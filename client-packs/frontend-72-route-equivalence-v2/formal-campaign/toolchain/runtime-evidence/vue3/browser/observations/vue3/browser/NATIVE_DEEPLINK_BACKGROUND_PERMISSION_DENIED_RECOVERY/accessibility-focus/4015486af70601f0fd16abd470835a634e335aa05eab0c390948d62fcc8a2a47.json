@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:f3df12519dc4130297e383b2d3d0ba008cdf06799fec727c638df6749fb2a3cb",
+      "block_id": "accessibility-focus",
+      "byte_count": 554083,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/vue3/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-accessibility-tree-focus-observer-trace/79fe975b2d3064dbf2b98658362eacdf6c4bc8e0515401249acd518643f1fc83.json",
+      "profile_id": "vue3",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+      "sha256": "sha256:79fe975b2d3064dbf2b98658362eacdf6c4bc8e0515401249acd518643f1fc83"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:2b6db0af29c193800c1de3a4ddfa8dbd8e87c33f0b1fbc4d255a53aaabefc068",
+        "byte_count": 555075,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-accessibility-axe-trace/683ae45646f1f3f622a684b436a8df20b3701d7ddae8d96dd40b57cec05131d1.json",
+        "profile_id": "vue3",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "sha256": "sha256:683ae45646f1f3f622a684b436a8df20b3701d7ddae8d96dd40b57cec05131d1"
+      },
+      {
+        "artifact_id": "sha256:db652fe3a2b6fcd054e30bc555ecb5d678d879daabb9dab42ce6e13063efbaba",
+        "byte_count": 5415,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-framework-event-trace/612c69a0bda25a77e78e66c16a520a59084c531eb27f7d84f533e7859bac91b9.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "sha256": "sha256:612c69a0bda25a77e78e66c16a520a59084c531eb27f7d84f533e7859bac91b9"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+  "schema_version": "1.0"
+}

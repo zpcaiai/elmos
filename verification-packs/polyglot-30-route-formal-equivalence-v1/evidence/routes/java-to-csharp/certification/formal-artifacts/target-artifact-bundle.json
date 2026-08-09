@@ -1,0 +1,25 @@
+{
+  "route_key": "java-to-csharp",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 201,
+      "corpus": "development",
+      "path": "certification/artifacts/development/Migrated.cs",
+      "sha256": "sha256:2896064edaaaffbc1b94d04ef087d84b2ff894bfe32749821476f8d580d0563e"
+    },
+    {
+      "bytes": 242,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/Migrated.cs",
+      "sha256": "sha256:63d669905d371eb8ddd960fa3439e72190bb6790b9cb197a0954a72ed0cc4de3"
+    },
+    {
+      "bytes": 198,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/Migrated.cs",
+      "sha256": "sha256:7ed09224a9de722c7c78de55313083d5e25df745d6ee33bdf26dc20917b5008f"
+    }
+  ]
+}

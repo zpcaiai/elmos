@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "BLOCK",
+    "event": "SUBMIT",
+    "handled": true,
+    "keyboardKey": "Enter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7ee8c369054dc6dde297eabd2aa55d4c75d04ef3a2a32b490d370a7d4624b2f2",
+      "block_id": "action-event",
+      "byte_count": 3254,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-native-event-outcome-observer-trace/551082ea6556e854218102bc93d3ad26c2ddff97ac541bdec65897aa5a5c9caf.json",
+      "profile_id": "react",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:551082ea6556e854218102bc93d3ad26c2ddff97ac541bdec65897aa5a5c9caf"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0c6eceae27b9b346ff568e1af707ee154848b52d8db380c86ad8098c49607a09",
+        "byte_count": 8790,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

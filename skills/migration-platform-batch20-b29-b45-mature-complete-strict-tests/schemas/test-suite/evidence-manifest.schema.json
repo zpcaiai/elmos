@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "manifest_id",
+    "case_id",
+    "artifact_digest",
+    "environment_digest",
+    "files",
+    "created_by"
+  ],
+  "properties": {
+    "manifest_id": {
+      "type": "string"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "artifact_digest": {
+      "type": "string"
+    },
+    "environment_digest": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "created_by": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

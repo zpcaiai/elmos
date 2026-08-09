@@ -332,3 +332,5 @@ Rules that hold regardless of which Skill you are implementing:
   you. Do not work around them.
 - A claim without a `limitations` entry in `claims.json` is incomplete. State
   what the run did not cover.
+
+## Imported Claude Cowork project instructions

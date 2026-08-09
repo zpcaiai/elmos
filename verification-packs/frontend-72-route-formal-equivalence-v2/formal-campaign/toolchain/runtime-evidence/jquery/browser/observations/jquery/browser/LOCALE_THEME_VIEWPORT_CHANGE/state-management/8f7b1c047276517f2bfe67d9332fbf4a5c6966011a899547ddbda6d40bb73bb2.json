@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:ff6378899f18b6eef4da08c72130b8adc0a9c787e4de4909aee929cd21ea6b4b",
+      "block_id": "state-management",
+      "byte_count": 1224,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/jquery/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-state-transition-observer-trace/daa9abc3611e87f91d83912891cb42fd8a8b416e8c689106ab4d1557c713015a.json",
+      "profile_id": "jquery",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:daa9abc3611e87f91d83912891cb42fd8a8b416e8c689106ab4d1557c713015a"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:7b8f6418eadb49a589f1e580e52225bbe34251be1a635258dd3351d7166f81e1",
+        "byte_count": 5288,
+        "channel": "browser",
+        "path": "traces/jquery/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-event-trace/d4d6c82872697b704ce7a93584b3e5ba4c20732731d1917c6035392ce0859b43.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:d4d6c82872697b704ce7a93584b3e5ba4c20732731d1917c6035392ce0859b43"
+      },
+      {
+        "artifact_id": "sha256:5f58638aea888325ca172a985602ed7d5b159aca12046e582e80c30c341402bd",
+        "byte_count": 39893,
+        "channel": "browser",
+        "path": "traces/jquery/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-dom-snapshot/3db33ef46d3d5bf5e0be5e74b1080faed24f3999799c70260498e52fd2d14ea3.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:3db33ef46d3d5bf5e0be5e74b1080faed24f3999799c70260498e52fd2d14ea3"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/extension-manifest.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "extension_key",
+    "host",
+    "version",
+    "host_version_range",
+    "protocol_version",
+    "capabilities",
+    "permissions",
+    "distribution"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "extension_key": {
+      "type": "string"
+    },
+    "host": {
+      "enum": [
+        "intellij",
+        "visual-studio",
+        "vscode"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "host_version_range": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": [
+        "repository_write",
+        "arbitrary_shell",
+        "secret_read",
+        "network_domains"
+      ],
+      "properties": {
+        "repository_write": {
+          "enum": [
+            "none",
+            "approved-patches-only"
+          ]
+        },
+        "arbitrary_shell": {
+          "const": false
+        },
+        "secret_read": {
+          "const": false
+        },
+        "network_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "distribution": {
+      "type": "object",
+      "required": [
+        "signed",
+        "package_ref"
+      ],
+      "properties": {
+        "signed": {
+          "type": "boolean"
+        },
+        "package_ref": {
+          "type": "string"
+        },
+        "signature_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,105 @@
+{
+  "actual_source": "ALLOWLISTED_BLOCK_OBSERVER_CAPTURE",
+  "block_id": "action-event",
+  "capture": {
+    "browser_matrix": [
+      {
+        "browser_id": "google-chrome",
+        "measurement": {
+          "captured_events": [
+            {
+              "defaultPrevented": false,
+              "key": "Delete",
+              "target": {
+                "attributes": {
+                  "data-elmos-control": "query",
+                  "data-field-id": "search.query",
+                  "id": "elmos-query",
+                  "name": "query"
+                },
+                "tag": "input",
+                "value": ""
+              },
+              "timestamp": 1786313784141,
+              "type": "keydown"
+            },
+            {
+              "defaultPrevented": false,
+              "key": null,
+              "target": {
+                "attributes": {
+                  "data-elmos-event": "HYDRATE",
+                  "data-run-scenario": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+                  "type": "button"
+                },
+                "tag": "button",
+                "value": ""
+              },
+              "timestamp": 1786313784166,
+              "type": "click"
+            }
+          ],
+          "outcome_attributes": {
+            "data-elmos-action": "HYDRATE",
+            "data-elmos-event-outcome": "HYDRATE",
+            "data-elmos-handled": "true",
+            "data-elmos-keyboard-key": "NONE"
+          }
+        }
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "measurement": {
+          "captured_events": [
+            {
+              "defaultPrevented": false,
+              "key": "Delete",
+              "target": {
+                "attributes": {
+                  "data-elmos-control": "query",
+                  "data-field-id": "search.query",
+                  "id": "elmos-query",
+                  "name": "query"
+                },
+                "tag": "input",
+                "value": ""
+              },
+              "timestamp": 1786313802761,
+              "type": "keydown"
+            },
+            {
+              "defaultPrevented": false,
+              "key": null,
+              "target": {
+                "attributes": {
+                  "data-elmos-event": "HYDRATE",
+                  "data-run-scenario": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+                  "type": "button"
+                },
+                "tag": "button",
+                "value": ""
+              },
+              "timestamp": 1786313802800,
+              "type": "click"
+            }
+          ],
+          "outcome_attributes": {
+            "data-elmos-action": "HYDRATE",
+            "data-elmos-event-outcome": "HYDRATE",
+            "data-elmos-handled": "true",
+            "data-elmos-keyboard-key": "NONE"
+          }
+        }
+      }
+    ],
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "observer_contract": "block-specific-runtime-observation-v1"
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-block-observer-trace-artifact",
+  "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+  "profile_id": "vue2",
+  "role": "browser-native-event-outcome-observer-trace",
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

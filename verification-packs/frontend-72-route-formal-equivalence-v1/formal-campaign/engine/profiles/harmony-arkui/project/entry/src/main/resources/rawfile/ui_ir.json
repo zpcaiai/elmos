@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "1.0",
+  "sourceSnapshotDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "routes": [
+    {
+      "id": "route.home",
+      "name": "route.home",
+      "kind": "bounded-fixture",
+      "references": [
+        "component.home"
+      ],
+      "sourceRefs": [
+        "fixture/route.home.tsx:1"
+      ],
+      "path": "/",
+      "componentId": "component.home",
+      "requiresAuth": false,
+      "deepLink": true
+    },
+    {
+      "id": "route.account",
+      "name": "route.account",
+      "kind": "bounded-fixture",
+      "references": [
+        "component.account"
+      ],
+      "sourceRefs": [
+        "fixture/route.account.tsx:1"
+      ],
+      "path": "/account",
+      "componentId": "component.account",
+      "requiresAuth": true,
+      "deepLink": true
+    },
+    {
+      "id": "route.help",
+      "name": "route.help",
+      "kind": "bounded-fixture",
+      "references": [
+        "component.help"
+      ],
+      "sourceRefs": [
+        "fixture/route.help.tsx:1"
+      ],
+      "path": "/help",
+      "componentId": "component.help",
+      "requiresAuth": false,
+      "deepLink": false
+    }
+  ],
+  "views": [
+    {
+      "id": "view.shell",
+      "name": "view.shell",
+      "kind": "bounded-fixture",
+      "references": [
+        "component.home",
+        "component.account",
+        "component.help"
+      ],
+      "sourceRefs": [
+        "fixture/view.shell.tsx:1"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "component.home",
+      "name": "component.home",
+      "kind": "bounded-fixture",
+      "references": [
+        "state.navigation"
+      ],
+      "sourceRefs": [
+        "fixture/component.home.tsx:1"
+      ],
+      "text": "首页内容",
+      "accessibilityRole": "main"
+    },
+    {
+      "id": "component.account",
+      "name": "component.account",
+      "kind": "bounded-fixture",
+      "references": [
+        "state.navigation"
+      ],
+      "sourceRefs": [
+        "fixture/component.account.tsx:1"
+      ],
+      "text": "账户内容",
+      "accessibilityRole": "main"
+    },
+    {
+      "id": "component.help",
+      "name": "component.help",
+      "kind": "bounded-fixture",
+      "references": [
+        "state.navigation"
+      ],
+      "sourceRefs": [
+        "fixture/component.help.tsx:1"
+      ],
+      "text": "帮助内容",
+      "accessibilityRole": "main"
+    }
+  ],
+  "states": [
+    {
+      "id": "state.navigation",
+      "name": "state.navigation",
+      "kind": "bounded-fixture",
+      "references": [],
+      "sourceRefs": [
+        "fixture/state.navigation.tsx:1"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "action.select-route",
+      "name": "action.select-route",
+      "kind": "bounded-fixture",
+      "references": [
+        "state.navigation"
+      ],
+      "sourceRefs": [
+        "fixture/action.select-route.tsx:1"
+      ]
+    }
+  ],
+  "effects": [
+    {
+      "id": "effect.history",
+      "name": "effect.history",
+      "kind": "bounded-fixture",
+      "references": [
+        "action.select-route"
+      ],
+      "sourceRefs": [
+        "fixture/effect.history.tsx:1"
+      ]
+    }
+  ],
+  "forms": [
+    {
+      "id": "form.none",
+      "name": "form.none",
+      "kind": "bounded-fixture",
+      "references": [],
+      "sourceRefs": [
+        "fixture/form.none.tsx:1"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "id": "binding.route",
+      "name": "binding.route",
+      "kind": "bounded-fixture",
+      "references": [
+        "state.navigation"
+      ],
+      "sourceRefs": [
+        "fixture/binding.route.tsx:1"
+      ]
+    }
+  ],
+  "permissions": [
+    {
+      "id": "permission.route-metadata",
+      "name": "permission.route-metadata",
+      "kind": "bounded-fixture",
+      "references": [],
+      "sourceRefs": [
+        "fixture/permission.route-metadata.tsx:1"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "resource.route-copy",
+      "name": "resource.route-copy",
+      "kind": "bounded-fixture",
+      "references": [],
+      "sourceRefs": [
+        "fixture/resource.route-copy.tsx:1"
+      ]
+    }
+  ],
+  "designTokens": [
+    {
+      "id": "token.navigation",
+      "name": "token.navigation",
+      "kind": "bounded-fixture",
+      "references": [],
+      "sourceRefs": [
+        "fixture/token.navigation.tsx:1"
+      ]
+    }
+  ],
+  "accessibility": [
+    {
+      "id": "a11y.navigation",
+      "name": "a11y.navigation",
+      "kind": "bounded-fixture",
+      "references": [
+        "view.shell"
+      ],
+      "sourceRefs": [
+        "fixture/a11y.navigation.tsx:1"
+      ]
+    }
+  ],
+  "nativeBoundaries": [],
+  "unknowns": []
+}

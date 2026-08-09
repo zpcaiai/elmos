@@ -1,0 +1,67 @@
+{
+  "actual_source": "ALLOWLISTED_BLOCK_OBSERVER_CAPTURE",
+  "block_id": "i18n-theme-responsive",
+  "capture": {
+    "browser_matrix": [
+      {
+        "browser_id": "google-chrome",
+        "measurement": {
+          "computed_theme_tokens": {
+            "requested_theme": "LIGHT",
+            "theme": "LIGHT"
+          },
+          "html_lang": "zh-CN",
+          "layout_measurement": {
+            "bounding_box": {
+              "height": 22,
+              "width": 320,
+              "x": 0,
+              "y": 401.5625
+            },
+            "columns": 2,
+            "computed_grid_template_columns": "160px 160px",
+            "viewport_width": 1024
+          },
+          "translated_text": {
+            "requested_locale": "zh-CN",
+            "text": "搜索结果"
+          }
+        }
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "measurement": {
+          "computed_theme_tokens": {
+            "requested_theme": "LIGHT",
+            "theme": "LIGHT"
+          },
+          "html_lang": "zh-CN",
+          "layout_measurement": {
+            "bounding_box": {
+              "height": 23,
+              "width": 320,
+              "x": 0,
+              "y": 406.5666809082031
+            },
+            "columns": 2,
+            "computed_grid_template_columns": "160px 160px",
+            "viewport_width": 1024
+          },
+          "translated_text": {
+            "requested_locale": "zh-CN",
+            "text": "搜索结果"
+          }
+        }
+      }
+    ],
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "observer_contract": "block-specific-runtime-observation-v1"
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-block-observer-trace-artifact",
+  "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+  "profile_id": "react",
+  "role": "browser-computed-layout-i18n-theme-observer-trace",
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

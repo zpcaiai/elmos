@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "campaign_key",
+    "owner",
+    "targets",
+    "seed_corpus",
+    "coverage_signal",
+    "budgets",
+    "sanitizers"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "campaign_key": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "seed_corpus": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverage_signal": {
+      "type": "string"
+    },
+    "budgets": {
+      "type": "object"
+    },
+    "sanitizers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dictionary_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

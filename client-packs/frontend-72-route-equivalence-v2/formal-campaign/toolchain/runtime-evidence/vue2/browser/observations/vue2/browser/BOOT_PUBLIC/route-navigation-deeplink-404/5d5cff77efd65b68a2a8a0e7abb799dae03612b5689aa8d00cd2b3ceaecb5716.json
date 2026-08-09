@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7ea5ecc2d031e0486839b8f5a99cf0e0dbe5609c7e4e1bb7ece340f9a79ed83b",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2408,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue2/browser/BOOT_PUBLIC/browser-route-dom-url-observer-trace/1341fca92f44ab49005a6450685510b4aaf16a067d14bfb5f0861b5ed7a574ff.json",
+      "profile_id": "vue2",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "BOOT_PUBLIC",
+      "sha256": "sha256:1341fca92f44ab49005a6450685510b4aaf16a067d14bfb5f0861b5ed7a574ff"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:55cd6c149dd35aa40a916c20ba4a42550deafb7348af642c69a5250446c16eb2",
+        "byte_count": 40362,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BOOT_PUBLIC/browser-dom-snapshot/b08a3c7a20564067b1a21f24a2fd73078eb4255560d7318c8e1c8b63ecf5f0fb.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:b08a3c7a20564067b1a21f24a2fd73078eb4255560d7318c8e1c8b63ecf5f0fb"
+      },
+      {
+        "artifact_id": "sha256:bd4a70d8260db162e7b6bbae06fc6d98c9ba0f2906ff2f11d420f8792abe1a26",
+        "byte_count": 5161,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BOOT_PUBLIC/browser-framework-event-trace/eb6036615714d2d26add8d7a53eac175c304de428da2fedea603c15d4893a21f.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:eb6036615714d2d26add8d7a53eac175c304de428da2fedea603c15d4893a21f"
+      }
+    ]
+  },
+  "scenario_id": "BOOT_PUBLIC",
+  "schema_version": "1.0"
+}

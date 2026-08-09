@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": "QUERY_TOO_SHORT",
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": true,
+    "valid": false,
+    "value": "x"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0f8f87426a0911ad77d761281dda5cfcfb50121d8dc00f5fa05d05a617e7b165",
+      "block_id": "form-binding-validation",
+      "byte_count": 1546,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-form-validity-observer-trace/5b0d7d604555eafc85bca99c5f10db1593b6f4b54e1507fd651dc961b18a2380.json",
+      "profile_id": "jquery",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:5b0d7d604555eafc85bca99c5f10db1593b6f4b54e1507fd651dc961b18a2380"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:90d28273c267599f3522d1dab218131d4d1c08cae38dda8e6aff62241e6a0b22",
+        "byte_count": 40254,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/d7e206e1ad06930ad5426a34ed91ac383e7be2fb48e8fe75fe31422ac9e00075.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:d7e206e1ad06930ad5426a34ed91ac383e7be2fb48e8fe75fe31422ac9e00075"
+      },
+      {
+        "artifact_id": "sha256:3188d07f0331f97d228f52c3ba7196bbda424caeee3fbbd999e97543f43ce447",
+        "byte_count": 8791,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/c705df5e4766f16104db00a0f636bc0917136ecb41b361eb7bd2be9b204ec555.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:c705df5e4766f16104db00a0f636bc0917136ecb41b361eb7bd2be9b204ec555"
+      },
+      {
+        "artifact_id": "sha256:df8ba24a585f7011efa7be5c2476347cbb04229501fd11500c23e86c92554ae6",
+        "byte_count": 555441,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-accessibility-axe-trace/bc9c94907f0b77c17f4b548976dc90da8b06ee8b1066ccd8097852c71449b970.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:bc9c94907f0b77c17f4b548976dc90da8b06ee8b1066ccd8097852c71449b970"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

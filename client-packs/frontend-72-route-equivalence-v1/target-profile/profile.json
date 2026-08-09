@@ -1,0 +1,75 @@
+{
+  "profile_key": "frontend-72-route-equivalence-v1-target",
+  "version": "0.1.0",
+  "owner": "frontend-client-platform-team",
+  "framework": "flutter",
+  "versions": [
+    "3.44.1"
+  ],
+  "language": "Dart",
+  "language_versions": [
+    "3.12.1"
+  ],
+  "runtime": "Flutter Engine",
+  "runtime_versions": [
+    "3.44.1"
+  ],
+  "build_tool": "flutter",
+  "package_manager": "pub",
+  "router": [
+    "MaterialApp named routes"
+  ],
+  "rendering_strategy": {
+    "mode": "Flutter widgets"
+  },
+  "state_strategy": {
+    "provider": "ChangeNotifier-compatible generated boundary"
+  },
+  "form_strategy": {
+    "provider": "NOT_RUN"
+  },
+  "styling_strategy": {
+    "mode": "NOT_RUN"
+  },
+  "design_system_strategy": {
+    "mode": "NOT_RUN"
+  },
+  "api_client_strategy": {
+    "provider": "NOT_RUN"
+  },
+  "auth_strategy": {
+    "mode": "metadata-only-NOT_RUN"
+  },
+  "i18n_strategy": {
+    "provider": "NOT_RUN"
+  },
+  "accessibility_profile": {
+    "standard": "model-only-NOT_RUN"
+  },
+  "browser_matrix": [
+    "browser-execution-NOT_RUN"
+  ],
+  "device_profiles": [
+    "ANDROID-NOT_RUN",
+    "IOS-NOT_RUN"
+  ],
+  "test_profiles": [
+    "flutter_test 3.44.1"
+  ],
+  "provision": {
+    "commands": [
+      "NOT_RUN"
+    ]
+  },
+  "health_check": {
+    "commands": [
+      "NOT_RUN"
+    ]
+  },
+  "security": {
+    "status": "NOT_RUN"
+  },
+  "lifecycle": {
+    "policy": "recertify-on-profile-drift"
+  }
+}

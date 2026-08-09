@@ -1,0 +1,29 @@
+{
+  "id": "harmony-arkui",
+  "label": "HarmonyOS ArkUI",
+  "frameworkVersion": "6.0.0(20)",
+  "profileVersion": "1.0.0",
+  "status": "ACTIVE",
+  "platforms": [
+    "HARMONYOS"
+  ],
+  "language": "ArkTS",
+  "languageVersion": "HarmonyOS 6.0.0 API 20",
+  "runtime": "HarmonyOS",
+  "runtimeVersion": "6.0.0(20)",
+  "buildTool": "Hvigor",
+  "buildToolVersion": "DevEco Studio 6.0.0 Release bundled",
+  "packageManager": "ohpm",
+  "packageManagerVersion": "DevEco Studio 6.0.0 Release bundled",
+  "router": "ArkUI Navigation",
+  "state": "ArkUI observed state",
+  "rendering": "ArkUI declarative rendering",
+  "testTool": "Hypium profile",
+  "runnerProfile": "HARMONYOS",
+  "requiredProjectFiles": [
+    "build-profile.json5",
+    "AppScope/app.json5",
+    "entry/src/main/module.json5",
+    "entry/src/main/ets/pages/Index.ets"
+  ]
+}

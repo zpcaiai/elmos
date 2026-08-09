@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_key",
+    "owner",
+    "provider",
+    "regions",
+    "account_model",
+    "iac_tool",
+    "state_backend",
+    "container",
+    "orchestrator",
+    "identity",
+    "network",
+    "dns",
+    "service_mesh",
+    "serverless",
+    "managed_services",
+    "api_gateway",
+    "observability",
+    "security",
+    "cost",
+    "provision",
+    "validate",
+    "destroy",
+    "lifecycle"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_key": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "regions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "account_model": {
+      "type": "string"
+    },
+    "iac_tool": {
+      "type": "object"
+    },
+    "state_backend": {
+      "type": "object"
+    },
+    "container": {
+      "type": "object"
+    },
+    "orchestrator": {
+      "type": "object"
+    },
+    "identity": {
+      "type": "object"
+    },
+    "network": {
+      "type": "object"
+    },
+    "dns": {
+      "type": "object"
+    },
+    "service_mesh": {
+      "type": "object"
+    },
+    "serverless": {
+      "type": "object"
+    },
+    "managed_services": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "api_gateway": {
+      "type": "object"
+    },
+    "observability": {
+      "type": "object"
+    },
+    "security": {
+      "type": "object"
+    },
+    "cost": {
+      "type": "object"
+    },
+    "provision": {
+      "type": "object"
+    },
+    "validate": {
+      "type": "object"
+    },
+    "destroy": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

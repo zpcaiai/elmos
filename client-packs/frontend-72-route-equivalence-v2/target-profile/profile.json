@@ -1,0 +1,71 @@
+{
+  "profile_key": "frontend-72-route-equivalence-v2-target",
+  "version": "0.1.0",
+  "owner": "frontend-client-platform-team",
+  "framework": "flutter",
+  "versions": [
+    "3.44.1"
+  ],
+  "language": "Dart",
+  "language_versions": [
+    "3.12.1"
+  ],
+  "runtime": "Flutter Engine",
+  "runtime_versions": [
+    "3.44.1"
+  ],
+  "build_tool": "flutter",
+  "package_manager": "pub",
+  "router": [],
+  "rendering_strategy": {
+    "mode": "UNSET"
+  },
+  "state_strategy": {
+    "provider": "UNSET"
+  },
+  "form_strategy": {
+    "provider": "UNSET"
+  },
+  "styling_strategy": {
+    "mode": "UNSET"
+  },
+  "design_system_strategy": {
+    "mode": "UNSET"
+  },
+  "api_client_strategy": {
+    "provider": "UNSET"
+  },
+  "auth_strategy": {
+    "mode": "UNSET"
+  },
+  "i18n_strategy": {
+    "provider": "UNSET"
+  },
+  "accessibility_profile": {
+    "standard": "WCAG-UNSET"
+  },
+  "browser_matrix": [
+    "chromium-UNSET"
+  ],
+  "device_profiles": [],
+  "test_profiles": [
+    "e2e-UNSET"
+  ],
+  "provision": {
+    "commands": [
+      "UNSET"
+    ]
+  },
+  "health_check": {
+    "commands": [
+      "UNSET"
+    ]
+  },
+  "security": {
+    "content_security_policy": "UNSET"
+  },
+  "lifecycle": {
+    "support_until": "UNSET",
+    "upgrade_policy": "UNSET"
+  }
+}

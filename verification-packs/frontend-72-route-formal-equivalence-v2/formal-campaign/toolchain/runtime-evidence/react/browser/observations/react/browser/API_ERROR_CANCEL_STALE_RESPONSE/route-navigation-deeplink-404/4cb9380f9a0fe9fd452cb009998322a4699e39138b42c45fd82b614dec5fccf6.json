@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": true,
+    "resolution": "DECLARED",
+    "selectedPath": "/account",
+    "selectedRouteId": "route.account"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:6fdf0173028d862090ec5f968e839b67a4a93879daf2cddf3676e21031bd2c47",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2461,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-route-dom-url-observer-trace/324bd9232a52bf83cfcba1bd6b6c1989594489d0343a678cc189bbc8f7d2ac4c.json",
+      "profile_id": "react",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:324bd9232a52bf83cfcba1bd6b6c1989594489d0343a678cc189bbc8f7d2ac4c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:fc648db0affad76660f70cfd334a2dd5a06edd27b83e98ffa7654bb520ebedf7",
+        "byte_count": 40421,
+        "channel": "browser",
+        "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-dom-snapshot/d9473a71c55f0d703b7ae81cf060dd1d5d73ae0753bdffc16be786be3658a825.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:d9473a71c55f0d703b7ae81cf060dd1d5d73ae0753bdffc16be786be3658a825"
+      },
+      {
+        "artifact_id": "sha256:147214a2c080eb5c498693c116cdc522397d00c731ecf8ba8bd695106a190cc2",
+        "byte_count": 6164,
+        "channel": "browser",
+        "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-framework-event-trace/3e87db98fcec14760a3a029f1d461cafbee37d3daf83905506e3eafbcd5f06b6.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:3e87db98fcec14760a3a029f1d461cafbee37d3daf83905506e3eafbcd5f06b6"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

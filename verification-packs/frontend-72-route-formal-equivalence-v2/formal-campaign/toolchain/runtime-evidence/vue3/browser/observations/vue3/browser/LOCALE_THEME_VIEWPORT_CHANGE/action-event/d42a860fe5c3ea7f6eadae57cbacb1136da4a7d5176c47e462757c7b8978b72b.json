@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:6e0ffac845292c92f7edf84647bb058a364467ae1d93dcce95383e61d909aea0",
+      "block_id": "action-event",
+      "byte_count": 3324,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue3/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-native-event-outcome-observer-trace/4995fe5bb544b0b50fb0afcf7324241b8124e7e08897351b633b580447ea3fdb.json",
+      "profile_id": "vue3",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:4995fe5bb544b0b50fb0afcf7324241b8124e7e08897351b633b580447ea3fdb"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:71768a4a1892d741212ea5b7313526c877e05f42d0d147ec2b25e51e31db68fd",
+        "byte_count": 5286,
+        "channel": "browser",
+        "path": "traces/vue3/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-event-trace/146dda7852439cb005b0384a4ea9e223e810c73b61305431f1c44f8c33387279.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:146dda7852439cb005b0384a4ea9e223e810c73b61305431f1c44f8c33387279"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

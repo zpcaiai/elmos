@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": true,
+    "resolution": "DECLARED",
+    "selectedPath": "/account",
+    "selectedRouteId": "route.account"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:9a6788f7ad0727ccb3c43e35b34d26c76ab289ea0407b2cf93dbb7111fc4d185",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2460,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue3/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-route-dom-url-observer-trace/895f9d09ef21f414fbed365175736407d730b8b777596cadd578e83b5618ad8d.json",
+      "profile_id": "vue3",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:895f9d09ef21f414fbed365175736407d730b8b777596cadd578e83b5618ad8d"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:951f425efafa727b1fef2622f4fd9b5f82c237d5b85686337d2286db9dbd4697",
+        "byte_count": 40660,
+        "channel": "browser",
+        "path": "traces/vue3/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-dom-snapshot/f4dc9671171aca11ad90ecb0bc9da2deed828cf56ed98cf9523b6a9e0e513cd8.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:f4dc9671171aca11ad90ecb0bc9da2deed828cf56ed98cf9523b6a9e0e513cd8"
+      },
+      {
+        "artifact_id": "sha256:c880b751b4d384b55d7550ac40f095efc4ad8591bc02f7b550ccf61b8d3d9e05",
+        "byte_count": 6163,
+        "channel": "browser",
+        "path": "traces/vue3/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-framework-event-trace/b6ba152d9139a0291c18cc92ca79a9f0b7737655434a4224edc49e26a71dee90.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:b6ba152d9139a0291c18cc92ca79a9f0b7737655434a4224edc49e26a71dee90"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

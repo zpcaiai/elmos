@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-formal-equivalence-v1",
+  "status": "experimental",
+  "owner": "frontend-formal-verification-team",
+  "exact_scope": {
+    "migration_route": "all-directed-pairs-nine-exact-frontend-profiles",
+    "source_artifact_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+    "target_artifact_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+    "workload_key": "bounded-navigation-v1",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:31a41ef1d6fba82572274b028cece6058a6cc785912881142c289efc91c5844c"
+  },
+  "metrics": {},
+  "evidence_refs": [
+    "formal-campaign/frontend-formal-route-campaign.json"
+  ],
+  "limitations": [
+    "The solver result is proof under assumptions for bounded-navigation-v1.",
+    "Native, holdout, representative, independent external, and certification evidence remain NOT_RUN."
+  ],
+  "approved_at": null
+}

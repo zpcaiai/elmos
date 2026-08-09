@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "HYDRATE",
+    "event": "HYDRATE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:fa834beb438645770500057d979c146526c3b5418b0d8d584c6f85aed3ab16a7",
+      "block_id": "action-event",
+      "byte_count": 3266,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-native-event-outcome-observer-trace/635fbcabfc60e7dae501e9a75488c83a7857374f84e79f4cb012eb1ddbe01785.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:635fbcabfc60e7dae501e9a75488c83a7857374f84e79f4cb012eb1ddbe01785"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:5db5df26a884a5221443093bbb481e9d1c57e59d1174772f76d3d9270e0cac41",
+        "byte_count": 5230,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/49591884f13dc4845b831266a1882892a17d4129905fcf8cc22b796c80dadf49.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:49591884f13dc4845b831266a1882892a17d4129905fcf8cc22b796c80dadf49"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

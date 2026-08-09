@@ -18,6 +18,7 @@ const MAX_FILE_COUNT = 5_000;
 const MAX_SOURCE_BYTES = 64 * 1024 * 1024;
 const MAX_WORK_UNIT_BYTES = 2 * 1024 * 1024;
 const SHA256 = /^[0-9a-f]{64}$/;
+const REPOSITORY_WORKSPACE_REF = /^repository-workspace:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@[0-9a-f]{40}$/;
 
 export class RepositoryPlanError extends Error {
   readonly errorCode: string;
@@ -46,6 +47,7 @@ export function isSafeRepositoryRef(value: string): boolean {
     || value.startsWith("~")
   ) return false;
   if (/^local:[a-z0-9][a-z0-9._/-]{2,170}$/i.test(value)) return true;
+  if (REPOSITORY_WORKSPACE_REF.test(value)) return true;
   try {
     const parsed = new URL(value);
     return parsed.protocol === "https:"
@@ -96,6 +98,16 @@ function parseWorkUnit(value: unknown, index: number, routeId: string): Translat
   if (typeof value.id !== "string" || value.id.length === 0 || value.id.length > 200) {
     fail("WORK_UNIT_ID_INVALID", `work_units[${index}].id 非法。`);
   }
+  if (
+    !Array.isArray(value.required_inputs)
+    || value.required_inputs.length !== 1
+    || value.required_inputs[0] !== "behavior_cases_json_per_discovered_function"
+  ) {
+    fail(
+      "WORK_UNIT_REQUIRED_INPUTS_INVALID",
+      `work_units[${index}].required_inputs 必须要求每个发现函数独立提供行为用例。`,
+    );
+  }
   return {
     id: value.id,
     route_id: routeId,
@@ -104,7 +116,7 @@ function parseWorkUnit(value: unknown, index: number, routeId: string): Translat
     source_bytes: value.source_bytes as number,
     status: "DISCOVERY_REQUIRED",
     execution_status: "NOT_RUN",
-    required_inputs: ["function_name", "behavior_cases_json"],
+    required_inputs: ["behavior_cases_json_per_discovered_function"],
     declared_profile: "typed-pure-function-v1",
     unsupported_until_discovered: unsupported as string[],
   };
@@ -192,6 +204,27 @@ export function validateRepositoryPlan(
   ) {
     fail("PLAN_SOURCE_BYTES_INVALID", "清单 source_bytes 超出 64 MB 聚合上限。");
   }
+  const expectedScale = (fileCount as number) <= 500 && (sourceBytes as number) <= 8 * 1024 * 1024
+    ? "small"
+    : "medium";
+  if (raw.repository_scale !== expectedScale) {
+    fail("PLAN_REPOSITORY_SCALE_INVALID", `清单 repository_scale 应为 ${expectedScale}。`);
+  }
+  const repositoryLimits = raw.repository_limits;
+  if (!isRecord(repositoryLimits)) {
+    fail("PLAN_REPOSITORY_LIMITS_INVALID", "清单缺少 repository_limits。");
+  }
+  const expectedLimits = {
+    maximum_source_files: MAX_FILE_COUNT,
+    maximum_source_bytes: MAX_SOURCE_BYTES,
+    maximum_bytes_per_file: MAX_WORK_UNIT_BYTES,
+  } as const;
+  if (
+    Object.keys(repositoryLimits).sort().join(",") !== Object.keys(expectedLimits).sort().join(",")
+    || Object.entries(expectedLimits).some(([key, value]) => repositoryLimits[key] !== value)
+  ) {
+    fail("PLAN_REPOSITORY_LIMITS_INVALID", "清单 repository_limits 与执行器硬上限不一致。");
+  }
   if (
     !Number.isInteger(raw.ignored_symlink_count)
     || (raw.ignored_symlink_count as number) < 0
@@ -249,6 +282,8 @@ export function validateRepositoryPlan(
     file_count: fileCount as number,
     source_file_count: sourceFileCount as number,
     source_bytes: sourceBytes as number,
+    repository_scale: expectedScale,
+    repository_limits: expectedLimits,
     language_counts: counts as Record<TranslationLanguageId, number>,
     ignored_symlink_count: raw.ignored_symlink_count as number,
     work_units: workUnits,

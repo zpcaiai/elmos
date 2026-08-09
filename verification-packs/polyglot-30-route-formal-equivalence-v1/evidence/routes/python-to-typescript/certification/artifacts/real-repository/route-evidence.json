@@ -1,0 +1,204 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:e446b89074cc09adba39a29e1225df0db69f446ade20dc6a8d7994515afc0f58",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:6a55264b2ad8c6bee7679ca4cd4ca11d19c610ddf3609b8137929e9be8fc00a4",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "real-repository",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:34fa2bed9318139348dfe5e02bfb7d138db4984f306ffd36c95ab08297d97517",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:9c6af1b5f38ce1033c71d485814b709bef6ca89a7a290c7ec2d6b7f46094432b",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:9c6af1b5f38ce1033c71d485814b709bef6ca89a7a290c7ec2d6b7f46094432b",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:9c6af1b5f38ce1033c71d485814b709bef6ca89a7a290c7ec2d6b7f46094432b",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:e833967f08eb99c2e60bcbd40a166e19f4a0976f25f2bd15b591ebf3b9f9c298",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      },
+      {
+        "formal_input_sha256": "sha256:9c6af1b5f38ce1033c71d485814b709bef6ca89a7a290c7ec2d6b7f46094432b",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:57ff1212cb17653fa90bb898d477bd48486f7a1aad8169890f2c10e268cf6708",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:e833967f08eb99c2e60bcbd40a166e19f4a0976f25f2bd15b591ebf3b9f9c298",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:c4e809d6e1696fc28af203b1c7f29c8fb1e4b6ca0af28b65229135a78019ec7f",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "python-to-typescript",
+  "route_maturity": "LIMITED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:5f763b308b0463e967de51e0a6f705b76e4966926c6cc7262b25a05bac2e72a7"
+  },
+  "semantic_ir_sha256": "sha256:0b58f3ed53fde7f3d61fef92c3abd1901d4d173d574f1d82dba66d85d080f052",
+  "source": {
+    "analyzer": "CPython ast",
+    "analyzer_version": "3.12.12",
+    "language": "python",
+    "path": "difference.py",
+    "sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "difference.py",
+    "artifact_sha256": "sha256:95bda0d2fd45db0913cd0a4051ef9e170ea1e552dbca2499ce0c4af700af688b",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "-m",
+          "py_compile",
+          "difference.py",
+          "source_harness.py"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "source_harness.py"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":13}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":0}\n"
+      }
+    ],
+    "language": "python",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":13}",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "role": "source",
+    "status": "PASSED"
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "typescript",
+    "path": "migrated.ts",
+    "sha256": "sha256:297c84d710be4d04999a76e33b736bc9c72b76f5849a1dff6842fdeaefda8d81"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/node",
+          "dist/route_harness.js"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":13}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":0}\n"
+      }
+    ],
+    "language": "typescript",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":13}",
+        "status": "RETURNED",
+        "value": 13
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      }
+    ],
+    "status": "PASSED"
+  }
+}

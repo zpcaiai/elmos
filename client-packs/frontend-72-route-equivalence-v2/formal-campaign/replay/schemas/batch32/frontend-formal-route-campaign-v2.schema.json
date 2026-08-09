@@ -1,0 +1,791 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.invalid/batch32/frontend-formal-route-campaign-v2.schema.json",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema_version",
+        "kind",
+        "campaign_key",
+        "version",
+        "proof_profile",
+        "campaign_status",
+        "certification_status",
+        "artifact_root",
+        "profile_count",
+        "route_count",
+        "block_count",
+        "route_block_count",
+        "semantic_block_ids",
+        "block_symbol_map",
+        "scenario_manifest",
+        "profiles",
+        "routes",
+        "artifacts",
+        "engine_campaign_artifact_id",
+        "engine_artifact_ids",
+        "engine_verifier",
+        "gap_inventory_artifact_id",
+        "implementation",
+        "toolchain_evidence",
+        "replay",
+        "corpora",
+        "oracle_provenance",
+        "runtime_projection",
+        "external_evidence",
+        "assumptions",
+        "unsupported_semantics",
+        "unconditional_proof",
+        "peer_binding",
+        "limitations"
+    ],
+    "properties": {
+        "schema_version": {"const": 2},
+        "kind": {"const": "frontend-formal-route-campaign-v2"},
+        "campaign_key": {"const": "frontend-72-route-formal-equivalence-v2"},
+        "version": {"const": "2.0.0"},
+        "proof_profile": {"const": "bounded-frontend-interaction-v1"},
+        "campaign_status": {"enum": ["NOT_RUN", "LOCAL_EXECUTED", "BLOCKED", "FAILED"]},
+        "certification_status": {"enum": ["NOT_CERTIFIED", "CERTIFIED"]},
+        "artifact_root": {"const": "formal-campaign"},
+        "profile_count": {"const": 9},
+        "route_count": {"const": 72},
+        "block_count": {"const": 12},
+        "route_block_count": {"const": 864},
+        "semantic_block_ids": {"$ref": "#/$defs/exactBlockIds"},
+        "block_symbol_map": {"$ref": "#/$defs/exactBlockSymbolMap"},
+        "scenario_manifest": {"$ref": "#/$defs/scenarioManifest"},
+        "profiles": {
+            "type": "array",
+            "minItems": 9,
+            "maxItems": 9,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/profileRecord"}
+        },
+        "routes": {
+            "type": "array",
+            "minItems": 72,
+            "maxItems": 72,
+            "items": {"$ref": "#/$defs/routeRecord"}
+        },
+        "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/artifactRef"}
+        },
+        "engine_campaign_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+        "engine_artifact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/nonEmpty"}
+        },
+        "engine_verifier": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "entrypoint_artifact_id",
+                "runtime_artifact_ids",
+                "node_identity_artifact_id",
+                "fingerprint",
+                "command",
+                "status",
+                "portability"
+            ],
+            "properties": {
+                "entrypoint_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "runtime_artifact_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "node_identity_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "fingerprint": {"$ref": "#/$defs/sha256"},
+                "command": {
+                    "type": "array",
+                    "minItems": 9,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "status": {"enum": ["PASSED", "FAILED", "NOT_RUN"]},
+                "portability": {"const": "PINNED_NODE_ENVIRONMENT_ASSUMPTION"}
+            }
+        },
+        "gap_inventory_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+        "implementation": {"$ref": "#/$defs/fingerprintBundle"},
+        "toolchain_evidence": {"$ref": "#/$defs/toolchainEvidence"},
+        "replay": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "manifest_artifact_id",
+                "artifact_ids",
+                "fingerprint",
+                "command"
+            ],
+            "properties": {
+                "manifest_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "artifact_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "fingerprint": {"$ref": "#/$defs/sha256"},
+                "command": {
+                    "type": "array",
+                    "minItems": 3,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                }
+            }
+        },
+        "corpora": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "development",
+                "negative",
+                "holdout",
+                "representative_workloads"
+            ],
+            "properties": {
+                "development": {"$ref": "#/$defs/corpus"},
+                "negative": {"$ref": "#/$defs/corpus"},
+                "holdout": {"$ref": "#/$defs/corpus"},
+                "representative_workloads": {"$ref": "#/$defs/corpus"}
+            }
+        },
+        "oracle_provenance": {"$ref": "#/$defs/oracleProvenance"},
+        "runtime_projection": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "artifact_id",
+                "fingerprint",
+                "profile_channel_contracts",
+                "contract_fingerprint"
+            ],
+            "properties": {
+                "artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "fingerprint": {"$ref": "#/$defs/sha256"},
+                "profile_channel_contracts": {
+                    "type": "object",
+                    "minProperties": 9,
+                    "maxProperties": 9,
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["browser", "android", "ios", "harmonyos"],
+                        "properties": {
+                            "browser": {"$ref": "#/$defs/runtimeScopeContract"},
+                            "android": {"$ref": "#/$defs/runtimeScopeContract"},
+                            "ios": {"$ref": "#/$defs/runtimeScopeContract"},
+                            "harmonyos": {"$ref": "#/$defs/runtimeScopeContract"}
+                        }
+                    }
+                },
+                "contract_fingerprint": {"$ref": "#/$defs/sha256"}
+            }
+        },
+        "external_evidence": {"$ref": "#/$defs/externalEvidence"},
+        "assumptions": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/nonEmpty"}
+        },
+        "unsupported_semantics": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/nonEmpty"}
+        },
+        "unconditional_proof": {"type": "boolean"},
+        "peer_binding": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["batch32_pack_key", "batch35_pack_key", "scope_digest"],
+            "properties": {
+                "batch32_pack_key": {"const": "frontend-72-route-equivalence-v2"},
+                "batch35_pack_key": {
+                    "const": "frontend-72-route-formal-equivalence-v2"
+                },
+                "scope_digest": {"$ref": "#/$defs/sha256"}
+            }
+        },
+        "limitations": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/nonEmpty"}
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "required": ["unconditional_proof"],
+                "properties": {"unconditional_proof": {"const": true}}
+            },
+            "then": {
+                "properties": {
+                    "assumptions": {"maxItems": 0},
+                    "unsupported_semantics": {"maxItems": 0}
+                }
+            }
+        }
+    ],
+    "$defs": {
+        "nonEmpty": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "profileId": {
+            "enum": [
+                "angular",
+                "flutter",
+                "harmony-arkui",
+                "jquery",
+                "react",
+                "react-native",
+                "svelte",
+                "vue2",
+                "vue3"
+            ]
+        },
+        "routeId": {
+            "type": "string",
+            "pattern": "^(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)--to--(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)$"
+        },
+        "blockId": {
+            "enum": [
+                "route-navigation-deeplink-404",
+                "component-template-view",
+                "state-management",
+                "action-event",
+                "effect-lifecycle",
+                "form-binding-validation",
+                "api-network",
+                "identity-permission",
+                "rendering-hydration",
+                "accessibility-focus",
+                "i18n-theme-responsive",
+                "native-platform"
+            ]
+        },
+        "exactBlockIds": {
+            "const": [
+                "route-navigation-deeplink-404",
+                "component-template-view",
+                "state-management",
+                "action-event",
+                "effect-lifecycle",
+                "form-binding-validation",
+                "api-network",
+                "identity-permission",
+                "rendering-hydration",
+                "accessibility-focus",
+                "i18n-theme-responsive",
+                "native-platform"
+            ]
+        },
+        "exactBlockSymbolMap": {
+            "const": {
+                "route-navigation-deeplink-404": "navigation",
+                "component-template-view": "component_template",
+                "state-management": "state_management",
+                "action-event": "action_event",
+                "effect-lifecycle": "effect_lifecycle",
+                "form-binding-validation": "form_binding_validation",
+                "api-network": "api_network",
+                "identity-permission": "identity_permission",
+                "rendering-hydration": "rendering_hydration",
+                "accessibility-focus": "accessibility_focus",
+                "i18n-theme-responsive": "i18n_theme_responsive",
+                "native-platform": "native_platform"
+            }
+        },
+        "runtimeChannel": {"enum": ["browser", "android", "ios", "harmonyos"]},
+        "evidenceStatus": {"enum": ["PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"]},
+        "aggregateStatus": {
+            "enum": ["PASSED", "PARTIAL", "FAILED", "NOT_RUN", "NOT_APPLICABLE"]
+        },
+        "runtimeToolScope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "role",
+                "path",
+                "realpath",
+                "version",
+                "sha256",
+                "byte_count",
+                "package_closure_digest"
+            ],
+            "properties": {
+                "role": {"$ref": "#/$defs/nonEmpty"},
+                "path": {"type": "string", "pattern": "^/", "minLength": 2},
+                "realpath": {"type": "string", "pattern": "^/", "minLength": 2},
+                "version": {"$ref": "#/$defs/nonEmpty"},
+                "sha256": {"$ref": "#/$defs/sha256"},
+                "byte_count": {"type": "integer", "minimum": 1},
+                "package_closure_digest": {"$ref": "#/$defs/sha256"}
+            }
+        },
+        "browserMatrixEntry": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["browser_id", "engine", "version", "executable_sha256"],
+                    "properties": {
+                        "browser_id": {"$ref": "#/$defs/nonEmpty"},
+                        "engine": {"enum": ["chromium", "firefox"]},
+                        "version": {"$ref": "#/$defs/nonEmpty"},
+                        "executable_sha256": {"$ref": "#/$defs/sha256"}
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "browser_id",
+                        "engine",
+                        "version",
+                        "executable_sha256",
+                        "driver_version",
+                        "driver_sha256"
+                    ],
+                    "properties": {
+                        "browser_id": {"const": "cft-chrome"},
+                        "engine": {"const": "chromium"},
+                        "version": {"const": "151.0.7922.77"},
+                        "executable_sha256": {"$ref": "#/$defs/sha256"},
+                        "driver_version": {"const": "151.0.7922.77"},
+                        "driver_sha256": {"$ref": "#/$defs/sha256"}
+                    }
+                }
+            ]
+        },
+        "browserMatrixScope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["policy_id", "browser_matrix", "cross_browser", "fingerprint"],
+            "properties": {
+                "policy_id": {
+                    "enum": [
+                        "node-web-chromium-firefox-v1",
+                        "flutter-web-cft-chrome-drive-v1"
+                    ]
+                },
+                "browser_matrix": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 2,
+                    "items": {"$ref": "#/$defs/browserMatrixEntry"}
+                },
+                "cross_browser": {"type": "boolean"},
+                "capability_scope": {
+                    "const": "flutter-web-chrome-drive-only"
+                },
+                "fingerprint": {"$ref": "#/$defs/sha256"}
+            }
+        },
+        "runtimeScopeContract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "required",
+                "status",
+                "runner_kind",
+                "execution_policy_digest",
+                "runtime_tools",
+                "browser_matrix",
+                "portable_replay",
+                "portable_replay_status"
+            ],
+            "properties": {
+                "required": {"type": "boolean"},
+                "status": {"$ref": "#/$defs/evidenceStatus"},
+                "runner_kind": {"type": ["string", "null"], "minLength": 1},
+                "execution_policy_digest": {
+                    "oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+                },
+                "runtime_tools": {
+                    "type": "array",
+                    "items": {"$ref": "#/$defs/runtimeToolScope"}
+                },
+                "browser_matrix": {
+                    "oneOf": [
+                        {"$ref": "#/$defs/browserMatrixScope"},
+                        {"type": "null"}
+                    ]
+                },
+                "portable_replay": {"const": false},
+                "portable_replay_status": {"const": "NOT_RUN"}
+            }
+        },
+        "formalStatus": {
+            "enum": [
+                "PROVED",
+                "PROVED_UNDER_ASSUMPTIONS",
+                "REFUTED",
+                "NOT_PROVED",
+                "UNKNOWN",
+                "TIMEOUT",
+                "NOT_RUN"
+            ]
+        },
+        "safePath": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+        },
+        "artifactRef": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "role", "path", "sha256", "bytes"],
+            "properties": {
+                "id": {"$ref": "#/$defs/nonEmpty"},
+                "role": {"$ref": "#/$defs/nonEmpty"},
+                "path": {"$ref": "#/$defs/safePath"},
+                "sha256": {"$ref": "#/$defs/sha256"},
+                "bytes": {"type": "integer", "minimum": 1}
+            }
+        },
+        "fingerprintBundle": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["manifest_artifact_id", "artifact_ids", "fingerprint"],
+            "properties": {
+                "manifest_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "artifact_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "fingerprint": {"$ref": "#/$defs/sha256"}
+            }
+        },
+        "scenarioManifest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "artifact_id",
+                "sha256",
+                "bytes",
+                "scenario_ids",
+                "scenario_count",
+                "input_schema"
+            ],
+            "properties": {
+                "artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "sha256": {"$ref": "#/$defs/sha256"},
+                "bytes": {"type": "integer", "minimum": 1},
+                "scenario_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "scenario_count": {"type": "integer", "minimum": 1},
+                "input_schema": {"$ref": "#/$defs/nonEmpty"}
+            }
+        },
+        "profileRecord": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "profile",
+                "profile_digest",
+                "project_digest",
+                "engine_profile_artifact_id",
+                "manifest_digest",
+                "source_fixture_digest",
+                "relift_model_digest",
+                "relift_block_digests",
+                "runtime_driver_contract",
+                "runtime_driver_contract_digest",
+                "required_runtime_channels",
+                "project_files",
+                "artifact_ids"
+            ],
+            "properties": {
+                "profile": {
+                    "$ref": "https://example.invalid/batch32/frontend-formal-route-campaign.schema.json#/$defs/exactProfile"
+                },
+                "profile_digest": {"$ref": "#/$defs/sha256"},
+                "project_digest": {"$ref": "#/$defs/sha256"},
+                "engine_profile_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "manifest_digest": {"$ref": "#/$defs/sha256"},
+                "source_fixture_digest": {"$ref": "#/$defs/sha256"},
+                "relift_model_digest": {"$ref": "#/$defs/sha256"},
+                "relift_block_digests": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "route-navigation-deeplink-404",
+                        "component-template-view",
+                        "state-management",
+                        "action-event",
+                        "effect-lifecycle",
+                        "form-binding-validation",
+                        "api-network",
+                        "identity-permission",
+                        "rendering-hydration",
+                        "accessibility-focus",
+                        "i18n-theme-responsive",
+                        "native-platform"
+                    ],
+                    "properties": {
+                        "route-navigation-deeplink-404": {"$ref": "#/$defs/sha256"},
+                        "component-template-view": {"$ref": "#/$defs/sha256"},
+                        "state-management": {"$ref": "#/$defs/sha256"},
+                        "action-event": {"$ref": "#/$defs/sha256"},
+                        "effect-lifecycle": {"$ref": "#/$defs/sha256"},
+                        "form-binding-validation": {"$ref": "#/$defs/sha256"},
+                        "api-network": {"$ref": "#/$defs/sha256"},
+                        "identity-permission": {"$ref": "#/$defs/sha256"},
+                        "rendering-hydration": {"$ref": "#/$defs/sha256"},
+                        "accessibility-focus": {"$ref": "#/$defs/sha256"},
+                        "i18n-theme-responsive": {"$ref": "#/$defs/sha256"},
+                        "native-platform": {"$ref": "#/$defs/sha256"}
+                    }
+                },
+                "runtime_driver_contract": {"type": "object", "minProperties": 1},
+                "runtime_driver_contract_digest": {"$ref": "#/$defs/sha256"},
+                "required_runtime_channels": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/runtimeChannel"}
+                },
+                "project_files": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["relative_path", "artifact_id"],
+                        "properties": {
+                            "relative_path": {"$ref": "#/$defs/safePath"},
+                            "artifact_id": {"$ref": "#/$defs/nonEmpty"}
+                        }
+                    }
+                },
+                "artifact_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                }
+            }
+        },
+        "routeRecord": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "route_id",
+                "source_profile_id",
+                "target_profile_id",
+                "source_profile_digest",
+                "target_profile_digest",
+                "source_project_digest",
+                "target_project_digest",
+                "route_evidence_artifact_id",
+                "artifact_ids",
+                "block_count",
+                "model_formal_status",
+                "browser_status",
+                "native_status",
+                "independent_status",
+                "runtime_status"
+            ],
+            "properties": {
+                "route_id": {"$ref": "#/$defs/routeId"},
+                "source_profile_id": {"$ref": "#/$defs/profileId"},
+                "target_profile_id": {"$ref": "#/$defs/profileId"},
+                "source_profile_digest": {"$ref": "#/$defs/sha256"},
+                "target_profile_digest": {"$ref": "#/$defs/sha256"},
+                "source_project_digest": {"$ref": "#/$defs/sha256"},
+                "target_project_digest": {"$ref": "#/$defs/sha256"},
+                "route_evidence_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "artifact_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "block_count": {"const": 12},
+                "model_formal_status": {"$ref": "#/$defs/aggregateStatus"},
+                "browser_status": {"$ref": "#/$defs/aggregateStatus"},
+                "native_status": {"$ref": "#/$defs/aggregateStatus"},
+                "independent_status": {"$ref": "#/$defs/aggregateStatus"},
+                "runtime_status": {"$ref": "#/$defs/aggregateStatus"}
+            }
+        },
+        "toolchainEvidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "provided",
+                "status",
+                "artifact_id",
+                "artifact_sha256",
+                "artifact_bytes",
+                "engine_campaign_sha256",
+                "producer_fingerprint",
+                "scenario_manifest_sha256",
+                "profile_binding_count",
+                "route_binding_count",
+                "block_binding_count",
+                "runtime_status",
+                "runtime_artifact_ids",
+                "runtime_artifact_count",
+                "profile_channel_statuses",
+                "boundaries"
+            ],
+            "properties": {
+                "provided": {"const": true},
+                "status": {"$ref": "#/$defs/aggregateStatus"},
+                "artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "artifact_sha256": {
+                    "$ref": "#/$defs/sha256"
+                },
+                "artifact_bytes": {"type": "integer", "minimum": 1},
+                "engine_campaign_sha256": {
+                    "$ref": "#/$defs/sha256"
+                },
+                "producer_fingerprint": {"$ref": "#/$defs/sha256"},
+                "scenario_manifest_sha256": {"$ref": "#/$defs/sha256"},
+                "profile_binding_count": {"const": 9},
+                "route_binding_count": {"const": 72},
+                "block_binding_count": {"const": 864},
+                "runtime_status": {"$ref": "#/$defs/aggregateStatus"},
+                "runtime_artifact_ids": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "runtime_artifact_count": {"type": "integer", "minimum": 0},
+                "profile_channel_statuses": {
+                    "type": "object",
+                    "minProperties": 9,
+                    "maxProperties": 9,
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["browser", "android", "ios", "harmonyos"],
+                        "properties": {
+                            "browser": {"$ref": "#/$defs/evidenceStatus"},
+                            "android": {"$ref": "#/$defs/evidenceStatus"},
+                            "ios": {"$ref": "#/$defs/evidenceStatus"},
+                            "harmonyos": {"$ref": "#/$defs/evidenceStatus"}
+                        }
+                    }
+                },
+                "boundaries": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "build_is_behavior",
+                        "model_is_runtime",
+                        "same_producer_is_independent",
+                        "certification"
+                    ],
+                    "properties": {
+                        "build_is_behavior": {"const": false},
+                        "model_is_runtime": {"const": false},
+                        "same_producer_is_independent": {"const": false},
+                        "certification": {"const": "NOT_CERTIFIED"}
+                    }
+                }
+            }
+        },
+        "corpus": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status", "manifest_artifact_id", "case_ids"],
+            "properties": {
+                "id": {"$ref": "#/$defs/nonEmpty"},
+                "status": {"enum": ["NOT_RUN", "PASSED", "FAILED", "BLOCKED"]},
+                "manifest_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "case_ids": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                }
+            }
+        },
+        "oracleProvenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "independence",
+                "same_producer",
+                "graph_artifact_id",
+                "status"
+            ],
+            "properties": {
+                "independence": {
+                    "enum": ["NOT_INDEPENDENT_SINGLE_ENGINE", "EXTERNALLY_INDEPENDENT"]
+                },
+                "same_producer": {"type": "boolean"},
+                "graph_artifact_id": {"$ref": "#/$defs/nonEmpty"},
+                "status": {"$ref": "#/$defs/evidenceStatus"}
+            }
+        },
+        "externalEvidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "provided",
+                "status",
+                "intake_artifact_id",
+                "trust_store_artifact_id",
+                "trust_root_id",
+                "trust_root_fingerprint",
+                "trust_store_authorization_status",
+                "replay_verifier_fingerprint",
+                "artifact_ids",
+                "scope_digest",
+                "authorization_status",
+                "signature_status",
+                "replay_status",
+                "independent_status",
+                "holdout_status",
+                "representative_status",
+                "customer_status",
+                "organization_ids"
+            ],
+            "properties": {
+                "provided": {"type": "boolean"},
+                "status": {"$ref": "#/$defs/evidenceStatus"},
+                "intake_artifact_id": {"type": ["string", "null"], "minLength": 1},
+                "trust_store_artifact_id": {"type": ["string", "null"], "minLength": 1},
+                "trust_root_id": {"type": ["string", "null"], "minLength": 1},
+                "trust_root_fingerprint": {
+                    "oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+                },
+                "trust_store_authorization_status": {"$ref": "#/$defs/evidenceStatus"},
+                "replay_verifier_fingerprint": {
+                    "oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+                },
+                "artifact_ids": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                },
+                "scope_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+                "authorization_status": {"$ref": "#/$defs/evidenceStatus"},
+                "signature_status": {"$ref": "#/$defs/evidenceStatus"},
+                "replay_status": {"$ref": "#/$defs/evidenceStatus"},
+                "independent_status": {"$ref": "#/$defs/evidenceStatus"},
+                "holdout_status": {"$ref": "#/$defs/evidenceStatus"},
+                "representative_status": {"$ref": "#/$defs/evidenceStatus"},
+                "customer_status": {"$ref": "#/$defs/evidenceStatus"},
+                "organization_ids": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {"$ref": "#/$defs/nonEmpty"}
+                }
+            }
+        }
+    }
+}

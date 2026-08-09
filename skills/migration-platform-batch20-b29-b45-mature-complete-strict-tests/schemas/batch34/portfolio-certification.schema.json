@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch34/portfolio-certification.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "status",
+    "owner",
+    "exact_scope",
+    "metrics",
+    "zero_counts",
+    "holdout",
+    "representative_portfolios",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    },
+    "exact_scope": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "zero_counts": {
+      "type": "object"
+    },
+    "holdout": {
+      "type": "array"
+    },
+    "representative_portfolios": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:91429765b32e194996f95287cd5217cce7e6c171b8587194e03d5ef0712d702f",
+      "block_id": "accessibility-focus",
+      "byte_count": 552703,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/vue2/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-accessibility-tree-focus-observer-trace/3340bfcfef6a6091bf095aca8de9f77fb634c8facf4b3291a5710b24108e1e31.json",
+      "profile_id": "vue2",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+      "sha256": "sha256:3340bfcfef6a6091bf095aca8de9f77fb634c8facf4b3291a5710b24108e1e31"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e1fc462cc956299ea8149d7b53754372bf255ed385f4660aa9930c5a6df660e2",
+        "byte_count": 553643,
+        "channel": "browser",
+        "path": "traces/vue2/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-accessibility-axe-trace/abf849ae60ea86e0bc7165dd2ae9906223120fc83c18311fb51e4b1dbf88c0a6.json",
+        "profile_id": "vue2",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:abf849ae60ea86e0bc7165dd2ae9906223120fc83c18311fb51e4b1dbf88c0a6"
+      },
+      {
+        "artifact_id": "sha256:a070f8bb6617b4c6f82890333c007fff32b2b0cedb64b9e33c9fbba82119e5e8",
+        "byte_count": 5293,
+        "channel": "browser",
+        "path": "traces/vue2/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-framework-event-trace/2b941870997c600e0e11d4a4a525b088a68bcd9ff74dcca38a21421b637d3eae.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:2b941870997c600e0e11d4a4a525b088a68bcd9ff74dcca38a21421b637d3eae"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

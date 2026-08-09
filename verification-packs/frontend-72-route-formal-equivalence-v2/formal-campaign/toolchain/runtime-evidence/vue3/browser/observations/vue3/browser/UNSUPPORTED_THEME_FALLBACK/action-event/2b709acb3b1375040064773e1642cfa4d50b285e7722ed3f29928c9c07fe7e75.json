@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:b4781402288b6cc9866d428cd67580e6e129042081a82907b5aa4989212288c6",
+      "block_id": "action-event",
+      "byte_count": 3318,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue3/browser/UNSUPPORTED_THEME_FALLBACK/browser-native-event-outcome-observer-trace/17621fd214acabe8865f745ccedbca4f0446b84cf041a2b693a370c84491b7a3.json",
+      "profile_id": "vue3",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+      "sha256": "sha256:17621fd214acabe8865f745ccedbca4f0446b84cf041a2b693a370c84491b7a3"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:98a723ab80bfb02429f3772770d5ebb8c94b36723f8079305b63d89b0be4f448",
+        "byte_count": 5276,
+        "channel": "browser",
+        "path": "traces/vue3/browser/UNSUPPORTED_THEME_FALLBACK/browser-framework-event-trace/dfe3c07d7ffadb5dd864a04def108b4599f313e937330cbfef1755c349335483.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:dfe3c07d7ffadb5dd864a04def108b4599f313e937330cbfef1755c349335483"
+      }
+    ]
+  },
+  "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+  "schema_version": "1.0"
+}

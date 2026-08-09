@@ -1,0 +1,68 @@
+{
+  "BATCH": 40,
+  "TITLE": "安全供应链与合规认证",
+  "PACK_TYPE": "supply-chain-compliance",
+  "SKILL_COUNT": 24,
+  "SKILL_NAMES": [
+    "b40-software-supply-chain-compliance-factory",
+    "b40-secure-sdlc-ssdf-governance",
+    "b40-threat-modeling",
+    "b40-security-architecture-review",
+    "b40-secure-code-review-sensitive-change",
+    "b40-sast-integration",
+    "b40-dast-iast-integration",
+    "b40-dependency-sca-governance",
+    "b40-secret-scanning-credential-leakage",
+    "b40-container-kubernetes-iac-security-scan",
+    "b40-sbom-component-identity",
+    "b40-vex-vulnerability-applicability",
+    "b40-license-ip-code-provenance",
+    "b40-artifact-container-signing",
+    "b40-slsa-provenance-build-attestation",
+    "b40-isolated-build-trusted-builder",
+    "b40-runner-update-supply-chain-security",
+    "b40-ai-ml-bom-model-provenance",
+    "b40-vulnerability-lifecycle-patch-sla",
+    "b40-psirt-product-security-incident",
+    "b40-iso-soc-industry-control-crosswalk",
+    "b40-customer-audit-evidence-automation",
+    "b40-independent-pentest-code-audit-certification",
+    "b40-supply-chain-compliance-certification-gate"
+  ],
+  "METRICS": {
+    "secure_sdlc_control_coverage": 1.0,
+    "threat_model_coverage": 1.0,
+    "sbom_coverage": 1.0,
+    "signature_verification_rate": 1.0,
+    "provenance_coverage": 1.0,
+    "vulnerability_sla_compliance": 1.0,
+    "audit_evidence_freshness_rate": 1.0,
+    "independent_assessment_closure_rate": 1.0,
+    "evidence_trace_coverage": 0.98
+  },
+  "ZERO_TOLERANCE": [
+    "critical_open_vulnerabilities",
+    "secret_leaks",
+    "unsigned_production_artifacts",
+    "tampered_artifacts_accepted",
+    "unresolved_license_blocks",
+    "builder_attestation_failures",
+    "runner_downgrade_acceptances",
+    "cross_tenant_evidence_leaks",
+    "test_integrity_violations"
+  ],
+  "EXTRA_RECORDS": [
+    "threat-model",
+    "sbom-record",
+    "vex-record",
+    "provenance-record",
+    "control-crosswalk",
+    "psirt-case"
+  ],
+  "REQUIRED_BATCHES": [
+    26,
+    37,
+    38,
+    39
+  ]
+}

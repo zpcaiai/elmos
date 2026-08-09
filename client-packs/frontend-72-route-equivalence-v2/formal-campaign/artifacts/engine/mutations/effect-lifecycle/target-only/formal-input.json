@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "effect-lifecycle",
+  "obligation_symbol": "diff_effect_lifecycle",
+  "variant": "TARGET_ONLY",
+  "pointer": "/effectLifecycle/cleanupEffect",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:9d5fd3c319eade66f31654035f03777e5a903dfb9fa896a4fe4c156c658e4934",
+  "canonical_block_digest": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4",
+  "mutant_block_digest": "sha256:0947de3a36bf33d6bb0dbff1706809dd9bdf44a732e3085a4618421427b59e65",
+  "counterexample_replay": {
+    "block_id": "effect-lifecycle",
+    "pointer": "/effectLifecycle/cleanupEffect",
+    "influence_class": "OBSERVABLE_EFFECT",
+    "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "lifecycle": "UNMOUNT",
+      "mountEffect": "NONE",
+      "cleanupEffect": "CANCEL_ON_UNMOUNT",
+      "maxExecutionsPerMount": 1,
+      "staleResponsePolicy": "IGNORE_AFTER_CANCEL",
+      "executions": 0,
+      "cleanup": true,
+      "staleResponseIgnored": true
+    },
+    "mutant_observation": {
+      "lifecycle": "UNMOUNT",
+      "mountEffect": "NONE",
+      "cleanupEffect": "CANCEL_ON_UNMOUNT__MUTANT",
+      "maxExecutionsPerMount": 1,
+      "staleResponsePolicy": "IGNORE_AFTER_CANCEL",
+      "executions": 0,
+      "cleanup": true,
+      "staleResponseIgnored": true
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

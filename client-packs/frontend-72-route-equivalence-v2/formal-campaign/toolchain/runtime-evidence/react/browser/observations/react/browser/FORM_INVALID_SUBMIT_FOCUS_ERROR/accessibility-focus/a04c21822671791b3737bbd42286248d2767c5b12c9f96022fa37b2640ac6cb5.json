@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": "alert",
+    "focusTarget": "query",
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": true,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0964777a61a92d9ab59ce81193cf661c0f31d497a4c636ca7310789a6d80521f",
+      "block_id": "accessibility-focus",
+      "byte_count": 566378,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-accessibility-tree-focus-observer-trace/897e86f14499edb5cd915b08012c396f97a69f5ad1ef39731bf804db9a546e1f.json",
+      "profile_id": "react",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:897e86f14499edb5cd915b08012c396f97a69f5ad1ef39731bf804db9a546e1f"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:d81059e16e751c2b73acd3a8e90721c7346bfe58414c2086ef355c49359e8bf1",
+        "byte_count": 568196,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-accessibility-axe-trace/3bd97f3eed69460338225165af018017a8ed39314f96a43c88be183c4a4eb845.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:3bd97f3eed69460338225165af018017a8ed39314f96a43c88be183c4a4eb845"
+      },
+      {
+        "artifact_id": "sha256:0c6eceae27b9b346ff568e1af707ee154848b52d8db380c86ad8098c49607a09",
+        "byte_count": 8790,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

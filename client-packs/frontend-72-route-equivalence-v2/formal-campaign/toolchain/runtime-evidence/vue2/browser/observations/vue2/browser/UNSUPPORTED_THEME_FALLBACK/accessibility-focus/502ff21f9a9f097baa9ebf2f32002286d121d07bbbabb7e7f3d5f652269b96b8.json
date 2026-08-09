@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:445606517cb02e781713e1ba26e3bf1568343fdade318e03e9b2bcc3f6d00486",
+      "block_id": "accessibility-focus",
+      "byte_count": 553468,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/vue2/browser/UNSUPPORTED_THEME_FALLBACK/browser-accessibility-tree-focus-observer-trace/9dc69e4fef460b4b277ef0c68de31a6e91b3771aa14f9feb8b605eacc0dbeee0.json",
+      "profile_id": "vue2",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+      "sha256": "sha256:9dc69e4fef460b4b277ef0c68de31a6e91b3771aa14f9feb8b605eacc0dbeee0"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:ea04b9dc686de404d48c7040d4f1702f21d1f25e762b4f80df941abdf1d011b1",
+        "byte_count": 554404,
+        "channel": "browser",
+        "path": "traces/vue2/browser/UNSUPPORTED_THEME_FALLBACK/browser-accessibility-axe-trace/1d72562fccd80fe4180e69ac3f3641de1893a3d5121fe4149ce69eaee7706f7d.json",
+        "profile_id": "vue2",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:1d72562fccd80fe4180e69ac3f3641de1893a3d5121fe4149ce69eaee7706f7d"
+      },
+      {
+        "artifact_id": "sha256:8bbad1a105856dc831cadcf304e23d7991424f046381030f7b8660b226016830",
+        "byte_count": 5276,
+        "channel": "browser",
+        "path": "traces/vue2/browser/UNSUPPORTED_THEME_FALLBACK/browser-framework-event-trace/b7727938c401fb57a40ac781ed6b3e50b90fbf02603b4b9253ec3e6eaf057539.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:b7727938c401fb57a40ac781ed6b3e50b90fbf02603b4b9253ec3e6eaf057539"
+      }
+    ]
+  },
+  "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+  "schema_version": "1.0"
+}

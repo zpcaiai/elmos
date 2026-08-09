@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "HYDRATE",
+    "event": "HYDRATE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3dccf7b5caa550420dc2fdb5bf9142b14e99c3e26a00d9ae59da6aef72229db1",
+      "block_id": "action-event",
+      "byte_count": 3264,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue2/browser/HYDRATE_MISMATCH_ERROR/browser-native-event-outcome-observer-trace/7178391f7dc9532b76a2063d8b86009d17686aab91285d78fb9ae90cb6d4d62f.json",
+      "profile_id": "vue2",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:7178391f7dc9532b76a2063d8b86009d17686aab91285d78fb9ae90cb6d4d62f"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:2759c239153c66509630fbe2e6079421ef9ad9a79402b135a4367e99ec6ad1b4",
+        "byte_count": 5228,
+        "channel": "browser",
+        "path": "traces/vue2/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/68a3c6879e7ccc160444b8e5d8620aee682b21fbe837baa910d93f52b1a2c813.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:68a3c6879e7ccc160444b8e5d8620aee682b21fbe837baa910d93f52b1a2c813"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

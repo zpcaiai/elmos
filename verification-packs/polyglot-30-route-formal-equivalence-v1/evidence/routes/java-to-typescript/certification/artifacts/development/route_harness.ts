@@ -1,0 +1,10 @@
+import { calculate } from "./migrated.js";
+const actual0 = calculate(100, 20);
+if (actual0 !== 120) throw new Error("case 0");
+console.log("ELMOS_OBSERVATION\tjson\t" + JSON.stringify({case_id: 0, value: actual0}));
+const actual1 = calculate(-1, 5);
+if (actual1 !== 0) throw new Error("case 1");
+console.log("ELMOS_OBSERVATION\tjson\t" + JSON.stringify({case_id: 1, value: actual1}));
+const actual2 = calculate(7, -2);
+if (actual2 !== 5) throw new Error("case 2");
+console.log("ELMOS_OBSERVATION\tjson\t" + JSON.stringify({case_id: 2, value: actual2}));

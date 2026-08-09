@@ -1,0 +1,887 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch35/formal-route-campaign.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "campaign_key",
+    "version",
+    "semantic_profile",
+    "campaign_status",
+    "certification_status",
+    "required_languages",
+    "semantic_blocks",
+    "route_set",
+    "obligations",
+    "obligation_matrix",
+    "compositions",
+    "solver_runs",
+    "replays",
+    "evidence",
+    "packed_route_replay",
+    "independent_verification",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [1, 2]
+    },
+    "campaign_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "campaign_status": {
+      "enum": [
+        "NOT_RUN",
+        "LOCAL_EXECUTED",
+        "BLOCKED",
+        "FAILED"
+      ]
+    },
+    "certification_status": {
+      "enum": [
+        "NOT_CERTIFIED",
+        "CERTIFIED"
+      ]
+    },
+    "route_policy": {
+      "const": "exact-explicit-set"
+    },
+    "input_domain": {
+      "const": "canonical-finite-no-error-input-domain"
+    },
+    "required_route_keys": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+-to-[a-z]+$"
+      }
+    },
+    "required_languages": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "csharp",
+          "go",
+          "java",
+          "python",
+          "rust",
+          "typescript",
+          "cpp",
+          "objc",
+          "swift"
+        ]
+      }
+    },
+    "semantic_blocks": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "route_set": {
+      "type": "object",
+      "required": [
+        "manifest_evidence_id",
+        "routes"
+      ],
+      "properties": {
+        "manifest_evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "routes": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/route"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "obligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/obligation"
+      }
+    },
+    "obligation_matrix": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "$ref": "#/$defs/matrixEntry"
+      }
+    },
+    "compositions": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 30,
+      "items": {
+        "$ref": "#/$defs/composition"
+      }
+    },
+    "solver_runs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/solverRun"
+      }
+    },
+    "replays": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/replay"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "packed_route_replay": {
+      "type": "object",
+      "required": [
+        "packed_validation",
+        "external_native_reexecution"
+      ],
+      "properties": {
+        "packed_validation": {
+          "type": "object",
+          "required": [
+            "scope",
+            "command",
+            "cwd"
+          ],
+          "properties": {
+            "scope": {
+              "const": "evidence-integrity-and-semantic-closure-only"
+            },
+            "command": {
+              "oneOf": [
+                {
+                  "const": [
+                    "python3",
+                    "certification/replay/validate_packed_route.py",
+                    "--route",
+                    "."
+                  ]
+                },
+                {
+                  "const": [
+                    "uv",
+                    "--project",
+                    "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine",
+                    "run",
+                    "--locked",
+                    "python",
+                    "certification/replay/validate_packed_route.py",
+                    "--route",
+                    "."
+                  ]
+                }
+              ]
+            },
+            "cwd": {
+              "const": "."
+            }
+          },
+          "additionalProperties": false
+        },
+        "external_native_reexecution": {
+          "type": "object",
+          "required": [
+            "status",
+            "scope",
+            "required_environment_variable",
+            "command_template"
+          ],
+          "properties": {
+            "status": {
+              "const": "NOT_RUN"
+            },
+            "scope": {
+              "const": "native-toolchain-regeneration-and-execution"
+            },
+            "required_environment_variable": {
+              "const": "ELMOS_REPO_ROOT"
+            },
+            "command_template": {
+              "const": [
+                "uv",
+                "--directory",
+                "${ELMOS_REPO_ROOT}/engines/polyglot-route-engine",
+                "run",
+                "--locked",
+                "python",
+                "${ELMOS_REPO_ROOT}/scripts/batch29/run_polyglot_routes.py",
+                "--repo-root",
+                "${ELMOS_REPO_ROOT}",
+                "--route",
+                "{route_key}"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "independent_verification": {
+      "type": "object",
+      "required": [
+        "status",
+        "verifier",
+        "evidence_ids"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "NOT_RUN",
+            "PASSED",
+            "FAILED",
+            "BLOCKED"
+          ]
+        },
+        "verifier": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"schema_version": {"const": 1}},
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "required_languages": {
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "enum": ["csharp", "go", "java", "python", "rust", "typescript"]
+            }
+          },
+          "packed_route_replay": {
+            "properties": {
+              "packed_validation": {
+                "properties": {
+                  "command": {
+                    "const": [
+                      "python3",
+                      "certification/replay/validate_packed_route.py",
+                      "--route",
+                      "."
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "route_set": {
+            "properties": {"routes": {"minItems": 30, "maxItems": 30}}
+          },
+          "compositions": {"minItems": 30, "maxItems": 30}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"schema_version": {"const": 2}},
+        "required": ["schema_version"]
+      },
+      "then": {
+        "required": ["route_policy", "required_route_keys", "input_domain"],
+        "properties": {
+          "route_policy": {"const": "exact-explicit-set"},
+          "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+          "required_route_keys": {
+            "minItems": 8,
+            "maxItems": 8,
+            "items": {
+              "enum": [
+                "cpp-to-objc",
+                "objc-to-cpp",
+                "cpp-to-swift",
+                "swift-to-cpp",
+                "objc-to-swift",
+                "swift-to-objc",
+                "cpp-to-java",
+                "java-to-cpp"
+              ]
+            }
+          },
+          "required_languages": {
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {"enum": ["cpp", "objc", "swift", "java"]}
+          },
+          "packed_route_replay": {
+            "properties": {
+              "packed_validation": {
+                "properties": {
+                  "command": {
+                    "const": [
+                      "uv",
+                      "--project",
+                      "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine",
+                      "run",
+                      "--locked",
+                      "python",
+                      "certification/replay/validate_packed_route.py",
+                      "--route",
+                      "."
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "route_set": {
+            "properties": {
+              "routes": {
+                "minItems": 8,
+                "maxItems": 8,
+                "items": {
+                  "required": ["module_evidence_id"],
+                  "properties": {
+                    "packed_replay_evidence_ids": {
+                      "minItems": 5,
+                      "maxItems": 5
+                    }
+                  },
+                  "oneOf": [
+                    {"properties": {"route_key": {"const": "cpp-to-objc"}, "source_language": {"const": "cpp"}, "target_language": {"const": "objc"}}},
+                    {"properties": {"route_key": {"const": "objc-to-cpp"}, "source_language": {"const": "objc"}, "target_language": {"const": "cpp"}}},
+                    {"properties": {"route_key": {"const": "cpp-to-swift"}, "source_language": {"const": "cpp"}, "target_language": {"const": "swift"}}},
+                    {"properties": {"route_key": {"const": "swift-to-cpp"}, "source_language": {"const": "swift"}, "target_language": {"const": "cpp"}}},
+                    {"properties": {"route_key": {"const": "objc-to-swift"}, "source_language": {"const": "objc"}, "target_language": {"const": "swift"}}},
+                    {"properties": {"route_key": {"const": "swift-to-objc"}, "source_language": {"const": "swift"}, "target_language": {"const": "objc"}}},
+                    {"properties": {"route_key": {"const": "cpp-to-java"}, "source_language": {"const": "cpp"}, "target_language": {"const": "java"}}},
+                    {"properties": {"route_key": {"const": "java-to-cpp"}, "source_language": {"const": "java"}, "target_language": {"const": "cpp"}}}
+                  ]
+                }
+              }
+            }
+          },
+          "compositions": {"minItems": 8, "maxItems": 8}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "route": {
+      "type": "object",
+      "required": [
+        "route_key",
+        "source_language",
+        "target_language",
+        "route_version",
+        "semantic_profile",
+        "composition_id",
+        "artifact_evidence_ids",
+        "packed_replay_evidence_ids"
+      ],
+      "properties": {
+        "route_key": {
+          "type": "string"
+        },
+        "source_language": {
+          "type": "string"
+        },
+        "target_language": {
+          "type": "string"
+        },
+        "route_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "composition_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "packed_replay_evidence_ids": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "module_evidence_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "assumption": {
+      "type": "object",
+      "required": [
+        "assumption_id",
+        "statement",
+        "status",
+        "evidence_ids"
+      ],
+      "properties": {
+        "assumption_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "discharged",
+            "unverified",
+            "rejected"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "obligation": {
+      "type": "object",
+      "required": [
+        "obligation_id",
+        "claim_id",
+        "property_id",
+        "kind",
+        "semantic_block",
+        "required",
+        "status",
+        "proof_strength",
+        "method",
+        "assumptions",
+        "evidence_ids"
+      ],
+      "properties": {
+        "obligation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "property_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "source-lifting",
+            "target-lowering",
+            "route-behavior"
+          ]
+        },
+        "semantic_block": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_language": {
+          "type": "string"
+        },
+        "target_language": {
+          "type": "string"
+        },
+        "route_key": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "proved",
+            "passed",
+            "disproved",
+            "failed",
+            "unknown",
+            "timeout",
+            "unsupported",
+            "invalid",
+            "not-run"
+          ]
+        },
+        "proof_strength": {
+          "enum": [
+            "theorem",
+            "bounded",
+            "axiom",
+            "testing",
+            "assumption",
+            "none"
+          ]
+        },
+        "method": {
+          "enum": [
+            "smt",
+            "proof-certificate",
+            "language-standard-axiom",
+            "bounded-model",
+            "differential-execution",
+            "not-run"
+          ]
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assumption"
+          }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "solver_run_id": {
+          "type": "string"
+        },
+        "replay_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "matrixEntry": {
+      "type": "object",
+      "required": [
+        "route_key",
+        "semantic_block",
+        "source_lifting_obligation_id",
+        "target_lowering_obligation_id",
+        "behavior_obligation_id",
+        "composition_id"
+      ],
+      "properties": {
+        "route_key": {
+          "type": "string"
+        },
+        "semantic_block": {
+          "type": "string"
+        },
+        "source_lifting_obligation_id": {
+          "type": "string"
+        },
+        "target_lowering_obligation_id": {
+          "type": "string"
+        },
+        "behavior_obligation_id": {
+          "type": "string"
+        },
+        "composition_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "composition": {
+      "type": "object",
+      "required": [
+        "composition_id",
+        "route_key",
+        "source_lifting_obligation_ids",
+        "target_lowering_obligation_ids",
+        "behavior_obligation_ids",
+        "status"
+      ],
+      "properties": {
+        "composition_id": {
+          "type": "string"
+        },
+        "route_key": {
+          "type": "string"
+        },
+        "source_lifting_obligation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "target_lowering_obligation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "behavior_obligation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "proved",
+            "disproved",
+            "unknown",
+            "timeout",
+            "unsupported",
+            "invalid",
+            "not-run"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "solverRun": {
+      "type": "object",
+      "required": [
+        "run_id",
+        "obligation_ids",
+        "solver",
+        "result",
+        "input_evidence_id",
+        "output_evidence_id"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "obligation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "solver": {
+          "type": "object",
+          "required": [
+            "name",
+            "version",
+            "binary_digest",
+            "binary_evidence_id",
+            "options",
+            "timeout_ms"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "binary_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "binary_evidence_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "options": {
+              "type": "object"
+            },
+            "timeout_ms": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "result": {
+          "enum": [
+            "unsat",
+            "sat",
+            "unknown",
+            "timeout",
+            "unsupported",
+            "error",
+            "not-run"
+          ]
+        },
+        "input_evidence_id": {
+          "type": "string"
+        },
+        "output_evidence_id": {
+          "type": "string"
+        },
+        "proof_evidence_id": {
+          "type": "string"
+        },
+        "model_evidence_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "replay": {
+      "type": "object",
+      "required": [
+        "replay_id",
+        "obligation_id",
+        "status",
+        "manifest_evidence_id",
+        "expected_fingerprint",
+        "observed_fingerprint",
+        "evidence_ids"
+      ],
+      "properties": {
+        "replay_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "obligation_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "not-run"
+          ]
+        },
+        "manifest_evidence_id": {
+          "type": "string"
+        },
+        "expected_fingerprint": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "observed_fingerprint": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "path",
+        "sha256",
+        "bytes",
+        "role"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "role": {
+          "enum": [
+            "route-set",
+            "route-formal-evidence",
+            "route-module-evidence",
+            "replay-tool",
+            "replay-schema",
+            "artifact",
+            "environment",
+            "solver-input",
+            "solver-output",
+            "proof-certificate",
+            "countermodel",
+            "behavior-run",
+            "replay-manifest",
+            "replay-output",
+            "assumption",
+            "independent-review",
+            "other"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:193dba3b58d60479470b148917e95866aac78eaf49b79aa7b9c78399f73b5611",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2023,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue2/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-computed-layout-i18n-theme-observer-trace/1be102e19046ba76e3cb3a0d3037d15c796a05ae40d27ca4fed858c431c64956.json",
+      "profile_id": "vue2",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+      "sha256": "sha256:1be102e19046ba76e3cb3a0d3037d15c796a05ae40d27ca4fed858c431c64956"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:dbf6eef195f46a8e3e7a8966d00f227a6cb7882c6a803e2074357c18349bbf62",
+        "byte_count": 40448,
+        "channel": "browser",
+        "path": "traces/vue2/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-dom-snapshot/f11e37037801191b40156c52f804d52d7b6253e0aa11b73bfee55a6a0a22be74.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "sha256": "sha256:f11e37037801191b40156c52f804d52d7b6253e0aa11b73bfee55a6a0a22be74"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+  "schema_version": "1.0"
+}

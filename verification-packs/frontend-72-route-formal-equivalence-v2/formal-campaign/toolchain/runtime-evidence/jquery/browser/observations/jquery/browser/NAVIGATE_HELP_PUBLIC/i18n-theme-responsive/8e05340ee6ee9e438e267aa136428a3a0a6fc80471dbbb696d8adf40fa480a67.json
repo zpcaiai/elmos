@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:10f524dff460a214f4675eb603f73896403a968d72d3398297fb0dfd6914b03e",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1976,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/NAVIGATE_HELP_PUBLIC/browser-computed-layout-i18n-theme-observer-trace/bffd0814ec6db02b547e7aa84c2e999e11bebe03c2bce0e957411f3581ec8533.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "NAVIGATE_HELP_PUBLIC",
+      "sha256": "sha256:bffd0814ec6db02b547e7aa84c2e999e11bebe03c2bce0e957411f3581ec8533"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e0aa80d8cd4c497467734a31cc12efb868ec1b66413997905a01daa869533538",
+        "byte_count": 39883,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_HELP_PUBLIC/browser-dom-snapshot/0c8a83eaca4cc146548a3f273a4c8949feaf3c22ea3bcbdb79f0cf81cbe95b95.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:0c8a83eaca4cc146548a3f273a4c8949feaf3c22ea3bcbdb79f0cf81cbe95b95"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_HELP_PUBLIC",
+  "schema_version": "1.0"
+}

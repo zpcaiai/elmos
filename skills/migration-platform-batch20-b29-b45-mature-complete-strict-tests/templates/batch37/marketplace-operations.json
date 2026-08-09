@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "owner": "marketplace-sre",
+  "slos": [
+    {
+      "name": "catalog-availability",
+      "target": 0.999
+    }
+  ],
+  "on_call": true,
+  "runbooks": [
+    "catalog-outage",
+    "revocation-outage",
+    "registry-corruption"
+  ],
+  "backup_restore_tested": true,
+  "dr_tested": true,
+  "rto_minutes": 60,
+  "rpo_minutes": 5,
+  "state_reconciled": true,
+  "open_critical_incidents": 0,
+  "evidence_refs": [
+    "operations/evidence.txt"
+  ]
+}

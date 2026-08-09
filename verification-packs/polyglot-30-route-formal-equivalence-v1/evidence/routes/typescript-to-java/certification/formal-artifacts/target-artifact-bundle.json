@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-java",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 199,
+      "corpus": "development",
+      "path": "certification/artifacts/development/Migrated.java",
+      "sha256": "sha256:edc7e7c0670307c6dd668b4a071568f927391fb56d231256c875837fc29efe8a"
+    },
+    {
+      "bytes": 247,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/Migrated.java",
+      "sha256": "sha256:f44e9758a15a6b5a0375640e24486ac4dc2de09b0ef0880d721099e580ef51b0"
+    },
+    {
+      "bytes": 196,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/Migrated.java",
+      "sha256": "sha256:8dbf63c3d1696ed419f6fe0329c43f56899ad4625e53a4997d6bbfcbf30781fc"
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 4,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:ea08df4b4aeaee0a40346502a171b4dc718f7b709b9c2313a4725945d3c0432d",
+    "case_count": 4,
+    "oracle_conflict_count": 0,
+    "pass_count": 4,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:003395fa352908dbbfaea64b035e10c17827efaf48ba97aa7d2fd4c2f86abf82",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 14,
+    "required_source_chunk_count": 14,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "real-repository",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:d50e3cd41bbc61d1f89be42977d952f48ef4995ae9934f0d7d7820f150805f49",
+    "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
+    "formal_input_digest": "sha256:8cbda4231a3fc8e4e33eb2d73686b766c5ffa11d76d8179864386c5c505bc972",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:8cbda4231a3fc8e4e33eb2d73686b766c5ffa11d76d8179864386c5c505bc972",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:8cbda4231a3fc8e4e33eb2d73686b766c5ffa11d76d8179864386c5c505bc972",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:56a276cc8dd3625d680ae2ceed07063ae726c291909c868a4100777c28355e2a",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:8cbda4231a3fc8e4e33eb2d73686b766c5ffa11d76d8179864386c5c505bc972",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:62fe7828ca36e5d00d064496379c95f890a4de99072b3a34754b06bdf2df44ce",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:56a276cc8dd3625d680ae2ceed07063ae726c291909c868a4100777c28355e2a",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:3f9f4a0b66718a953f97bd06fd8e00e2eaa755304176bc85757de753617aee9c",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "route": "objc-to-swift",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:c819d943ce49a388cc0a8308c4a303304ebca454d97fb2f994c6ec94a2ddc9d6",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:32ab1611001f8af18276b4e5aa80f1ff8fa7b201f32c7cfb124d1f9b6328e2fd",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:5efbde495ec7fcbd310e45443b6f4ac061fb4f2750a099b7fe90aa41004a5866"
+  },
+  "semantic_ir_sha256": "sha256:32ab1611001f8af18276b4e5aa80f1ff8fa7b201f32c7cfb124d1f9b6328e2fd",
+  "source": {
+    "analyzer": "clang AST (JSON)",
+    "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "language": "objc",
+    "path": "decision.m",
+    "sha256": "sha256:99194d629cb2c734c86e5abdd9fd9dd9914006f9dd889a7f63cab13555364701"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "decision.m",
+    "artifact_sha256": "sha256:99194d629cb2c734c86e5abdd9fd9dd9914006f9dd889a7f63cab13555364701",
+    "case_count": 4,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "-x",
+          "objective-c",
+          "-std=c17",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-fobjc-arc",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-framework",
+          "Foundation",
+          "-o",
+          "source_harness",
+          "source_harness.m"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tbool\ttrue\nELMOS_OBSERVATION\t1\tbool\tfalse\nELMOS_OBSERVATION\t2\tbool\ttrue\nELMOS_OBSERVATION\t3\tbool\tfalse\n"
+      }
+    ],
+    "language": "objc",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "bool",
+        "raw": "true",
+        "status": "RETURNED",
+        "value": true
+      },
+      {
+        "case_id": 1,
+        "encoding": "bool",
+        "raw": "false",
+        "status": "RETURNED",
+        "value": false
+      },
+      {
+        "case_id": 2,
+        "encoding": "bool",
+        "raw": "true",
+        "status": "RETURNED",
+        "value": true
+      },
+      {
+        "case_id": 3,
+        "encoding": "bool",
+        "raw": "false",
+        "status": "RETURNED",
+        "value": false
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "objc",
+      "profile": [
+        "platform=Darwin/arm64",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c17/objc-arc/Foundation/Apple-runtime"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "swift",
+    "path": "migrated.swift",
+    "sha256": "sha256:78bf04aa18b1c01f2298d87ebe6ee6b01502390766144d8a66c44626407c12d7"
+  },
+  "validation": {
+    "case_count": 4,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+          "-swift-version",
+          "6",
+          "-sdk",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-warnings-as-errors",
+          "-o",
+          "route_harness",
+          "migrated.swift",
+          "main.swift"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tbool\ttrue\nELMOS_OBSERVATION\t1\tbool\tfalse\nELMOS_OBSERVATION\t2\tbool\ttrue\nELMOS_OBSERVATION\t3\tbool\tfalse\n"
+      }
+    ],
+    "language": "swift",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "bool",
+        "raw": "true",
+        "status": "RETURNED",
+        "value": true
+      },
+      {
+        "case_id": 1,
+        "encoding": "bool",
+        "raw": "false",
+        "status": "RETURNED",
+        "value": false
+      },
+      {
+        "case_id": 2,
+        "encoding": "bool",
+        "raw": "true",
+        "status": "RETURNED",
+        "value": true
+      },
+      {
+        "case_id": 3,
+        "encoding": "bool",
+        "raw": "false",
+        "status": "RETURNED",
+        "value": false
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+      "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+      "language": "swift",
+      "profile": [
+        "platform=Darwin/arm64",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "swift-language-mode=6",
+        "integer=Int64"
+      ],
+      "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    }
+  }
+}

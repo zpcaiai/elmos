@@ -1,0 +1,637 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/module-equivalence-evidence.schema.json",
+  "title": "Batch29TypedPureModuleEquivalenceEvidence",
+  "type": "object",
+  "required": ["schema_version", "kind", "profile", "status", "local_verification_status", "route", "module_input_sha256", "module_contract", "functions", "composition", "artifact_refs", "certification_status", "external_verification_status"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "typed-pure-module-equivalence"},
+    "profile": {"const": "typed-pure-module-v1"},
+    "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
+    "local_verification_status": {"enum": ["PASSED", "BLOCKED", "FAILED", "NOT_RUN"]},
+    "route": {"$ref": "#/$defs/exact_specialized_route"},
+    "module_input_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "module_input": {"$ref": "#/$defs/module_input"},
+    "module_contract": {
+      "type": "object",
+      "required": ["source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_language_prelude", "verified_language_wrapper", "manifest_symbols", "exact_profile_symbol_set", "exact_generated_helper_symbol_set", "exact_profile_signature_set", "whole_file_closure_sha256", "independence"],
+      "properties": {
+        "source_profile_symbols": {"$ref": "#/$defs/symbols"},
+        "target_profile_symbols": {"$ref": "#/$defs/symbols"},
+        "target_helper_symbols": {"type": "array", "items": {"$ref": "#/$defs/helper_symbol"}},
+        "verified_language_prelude": {
+          "oneOf": [
+            {"$ref": "#/$defs/verified_language_prelude"},
+            {"const": {"status": "NOT_RUN"}}
+          ]
+        },
+        "verified_language_wrapper": {
+          "oneOf": [
+            {"$ref": "#/$defs/verified_language_wrapper"},
+            {"const": {"status": "NOT_RUN"}}
+          ]
+        },
+        "manifest_symbols": {"$ref": "#/$defs/symbols"},
+        "exact_profile_symbol_set": {"type": "boolean"},
+        "exact_generated_helper_symbol_set": {"type": "boolean"},
+        "exact_profile_signature_set": {"type": "boolean"},
+        "whole_file_closure_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "independence": {
+          "oneOf": [
+            {"$ref": "#/$defs/module_independence"},
+            {"const": {"status": "NOT_RUN"}}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "functions": {"type": "array", "items": {"$ref": "#/$defs/function"}},
+    "composition": {
+      "type": "object",
+      "required": ["rule", "input_domain", "out_of_domain_arithmetic_behavior", "function_count", "passed_function_count", "status", "proof_strength", "original_source_bytes_theorem", "source_compiler_runtime_soundness", "target_compiler_runtime_soundness", "analyzer_and_emitter_soundness", "source_user_call_graph", "target_call_graph", "target_profile_to_emitted_call_graph_status", "target_profile_to_emitted_call_graph_scope"],
+      "properties": {
+        "rule": {"type": "string", "minLength": 1},
+        "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+        "out_of_domain_arithmetic_behavior": {"const": "BLOCKED_NOT_EQUIVALENTLY_MODELED"},
+        "function_count": {"type": "integer", "minimum": 0},
+        "passed_function_count": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
+        "proof_strength": {"enum": ["THEOREM", "PROVED_UNDER_ASSUMPTIONS", "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS", "BOUNDED", "NONE"]},
+        "original_source_bytes_theorem": {"type": "boolean"},
+        "source_compiler_runtime_soundness": {"enum": ["PROVED", "NOT_RUN"]},
+        "target_compiler_runtime_soundness": {"enum": ["PROVED", "NOT_RUN"]},
+        "analyzer_and_emitter_soundness": {"enum": ["PROVED", "ASSUMPTION", "NOT_RUN"]},
+        "source_user_call_graph": {"enum": ["EMPTY_AND_CLOSED", "NOT_RUN"]},
+        "target_call_graph": {"enum": ["UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS", "NOT_RUN"]},
+        "target_profile_to_emitted_call_graph_status": {"enum": ["EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS", "NOT_RUN"]},
+        "target_profile_to_emitted_call_graph_scope": {"enum": ["profile-functions-to-emitted-callees", "NOT_RUN"]}
+      },
+      "additionalProperties": false
+    },
+    "artifact_refs": {"type": "array", "items": {"$ref": "#/$defs/artifact_ref"}},
+    "source_validation": {"type": "object"},
+    "target_validation": {"type": "object"},
+    "unsupported_semantics": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "whole_file_closure": {"$ref": "#/$defs/whole_file_closure"},
+    "certification_status": {"const": "NOT_CERTIFIED"},
+    "external_verification_status": {"const": "NOT_RUN"},
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASSED"}}, "required": ["status"]},
+      "then": {
+        "required": ["module_input", "source_validation", "target_validation", "unsupported_semantics", "whole_file_closure"],
+        "properties": {
+          "local_verification_status": {"const": "PASSED"},
+          "module_input_sha256": {"$ref": "#/$defs/sha256"},
+          "functions": {"minItems": 3},
+          "artifact_refs": {"minItems": 22},
+          "composition": {"properties": {"function_count": {"minimum": 3}, "passed_function_count": {"minimum": 3}, "status": {"const": "PASSED"}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "NOT_RUN"}}, "required": ["status"]},
+      "then": {
+        "required": ["limitations"],
+        "properties": {
+          "local_verification_status": {"const": "NOT_RUN"},
+          "module_input_sha256": {"type": "null"},
+          "functions": {"maxItems": 0},
+          "artifact_refs": {"maxItems": 0},
+          "composition": {"properties": {"function_count": {"const": 0}, "passed_function_count": {"const": 0}, "status": {"const": "NOT_RUN"}, "proof_strength": {"const": "NONE"}}}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"const": "PASSED"},
+          "route": {
+            "properties": {
+              "route_key": {"enum": ["cpp-to-swift", "swift-to-cpp", "objc-to-swift", "swift-to-objc"]}
+            },
+            "required": ["route_key"]
+          }
+        },
+        "required": ["status", "route"]
+      },
+      "then": {
+        "properties": {
+          "artifact_refs": {
+            "contains": {"properties": {"role": {"const": "swift-analyzer-build-receipt"}}, "required": ["role"]},
+            "minContains": 1,
+            "maxContains": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "artifact_refs": {
+            "not": {"contains": {"properties": {"role": {"const": "swift-analyzer-build-receipt"}}, "required": ["role"]}}
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "swift_analyzer_build_receipt": {
+      "type": "object",
+      "required": ["schema_version", "kind", "source_inputs", "dependency", "toolchain", "build", "binary"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.swift-analyzer-build-receipt"},
+        "source_inputs": {
+          "type": "object",
+          "required": ["sha256", "files"],
+          "properties": {
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "files": {
+              "type": "array",
+              "minItems": 3,
+              "items": {
+                "type": "object",
+                "required": ["path", "sha256", "bytes"],
+                "properties": {
+                  "path": {"type": "string", "minLength": 1},
+                  "sha256": {"$ref": "#/$defs/sha256"},
+                  "bytes": {"type": "integer", "minimum": 1}
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "dependency": {
+          "type": "object",
+          "required": ["identity", "version", "revision", "sha256", "file_count", "bytes", "mirror"],
+          "properties": {
+            "identity": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "revision": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "file_count": {"type": "integer", "minimum": 1},
+            "bytes": {"type": "integer", "minimum": 1},
+            "mirror": {
+              "type": "object",
+              "required": ["seed", "git", "sha256", "file_count", "bytes"],
+              "properties": {
+                "seed": {
+                  "enum": [
+                    "verified-package-source-mirror",
+                    "verified-user-git-cache",
+                    "network-exact-revision"
+                  ]
+                },
+                "git": {
+                  "type": "object",
+                  "required": ["path", "sha256", "version"],
+                  "properties": {
+                    "path": {"type": "string", "minLength": 1},
+                    "sha256": {"$ref": "#/$defs/sha256"},
+                    "version": {"type": "string", "minLength": 1}
+                  },
+                  "additionalProperties": false
+                },
+                "sha256": {"$ref": "#/$defs/sha256"},
+                "file_count": {"type": "integer", "minimum": 1},
+                "bytes": {"type": "integer", "minimum": 1}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "toolchain": {
+          "type": "object",
+          "required": ["swiftc", "swiftc_sha256", "swift_driver", "swift_driver_sha256", "version", "profile"],
+          "properties": {
+            "swiftc": {"type": "string", "minLength": 1},
+            "swiftc_sha256": {"$ref": "#/$defs/sha256"},
+            "swift_driver": {"type": "string", "minLength": 1},
+            "swift_driver_sha256": {"$ref": "#/$defs/sha256"},
+            "version": {"type": "string", "minLength": 1},
+            "profile": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+          },
+          "additionalProperties": false
+        },
+        "build": {
+          "const": {
+            "configuration": "release",
+            "automatic_resolution": false,
+            "manifest_cache": "none",
+            "environment_policy": "minimal-empty-home-v1",
+            "argv": ["<swift-driver>", "build", "--package-path", "<source-snapshot>", "--cache-path", "<isolated-cache>", "--config-path", "<isolated-config>", "--security-path", "<isolated-security>", "--scratch-path", "<isolated-build>", "--manifest-cache", "none", "--disable-automatic-resolution", "-c", "release"]
+          }
+        },
+        "binary": {
+          "type": "object",
+          "required": ["name", "sha256", "bytes", "mode"],
+          "properties": {
+            "name": {"const": "ElmosSwiftAnalyzer"},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "bytes": {"type": "integer", "minimum": 1, "maximum": 100000000},
+            "mode": {"type": "string", "pattern": "^[0-7]{4}$"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "module_route": {
+      "oneOf": [
+        {"const": {"source_language": "cpp", "target_language": "objc"}},
+        {"const": {"source_language": "objc", "target_language": "cpp"}},
+        {"const": {"source_language": "cpp", "target_language": "swift"}},
+        {"const": {"source_language": "swift", "target_language": "cpp"}},
+        {"const": {"source_language": "objc", "target_language": "swift"}},
+        {"const": {"source_language": "swift", "target_language": "objc"}},
+        {"const": {"source_language": "cpp", "target_language": "java"}},
+        {"const": {"source_language": "java", "target_language": "cpp"}}
+      ]
+    },
+    "module_input": {
+      "type": "object",
+      "required": ["profile", "route", "input_domain", "source_artifact_sha256", "target_artifact_sha256", "source_artifact_byte_count", "target_artifact_byte_count", "source_logical_file", "target_logical_file", "corpus_sha256", "source_semantic_ir_sha256", "target_semantic_ir_sha256", "case_manifest_sha256", "source_inventory_sha256", "source_inventory_byte_count", "target_inventory_sha256", "target_inventory_byte_count", "whole_file_closure_sha256"],
+      "properties": {
+        "profile": {"const": "typed-pure-module-v1"},
+        "route": {"$ref": "#/$defs/module_route"},
+        "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+        "source_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "target_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "source_artifact_byte_count": {"type": "integer", "minimum": 1},
+        "target_artifact_byte_count": {"type": "integer", "minimum": 1},
+        "source_logical_file": {"type": "string", "minLength": 1},
+        "target_logical_file": {"type": "string", "minLength": 1},
+        "corpus_sha256": {"$ref": "#/$defs/sha256"},
+        "source_semantic_ir_sha256": {"$ref": "#/$defs/sha256"},
+        "target_semantic_ir_sha256": {"$ref": "#/$defs/sha256"},
+        "case_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "source_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "source_inventory_byte_count": {"type": "integer", "minimum": 1},
+        "target_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "target_inventory_byte_count": {"type": "integer", "minimum": 1},
+        "whole_file_closure_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "source_span": {
+      "type": "object",
+      "required": ["file", "start_byte", "end_byte"],
+      "properties": {
+        "file": {"type": "string", "minLength": 1},
+        "start_byte": {"type": "integer", "minimum": 0},
+        "end_byte": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "raw_signature": {
+      "type": "object",
+      "required": ["visibility", "storage"],
+      "properties": {
+        "visibility": {"type": "string", "minLength": 1},
+        "storage": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    },
+    "inventory_subject": {
+      "type": "object",
+      "required": ["name", "qualified_name", "declaration_kind", "analyzable", "source_span", "signature", "occurrence"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "analyzable": {"type": "boolean"},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "signature": {"$ref": "#/$defs/raw_signature"},
+        "occurrence": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "language_directive": {
+      "type": "object",
+      "required": ["order", "kind", "value", "source_span", "sha256"],
+      "properties": {
+        "order": {"type": "integer", "minimum": 0},
+        "kind": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "verified_language_prelude_side": {
+      "type": "object",
+      "required": ["status", "role", "language", "directives"],
+      "properties": {
+        "status": {"const": "EXACT_AND_CLOSED"},
+        "role": {"enum": ["source", "target"]},
+        "language": {"enum": ["cpp", "objc", "swift", "java"]},
+        "directives": {"type": "array", "items": {"$ref": "#/$defs/language_directive"}}
+      },
+      "additionalProperties": false
+    },
+    "verified_language_prelude": {
+      "type": "object",
+      "required": ["source", "target"],
+      "properties": {
+        "source": {"$ref": "#/$defs/verified_language_prelude_side"},
+        "target": {"$ref": "#/$defs/verified_language_prelude_side"}
+      },
+      "additionalProperties": false
+    },
+    "language_wrapper_signature": {
+      "type": "object",
+      "required": ["type_kind", "visibility", "storage", "modifiers", "final", "abstract", "extends", "implements", "type_parameters", "annotations", "permits"],
+      "properties": {
+        "type_kind": {"const": "CLASS"},
+        "visibility": {"const": "public"},
+        "storage": {"const": "top-level"},
+        "modifiers": {"const": ["final", "public"]},
+        "final": {"const": true},
+        "abstract": {"const": false},
+        "extends": {"const": ""},
+        "implements": {"const": []},
+        "type_parameters": {"const": []},
+        "annotations": {"const": []},
+        "permits": {"const": []}
+      },
+      "additionalProperties": false
+    },
+    "language_wrapper_member": {
+      "type": "object",
+      "required": ["name", "qualified_name", "declaration_kind", "occurrence", "source_span"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "source_span": {"$ref": "#/$defs/source_span"}
+      },
+      "additionalProperties": false
+    },
+    "verified_java_wrapper": {
+      "type": "object",
+      "required": ["status", "role", "language", "file", "name", "qualified_name", "declaration_kind", "analyzable", "occurrence", "source_span", "signature", "member_span_status", "member_subjects"],
+      "properties": {
+        "status": {"const": "EXACT_AND_CLOSED"},
+        "role": {"enum": ["source", "target"]},
+        "language": {"const": "java"},
+        "file": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"const": "top-level-class-wrapper"},
+        "analyzable": {"const": false},
+        "occurrence": {"const": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "signature": {"$ref": "#/$defs/language_wrapper_signature"},
+        "member_span_status": {"const": "ALL_CONTAINED"},
+        "member_subjects": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/language_wrapper_member"}}
+      },
+      "additionalProperties": false
+    },
+    "verified_non_java_wrapper": {
+      "type": "object",
+      "required": ["status", "role", "language", "file"],
+      "properties": {
+        "status": {"const": "NOT_APPLICABLE"},
+        "role": {"enum": ["source", "target"]},
+        "language": {"enum": ["cpp", "objc", "swift"]},
+        "file": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "verified_language_wrapper_side": {
+      "oneOf": [
+        {"$ref": "#/$defs/verified_java_wrapper"},
+        {"$ref": "#/$defs/verified_non_java_wrapper"}
+      ]
+    },
+    "verified_language_wrapper": {
+      "type": "object",
+      "required": ["source", "target"],
+      "properties": {
+        "source": {"$ref": "#/$defs/verified_language_wrapper_side"},
+        "target": {"$ref": "#/$defs/verified_language_wrapper_side"}
+      },
+      "additionalProperties": false
+    },
+    "module_inventory": {
+      "type": "object",
+      "required": ["schema_version", "kind", "profile", "source_language", "source_file", "analyzer", "analyzer_version", "enumeration_status", "subjects", "diagnostics", "source_artifact_sha256", "source_artifact_bytes", "directives"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.typed-pure-module-inventory"},
+        "profile": {"const": "typed-pure-module-v1"},
+        "source_language": {"enum": ["cpp", "objc", "swift", "java"]},
+        "source_file": {"type": "string", "minLength": 1},
+        "analyzer": {"type": "string", "minLength": 1},
+        "analyzer_version": {"type": "string", "minLength": 1},
+        "enumeration_status": {"const": "PASSED"},
+        "subjects": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/inventory_subject"}},
+        "diagnostics": {"const": []},
+        "source_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "source_artifact_bytes": {"type": "integer", "minimum": 1},
+        "directives": {"type": "array", "items": {"$ref": "#/$defs/language_directive"}},
+        "analyzer_build_receipt": {"$ref": "#/$defs/swift_analyzer_build_receipt"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"source_language": {"const": "swift"}}, "required": ["source_language"]},
+          "then": {"required": ["analyzer_build_receipt"]},
+          "else": {"not": {"required": ["analyzer_build_receipt"]}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "profile_symbol": {
+      "type": "object",
+      "required": ["symbol", "qualified_name", "declaration_kind", "occurrence", "source_span", "raw_signature", "raw_parameter_names", "canonical_signature"],
+      "properties": {
+        "symbol": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "raw_signature": {"$ref": "#/$defs/raw_signature"},
+        "raw_parameter_names": {"type": "array", "items": {"type": "string"}},
+        "canonical_signature": {"type": "object", "minProperties": 1}
+      },
+      "additionalProperties": false
+    },
+    "helper_symbol": {
+      "type": "object",
+      "required": ["helper_id", "name", "qualified_name", "declaration_kind", "analyzable", "occurrence", "arity", "visibility", "storage", "source_span", "raw_signature"],
+      "properties": {
+        "helper_id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "analyzable": {"const": true},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "arity": {"type": "integer", "minimum": 0},
+        "visibility": {"enum": ["internal", "private", "fileprivate"]},
+        "storage": {"enum": ["static", "file-scope"]},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "raw_signature": {"$ref": "#/$defs/raw_signature"}
+      },
+      "additionalProperties": false
+    },
+    "verified_helper": {
+      "type": "object",
+      "required": ["helper_id", "sha256", "bytes", "start_byte", "end_byte", "source_span", "symbols"],
+      "properties": {
+        "helper_id": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "start_byte": {"type": "integer", "minimum": 0},
+        "end_byte": {"type": "integer", "minimum": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "symbols": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/helper_symbol"}}
+      },
+      "additionalProperties": false
+    },
+    "whole_file_closure": {
+      "type": "object",
+      "required": ["schema_version", "kind", "profile", "route", "status", "source_inventory_sha256", "source_inventory_bytes", "target_inventory_sha256", "target_inventory_bytes", "manifest_symbols", "source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_generated_helpers", "verified_language_prelude", "verified_language_wrapper", "blocked_declarations", "source_user_call_graph", "target_call_graph_policy", "target_call_graph", "target_builtin_normalizations"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.typed-pure-module-whole-file-closure"},
+        "profile": {"const": "typed-pure-module-v1"},
+        "route": {"$ref": "#/$defs/module_route"},
+        "status": {"const": "PASSED"},
+        "source_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "source_inventory_bytes": {"type": "integer", "minimum": 1},
+        "target_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "target_inventory_bytes": {"type": "integer", "minimum": 1},
+        "manifest_symbols": {"$ref": "#/$defs/symbols"},
+        "source_profile_symbols": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/profile_symbol"}},
+        "target_profile_symbols": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/profile_symbol"}},
+        "target_helper_symbols": {"type": "array", "items": {"$ref": "#/$defs/helper_symbol"}},
+        "verified_generated_helpers": {"type": "array", "items": {"$ref": "#/$defs/verified_helper"}},
+        "verified_language_prelude": {"$ref": "#/$defs/verified_language_prelude"},
+        "verified_language_wrapper": {"$ref": "#/$defs/verified_language_wrapper"},
+        "blocked_declarations": {"const": {"source": [], "target": []}},
+        "source_user_call_graph": {"const": {"edges": [], "status": "EMPTY_AND_CLOSED"}},
+        "target_call_graph_policy": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
+        "target_call_graph": {"$ref": "#/$defs/target_call_graph"},
+        "target_builtin_normalizations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "target_call_graph_edge": {
+      "type": "object",
+      "required": ["caller", "callee", "callee_kind", "canonical_domain", "canonical_operator", "normalization_rule"],
+      "properties": {
+        "caller": {"type": "string", "minLength": 1},
+        "callee": {"type": "string", "minLength": 1},
+        "callee_kind": {"enum": ["exact-generated-helper", "pinned-target-builtin"]},
+        "canonical_domain": {"enum": ["integer", "number"]},
+        "canonical_operator": {"enum": ["+", "-", "*", "/", "%"]},
+        "normalization_rule": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "target_call_graph": {
+      "type": "object",
+      "required": ["status", "scope", "edges", "helper_internal_calls"],
+      "properties": {
+        "status": {"const": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"},
+        "scope": {"const": "profile-functions-to-emitted-callees"},
+        "edges": {"type": "array", "items": {"$ref": "#/$defs/target_call_graph_edge"}},
+        "helper_internal_calls": {
+          "const": {
+            "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+            "binding": "verified_generated_helpers-exact-bytes-and-digests"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "module_independence": {
+      "type": "object",
+      "required": ["source_user_call_graph_edges", "source_user_call_graph_closure", "target_call_graph_policy", "target_call_graph", "target_generated_helper_symbols", "target_builtin_normalizations", "function_calls", "mutable_state", "shared_state"],
+      "properties": {
+        "source_user_call_graph_edges": {"const": []},
+        "source_user_call_graph_closure": {"const": "EMPTY_AND_CLOSED"},
+        "target_call_graph_policy": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
+        "target_call_graph": {"$ref": "#/$defs/target_call_graph"},
+        "target_generated_helper_symbols": {"type": "array", "items": {"$ref": "#/$defs/helper_symbol"}},
+        "target_builtin_normalizations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "function_calls": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
+        "mutable_state": {"const": "UNSUPPORTED"},
+        "shared_state": {"const": "ABSENT_BY_IR_CONSTRUCTION"}
+      },
+      "additionalProperties": false
+    },
+    "exact_specialized_route": {
+      "oneOf": [
+        {"const": {"route_key": "cpp-to-objc", "source_language": "cpp", "target_language": "objc"}},
+        {"const": {"route_key": "objc-to-cpp", "source_language": "objc", "target_language": "cpp"}},
+        {"const": {"route_key": "cpp-to-swift", "source_language": "cpp", "target_language": "swift"}},
+        {"const": {"route_key": "swift-to-cpp", "source_language": "swift", "target_language": "cpp"}},
+        {"const": {"route_key": "objc-to-swift", "source_language": "objc", "target_language": "swift"}},
+        {"const": {"route_key": "swift-to-objc", "source_language": "swift", "target_language": "objc"}},
+        {"const": {"route_key": "cpp-to-java", "source_language": "cpp", "target_language": "java"}},
+        {"const": {"route_key": "java-to-cpp", "source_language": "java", "target_language": "cpp"}}
+      ]
+    },
+    "symbols": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "artifact_ref": {
+      "type": "object",
+      "required": ["role", "path", "sha256", "bytes"],
+      "properties": {
+        "role": {"enum": ["source-module-semantic-ir", "target-module-semantic-ir", "source-module-observations", "target-module-observations", "original-source-module-artifact", "emitted-target-module-artifact", "module-formal-input", "formal-function-input", "formal-function-smt2", "formal-function-result", "source-module-validation", "target-module-validation", "module-case-manifest", "source-module-inventory", "target-module-inventory", "whole-file-module-closure", "swift-analyzer-build-receipt"]},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "layer": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {"status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]}},
+      "additionalProperties": true
+    },
+    "formal_layer": {
+      "type": "object",
+      "required": ["status", "property_status", "proof_strength", "assumptions", "formal_input_path", "formal_input_sha256", "solver_input_path", "solver_input_sha256", "formal_result_path", "formal_result_sha256"],
+      "properties": {
+        "status": {"enum": ["PROVED_UNDER_ASSUMPTIONS", "FAILED", "INVALID", "UNSUPPORTED", "VACUOUS", "UNKNOWN", "TIMEOUT", "NOT_RUN"]},
+        "property_status": {"enum": ["PROVED", "COUNTEREXAMPLE", "INVALID", "UNSUPPORTED", "VACUOUS", "UNKNOWN", "TIMEOUT", "NOT_RUN"]},
+        "proof_strength": {"enum": ["THEOREM", "THEOREM_UNDER_ASSUMPTIONS", "PROVED_UNDER_ASSUMPTIONS", "BOUNDED", "AXIOM", "NONE"]},
+        "assumptions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "formal_input_path": {"type": "string", "minLength": 1},
+        "formal_input_sha256": {"$ref": "#/$defs/sha256"},
+        "solver_input_path": {"type": "string", "minLength": 1},
+        "solver_input_sha256": {"$ref": "#/$defs/sha256"},
+        "formal_result_path": {"type": "string", "minLength": 1},
+        "formal_result_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": true
+    },
+    "function": {
+      "type": "object",
+      "required": ["symbol", "signature", "status", "case_manifest_sha256", "layers"],
+      "properties": {
+        "symbol": {"type": "string", "minLength": 1},
+        "signature": {"type": "object", "minProperties": 1},
+        "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
+        "case_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "layers": {
+          "type": "object",
+          "required": ["semantic", "chunk", "behavior", "formal"],
+          "properties": {"semantic": {"$ref": "#/$defs/layer"}, "chunk": {"$ref": "#/$defs/layer"}, "behavior": {"$ref": "#/$defs/layer"}, "formal": {"$ref": "#/$defs/formal_layer"}},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

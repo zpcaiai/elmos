@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v1",
+  "source_tuple": {
+    "stack": "angular",
+    "versions": [
+      "22.0.8"
+    ],
+    "language": "TypeScript",
+    "language_versions": [
+      "6.0.3"
+    ],
+    "runtime": "Node.js",
+    "runtime_versions": [
+      "26.0.0"
+    ],
+    "build_tool": "Angular CLI 22.0.8",
+    "package_manager": "npm 11.12.1",
+    "router": [
+      "Angular Router 22.0.8"
+    ],
+    "renderer": [
+      "CSR"
+    ],
+    "state": [
+      "Angular signals"
+    ],
+    "forms": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "styling": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "design_system": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "api_client": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "identity": [
+      "metadata-only-NOT_RUN"
+    ],
+    "i18n": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "test_tools": [
+      "Angular build and browser E2E profile"
+    ],
+    "browsers": [
+      "browser-execution-NOT_RUN"
+    ],
+    "devices": []
+  },
+  "snapshot_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+  "coverage": 1.0,
+  "routes": [],
+  "components": [],
+  "templates": [],
+  "state_stores": [],
+  "forms": [],
+  "api_clients": [],
+  "auth": [],
+  "i18n": [],
+  "design_assets": [],
+  "accessibility": [],
+  "runtime_evidence": [],
+  "evidence_refs": []
+}

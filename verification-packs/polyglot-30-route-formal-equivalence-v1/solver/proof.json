@@ -1,0 +1,26 @@
+{
+  "assumptions": [
+    "Source analyzer soundness is not independently proved.",
+    "Language-standard primitive behavior is cited, not solver-certified.",
+    "Three arithmetic obligations are bounded below 64 bits only."
+  ],
+  "evidence_refs": [
+    "solver/arithmetic-campaign.json",
+    "formal-route-campaign.json"
+  ],
+  "input_digest": "sha256:404377c9dddda1dcfe5f4d72e80fd80a164bdad7219ab312e43e9bf4fb6d3876",
+  "proof_id": "proof.aggregate-route-equivalence",
+  "property_id": "property.route-equivalence",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3-solver",
+    "options": {
+      "random_seed": 0,
+      "smt_random_seed": 0,
+      "timeout_ms": 20000
+    },
+    "timeout_ms": 20000,
+    "version": "4.16.0"
+  },
+  "status": "unknown"
+}

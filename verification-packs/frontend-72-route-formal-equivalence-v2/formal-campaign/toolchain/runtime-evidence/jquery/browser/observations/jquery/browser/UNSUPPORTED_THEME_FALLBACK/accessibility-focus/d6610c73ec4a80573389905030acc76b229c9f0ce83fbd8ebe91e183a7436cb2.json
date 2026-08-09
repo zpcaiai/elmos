@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a3b039de76223cb0dbed505432dfcb1ef5d416af11dfe1cc1129a5c518cbcdfe",
+      "block_id": "accessibility-focus",
+      "byte_count": 543934,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/jquery/browser/UNSUPPORTED_THEME_FALLBACK/browser-accessibility-tree-focus-observer-trace/dd052fe5ded25fdff8439849cd176a71023c233a7a5d65fd0787f096e70fd266.json",
+      "profile_id": "jquery",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+      "sha256": "sha256:dd052fe5ded25fdff8439849cd176a71023c233a7a5d65fd0787f096e70fd266"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:c994cb9978d6ff868856b6ce1e2113f873dfc89fa1cacce826b2fe0a624e8e14",
+        "byte_count": 544870,
+        "channel": "browser",
+        "path": "traces/jquery/browser/UNSUPPORTED_THEME_FALLBACK/browser-accessibility-axe-trace/e036773bf68cba4831d0e5ad1c7fdcccbc9d98e49c712d5d33d33bd4744363c9.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:e036773bf68cba4831d0e5ad1c7fdcccbc9d98e49c712d5d33d33bd4744363c9"
+      },
+      {
+        "artifact_id": "sha256:3404db2a2720b1ee4838eb06bb708f34579fe89a0c593a0110f50a19090dc065",
+        "byte_count": 5278,
+        "channel": "browser",
+        "path": "traces/jquery/browser/UNSUPPORTED_THEME_FALLBACK/browser-framework-event-trace/849c2b7571a5546284bafaa523d0ae1c5900a0f4321dd71a1fd4429b3bda0968.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:849c2b7571a5546284bafaa523d0ae1c5900a0f4321dd71a1fd4429b3bda0968"
+      }
+    ]
+  },
+  "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+  "schema_version": "1.0"
+}

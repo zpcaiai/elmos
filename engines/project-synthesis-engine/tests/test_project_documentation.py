@@ -95,7 +95,7 @@ def test_every_approved_task_renders_traceable_markdown_document_pack() -> None:
 
     assert set(DOCUMENT_SOURCE_REFS) <= set(files)
     manifest = json.loads(files[".elmos/generation-manifest.json"])
-    assert manifest["engine_version"] == "1.3.0"
+    assert manifest["engine_version"] == "1.4.0"
     assert manifest["documentation"] == {
         "status": "GENERATED_REVIEW_REQUIRED",
         "external_review_status": "NOT_RUN",
@@ -134,15 +134,8 @@ def test_every_approved_task_renders_traceable_markdown_document_pack() -> None:
     assert request.request_hash in history
 
     asset_graph = json.loads(files["requirements/asset-graph.json"])
-    document_nodes = {
-        node["path"]: node["status"]
-        for node in asset_graph["nodes"]
-        if node["path"].startswith("docs/")
-    }
-    assert document_nodes == {
-        path: "GENERATED_REVIEW_REQUIRED"
-        for path in DOCUMENT_SOURCE_REFS
-    }
+    document_nodes = {node["path"]: node["status"] for node in asset_graph["nodes"] if node["path"].startswith("docs/")}
+    assert document_nodes == {path: "GENERATED_REVIEW_REQUIRED" for path in DOCUMENT_SOURCE_REFS}
 
 
 def test_in_memory_tasks_keep_physical_database_and_migration_status_not_applicable() -> None:
@@ -172,7 +165,4 @@ def test_markdown_document_pack_is_in_the_download_archive(tmp_path: Path) -> No
     assert result["status"] == "ARCHIVED"
     with zipfile.ZipFile(archive) as bundle:
         archived = set(bundle.namelist())
-    assert {
-        f"generated-task/{path}"
-        for path in DOCUMENT_SOURCE_REFS
-    } <= archived
+    assert {f"generated-task/{path}" for path in DOCUMENT_SOURCE_REFS} <= archived

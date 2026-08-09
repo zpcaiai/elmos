@@ -1,0 +1,152 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/objc-to-cpp/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 2706,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:8e4696a44dc2d217bfa281e86b9db348748d51a606d4416f11f50452c6a22fd6"
+    },
+    {
+      "bytes": 4508,
+      "path": "chunk-map.json",
+      "sha256": "sha256:5e9e2deb5eb031c4a401a92869394c60cf3dc3d5b3b1cbca36abd9df29f19cda"
+    },
+    {
+      "bytes": 3227,
+      "path": "formal-composition.json",
+      "sha256": "sha256:2e97893126e5aafbb0cdf493c9e3e277a2d6e0a6dbaa87a7c7b2713bc7c745d1"
+    },
+    {
+      "bytes": 1162,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:b550fca92ddb5c9f47cad9470b30a32b4a6b800ea3e73391ba8f948d3603ca90"
+    },
+    {
+      "bytes": 5707,
+      "path": "formal-input.json",
+      "sha256": "sha256:7704c6ef53b34290ac207f7679dc4554a05a36611a8127a9cc2be7a86f56f7eb"
+    },
+    {
+      "bytes": 2569,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:69af39715d925617efa3f7c12cd6b75e2aecbb4f10e88cfcca9acc244c1a8842"
+    },
+    {
+      "bytes": 427,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:e06552cc526e8f4177c9b7cb8a50f19055c7c555d118f7bad88888af297bdfa1"
+    },
+    {
+      "bytes": 84,
+      "path": "inputs/echo_number.m",
+      "sha256": "sha256:97b3b3cf441edc94750d1e1ff878994967dca4afea6eff449a4b1a4a1ec0e01b"
+    },
+    {
+      "bytes": 3712,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:d35928ddf71490cf8dab3622aca3560fe3113e9638fd29c4a7519c812e237169"
+    },
+    {
+      "bytes": 113,
+      "path": "migrated.cpp",
+      "sha256": "sha256:4265f2dea09998905a394840e7c2edfd1c621a8d8a3c9db24556e5bc2ebfb694"
+    },
+    {
+      "bytes": 9909,
+      "path": "route-evidence.json",
+      "sha256": "sha256:98647fb57cbb9b6c4100b7a3d5c2d09ed2d34f09b45c4d2da8179fd447872db6"
+    },
+    {
+      "bytes": 2552,
+      "path": "route_harness.cpp",
+      "sha256": "sha256:6496d7a330861307c337566758d9aff507b801c310c65ba6af82df1604db6fea"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:1ecc40402a160340c4d61282f5a09f72ebb06c83af9d56095992df8d9a6948fe"
+    },
+    {
+      "bytes": 653,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:4d371fc7e0f981821004e0b20cd1e7bc96b9b723b8dd3cb7ed6a4c9f6356f7a8"
+    },
+    {
+      "bytes": 84,
+      "path": "source-runtime/echo_number.m",
+      "sha256": "sha256:97b3b3cf441edc94750d1e1ff878994967dca4afea6eff449a4b1a4a1ec0e01b"
+    },
+    {
+      "bytes": 2474,
+      "path": "source-runtime/source_harness.m",
+      "sha256": "sha256:ef14d6bcbbe2409b1e40bd35878de7e54642a7119cf621c0dda2e757173c805f"
+    },
+    {
+      "bytes": 653,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:4d371fc7e0f981821004e0b20cd1e7bc96b9b723b8dd3cb7ed6a4c9f6356f7a8"
+    },
+    {
+      "bytes": 651,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:336b71d8a8c25203aea532cb7c5244290c93ac73c81b7ecdedfdca0cc9f6d7cf"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "objc-to-cpp",
+  "schema_version": 1,
+  "total_bytes": 41500
+}

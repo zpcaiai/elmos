@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:61d84210875cde8b492d6c989b4a118f5267d0a7818930a253e73d99dfac9dff",
+      "block_id": "component-template-view",
+      "byte_count": 1510,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-rendered-component-observer-trace/36787d002a3382676d1d699ffe9284cf9849f7badbc52974e93c1a8284c14447.json",
+      "profile_id": "react",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:36787d002a3382676d1d699ffe9284cf9849f7badbc52974e93c1a8284c14447"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:cbd7b5de87c84b74456ac0e666570eb5bbbe098a5bd73eea87ec2eea7ed60bb5",
+        "byte_count": 40387,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/e410e0604b12f432e6df5119d6fd14f84a45c9292eec77b82458eb5342151018.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:e410e0604b12f432e6df5119d6fd14f84a45c9292eec77b82458eb5342151018"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

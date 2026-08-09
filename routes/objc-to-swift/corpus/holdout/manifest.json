@@ -1,0 +1,16 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "holdout",
+  "customer_repository": false,
+  "evidence_class": "independent-holdout",
+  "function_name": "echoNumber",
+  "independent": true,
+  "input_domain": "canonical-finite-no-error-input-domain",
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "echo_number.m",
+  "source_language": "objc",
+  "type_coverage": [
+    "number"
+  ]
+}

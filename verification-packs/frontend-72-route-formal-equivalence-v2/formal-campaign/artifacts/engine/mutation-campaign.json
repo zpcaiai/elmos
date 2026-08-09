@@ -1,0 +1,866 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-campaign",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "mutations": [
+    {
+      "block_id": "route-navigation-deeplink-404",
+      "obligation_symbol": "diff_navigation",
+      "pointer": "/navigation/fallback",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "route-navigation-deeplink-404",
+        "pointer": "/navigation/fallback",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "requestedPath": "/",
+          "selectedRouteId": "route.home",
+          "selectedPath": "/",
+          "resolution": "DECLARED",
+          "navigationLabel": "主要导航",
+          "fallback": "FIRST_DECLARED_ROUTE",
+          "deepLink": true,
+          "requiresAuth": false
+        },
+        "mutant_observation": {
+          "requestedPath": "/",
+          "selectedRouteId": "route.home",
+          "selectedPath": "/",
+          "resolution": "DECLARED",
+          "navigationLabel": "主要导航",
+          "fallback": "FIRST_DECLARED_ROUTE__MUTANT",
+          "deepLink": true,
+          "requiresAuth": false
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/route-navigation-deeplink-404/source-only/formal-input.json",
+          "formal_input_digest": "sha256:c61e2a487f5a18bc80b7b2057bd159976b256ad5355f304f3385c621c070fbdf",
+          "smt2_path": "mutations/route-navigation-deeplink-404/source-only/proof.smt2",
+          "smt2_digest": "sha256:04ff484dc63248b12317ed8ee97e48935256658cfe5de09405962a1262b96d8f",
+          "solver_result_path": "mutations/route-navigation-deeplink-404/source-only/solver-result.json",
+          "solver_result_digest": "sha256:aa545d70d1d4e0be9303d1f787f8c8b173938c93437e4a56b3e7c38b6a70e39d",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/route-navigation-deeplink-404/target-only/formal-input.json",
+          "formal_input_digest": "sha256:c821d81fa8d19f6f186d4d9957f9b67319b3b65e3b38e08e010975258545dc27",
+          "smt2_path": "mutations/route-navigation-deeplink-404/target-only/proof.smt2",
+          "smt2_digest": "sha256:8ec8278f8ff3f37b617e3202ffeae2bb5c7d50ca1a648d8a790f4eb7173e4d5c",
+          "solver_result_path": "mutations/route-navigation-deeplink-404/target-only/solver-result.json",
+          "solver_result_digest": "sha256:1bd35e6c4b982d2668edb685669463c3835da3322a3b6817e6b441ec521810e2",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/route-navigation-deeplink-404/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:c5686aa8692697dd4f964d56a7670b893f81af876e3615a3a58a1850462323c0",
+          "smt2_path": "mutations/route-navigation-deeplink-404/reference-only/proof.smt2",
+          "smt2_digest": "sha256:56bcac96c11ad96ab48bff1525fdbda0fded1e71208bf0c392a93fc9754a1f4e",
+          "solver_result_path": "mutations/route-navigation-deeplink-404/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:bec50faa29867df6d1222d5823cfb0cfc279611624a87a43c718280f6a8d0158",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "component-template-view",
+      "obligation_symbol": "diff_component_template",
+      "pointer": "/componentTemplate/keyedBy",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "component-template-view",
+        "pointer": "/componentTemplate/keyedBy",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "componentId": "interaction.shell",
+          "templateKind": "ROUTE_DETAIL_WITH_INTERACTION_MATRIX",
+          "keyedBy": "route.id",
+          "titleBinding": "route.title",
+          "textBinding": "route.text",
+          "key": "route.home",
+          "title": "首页",
+          "text": "首页内容",
+          "visible": true
+        },
+        "mutant_observation": {
+          "componentId": "interaction.shell",
+          "templateKind": "ROUTE_DETAIL_WITH_INTERACTION_MATRIX",
+          "keyedBy": "route.id__MUTANT",
+          "titleBinding": "route.title",
+          "textBinding": "route.text",
+          "key": "",
+          "title": "首页",
+          "text": "首页内容",
+          "visible": true
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/component-template-view/source-only/formal-input.json",
+          "formal_input_digest": "sha256:2eb053ef02537a98e5a5803f1b364b700723a0ae29d53eef22fb0c30b12b1db1",
+          "smt2_path": "mutations/component-template-view/source-only/proof.smt2",
+          "smt2_digest": "sha256:9d5571f7e7a6b4f6564c2c6f6d616565d9a696a4bb8f028ebef1c7ab9006e9c0",
+          "solver_result_path": "mutations/component-template-view/source-only/solver-result.json",
+          "solver_result_digest": "sha256:a55c922d43b151cb1b696382917dbc4cf22e50bae5f91be9dab268f01f7f78fa",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/component-template-view/target-only/formal-input.json",
+          "formal_input_digest": "sha256:784d9a1fb5934668cc675f90d00d873de2422e4fb9ecb72c0e31d14ba39f956f",
+          "smt2_path": "mutations/component-template-view/target-only/proof.smt2",
+          "smt2_digest": "sha256:a2979d9718ae909f0763adcbcc516de17abebd3f2434730b8e3aa9cce3b714b1",
+          "solver_result_path": "mutations/component-template-view/target-only/solver-result.json",
+          "solver_result_digest": "sha256:d9d706843f028cef9af8d15eec4f049c221c20a488534f3cfbf27bb064b98dc3",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/component-template-view/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:6d1935687db3e9a0a1fc307a9689b191827b0d384f946db0301523436a7d78f1",
+          "smt2_path": "mutations/component-template-view/reference-only/proof.smt2",
+          "smt2_digest": "sha256:23ed657cd211a4a2d2b8991dc1fccb7b3d59380ad212ac2be76100e0dd13bebe",
+          "solver_result_path": "mutations/component-template-view/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:ca682b4b3c4c4208b432f5a7f70ae66a77e3c5ca65ac965f5bb8ecd4f4b1386a",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "state-management",
+      "obligation_symbol": "diff_state_management",
+      "pointer": "/stateManagement/initial",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "state-management",
+        "pointer": "/stateManagement/initial",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "stateId": "bounded.counter",
+          "initial": 0,
+          "minimum": 0,
+          "maximum": 2,
+          "transition": "SATURATING_INCREMENT",
+          "before": 0,
+          "after": 0,
+          "saturated": false
+        },
+        "mutant_observation": {
+          "stateId": "bounded.counter",
+          "initial": 1,
+          "minimum": 0,
+          "maximum": 2,
+          "transition": "SATURATING_INCREMENT",
+          "before": 0,
+          "after": 1,
+          "saturated": false
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/state-management/source-only/formal-input.json",
+          "formal_input_digest": "sha256:7f834d6175e5b65c45009c34fae2a1d4a87a57968d4c9a3619086b515c5ceb22",
+          "smt2_path": "mutations/state-management/source-only/proof.smt2",
+          "smt2_digest": "sha256:547274b44dc482596e6793d2d6ee5cf69b70c9cdcd325a6538b0c411403784cf",
+          "solver_result_path": "mutations/state-management/source-only/solver-result.json",
+          "solver_result_digest": "sha256:4d8da2b2edb129ed373cc94dcc4d5d0b46e68a13a13ce2337377cc4e58f9741c",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/state-management/target-only/formal-input.json",
+          "formal_input_digest": "sha256:1c10df09a5ca4f7f299d04ec6572286824b2b06de50dee05a6155a7f396007a5",
+          "smt2_path": "mutations/state-management/target-only/proof.smt2",
+          "smt2_digest": "sha256:092d030877c2934d14404bf95a35961e48d802a273ba921ef6abf5a00897a783",
+          "solver_result_path": "mutations/state-management/target-only/solver-result.json",
+          "solver_result_digest": "sha256:28d0ee61e72772ff709f1aaa13075b58715adcc946d30ae0f2d96ed0f254b641",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/state-management/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:c1d4cbc5de3e44c06b38007446463c37bf2eb8b22f64808b8ea16fe57bd1a37c",
+          "smt2_path": "mutations/state-management/reference-only/proof.smt2",
+          "smt2_digest": "sha256:feaf60f41e830396943b9e3a879b48f4ac67984795de49382324991d897f5f95",
+          "solver_result_path": "mutations/state-management/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:d7d2ba216ad07e93db57bf96657cf26d1d7e2a1d1b25d670760a9f0edab801c1",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "action-event",
+      "obligation_symbol": "diff_action_event",
+      "pointer": "/actionEvent/acceptedEvents/0",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "action-event",
+        "pointer": "/actionEvent/acceptedEvents/0",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "event": "BOOT",
+          "keyboardKey": "NONE",
+          "handled": true,
+          "action": "BOOT"
+        },
+        "mutant_observation": {
+          "event": "BOOT",
+          "keyboardKey": "NONE",
+          "handled": false,
+          "action": "BOOT"
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/action-event/source-only/formal-input.json",
+          "formal_input_digest": "sha256:5741995b928f62881bbad51f7223157f4127050306b6faf564d042adddb77836",
+          "smt2_path": "mutations/action-event/source-only/proof.smt2",
+          "smt2_digest": "sha256:0291f1847a160f4ca1a6a07879f7074f039fe5912e9621eb9731685890d8b21b",
+          "solver_result_path": "mutations/action-event/source-only/solver-result.json",
+          "solver_result_digest": "sha256:4749356357e8599e6357a96ca257d03ebb2ac5e9599eff507e5ffcf5fec5a2e8",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/action-event/target-only/formal-input.json",
+          "formal_input_digest": "sha256:712dfed9a65c771439065e24b569ba99c4de4202017c3762037c0385b1d7b5a5",
+          "smt2_path": "mutations/action-event/target-only/proof.smt2",
+          "smt2_digest": "sha256:9a650f27d26afd3847530536449ca009e870f3604bb8cdbb4dec910d3d4c3168",
+          "solver_result_path": "mutations/action-event/target-only/solver-result.json",
+          "solver_result_digest": "sha256:1e7d2e1480344a19fe91c4a0e9597b1203a7915647956179346fa3c39215e12a",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/action-event/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:25594da422d923bfe256675b5964fce6ce66402de56de3449946e02ed728674b",
+          "smt2_path": "mutations/action-event/reference-only/proof.smt2",
+          "smt2_digest": "sha256:8a72c975d2dd547030ab60af3df945b4fef8dc2da9f9c21134557095d4aed4fd",
+          "solver_result_path": "mutations/action-event/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:24470c7e3f98acc32fe40fb2bb2bd942b04dca7a0046b89659344c8ce1d270c9",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "effect-lifecycle",
+      "obligation_symbol": "diff_effect_lifecycle",
+      "pointer": "/effectLifecycle/cleanupEffect",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "counterexample_replay": {
+        "block_id": "effect-lifecycle",
+        "pointer": "/effectLifecycle/cleanupEffect",
+        "influence_class": "OBSERVABLE_EFFECT",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "lifecycle": "UNMOUNT",
+          "mountEffect": "NONE",
+          "cleanupEffect": "CANCEL_ON_UNMOUNT",
+          "maxExecutionsPerMount": 1,
+          "staleResponsePolicy": "IGNORE_AFTER_CANCEL",
+          "executions": 0,
+          "cleanup": true,
+          "staleResponseIgnored": true
+        },
+        "mutant_observation": {
+          "lifecycle": "UNMOUNT",
+          "mountEffect": "NONE",
+          "cleanupEffect": "CANCEL_ON_UNMOUNT__MUTANT",
+          "maxExecutionsPerMount": 1,
+          "staleResponsePolicy": "IGNORE_AFTER_CANCEL",
+          "executions": 0,
+          "cleanup": true,
+          "staleResponseIgnored": true
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/effect-lifecycle/source-only/formal-input.json",
+          "formal_input_digest": "sha256:4f3a4bee49a284add6aa698a644d5033b82096eea07173b0a3bb60d00e3339dc",
+          "smt2_path": "mutations/effect-lifecycle/source-only/proof.smt2",
+          "smt2_digest": "sha256:39bbba6a8c4fc01bdcc6c83410dc3eeda44f6d65bcb73315608c72d3bfcfc832",
+          "solver_result_path": "mutations/effect-lifecycle/source-only/solver-result.json",
+          "solver_result_digest": "sha256:8d0d04c003062434e3782af44e163b91d24d1325910485c64517d6335b03e291",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/effect-lifecycle/target-only/formal-input.json",
+          "formal_input_digest": "sha256:000cc14bd1eccf8824f585656ef5f743a617838ee3edf31f25e3cfaf3db80ffc",
+          "smt2_path": "mutations/effect-lifecycle/target-only/proof.smt2",
+          "smt2_digest": "sha256:ae81e1a9900b334773223cc9b45ce24903cea5ad822fd509c6a7baace95ad410",
+          "solver_result_path": "mutations/effect-lifecycle/target-only/solver-result.json",
+          "solver_result_digest": "sha256:18f74387ac4b9163c76358893b5ca86ed0b0f58f3a0a565781ad9a6c35c0ff37",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/effect-lifecycle/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:4b6393d3a8963870befabd98d60fc1646b6571924c8812c3cc54aa051a4317c0",
+          "smt2_path": "mutations/effect-lifecycle/reference-only/proof.smt2",
+          "smt2_digest": "sha256:db5b55d9810b02e38999e3e150233e9005c65ca453540a5665c3ffdec7ca8f91",
+          "solver_result_path": "mutations/effect-lifecycle/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:fc1308f2e7dff47d44acda078751382b4756980d91ea835a80b926ac4cc63d67",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "form-binding-validation",
+      "obligation_symbol": "diff_form_binding_validation",
+      "pointer": "/formBindingValidation/initialValue",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "form-binding-validation",
+        "pointer": "/formBindingValidation/initialValue",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "formId": "search",
+          "fieldId": "query",
+          "initialValue": "",
+          "required": true,
+          "minimumLength": 2,
+          "validation": "ON_SUBMIT",
+          "value": "",
+          "submitted": false,
+          "validated": false,
+          "valid": false,
+          "errorCode": null
+        },
+        "mutant_observation": {
+          "formId": "search",
+          "fieldId": "query",
+          "initialValue": "__MUTANT",
+          "required": true,
+          "minimumLength": 2,
+          "validation": "ON_SUBMIT",
+          "value": "__MUTANT",
+          "submitted": false,
+          "validated": false,
+          "valid": true,
+          "errorCode": null
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/form-binding-validation/source-only/formal-input.json",
+          "formal_input_digest": "sha256:11754e27c7c289a01e239916e3e8d926878d7bb0835b922dc367138c117aa771",
+          "smt2_path": "mutations/form-binding-validation/source-only/proof.smt2",
+          "smt2_digest": "sha256:5f76dfe18f311282b04b18d3c66438c956e733ef115d40b067cfc9bf13b9f85f",
+          "solver_result_path": "mutations/form-binding-validation/source-only/solver-result.json",
+          "solver_result_digest": "sha256:505ae765b2fee31c18f9f23d3e0a6f2912d02ed73fc5de6e2efa725b49c38e1a",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/form-binding-validation/target-only/formal-input.json",
+          "formal_input_digest": "sha256:fdd9f834670841d9851c0f4716095d5915b678dd994a3056eb7d56f5a80c1d8c",
+          "smt2_path": "mutations/form-binding-validation/target-only/proof.smt2",
+          "smt2_digest": "sha256:faba194cb04af5a73732887ab7b8657eae085d7c5a19de826dd14feeb6c4cf57",
+          "solver_result_path": "mutations/form-binding-validation/target-only/solver-result.json",
+          "solver_result_digest": "sha256:4c77e5e0d0df07bf8d48714c8ae0ec3ce436113e2163d295346b13af957c6832",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/form-binding-validation/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:82253f5280ae722746c27283c9a5999118af3b717fadd8dc434bf4a76d6b1099",
+          "smt2_path": "mutations/form-binding-validation/reference-only/proof.smt2",
+          "smt2_digest": "sha256:cc36a61a9c29d1628c8eb16c675eedae5cc1536adfc98a74526f767f3d4373f4",
+          "solver_result_path": "mutations/form-binding-validation/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:719e146488dff6e173a2b8b4e23fd6712a64fc52d30a545a327e42f9ac23132d",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "api-network",
+      "obligation_symbol": "diff_api_network",
+      "pointer": "/apiNetwork/cacheScope",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "api-network",
+        "pointer": "/apiNetwork/cacheScope",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "operationId": "search",
+          "called": false,
+          "method": "POST",
+          "path": "/api/search",
+          "timeoutMs": 1000,
+          "retry": "NEVER",
+          "cacheScope": "TENANT_QUERY",
+          "cancelOnUnmount": true,
+          "outcome": "NOT_CALLED",
+          "canceled": false,
+          "staleIgnored": false,
+          "cacheKey": "tenant-a:"
+        },
+        "mutant_observation": {
+          "operationId": "search",
+          "called": false,
+          "method": "POST",
+          "path": "/api/search",
+          "timeoutMs": 1000,
+          "retry": "NEVER",
+          "cacheScope": "TENANT_QUERY__MUTANT",
+          "cancelOnUnmount": true,
+          "outcome": "NOT_CALLED",
+          "canceled": false,
+          "staleIgnored": false,
+          "cacheKey": ""
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/api-network/source-only/formal-input.json",
+          "formal_input_digest": "sha256:40c54895a4dbf849a77736948b0b15e2ad706158ef42fac9e33c2a366d30e526",
+          "smt2_path": "mutations/api-network/source-only/proof.smt2",
+          "smt2_digest": "sha256:966a218c149c8c7e22399792c346f79d781b14ee33c1bc03c3adc1f84f0f6bf6",
+          "solver_result_path": "mutations/api-network/source-only/solver-result.json",
+          "solver_result_digest": "sha256:237bc87d61fa723d864c9a7cfdfe8c38e165b98949ace31f7bda97a3e4823af7",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/api-network/target-only/formal-input.json",
+          "formal_input_digest": "sha256:d7b808f2c6a42ce2ddc716f709e09f9702b0bda9bdc8f3a4374975600e070c0a",
+          "smt2_path": "mutations/api-network/target-only/proof.smt2",
+          "smt2_digest": "sha256:9a195cbc292f3e6d32c343225fc5b8c7a3c2e39781bebda0ab08ce577920180c",
+          "solver_result_path": "mutations/api-network/target-only/solver-result.json",
+          "solver_result_digest": "sha256:f65e12b2d4dd6bcebd3b1f918e439732660a3e69d041ed99ffeb23a4a37cde1d",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/api-network/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:9e7802f479e605f07d507e92ae31f0b5ba36a04d242c07c7cf2610b5e42e2a6d",
+          "smt2_path": "mutations/api-network/reference-only/proof.smt2",
+          "smt2_digest": "sha256:5f779591846dd5d955d67157c17a7e330b6c6ba449508be35ffd92c12104b34a",
+          "solver_result_path": "mutations/api-network/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:641fdfb5c1e069f3b63974cfa74ed6a6da90f15c8648e3e5e9ad44f64ab6e62e",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "identity-permission",
+      "obligation_symbol": "diff_identity_permission",
+      "pointer": "/identityPermission/anonymousRole",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "identity-permission",
+        "pointer": "/identityPermission/anonymousRole",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "role": "ANONYMOUS",
+          "permission": "search:execute",
+          "permissionGranted": false,
+          "deniedBehavior": "HIDE_AND_BLOCK",
+          "tenantIsolation": "EXACT_TENANT_MATCH",
+          "tenantMatch": true,
+          "authorized": true,
+          "serverAuthorityRequired": true
+        },
+        "mutant_observation": {
+          "role": "ANONYMOUS__MUTANT",
+          "permission": "search:execute",
+          "permissionGranted": false,
+          "deniedBehavior": "HIDE_AND_BLOCK",
+          "tenantIsolation": "EXACT_TENANT_MATCH",
+          "tenantMatch": true,
+          "authorized": true,
+          "serverAuthorityRequired": true
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/identity-permission/source-only/formal-input.json",
+          "formal_input_digest": "sha256:5d68f0a8f6f6c763c165fb89f2c93b854df6c87244b1bc2374314d1171ad87c3",
+          "smt2_path": "mutations/identity-permission/source-only/proof.smt2",
+          "smt2_digest": "sha256:996292fab94e13f3ab2f398d665338887c8fee0003b413348b9af04bbf26fedf",
+          "solver_result_path": "mutations/identity-permission/source-only/solver-result.json",
+          "solver_result_digest": "sha256:59beed74d52508efe3b5bb0751dbdd54a1ff1cf6b5f346b65a5a865fcc4f126f",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/identity-permission/target-only/formal-input.json",
+          "formal_input_digest": "sha256:9a8b08070b8197d88f1006e71823eda7cc0f72943ef24354436a773652676d8e",
+          "smt2_path": "mutations/identity-permission/target-only/proof.smt2",
+          "smt2_digest": "sha256:a1a61501c24f9ff1e4883470f420d6b05f9335df51f42a54e4c7a568c6ea511f",
+          "solver_result_path": "mutations/identity-permission/target-only/solver-result.json",
+          "solver_result_digest": "sha256:af0da93334e502bf6f588a834fca8d1024823f672a1ba2a2030af239d61750e4",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/identity-permission/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:b6379f8eff900f4babe6ac70298f5e3b8f9ccb36f50957f12d7fb37e8bae6ce9",
+          "smt2_path": "mutations/identity-permission/reference-only/proof.smt2",
+          "smt2_digest": "sha256:c932d22fdb2864dfbb3617d14b4459dae221970f7aa37340593f6220107a572c",
+          "solver_result_path": "mutations/identity-permission/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:aae18560586e6b3c2dd02679dbe1187df7aaeefb57da22c7a11fd952f2cd98ca",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "rendering-hydration",
+      "obligation_symbol": "diff_rendering_hydration",
+      "pointer": "/renderingHydration/duplicateEffectsAllowed",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "rendering-hydration",
+        "pointer": "/renderingHydration/duplicateEffectsAllowed",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "mode": "HYDRATABLE_CSR",
+          "hydrationPolicy": "REQUIRE_MATCH",
+          "requested": "MATCH",
+          "status": "MATCHED",
+          "duplicateEffectsAllowed": false,
+          "duplicateEffects": false,
+          "mismatchVisible": false
+        },
+        "mutant_observation": {
+          "mode": "HYDRATABLE_CSR",
+          "hydrationPolicy": "REQUIRE_MATCH",
+          "requested": "MATCH",
+          "status": "MATCHED",
+          "duplicateEffectsAllowed": true,
+          "duplicateEffects": false,
+          "mismatchVisible": false
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/rendering-hydration/source-only/formal-input.json",
+          "formal_input_digest": "sha256:f9c35c8977ddd3174b460d25e57a26e069a94dcdeea1ad1e93044bcc8478cbf1",
+          "smt2_path": "mutations/rendering-hydration/source-only/proof.smt2",
+          "smt2_digest": "sha256:8a895026e523eb620cd58266835f97161647aaebba9ab206e328378eeb56d114",
+          "solver_result_path": "mutations/rendering-hydration/source-only/solver-result.json",
+          "solver_result_digest": "sha256:a6208b8686a1938f9fd98934434d654216a4a8895f8103152d1811df771aefb3",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/rendering-hydration/target-only/formal-input.json",
+          "formal_input_digest": "sha256:ea1c25c70718d3734c152dd6aebc2042dd2e37e81813b3380f8418f45551ea40",
+          "smt2_path": "mutations/rendering-hydration/target-only/proof.smt2",
+          "smt2_digest": "sha256:55c9fc66d54e58a29138aa481b1d7a3dfbe1748fde5f7c52fe80578c010dfc60",
+          "solver_result_path": "mutations/rendering-hydration/target-only/solver-result.json",
+          "solver_result_digest": "sha256:27badbae4e6f50fcda651370237003432a71668671c45293af8b0029f2de12b0",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/rendering-hydration/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:22b1e5929d36d42583f833ea498f4f5daeaa91d1c638c651aca4f709ce3947fc",
+          "smt2_path": "mutations/rendering-hydration/reference-only/proof.smt2",
+          "smt2_digest": "sha256:eff5a8daa7e0550f79fb17627264a2ea9dc00156fd94b61e925273f99a083dbf",
+          "solver_result_path": "mutations/rendering-hydration/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:37b8e10479edd6d76a38c8e2001803ffd4cd592cd9d3661025f65c67f2c6baa8",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "accessibility-focus",
+      "obligation_symbol": "diff_accessibility_focus",
+      "pointer": "/accessibilityFocus/errorRole",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "counterexample_replay": {
+        "block_id": "accessibility-focus",
+        "pointer": "/accessibilityFocus/errorRole",
+        "influence_class": "OBSERVABLE_EFFECT",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "mainRole": "main",
+          "headingLevel": 1,
+          "formLabel": "搜索",
+          "errorRole": "alert",
+          "liveRegion": "polite",
+          "keyboardSubmit": true,
+          "focusTarget": "query"
+        },
+        "mutant_observation": {
+          "mainRole": "main",
+          "headingLevel": 1,
+          "formLabel": "搜索",
+          "errorRole": "alert__MUTANT",
+          "liveRegion": "polite",
+          "keyboardSubmit": true,
+          "focusTarget": "query"
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/accessibility-focus/source-only/formal-input.json",
+          "formal_input_digest": "sha256:242749987fc720d9974da1569dba5bab82447b2f0becfa2ef90fc5c6369889ee",
+          "smt2_path": "mutations/accessibility-focus/source-only/proof.smt2",
+          "smt2_digest": "sha256:e5bc255094fe8b6315f110bdf2e6420b03e72dd38a809decd805eff253e018c0",
+          "solver_result_path": "mutations/accessibility-focus/source-only/solver-result.json",
+          "solver_result_digest": "sha256:eea1f0c1216da69582a980c8112af9ca9788710d1c14277ddafaa7e4da014b1f",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/accessibility-focus/target-only/formal-input.json",
+          "formal_input_digest": "sha256:5224c5d5f5235447946ea14833f0fccbaf83ec4ea3168342c1187dac84f05354",
+          "smt2_path": "mutations/accessibility-focus/target-only/proof.smt2",
+          "smt2_digest": "sha256:b78a7abaa400991318d2d52550b6ea31ad1f35748b506b5618d0be3254682d17",
+          "solver_result_path": "mutations/accessibility-focus/target-only/solver-result.json",
+          "solver_result_digest": "sha256:5654b2916d092ce5e6e180fe8a8af6d89c30e637cf87ee8a4a51309ab5f490ae",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/accessibility-focus/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:130b11b2247904500225b6fa6973c9c05cf207fde199a07f910a319b16470b1d",
+          "smt2_path": "mutations/accessibility-focus/reference-only/proof.smt2",
+          "smt2_digest": "sha256:11818d0610b983493e18a3df7357cff65bc34461ddf1cf9b32274e8b4e57fb1a",
+          "solver_result_path": "mutations/accessibility-focus/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:820113f1031bdb019ff8f7499fa0bb20486f727b0d1dcf55abd8c8f6542d3af3",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "i18n-theme-responsive",
+      "obligation_symbol": "diff_i18n_theme_responsive",
+      "pointer": "/i18nThemeResponsive/compactBreakpoint",
+      "scenario_id": "LOCALE_EN_US_WIDE_721",
+      "counterexample_replay": {
+        "block_id": "i18n-theme-responsive",
+        "pointer": "/i18nThemeResponsive/compactBreakpoint",
+        "influence_class": "TRANSITION",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "requestedLocale": "en-US",
+          "localeSupported": true,
+          "locale": "en-US",
+          "requestedTheme": "LIGHT",
+          "themeSupported": true,
+          "theme": "LIGHT",
+          "viewportWidth": 721,
+          "columns": 2
+        },
+        "mutant_observation": {
+          "requestedLocale": "en-US",
+          "localeSupported": true,
+          "locale": "en-US",
+          "requestedTheme": "LIGHT",
+          "themeSupported": true,
+          "theme": "LIGHT",
+          "viewportWidth": 721,
+          "columns": 1
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/i18n-theme-responsive/source-only/formal-input.json",
+          "formal_input_digest": "sha256:14e4c9c59d3fcd00901a5279bf69935c6a54166e26bdb1ec3c6a984a53e12126",
+          "smt2_path": "mutations/i18n-theme-responsive/source-only/proof.smt2",
+          "smt2_digest": "sha256:3c642255912f68380b54e5daf82d8d4e60229f67bf6f3ce982b404cf2dd0d58c",
+          "solver_result_path": "mutations/i18n-theme-responsive/source-only/solver-result.json",
+          "solver_result_digest": "sha256:30afa5d244585ff313cf4800e13a9a78a82d4a34f54b391f1e45822c40b7cc21",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/i18n-theme-responsive/target-only/formal-input.json",
+          "formal_input_digest": "sha256:1a20db93a8cdd66d519db109571bbb982d1015a24cfc5bd5dd001936add4544c",
+          "smt2_path": "mutations/i18n-theme-responsive/target-only/proof.smt2",
+          "smt2_digest": "sha256:4020d1ced952d1da0c3f27c7e15449b6468923d25f36da0ac19e8368439578e0",
+          "solver_result_path": "mutations/i18n-theme-responsive/target-only/solver-result.json",
+          "solver_result_digest": "sha256:82bad65a7a6ade8feb58dc54751cb2f9f535264b641272e42699631f43fab3b7",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/i18n-theme-responsive/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:ed02792cceec7c89fc4411baa67ea046852652585001b961791f54c1a5659ed9",
+          "smt2_path": "mutations/i18n-theme-responsive/reference-only/proof.smt2",
+          "smt2_digest": "sha256:5bb9891ab9c811d549e456e2a55aeed6f51f6492e051af77c46b6ed79d7a779b",
+          "solver_result_path": "mutations/i18n-theme-responsive/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:1a05a92257fc999fc1065ec29fbcc905dd35c851d3def3c27a2300bc139bdd9f",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    },
+    {
+      "block_id": "native-platform",
+      "obligation_symbol": "diff_native_platform",
+      "pointer": "/nativePlatform/capability",
+      "scenario_id": "BOOT_PUBLIC",
+      "counterexample_replay": {
+        "block_id": "native-platform",
+        "pointer": "/nativePlatform/capability",
+        "influence_class": "TRANSITION",
+        "scenario_id": "BOOT_PUBLIC",
+        "semantic_mutant_detected": true,
+        "behavior_mutant_detected": true,
+        "canonical_observation": {
+          "boundary": "ADAPTER",
+          "capability": "OPEN_DEEP_LINK",
+          "lifecycleStates": "FOREGROUND|BACKGROUND",
+          "lifecycle": "FOREGROUND",
+          "lifecycleKnown": true,
+          "deepLinkPath": null,
+          "targetRouteId": null,
+          "targetAuthorized": true,
+          "attempted": false,
+          "permissionContract": "DEEPLINK_OPEN",
+          "permission": "GRANTED",
+          "available": true,
+          "deniedBehavior": "NO_OP_REPORTED",
+          "outcome": "NOT_ATTEMPTED",
+          "recovery": "FOREGROUND_RETRY"
+        },
+        "mutant_observation": {
+          "boundary": "ADAPTER",
+          "capability": "OPEN_DEEP_LINK__MUTANT",
+          "lifecycleStates": "FOREGROUND|BACKGROUND",
+          "lifecycle": "FOREGROUND",
+          "lifecycleKnown": true,
+          "deepLinkPath": null,
+          "targetRouteId": null,
+          "targetAuthorized": true,
+          "attempted": false,
+          "permissionContract": "DEEPLINK_OPEN",
+          "permission": "GRANTED",
+          "available": true,
+          "deniedBehavior": "NO_OP_REPORTED",
+          "outcome": "NOT_ATTEMPTED",
+          "recovery": "FOREGROUND_RETRY"
+        }
+      },
+      "variants": [
+        {
+          "variant": "SOURCE_ONLY",
+          "formal_input_path": "mutations/native-platform/source-only/formal-input.json",
+          "formal_input_digest": "sha256:fa2c11f0d7b33fc2fd7eedc0906849829766d6643193f841ec4913c9ae09bf04",
+          "smt2_path": "mutations/native-platform/source-only/proof.smt2",
+          "smt2_digest": "sha256:250ecb02ababf29a0c623fe3183c0b7114dff8f56565927f9db93992e1d4ebce",
+          "solver_result_path": "mutations/native-platform/source-only/solver-result.json",
+          "solver_result_digest": "sha256:9b12cb1fd4f021aea2fa45d49ed447271e300e14b9103a2ae53d1baf7fb34ec8",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "TARGET_ONLY",
+          "formal_input_path": "mutations/native-platform/target-only/formal-input.json",
+          "formal_input_digest": "sha256:212392e183988f17717dcac0be2000967c8bbfceab18b9671b08c114af9271e0",
+          "smt2_path": "mutations/native-platform/target-only/proof.smt2",
+          "smt2_digest": "sha256:9d540ebbeb4c89a3898598da13de9cae1d4d61064fb035339be2a9be63a5bb24",
+          "solver_result_path": "mutations/native-platform/target-only/solver-result.json",
+          "solver_result_digest": "sha256:877a2f7ba0946310ac22163c0bf69ff6541829ff094921cdf67c41fdfc6198e1",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        },
+        {
+          "variant": "REFERENCE_ONLY",
+          "formal_input_path": "mutations/native-platform/reference-only/formal-input.json",
+          "formal_input_digest": "sha256:cb859401b6205b41849d3e527b5d81017562ffa6547b212c9d39a3c12d1935de",
+          "smt2_path": "mutations/native-platform/reference-only/proof.smt2",
+          "smt2_digest": "sha256:db02e2616d391de4b7b9a4041738eb09bfe8fdfdecec46cc21b16c27877ec6a3",
+          "solver_result_path": "mutations/native-platform/reference-only/solver-result.json",
+          "solver_result_digest": "sha256:94092dbbf4283ae1f914f7051dd4cd397a5f7fc6f10be9fe4aeb53e9d812faf5",
+          "solver_outcome": "SAT",
+          "replay_status": "PASSED"
+        }
+      ],
+      "status": "REFUTED_AS_EXPECTED"
+    }
+  ],
+  "status": "PASSED"
+}

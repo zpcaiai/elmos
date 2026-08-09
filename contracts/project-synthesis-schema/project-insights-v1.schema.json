@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/project-synthesis/project-insights-v1.schema.json",
+  "title": "ELMOS Project Generation Insights v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "stage",
+    "project",
+    "claim_ceiling",
+    "project_structure",
+    "declared_dependencies",
+    "structure",
+    "semantic",
+    "behavior",
+    "coverage",
+    "external_verification_status",
+    "certification_status"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "kind": { "const": "elmos.project-generation-insights" },
+    "stage": { "enum": ["GENERATED", "VERIFIED"] },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "request_sha256", "approved_payload_sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 63 },
+        "request_sha256": { "$ref": "#/$defs/digest" },
+        "approved_payload_sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "claim_ceiling": { "const": "LOCAL_ENGINEERING_EVIDENCE" },
+    "project_structure": { "$ref": "project-structure-v1.schema.json" },
+    "declared_dependencies": { "$ref": "declared-dependency-graph-v1.schema.json" },
+    "structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["graph_kind", "nodes", "edges", "node_count", "edge_count", "target_count"],
+      "properties": {
+        "graph_kind": { "const": "project-synthesis-insight-graph" },
+        "nodes": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 14,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "kind", "path", "status"],
+            "properties": {
+              "id": { "$ref": "#/$defs/token" },
+              "label": { "type": "string", "minLength": 1, "maxLength": 180 },
+              "kind": { "$ref": "#/$defs/token" },
+              "path": { "$ref": "#/$defs/relativePath" },
+              "language": { "$ref": "#/$defs/language" },
+              "status": { "$ref": "#/$defs/status" }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to", "relation"],
+            "properties": {
+              "from": { "$ref": "#/$defs/token" },
+              "to": { "$ref": "#/$defs/token" },
+              "relation": { "$ref": "#/$defs/token" }
+            }
+          }
+        },
+        "node_count": { "type": "integer", "minimum": 7, "maximum": 14 },
+        "edge_count": { "type": "integer", "minimum": 6, "maximum": 20 },
+        "target_count": { "type": "integer", "minimum": 1, "maximum": 8 }
+      }
+    },
+    "semantic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "relation",
+        "mapping_status",
+        "equivalence_status",
+        "subjects",
+        "source_subject_count",
+        "mapped_subject_count",
+        "limitations"
+      ],
+      "properties": {
+        "relation": { "const": "APPROVED_REQUIREMENTS_TO_GENERATED_TARGETS" },
+        "mapping_status": { "const": "PASSED" },
+        "equivalence_status": { "const": "NOT_RUN" },
+        "subjects": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "source_count",
+              "mapped_count",
+              "mapping_status",
+              "semantic_equivalence_status",
+              "evidence_strength"
+            ],
+            "properties": {
+              "id": { "$ref": "#/$defs/token" },
+              "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+              "source_count": { "type": "integer", "minimum": 0, "maximum": 10000 },
+              "mapped_count": { "type": "integer", "minimum": 0, "maximum": 10000 },
+              "mapping_status": { "const": "PASSED" },
+              "semantic_equivalence_status": { "const": "NOT_RUN" },
+              "evidence_strength": { "const": "HASH_BOUND_TRACEABILITY" }
+            }
+          }
+        },
+        "source_subject_count": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "mapped_subject_count": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "limitations": { "$ref": "#/$defs/limitations" }
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "status", "targets", "cross_target_matrix", "limitations"],
+      "properties": {
+        "profile": { "const": "native-build-test-startup-v1" },
+        "status": { "$ref": "#/$defs/status" },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["language", "status", "exact_toolchain_status", "build_analysis", "startup_status"],
+            "properties": {
+              "language": { "$ref": "#/$defs/language" },
+              "status": { "$ref": "#/$defs/status" },
+              "exact_toolchain_status": { "$ref": "#/$defs/status" },
+              "build_analysis": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["total", "status_counts"],
+                "properties": {
+                  "total": { "type": "integer", "minimum": 0, "maximum": 100 },
+                  "status_counts": { "$ref": "#/$defs/statusCounts" }
+                }
+              },
+              "startup_status": { "$ref": "#/$defs/status" }
+            }
+          }
+        },
+        "cross_target_matrix": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "target", "semantic_status", "behavior_status", "reason"],
+            "properties": {
+              "source": { "$ref": "#/$defs/language" },
+              "target": { "$ref": "#/$defs/language" },
+              "semantic_status": { "enum": ["NOT_RUN", "NOT_APPLICABLE"] },
+              "behavior_status": { "enum": ["NOT_RUN", "NOT_APPLICABLE"] },
+              "reason": { "enum": ["SAME_TARGET", "DIRECT_PAIRWISE_SOURCE_TARGET_COMPARISON_NOT_EXECUTED"] }
+            }
+          }
+        },
+        "limitations": { "$ref": "#/$defs/limitations" }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "status", "passed", "total"],
+        "properties": {
+          "id": { "$ref": "#/$defs/token" },
+          "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "status": { "$ref": "#/$defs/status" },
+          "passed": { "type": "integer", "minimum": 0, "maximum": 10000 },
+          "total": { "type": "integer", "minimum": 0, "maximum": 10000 }
+        }
+      }
+    },
+    "verification_status": { "enum": ["PASSED", "PARTIAL", "FAILED"] },
+    "external_verification_status": { "const": "NOT_RUN" },
+    "certification_status": { "const": "NOT_CERTIFIED" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "token": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,127}$" },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "not": { "pattern": "(^/|(^|/)\\.\\.(/|$)|\\\\)" }
+    },
+    "language": {
+      "enum": ["java", "python", "csharp", "typescript", "go", "kotlin", "php", "rust"]
+    },
+    "status": { "enum": ["PASSED", "FAILED", "NOT_RUN", "UNKNOWN", "NOT_APPLICABLE"] },
+    "statusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["PASSED", "FAILED", "NOT_RUN", "UNKNOWN", "NOT_APPLICABLE"],
+      "properties": {
+        "PASSED": { "type": "integer", "minimum": 0 },
+        "FAILED": { "type": "integer", "minimum": 0 },
+        "NOT_RUN": { "type": "integer", "minimum": 0 },
+        "UNKNOWN": { "type": "integer", "minimum": 0 },
+        "NOT_APPLICABLE": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+    }
+  }
+}

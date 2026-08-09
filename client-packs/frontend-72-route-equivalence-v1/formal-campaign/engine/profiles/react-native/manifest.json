@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "react-native",
+  "framework_version": "0.86.0",
+  "platforms": [
+    "ANDROID",
+    "IOS",
+    "WEB"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:bcea48117319a6498a7c51c5baa859c3b68e98f9cc84a38adccebae13de57796",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 20,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:fb2e1734c24b314919225519752d3cd4e10eaaba50206d2f1a639638318f4186",
+      "byte_count": 544
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "sha256:89d6abc7cbd516992af9a131693cc021827f6c3bac49e8b06878e258f6cec99c",
+      "byte_count": 75
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "sha256:e8e8584c09cc1d8fbb12fbf9c0f6f84053223ab8a236a5230c3c9b20ff1a017a",
+      "byte_count": 7
+    },
+    {
+      "path": "App.tsx",
+      "sha256": "sha256:f8e60066e3216d61671cc8279a94ad108f477176b0f519ea701b302c1abf19ae",
+      "byte_count": 210
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:73ba43d45bb757848cf3096383ff3fef9756391db7c493619af03a9cdf892979",
+      "byte_count": 2027
+    },
+    {
+      "path": "app.json",
+      "sha256": "sha256:99a48f5567a0940daa76c00433b518b1e3aa1c6f1f1b5abb7590e1cbbec3279e",
+      "byte_count": 436
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:93fe97285a377cc45918f4d98000e3c0fd047288f412927b2c256cf21f02361d",
+      "byte_count": 1225
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:1438969bce74d1aec0ef859b9dcd5ace6c81650cbe4d18391933e5ba087958d8",
+      "byte_count": 317
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:4e22cfdb9e68e642431ae692bbd3418cd4b7dd4ed51d4e8cc5d621c8a1f7ee13",
+      "byte_count": 2379
+    },
+    {
+      "path": "index.ts",
+      "sha256": "sha256:05a43a5e4a3a033589d80b62adf020c40f8124c2fe36adb90cab5e9905ed24c0",
+      "byte_count": 103
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:9c6def4e982e70bae84c961e78d7c073e44fe088dd9563d415cd1b6124c49629",
+      "byte_count": 881
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:25d498698384fd5333c687216328a813790c5f39b3a66388a5bb9bd1a2d8caf5",
+      "byte_count": 276
+    },
+    {
+      "path": "src/elmos-bounded-navigation.ts",
+      "sha256": "sha256:da681243607b2d7696960b62cb535c134a1270e72c3298028a2078bbe08e40f0",
+      "byte_count": 1934
+    },
+    {
+      "path": "src/navigation.tsx",
+      "sha256": "sha256:ef6cf26a16225e12e8087b302622833f4493108f977d8e4d8859372bd33eb478",
+      "byte_count": 3010
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:b7c81a0c6b092feebaf368024710a1d34af49e8bba001fe215e0bd1eee6f2012",
+      "byte_count": 791
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "sha256:7e0b9128bfc8e96c830c1d591f7a9174f637d5a50187c566ce1e4ac3887b62ee",
+      "byte_count": 123
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:20df8dd18e85ca21a0dbec03f04be98907e400b4a55e4d48aca20db907193199",
+      "byte_count": 7154
+    }
+  ],
+  "manifest_digest": "sha256:a601f52522edde8b00959d19e6f64603f81bcd4d33d264093722eb8222534c0b"
+}

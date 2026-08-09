@@ -9,6 +9,7 @@ from .rendering import clean
 DOCUMENTATION_STATUS = "GENERATED_REVIEW_REQUIRED"
 DOCUMENT_SOURCE_REFS: dict[str, tuple[str, ...]] = {
     "docs/ARCHITECTURE.md": ("approved-request", "PG054"),
+    "docs/PROJECT_INSIGHTS.md": ("approved-request", "PG054", "B29", "B35"),
     "docs/MIGRATION_GUIDE.md": ("approved-request", "PG114", "PG175"),
     "docs/CHANGE_HISTORY.md": ("approved-request", "PG175"),
     "docs/DATABASE_DESIGN.md": ("approved-request", "PG113", "PG114"),
@@ -60,10 +61,7 @@ def _records_table(
         return empty
     header = "| " + " | ".join(label for label, _ in columns) + " |"
     divider = "|" + "|".join("---" for _ in columns) + "|"
-    body = [
-        "| " + " | ".join(_value(record, key) for _, key in columns) + " |"
-        for record in rows
-    ]
+    body = ["| " + " | ".join(_value(record, key) for _, key in columns) + " |" for record in rows]
     return "\n".join((header, divider, *body))
 
 
@@ -100,8 +98,7 @@ def _architecture(request: SynthesisRequest) -> str:
         for target in request.targets
     )
     entities = "\n".join(
-        f"| `{entity.singular}` | `{entity.plural}` | {len(entity.fields)} | CRUD API |"
-        for entity in request.entities
+        f"| `{entity.singular}` | `{entity.plural}` | {len(entity.fields)} | CRUD API |" for entity in request.entities
     )
     actors = _records_table(
         request.raw.get("actors", []),
@@ -129,8 +126,7 @@ def _architecture(request: SynthesisRequest) -> str:
         empty="尚未声明假设。",
     )
     target_nodes = "\n".join(
-        f'    {target.language}["{target.language}: {target.framework} {target.runtime}"]'
-        for target in request.targets
+        f'    {target.language}["{target.language}: {target.framework} {target.runtime}"]' for target in request.targets
     )
     target_edges = "\n".join(f"    gateway --> {target.language}" for target in request.targets)
     adr_rows = "\n".join(
@@ -254,9 +250,7 @@ def _relationship_field_type(
     field: FieldSpec,
 ) -> str:
     is_foreign_identifier = any(
-        relation.source == entity.singular
-        and relation.source_field == field.name
-        and relation.target_field == "id"
+        relation.source == entity.singular and relation.source_field == field.name and relation.target_field == "id"
         for relation in request.relations
     )
     return "uuid" if is_foreign_identifier else _SQL_TYPES[field.type]
@@ -285,10 +279,11 @@ def _er_diagram(request: SynthesisRequest) -> str:
             blocks.append("        string id PK")
         for field in entity.fields:
             data_type = (
-                _relationship_field_type(request, entity, field)
-                if request.requires_database
-                else field.type
-            ).replace("(", "_").replace(")", "").replace(",", "_")
+                (_relationship_field_type(request, entity, field) if request.requires_database else field.type)
+                .replace("(", "_")
+                .replace(")", "")
+                .replace(",", "_")
+            )
             blocks.append(f"        {data_type} {field.name}")
         blocks.append("    }")
     blocks.extend(_er_relation(relation) for relation in request.relations)
@@ -347,22 +342,22 @@ def _entity_sections(request: SynthesisRequest) -> str:
 
 def _database_design(request: SynthesisRequest) -> str:
     physical_status = "GENERATED_NOT_APPLIED" if request.requires_database else "NOT_APPLICABLE"
-    relation_rows = "\n".join(
-        (
-            f"| `{relation.source}` | `{relation.source_field or '—'}` | `{relation.kind}` | "
-            f"`{relation.target}` | `{relation.target_field or '—'}` | "
-            f"{'是' if relation.required else '否'} |"
+    relation_rows = (
+        "\n".join(
+            (
+                f"| `{relation.source}` | `{relation.source_field or '—'}` | `{relation.kind}` | "
+                f"`{relation.target}` | `{relation.target_field or '—'}` | "
+                f"{'是' if relation.required else '否'} |"
+            )
+            for relation in request.relations
         )
-        for relation in request.relations
-    ) or "| — | — | — | — | — | — |"
+        or "| — | — | — | — | — | — |"
+    )
     database_rules = [
         rule
         for rule in request.raw["business_rules"]
         if rule.get("enforcement") == "database"
-        or (
-            isinstance(rule.get("predicate"), dict)
-            and rule["predicate"].get("type") == "field-comparison"
-        )
+        or (isinstance(rule.get("predicate"), dict) and rule["predicate"].get("type") == "field-comparison")
     ]
     rules = _records_table(
         database_rules,
@@ -390,8 +385,7 @@ def _database_design(request: SynthesisRequest) -> str:
         )
     else:
         physical = (
-            "当前持久化配置为 `in-memory`，没有生成 PostgreSQL DDL、迁移脚本或物理索引；"
-            "相关状态为 `NOT_APPLICABLE`。"
+            "当前持久化配置为 `in-memory`，没有生成 PostgreSQL DDL、迁移脚本或物理索引；相关状态为 `NOT_APPLICABLE`。"
         )
         isolation = (
             "当前内存配置没有实现数据库级租户隔离。若未来切换到持久化数据库，"
@@ -477,8 +471,7 @@ def _migration_guide(request: SynthesisRequest) -> str:
             """
         )
         database_artifacts = (
-            "`database/migrations/001_initial.sql`、`database/migrations/manifest.json`、"
-            "`database/apply-migrations.sh`"
+            "`database/migrations/001_initial.sql`、`database/migrations/manifest.json`、`database/apply-migrations.sh`"
         )
     else:
         database_steps = (
@@ -574,13 +567,9 @@ def _change_history(request: SynthesisRequest) -> str:
         "`GENERATED_REVIEW_REQUIRED` |"
     )
     requirements_impact = (
-        f"{len(request.raw['requirements'])} 条需求、"
-        f"{len(request.raw['acceptance_criteria'])} 条验收标准进入基线"
+        f"{len(request.raw['requirements'])} 条需求、{len(request.raw['acceptance_criteria'])} 条验收标准进入基线"
     )
-    security_impact = (
-        f"| 安全 | 认证 `{request.auth_mode}`，权限默认拒绝，"
-        "租户边界不得由客户端自报 | `NOT_RUN` |"
-    )
+    security_impact = f"| 安全 | 认证 `{request.auth_mode}`，权限默认拒绝，租户边界不得由客户端自报 | `NOT_RUN` |"
     database_impact = (
         "生成 PostgreSQL 初始 schema、复合租户主键、索引、RLS、外键和迁移清单；尚未执行。"
         if request.requires_database
@@ -612,7 +601,7 @@ def _change_history(request: SynthesisRequest) -> str:
         |---|---|---|
         | 需求/行为 | {requirements_impact} | `GENERATED` |
         | API | 各目标生成同一实体 CRUD 与健康检查契约 | `NOT_RUN` |
-        | 数据库 | {database_impact} | `{'NOT_RUN' if request.requires_database else 'NOT_APPLICABLE'}` |
+        | 数据库 | {database_impact} | `{"NOT_RUN" if request.requires_database else "NOT_APPLICABLE"}` |
         {_block(security_impact)}
         | 运维 | 生成运行手册、SLO/可观测性契约和部署交接 | `NOT_RUN` |
         | 外部系统 | 未执行真实提供商、生产流量、真实数据或第三方认证 | `NOT_RUN` |

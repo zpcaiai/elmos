@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "owner": "marketplace-team",
+  "security_precedes_ranking": true,
+  "paid_placement_disclosed": true,
+  "verified_reviews_required": true,
+  "anti_abuse": {
+    "self_review_blocked": true,
+    "sybil_detection": true,
+    "impersonation_detection": true
+  },
+  "appeal": {
+    "enabled": true,
+    "independent_reviewer": "trust-team"
+  },
+  "open_critical_abuse_cases": 0,
+  "evidence_refs": [
+    "catalog/ranking-evidence.txt"
+  ]
+}

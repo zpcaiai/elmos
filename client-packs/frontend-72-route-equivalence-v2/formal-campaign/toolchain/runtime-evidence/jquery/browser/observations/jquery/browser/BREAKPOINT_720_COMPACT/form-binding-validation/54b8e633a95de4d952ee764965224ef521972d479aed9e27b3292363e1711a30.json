@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:eb258e3ebf575b124e0301abd7498ee21026ecc338522da3a07f9eb12a453c6a",
+      "block_id": "form-binding-validation",
+      "byte_count": 1505,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-form-validity-observer-trace/88c7b09b4412fc88399af399d75e102310b79f04116ad39431b6576704af243d.json",
+      "profile_id": "jquery",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:88c7b09b4412fc88399af399d75e102310b79f04116ad39431b6576704af243d"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:5ef9432d6b28c6a3b9c08d848af83e81e7bb3ea926756fe4c576cf591f332d1d",
+        "byte_count": 39887,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/347366c67a6e3fc8bb596a9d0c095511ae442b7aaa818aed81802e023b66ac14.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:347366c67a6e3fc8bb596a9d0c095511ae442b7aaa818aed81802e023b66ac14"
+      },
+      {
+        "artifact_id": "sha256:356813a3753ec33e5ae396bd913f56378b6b8ab5615aca5863991782840a103a",
+        "byte_count": 5258,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/7e06d63eb0a8540ef27d058243b2716b031d80c3c7ac61310d7982315b8acdda.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:7e06d63eb0a8540ef27d058243b2716b031d80c3c7ac61310d7982315b8acdda"
+      },
+      {
+        "artifact_id": "sha256:54686926dd006edd6966bdd76b870282bc9634432d5c0f1a74fe4819ee985974",
+        "byte_count": 544850,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-accessibility-axe-trace/f48e319693d54ef0c0a308d6618c56031bcdad1503c780940fce6f1b49c0af2a.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:f48e319693d54ef0c0a308d6618c56031bcdad1503c780940fce6f1b49c0af2a"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

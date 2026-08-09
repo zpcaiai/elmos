@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:6fff3513a735df72ad468da3c4f0fc05e580bf36672c2ea5897c0ef2a02116c7",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1973,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/API_NETWORK_ERROR/browser-computed-layout-i18n-theme-observer-trace/a26e6e5ce0a685537c9cccf1eab2a2abaded984b65fe173bf0e266f885030723.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "API_NETWORK_ERROR",
+      "sha256": "sha256:a26e6e5ce0a685537c9cccf1eab2a2abaded984b65fe173bf0e266f885030723"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0c54645abc922b963cb380f7cbc27ab0755d19906af159d2de5ec1e9bd2b7ad6",
+        "byte_count": 39940,
+        "channel": "browser",
+        "path": "traces/jquery/browser/API_NETWORK_ERROR/browser-dom-snapshot/523b1971802088dbdd4538a7cf04e1c7043bf95d8123f224eda4da97058f4bb8.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:523b1971802088dbdd4538a7cf04e1c7043bf95d8123f224eda4da97058f4bb8"
+      }
+    ]
+  },
+  "scenario_id": "API_NETWORK_ERROR",
+  "schema_version": "1.0"
+}

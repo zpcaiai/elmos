@@ -5,7 +5,8 @@ import { Icon } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
 import { SmokeRunButton } from "../components/SmokeRunButton";
-import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
+import { TranslationEvidenceCharts } from "../components/ProjectEvidenceCharts";
+import { consoleTranslationLanguages, directedLanguageRoutes } from "../lib/businessLines";
 import type {
   DirectedLanguageRoute,
   TranslationCapabilityResponse,
@@ -41,7 +42,6 @@ type TranslationRunnerHealth = {
 const STORAGE_KEY = "elmos.translation-handoff.v3";
 const JOB_STORAGE_KEY = "elmos.translation.latest-job-id";
 const WORK_UNIT_PAGE_SIZE = 25;
-const routeIds = new Set(directedLanguageRoutes.map((route) => route.id));
 
 function isSafeRepositoryRef(value: string): boolean {
   if (
@@ -63,14 +63,17 @@ function isSafeRepositoryRef(value: string): boolean {
   }
 }
 
-function isStoredHandoff(value: unknown): value is Handoff {
+function isStoredHandoff(
+  value: unknown,
+  allowedRouteIds: ReadonlySet<string>,
+): value is Handoff {
   if (!value || typeof value !== "object") return false;
   const stored = value as Partial<Handoff>;
   return stored.schemaVersion === "1.1.0"
     && typeof stored.repositoryRef === "string"
     && isSafeRepositoryRef(stored.repositoryRef)
     && typeof stored.routeId === "string"
-    && routeIds.has(stored.routeId)
+    && allowedRouteIds.has(stored.routeId)
     && ["single-module", "repository", "portfolio"].includes(stored.scope ?? "")
     && stored.requestedStatus === "EXPERIMENTAL_EVALUATION"
     && stored.executionStatus === "NOT_RUN"
@@ -152,7 +155,7 @@ export function TranslationStudio() {
     if (/^[0-9a-f-]{36}$/.test(value)) setRepositoryWorkspaceId(value);
   }, []);
 
-  const languages = capability?.languages ?? translationLanguages;
+  const languages = capability?.languages ?? consoleTranslationLanguages;
   const routes = capability?.routes ?? directedLanguageRoutes;
   const routeByPair = useMemo(() => {
     const index = new Map<string, DirectedLanguageRoute>();
@@ -161,6 +164,12 @@ export function TranslationStudio() {
   }, [routes]);
   const selectedRoute = routeByPair.get(`${sourceLanguage}>${targetLanguage}`);
   const selectedRouteExecutable = selectedRoute?.localExecution === "PASSED";
+  const selectedRepositoryExecutable = selectedRoute?.repositoryExecutionStatus === "PASSED"
+    && Boolean(selectedRoute.repositoryProfile)
+    && Boolean(selectedRoute.repositoryEvidenceRef)
+    && Boolean(selectedRoute.repositoryEvidenceSha256)
+    && Number.isInteger(selectedRoute.repositoryEvidenceBytes)
+    && Number(selectedRoute.repositoryEvidenceBytes) > 0;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -178,6 +187,19 @@ export function TranslationStudio() {
         }
         setCapability(payload);
         setCapabilityError("");
+        try {
+          const stored = JSON.parse(
+            window.localStorage.getItem(STORAGE_KEY) ?? "null",
+          ) as Handoff | null;
+          const allowedRouteIds = new Set(payload.routes.map((route) => route.id));
+          if (isStoredHandoff(stored, allowedRouteIds)) {
+            setHandoff(stored);
+          } else if (stored !== null) {
+            window.localStorage.removeItem(STORAGE_KEY);
+          }
+        } catch {
+          try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be denied. */ }
+        }
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
@@ -187,12 +209,6 @@ export function TranslationStudio() {
           + "所有路线状态保持 NOT_RUN，页面不会展示未读取到的通过结论。",
         );
       });
-    try {
-      const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null") as Handoff | null;
-      if (isStoredHandoff(stored)) setHandoff(stored);
-    } catch {
-      try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be denied. */ }
-    }
     return () => controller.abort();
   }, []);
 
@@ -244,8 +260,12 @@ export function TranslationStudio() {
   const routeCounts = useMemo(() => ({
     total: routes.length,
     locallyPassed: routes.filter((route) => route.localExecution === "PASSED").length,
+    repositoryPassed: routes.filter(
+      (route) => route.repositoryExecutionStatus === "PASSED",
+    ).length,
     externallyPending: routes.filter((route) => route.externalVerification === "NOT_RUN").length,
   }), [routes]);
+  const routeMatrixColumns = `90px repeat(${languages.length}, minmax(65px, 1fr))`;
 
   const filteredWorkUnits = useMemo(() => {
     const units = repositoryPlan?.work_units ?? [];
@@ -477,8 +497,8 @@ export function TranslationStudio() {
   }
 
   async function startRepositoryPipeline() {
-    if (!selectedRouteExecutable) {
-      setFeedback("当前路线没有本地 Profile 通过证据，受控执行保持关闭。");
+    if (!selectedRepositoryExecutable) {
+      setFeedback("当前路线没有仓库级 Profile 与执行证据，整库任务保持关闭。");
       return;
     }
     setJobBusy(true);
@@ -648,7 +668,7 @@ export function TranslationStudio() {
       <section className="metric-grid metric-grid-four" aria-label="跨语言路线摘要">
         <article className="metric-card"><span>语言引擎</span><strong>{languages.length}</strong><small>精确版本、相互独立</small></article>
         <article className="metric-card"><span>有向路线</span><strong>{capability?.routePackageCount ?? routeCounts.total}</strong><small>反向路线不复用结论</small></article>
-        <article className="metric-card"><span>本地受限 Profile</span><strong className={routeCounts.locallyPassed > 0 ? "" : "warning-text"}>{routeCounts.locallyPassed}</strong><small>{capability?.semanticProfile ?? "契约未读取"}</small></article>
+        <article className="metric-card"><span>本地受限 Profile</span><strong className={routeCounts.locallyPassed > 0 ? "" : "warning-text"}>{routeCounts.locallyPassed}</strong><small>{capability?.semanticProfile ?? "契约未读取"} · 整库准入 {routeCounts.repositoryPassed}</small></article>
         <article className="metric-card"><span>独立验证待办</span><strong className="warning-text">{routeCounts.externallyPending}</strong><small>外部证据 {capability?.externalExecutionEvidence ?? "UNREAD"}</small></article>
       </section>
 
@@ -666,9 +686,9 @@ export function TranslationStudio() {
             <fieldset><legend>2 · 目标语言</legend><div>{languages.map((language) => <button type="button" disabled={sourceLanguage === language.id} className={targetLanguage === language.id ? "selected" : ""} key={language.id} onClick={() => chooseTarget(language.id)} aria-pressed={targetLanguage === language.id}><strong>{language.label}</strong><small>{language.runtime}</small></button>)}</div></fieldset>
           </div>
           <div className="route-matrix" role="table" aria-label={`${routeCounts.total} 条有向语言路线的本地执行状态`}>
-            <div className="route-matrix-row route-matrix-head" role="row"><span role="columnheader">源 \\ 目标</span>{languages.map((language) => <b role="columnheader" key={language.id}>{language.label}</b>)}</div>
+            <div className="route-matrix-row route-matrix-head" role="row" style={{ gridTemplateColumns: routeMatrixColumns }}><span role="columnheader">源 \\ 目标</span>{languages.map((language) => <b role="columnheader" key={language.id}>{language.label}</b>)}</div>
             {languages.map((source) => (
-              <div className="route-matrix-row" role="row" key={source.id}>
+              <div className="route-matrix-row" role="row" key={source.id} style={{ gridTemplateColumns: routeMatrixColumns }}>
                 <b role="rowheader">{source.label}</b>
                 {languages.map((target) => {
                   const route = routeByPair.get(`${source.id}>${target.id}`);
@@ -716,6 +736,9 @@ export function TranslationStudio() {
                 <div><dt>目标运行时</dt><dd>{targetProfile?.runtime}</dd></div>
                 <div><dt>方向 Skill</dt><dd>${selectedRoute.skill}</dd></div>
                 <div><dt>本地执行</dt><dd>{selectedRoute.localExecution}</dd></div>
+                <div><dt>仓库执行</dt><dd>{selectedRoute.repositoryExecutionStatus}</dd></div>
+                <div><dt>仓库 Profile</dt><dd>{selectedRoute.repositoryProfile ?? "NOT_RUN"}</dd></div>
+                <div><dt>仓库证据</dt><dd>{selectedRoute.repositoryEvidenceRef ?? "NOT_RUN"}</dd></div>
                 <div><dt>独立验证</dt><dd>{selectedRoute.independentVerification}</dd></div>
                 <div><dt>外部认证</dt><dd>{selectedRoute.externalVerification}</dd></div>
               </dl>
@@ -771,7 +794,8 @@ export function TranslationStudio() {
         <p>
           Runner 从管理员预先材料化的只读源码与独立行为用例目录读取输入，自动完成清单、编译器发现、
           断点批处理、无冲突装配、真实构建和内容寻址归档。它只覆盖 typed-pure-function-v1；
-          `PARTIAL` 会完整保留跳过与失败，绝不等同于整库完成。
+          路线还必须具有独立的仓库级 PASSED、Profile 与证据引用；`PARTIAL` 会完整保留跳过与失败，
+          绝不等同于整库完成。
         </p>
         <div className="business-form-grid">
           <label>
@@ -817,6 +841,8 @@ export function TranslationStudio() {
             </strong>
             <small>
               源存储 {runnerHealth?.sourceStorage ?? "NOT_RUN"} · 活跃任务 {runnerHealth?.activeJobs ?? 0}。
+              仓库路线准入 {selectedRoute?.repositoryExecutionStatus ?? "NOT_RUN"}
+              {selectedRoute?.repositoryProfile ? ` · ${selectedRoute.repositoryProfile}` : ""}。
               {runnerHealth?.reason ? ` ${runnerHealth.reason}` : " 生产模式只允许不可变镜像的 Rootless Container。"}
             </small>
           </div>
@@ -829,7 +855,7 @@ export function TranslationStudio() {
           <button
             type="button"
             className="button button-primary"
-            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRouteExecutable
+            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRepositoryExecutable
               || (!workspaceId.trim() && !repositoryWorkspaceId.trim())}
             onClick={() => void startRepositoryPipeline()}
           >
@@ -868,8 +894,14 @@ export function TranslationStudio() {
               <div><dt>路线</dt><dd>{job.sourceLanguage} → {job.targetLanguage}</dd></div>
               <div><dt>工作单元</dt><dd>{job.includedUnitCount ?? 0} / {job.workUnitCount ?? "NOT_RUN"}</dd></div>
               <div><dt>真实构建</dt><dd>{job.buildVerification?.status ?? "NOT_RUN"}</dd></div>
+              <div><dt>项目图完整</dt><dd>{job.repositoryComplete === undefined ? "NOT_RUN" : String(job.repositoryComplete)}</dd></div>
+              <div><dt>项目图义务</dt><dd>{job.projectGraph?.obligation_count ?? "NOT_RUN"}</dd></div>
               <div><dt>外部证据</dt><dd>{job.externalVerificationStatus} · {job.certificationStatus}</dd></div>
             </dl>
+            <TranslationEvidenceCharts
+              semanticCoverage={job.semanticCoverage}
+              behaviorCoverage={job.behaviorCoverage}
+            />
             {job.reason && <p className="warning-text">{job.reason}</p>}
             <pre aria-label="跨语言任务日志">{job.logs.map((entry) => `[${entry.stream}] ${entry.message}`).join("\n") || "日志尚未产生。"}</pre>
           </div>

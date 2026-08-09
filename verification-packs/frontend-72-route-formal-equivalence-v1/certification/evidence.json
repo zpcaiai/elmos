@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-formal-equivalence-v1",
+  "metrics": {},
+  "zero_tolerance": {},
+  "evidence_refs": [
+    "formal-campaign/frontend-formal-route-campaign.json"
+  ],
+  "notes": []
+}

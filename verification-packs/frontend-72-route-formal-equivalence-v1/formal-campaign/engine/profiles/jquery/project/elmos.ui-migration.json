@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "8d87e5e12b86816cec3d6574",
+  "direction": {
+    "routeId": "angular--to--jquery",
+    "source": "angular",
+    "target": "jquery",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "4.0.0",
+    "supportState": "LEGACY_TARGET_CONDITIONAL",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "jquery",
+    "label": "jQuery compatibility target",
+    "frameworkVersion": "4.0.0",
+    "profileVersion": "1.0.0",
+    "status": "LEGACY_CONDITIONAL",
+    "platforms": [
+      "WEB"
+    ],
+    "language": "TypeScript",
+    "languageVersion": "7.0.2",
+    "runtime": "Node.js",
+    "runtimeVersion": "26.0.0",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Vite",
+    "buildToolVersion": "8.1.5",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "History API adapter",
+    "state": "Explicit immutable store",
+    "rendering": "CSR with isolated DOM ownership",
+    "testTool": "Vitest 4.1.10",
+    "runnerProfile": "WEB_LEGACY",
+    "requiredProjectFiles": [
+      "package.json",
+      "vite.config.ts",
+      "index.html",
+      "src/main.ts"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:b377ed9b269c474b876d8a5e19cebe248126ed4e597353c76fc7e96ec0533a14",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "README.md",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "index.html",
+      "package.json",
+      "scripts/verify.sh",
+      "src/elmos-bounded-navigation.ts",
+      "src/main.ts",
+      "src/routes.test.ts",
+      "src/routes.ts",
+      "src/styles.css",
+      "target-profile/profile.json",
+      "tsconfig.json",
+      "ui-ir/model.json",
+      "vite.config.ts"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

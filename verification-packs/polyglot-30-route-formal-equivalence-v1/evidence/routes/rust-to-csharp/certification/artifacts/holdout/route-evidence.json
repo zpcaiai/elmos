@@ -1,0 +1,212 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:dc087db409ea46cb70d450da68b676f8579c0b7dacccd9df8f9c542bb356f993",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:8205f5e681c9e03f5c30babd35110cde545ab3044f4532233a9043c190429c08",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 17,
+    "required_source_chunk_count": 17,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "holdout",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:5f8e37359bef7cdadb0b17cd31822f01852c9c356c54212997406372d29ea5be",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:406ccfe3e16abb5864f5b860f8852766075131b3179780f77084f9396edd015a",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:406ccfe3e16abb5864f5b860f8852766075131b3179780f77084f9396edd015a",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:406ccfe3e16abb5864f5b860f8852766075131b3179780f77084f9396edd015a",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:c4fee655bd9947adb51ce60bf9390c81344bfcab30a243aa1e6046260e59d01e",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      },
+      {
+        "formal_input_sha256": "sha256:406ccfe3e16abb5864f5b860f8852766075131b3179780f77084f9396edd015a",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:7ddad03e688a126b379962b446e1de4a832d3ebc508587f517f1edc1b5bdfb24",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:c4fee655bd9947adb51ce60bf9390c81344bfcab30a243aa1e6046260e59d01e",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:9372235a5c6a21c2b2b45302f62229b37ba21996ad72fed16cd47259e7d9d5d0",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "rust-to-csharp",
+  "route_maturity": "LIMITED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:aebfb9da93995102b6ba472e2edac02a1abb125ad5320163d6c558b406bb86a9",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:8b999ca00e2682357be2ba621fa7bab452aa71503a888b30d60e3e74fd8f8774"
+  },
+  "semantic_ir_sha256": "sha256:aebfb9da93995102b6ba472e2edac02a1abb125ad5320163d6c558b406bb86a9",
+  "source": {
+    "analyzer": "syn AST",
+    "analyzer_version": "2.0.119 / rustc 1.89.0",
+    "language": "rust",
+    "path": "clamp.rs",
+    "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "clamp.rs",
+    "artifact_sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/bin/rustc",
+          "--edition=2021",
+          "-D",
+          "warnings",
+          "-o",
+          "source_harness",
+          "source_harness.rs"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\trust-debug\t10\nELMOS_OBSERVATION\t1\trust-debug\t0\nELMOS_OBSERVATION\t2\trust-debug\t7\n"
+      }
+    ],
+    "language": "rust",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "rust-debug",
+        "raw": "10",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "rust-debug",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "rust-debug",
+        "raw": "7",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "role": "source",
+    "status": "PASSED"
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "csharp",
+    "path": "Migrated.cs",
+    "sha256": "sha256:63d669905d371eb8ddd960fa3439e72190bb6790b9cb197a0954a72ed0cc4de3"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/bin/dotnet",
+          "build",
+          "RouteHarness.csproj",
+          "-c",
+          "Release"
+        ],
+        "stderr": "",
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-rust-to-csharp-b2uxlnxq/holdout/RouteHarness.csproj (in 31 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-rust-to-csharp-b2uxlnxq/holdout/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.56\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/dotnet",
+          "run",
+          "--project",
+          "RouteHarness.csproj",
+          "-c",
+          "Release",
+          "--no-build"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTA=\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNw==\n"
+      }
+    ],
+    "language": "csharp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTA=",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "Nw==",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "status": "PASSED"
+  }
+}

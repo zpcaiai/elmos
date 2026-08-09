@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "pack_key": "client-source-to-target",
+  "source_snapshot_digest": "UNSET",
+  "routes": [],
+  "views": [],
+  "components": [],
+  "states": [],
+  "actions": [],
+  "effects": [],
+  "forms": [],
+  "bindings": [],
+  "permissions": [],
+  "resources": [],
+  "design_tokens": [],
+  "accessibility": [],
+  "source_map": [],
+  "unknowns": []
+}

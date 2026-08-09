@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:762e3f205184a2008d113a397b764c4c53e550ba20f48cb710bcfa07d07caffb",
+      "block_id": "form-binding-validation",
+      "byte_count": 1518,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-form-validity-observer-trace/dbec194465e0b22e5055d7d7fba2c904bdf515bfc827952803a618a26173aa52.json",
+      "profile_id": "jquery",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:dbec194465e0b22e5055d7d7fba2c904bdf515bfc827952803a618a26173aa52"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:8a832b04164de53bde9714cb9e81e857b346fa521fbe75222a460b6558b3cdcc",
+        "byte_count": 39878,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/2dd5a1d4b381843be2c2fc6689120d3752a85acc2c709d280736951f5fd02826.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:2dd5a1d4b381843be2c2fc6689120d3752a85acc2c709d280736951f5fd02826"
+      },
+      {
+        "artifact_id": "sha256:bb3c1cbcb67810e5aca3719a93a500fdff335106af24e3d094d2eedbd48caa47",
+        "byte_count": 5299,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-framework-event-trace/2b0f5d55a1f9b827492ca811b920d5a22e714ac530bd4e9734ddf1701c1131b1.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:2b0f5d55a1f9b827492ca811b920d5a22e714ac530bd4e9734ddf1701c1131b1"
+      },
+      {
+        "artifact_id": "sha256:7920533ca45148a7a707816c517dd09c8986218fdb0ee3cd000fdf98deea35eb",
+        "byte_count": 544121,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-accessibility-axe-trace/ba136c91cd9f781b72fc16a71617af9e9ec43ea89cfeb9b7261e97e8d8578293.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:ba136c91cd9f781b72fc16a71617af9e9ec43ea89cfeb9b7261e97e8d8578293"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

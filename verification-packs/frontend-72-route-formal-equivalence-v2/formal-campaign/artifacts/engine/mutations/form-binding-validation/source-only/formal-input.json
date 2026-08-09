@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "form-binding-validation",
+  "obligation_symbol": "diff_form_binding_validation",
+  "variant": "SOURCE_ONLY",
+  "pointer": "/formBindingValidation/initialValue",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:3384cccb87087c0b8b99f8e9e1b7843cef2bb3892034de825f49db68d959d41d",
+  "canonical_block_digest": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e",
+  "mutant_block_digest": "sha256:fa163dadae45345f9d9a606ea1f71c0609c738f2f342b32e82ac75153c92cd5e",
+  "counterexample_replay": {
+    "block_id": "form-binding-validation",
+    "pointer": "/formBindingValidation/initialValue",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "formId": "search",
+      "fieldId": "query",
+      "initialValue": "",
+      "required": true,
+      "minimumLength": 2,
+      "validation": "ON_SUBMIT",
+      "value": "",
+      "submitted": false,
+      "validated": false,
+      "valid": false,
+      "errorCode": null
+    },
+    "mutant_observation": {
+      "formId": "search",
+      "fieldId": "query",
+      "initialValue": "__MUTANT",
+      "required": true,
+      "minimumLength": 2,
+      "validation": "ON_SUBMIT",
+      "value": "__MUTANT",
+      "submitted": false,
+      "validated": false,
+      "valid": true,
+      "errorCode": null
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

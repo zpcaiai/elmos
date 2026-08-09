@@ -1,0 +1,43 @@
+{
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
+  "evidence_format": 2,
+  "evidence_refs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json",
+    "certification/module-equivalence.json",
+    "certification/artifacts/module/artifact-manifest.json"
+  ],
+  "formal_equivalence": {
+    "bytes": 58925,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:6fc5ff0723270203885ae1107258ec8b32ff0b8df61e08786079143a838e0663"
+  },
+  "gate_results": {
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_execution": "PASSED",
+    "module_execution": "PASSED"
+  },
+  "issued_at": "2026-08-09T16:40:42.909912+00:00",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "module_equivalence": {
+    "bytes": 196991,
+    "path": "certification/module-equivalence.json",
+    "sha256": "sha256:7e776fd9266d57edb2aefa7307f7a1e5b1664a0075521022e086f31b4a17b3c2"
+  },
+  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "route_key": "swift-to-objc",
+  "route_version": "1.0.0",
+  "schema_version": 1,
+  "status": "limited"
+}

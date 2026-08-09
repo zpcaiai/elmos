@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:2e362fca50e47347b261d34f1d8d0c7794432fa48de7c5294053be8b52da4062",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2419,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue2/browser/HYDRATE_MISMATCH_ERROR/browser-route-dom-url-observer-trace/97b685402128a4b31e7c3da9558d048a97800ffddb5e27e6e557353fff44750d.json",
+      "profile_id": "vue2",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:97b685402128a4b31e7c3da9558d048a97800ffddb5e27e6e557353fff44750d"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:83ff72487ff64898288ae36e4f6b3d76e154608bc16a71cb9e009f34ca8d0258",
+        "byte_count": 40385,
+        "channel": "browser",
+        "path": "traces/vue2/browser/HYDRATE_MISMATCH_ERROR/browser-dom-snapshot/7bd30a400ca3ae3428251e06b4ba59b3684523221e4bd530ba4a952dd468a52d.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:7bd30a400ca3ae3428251e06b4ba59b3684523221e4bd530ba4a952dd468a52d"
+      },
+      {
+        "artifact_id": "sha256:2759c239153c66509630fbe2e6079421ef9ad9a79402b135a4367e99ec6ad1b4",
+        "byte_count": 5228,
+        "channel": "browser",
+        "path": "traces/vue2/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/68a3c6879e7ccc160444b8e5d8620aee682b21fbe837baa910d93f52b1a2c813.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:68a3c6879e7ccc160444b8e5d8620aee682b21fbe837baa910d93f52b1a2c813"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

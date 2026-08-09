@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "counterexample_id": "ce.sample",
+  "technique": "property",
+  "claim_id": "claim.behavior",
+  "failure_fingerprint": "TODO",
+  "environment_digest": "sha256:TODO",
+  "artifact_digests": [
+    "sha256:TODO"
+  ],
+  "input_ref": "counterexamples/input.json",
+  "replay": {
+    "command": "./scripts/replay.sh ce.sample",
+    "expected_fingerprint": "TODO"
+  },
+  "status": "open",
+  "owner": "TODO"
+}

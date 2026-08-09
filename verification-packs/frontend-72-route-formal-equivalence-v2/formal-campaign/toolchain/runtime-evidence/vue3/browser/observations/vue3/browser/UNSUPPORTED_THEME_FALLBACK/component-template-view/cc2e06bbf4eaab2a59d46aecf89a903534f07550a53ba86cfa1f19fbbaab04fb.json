@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:130ce7f9c99f55b3203ec56a1612f157e250697f771576e0bd337ff9d47f1daa",
+      "block_id": "component-template-view",
+      "byte_count": 1500,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/vue3/browser/UNSUPPORTED_THEME_FALLBACK/browser-rendered-component-observer-trace/033f5b8b230034c148f36bfef3109194372f6840f69f5e3fdff5b8cebdeda7d6.json",
+      "profile_id": "vue3",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+      "sha256": "sha256:033f5b8b230034c148f36bfef3109194372f6840f69f5e3fdff5b8cebdeda7d6"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0d42a29871dcf75b74b0afc96aef190d3a6ce4852a511598b4571429d18d761b",
+        "byte_count": 40641,
+        "channel": "browser",
+        "path": "traces/vue3/browser/UNSUPPORTED_THEME_FALLBACK/browser-dom-snapshot/c927455540cbb279f062cf2530cfd543e3134b2bc78cf75945abe31f1b315426.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:c927455540cbb279f062cf2530cfd543e3134b2bc78cf75945abe31f1b315426"
+      }
+    ]
+  },
+  "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+  "schema_version": "1.0"
+}

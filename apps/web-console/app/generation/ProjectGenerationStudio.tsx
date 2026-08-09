@@ -12,6 +12,7 @@ import type {
 } from "../lib/contracts";
 import { generationDeploymentGuidance } from "../lib/deploymentGuidance";
 import { Icon, type IconName } from "../components/Icon";
+import { ProjectEvidenceCharts } from "../components/ProjectEvidenceCharts";
 import { RuntimeDeploymentGuide } from "../components/RuntimeDeploymentGuide";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
@@ -1143,6 +1144,7 @@ export function ProjectGenerationStudio() {
                   {job.artifactSha256 && <div><span>归档摘要</span><strong>{job.artifactSha256.slice(0, 12)}</strong></div>}
                 </div>
                 <div className="generation-progress" role="progressbar" aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100} aria-label="任务进度"><i style={{ width: `${job.progress}%` }} /></div>
+                <ProjectEvidenceCharts insights={job.insights} />
                 {job.reason && <p className="generation-job-reason" role="alert">{runnerReasonMessage(job.reason)}</p>}
                 <pre className="generation-job-logs" tabIndex={0} aria-label="任务日志">{job.logs.slice(-60).map((entry) => `[${new Date(entry.at).toLocaleTimeString("zh-CN")}] ${entry.stream}: ${entry.message}`).join("\n") || "等待任务日志…"}</pre>
                 {job.artifacts.length > 0 && (

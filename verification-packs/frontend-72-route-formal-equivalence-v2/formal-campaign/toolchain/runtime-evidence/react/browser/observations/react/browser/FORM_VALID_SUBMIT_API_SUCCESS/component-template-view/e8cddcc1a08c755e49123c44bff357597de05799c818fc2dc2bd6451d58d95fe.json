@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.account",
+    "text": "账户内容",
+    "title": "账户",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:455ef4aaf5a1c7eef51d8b1b37ab0847beb1c616369c206d003db3cdd25fcec8",
+      "block_id": "component-template-view",
+      "byte_count": 1516,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-rendered-component-observer-trace/2a8514898cf89bf262934946f0fbdb44909036327b7a9104f82648d2b204013e.json",
+      "profile_id": "react",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:2a8514898cf89bf262934946f0fbdb44909036327b7a9104f82648d2b204013e"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:75b69f09e56e2fd3bccb62aea88e13f8feb91798768672ab0daa5228446a3e67",
+        "byte_count": 40459,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

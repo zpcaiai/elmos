@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:63b983beb392407d7a3228ed9a908b15486c5d7605f691f083c04844e98fd32f",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2001,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue3/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-computed-layout-i18n-theme-observer-trace/9b92262bd104cf92911728fa4bddaf45e940446427cf6a7c92bbcdedfdb13f2f.json",
+      "profile_id": "vue3",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:9b92262bd104cf92911728fa4bddaf45e940446427cf6a7c92bbcdedfdb13f2f"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:acf8a9b1109c7349686048d4809b1cb57338b16966f4d1738a15953391097893",
+        "byte_count": 40698,
+        "channel": "browser",
+        "path": "traces/vue3/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/3979521da861a3edb2d8422d4b125edc11f707beb50dc04395f70f00d340fe93.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:3979521da861a3edb2d8422d4b125edc11f707beb50dc04395f70f00d340fe93"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

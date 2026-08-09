@@ -1,0 +1,150 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-rust/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/Difference.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1491,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:2e04a6724192b79bd5a7a22d8129c1d8638ef28049a35e7ba3dff048de4768bb"
+    },
+    {
+      "bytes": 8224,
+      "path": "chunk-map.json",
+      "sha256": "sha256:24e28ea47992ba800fb23b3cfd32cb95f7fc0090f20c6c9ca0abce1c25320b1c"
+    },
+    {
+      "bytes": 2948,
+      "path": "formal-composition.json",
+      "sha256": "sha256:d70b50090376e78ea11ff47a76e140f4717190e23f579b1a406174cc7ac4d317"
+    },
+    {
+      "bytes": 973,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:b729ce1a9888d07dbcddfb00f3a8fc69884ebdb278bf74f10c4c79483b1cb636"
+    },
+    {
+      "bytes": 6608,
+      "path": "formal-input.json",
+      "sha256": "sha256:a4e91f7ecdb94537f7005c88db684925b4a29d3db0d5e12931362039471699ce"
+    },
+    {
+      "bytes": 2326,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:5b0f0eba5eeaf6cca42e52e63a8007f95e21a277690c01035f49319fcf2666d2"
+    },
+    {
+      "bytes": 217,
+      "path": "inputs/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 3443,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:c0fb9a1a53875887a5b7d79c7fe84e88004a3ad245cc83ff852703af64113211"
+    },
+    {
+      "bytes": 165,
+      "path": "migrated.rs",
+      "sha256": "sha256:e1ed2f573427cf79c1aa23b4408c65800c23c5db68fe57a12621aad1d5cf0f4f"
+    },
+    {
+      "bytes": 6847,
+      "path": "route-evidence.json",
+      "sha256": "sha256:a2dee259213030f845106368b8ac83917a9c533786439a81ab3374e90bea491d"
+    },
+    {
+      "bytes": 465,
+      "path": "route_harness.rs",
+      "sha256": "sha256:ec2aed06425c0a96803d8069389834c024295ce96bc677441baed88bb6e8f38a"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 675,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:2457a2efd0bdfd283155455d5c85868efd340cfef31f9c1a41812827bb44c8d5"
+    },
+    {
+      "bytes": 217,
+      "path": "source-runtime/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 971,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:df829a3b595a6fca3e1802a1b0fec335282a2fc0951a9a5a3eb9204fce1ef419"
+    },
+    {
+      "bytes": 675,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:2457a2efd0bdfd283155455d5c85868efd340cfef31f9c1a41812827bb44c8d5"
+    },
+    {
+      "bytes": 671,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:e39748928f7d10a36a1e5cb7de576ce528f999abf0b0df9d785461f01fc546b7"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-rust",
+  "schema_version": 1,
+  "total_bytes": 37371
+}

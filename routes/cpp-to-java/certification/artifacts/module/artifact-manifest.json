@@ -1,0 +1,305 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/cpp-to-java/certification/artifacts/module",
+  "corpus": "module",
+  "excluded_files": [
+    "source-runtime/000/source_harness",
+    "source-runtime/001/source_harness",
+    "source-runtime/002/source_harness",
+    "source-runtime/003/source_harness",
+    "source-runtime/004/source_harness",
+    "target-runtime/000/Migrated.class",
+    "target-runtime/000/RouteHarness.class",
+    "target-runtime/001/Migrated.class",
+    "target-runtime/001/RouteHarness.class",
+    "target-runtime/002/Migrated.class",
+    "target-runtime/002/RouteHarness.class",
+    "target-runtime/003/Migrated.class",
+    "target-runtime/003/RouteHarness.class",
+    "target-runtime/004/Migrated.class",
+    "target-runtime/004/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 46,
+  "files": [
+    {
+      "bytes": 918,
+      "path": "Migrated.java",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 1361,
+      "path": "formal-function-000-input.json",
+      "sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895"
+    },
+    {
+      "bytes": 2414,
+      "path": "formal-function-000-result.json",
+      "sha256": "sha256:6d9b9875555859df29b734c13c47b63f4fa8ba314da5f04c9083774533a1acf2"
+    },
+    {
+      "bytes": 1299,
+      "path": "formal-function-000.smt2",
+      "sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc"
+    },
+    {
+      "bytes": 1818,
+      "path": "formal-function-001-input.json",
+      "sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb"
+    },
+    {
+      "bytes": 2423,
+      "path": "formal-function-001-result.json",
+      "sha256": "sha256:3f91aa9646488f946d8c07adfd2c2601e8e8cc00c7721b6f4a3adb88e30dc690"
+    },
+    {
+      "bytes": 2057,
+      "path": "formal-function-001.smt2",
+      "sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7"
+    },
+    {
+      "bytes": 2217,
+      "path": "formal-function-002-input.json",
+      "sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a"
+    },
+    {
+      "bytes": 2450,
+      "path": "formal-function-002-result.json",
+      "sha256": "sha256:95803bfcbbc360bab0aa448ca5b0987983e357bd220145a4a9d5f36efc035580"
+    },
+    {
+      "bytes": 1933,
+      "path": "formal-function-002.smt2",
+      "sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163"
+    },
+    {
+      "bytes": 2223,
+      "path": "formal-function-003-input.json",
+      "sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2"
+    },
+    {
+      "bytes": 2734,
+      "path": "formal-function-003-result.json",
+      "sha256": "sha256:11cdcc9fd4e64c68c232fad2e29f168c7385f15a642092e4debc8b5641fba3c0"
+    },
+    {
+      "bytes": 2615,
+      "path": "formal-function-003.smt2",
+      "sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e"
+    },
+    {
+      "bytes": 1377,
+      "path": "formal-function-004-input.json",
+      "sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471"
+    },
+    {
+      "bytes": 2420,
+      "path": "formal-function-004-result.json",
+      "sha256": "sha256:48f44b0a72884b17c3acf49598e708f0cac4aeb37398dbb477f1f3e5dfc64dfb"
+    },
+    {
+      "bytes": 1813,
+      "path": "formal-function-004.smt2",
+      "sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163"
+    },
+    {
+      "bytes": 2794,
+      "path": "module-case-manifest.json",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 890,
+      "path": "module-formal-input.json",
+      "sha256": "sha256:3bc368a81e8e9b37896eb296b7a92e0787448f9172af5ef99766e4b21f68ca87"
+    },
+    {
+      "bytes": 742,
+      "path": "source-module-artifact/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 1881,
+      "path": "source-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7670,
+      "path": "source-module-semantic-ir.json",
+      "sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071"
+    },
+    {
+      "bytes": 8228,
+      "path": "source-module-validation.json",
+      "sha256": "sha256:3a2532fa10d32d6797915a323b75adc6758769df7f45401885889c79fdd867b9"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/000/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2214,
+      "path": "source-runtime/000/source_harness.cpp",
+      "sha256": "sha256:3102f027c188be9cd24909a520ee2e4222ebc11aadbff694761b6a6659340a41"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/001/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2126,
+      "path": "source-runtime/001/source_harness.cpp",
+      "sha256": "sha256:9077a4099bfd7d59cc50d976860e7718a82e520245e0b16aae9658b5c34561aa"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/002/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2300,
+      "path": "source-runtime/002/source_harness.cpp",
+      "sha256": "sha256:6060707e65d6cbdba30bf1e7c67bdfc3d00ad9694146cfc8beb85390364c89f3"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/003/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2513,
+      "path": "source-runtime/003/source_harness.cpp",
+      "sha256": "sha256:05679c86decbee7352f4a8f59c0d9ede2f9e3914db2063e3bebcc3e59bbcdb98"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/004/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2087,
+      "path": "source-runtime/004/source_harness.cpp",
+      "sha256": "sha256:a43b17ebfdcfb69876a7f53ab234b3f546e8799736700caeb7e44dff4d43c53c"
+    },
+    {
+      "bytes": 1881,
+      "path": "target-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7064,
+      "path": "target-module-semantic-ir.json",
+      "sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c"
+    },
+    {
+      "bytes": 5623,
+      "path": "target-module-validation.json",
+      "sha256": "sha256:fb0624e356e0fc6113e6fb2651085078fc38810b78ba483895940baa8b8550d0"
+    },
+    {
+      "bytes": 918,
+      "path": "target-runtime/000/Migrated.java",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 1042,
+      "path": "target-runtime/000/RouteHarness.java",
+      "sha256": "sha256:ac1784cf410f0724decb0a2d70175340bf6c491b4d5518224068052375fd428d"
+    },
+    {
+      "bytes": 918,
+      "path": "target-runtime/001/Migrated.java",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 1064,
+      "path": "target-runtime/001/RouteHarness.java",
+      "sha256": "sha256:3c652a8650568ccd3b5dfb69b069300e6578b248878cafa01cf46002270ef67d"
+    },
+    {
+      "bytes": 918,
+      "path": "target-runtime/002/Migrated.java",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 1269,
+      "path": "target-runtime/002/RouteHarness.java",
+      "sha256": "sha256:f03a751f847c80c7451724a383ae927773096619b2f0b15ea8ddbed3710f0171"
+    },
+    {
+      "bytes": 918,
+      "path": "target-runtime/003/Migrated.java",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 2227,
+      "path": "target-runtime/003/RouteHarness.java",
+      "sha256": "sha256:9a197acf2ef258662019b18b107547f9f5df01a2a3d6ad7bfc194343c9a16ed1"
+    },
+    {
+      "bytes": 918,
+      "path": "target-runtime/004/Migrated.java",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 1027,
+      "path": "target-runtime/004/RouteHarness.java",
+      "sha256": "sha256:69273add29696ab0500d2603d7499ec9e418c0b435184bb2f3621362f0e8ce90"
+    },
+    {
+      "bytes": 161470,
+      "path": "typed-pure-module-equivalence.json",
+      "sha256": "sha256:51bc57974f63e25ff377375f29583382736410fc1d02f68208a334c0c8ef767e"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "cpp-to-java",
+  "schema_version": 1,
+  "total_bytes": 256484
+}

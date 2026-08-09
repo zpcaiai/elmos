@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "HYDRATE",
+    "event": "HYDRATE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:50d256f9ec4b825e469e94454e943049a4df9f6d53220ba3f08400ba83214c31",
+      "block_id": "action-event",
+      "byte_count": 3303,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue3/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-native-event-outcome-observer-trace/b017ac76960e8cf24681c6639c424dc3df61825ce3316a9a99fdd590ef179610.json",
+      "profile_id": "vue3",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+      "sha256": "sha256:b017ac76960e8cf24681c6639c424dc3df61825ce3316a9a99fdd590ef179610"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:f2bc50d087d2b0bf7a4cf20aca5925f777e74d751adefbad3b3a4f92cb994307",
+        "byte_count": 5293,
+        "channel": "browser",
+        "path": "traces/vue3/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-framework-event-trace/d66862dc15c542475f0237e6e34e6b2a778e7a07603916432702d974d8e9230a.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:d66862dc15c542475f0237e6e34e6b2a778e7a07603916432702d974d8e9230a"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:1a954e04a8dddbe91f9020cd8bd03d7a5d97884d749f56d573db7d8deb8bf009",
+      "block_id": "component-template-view",
+      "byte_count": 1506,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-rendered-component-observer-trace/43c82beb1a6b3523d9b63f66c986714feae13e356bb0e705f43761eb994eb920.json",
+      "profile_id": "vue2",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:43c82beb1a6b3523d9b63f66c986714feae13e356bb0e705f43761eb994eb920"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:7726f91d805e76fe5843d0eb9e2aeb7e3d6751fdf2c5a9340ea5fb549d8285a0",
+        "byte_count": 40425,
+        "channel": "browser",
+        "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/44034b07cb8fc908ed06dac94c87782f7d5fc573b486b8531484e97bb968a86d.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:44034b07cb8fc908ed06dac94c87782f7d5fc573b486b8531484e97bb968a86d"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

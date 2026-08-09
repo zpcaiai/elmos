@@ -203,6 +203,38 @@ After a browser refresh, an operator can recover an atomically persisted task by
 its complete UUID, tenant, actor, and a re-entered short-lived token. The token
 is not written to browser storage, and a tenant/actor mismatch fails closed.
 
+## Generated structure and equivalence views
+
+Every generated archive carries one digest-bound, machine-readable insight bundle
+and its human-readable chart projection:
+
+- `requirements/project-structure.json` inventories the repository, shared
+  operational roots, every selected application, and its source, test, build,
+  configuration, API, and container areas. Its coverage denominator is every
+  manifest-managed generated file; an unknown root or dangling edge blocks
+  verification before a native command runs.
+- `requirements/declared-dependency-graph.json` records direct runtime,
+  framework, build-tool, and provider declarations. Native transitive resolution
+  initially remains `NOT_RUN` and `complete=false`; this graph is not presented
+  as a resolved SBOM.
+- `requirements/project-insights.json` combines those graphs with approved-input
+  semantic traceability, per-target exact-toolchain/build/startup evidence, a
+  complete selected-target pair matrix, and separate completion denominators.
+- `docs/PROJECT_INSIGHTS.md` renders deterministic Mermaid structure and
+  dependency diagrams plus semantic, behavioral, and completion tables. The Web
+  Console renders the same allowlisted data as accessible React/CSS charts; it
+  never executes generated Mermaid or HTML.
+
+For greenfield generation, hash-bound requirement-to-PSIR-to-artifact mapping can
+pass while direct source/target semantic equivalence remains `NOT_RUN`: there is
+no executable pre-conversion source program. Likewise, independently passing all
+selected targets does not prove pairwise behavioral equivalence. Every
+off-diagonal pair remains `NOT_RUN` until both exact targets run the same governed
+behavior corpus and their normalized observations are compared. Structure,
+traceability, native target verification, direct semantic equivalence, direct
+behavior equivalence, independent verification, and certification are therefore
+shown separately and are never averaged into one misleading score.
+
 ## Evidence boundary
 
 All eight emitters accept the exact `api` + `in-memory` + `auth=none` starter

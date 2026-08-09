@@ -1,7 +1,46 @@
 {
+  "artifact_manifests": {
+    "development": {
+      "bytes": 5963,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:52e8a4d84af42d728c813dd8743d6663b65ab8fd23f540fe657d8c2a35a12585"
+    },
+    "holdout": {
+      "bytes": 5952,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:4559aff29a1e6d2b2e8bba042263568b2fc7c3fb6f2b6cb8b5e14c2a5355bbe3"
+    },
+    "real-repository": {
+      "bytes": 5977,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:3a065bc4369b45a6b61139c1e523e1de8d8ae04c77c7323edece596be479aaee"
+    }
+  },
+  "artifact_refs": [
+    {
+      "bytes": 5963,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:52e8a4d84af42d728c813dd8743d6663b65ab8fd23f540fe657d8c2a35a12585"
+    },
+    {
+      "bytes": 5952,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:4559aff29a1e6d2b2e8bba042263568b2fc7c3fb6f2b6cb8b5e14c2a5355bbe3"
+    },
+    {
+      "bytes": 5977,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:3a065bc4369b45a6b61139c1e523e1de8d8ae04c77c7323edece596be479aaee"
+    }
+  ],
   "critical_behavior_regressions": 0,
   "critical_unknown_semantics": 0,
   "execution_status": "PASSED_LOCAL",
+  "formal_equivalence": {
+    "bytes": 67462,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:1a0ec0904d446e14634b137c8a7d84e9a1c1cf3d7e50d5f2f5f631ceb0fbd7f2"
+  },
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -15,6 +54,7 @@
   ],
   "notes": [
     "The exact typed-pure-function-v1 profile passed native source analysis, native target compilation, and behavior replay.",
+    "Each corpus output directory is persisted under certification/artifacts and bound by a path, SHA-256, and byte-count manifest.",
     "The physically separate holdout and representative bounded fixture were not used to author route rules.",
     "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN."
   ],

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v2",
+  "status": "experimental",
+  "owner": "frontend-quality-team",
+  "exact_tuple": {
+    "source": {
+      "stack": "angular",
+      "versions": [
+        "22.0.8"
+      ],
+      "language": "TypeScript",
+      "language_versions": [
+        "6.0.3"
+      ],
+      "runtime": "Node.js",
+      "runtime_versions": [
+        "26.0.0"
+      ],
+      "build_tool": "Angular CLI 22.0.8",
+      "package_manager": "npm 11.12.1",
+      "router": [
+        "Angular Router 22.0.8"
+      ],
+      "renderer": [
+        "CSR"
+      ],
+      "state": [
+        "Angular signals"
+      ],
+      "forms": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "styling": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "design_system": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "api_client": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "identity": [
+        "metadata-only-NOT_RUN"
+      ],
+      "i18n": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "test_tools": [
+        "Angular build and browser E2E profile"
+      ],
+      "browsers": [
+        "browser-execution-NOT_RUN"
+      ],
+      "devices": []
+    },
+    "target": {
+      "stack": "flutter",
+      "versions": [
+        "3.44.1"
+      ],
+      "language": "Dart",
+      "language_versions": [
+        "3.12.1"
+      ],
+      "runtime": "Flutter Engine",
+      "runtime_versions": [
+        "3.44.1"
+      ],
+      "build_tool": "flutter 3.44.1",
+      "package_manager": "pub 3.12.1",
+      "router": [
+        "MaterialApp named routes"
+      ],
+      "renderer": [
+        "Flutter widgets"
+      ],
+      "state": [
+        "ChangeNotifier-compatible generated boundary"
+      ],
+      "forms": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "styling": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "design_system": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "api_client": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "identity": [
+        "metadata-only-NOT_RUN"
+      ],
+      "i18n": [
+        "formal-campaign-NOT_RUN"
+      ],
+      "test_tools": [
+        "flutter_test 3.44.1"
+      ],
+      "browsers": [
+        "browser-execution-NOT_RUN"
+      ],
+      "devices": [
+        "ANDROID",
+        "IOS"
+      ]
+    }
+  },
+  "evidence_refs": [
+    "formal-campaign/frontend-formal-route-campaign-v2.json",
+    "certification/gap-inventory.md"
+  ],
+  "recertification_triggers": [],
+  "limitations": [
+    "Model/formal, browser, native and independent readiness are separate.",
+    "Packed actual runtime aggregate is NOT_RUN; certification is NOT_CERTIFIED."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:5ae0bc911c5dc198b6c086984ba391a9c14d47cebe0655a7e73c31ad5ef2877d",
+      "block_id": "form-binding-validation",
+      "byte_count": 1503,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-form-validity-observer-trace/41c843493437dee63016987f14be6444b73617c635b81a4187cbd711101d6e14.json",
+      "profile_id": "vue2",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:41c843493437dee63016987f14be6444b73617c635b81a4187cbd711101d6e14"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e8722424edca1cf9da9274a87efd30c13c06c6f989677dac00d31f3b8148eec5",
+        "byte_count": 40411,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/21e5f2844bfef130d5d5cc3e7755033bb368655dbc78f7cb345dc79d76a0f738.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:21e5f2844bfef130d5d5cc3e7755033bb368655dbc78f7cb345dc79d76a0f738"
+      },
+      {
+        "artifact_id": "sha256:25c959e732b6e906a2d01742787778a5f7bd71ca450d2f6b00b75f65a4f0c58b",
+        "byte_count": 5256,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/6a6f72ba810cb137e5d4147b3ee6ff0c5150caa383d5ef038c99f888195d3cb6.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:6a6f72ba810cb137e5d4147b3ee6ff0c5150caa383d5ef038c99f888195d3cb6"
+      },
+      {
+        "artifact_id": "sha256:a5b66e789d7d45b1afe433c40cdb31ee8219039603683a5566f94c84bbfabdd1",
+        "byte_count": 554384,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-accessibility-axe-trace/b1aa35194228d6318790277cd4406e475fab3d99d4f1c4291711bd38f808dc5f.json",
+        "profile_id": "vue2",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:b1aa35194228d6318790277cd4406e475fab3d99d4f1c4291711bd38f808dc5f"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

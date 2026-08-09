@@ -1,0 +1,150 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-rust/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/Clamp.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1491,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:2831cbe89f0875ab6eb394d7ec1ebe4ff1d9de273fe1d864a1cde8759aaf602e"
+    },
+    {
+      "bytes": 10541,
+      "path": "chunk-map.json",
+      "sha256": "sha256:e697ba70fdc4982482672ad889e863eeeb90939e9c005fb639071e4b2dc570df"
+    },
+    {
+      "bytes": 2950,
+      "path": "formal-composition.json",
+      "sha256": "sha256:3ef8a1152f34e175dce6a6632ce8788123b5c236a7d8737880d4309914a3e91d"
+    },
+    {
+      "bytes": 977,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:0d9c6478c4b291382d5516d18034d85a26c0753f2bf0325879943b179bdf9178"
+    },
+    {
+      "bytes": 7107,
+      "path": "formal-input.json",
+      "sha256": "sha256:c24c98766dbba035654bfd45c679cd54347a77fb06bc06eeae0127579304d83f"
+    },
+    {
+      "bytes": 2328,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:baf15aafe985ded9cfbf95e31f9fa3eff201b58f6e4e43a3f387996ca304d74a"
+    },
+    {
+      "bytes": 258,
+      "path": "inputs/Clamp.java",
+      "sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 3445,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:0d50ec82238c56521cf8504c21875d2e0806654938cb7e180766b89b99aac394"
+    },
+    {
+      "bytes": 156,
+      "path": "migrated.rs",
+      "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+    },
+    {
+      "bytes": 6824,
+      "path": "route-evidence.json",
+      "sha256": "sha256:859b93e41c6a6bb7cb094926ef6713d7b3f8c8b0ff70f8a6f1e1e911f2e27236"
+    },
+    {
+      "bytes": 454,
+      "path": "route_harness.rs",
+      "sha256": "sha256:6c9e0e1b551b918cebc672fc8599c0b9bfe5dae6e4b34d0d002053c1e5e90ff5"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 805,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:f6a64022d4896dd6860e189f4bc790da78dd293614f1937e6a18bd51466b86a2"
+    },
+    {
+      "bytes": 258,
+      "path": "source-runtime/Clamp.java",
+      "sha256": "sha256:b70585c4544448dff35682a27f6aed930ed16fdf38d792f7ba6dee1b0847420d"
+    },
+    {
+      "bytes": 945,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:30d13b0f33a893055a43c6caae9dddcae142b99e0ae5892d54525a23261d2dae"
+    },
+    {
+      "bytes": 805,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:f6a64022d4896dd6860e189f4bc790da78dd293614f1937e6a18bd51466b86a2"
+    },
+    {
+      "bytes": 806,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:e4af0b12359ab5a62e97262b2b7f7d563ebce0b170fd281e9509966e614b1814"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-rust",
+  "schema_version": 1,
+  "total_bytes": 40609
+}

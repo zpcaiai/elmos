@@ -1,0 +1,14 @@
+{
+  "corpus": "representative-workloads",
+  "dataset_class": "bounded-representative-fixture",
+  "dataset_digest": "sha256:6b5a2930bf323d1a1439bc1f93fbc08c48cc9054ac74d992b68aab4c69648d53",
+  "evidence_refs": [
+    "evidence/route-set.json"
+  ],
+  "notes": [
+    "Customer repository and production representativeness NOT_RUN."
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:c1fd6ae6d02b401ca9dff0dcd7ff864f2cc44421e2065a1f1624f73a7167a4ff",
+  "status": "passed"
+}

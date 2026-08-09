@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-formal-equivalence-v1",
+  "status": "passed",
+  "structural_gate_status": "passed",
+  "structural_status": "PASSED",
+  "local_equivalence_status": "PARTIAL_PROVED_UNDER_ASSUMPTIONS",
+  "bounded_proof_profile_ready": true,
+  "formal_ready": false,
+  "external_evidence_status": "NOT_RUN",
+  "certification_requested": false,
+  "certification_decision": "NOT_CERTIFIED",
+  "pack_status": "experimental",
+  "failures": [],
+  "frontend_formal_route_campaign": {
+    "status": "valid",
+    "campaign_key": "frontend-72-route-formal-equivalence-v1",
+    "route_count": 72,
+    "profile_count": 9,
+    "structural_status": "PASSED",
+    "local_equivalence_status": "PARTIAL_PROVED_UNDER_ASSUMPTIONS",
+    "bounded_proof_profile_ready": true,
+    "formal_ready": false,
+    "external_evidence_status": "NOT_RUN",
+    "certification_ready": false,
+    "proved_route_count": 0,
+    "proved_under_assumptions_route_count": 72,
+    "native_route_count": 0
+  }
+}

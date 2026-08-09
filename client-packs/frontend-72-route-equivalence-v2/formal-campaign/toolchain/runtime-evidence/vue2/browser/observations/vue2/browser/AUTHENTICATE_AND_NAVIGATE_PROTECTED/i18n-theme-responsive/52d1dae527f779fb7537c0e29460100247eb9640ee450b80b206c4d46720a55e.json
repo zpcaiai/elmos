@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0f986fee4fbf4020bb550dd946fab64003c4b58bfa7992fde39ed99e3242bf59",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2006,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue2/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-computed-layout-i18n-theme-observer-trace/26c003e19b115a61a1c17f0314bf21e44a5d8d3baa9e8721b03cfb8835f26ffd.json",
+      "profile_id": "vue2",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+      "sha256": "sha256:26c003e19b115a61a1c17f0314bf21e44a5d8d3baa9e8721b03cfb8835f26ffd"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:4d774bdac91115ddfa409f0806fc277d4da1ece959528f51b70b08b09cf728bc",
+        "byte_count": 40496,
+        "channel": "browser",
+        "path": "traces/vue2/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-dom-snapshot/41f0a03d9939fa238d2269d4449d7969a4e98ddf0b0bbf9797431dde28443c11.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:41f0a03d9939fa238d2269d4449d7969a4e98ddf0b0bbf9797431dde28443c11"
+      }
+    ]
+  },
+  "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+  "schema_version": "1.0"
+}

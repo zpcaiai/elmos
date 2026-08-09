@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.account",
+    "text": "账户内容",
+    "title": "账户",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:769c17911cfc11a57d35101a5bea875470252e13a5f96fae5e4b6b230843e177",
+      "block_id": "component-template-view",
+      "byte_count": 1519,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-rendered-component-observer-trace/f8db48658e9bce52fb45fb0dcd910a1e2791ed3818da7390b25c20bde6b6816c.json",
+      "profile_id": "jquery",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:f8db48658e9bce52fb45fb0dcd910a1e2791ed3818da7390b25c20bde6b6816c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:90d28273c267599f3522d1dab218131d4d1c08cae38dda8e6aff62241e6a0b22",
+        "byte_count": 40254,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/d7e206e1ad06930ad5426a34ed91ac383e7be2fb48e8fe75fe31422ac9e00075.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:d7e206e1ad06930ad5426a34ed91ac383e7be2fb48e8fe75fe31422ac9e00075"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

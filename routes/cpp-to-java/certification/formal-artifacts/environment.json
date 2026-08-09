@@ -1,0 +1,31 @@
+{
+  "authority": "local-engineering-validation",
+  "engine_source_manifest": {
+    "bytes": 11665,
+    "path": "certification/formal-artifacts/engine-source-manifest.json",
+    "sha256": "sha256:7af3541cc67a1c47d9012e9c97a468232f5886555a04953ac98cc4f92bcc5534"
+  },
+  "external_certification": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "platform": "macOS-26.6-arm64-arm-64bit",
+  "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:34:53) [Clang 19.1.7 ]",
+  "route_engine_lock": {
+    "path": "engines/polyglot-route-engine/uv.lock",
+    "sha256": "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+  },
+  "route_key": "cpp-to-java",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3",
+    "version": "4.16.0"
+  },
+  "source_toolchain": [
+    "C++20",
+    "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "arm64-apple-darwin25.6.0"
+  ],
+  "target_toolchain": [
+    "Java 21.0.11",
+    "JDK Compiler Tree API"
+  ]
+}

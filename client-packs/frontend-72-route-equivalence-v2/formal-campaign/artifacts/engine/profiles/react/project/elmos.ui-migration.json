@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "2.0",
+  "projectId": "692f6b9ec250664fba3ac9df",
+  "direction": {
+    "routeId": "angular--to--react",
+    "source": "angular",
+    "target": "react",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "19.2.8",
+    "supportState": "PROJECT_GENERATION_READY",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "react",
+    "label": "React",
+    "frameworkVersion": "19.2.8",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "WEB"
+    ],
+    "language": "TypeScript",
+    "languageVersion": "7.0.2",
+    "runtime": "Node.js",
+    "runtimeVersion": "26.0.0",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Vite",
+    "buildToolVersion": "8.1.5",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "react-router-dom 7.18.1",
+    "state": "React reducer/context",
+    "rendering": "CSR",
+    "testTool": "Vitest 4.1.10",
+    "runnerProfile": "MODERN_WEB",
+    "requiredProjectFiles": [
+      "package.json",
+      "vite.config.ts",
+      "src/main.tsx",
+      "src/App.tsx"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:e8ab5bbe01a8446b247540f05138434fde6b0f8aa3c859fbde71236443d93149",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "README.md",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "index.html",
+      "package.json",
+      "scripts/verify.sh",
+      "src/App.tsx",
+      "src/elmos-bounded-navigation.ts",
+      "src/main.tsx",
+      "src/routes.test.ts",
+      "src/routes.ts",
+      "src/styles.css",
+      "target-profile/profile.json",
+      "tsconfig.json",
+      "ui-ir/model.json",
+      "vite.config.ts"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "proofProfile": "bounded-frontend-interaction-v1",
+  "interactionScenarioCount": 18,
+  "interactionBlockIds": [
+    "route-navigation-deeplink-404",
+    "component-template-view",
+    "state-management",
+    "action-event",
+    "effect-lifecycle",
+    "form-binding-validation",
+    "api-network",
+    "identity-permission",
+    "rendering-hydration",
+    "accessibility-focus",
+    "i18n-theme-responsive",
+    "native-platform"
+  ]
+}

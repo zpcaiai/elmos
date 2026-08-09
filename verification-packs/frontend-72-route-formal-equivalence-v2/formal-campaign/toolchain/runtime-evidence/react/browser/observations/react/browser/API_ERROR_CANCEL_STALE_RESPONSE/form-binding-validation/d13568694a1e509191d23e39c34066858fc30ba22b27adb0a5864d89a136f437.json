@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": true,
+    "value": "fail"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:2d1f35bcee6d5aa1c49e8b7077db575ea5f388c993fb109b44474ae176e29d5a",
+      "block_id": "form-binding-validation",
+      "byte_count": 1519,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-form-validity-observer-trace/2a2b7ea480efb603b2fb1624082ec8528a01ebfcd37a01f2aca9f626a885264a.json",
+      "profile_id": "react",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:2a2b7ea480efb603b2fb1624082ec8528a01ebfcd37a01f2aca9f626a885264a"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:fc648db0affad76660f70cfd334a2dd5a06edd27b83e98ffa7654bb520ebedf7",
+        "byte_count": 40421,
+        "channel": "browser",
+        "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-dom-snapshot/d9473a71c55f0d703b7ae81cf060dd1d5d73ae0753bdffc16be786be3658a825.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:d9473a71c55f0d703b7ae81cf060dd1d5d73ae0753bdffc16be786be3658a825"
+      },
+      {
+        "artifact_id": "sha256:147214a2c080eb5c498693c116cdc522397d00c731ecf8ba8bd695106a190cc2",
+        "byte_count": 6164,
+        "channel": "browser",
+        "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-framework-event-trace/3e87db98fcec14760a3a029f1d461cafbee37d3daf83905506e3eafbcd5f06b6.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:3e87db98fcec14760a3a029f1d461cafbee37d3daf83905506e3eafbcd5f06b6"
+      },
+      {
+        "artifact_id": "sha256:62368afaddda026d53d895e1f5d950e0b2866f2f2b109dee01ca029e2986dd7f",
+        "byte_count": 556620,
+        "channel": "browser",
+        "path": "traces/react/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-accessibility-axe-trace/f6ea776844e7c536fe6db188b551a38f2e3b96a52a82c88c438b977014f2311b.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:f6ea776844e7c536fe6db188b551a38f2e3b96a52a82c88c438b977014f2311b"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

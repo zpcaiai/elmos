@@ -1,0 +1,7 @@
+test-suite-validate:
+	python3 scripts/test-suite/validate_skill_bundle.py .
+	python3 scripts/test-suite/validate_test_catalog.py test-suites/batch1-37-strict/cases/catalog.json
+	python3 scripts/test-suite/validate_coverage_matrix.py test-suites/batch1-37-strict/coverage-matrix.json
+
+test-suite-test:
+	python3 -m unittest tests/test-suite/test_toolkit.py

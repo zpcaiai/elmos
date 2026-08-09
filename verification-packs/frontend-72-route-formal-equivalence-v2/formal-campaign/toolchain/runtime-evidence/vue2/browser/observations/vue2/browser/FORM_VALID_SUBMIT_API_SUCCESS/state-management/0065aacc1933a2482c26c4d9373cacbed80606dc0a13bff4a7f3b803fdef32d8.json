@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 2,
+    "before": 0,
+    "saturated": true,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:dae1fddb2521f11daa122bf564bae5534d592f5cd2f85dbf16a7740716ef0ddd",
+      "block_id": "state-management",
+      "byte_count": 1221,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue2/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-state-transition-observer-trace/3f08d87c1216e4d536664377cda41848f4977d47e3646dfc40b5d74392e57ec2.json",
+      "profile_id": "vue2",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:3f08d87c1216e4d536664377cda41848f4977d47e3646dfc40b5d74392e57ec2"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:2422f85349a23d13fe1c04041e61707ca6aa33370682448468bad1397a927639",
+        "byte_count": 8331,
+        "channel": "browser",
+        "path": "traces/vue2/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-event-trace/753f121675a9c007d191b1700b5d91b216dd4b2a538eaeb5bacce51d2f0afd38.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:753f121675a9c007d191b1700b5d91b216dd4b2a538eaeb5bacce51d2f0afd38"
+      },
+      {
+        "artifact_id": "sha256:8cd79ee1a001c1bcfaaae4818cb3c142b89c6d2ee6c1dab29639db6cfff12a11",
+        "byte_count": 40510,
+        "channel": "browser",
+        "path": "traces/vue2/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/dca64570c2b96c34003d9d7bd2a515665db6861146f689987dcbbee61576a118.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:dca64570c2b96c34003d9d7bd2a515665db6861146f689987dcbbee61576a118"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

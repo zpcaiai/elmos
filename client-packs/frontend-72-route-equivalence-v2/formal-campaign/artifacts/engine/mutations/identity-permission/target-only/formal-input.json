@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "identity-permission",
+  "obligation_symbol": "diff_identity_permission",
+  "variant": "TARGET_ONLY",
+  "pointer": "/identityPermission/anonymousRole",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:8fa9bfa06f94a4e47834352f1971957cdf6ee90247e94ce57da97810677ba69b",
+  "canonical_block_digest": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b",
+  "mutant_block_digest": "sha256:f5574f032d65b0fefe69b8fb5bb0928293b8677f5d97f9f193a4b994d8a5b093",
+  "counterexample_replay": {
+    "block_id": "identity-permission",
+    "pointer": "/identityPermission/anonymousRole",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "role": "ANONYMOUS",
+      "permission": "search:execute",
+      "permissionGranted": false,
+      "deniedBehavior": "HIDE_AND_BLOCK",
+      "tenantIsolation": "EXACT_TENANT_MATCH",
+      "tenantMatch": true,
+      "authorized": true,
+      "serverAuthorityRequired": true
+    },
+    "mutant_observation": {
+      "role": "ANONYMOUS__MUTANT",
+      "permission": "search:execute",
+      "permissionGranted": false,
+      "deniedBehavior": "HIDE_AND_BLOCK",
+      "tenantIsolation": "EXACT_TENANT_MATCH",
+      "tenantMatch": true,
+      "authorized": true,
+      "serverAuthorityRequired": true
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

@@ -1,0 +1,25 @@
+{
+  "route_key": "python-to-typescript",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 480,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.ts",
+      "sha256": "sha256:cd7e7f800d565e91f3189d0871913ed47755720676dd3fe2ea4b66645a42750a"
+    },
+    {
+      "bytes": 517,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.ts",
+      "sha256": "sha256:de917de5375f472c26a98bf3462380ce463472251fe6692aef42d4c1dd1a99e0"
+    },
+    {
+      "bytes": 475,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.ts",
+      "sha256": "sha256:297c84d710be4d04999a76e33b736bc9c72b76f5849a1dff6842fdeaefda8d81"
+    }
+  ]
+}

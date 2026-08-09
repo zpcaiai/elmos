@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:de97dc1e7b5965fcf4f3699f8cd8ce85ac2d139ac3fe7b5f4641274125be30f7",
+      "block_id": "action-event",
+      "byte_count": 3326,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-native-event-outcome-observer-trace/319d0772488a2cff33b5d18d55c467fa65d1d50108cc810cbf1e8601d6932131.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:319d0772488a2cff33b5d18d55c467fa65d1d50108cc810cbf1e8601d6932131"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:7b8f6418eadb49a589f1e580e52225bbe34251be1a635258dd3351d7166f81e1",
+        "byte_count": 5288,
+        "channel": "browser",
+        "path": "traces/jquery/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-event-trace/d4d6c82872697b704ce7a93584b3e5ba4c20732731d1917c6035392ce0859b43.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:d4d6c82872697b704ce7a93584b3e5ba4c20732731d1917c6035392ce0859b43"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

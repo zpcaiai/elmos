@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_version": "Z3 version 4.16.0 - 64 bit",
+  "identity_status": "VERIFIED",
+  "invocation": [
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "-in"
+  ],
+  "options": {
+    "args": [
+      "-in"
+    ],
+    "timeout_ms": 10000
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_version": "v26.0.0"
+  },
+  "exit_code": 0,
+  "stdout": "unsat\n",
+  "stderr": "",
+  "outcome": "UNSAT",
+  "proof_status": "PROVED_UNDER_ASSUMPTIONS",
+  "unconditional_proof": false,
+  "route_id": "angular--to--react",
+  "formal_input_digest": "sha256:165ddfb10e602f59b0c854b64957f7d0f28fca1bcff02c8a4d6c35cfe4b47d4e",
+  "solver_input_digest": "sha256:66d489dbbee25a62a0930072c19423d7ae1f38e630f90bb8aeee049967eb5ff3",
+  "smt2_digest": "sha256:66d489dbbee25a62a0930072c19423d7ae1f38e630f90bb8aeee049967eb5ff3"
+}

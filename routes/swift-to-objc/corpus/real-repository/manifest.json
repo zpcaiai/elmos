@@ -1,0 +1,16 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "real-repository",
+  "customer_repository": false,
+  "evidence_class": "representative-bounded-fixture",
+  "function_name": "decision",
+  "independent": true,
+  "input_domain": "canonical-finite-no-error-input-domain",
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "decision.swift",
+  "source_language": "swift",
+  "type_coverage": [
+    "boolean"
+  ]
+}

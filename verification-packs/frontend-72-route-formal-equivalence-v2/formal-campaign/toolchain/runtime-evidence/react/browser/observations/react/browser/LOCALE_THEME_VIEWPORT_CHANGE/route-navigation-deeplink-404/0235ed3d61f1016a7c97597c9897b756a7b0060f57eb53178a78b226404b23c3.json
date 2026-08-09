@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:031edb6a27c1d8bb29c9254b6a6f9d4cf87dd5849880dcba615a75994899e3c8",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2426,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/react/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-route-dom-url-observer-trace/766f7bc1e36f65e86a9a099b841058847d883d1c45d77f60d2da2c22786acdfb.json",
+      "profile_id": "react",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:766f7bc1e36f65e86a9a099b841058847d883d1c45d77f60d2da2c22786acdfb"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:a3c86d59141b5a6b8e84928e9ef1a59e05277be4295fdcc4948acec88e57d0d9",
+        "byte_count": 40402,
+        "channel": "browser",
+        "path": "traces/react/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-dom-snapshot/392e1f7081715db2b9ab872a4e5717f558c85fa5433e7933a6963c7ff89333f7.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:392e1f7081715db2b9ab872a4e5717f558c85fa5433e7933a6963c7ff89333f7"
+      },
+      {
+        "artifact_id": "sha256:1715c844c27590bb5807036836c07133000f68837f882cebcc26f929c22ec24a",
+        "byte_count": 5287,
+        "channel": "browser",
+        "path": "traces/react/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-event-trace/abd7b98d97b3f2f284a9c2922a66a8df76b8e0f3a52e70f17aa0d25f4d4db8b5.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:abd7b98d97b3f2f284a9c2922a66a8df76b8e0f3a52e70f17aa0d25f4d4db8b5"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

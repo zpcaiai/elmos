@@ -1,0 +1,206 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:1a95c9e6b289c4da116eb0c7af05079d4ac8cb3896786e130cf932d174a5d3e8",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:bf4c124502a7a80ae061559cba7bd0005b2deea1daef5e904bddedf8e754d08c",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:60e2b787e551fa2224fb32cc5dbdeed8e4a999dca6b46c4529a5fc1a5fde04f8",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:395a8e474fc37c512549471376aa6db0c1b61e5f68b21f2c63215e7a9fba0111",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:395a8e474fc37c512549471376aa6db0c1b61e5f68b21f2c63215e7a9fba0111",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:395a8e474fc37c512549471376aa6db0c1b61e5f68b21f2c63215e7a9fba0111",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:47a6cef7df4d172e8d158c40a9353e4d9a5825a4e441b03b829d43411093cc1e",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      },
+      {
+        "formal_input_sha256": "sha256:395a8e474fc37c512549471376aa6db0c1b61e5f68b21f2c63215e7a9fba0111",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:bbb4d5a58c5c01984d8e452d8d7b5fbd8354f8921142d26524069ad56b38a4af",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:47a6cef7df4d172e8d158c40a9353e4d9a5825a4e441b03b829d43411093cc1e",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:262c5dbd0eaf092dd8bc69edacd03be0d74f152845ffd9083b4123fac9de2751",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "python-to-go",
+  "route_maturity": "LIMITED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:0431ee5ee6595b149fb92a211b72081b0d9bbbfad98fbcae1f9004acbe6b008a",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:4d9f958c76f2fb37c951dfa07e149c8f08267a86af351c01d2ba323d02363929"
+  },
+  "semantic_ir_sha256": "sha256:0431ee5ee6595b149fb92a211b72081b0d9bbbfad98fbcae1f9004acbe6b008a",
+  "source": {
+    "analyzer": "CPython ast",
+    "analyzer_version": "3.12.12",
+    "language": "python",
+    "path": "pricing.py",
+    "sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.py",
+    "artifact_sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "-m",
+          "py_compile",
+          "pricing.py",
+          "source_harness.py"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "source_harness.py"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":120}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":5}\n"
+      }
+    ],
+    "language": "python",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":120}",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":5}",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED"
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "go",
+    "path": "migrated.go",
+    "sha256": "sha256:606e5af0c37b299ae616f4f1c0476f33dfe3ef005d5c92584609e9a35c42ae3f"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/bin/go",
+          "build",
+          "-o",
+          "route_harness",
+          "migrated.go",
+          "route_harness.go"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n"
+      }
+    ],
+    "language": "go",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTIw",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "NQ==",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED"
+  }
+}

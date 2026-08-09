@@ -1,0 +1,3776 @@
+{
+  "artifact_refs": [
+    {
+      "bytes": 7670,
+      "path": "certification/artifacts/module/source-module-semantic-ir.json",
+      "role": "source-module-semantic-ir",
+      "sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071"
+    },
+    {
+      "bytes": 7064,
+      "path": "certification/artifacts/module/target-module-semantic-ir.json",
+      "role": "target-module-semantic-ir",
+      "sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c"
+    },
+    {
+      "bytes": 1881,
+      "path": "certification/artifacts/module/source-module-observations.json",
+      "role": "source-module-observations",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 1881,
+      "path": "certification/artifacts/module/target-module-observations.json",
+      "role": "target-module-observations",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 742,
+      "path": "certification/artifacts/module/source-module-artifact/equivalence_module.cpp",
+      "role": "original-source-module-artifact",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 918,
+      "path": "certification/artifacts/module/Migrated.java",
+      "role": "emitted-target-module-artifact",
+      "sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be"
+    },
+    {
+      "bytes": 2794,
+      "path": "certification/artifacts/module/module-case-manifest.json",
+      "role": "module-case-manifest",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 890,
+      "path": "certification/artifacts/module/module-formal-input.json",
+      "role": "module-formal-input",
+      "sha256": "sha256:3bc368a81e8e9b37896eb296b7a92e0787448f9172af5ef99766e4b21f68ca87"
+    },
+    {
+      "bytes": 1361,
+      "path": "certification/artifacts/module/formal-function-000-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895"
+    },
+    {
+      "bytes": 1299,
+      "path": "certification/artifacts/module/formal-function-000.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc"
+    },
+    {
+      "bytes": 2414,
+      "path": "certification/artifacts/module/formal-function-000-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:6d9b9875555859df29b734c13c47b63f4fa8ba314da5f04c9083774533a1acf2"
+    },
+    {
+      "bytes": 1818,
+      "path": "certification/artifacts/module/formal-function-001-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb"
+    },
+    {
+      "bytes": 2057,
+      "path": "certification/artifacts/module/formal-function-001.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7"
+    },
+    {
+      "bytes": 2423,
+      "path": "certification/artifacts/module/formal-function-001-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:3f91aa9646488f946d8c07adfd2c2601e8e8cc00c7721b6f4a3adb88e30dc690"
+    },
+    {
+      "bytes": 2217,
+      "path": "certification/artifacts/module/formal-function-002-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a"
+    },
+    {
+      "bytes": 1933,
+      "path": "certification/artifacts/module/formal-function-002.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163"
+    },
+    {
+      "bytes": 2450,
+      "path": "certification/artifacts/module/formal-function-002-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:95803bfcbbc360bab0aa448ca5b0987983e357bd220145a4a9d5f36efc035580"
+    },
+    {
+      "bytes": 2223,
+      "path": "certification/artifacts/module/formal-function-003-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2"
+    },
+    {
+      "bytes": 2615,
+      "path": "certification/artifacts/module/formal-function-003.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e"
+    },
+    {
+      "bytes": 2734,
+      "path": "certification/artifacts/module/formal-function-003-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:11cdcc9fd4e64c68c232fad2e29f168c7385f15a642092e4debc8b5641fba3c0"
+    },
+    {
+      "bytes": 1377,
+      "path": "certification/artifacts/module/formal-function-004-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471"
+    },
+    {
+      "bytes": 1813,
+      "path": "certification/artifacts/module/formal-function-004.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163"
+    },
+    {
+      "bytes": 2420,
+      "path": "certification/artifacts/module/formal-function-004-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:48f44b0a72884b17c3acf49598e708f0cac4aeb37398dbb477f1f3e5dfc64dfb"
+    },
+    {
+      "bytes": 8228,
+      "path": "certification/artifacts/module/source-module-validation.json",
+      "role": "source-module-validation",
+      "sha256": "sha256:3a2532fa10d32d6797915a323b75adc6758769df7f45401885889c79fdd867b9"
+    },
+    {
+      "bytes": 5623,
+      "path": "certification/artifacts/module/target-module-validation.json",
+      "role": "target-module-validation",
+      "sha256": "sha256:fb0624e356e0fc6113e6fb2651085078fc38810b78ba483895940baa8b8550d0"
+    }
+  ],
+  "certification_status": "NOT_CERTIFIED",
+  "composition": {
+    "analyzer_and_emitter_soundness": "ASSUMPTION",
+    "function_count": 5,
+    "input_domain": "canonical-finite-no-error-input-domain",
+    "original_source_bytes_theorem": false,
+    "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
+    "passed_function_count": 5,
+    "proof_strength": "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS",
+    "rule": "per-function-denotation-plus-call-graph-closure",
+    "source_compiler_runtime_soundness": "NOT_RUN",
+    "status": "PASSED",
+    "target_compiler_runtime_soundness": "NOT_RUN"
+  },
+  "external_verification_status": "NOT_RUN",
+  "functions": [
+    {
+      "case_manifest_sha256": "sha256:1ee1cd90296a1c3dffabae056d8f88391ea6df0a3a52ff97e2751f0110c1294e",
+      "layers": {
+        "behavior": {
+          "case_count": 4,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 4,
+          "results": [
+            {
+              "arguments_sha256": "sha256:f4ad278aced37942fd2e169e552317712a7674f2fa74f223d0ef01ed6d18cef9",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": true
+              },
+              "case_id": 0,
+              "independent_expected": true,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "bool",
+                "raw": "true",
+                "status": "RETURNED",
+                "value": true
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "bool",
+                "raw": "true",
+                "status": "RETURNED",
+                "value": true
+              }
+            },
+            {
+              "arguments_sha256": "sha256:846c10e65648eee2f1fc4a5d51cf2022603e56b6a30654981c047d51a71aebf6",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": false
+              },
+              "case_id": 1,
+              "independent_expected": false,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              }
+            },
+            {
+              "arguments_sha256": "sha256:a7c1bd00c0035f7014093a133cbda58d8365aa9fd46344373dd11e081692acd7",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": false
+              },
+              "case_id": 2,
+              "independent_expected": false,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              }
+            },
+            {
+              "arguments_sha256": "sha256:6920e175d6b62f0218fe626b44b8725cc3f6cc9b50b17f06acc16b23af8ab1df",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": false
+              },
+              "case_id": 3,
+              "independent_expected": false,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 4,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 4,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 7,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:2ab26bdfd6db64d1907adfd96e14f0070a39b8c266b1ab521bc413357a50eaa6",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0",
+              "source_chunk_id": "sha256:d779e16f027d453c5a3e07d1f8351e4a45c74d700b22990f77f434099a180f23",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 741,
+                "file": "equivalence_module.cpp",
+                "start_byte": 679
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
+              "target_chunk_id": "sha256:d70ccad7ce376693e4e2079c0fc16c0dea0317ebd7d4827fa94a87616e0652a4",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 129,
+                "file": "Migrated.java",
+                "start_byte": 34
+              }
+            },
+            {
+              "semantic_hash": "sha256:40010c4f843bc474b504ca90667b45caf8d69555824e6e9a2e994d81e65f0bfd",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:db8d9e4a0dca0b325ad8e569c0cd4b491ac6a06bf045ffcf5d0306535aa67842",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 698,
+                "file": "equivalence_module.cpp",
+                "start_byte": 689
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:0826dc1d7bbb584ed1ca9dd8e067a9c41b08bb1b90363250fc02d04dd3883ad4",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 73,
+                "file": "Migrated.java",
+                "start_byte": 61
+              }
+            },
+            {
+              "semantic_hash": "sha256:d6b7aa9052edf1441eff4f00fb36b2ec17e72621181f22c62ee5e7e1721ab279",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:b008ae7a2f1fe00f2aa42396fadb9ef58e8aacb5de09a01a7a8a061254bb95b6",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 710,
+                "file": "equivalence_module.cpp",
+                "start_byte": 700
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:3c3288a8ed9635e00293615896bacee5d8644bc460e6319350a51e507b83e291",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 88,
+                "file": "Migrated.java",
+                "start_byte": 75
+              }
+            },
+            {
+              "semantic_hash": "sha256:710193622649105189aecfb1c6d4ca5473a26792456195cdd2d18f46fbe640ff",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0",
+              "source_chunk_id": "sha256:d641ea32c51e1239bd947c6d52d65eb9a5e33dd8db52d10688d0dabade65b491",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 738,
+                "file": "equivalence_module.cpp",
+                "start_byte": 718
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
+              "target_chunk_id": "sha256:fe39d64ee5de8e7ae0c36535448e2ed98b63bc589526e1f897ee80ea638ab3a6",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 123,
+                "file": "Migrated.java",
+                "start_byte": 100
+              }
+            },
+            {
+              "semantic_hash": "sha256:a2ad8a74ee018071718d36a45f7c78eab25dcfe40c3db49ae133360656dce541",
+              "semantic_path": "/functions/0/body/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/expression",
+              "source_chunk_id": "sha256:2c6982ac823fcd32e8ba9346a3485be0190f392b1be89833d90ba5fa3eedd55e",
+              "source_semantic_pointer": "/functions/0/body/0/expression",
+              "source_span": {
+                "end_byte": 738,
+                "file": "equivalence_module.cpp",
+                "start_byte": 725
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:2f797a52a7a080f335b18b8e0cfdf7d8ba5daf40bec2e2a054ca6d28dd9589d3",
+              "target_semantic_pointer": "/functions/0/body/0/expression",
+              "target_span": {
+                "end_byte": 122,
+                "file": "Migrated.java",
+                "start_byte": 107
+              }
+            },
+            {
+              "semantic_hash": "sha256:6a7a75b8577de0e17c331bc3bf9ecdb9a9be63fb3433a3278b7478b3a271da20",
+              "semantic_path": "/functions/0/body/0/expression/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/expression/left",
+              "source_chunk_id": "sha256:49345f36ce3a74491291e8980ca023d8b764c9a7116132e6c7967763c9e54050",
+              "source_semantic_pointer": "/functions/0/body/0/expression/left",
+              "source_span": {
+                "end_byte": 729,
+                "file": "equivalence_module.cpp",
+                "start_byte": 725
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:eb7a5ff29179c3f06c815e85855c5a69c389a361b6f6dcdfecb01eb85ed0075c",
+              "target_semantic_pointer": "/functions/0/body/0/expression/left",
+              "target_span": {
+                "end_byte": 112,
+                "file": "Migrated.java",
+                "start_byte": 108
+              }
+            },
+            {
+              "semantic_hash": "sha256:36a0598f311fa31ea2246e83b4504fae8b3e4a541de7e3bd7f50f148326304a2",
+              "semantic_path": "/functions/0/body/0/expression/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/expression/right",
+              "source_chunk_id": "sha256:6b3392c00bc1c7a7c44838538c7dd9bd1751fc9464e7c760140f022786a342c4",
+              "source_semantic_pointer": "/functions/0/body/0/expression/right",
+              "source_span": {
+                "end_byte": 738,
+                "file": "equivalence_module.cpp",
+                "start_byte": 733
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:8dc029d85108ab25cf52a84b8515a31a4769a8e2c595d8fc9ca73fe8e9a3a647",
+              "target_semantic_pointer": "/functions/0/body/0/expression/right",
+              "target_span": {
+                "end_byte": 121,
+                "file": "Migrated.java",
+                "start_byte": 116
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [
+            "java.integer.+.call:Math.addExact",
+            "java.integer.-.call:Math.subtractExact"
+          ],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 7,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 742,
+              "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+              "logical_file": "equivalence_module.cpp",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 918,
+              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "logical_file": "Migrated.java",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:cpp",
+            "target-analyzer-soundness:java",
+            "source-compiler-runtime-soundness-not-discharged:cpp",
+            "target-compiler-runtime-soundness-not-discharged:java",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:java",
+            "emitter-normalization-soundness:java",
+            "same-input:left:left",
+            "same-input:right:right",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-000-input.json",
+            "sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895"
+          },
+          "formal_input_digest": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895",
+          "formal_input_path": "certification/artifacts/module/formal-function-000-input.json",
+          "formal_input_sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895",
+          "formal_result_path": "certification/artifacts/module/formal-function-000-result.json",
+          "formal_result_sha256": "sha256:6d9b9875555859df29b734c13c47b63f4fa8ba314da5f04c9083774533a1acf2",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:6f2a21b2edd2a1d48fcbcc6bd4d271a2077f4d2a6f839a5db112f8a84fface11",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:fbc704eaa618ba2a9adae6bf6ac0d2ee3b92aa7b8ae431e5d1937b33c509f8dc",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-000.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-000.smt2",
+            "sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc"
+          },
+          "solver_input_digest": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc",
+          "solver_input_path": "certification/artifacts/module/formal-function-000.smt2",
+          "solver_input_sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "both",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:84c541c62d990f70d32c4dad7448cf7b2fe107ffa0b9190c866ebbe2a00bbfe6",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:84c541c62d990f70d32c4dad7448cf7b2fe107ffa0b9190c866ebbe2a00bbfe6"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "boolean"
+          },
+          {
+            "name": "right",
+            "type": "boolean"
+          }
+        ],
+        "return_type": "boolean"
+      },
+      "status": "PASSED",
+      "symbol": "both"
+    },
+    {
+      "case_manifest_sha256": "sha256:2beec4fefdc351ae201ea354ff77e716a9caebfe624294240cf12f539205f18a",
+      "layers": {
+        "behavior": {
+          "case_count": 4,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 4,
+          "results": [
+            {
+              "arguments_sha256": "sha256:325a83df017d547336b866bdb247dbac0af29bbf719277169beca46c42947dbb",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 120
+              },
+              "case_id": 0,
+              "independent_expected": 120,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "120",
+                "status": "RETURNED",
+                "value": 120
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "120",
+                "status": "RETURNED",
+                "value": 120
+              }
+            },
+            {
+              "arguments_sha256": "sha256:02aeab23c2fbe91c9f0c242bca8416c1900d858cb726e88739ab592f0e4b653d",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 1,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:d9aab842afdeae14ab2f34b50698137b5f091e5d3cce642c10e713a9a61a3e25",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 2,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:ab962cf3cb47bccde4c69a815e7addd6a904d4ba103bdb34e3c5ff017600625d",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 9223372036854775707
+              },
+              "case_id": 3,
+              "independent_expected": 9223372036854775707,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "9223372036854775707",
+                "status": "RETURNED",
+                "value": 9223372036854775707
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "9223372036854775707",
+                "status": "RETURNED",
+                "value": 9223372036854775707
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 4,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 4,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 13,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:d81a445a068ccdb1ced9c52c7721771b39cca948e954626ee2ca1a55a70f66b8",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0",
+              "source_chunk_id": "sha256:6d1b4583520105f4db5757bb498473584257068558e0987452b595660895e473",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 162,
+                "file": "equivalence_module.cpp",
+                "start_byte": 20
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
+              "target_chunk_id": "sha256:7c5fe42be7c109537077606341f9852e26a21da374ed15ac81c374e285b9519e",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 303,
+                "file": "Migrated.java",
+                "start_byte": 135
+              }
+            },
+            {
+              "semantic_hash": "sha256:d3886e8e06272286ead7a18eaa71c6c99e444d11e495208da78eac4089276516",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:60eb6822d3039a492bb9181df9367065f8f5a7ba814fefbdf349590a4542d24f",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 64,
+                "file": "equivalence_module.cpp",
+                "start_byte": 43
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:86e1758b513e46c8fe80d9399400d75447873eaacd70fe36f5abf862866304f8",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 177,
+                "file": "Migrated.java",
+                "start_byte": 164
+              }
+            },
+            {
+              "semantic_hash": "sha256:f9f292032ffa50846d1bdfffc6ee2230b4ad6c110021479e3d3b0a33626ae504",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:ff8c076e2eab5e8d7602729b09e1ed291a28fc8610d9ab9bc5da4557614c5d71",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 82,
+                "file": "equivalence_module.cpp",
+                "start_byte": 66
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:2b5fee75b96f75dc249df88fc00edb7d5656b0e183206b8ed0c0267995f98bf2",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 187,
+                "file": "Migrated.java",
+                "start_byte": 179
+              }
+            },
+            {
+              "semantic_hash": "sha256:7daf3225fb278fa05ca1bd6f07a7b327ca088fe121d0ca0d4c5ab8e9f64b34ae",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0",
+              "source_chunk_id": "sha256:ec83ea974bf83b2d9f3e16fc4fc6d5e7cc5fd6be3152a912427e5a33b6bc9132",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 133,
+                "file": "equivalence_module.cpp",
+                "start_byte": 90
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
+              "target_chunk_id": "sha256:3a3f2f7262509235d91497b970a49ca3e53b16dd80c7eca4b903894503bd4059",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 252,
+                "file": "Migrated.java",
+                "start_byte": 199
+              }
+            },
+            {
+              "semantic_hash": "sha256:770787d477c266baf77799eda6881dfa977692b2104ad741f29414925d66ed13",
+              "semantic_path": "/functions/0/body/0/condition",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition",
+              "source_chunk_id": "sha256:f4a9bc52367d44d101c602d258c33803f6beda85ac3ce0ce6a98afc8e0825cc0",
+              "source_semantic_pointer": "/functions/0/body/0/condition",
+              "source_span": {
+                "end_byte": 106,
+                "file": "equivalence_module.cpp",
+                "start_byte": 94
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:477502d5683e20e7d7625fc047a26532c1ce45a2ac149800f0d24390d7dd3d49",
+              "target_semantic_pointer": "/functions/0/body/0/condition",
+              "target_span": {
+                "end_byte": 218,
+                "file": "Migrated.java",
+                "start_byte": 202
+              }
+            },
+            {
+              "semantic_hash": "sha256:a1b2f233d6f52fe3bf25c4efddbaedb7aa43d853c6d7e5a5e08fc65d4ebdaad1",
+              "semantic_path": "/functions/0/body/0/condition/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition/left",
+              "source_chunk_id": "sha256:ab6e76b4d8f63493f07dbc5bdc3c339bff452688150ecc0fe8dc894f13d8ba2c",
+              "source_semantic_pointer": "/functions/0/body/0/condition/left",
+              "source_span": {
+                "end_byte": 102,
+                "file": "equivalence_module.cpp",
+                "start_byte": 94
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:0406f4981d80eacb61a919f42a19837b319291ad43318bc1e6197179579930d1",
+              "target_semantic_pointer": "/functions/0/body/0/condition/left",
+              "target_span": {
+                "end_byte": 212,
+                "file": "Migrated.java",
+                "start_byte": 204
+              }
+            },
+            {
+              "semantic_hash": "sha256:1526b7aaf763a65b7048cabaf1fd23df885f6fd4eb6b9c5c377de16f11e074db",
+              "semantic_path": "/functions/0/body/0/condition/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition/right",
+              "source_chunk_id": "sha256:abbb704cceb9caaf74ae136436408c7aaf4911fa4f246282446e08c4a0021ef7",
+              "source_semantic_pointer": "/functions/0/body/0/condition/right",
+              "source_span": {
+                "end_byte": 106,
+                "file": "equivalence_module.cpp",
+                "start_byte": 105
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:0bce86d2bffb8fef18155ae8a852708160d632266f42aa02620c32e3b14bb8d7",
+              "target_semantic_pointer": "/functions/0/body/0/condition/right",
+              "target_span": {
+                "end_byte": 216,
+                "file": "Migrated.java",
+                "start_byte": 215
+              }
+            },
+            {
+              "semantic_hash": "sha256:dc9ecb03dcc8d19e75e45f8195f28956d87876e4bf895a2e535b787a3aa0bfc5",
+              "semantic_path": "/functions/0/body/0/then/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/then/0",
+              "source_chunk_id": "sha256:5f327c789d1ae83b56e1918cd3fd29a55339ae48079d406ac2f9463da2588704",
+              "source_semantic_pointer": "/functions/0/body/0/then/0",
+              "source_span": {
+                "end_byte": 126,
+                "file": "equivalence_module.cpp",
+                "start_byte": 118
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:58f7603ebff5fb845f725df027c56a5dda9605f93bb08f6de6e291bb4f28b73c",
+              "target_semantic_pointer": "/functions/0/body/0/then/0",
+              "target_span": {
+                "end_byte": 242,
+                "file": "Migrated.java",
+                "start_byte": 233
+              }
+            },
+            {
+              "semantic_hash": "sha256:1526b7aaf763a65b7048cabaf1fd23df885f6fd4eb6b9c5c377de16f11e074db",
+              "semantic_path": "/functions/0/body/0/then/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/then/0/expression",
+              "source_chunk_id": "sha256:8cbea40fe1a1253e059e63647118b283e16de00e5f53282576f45616066f5de4",
+              "source_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "source_span": {
+                "end_byte": 126,
+                "file": "equivalence_module.cpp",
+                "start_byte": 125
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:43595cc0fdf7da2a855b4e5c2ac0cbedc6ef4c36b2060d45f3a767134fe0e96b",
+              "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "target_span": {
+                "end_byte": 241,
+                "file": "Migrated.java",
+                "start_byte": 240
+              }
+            },
+            {
+              "semantic_hash": "sha256:25eeb7e2cfbcfd67c33d8e81a0f82ce25960e302727e29e38efbaa60f146ca3a",
+              "semantic_path": "/functions/0/body/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1",
+              "source_chunk_id": "sha256:9402bcf07e8aa040102e7f5c28009700a46cce80203b6c5679991504d938e311",
+              "source_semantic_pointer": "/functions/0/body/1",
+              "source_span": {
+                "end_byte": 159,
+                "file": "equivalence_module.cpp",
+                "start_byte": 138
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1",
+              "target_chunk_id": "sha256:d2cdc71d76649fa749da8a159644d987bc4c273acbeefab2dabd9e2adc544add",
+              "target_semantic_pointer": "/functions/0/body/1",
+              "target_span": {
+                "end_byte": 297,
+                "file": "Migrated.java",
+                "start_byte": 261
+              }
+            },
+            {
+              "semantic_hash": "sha256:7264546493057e9b128acddef2e5caff3c93d7564790fc94080dfc4c3bc221ec",
+              "semantic_path": "/functions/0/body/1/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/expression",
+              "source_chunk_id": "sha256:b10a53ef60453decf8e76fb85d71eb7a17e457dbfcb6be4f505176a4ff3ae234",
+              "source_semantic_pointer": "/functions/0/body/1/expression",
+              "source_span": {
+                "end_byte": 159,
+                "file": "equivalence_module.cpp",
+                "start_byte": 145
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/expression",
+              "target_chunk_id": "sha256:784c183700f924452eff06305cfb77d11579192dbee4466c617f15d1d333b893",
+              "target_semantic_pointer": "/functions/0/body/1/expression",
+              "target_span": {
+                "end_byte": 296,
+                "file": "Migrated.java",
+                "start_byte": 268
+              }
+            },
+            {
+              "semantic_hash": "sha256:a1b2f233d6f52fe3bf25c4efddbaedb7aa43d853c6d7e5a5e08fc65d4ebdaad1",
+              "semantic_path": "/functions/0/body/1/expression/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/expression/left",
+              "source_chunk_id": "sha256:f46222ba70dbb0339ea92042f2194cb16ea278f17847a2288e8419a06882e773",
+              "source_semantic_pointer": "/functions/0/body/1/expression/left",
+              "source_span": {
+                "end_byte": 153,
+                "file": "equivalence_module.cpp",
+                "start_byte": 145
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/expression/left",
+              "target_chunk_id": "sha256:c3971e72aa6c3f93e4518a18f0138cabea077f477a917a33eee764673de6d402",
+              "target_semantic_pointer": "/functions/0/body/1/expression/left",
+              "target_span": {
+                "end_byte": 290,
+                "file": "Migrated.java",
+                "start_byte": 282
+              }
+            },
+            {
+              "semantic_hash": "sha256:95555cd7b9f8754e00c3e500e587b3f9287405e94fb2a8c21e117a2b753b4974",
+              "semantic_path": "/functions/0/body/1/expression/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/expression/right",
+              "source_chunk_id": "sha256:e82a27137d9c01ee1d2d578125b67a40d02c82f83b57af5396ce17006265dd34",
+              "source_semantic_pointer": "/functions/0/body/1/expression/right",
+              "source_span": {
+                "end_byte": 159,
+                "file": "equivalence_module.cpp",
+                "start_byte": 156
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/expression/right",
+              "target_chunk_id": "sha256:f30dcb050531e7096d12e49bf17698484db14af35c10701cc20e902ddf1306bd",
+              "target_semantic_pointer": "/functions/0/body/1/expression/right",
+              "target_span": {
+                "end_byte": 295,
+                "file": "Migrated.java",
+                "start_byte": 292
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [
+            "java.integer.+.call:Math.addExact",
+            "java.integer.-.call:Math.subtractExact"
+          ],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 13,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 742,
+              "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+              "logical_file": "equivalence_module.cpp",
+              "node_count": 13,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 918,
+              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "logical_file": "Migrated.java",
+              "node_count": 13,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:cpp",
+            "target-analyzer-soundness:java",
+            "source-compiler-runtime-soundness-not-discharged:cpp",
+            "target-compiler-runtime-soundness-not-discharged:java",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:java",
+            "emitter-normalization-soundness:java",
+            "same-input:subtotal:subtotal",
+            "same-input:tax:tax",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-001-input.json",
+            "sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb"
+          },
+          "formal_input_digest": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb",
+          "formal_input_path": "certification/artifacts/module/formal-function-001-input.json",
+          "formal_input_sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb",
+          "formal_result_path": "certification/artifacts/module/formal-function-001-result.json",
+          "formal_result_sha256": "sha256:3f91aa9646488f946d8c07adfd2c2601e8e8cc00c7721b6f4a3adb88e30dc690",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:0ea3506a291ba9e34d6410fcee148d1fe945c5f185c3064e0b6f71d36816be78",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:a879f5b08557c731377ea94c19343f94cedf7500936fd58e5aeb051fd691e995",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-001.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-001.smt2",
+            "sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7"
+          },
+          "solver_input_digest": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7",
+          "solver_input_path": "certification/artifacts/module/formal-function-001.smt2",
+          "solver_input_sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "calculate",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:dda98cb909f819c3164ee3e06bf6f4215540d35c4f9a1a509a2a82bbef506ff2",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:dda98cb909f819c3164ee3e06bf6f4215540d35c4f9a1a509a2a82bbef506ff2"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "subtotal",
+            "type": "integer"
+          },
+          {
+            "name": "tax",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "status": "PASSED",
+      "symbol": "calculate"
+    },
+    {
+      "case_manifest_sha256": "sha256:49c378b15abe44a7eae2be430997060425459c6f9bd3960697781ae1e790cf2a",
+      "layers": {
+        "behavior": {
+          "case_count": 5,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 5,
+          "results": [
+            {
+              "arguments_sha256": "sha256:0399c87e21278339613d80f2c68eeee8f1f5db8c7bbc17aef5ea3505a34cf113",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 0,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:dd55e0b5b3f8b4641b7e21301dce0ed5a3348cfbbad38b703cec8c59890f857e",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 55
+              },
+              "case_id": 1,
+              "independent_expected": 55,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "55",
+                "status": "RETURNED",
+                "value": 55
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "55",
+                "status": "RETURNED",
+                "value": 55
+              }
+            },
+            {
+              "arguments_sha256": "sha256:65caac3e2551b9592e66ec492fba81c94edf43e77a4b03902587245cc3538e29",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 100
+              },
+              "case_id": 2,
+              "independent_expected": 100,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              }
+            },
+            {
+              "arguments_sha256": "sha256:6d0768ca694f07d7950ef60bfe3265329d6397e816f09712fece38c95433aa3b",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 3,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:dc559f06dce0aba331dba5c7aa8919ee2ccee69237fe196a5f8cbea3aad250b7",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 100
+              },
+              "case_id": 4,
+              "independent_expected": 100,
+              "source_native": {
+                "case_id": 4,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 4,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 5,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 5,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 18,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:b99493e7f5017f178f540e799e089ba743ea282c1f1c3f40cc36dcfbdc5c636b",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0",
+              "source_chunk_id": "sha256:6297ae1c3e6c77de9e37efc0ed14ce88e9be5b6c551f9a159be0a5fd6b17d1ff",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 382,
+                "file": "equivalence_module.cpp",
+                "start_byte": 164
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
+              "target_chunk_id": "sha256:d647ce41c0274e02e908f0f5814f51620815bc3f9f77b36ab8c7117dbfa266d7",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 545,
+                "file": "Migrated.java",
+                "start_byte": 309
+              }
+            },
+            {
+              "semantic_hash": "sha256:e3f3501b4b67ec369d3121a54c9f4272fd602ac8a3d8ed0eac05118f591882b5",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:02c27b52c59afef4a3edc13f31bfc9bd403a90c4405614558bbd6023809c1c2c",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 201,
+                "file": "equivalence_module.cpp",
+                "start_byte": 183
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:92572f4941533f862c376f1b1ae8d21a9b103151d7cb5cbce50c0c67ae0ba392",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 344,
+                "file": "Migrated.java",
+                "start_byte": 334
+              }
+            },
+            {
+              "semantic_hash": "sha256:b3f254193df987c62ea50d197fc571d0fb42fbef0c995439f066eddb084033b4",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:61f1cd3ff03594b263a5fa3d302c650e897c6d5824acff8a71905045c5c4c7e2",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 223,
+                "file": "equivalence_module.cpp",
+                "start_byte": 203
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:c622752cd9cd7ef68bc549b3601ae57ecf173028b6c312dd61d1e345be88c05a",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 358,
+                "file": "Migrated.java",
+                "start_byte": 346
+              }
+            },
+            {
+              "semantic_hash": "sha256:f46cad68ab3221e2bdbf719ff5915810fc4966bed231f607aa889554754ea3f0",
+              "semantic_path": "/functions/0/parameters/2",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/2",
+              "source_chunk_id": "sha256:cc0e8bc776b68eb649f76052c7546045a86e73481748a5bc1ef56df5b1ef26e8",
+              "source_semantic_pointer": "/functions/0/parameters/2",
+              "source_span": {
+                "end_byte": 245,
+                "file": "equivalence_module.cpp",
+                "start_byte": 225
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:9b2cf837d8dd0f454f7b1b79acf53d889b48f6c160b0af69003fb68bf186efe1",
+              "target_semantic_pointer": "/functions/0/parameters/2",
+              "target_span": {
+                "end_byte": 372,
+                "file": "Migrated.java",
+                "start_byte": 360
+              }
+            },
+            {
+              "semantic_hash": "sha256:e3664b76ce4bd7790c6ade1b9a4f94615ed3f1731dd5e43d589c520661a95cf0",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0",
+              "source_chunk_id": "sha256:621c5416e7f81502be7952f2fd472b06a3051eb7490d37dbe0db94daa95287cd",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 305,
+                "file": "equivalence_module.cpp",
+                "start_byte": 253
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
+              "target_chunk_id": "sha256:25b377847c236f07adf91b4817498c410d3b86c964e1695c462b4e22ae5500d1",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 446,
+                "file": "Migrated.java",
+                "start_byte": 384
+              }
+            },
+            {
+              "semantic_hash": "sha256:53d46a837947676f1f761d7d129d24da05c45bc6fb96dc3ce2907957016c7541",
+              "semantic_path": "/functions/0/body/0/condition",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition",
+              "source_chunk_id": "sha256:f1ec423790187e58316a579e7efc907c7edb3e7f4e56c900fe5a61b8d5117509",
+              "source_semantic_pointer": "/functions/0/body/0/condition",
+              "source_span": {
+                "end_byte": 272,
+                "file": "equivalence_module.cpp",
+                "start_byte": 257
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:ec6454a1be491c70248befa4dba65c356ea3bb23933de1f9fbf527cebf171519",
+              "target_semantic_pointer": "/functions/0/body/0/condition",
+              "target_span": {
+                "end_byte": 406,
+                "file": "Migrated.java",
+                "start_byte": 387
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/0/condition/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition/left",
+              "source_chunk_id": "sha256:89fa8d90f83d7b8fdeb571cee57889bcc8b24c37effe7f1097eb758f5e2639d2",
+              "source_semantic_pointer": "/functions/0/body/0/condition/left",
+              "source_span": {
+                "end_byte": 262,
+                "file": "equivalence_module.cpp",
+                "start_byte": 257
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:10a9f033a3587900f3f1387c558a408f02114d62769dd5ad7d9f53b206dbc8f7",
+              "target_semantic_pointer": "/functions/0/body/0/condition/left",
+              "target_span": {
+                "end_byte": 394,
+                "file": "Migrated.java",
+                "start_byte": 389
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/condition/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition/right",
+              "source_chunk_id": "sha256:ed169756fb983c9de8ca4b495e5fd86376323b32474ddd74ab1f45bdc8ffb079",
+              "source_semantic_pointer": "/functions/0/body/0/condition/right",
+              "source_span": {
+                "end_byte": 272,
+                "file": "equivalence_module.cpp",
+                "start_byte": 265
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:10f63a42872a90f9118df0c78f0a204ccfa0cd951b5dd94af45ec994987cac6d",
+              "target_semantic_pointer": "/functions/0/body/0/condition/right",
+              "target_span": {
+                "end_byte": 404,
+                "file": "Migrated.java",
+                "start_byte": 397
+              }
+            },
+            {
+              "semantic_hash": "sha256:77beca6c926a111a584364a9fd926386dcfcb25560e017e99cbe456c1ea386c2",
+              "semantic_path": "/functions/0/body/0/then/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/then/0",
+              "source_chunk_id": "sha256:4e378a1e166cda3e870a49a8e1d3ffb4a94c0bf1330f9c4f595c38b3526b29ba",
+              "source_semantic_pointer": "/functions/0/body/0/then/0",
+              "source_span": {
+                "end_byte": 298,
+                "file": "equivalence_module.cpp",
+                "start_byte": 284
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:8f4314255b5d813a5e11874de65281b027dea3b6ad6d439c25215cde22a0c2c5",
+              "target_semantic_pointer": "/functions/0/body/0/then/0",
+              "target_span": {
+                "end_byte": 436,
+                "file": "Migrated.java",
+                "start_byte": 421
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/then/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/then/0/expression",
+              "source_chunk_id": "sha256:7a1ed9d867aac5d4654c281ec20b7f5946c236c8509bcc28baf3f882a57d50c6",
+              "source_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "source_span": {
+                "end_byte": 298,
+                "file": "equivalence_module.cpp",
+                "start_byte": 291
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:a1f9d02f51d5c297ff6e03228caff89fbd5342f483d86821c692f4ed0dd786ee",
+              "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "target_span": {
+                "end_byte": 435,
+                "file": "Migrated.java",
+                "start_byte": 428
+              }
+            },
+            {
+              "semantic_hash": "sha256:84080fec0bd65bbf4c493c9eb198b58eea1402071e245a2b2d6667e9f95f9a6f",
+              "semantic_path": "/functions/0/body/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1",
+              "source_chunk_id": "sha256:9270e9b3f2c18854a3a57617d1b6a475fe27c9b9a82073ccca7d62fda93186db",
+              "source_semantic_pointer": "/functions/0/body/1",
+              "source_span": {
+                "end_byte": 362,
+                "file": "equivalence_module.cpp",
+                "start_byte": 310
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1",
+              "target_chunk_id": "sha256:7fffef3827074aab3100d4a75474a63df300a77938ed31102de9ed945cde11f1",
+              "target_semantic_pointer": "/functions/0/body/1",
+              "target_span": {
+                "end_byte": 517,
+                "file": "Migrated.java",
+                "start_byte": 455
+              }
+            },
+            {
+              "semantic_hash": "sha256:6e317bdabfa4adcb324b2c69b70a8d078ff186fadd134b427e9befa09e6316a2",
+              "semantic_path": "/functions/0/body/1/condition",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/condition",
+              "source_chunk_id": "sha256:a9ff5deea65bb3f39e4400691ad5d25678e40e53ee3de54ed94745933775232f",
+              "source_semantic_pointer": "/functions/0/body/1/condition",
+              "source_span": {
+                "end_byte": 329,
+                "file": "equivalence_module.cpp",
+                "start_byte": 314
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:64460150640c92e2aaa91555b751d9b31724d3562f702f4a39ea29a45e85fb10",
+              "target_semantic_pointer": "/functions/0/body/1/condition",
+              "target_span": {
+                "end_byte": 477,
+                "file": "Migrated.java",
+                "start_byte": 458
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/1/condition/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/condition/left",
+              "source_chunk_id": "sha256:2237306e0b0f106983cfd8248b2cacbfd03eed9f9f9fde94837571d7809af30a",
+              "source_semantic_pointer": "/functions/0/body/1/condition/left",
+              "source_span": {
+                "end_byte": 319,
+                "file": "equivalence_module.cpp",
+                "start_byte": 314
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:422489f7f02b934ccb158007c3e9b081e0a05678841ae85d97ac9cc4220d9239",
+              "target_semantic_pointer": "/functions/0/body/1/condition/left",
+              "target_span": {
+                "end_byte": 465,
+                "file": "Migrated.java",
+                "start_byte": 460
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/condition/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/condition/right",
+              "source_chunk_id": "sha256:28e85b9765938786c73c9b6684d42b9ff15b960f7dbf464712cbdfc16b61f604",
+              "source_semantic_pointer": "/functions/0/body/1/condition/right",
+              "source_span": {
+                "end_byte": 329,
+                "file": "equivalence_module.cpp",
+                "start_byte": 322
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:8103f2a9cd84cac972a0913d26fc3cd9d6c8150d5df227211059e98ba2c3c53d",
+              "target_semantic_pointer": "/functions/0/body/1/condition/right",
+              "target_span": {
+                "end_byte": 475,
+                "file": "Migrated.java",
+                "start_byte": 468
+              }
+            },
+            {
+              "semantic_hash": "sha256:67b380747fcbe01bf49da0edcaeb31681aa010a2406cfbc5e57e2eb2bdeff892",
+              "semantic_path": "/functions/0/body/1/then/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/then/0",
+              "source_chunk_id": "sha256:b7ab6d3d40101f086c8b0ea2316aba432c88359e240c82b6ec6ac26fec8e91e1",
+              "source_semantic_pointer": "/functions/0/body/1/then/0",
+              "source_span": {
+                "end_byte": 355,
+                "file": "equivalence_module.cpp",
+                "start_byte": 341
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:cfca6519c19ef1aa6c395585f52ac11df48a53322dee32f76dda6a1214f08352",
+              "target_semantic_pointer": "/functions/0/body/1/then/0",
+              "target_span": {
+                "end_byte": 507,
+                "file": "Migrated.java",
+                "start_byte": 492
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/then/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/then/0/expression",
+              "source_chunk_id": "sha256:afa9c5ec943e279dd01c765e0cc706abb4d62e2da84f664b2f6d77eb693e7722",
+              "source_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "source_span": {
+                "end_byte": 355,
+                "file": "equivalence_module.cpp",
+                "start_byte": 348
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:7f8e2a23a74629573a82821dd45b27c0b05d3452649974d0f5faae978ecdcdae",
+              "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "target_span": {
+                "end_byte": 506,
+                "file": "Migrated.java",
+                "start_byte": 499
+              }
+            },
+            {
+              "semantic_hash": "sha256:791ff6c68a23e38a5b1c986d31b9de40243f26ab65cc4e5297a69e1a1f440d42",
+              "semantic_path": "/functions/0/body/2",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/2",
+              "source_chunk_id": "sha256:b151a86700a47878472f0ae39845089ca6d9bdc06cdbd8a23680460380ba6428",
+              "source_semantic_pointer": "/functions/0/body/2",
+              "source_span": {
+                "end_byte": 379,
+                "file": "equivalence_module.cpp",
+                "start_byte": 367
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2",
+              "target_chunk_id": "sha256:40a25dca95e6f8c7d17c25a092d34b26515c2c19017328c40d5dab34b80baa91",
+              "target_semantic_pointer": "/functions/0/body/2",
+              "target_span": {
+                "end_byte": 539,
+                "file": "Migrated.java",
+                "start_byte": 526
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/2/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/2/expression",
+              "source_chunk_id": "sha256:3e9f87f590402cf6d7a50a0fd6f4004ea60951e339172f881a9459af9b657248",
+              "source_semantic_pointer": "/functions/0/body/2/expression",
+              "source_span": {
+                "end_byte": 379,
+                "file": "equivalence_module.cpp",
+                "start_byte": 374
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:abb3971bcf5bee4fc4dd1b97074a4e2e0ecd3427a3061d4db0e70bc5a81d706f",
+              "target_semantic_pointer": "/functions/0/body/2/expression",
+              "target_span": {
+                "end_byte": 538,
+                "file": "Migrated.java",
+                "start_byte": 533
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [
+            "java.integer.+.call:Math.addExact",
+            "java.integer.-.call:Math.subtractExact"
+          ],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 18,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 742,
+              "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+              "logical_file": "equivalence_module.cpp",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 918,
+              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "logical_file": "Migrated.java",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:cpp",
+            "target-analyzer-soundness:java",
+            "source-compiler-runtime-soundness-not-discharged:cpp",
+            "target-compiler-runtime-soundness-not-discharged:java",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:java",
+            "emitter-normalization-soundness:java",
+            "same-input:value:value",
+            "same-input:minimum:minimum",
+            "same-input:maximum:maximum",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-002-input.json",
+            "sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a"
+          },
+          "formal_input_digest": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a",
+          "formal_input_path": "certification/artifacts/module/formal-function-002-input.json",
+          "formal_input_sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a",
+          "formal_result_path": "certification/artifacts/module/formal-function-002-result.json",
+          "formal_result_sha256": "sha256:95803bfcbbc360bab0aa448ca5b0987983e357bd220145a4a9d5f36efc035580",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:2a9f5f06e16464ef3df8aa26bdaa21bccd3d4930f9a645385368958438970911",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:9af6e661977c24f50a3c4aa7de8d79d4466d938100225181f18126987b0bba78",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-002.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-002.smt2",
+            "sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163"
+          },
+          "solver_input_digest": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163",
+          "solver_input_path": "certification/artifacts/module/formal-function-002.smt2",
+          "solver_input_sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "clamp",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:b579602f8be54c72cf2fb2d137d0d52827940cd689d67d98f709a1223f46468c",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:b579602f8be54c72cf2fb2d137d0d52827940cd689d67d98f709a1223f46468c"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "integer"
+          },
+          {
+            "name": "minimum",
+            "type": "integer"
+          },
+          {
+            "name": "maximum",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "status": "PASSED",
+      "symbol": "clamp"
+    },
+    {
+      "case_manifest_sha256": "sha256:21c6eed9d6dc54d937a2de0a5dac4ce4db80157c757359a43029d3bd89291872",
+      "layers": {
+        "behavior": {
+          "case_count": 5,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 5,
+          "results": [
+            {
+              "arguments_sha256": "sha256:a2fdbbbeaa4135d28c21a96ec9ab564891d460ff94c3239feadd2c08f335f759",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "case_id": 0,
+              "independent_expected": 0.0,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:fb99ab6ddb90164a1f9e95a5b3f1f39673599381059d8faacb3f6cbbe9087380",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 55.25
+              },
+              "case_id": 1,
+              "independent_expected": 55.25,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "fp64-hex",
+                "raw": "404ba00000000000",
+                "status": "RETURNED",
+                "value": 55.25
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "fp64-hex",
+                "raw": "404ba00000000000",
+                "status": "RETURNED",
+                "value": 55.25
+              }
+            },
+            {
+              "arguments_sha256": "sha256:9ba649278a8549468844bea6005a78e8e8f89bc7f71ab556f3139c2d5a006ef1",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 100.0
+              },
+              "case_id": 2,
+              "independent_expected": 100.0,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "fp64-hex",
+                "raw": "4059000000000000",
+                "status": "RETURNED",
+                "value": 100.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "fp64-hex",
+                "raw": "4059000000000000",
+                "status": "RETURNED",
+                "value": 100.0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:b7a59d70788992b47bd5bdde212ee70b4c4522f7d1d5aeeb1f51a52184ffd469",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": -0.0
+              },
+              "case_id": 3,
+              "independent_expected": -0.0,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "fp64-hex",
+                "raw": "8000000000000000",
+                "status": "RETURNED",
+                "value": -0.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "fp64-hex",
+                "raw": "8000000000000000",
+                "status": "RETURNED",
+                "value": -0.0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:aaaf40eff3e409415414b67b939e99877aa08cffd1f036053d00efe581ceee54",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "case_id": 4,
+              "independent_expected": 0.0,
+              "source_native": {
+                "case_id": 4,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 4,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 5,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 5,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 18,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:0b493cc502b0ddacddd72c0172c3e192dc14d8503fd45d0ee604ff09eafab894",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0",
+              "source_chunk_id": "sha256:77ecf3252f0a0b03a716754ff37e278f6df1d502af7cb309793b395ce82d0869",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 677,
+                "file": "equivalence_module.cpp",
+                "start_byte": 477
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
+              "target_chunk_id": "sha256:0ee070287784855c5256af2bfec34d8aa052a7c0eeb34cf147c77f0f5fa974c9",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 801,
+                "file": "Migrated.java",
+                "start_byte": 551
+              }
+            },
+            {
+              "semantic_hash": "sha256:4c6e93c24ca331620e870b929cbd51b4d004515bc76e600df3d50d65d084cf80",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:e7b4c75191636eb98ed78bb2444adfc7b027462025dd1da04939bacac29fb422",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 508,
+                "file": "equivalence_module.cpp",
+                "start_byte": 496
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:1f450dbe7dedb29aabeac8974c2c1ab0c64be860668cea9eacaf7274b3861a7a",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 596,
+                "file": "Migrated.java",
+                "start_byte": 584
+              }
+            },
+            {
+              "semantic_hash": "sha256:0fb48d68d197772333863ed05fb41b39810103fb49f8e54a84e8287ee65d6bba",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:cf63ebe1fb9f95be13ddf70170d77b6c46fef08b4ab622f077ace4c95af611d1",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 524,
+                "file": "equivalence_module.cpp",
+                "start_byte": 510
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:e68d91ec206790fe3f91d253f67cb46f0281533ac14a8c1656ac424c53483d4e",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 612,
+                "file": "Migrated.java",
+                "start_byte": 598
+              }
+            },
+            {
+              "semantic_hash": "sha256:5bb2b664a0580e21f493eb3bcb6a1f2cfb2803955f7027657dc14935764a7029",
+              "semantic_path": "/functions/0/parameters/2",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/2",
+              "source_chunk_id": "sha256:a0a9c3ef04b2052a081e1956e83e1eeb762f2c7106a708af68203a9d6112e87f",
+              "source_semantic_pointer": "/functions/0/parameters/2",
+              "source_span": {
+                "end_byte": 540,
+                "file": "equivalence_module.cpp",
+                "start_byte": 526
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:f4cf8c0ed03215c98d93b21c09da56608739b5f1728b7ee033e220cd22de71c8",
+              "target_semantic_pointer": "/functions/0/parameters/2",
+              "target_span": {
+                "end_byte": 628,
+                "file": "Migrated.java",
+                "start_byte": 614
+              }
+            },
+            {
+              "semantic_hash": "sha256:e3664b76ce4bd7790c6ade1b9a4f94615ed3f1731dd5e43d589c520661a95cf0",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0",
+              "source_chunk_id": "sha256:621c5416e7f81502be7952f2fd472b06a3051eb7490d37dbe0db94daa95287cd",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 600,
+                "file": "equivalence_module.cpp",
+                "start_byte": 548
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
+              "target_chunk_id": "sha256:25b377847c236f07adf91b4817498c410d3b86c964e1695c462b4e22ae5500d1",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 702,
+                "file": "Migrated.java",
+                "start_byte": 640
+              }
+            },
+            {
+              "semantic_hash": "sha256:53d46a837947676f1f761d7d129d24da05c45bc6fb96dc3ce2907957016c7541",
+              "semantic_path": "/functions/0/body/0/condition",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition",
+              "source_chunk_id": "sha256:f1ec423790187e58316a579e7efc907c7edb3e7f4e56c900fe5a61b8d5117509",
+              "source_semantic_pointer": "/functions/0/body/0/condition",
+              "source_span": {
+                "end_byte": 567,
+                "file": "equivalence_module.cpp",
+                "start_byte": 552
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:ec6454a1be491c70248befa4dba65c356ea3bb23933de1f9fbf527cebf171519",
+              "target_semantic_pointer": "/functions/0/body/0/condition",
+              "target_span": {
+                "end_byte": 662,
+                "file": "Migrated.java",
+                "start_byte": 643
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/0/condition/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition/left",
+              "source_chunk_id": "sha256:89fa8d90f83d7b8fdeb571cee57889bcc8b24c37effe7f1097eb758f5e2639d2",
+              "source_semantic_pointer": "/functions/0/body/0/condition/left",
+              "source_span": {
+                "end_byte": 557,
+                "file": "equivalence_module.cpp",
+                "start_byte": 552
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:10a9f033a3587900f3f1387c558a408f02114d62769dd5ad7d9f53b206dbc8f7",
+              "target_semantic_pointer": "/functions/0/body/0/condition/left",
+              "target_span": {
+                "end_byte": 650,
+                "file": "Migrated.java",
+                "start_byte": 645
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/condition/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/condition/right",
+              "source_chunk_id": "sha256:ed169756fb983c9de8ca4b495e5fd86376323b32474ddd74ab1f45bdc8ffb079",
+              "source_semantic_pointer": "/functions/0/body/0/condition/right",
+              "source_span": {
+                "end_byte": 567,
+                "file": "equivalence_module.cpp",
+                "start_byte": 560
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:10f63a42872a90f9118df0c78f0a204ccfa0cd951b5dd94af45ec994987cac6d",
+              "target_semantic_pointer": "/functions/0/body/0/condition/right",
+              "target_span": {
+                "end_byte": 660,
+                "file": "Migrated.java",
+                "start_byte": 653
+              }
+            },
+            {
+              "semantic_hash": "sha256:77beca6c926a111a584364a9fd926386dcfcb25560e017e99cbe456c1ea386c2",
+              "semantic_path": "/functions/0/body/0/then/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/then/0",
+              "source_chunk_id": "sha256:4e378a1e166cda3e870a49a8e1d3ffb4a94c0bf1330f9c4f595c38b3526b29ba",
+              "source_semantic_pointer": "/functions/0/body/0/then/0",
+              "source_span": {
+                "end_byte": 593,
+                "file": "equivalence_module.cpp",
+                "start_byte": 579
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:8f4314255b5d813a5e11874de65281b027dea3b6ad6d439c25215cde22a0c2c5",
+              "target_semantic_pointer": "/functions/0/body/0/then/0",
+              "target_span": {
+                "end_byte": 692,
+                "file": "Migrated.java",
+                "start_byte": 677
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/then/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/then/0/expression",
+              "source_chunk_id": "sha256:7a1ed9d867aac5d4654c281ec20b7f5946c236c8509bcc28baf3f882a57d50c6",
+              "source_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "source_span": {
+                "end_byte": 593,
+                "file": "equivalence_module.cpp",
+                "start_byte": 586
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:a1f9d02f51d5c297ff6e03228caff89fbd5342f483d86821c692f4ed0dd786ee",
+              "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "target_span": {
+                "end_byte": 691,
+                "file": "Migrated.java",
+                "start_byte": 684
+              }
+            },
+            {
+              "semantic_hash": "sha256:84080fec0bd65bbf4c493c9eb198b58eea1402071e245a2b2d6667e9f95f9a6f",
+              "semantic_path": "/functions/0/body/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1",
+              "source_chunk_id": "sha256:9270e9b3f2c18854a3a57617d1b6a475fe27c9b9a82073ccca7d62fda93186db",
+              "source_semantic_pointer": "/functions/0/body/1",
+              "source_span": {
+                "end_byte": 657,
+                "file": "equivalence_module.cpp",
+                "start_byte": 605
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1",
+              "target_chunk_id": "sha256:7fffef3827074aab3100d4a75474a63df300a77938ed31102de9ed945cde11f1",
+              "target_semantic_pointer": "/functions/0/body/1",
+              "target_span": {
+                "end_byte": 773,
+                "file": "Migrated.java",
+                "start_byte": 711
+              }
+            },
+            {
+              "semantic_hash": "sha256:6e317bdabfa4adcb324b2c69b70a8d078ff186fadd134b427e9befa09e6316a2",
+              "semantic_path": "/functions/0/body/1/condition",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/condition",
+              "source_chunk_id": "sha256:a9ff5deea65bb3f39e4400691ad5d25678e40e53ee3de54ed94745933775232f",
+              "source_semantic_pointer": "/functions/0/body/1/condition",
+              "source_span": {
+                "end_byte": 624,
+                "file": "equivalence_module.cpp",
+                "start_byte": 609
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:64460150640c92e2aaa91555b751d9b31724d3562f702f4a39ea29a45e85fb10",
+              "target_semantic_pointer": "/functions/0/body/1/condition",
+              "target_span": {
+                "end_byte": 733,
+                "file": "Migrated.java",
+                "start_byte": 714
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/1/condition/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/condition/left",
+              "source_chunk_id": "sha256:2237306e0b0f106983cfd8248b2cacbfd03eed9f9f9fde94837571d7809af30a",
+              "source_semantic_pointer": "/functions/0/body/1/condition/left",
+              "source_span": {
+                "end_byte": 614,
+                "file": "equivalence_module.cpp",
+                "start_byte": 609
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:422489f7f02b934ccb158007c3e9b081e0a05678841ae85d97ac9cc4220d9239",
+              "target_semantic_pointer": "/functions/0/body/1/condition/left",
+              "target_span": {
+                "end_byte": 721,
+                "file": "Migrated.java",
+                "start_byte": 716
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/condition/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/condition/right",
+              "source_chunk_id": "sha256:28e85b9765938786c73c9b6684d42b9ff15b960f7dbf464712cbdfc16b61f604",
+              "source_semantic_pointer": "/functions/0/body/1/condition/right",
+              "source_span": {
+                "end_byte": 624,
+                "file": "equivalence_module.cpp",
+                "start_byte": 617
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:8103f2a9cd84cac972a0913d26fc3cd9d6c8150d5df227211059e98ba2c3c53d",
+              "target_semantic_pointer": "/functions/0/body/1/condition/right",
+              "target_span": {
+                "end_byte": 731,
+                "file": "Migrated.java",
+                "start_byte": 724
+              }
+            },
+            {
+              "semantic_hash": "sha256:67b380747fcbe01bf49da0edcaeb31681aa010a2406cfbc5e57e2eb2bdeff892",
+              "semantic_path": "/functions/0/body/1/then/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/then/0",
+              "source_chunk_id": "sha256:b7ab6d3d40101f086c8b0ea2316aba432c88359e240c82b6ec6ac26fec8e91e1",
+              "source_semantic_pointer": "/functions/0/body/1/then/0",
+              "source_span": {
+                "end_byte": 650,
+                "file": "equivalence_module.cpp",
+                "start_byte": 636
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:cfca6519c19ef1aa6c395585f52ac11df48a53322dee32f76dda6a1214f08352",
+              "target_semantic_pointer": "/functions/0/body/1/then/0",
+              "target_span": {
+                "end_byte": 763,
+                "file": "Migrated.java",
+                "start_byte": 748
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/then/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/1/then/0/expression",
+              "source_chunk_id": "sha256:afa9c5ec943e279dd01c765e0cc706abb4d62e2da84f664b2f6d77eb693e7722",
+              "source_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "source_span": {
+                "end_byte": 650,
+                "file": "equivalence_module.cpp",
+                "start_byte": 643
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:7f8e2a23a74629573a82821dd45b27c0b05d3452649974d0f5faae978ecdcdae",
+              "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "target_span": {
+                "end_byte": 762,
+                "file": "Migrated.java",
+                "start_byte": 755
+              }
+            },
+            {
+              "semantic_hash": "sha256:791ff6c68a23e38a5b1c986d31b9de40243f26ab65cc4e5297a69e1a1f440d42",
+              "semantic_path": "/functions/0/body/2",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/2",
+              "source_chunk_id": "sha256:b151a86700a47878472f0ae39845089ca6d9bdc06cdbd8a23680460380ba6428",
+              "source_semantic_pointer": "/functions/0/body/2",
+              "source_span": {
+                "end_byte": 674,
+                "file": "equivalence_module.cpp",
+                "start_byte": 662
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2",
+              "target_chunk_id": "sha256:40a25dca95e6f8c7d17c25a092d34b26515c2c19017328c40d5dab34b80baa91",
+              "target_semantic_pointer": "/functions/0/body/2",
+              "target_span": {
+                "end_byte": 795,
+                "file": "Migrated.java",
+                "start_byte": 782
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/2/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/2/expression",
+              "source_chunk_id": "sha256:3e9f87f590402cf6d7a50a0fd6f4004ea60951e339172f881a9459af9b657248",
+              "source_semantic_pointer": "/functions/0/body/2/expression",
+              "source_span": {
+                "end_byte": 674,
+                "file": "equivalence_module.cpp",
+                "start_byte": 669
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:abb3971bcf5bee4fc4dd1b97074a4e2e0ecd3427a3061d4db0e70bc5a81d706f",
+              "target_semantic_pointer": "/functions/0/body/2/expression",
+              "target_span": {
+                "end_byte": 794,
+                "file": "Migrated.java",
+                "start_byte": 789
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [
+            "java.integer.+.call:Math.addExact",
+            "java.integer.-.call:Math.subtractExact"
+          ],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 18,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 742,
+              "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+              "logical_file": "equivalence_module.cpp",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 918,
+              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "logical_file": "Migrated.java",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:cpp",
+            "target-analyzer-soundness:java",
+            "source-compiler-runtime-soundness-not-discharged:cpp",
+            "target-compiler-runtime-soundness-not-discharged:java",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:java",
+            "emitter-normalization-soundness:java",
+            "canonical-finite-input-domain:source:value",
+            "canonical-finite-input-domain:target:value",
+            "same-input:value:value",
+            "canonical-finite-input-domain:source:minimum",
+            "canonical-finite-input-domain:target:minimum",
+            "same-input:minimum:minimum",
+            "canonical-finite-input-domain:source:maximum",
+            "canonical-finite-input-domain:target:maximum",
+            "same-input:maximum:maximum",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-003-input.json",
+            "sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2"
+          },
+          "formal_input_digest": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2",
+          "formal_input_path": "certification/artifacts/module/formal-function-003-input.json",
+          "formal_input_sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2",
+          "formal_result_path": "certification/artifacts/module/formal-function-003-result.json",
+          "formal_result_sha256": "sha256:11cdcc9fd4e64c68c232fad2e29f168c7385f15a642092e4debc8b5641fba3c0",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:5f73b860c5bbc8d7cfeb756c04959d5059687d24f2e26d5a9912876dfa916a25",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-003.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-003.smt2",
+            "sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e"
+          },
+          "solver_input_digest": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e",
+          "solver_input_path": "certification/artifacts/module/formal-function-003.smt2",
+          "solver_input_sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "clampNumber",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:d5ccc44f00f16bdba4597b39255686517a7bf240e5877c5e7e07af4490e53d31",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:d5ccc44f00f16bdba4597b39255686517a7bf240e5877c5e7e07af4490e53d31"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "number"
+          },
+          {
+            "name": "minimum",
+            "type": "number"
+          },
+          {
+            "name": "maximum",
+            "type": "number"
+          }
+        ],
+        "return_type": "number"
+      },
+      "status": "PASSED",
+      "symbol": "clampNumber"
+    },
+    {
+      "case_manifest_sha256": "sha256:30912587ae629e9ae809a5abb9c812dae2dc3427b916cad7a01ac397b1fe1e8d",
+      "layers": {
+        "behavior": {
+          "case_count": 4,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 4,
+          "results": [
+            {
+              "arguments_sha256": "sha256:c9d5599bff99b74574f4d281faac0adb73db1715829fa575d18c01929b471cda",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 5
+              },
+              "case_id": 0,
+              "independent_expected": 5,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "5",
+                "status": "RETURNED",
+                "value": 5
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "5",
+                "status": "RETURNED",
+                "value": 5
+              }
+            },
+            {
+              "arguments_sha256": "sha256:71b453b3e1ad21cf5235c36375339c16b98cdd4930ba58556e00a6a9fc052d6c",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": -5
+              },
+              "case_id": 1,
+              "independent_expected": -5,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "-5",
+                "status": "RETURNED",
+                "value": -5
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "-5",
+                "status": "RETURNED",
+                "value": -5
+              }
+            },
+            {
+              "arguments_sha256": "sha256:d9aab842afdeae14ab2f34b50698137b5f091e5d3cce642c10e713a9a61a3e25",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 2,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:058ad81bf8d13fd28539d480c77d3348bbdcca9f8c301dfb1cf56640f8cdf8da",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 3
+              },
+              "case_id": 3,
+              "independent_expected": 3,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "3",
+                "status": "RETURNED",
+                "value": 3
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "3",
+                "status": "RETURNED",
+                "value": 3
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 4,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 4,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 7,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:d23d135f12ed3c7fdddd0832b0411f90494f0f5c1f10d8052607d8cad841a7e3",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0",
+              "source_chunk_id": "sha256:66d629bd704e7cc1514c879f180a595696cdcff4b85bb677bc217cde2a58daa8",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 475,
+                "file": "equivalence_module.cpp",
+                "start_byte": 384
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0",
+              "target_chunk_id": "sha256:ec6c95e3bd3870f2c0f8cd6e2d94d985645a36c94ed564da6907ffd23e2af912",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 915,
+                "file": "Migrated.java",
+                "start_byte": 807
+              }
+            },
+            {
+              "semantic_hash": "sha256:3818cd68e3f7cbbde071720652490576086f836c238f87dd20344440b4254c93",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:0df306de03ad4085f7112e7859032ad6c29b8fd20e7713275f5d2d7d323dd9e6",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 425,
+                "file": "equivalence_module.cpp",
+                "start_byte": 408
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:7ef186a9f2f5463afd445d07124f355eced3d052822e41ad86271f948dcfde4b",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 846,
+                "file": "Migrated.java",
+                "start_byte": 837
+              }
+            },
+            {
+              "semantic_hash": "sha256:33de440b5cdb1b55a7223b726dbfbd63c52abbc6b359633aaa100d3b4d1ac29f",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:862ae48b26078549067b13ed5443dfe46232d218815d08019c23cca9898d035a",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 445,
+                "file": "equivalence_module.cpp",
+                "start_byte": 427
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:9fd0f66889f434251e7f685f053af0d557ced5e901bc3a96ba04d60ade1726ee",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 858,
+                "file": "Migrated.java",
+                "start_byte": 848
+              }
+            },
+            {
+              "semantic_hash": "sha256:6d17cc09e18cd4307291ffa32cf37b5c7cf8915ace55c90f5f91c6c22e2a8474",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0",
+              "source_chunk_id": "sha256:afdaa0a339e54a2d00415d17434abdc0651db3bd1574d026b8abd4fe6004b000",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 472,
+                "file": "equivalence_module.cpp",
+                "start_byte": 453
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0",
+              "target_chunk_id": "sha256:4d3038655aed9aa332a5683788b6f56d726a85027d53885ca966ba17273ff674",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 909,
+                "file": "Migrated.java",
+                "start_byte": 870
+              }
+            },
+            {
+              "semantic_hash": "sha256:50d41cae73183888cfb9aa70dee8858308446a1aa6a112b1ef79843fbe0c9dfe",
+              "semantic_path": "/functions/0/body/0/expression",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/expression",
+              "source_chunk_id": "sha256:1cadbb733b2e143099d248ae6235d72be6435656a6939e1f00da64d95d611c7d",
+              "source_semantic_pointer": "/functions/0/body/0/expression",
+              "source_span": {
+                "end_byte": 472,
+                "file": "equivalence_module.cpp",
+                "start_byte": 460
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:599b76d5286dc8c7c902cba13a5c5eb769f7dc59b994e9bfcb03d7ba727eeb52",
+              "target_semantic_pointer": "/functions/0/body/0/expression",
+              "target_span": {
+                "end_byte": 908,
+                "file": "Migrated.java",
+                "start_byte": 877
+              }
+            },
+            {
+              "semantic_hash": "sha256:6a7a75b8577de0e17c331bc3bf9ecdb9a9be63fb3433a3278b7478b3a271da20",
+              "semantic_path": "/functions/0/body/0/expression/left",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/expression/left",
+              "source_chunk_id": "sha256:49345f36ce3a74491291e8980ca023d8b764c9a7116132e6c7967763c9e54050",
+              "source_semantic_pointer": "/functions/0/body/0/expression/left",
+              "source_span": {
+                "end_byte": 464,
+                "file": "equivalence_module.cpp",
+                "start_byte": 460
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:eb7a5ff29179c3f06c815e85855c5a69c389a361b6f6dcdfecb01eb85ed0075c",
+              "target_semantic_pointer": "/functions/0/body/0/expression/left",
+              "target_span": {
+                "end_byte": 900,
+                "file": "Migrated.java",
+                "start_byte": 896
+              }
+            },
+            {
+              "semantic_hash": "sha256:36a0598f311fa31ea2246e83b4504fae8b3e4a541de7e3bd7f50f148326304a2",
+              "semantic_path": "/functions/0/body/0/expression/right",
+              "source_artifact_pointer": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576#/functions/0/body/0/expression/right",
+              "source_chunk_id": "sha256:6b3392c00bc1c7a7c44838538c7dd9bd1751fc9464e7c760140f022786a342c4",
+              "source_semantic_pointer": "/functions/0/body/0/expression/right",
+              "source_span": {
+                "end_byte": 472,
+                "file": "equivalence_module.cpp",
+                "start_byte": 467
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:8dc029d85108ab25cf52a84b8515a31a4769a8e2c595d8fc9ca73fe8e9a3a647",
+              "target_semantic_pointer": "/functions/0/body/0/expression/right",
+              "target_span": {
+                "end_byte": 907,
+                "file": "Migrated.java",
+                "start_byte": 902
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [
+            "java.integer.+.call:Math.addExact",
+            "java.integer.-.call:Math.subtractExact"
+          ],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 7,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 742,
+              "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+              "logical_file": "equivalence_module.cpp",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 918,
+              "artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+              "logical_file": "Migrated.java",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:cpp",
+            "target-analyzer-soundness:java",
+            "source-compiler-runtime-soundness-not-discharged:cpp",
+            "target-compiler-runtime-soundness-not-discharged:java",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:java",
+            "emitter-normalization-soundness:java",
+            "same-input:left:left",
+            "same-input:right:right",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-004-input.json",
+            "sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471"
+          },
+          "formal_input_digest": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471",
+          "formal_input_path": "certification/artifacts/module/formal-function-004-input.json",
+          "formal_input_sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471",
+          "formal_result_path": "certification/artifacts/module/formal-function-004-result.json",
+          "formal_result_sha256": "sha256:48f44b0a72884b17c3acf49598e708f0cac4aeb37398dbb477f1f3e5dfc64dfb",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:a41f0bb44704138bbd2e99c8bcd2a4ea6de1e4b1cf22572b6a1ee4b4340b7a1e",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-004.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-004.smt2",
+            "sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163"
+          },
+          "solver_input_digest": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163",
+          "solver_input_path": "certification/artifacts/module/formal-function-004.smt2",
+          "solver_input_sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "difference",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:f4964ad2c740589304d990dfb12193ec390d346dde7a3f9eebc013bb69e68521",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:f4964ad2c740589304d990dfb12193ec390d346dde7a3f9eebc013bb69e68521"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "integer"
+          },
+          {
+            "name": "right",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "status": "PASSED",
+      "symbol": "difference"
+    }
+  ],
+  "kind": "typed-pure-module-equivalence",
+  "local_verification_status": "PASSED",
+  "module_contract": {
+    "exact_signature_set": true,
+    "exact_symbol_set": true,
+    "independence": {
+      "call_graph_closure": "EMPTY_AND_CLOSED",
+      "call_graph_edges": [],
+      "function_calls": "UNSUPPORTED",
+      "mutable_state": "UNSUPPORTED",
+      "shared_state": "ABSENT_BY_IR_CONSTRUCTION"
+    },
+    "manifest_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "source_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "target_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ]
+  },
+  "module_input": {
+    "case_manifest_sha256": "sha256:765081f57632fdff2499118ddeb6c12023e942c433675ac3d5e9b9864720a7ed",
+    "corpus_sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112",
+    "input_domain": "canonical-finite-no-error-input-domain",
+    "profile": "typed-pure-module-v1",
+    "route": {
+      "source_language": "cpp",
+      "target_language": "java"
+    },
+    "source_artifact_byte_count": 742,
+    "source_artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+    "source_logical_file": "equivalence_module.cpp",
+    "source_semantic_ir_sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071",
+    "target_artifact_byte_count": 918,
+    "target_artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+    "target_logical_file": "Migrated.java",
+    "target_semantic_ir_sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c"
+  },
+  "module_input_sha256": "sha256:3bc368a81e8e9b37896eb296b7a92e0787448f9172af5ef99766e4b21f68ca87",
+  "profile": "typed-pure-module-v1",
+  "route": {
+    "route_key": "cpp-to-java",
+    "source_language": "cpp",
+    "target_language": "java"
+  },
+  "schema_version": "1.0.0",
+  "source_validation": {
+    "both": {
+      "artifact_path": "equivalence_module.cpp",
+      "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "-std=c++20",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-o",
+            "source_harness",
+            "source_harness.cpp"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tbool\ttrue\nELMOS_OBSERVATION\t1\tbool\tfalse\nELMOS_OBSERVATION\t2\tbool\tfalse\nELMOS_OBSERVATION\t3\tbool\tfalse\n"
+        }
+      ],
+      "language": "cpp",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "bool",
+          "raw": "true",
+          "status": "RETURNED",
+          "value": true
+        },
+        {
+          "case_id": 1,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 2,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 3,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "cpp",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c++20"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "calculate": {
+      "artifact_path": "equivalence_module.cpp",
+      "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "-std=c++20",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-o",
+            "source_harness",
+            "source_harness.cpp"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t9223372036854775707\n"
+        }
+      ],
+      "language": "cpp",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "120",
+          "status": "RETURNED",
+          "value": 120
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "9223372036854775707",
+          "status": "RETURNED",
+          "value": 9223372036854775707
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "cpp",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c++20"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "clamp": {
+      "artifact_path": "equivalence_module.cpp",
+      "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "-std=c++20",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-o",
+            "source_harness",
+            "source_harness.cpp"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t0\nELMOS_OBSERVATION\t1\ti64-dec\t55\nELMOS_OBSERVATION\t2\ti64-dec\t100\nELMOS_OBSERVATION\t3\ti64-dec\t0\nELMOS_OBSERVATION\t4\ti64-dec\t100\n"
+        }
+      ],
+      "language": "cpp",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "55",
+          "status": "RETURNED",
+          "value": 55
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 4,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "cpp",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c++20"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "clampNumber": {
+      "artifact_path": "equivalence_module.cpp",
+      "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "-std=c++20",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-o",
+            "source_harness",
+            "source_harness.cpp"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t404ba00000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t4059000000000000\nELMOS_OBSERVATION\t3\tfp64-hex\t8000000000000000\nELMOS_OBSERVATION\t4\tfp64-hex\t0000000000000000\n"
+        }
+      ],
+      "language": "cpp",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        },
+        {
+          "case_id": 1,
+          "encoding": "fp64-hex",
+          "raw": "404ba00000000000",
+          "status": "RETURNED",
+          "value": 55.25
+        },
+        {
+          "case_id": 2,
+          "encoding": "fp64-hex",
+          "raw": "4059000000000000",
+          "status": "RETURNED",
+          "value": 100.0
+        },
+        {
+          "case_id": 3,
+          "encoding": "fp64-hex",
+          "raw": "8000000000000000",
+          "status": "RETURNED",
+          "value": -0.0
+        },
+        {
+          "case_id": 4,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "cpp",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c++20"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "difference": {
+      "artifact_path": "equivalence_module.cpp",
+      "artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+            "-std=c++20",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-o",
+            "source_harness",
+            "source_harness.cpp"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t5\nELMOS_OBSERVATION\t1\ti64-dec\t-5\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t3\n"
+        }
+      ],
+      "language": "cpp",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "5",
+          "status": "RETURNED",
+          "value": 5
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "-5",
+          "status": "RETURNED",
+          "value": -5
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "3",
+          "status": "RETURNED",
+          "value": 3
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "cpp",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c++20"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    }
+  },
+  "status": "PASSED",
+  "target_validation": {
+    "both": {
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+            "Migrated.java",
+            "RouteHarness.java"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "-cp",
+            ".",
+            "RouteHarness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tbool\ttrue\nELMOS_OBSERVATION\t1\tbool\tfalse\nELMOS_OBSERVATION\t2\tbool\tfalse\nELMOS_OBSERVATION\t3\tbool\tfalse\n"
+        }
+      ],
+      "language": "java",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "bool",
+          "raw": "true",
+          "status": "RETURNED",
+          "value": true
+        },
+        {
+          "case_id": 1,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 2,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 3,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "executable_sha256": null,
+        "language": "java",
+        "profile": [],
+        "version": "21.0.11"
+      }
+    },
+    "calculate": {
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+            "Migrated.java",
+            "RouteHarness.java"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "-cp",
+            ".",
+            "RouteHarness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t9223372036854775707\n"
+        }
+      ],
+      "language": "java",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "120",
+          "status": "RETURNED",
+          "value": 120
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "9223372036854775707",
+          "status": "RETURNED",
+          "value": 9223372036854775707
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "executable_sha256": null,
+        "language": "java",
+        "profile": [],
+        "version": "21.0.11"
+      }
+    },
+    "clamp": {
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+            "Migrated.java",
+            "RouteHarness.java"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "-cp",
+            ".",
+            "RouteHarness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t0\nELMOS_OBSERVATION\t1\ti64-dec\t55\nELMOS_OBSERVATION\t2\ti64-dec\t100\nELMOS_OBSERVATION\t3\ti64-dec\t0\nELMOS_OBSERVATION\t4\ti64-dec\t100\n"
+        }
+      ],
+      "language": "java",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "55",
+          "status": "RETURNED",
+          "value": 55
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 4,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "executable_sha256": null,
+        "language": "java",
+        "profile": [],
+        "version": "21.0.11"
+      }
+    },
+    "clampNumber": {
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+            "Migrated.java",
+            "RouteHarness.java"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "-cp",
+            ".",
+            "RouteHarness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t404ba00000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t4059000000000000\nELMOS_OBSERVATION\t3\tfp64-hex\t8000000000000000\nELMOS_OBSERVATION\t4\tfp64-hex\t0000000000000000\n"
+        }
+      ],
+      "language": "java",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        },
+        {
+          "case_id": 1,
+          "encoding": "fp64-hex",
+          "raw": "404ba00000000000",
+          "status": "RETURNED",
+          "value": 55.25
+        },
+        {
+          "case_id": 2,
+          "encoding": "fp64-hex",
+          "raw": "4059000000000000",
+          "status": "RETURNED",
+          "value": 100.0
+        },
+        {
+          "case_id": 3,
+          "encoding": "fp64-hex",
+          "raw": "8000000000000000",
+          "status": "RETURNED",
+          "value": -0.0
+        },
+        {
+          "case_id": 4,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "executable_sha256": null,
+        "language": "java",
+        "profile": [],
+        "version": "21.0.11"
+      }
+    },
+    "difference": {
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+            "Migrated.java",
+            "RouteHarness.java"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+            "-cp",
+            ".",
+            "RouteHarness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t5\nELMOS_OBSERVATION\t1\ti64-dec\t-5\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t3\n"
+        }
+      ],
+      "language": "java",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "5",
+          "status": "RETURNED",
+          "value": 5
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "-5",
+          "status": "RETURNED",
+          "value": -5
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "3",
+          "status": "RETURNED",
+          "value": 3
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+        "executable_sha256": null,
+        "language": "java",
+        "profile": [],
+        "version": "21.0.11"
+      }
+    }
+  },
+  "unsupported_semantics": [
+    "heap-and-object-identity",
+    "mutable-state-and-aliasing",
+    "exceptions-as-user-visible-control-flow",
+    "async-and-concurrency",
+    "io-network-database-and-framework-effects",
+    "reflection-dynamic-loading-and-native-interop"
+  ]
+}

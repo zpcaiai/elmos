@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:65422ab315d5fd9872554a583ddb7abb810b5bbd21cfc7032d6cb093d63d1423",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2006,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue3/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-computed-layout-i18n-theme-observer-trace/c07033806a4a9222266a710a08fc6d3803483d8d33ca81ae78b7c290d98c5801.json",
+      "profile_id": "vue3",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:c07033806a4a9222266a710a08fc6d3803483d8d33ca81ae78b7c290d98c5801"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:a460203bf2cb7f3dea723322dac50bd7ce1d2565c1f675eb877bb93cce2a78fa",
+        "byte_count": 40626,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/531b2fc4c2b060c2cccd54fbed6dc9455c3941f75e5020ae7313515c6a133b34.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:531b2fc4c2b060c2cccd54fbed6dc9455c3941f75e5020ae7313515c6a133b34"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

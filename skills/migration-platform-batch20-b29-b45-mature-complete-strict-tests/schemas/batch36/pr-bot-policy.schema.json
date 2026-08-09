@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/pr-bot-policy.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_key",
+    "providers",
+    "permissions",
+    "events",
+    "write_policy",
+    "checks"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "policy_key": {
+      "type": "string"
+    },
+    "providers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "github",
+          "gitlab",
+          "bitbucket"
+        ]
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": [
+        "metadata",
+        "contents",
+        "checks",
+        "pull_requests",
+        "workflows",
+        "secrets"
+      ],
+      "properties": {
+        "metadata": {
+          "enum": [
+            "read"
+          ]
+        },
+        "contents": {
+          "enum": [
+            "read",
+            "approved-write"
+          ]
+        },
+        "checks": {
+          "enum": [
+            "write"
+          ]
+        },
+        "pull_requests": {
+          "enum": [
+            "write"
+          ]
+        },
+        "workflows": {
+          "enum": [
+            "none",
+            "read"
+          ]
+        },
+        "secrets": {
+          "const": "none"
+        }
+      },
+      "additionalProperties": true
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "write_policy": {
+      "type": "object",
+      "required": [
+        "self_approval",
+        "fork_secret_access",
+        "comment_mode"
+      ],
+      "properties": {
+        "self_approval": {
+          "const": false
+        },
+        "fork_secret_access": {
+          "const": false
+        },
+        "comment_mode": {
+          "enum": [
+            "single-updatable-summary",
+            "checks-only"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

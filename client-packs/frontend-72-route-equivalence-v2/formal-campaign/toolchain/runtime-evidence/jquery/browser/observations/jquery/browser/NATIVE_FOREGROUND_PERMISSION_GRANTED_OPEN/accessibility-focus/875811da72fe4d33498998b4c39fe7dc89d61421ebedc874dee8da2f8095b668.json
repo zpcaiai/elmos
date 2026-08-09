@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:51597fe44eea3095854e77abfbe555a7b739d0ae61b0808f8755ca4777ec9af1",
+      "block_id": "accessibility-focus",
+      "byte_count": 543203,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/jquery/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-tree-focus-observer-trace/5a0bf6d2f2920d8b47c9029a893312e285a38a8e489812056e0152d4c57d9bc0.json",
+      "profile_id": "jquery",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:5a0bf6d2f2920d8b47c9029a893312e285a38a8e489812056e0152d4c57d9bc0"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:5d080e12cfe24c76f2f51e110a0add6ee4bf6a124092090e2a3b3790f06752dd",
+        "byte_count": 544171,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-axe-trace/40a21d56ea131bd53a229dd53b659f35506cf70c9ad608fb3e3966ab64b12845.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:40a21d56ea131bd53a229dd53b659f35506cf70c9ad608fb3e3966ab64b12845"
+      },
+      {
+        "artifact_id": "sha256:3e7c77dae9c330a5460e8f760a2d29abdccad9d3ab6573b01254980d47357171",
+        "byte_count": 5357,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-framework-event-trace/26a72ca35b2180a97eba3654455025d95b5e9645aeb97cd0c56a7eb06644ec2b.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:26a72ca35b2180a97eba3654455025d95b5e9645aeb97cd0c56a7eb06644ec2b"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

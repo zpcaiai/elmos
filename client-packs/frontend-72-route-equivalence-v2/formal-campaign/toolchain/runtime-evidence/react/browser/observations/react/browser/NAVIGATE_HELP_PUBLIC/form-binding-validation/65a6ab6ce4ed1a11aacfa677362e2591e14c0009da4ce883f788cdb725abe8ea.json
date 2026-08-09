@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:333fb7238e9d18c1c1af20c1332c967e09372488b23012146c917ba0b044a660",
+      "block_id": "form-binding-validation",
+      "byte_count": 1502,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/react/browser/NAVIGATE_HELP_PUBLIC/browser-form-validity-observer-trace/f570866925a576367c2ce88efd762b967ac3c4f5d22ca4df9375f39f4a26186e.json",
+      "profile_id": "react",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "NAVIGATE_HELP_PUBLIC",
+      "sha256": "sha256:f570866925a576367c2ce88efd762b967ac3c4f5d22ca4df9375f39f4a26186e"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:8c4131a21f7b390e7d28bf420cf3b0f72ebae1f3f6e428772cf1db1d3a903741",
+        "byte_count": 40392,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_HELP_PUBLIC/browser-dom-snapshot/5b0a01f58c4a260200c948b1029889976c9eccc47836d7ee2f6a25e8a2267ee7.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:5b0a01f58c4a260200c948b1029889976c9eccc47836d7ee2f6a25e8a2267ee7"
+      },
+      {
+        "artifact_id": "sha256:fb567e2b0e011498bbe17f94031c4380032c8929ae2ee4f4606a7a891ee76ab8",
+        "byte_count": 5223,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_HELP_PUBLIC/browser-framework-event-trace/629fa590e658154ead4f83f8341fbf2091c001f87c83f7b88a1877f70f68df4e.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:629fa590e658154ead4f83f8341fbf2091c001f87c83f7b88a1877f70f68df4e"
+      },
+      {
+        "artifact_id": "sha256:d7714d18bf55697706bfcff2c95ec1f5a5770ce76bfe630c0ac913df30ccb1f4",
+        "byte_count": 557497,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_HELP_PUBLIC/browser-accessibility-axe-trace/1a8b6644630f21ab69c0cbf51682e72b76fd8d54584a83b869a724490010a6a1.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:1a8b6644630f21ab69c0cbf51682e72b76fd8d54584a83b869a724490010a6a1"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_HELP_PUBLIC",
+  "schema_version": "1.0"
+}

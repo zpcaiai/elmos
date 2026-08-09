@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:26f7ef003e2ac0f1aaf7a9c46fba818bfe73a261de343327b97da6b7c6532566",
+      "block_id": "component-template-view",
+      "byte_count": 1509,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/vue2/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-rendered-component-observer-trace/cedcaf2985a8c48acefad9c87bc0e23a24a48532bc563db531fef9ff47d67202.json",
+      "profile_id": "vue2",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:cedcaf2985a8c48acefad9c87bc0e23a24a48532bc563db531fef9ff47d67202"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:cd79708dc828753929439785e5fe360640d69dcfaa1037aa4f621565b12773cf",
+        "byte_count": 40402,
+        "channel": "browser",
+        "path": "traces/vue2/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/8d7dcf3ae3f7c6c32f2731185ca8400226bb42d750b68621dd1b5ddeb4b52982.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:8d7dcf3ae3f7c6c32f2731185ca8400226bb42d750b68621dd1b5ddeb4b52982"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

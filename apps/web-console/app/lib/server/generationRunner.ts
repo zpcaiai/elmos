@@ -35,6 +35,7 @@ import {
   DurableLeaseError,
   durableQueueConfiguration,
 } from "./durableJobLease";
+import { validateVerifiedInsightProjection } from "./generationInsights";
 import {
   accountCookieNames,
   AccountSessionError,
@@ -1254,6 +1255,30 @@ async function loadArtifacts(root: string): Promise<GenerationArtifact[]> {
   return artifacts;
 }
 
+async function loadVerifiedGenerationInsights(
+  root: string,
+  verificationInsights: unknown,
+  expectedVerificationStatus: string,
+): Promise<NonNullable<GenerationJob["insights"]>> {
+  const workspace = confined(root, "workspace");
+  const insightPath = confined(workspace, "requirements", "project-insights.json");
+  const details = lstatSync(insightPath);
+  if (details.isSymbolicLink() || !details.isFile() || details.size < 1 || details.size > 4_000_000) {
+    throw new GenerationRunnerError(500, "GENERATION_INSIGHTS_ARTIFACT_INVALID");
+  }
+  let generated: unknown;
+  try {
+    generated = JSON.parse(await readFile(insightPath, "utf-8"));
+  } catch {
+    throw new GenerationRunnerError(500, "GENERATION_INSIGHTS_ARTIFACT_INVALID");
+  }
+  const verified = validateVerifiedInsightProjection(generated, verificationInsights);
+  if (verified.verification_status !== expectedVerificationStatus) {
+    throw new GenerationRunnerError(500, "GENERATION_INSIGHTS_STATUS_MISMATCH");
+  }
+  return verified;
+}
+
 async function runJob(
   runner: RunnerConfig,
   context: AuthorizedContext,
@@ -1327,6 +1352,7 @@ async function runJob(
     const result = JSON.parse(pipeline.stdout) as {
       status?: string;
       runtime_plan?: GenerationRuntime["plans"];
+      verification?: { insights?: unknown };
     };
     if (!["PASSED", "PARTIAL"].includes(result.status ?? "")) {
       throw new Error(`PIPELINE_RESULT_INVALID:${result.status ?? "MISSING"}`);
@@ -1337,6 +1363,14 @@ async function runJob(
     job.resultStatus = result.status ?? "UNKNOWN";
     job.runtime.plans = result.runtime_plan;
     job.artifacts = await loadArtifacts(root);
+    if (!job.artifacts.some((artifact) => artifact.path === "requirements/project-insights.json")) {
+      throw new Error("GENERATION_INSIGHTS_ARTIFACT_MISSING");
+    }
+    job.insights = await loadVerifiedGenerationInsights(
+      root,
+      result.verification?.insights,
+      result.status ?? "UNKNOWN",
+    );
     const archive = confined(root, "generated-project.zip");
     const archiveInfo = await stat(archive);
     if (!archiveInfo.isFile() || archiveInfo.size <= 0 || archiveInfo.size > 128 * 1024 * 1024) {

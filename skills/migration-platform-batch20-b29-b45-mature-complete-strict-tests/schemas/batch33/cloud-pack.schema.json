@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch33/cloud-pack.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "version",
+    "status",
+    "mode",
+    "owner",
+    "maintenance_owner",
+    "source",
+    "target",
+    "contracts",
+    "support_matrix_path",
+    "corpus",
+    "certification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "assessment",
+        "migration",
+        "replatform",
+        "provider-change",
+        "iac-conversion",
+        "devops-modernization",
+        "coexistence"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintenance_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "$ref": "#/$defs/tuple"
+    },
+    "target": {
+      "$ref": "#/$defs/tuple"
+    },
+    "contracts": {
+      "type": "object",
+      "required": [
+        "runtime_architecture",
+        "iac_ir",
+        "target_profile",
+        "validation_profile"
+      ],
+      "properties": {
+        "runtime_architecture": {
+          "type": "string"
+        },
+        "iac_ir": {
+          "type": "string"
+        },
+        "target_profile": {
+          "type": "string"
+        },
+        "validation_profile": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "support_matrix_path": {
+      "type": "string"
+    },
+    "corpus": {
+      "type": "object",
+      "required": [
+        "development",
+        "negative",
+        "holdout",
+        "representative_workloads"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "certification": {
+      "type": "object",
+      "required": [
+        "evidence_path",
+        "result_path"
+      ],
+      "properties": {
+        "evidence_path": {
+          "type": "string"
+        },
+        "result_path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "tool": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "tuple": {
+      "type": "object",
+      "required": [
+        "platform",
+        "provider",
+        "regions",
+        "account_model",
+        "iac_tool",
+        "runtime",
+        "state_backend"
+      ],
+      "properties": {
+        "platform": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "account_model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "iac_tool": {
+          "$ref": "#/$defs/tool"
+        },
+        "runtime": {
+          "$ref": "#/$defs/tool"
+        },
+        "orchestrator": {
+          "$ref": "#/$defs/tool"
+        },
+        "ci_cd": {
+          "$ref": "#/$defs/tool"
+        },
+        "state_backend": {
+          "type": "object"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

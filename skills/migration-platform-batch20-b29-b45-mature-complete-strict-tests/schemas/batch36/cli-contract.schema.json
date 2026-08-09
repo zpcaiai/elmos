@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/cli-contract.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "cli_key",
+    "version",
+    "commands",
+    "output_formats",
+    "exit_codes",
+    "security"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "cli_key": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "idempotent",
+          "supports_json",
+          "supports_noninteractive",
+          "destructive"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "idempotent": {
+            "type": "boolean"
+          },
+          "supports_json": {
+            "type": "boolean"
+          },
+          "supports_noninteractive": {
+            "type": "boolean"
+          },
+          "destructive": {
+            "type": "boolean"
+          },
+          "requires_confirmation": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "output_formats": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "human",
+          "json",
+          "jsonl",
+          "quiet"
+        ]
+      }
+    },
+    "exit_codes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "credential_storage",
+        "prints_secrets",
+        "implicit_destructive_context"
+      ],
+      "properties": {
+        "credential_storage": {
+          "enum": [
+            "os-keychain",
+            "workload-identity",
+            "memory-only",
+            "offline-local-vault"
+          ]
+        },
+        "prints_secrets": {
+          "const": false
+        },
+        "implicit_destructive_context": {
+          "const": false
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

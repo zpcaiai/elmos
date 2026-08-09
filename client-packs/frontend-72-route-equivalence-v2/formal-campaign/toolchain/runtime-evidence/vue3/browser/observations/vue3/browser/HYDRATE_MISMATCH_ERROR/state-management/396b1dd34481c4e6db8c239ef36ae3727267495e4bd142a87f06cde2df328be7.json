@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:6de99bc467f466a968eaebd598b39d2b2d323d8e4439a188c282693196b520d0",
+      "block_id": "state-management",
+      "byte_count": 1216,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue3/browser/HYDRATE_MISMATCH_ERROR/browser-framework-state-transition-observer-trace/07461d07aa0c10442dc02e3ea6f46bf2aef71ab6a5656174ba05a42038348925.json",
+      "profile_id": "vue3",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:07461d07aa0c10442dc02e3ea6f46bf2aef71ab6a5656174ba05a42038348925"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:91c3bbb0257b2962e24c9f48798d95ca3a7b14be5cc95d6ea2a94aa95866ac46",
+        "byte_count": 5228,
+        "channel": "browser",
+        "path": "traces/vue3/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/db12a44bcd2dc152b9a33616fdcee1e5f0a9da04f07a4c5ac7fcc0e662ede8f3.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:db12a44bcd2dc152b9a33616fdcee1e5f0a9da04f07a4c5ac7fcc0e662ede8f3"
+      },
+      {
+        "artifact_id": "sha256:aa43dab58323dc1a41ce29e532388ad6cecfff92a571aa0146412f73dbf50d7b",
+        "byte_count": 40609,
+        "channel": "browser",
+        "path": "traces/vue3/browser/HYDRATE_MISMATCH_ERROR/browser-dom-snapshot/5253b6227ba55c3272d304d88f3c4eba62b2963d95adfe3dc988d3f8997fc0a1.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:5253b6227ba55c3272d304d88f3c4eba62b2963d95adfe3dc988d3f8997fc0a1"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

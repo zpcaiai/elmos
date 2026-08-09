@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": false,
+    "requestedPath": "/help",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/help",
+    "selectedRouteId": "route.help"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:bc785bea98229d1ebd2b9e1e1632004a0c79d342a64bbabe55a6c9deef977c73",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2437,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/jquery/browser/NAVIGATE_HELP_PUBLIC/browser-route-dom-url-observer-trace/9a6b4d4ef1772601de8cd8099c34aec11ca850461e3c1ea6f426b5fba33a0c3f.json",
+      "profile_id": "jquery",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "NAVIGATE_HELP_PUBLIC",
+      "sha256": "sha256:9a6b4d4ef1772601de8cd8099c34aec11ca850461e3c1ea6f426b5fba33a0c3f"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e0aa80d8cd4c497467734a31cc12efb868ec1b66413997905a01daa869533538",
+        "byte_count": 39883,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_HELP_PUBLIC/browser-dom-snapshot/0c8a83eaca4cc146548a3f273a4c8949feaf3c22ea3bcbdb79f0cf81cbe95b95.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:0c8a83eaca4cc146548a3f273a4c8949feaf3c22ea3bcbdb79f0cf81cbe95b95"
+      },
+      {
+        "artifact_id": "sha256:7df16843e8abf4ed81d460008e47f155b2e4ed3c251eed12a37928a584f9cb75",
+        "byte_count": 5224,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_HELP_PUBLIC/browser-framework-event-trace/c90484e607d398bd621f8fdf536701ab7c6b8c4ff4fd8bf56652157e1b531b90.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:c90484e607d398bd621f8fdf536701ab7c6b8c4ff4fd8bf56652157e1b531b90"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_HELP_PUBLIC",
+  "schema_version": "1.0"
+}

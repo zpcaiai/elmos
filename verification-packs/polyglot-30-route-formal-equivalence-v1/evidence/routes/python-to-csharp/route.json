@@ -1,0 +1,44 @@
+{
+  "framework_profiles": [],
+  "gates": {
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "semantic_profile": "typed-pure-function-v1",
+    "target_profile": "csharp-native-compiler"
+  },
+  "review_date": "2026-10-26",
+  "route_key": "python-to-csharp",
+  "schema_version": 1,
+  "source": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py",
+    "language": "python",
+    "versions": [
+      "Python 3.12.12",
+      "CPython AST"
+    ]
+  },
+  "status": "limited",
+  "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+    "language": "csharp",
+    "versions": [
+      "C# 14",
+      ".NET SDK 10.0.301",
+      "Roslyn 5.6.0"
+    ]
+  },
+  "version": "1.0.0"
+}

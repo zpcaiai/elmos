@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "capability",
+          "status",
+          "owner"
+        ],
+        "properties": {
+          "capability": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "certified",
+              "supported",
+              "conditional",
+              "experimental",
+              "detected-only",
+              "blocked"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/marketplace-support-matrix.schema.json"
+}

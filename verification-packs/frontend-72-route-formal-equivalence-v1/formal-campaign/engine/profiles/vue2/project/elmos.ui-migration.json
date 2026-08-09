@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "4edf148b1ecff291e4242d00",
+  "direction": {
+    "routeId": "angular--to--vue2",
+    "source": "angular",
+    "target": "vue2",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "2.7.16",
+    "supportState": "LEGACY_TARGET_CONDITIONAL",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "vue2",
+    "label": "Vue 2 compatibility target",
+    "frameworkVersion": "2.7.16",
+    "profileVersion": "1.0.0",
+    "status": "LEGACY_CONDITIONAL",
+    "platforms": [
+      "WEB"
+    ],
+    "language": "JavaScript",
+    "languageVersion": "ECMAScript 2022",
+    "runtime": "Node.js",
+    "runtimeVersion": "26.0.0",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Vite",
+    "buildToolVersion": "7.3.6",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "vue-router 3.6.5",
+    "state": "Vue.observable",
+    "rendering": "CSR",
+    "testTool": "Vitest 4.1.10",
+    "runnerProfile": "WEB_LEGACY",
+    "requiredProjectFiles": [
+      "package.json",
+      "vite.config.js",
+      "src/main.js",
+      "src/App.vue"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:7803cc82ee8c459e0c72fe37ecda268139867fd0bed5ae48f076e402b981396c",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "README.md",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "index.html",
+      "package.json",
+      "scripts/verify.sh",
+      "src/App.vue",
+      "src/elmos-bounded-navigation.js",
+      "src/main.js",
+      "src/router.js",
+      "src/routes.js",
+      "src/routes.test.js",
+      "src/styles.css",
+      "src/views/GeneratedPage.vue",
+      "target-profile/profile.json",
+      "ui-ir/model.json",
+      "vite.config.js"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

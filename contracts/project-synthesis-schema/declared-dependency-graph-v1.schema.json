@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.declared-dependency-graph.v1",
+  "title": "ELMOS Declared Dependency Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_kind",
+    "project_id",
+    "nodes",
+    "edges",
+    "resolution",
+    "complete",
+    "issues"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "graph_kind": {
+      "const": "elmos.declared-dependency-graph"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "resolved_graph_refs"
+      ],
+      "properties": {
+        "status": {
+          "const": "NOT_RUN"
+        },
+        "resolved_graph_refs": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "complete": {
+      "const": false
+    },
+    "issues": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": "NATIVE_TRANSITIVE_RESOLUTION_NOT_RUN"
+        }
+      ],
+      "minItems": 1,
+      "maxItems": 1
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9:._-]{0,199}$"
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "coordinate",
+        "version_source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "kind": {
+          "enum": [
+            "application",
+            "runtime",
+            "framework",
+            "build-tool",
+            "provider"
+          ]
+        },
+        "coordinate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "version_source": {
+          "enum": [
+            "project-blueprint",
+            "emitter-build-manifest",
+            "runtime-manifest"
+          ]
+        }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "type",
+        "scope",
+        "evidence_status"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/stableId"
+        },
+        "to": {
+          "$ref": "#/$defs/stableId"
+        },
+        "type": {
+          "enum": [
+            "requires",
+            "uses",
+            "builds-with",
+            "persists-to"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "application",
+            "build",
+            "runtime"
+          ]
+        },
+        "evidence_status": {
+          "const": "DECLARED"
+        }
+      }
+    }
+  }
+}

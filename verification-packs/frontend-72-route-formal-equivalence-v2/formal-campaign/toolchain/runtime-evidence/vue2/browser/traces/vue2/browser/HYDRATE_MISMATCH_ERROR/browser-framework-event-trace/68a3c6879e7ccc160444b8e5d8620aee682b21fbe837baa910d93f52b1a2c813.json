@@ -1,0 +1,203 @@
+{
+  "actual_source": "ALLOWLISTED_RUNTIME_CAPTURE",
+  "capture": {
+    "events": [
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313788587,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": "Delete",
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313788588,
+        "type": "keydown"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "HYDRATE",
+            "data-run-scenario": "HYDRATE_MISMATCH_ERROR",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313788616,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "HYDRATE",
+            "data-run-scenario": "HYDRATE_MISMATCH_ERROR",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313788616,
+        "type": "click"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313788617,
+        "type": "input"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {},
+          "tag": null,
+          "value": null
+        },
+        "timestamp": 1786313788617,
+        "type": "popstate"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313808707,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": "Delete",
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313808707,
+        "type": "keydown"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "HYDRATE",
+            "data-run-scenario": "HYDRATE_MISMATCH_ERROR",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313808751,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "HYDRATE",
+            "data-run-scenario": "HYDRATE_MISMATCH_ERROR",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313808751,
+        "type": "click"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313808752,
+        "type": "input"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {},
+          "tag": null,
+          "value": null
+        },
+        "timestamp": 1786313808752,
+        "type": "popstate"
+      }
+    ]
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-trace-artifact",
+  "profile_id": "vue2",
+  "role": "browser-framework-event-trace",
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

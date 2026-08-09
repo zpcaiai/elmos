@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:f75a496e6af0b08c2b2d5468f80b91f9c9aa49f6e548250cba97a0e66b591977",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1967,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/BOOT_PUBLIC/browser-computed-layout-i18n-theme-observer-trace/47870d453890abd91e96e5dac76d9cda4bd06f8746cbcbff51a1af3cef8d1583.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "BOOT_PUBLIC",
+      "sha256": "sha256:47870d453890abd91e96e5dac76d9cda4bd06f8746cbcbff51a1af3cef8d1583"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:bda813462cf370b9199d0e6b131cf0c2e23e3e4d26ce1ccf5ae04727d0aef36a",
+        "byte_count": 39838,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BOOT_PUBLIC/browser-dom-snapshot/3823e2b8bcad5162fa9d965a4e4a2dd11b62ce6ab10353953ac95333a8d3231c.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:3823e2b8bcad5162fa9d965a4e4a2dd11b62ce6ab10353953ac95333a8d3231c"
+      }
+    ]
+  },
+  "scenario_id": "BOOT_PUBLIC",
+  "schema_version": "1.0"
+}

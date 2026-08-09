@@ -9,8 +9,8 @@
 | 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
 | --- | --- | --- | --- |
 | Spring 老项目现代化 | 4 条 Maven 路线，各绑定**一个精确元组**（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17）→ Boot 3.5.3/Java 21，端到端源构建 + OpenRewrite + 目标构建 + 行为探针；Gradle 2.x 执行驱动已实现 | 元组以外的区间版本（需显式 experimental 开关）；Gradle 精确真实元组仍为 `NOT_RUN` | `PASSED_LOCAL`（仅四个 Maven 精确元组） |
-| 跨语言转换 | 6 语言两两成对共 30 条有向路线，语义 Profile 为 **`typed-pure-function-v1`**：有类型、无副作用、由 return/if/字面量/名字/白名单二元运算构成的函数 | **对象图、异常、async、I/O、框架、数据库、并发全部在范围外**。30 条路线是广度，不是深度 | `PASSED_LOCAL` / `limited` |
-| 多语言项目生成 | 8 个目标真实生成 + 精确工具链构建 + 启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 全通过 | **仅 Java/Python 支持多实体与关系**；Go/TypeScript/C#/Kotlin/Rust/PHP 为单实体边界，多实体请求失败关闭 | `PASSED_LOCAL` / `limited` |
+| 跨语言转换 | 9 种引擎语言的 72 个方向已在 **`typed-pure-function-v1`** 单函数仓库夹具上完成本机源运行、目标编译/运行与行为比对；72 个有向 Route Pack 已全部显式纳管为 `limited` | **对象图、跨文件调用语义、异常、async、I/O、框架、数据库、并发、依赖/资源/配置/测试迁移均未闭合**；这不是通用仓库转换 | 实验执行 `PASSED_LOCAL_UNCERTIFIED`；当前 Route Pack/仓库证据均为 `NOT_RUN` |
+| 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口 | 本地原生检查不等于跨目标语义/行为等价，也不替代独立或外部验证 | `PASSED_LOCAL` / `limited` |
 
 附属能力的实测覆盖率同样是子集而非全集：SQL 方言转写对本仓库 64 个真实迁移文件实测 **174/1015 = 17.1%**，
 大前端组件转写对 `apps/web-console` 实测 **8/33 = 24.2%**。两者的缺口都是结构性的，不是增量的。
@@ -38,13 +38,15 @@ Java/Spring 专用现代化链路已覆盖 Batch 1–10；Batch 11/12 在同一�
 
 ## Project Synthesis and Language Packs Batch 46–95
 
-ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill 将自然语言请求整理为带来源、假设、问题、验收标准和审批哈希的规格，再由 `engines/project-synthesis-engine` 生成可运行项目。内置 Emitter 覆盖八个精确目标：Java 21 / Spring Boot、Python 3.12 / FastAPI、C# / .NET 10 / ASP.NET Core、TypeScript / NestJS-Fastify、Go / net-http、Kotlin / Ktor、PHP 原生 HTTP 与 Rust / Axum。权威成熟度矩阵是 [`docs/project-synthesis/bundled-emitter-support.json`](docs/project-synthesis/bundled-emitter-support.json)，由 `scripts/operations/validate_generation_support_matrix.py` 对引擎、请求 Schema、Rootless Runner、Web Console 与 Skill 做失败关闭的一致性校验。生成器只接受已批准且未被篡改的规格，保护用户修改，并输出配置、测试、OpenAPI、CI、非 root 容器、Kubernetes、追踪关系和内容寻址清单。
+ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill 将自然语言请求整理为带来源、假设、问题、验收标准和审批哈希的规格，再由 `engines/project-synthesis-engine` 生成可运行项目。内置 Emitter 覆盖八个精确目标：Java 21 / Spring Boot、Python 3.12 / FastAPI、C# / .NET 10 / ASP.NET Core、TypeScript / NestJS-Fastify、Go / net-http、Kotlin / Ktor、PHP 原生 HTTP 与 Rust / Axum。权威成熟度矩阵是 [`docs/project-synthesis/bundled-emitter-support.json`](docs/project-synthesis/bundled-emitter-support.json)，由 `scripts/operations/validate_generation_support_matrix.py` 对引擎、请求 Schema、Rootless Runner、Web Console 与 Skill 做失败关闭的一致性校验。生成器只接受已批准且未被篡改的规格，保护用户修改，并输出配置、测试、OpenAPI、CI、非 root 容器、Kubernetes、追踪关系和内容寻址清单。每个生成包还包含实际项目结构图、声明依赖图、需求到生成物的语义映射、逐目标原生行为检查和完整语言对矩阵；控制台与 `docs/PROJECT_INSIGHTS.md` 分维度显示精确分母，未执行的直接语义/行为等价、独立验证和认证继续保持 `NOT_RUN` / `NOT_CERTIFIED`，不会被一个汇总百分比掩盖。
+
+仓库语言环境通过 [`toolchains/runtime-manifest.json`](toolchains/runtime-manifest.json) 统一声明并按任务选择，避免把 Python 3.12/3.14、Node 22/24/26、Maven 3.9.10/3.9.11 或 JDK 8/11/17/21 压成一个全局版本。`make toolchains-check` 严格检查核心、八语言生成与 macOS 九语言 Route 运行时；`make toolchains-install PROFILE=synthesis` 只安装安全且精确的本地子集；`make toolchains-doctor PROFILE=all` 会把厂商、许可证、远端系统和真实设备环境继续显示为 `NOT_RUN`。完整用法和证据边界见 [`docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md`](docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md)。
 
 `/repositories` 可从 GitHub、Gitee 或允许列表内的通用 HTTPS Git 服务建立精确提交工作区，读取/修改代码、说明、配置与部署文件，并交接到项目生成、跨语言转换和 Spring 现代化三条业务线。Commit、非强制 Push 与 GitHub/Gitee PR 分别校验权限、路径、HEAD、短期凭据、远端 SHA、审计和幂等回执；合并与部署不会自动执行。完整软硬件要求、配置及逐步操作见 [`docs/GIT_REPOSITORY_WORKSPACES.md`](docs/GIT_REPOSITORY_WORKSPACES.md)。
 
 Web Console `/help` 汇总三条业务线、受控交付、管理端和外部证据边界；导航与帮助支持中文/英文切换，浅色/深色主题按浏览器持久化，并纳入桌面/移动 Chromium、键盘、200% 缩放和自动可访问性检查。完整英文业务表单、独立读屏/跨浏览器/真实设备、视觉基线审批和代表性客户旅程仍保持 `NOT_RUN`，详见 [`docs/CLIENT_EXPERIENCE_READINESS.md`](docs/CLIENT_EXPERIENCE_READINESS.md)。
 
-运行 `make project-synthesis` 会验证 417 个全局 PG001–PG417 规范、180 个 Batch 81–95 Language Pack 规范和 42 个 Schema，执行引擎单元/静态检查，并在临时目录真实生成、构建、测试和启动全部八种目标。Batch 66–80 提供 195 个主流语言与工程资产 Runtime Skills；Batch 81–95 再提供 COBOL/Mainframe、SAP ABAP、数据库过程语言、IEC 61131-3 PLC、MATLAB/Simulink、Modelica/FMI、VB/Office、IBM i RPG、R、SAS、Salesforce、Objective-C、Delphi、BEAM 与 Lua/OpenResty 共 180 个 Skills。后者的源 PG223–PG402 与全局 PG 编号重叠，因此保留独立 package-local 命名空间，并以 `$b81-*`–`$b95-*` 安全别名调用，绝不重编号冒充全局连续性。生产 Profile（`postgresql` + `jwt`/`oidc`）的共享底座位于 `production_contract.py`（统一路由表、四条 SQL、环境变量名与 10 步集成场景）和 `production_runtime.py`（语言无关的 PostgreSQL 供给：loopback TCP + scram-sha-256、forward-only 迁移、最小权限角色、openssl 生成 RSA 并派生 JWKS）。`SUPPORTED_PROFILE_TARGETS` 已对全部 **八个目标（Python、Java、Go、TypeScript、C#、Kotlin、Rust、PHP）** 开放；`scripts/run_production_matrix.py` 是 8 × JWT/OIDC 共 16 个本地生产 Profile 的权威重放入口：真实 PostgreSQL 17.5 起库、应用启动探针通过、10 步场景全绿（含错签名/错 audience/错 issuer/缺租户声明被拒，以及跨租户读被 RLS 阻断）。
+运行 `make project-synthesis` 会验证 417 个全局 PG001–PG417 规范、180 个 Batch 81–95 Language Pack 规范和 42 个源包 Schema，执行引擎单元/静态检查，并在临时目录对可用的精确工具链执行真实生成、构建、测试和启动；严格八目标复验使用 `uv --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains`。Batch 66–80 提供 195 个主流语言与工程资产 Runtime Skills；Batch 81–95 再提供 COBOL/Mainframe、SAP ABAP、数据库过程语言、IEC 61131-3 PLC、MATLAB/Simulink、Modelica/FMI、VB/Office、IBM i RPG、R、SAS、Salesforce、Objective-C、Delphi、BEAM 与 Lua/OpenResty 共 180 个 Skills。后者的源 PG223–PG402 与全局 PG 编号重叠，因此保留独立 package-local 命名空间，并以 `$b81-*`–`$b95-*` 安全别名调用，绝不重编号冒充全局连续性。生产 Profile（`postgresql` + `jwt`/`oidc`）的共享底座位于 `production_contract.py`（统一路由表、四条 SQL、环境变量名与 10 步集成场景）和 `production_runtime.py`（语言无关的 PostgreSQL 供给：loopback TCP + scram-sha-256、forward-only 迁移、最小权限角色、openssl 生成 RSA 并派生 JWKS）。`SUPPORTED_PROFILE_TARGETS` 已对全部 **八个目标（Python、Java、Go、TypeScript、C#、Kotlin、Rust、PHP）** 开放；`scripts/run_production_matrix.py` 是 8 × JWT/OIDC 共 16 个本地生产 Profile 的权威重放入口：真实 PostgreSQL 17.5 起库、应用启动探针通过、10 步场景全绿（含错签名/错 audience/错 issuer/缺租户声明被拒，以及跨租户读被 RLS 阻断）。
 
 `verification.runtime_commands` 对 `storage=postgresql` 的非 Python 目标走独立的 harness 分支：python3 直接解析而不经语言工具链注册表（该表按语言键控，任一语言工具未匹配就会把 harness 误判为 NOT_RUN），并把该语言实际匹配到的工具目录与 postgres 目录前置注入 PATH。集成命令是各目标自己的测试运行器而非二次调用 harness——探针在应用仍运行时执行集成命令，再跑一次 harness 会在同一 data 目录上启动第二个 PostgreSQL。Python 保留原有 `uv run` 启动路径不变。
 
@@ -108,7 +110,7 @@ SOURCE_PACKAGE_ABSENT=<package> reason=missing:<manifest> …
 make verify
 ```
 
-`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、30 个有向 Route Pack（Java、Python、C#、Go、Rust、TypeScript 六种语言两两成对）、Polyglot 引擎语言集与 Web Console 一致，禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证），并禁止路线矩阵硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
+`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、9 种语言的 72 个显式有向 Route Pack、Polyglot 引擎语言集与 Web Console 一致，禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证），并禁止路线矩阵硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
 
 `make backend` 使用 Java 21 执行单元测试、契约测试和 ArchUnit 边界测试；`make dotnet` 使用锁定的 .NET 10 SDK；`make python` 使用 Python 3.14 与 uv 锁执行 pytest、Ruff 和 mypy；`make frontend` 验证独立的 TypeScript/Node 客户端引擎；`make web` 执行 Next.js/TypeScript 静态检查。
 
@@ -118,7 +120,7 @@ make verify
 make production-readiness-check
 ```
 
-该命令检查 Batch 45 失败关闭工具、Project Synthesis 的真实三语言构建/启动、Web Console 生产构建，以及 18 个 Spring HTTP 服务的优雅停机、安全错误响应、存活/就绪探针、唯一服务身份/端口和生产数据库必填配置。它属于工程证据，不替代部署矩阵、负载/Soak、安全独立评审、备份恢复/DR、客户结果或最终认证；对应 Pack 保持 `NOT_RUN`，见 [`mature-product-packs/batch45/elmos-platform-production-readiness/gate-report.md`](mature-product-packs/batch45/elmos-platform-production-readiness/gate-report.md)。
+该命令检查 Batch 45 失败关闭工具、Project Synthesis 的真实八语言构建/启动、Web Console 生产构建，以及 18 个 Spring HTTP 服务的优雅停机、安全错误响应、存活/就绪探针、唯一服务身份/端口和生产数据库必填配置。它属于工程证据，不替代部署矩阵、负载/Soak、安全独立评审、备份恢复/DR、客户结果或最终认证；对应 Pack 保持 `NOT_RUN`，见 [`mature-product-packs/batch45/elmos-platform-production-readiness/gate-report.md`](mature-product-packs/batch45/elmos-platform-production-readiness/gate-report.md)。
 
 Batch 1–13 的硬化基线记录在 [`docs/batch-1-13-hardening.md`](docs/batch-1-13-hardening.md)；Batch 14–26 的完成边界与现场 Gate 见对应 verification 文档。Batch 22–26 的统一验收摘要见 [`docs/batch-22-26-verification.md`](docs/batch-22-26-verification.md)。
 
@@ -144,7 +146,7 @@ Batch 81–95 Language Pack 补充资格套件位于 `test-suites/batch81-95-lan
 
 ## 跨语言迁移 Batch 交付范围
 
-整库跨语言转换是三段式管线，不再止步于清单：`inventory` 生成内容寻址的只读工作单元；`discover` 用与迁移同一套编译器支撑的分析器逐单元判定 `READY` / `UNSUPPORTED` / `NO_CANDIDATE_DECLARATION` / `UNREADABLE`，候选声明只由廉价扫描"提议"、绝不由它"裁决"，因此漏提议只会降级为 `NO_CANDIDATE_DECLARATION` 而不会产生假 `READY`；`batch` 只执行 `READY` 且具备独立行为语料的单元，逐单元写入 append-only checkpoint 支持断点续跑，任一跳过、失败或部分选择都让批次保持 `PARTIAL`，绝不把子集成功四舍五入成整库成功。工作单元内容摘要变化会直接使整份拆分失效（`WORK_UNIT_CONTENT_CHANGED`）。Web Console `/translation` 的清单与发现报告导入均由服务端按同一 Snapshot 摘要和路线契约重新校验，`READY` 判定必须携带函数名、签名与分析器来源，否则拒收。
+整库跨语言转换是三段式管线，不再止步于清单：`inventory` 生成内容寻址的只读工作单元；`discover` 用与迁移同一套编译器支撑的分析器逐单元判定 `READY` / `UNSUPPORTED` / `NO_CANDIDATE_DECLARATION` / `UNREADABLE`，候选声明只由廉价扫描"提议"、绝不由它"裁决"，因此漏提议只会降级为 `NO_CANDIDATE_DECLARATION` 而不会产生假 `READY`；`batch` 只执行 `READY` 且具备独立行为语料的单元，逐单元写入 append-only checkpoint。成功 checkpoint 不能作为迁移证明恢复，重跑时必须重新执行验证；任一跳过、失败、排除目录、未迁移的依赖/资源/配置/测试或部分选择都让批次保持 `PARTIAL`，绝不把子集成功四舍五入成整库成功。工作单元内容摘要变化会直接使整份拆分失效（`WORK_UNIT_CONTENT_CHANGED`）。Web Console `/translation` 的清单与发现报告导入均由服务端按同一 Snapshot 摘要和路线契约重新校验，`READY` 判定必须携带函数名、签名与分析器来源，否则拒收。
 
 - Batch 1（Repository Intake）：不可变 Snapshot、四语言项目/构建发现、Inventory、依赖图、Sandbox Policy、Baseline 与冻结 Manifest。
 - Batch 2（Semantic adapters）：PSP v1、四语言权威适配器边界、无损降级、符号/类型/调用/继承/数据流/诊断、模块门禁、Zstandard 流与 SQLite 索引。

@@ -1,0 +1,96 @@
+{
+  "artifact_manifests": {
+    "development": {
+      "bytes": 4033,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:60160bc21fa0e3aaa743f0226f473780a10da5341fd577a90631b051c3262a65"
+    },
+    "holdout": {
+      "bytes": 4028,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:392b924b8008bf11ca4caa1ccf00e522b4e3f3f37ca7d50b35b5a20efd8f9cee"
+    },
+    "real-repository": {
+      "bytes": 4044,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:f6ed46d0debf68f525d86a8f925a0be891ef2ab33ce2543fc755dad3c3a7cff2"
+    }
+  },
+  "artifact_refs": [
+    {
+      "bytes": 4033,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "sha256": "sha256:60160bc21fa0e3aaa743f0226f473780a10da5341fd577a90631b051c3262a65"
+    },
+    {
+      "bytes": 4028,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "sha256": "sha256:392b924b8008bf11ca4caa1ccf00e522b4e3f3f37ca7d50b35b5a20efd8f9cee"
+    },
+    {
+      "bytes": 4044,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "sha256": "sha256:f6ed46d0debf68f525d86a8f925a0be891ef2ab33ce2543fc755dad3c3a7cff2"
+    },
+    {
+      "bytes": 9900,
+      "path": "certification/artifacts/module/artifact-manifest.json",
+      "sha256": "sha256:8b6a5f71b9a51ccc1db42fad4ba0d9c6038261bd432a574dee76e38c9d422dd2"
+    }
+  ],
+  "critical_behavior_regressions": 0,
+  "critical_unknown_semantics": 0,
+  "evidenced_type_coverage": [
+    "integer",
+    "number",
+    "boolean"
+  ],
+  "execution_status": "PASSED_LOCAL",
+  "formal_equivalence": {
+    "bytes": 58924,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:62dd368ec423d756fba6470a2b1932ffd0ab3cf4101a1ee232aac02bf5d7013b"
+  },
+  "input_domain": "canonical-finite-no-error-input-domain",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "module_artifact_manifest": {
+    "bytes": 9900,
+    "path": "certification/artifacts/module/artifact-manifest.json",
+    "sha256": "sha256:8b6a5f71b9a51ccc1db42fad4ba0d9c6038261bd432a574dee76e38c9d422dd2"
+  },
+  "module_equivalence": {
+    "bytes": 184659,
+    "path": "certification/module-equivalence.json",
+    "sha256": "sha256:f063f3ce344b98980659c7280e3271c41a487992640c9f03fd050b076374bb0d"
+  },
+  "module_execution_status": "PASSED_LOCAL",
+  "negative_runs": [
+    "certification/local-negative-evidence.json"
+  ],
+  "notes": [
+    "The exact typed-pure-function-v1 profile passed native source analysis, native target compilation, and behavior replay.",
+    "Each corpus output directory is persisted under certification/artifacts and bound by a path, SHA-256, and byte-count manifest.",
+    "The physically separate holdout and representative bounded fixture were not used to author route rules.",
+    "Independent verifier, customer repository, framework, database, production, and external certification evidence remain NOT_RUN.",
+    "critical_unknown_semantics=0 is scoped only to canonical-finite-no-error-input-domain; string semantics and arithmetic-error-domain behavior remain blocked.",
+    "The typed-pure-module-v1 run composed at least three independently observed functions covering integer, finite-number, and boolean semantics with exact symbol/signature closure and byte-bound per-function proof artifacts."
+  ],
+  "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
+  "route_key": "objc-to-swift",
+  "route_maturity": "LIMITED",
+  "route_version": "1.0.0",
+  "runs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json"
+  ],
+  "schema_version": 1,
+  "test_integrity_violations": 0
+}

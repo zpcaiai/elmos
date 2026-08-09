@@ -120,9 +120,7 @@ def test_authenticated_production_profile_requires_explicit_permission_approval(
     )
 
     assert {item["effect"] for item in draft["permissions"]} == {"deny"}
-    assert [item["id"] for item in draft["open_questions"]] == [
-        "Q-PERMISSION-PRODUCTION-001"
-    ]
+    assert [item["id"] for item in draft["open_questions"]] == ["Q-PERMISSION-PRODUCTION-001"]
     with pytest.raises(ValueError, match="OPEN_QUESTIONS_BLOCK_APPROVAL"):
         approve_request(draft, actor="user:reviewer")
 
@@ -166,9 +164,7 @@ def test_imported_requirement_sources_are_hash_bound_and_generated() -> None:
     provenance = json.loads(rendered["requirements/source-provenance.json"])
 
     assert approved["source_bundle_sha256"] == bundle_digest
-    assert approved["requirements"][0]["source_refs"] == [
-        {"source_id": "SRC-001", "location": "imported-requirements"}
-    ]
+    assert approved["requirements"][0]["source_refs"] == [{"source_id": "SRC-001", "location": "imported-requirements"}]
     assert provenance["status"] == "HASH_BOUND"
     assert provenance["sources"] == sources
     assert "not executed" in provenance["execution_boundary"]
@@ -631,10 +627,7 @@ def test_python_enterprise_profile_renders_durable_auth_enforcement(auth_mode: s
         languages=("python",),
         persistence="postgresql",
         auth_mode=auth_mode,
-        permissions=tuple(
-            {**permission, "actor": "admin"}
-            for permission in allow_crud("customer", "order")
-        ),
+        permissions=tuple({**permission, "actor": "admin"} for permission in allow_crud("customer", "order")),
     )
     files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:enterprise-reviewer")))
 
@@ -774,6 +767,26 @@ def test_every_shipped_target_has_a_production_profile() -> None:
             persistence="in-memory",
             auth_mode="jwt",
         )
+
+
+def test_all_eight_production_targets_render_distinct_deployment_manifests() -> None:
+    draft = create_draft(
+        name="all-target-orders",
+        description="Authenticated durable order API in every bundled target.",
+        entity="order",
+        languages=SUPPORTED_LANGUAGES,
+        persistence="postgresql",
+        auth_mode="jwt",
+        permissions=allow_crud("order"),
+    )
+    files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:reviewer")))
+
+    expected = {f"deploy/{language}-kubernetes.yaml" for language in SUPPORTED_LANGUAGES}
+    assert expected <= set(files)
+    assert "deploy/kubernetes.yaml" not in files
+    for path in expected:
+        assert "kind: Deployment" in files[path]
+        assert "runAsNonRoot: true" in files[path]
 
 
 def test_production_profile_compiles_business_rules_and_blocks_ambiguous_relations() -> None:
@@ -1107,13 +1120,15 @@ def test_kotlin_toolchain_ignores_ambient_shell_proxy_for_gradle(
     monkeypatch.setitem(
         verification.EXACT_TOOLCHAIN_REQUIREMENTS,
         "kotlin",
-        [{
-            "tool": "java",
-            "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
-            "fallback": str(java),
-        }],
+        [
+            {
+                "tool": "java",
+                "arguments": ["-version"],
+                "expected": "Java 21",
+                "pattern": r'version "21(?:[.\-"]|$)',
+                "fallback": str(java),
+            }
+        ],
     )
     monkeypatch.delenv("HTTP_PROXY", raising=False)
     monkeypatch.delenv("HTTPS_PROXY", raising=False)
@@ -1139,13 +1154,15 @@ def test_kotlin_toolchain_rejects_proxy_credentials(
     monkeypatch.setitem(
         verification.EXACT_TOOLCHAIN_REQUIREMENTS,
         "kotlin",
-        [{
-            "tool": "java",
-            "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
-            "fallback": str(java),
-        }],
+        [
+            {
+                "tool": "java",
+                "arguments": ["-version"],
+                "expected": "Java 21",
+                "pattern": r'version "21(?:[.\-"]|$)',
+                "fallback": str(java),
+            }
+        ],
     )
     monkeypatch.delenv("HTTP_PROXY", raising=False)
     monkeypatch.setenv(
@@ -1169,13 +1186,15 @@ def test_kotlin_toolchain_accepts_explicit_controlled_gradle_proxy(
     monkeypatch.setitem(
         verification.EXACT_TOOLCHAIN_REQUIREMENTS,
         "kotlin",
-        [{
-            "tool": "java",
-            "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
-            "fallback": str(java),
-        }],
+        [
+            {
+                "tool": "java",
+                "arguments": ["-version"],
+                "expected": "Java 21",
+                "pattern": r'version "21(?:[.\-"]|$)',
+                "fallback": str(java),
+            }
+        ],
     )
     monkeypatch.delenv("HTTP_PROXY", raising=False)
     monkeypatch.delenv("HTTPS_PROXY", raising=False)
@@ -1435,9 +1454,7 @@ def test_php_production_runtime_honors_the_verified_port_override(tmp_path: Path
 
     generate_workspace(request, workspace)
 
-    runtime = (workspace / "php" / "scripts" / "local_runtime.py").read_text(
-        encoding="utf-8"
-    )
+    runtime = (workspace / "php" / "scripts" / "local_runtime.py").read_text(encoding="utf-8")
     assert "APP_PORT_ARGUMENT_INDEX = 2" in runtime
     assert 'command[APP_PORT_ARGUMENT_INDEX] = f"127.0.0.1:{port}"' in runtime
     assert 'environment["NO_PROXY"] = "127.0.0.1,localhost"' in runtime

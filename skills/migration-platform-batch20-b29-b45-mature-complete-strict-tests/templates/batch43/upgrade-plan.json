@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "example-product-lifecycle-upgrade-plan",
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "draft",
+  "evidence_refs": [],
+  "metadata": {}
+}

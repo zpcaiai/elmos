@@ -1,0 +1,39 @@
+{
+  "actual_source": "ALLOWLISTED_BLOCK_OBSERVER_CAPTURE",
+  "block_id": "state-management",
+  "capture": {
+    "browser_matrix": [
+      {
+        "browser_id": "google-chrome",
+        "measurement": {
+          "state_measurement": {
+            "data-elmos-after": "0",
+            "data-elmos-before": "0",
+            "data-elmos-saturated": "false",
+            "data-elmos-state-id": "bounded.counter"
+          }
+        }
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "measurement": {
+          "state_measurement": {
+            "data-elmos-after": "0",
+            "data-elmos-before": "0",
+            "data-elmos-saturated": "false",
+            "data-elmos-state-id": "bounded.counter"
+          }
+        }
+      }
+    ],
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "observer_contract": "block-specific-runtime-observation-v1"
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-block-observer-trace-artifact",
+  "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+  "profile_id": "jquery",
+  "role": "browser-framework-state-transition-observer-trace",
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

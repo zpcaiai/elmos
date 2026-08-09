@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "publisher_id",
+    "status",
+    "owner",
+    "maintainers",
+    "signing_keys",
+    "reverified_at",
+    "next_reverification_at",
+    "offboarding",
+    "open_critical_findings"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "publisher_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "active",
+        "suspended",
+        "offboarding",
+        "closed"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maintainers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "person_id",
+          "status"
+        ],
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "active",
+              "departed",
+              "suspended"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "signing_keys": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "key_id",
+          "status",
+          "valid_from",
+          "valid_until"
+        ],
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "active",
+              "overlap",
+              "revoked",
+              "expired"
+            ]
+          },
+          "valid_from": {
+            "type": "string",
+            "minLength": 1
+          },
+          "valid_until": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "reverified_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "next_reverification_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ownership_transfer": {
+      "type": "object"
+    },
+    "offboarding": {
+      "type": "object",
+      "required": [
+        "plan_exists",
+        "publish_rights_revoked_before_close"
+      ],
+      "properties": {
+        "plan_exists": {
+          "const": true
+        },
+        "publish_rights_revoked_before_close": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "open_critical_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/publisher-lifecycle.schema.json"
+}

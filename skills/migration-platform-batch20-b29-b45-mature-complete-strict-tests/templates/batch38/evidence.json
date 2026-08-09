@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "example-deployment-lifecycle",
+  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "metrics": {
+    "edition_coverage": 0,
+    "portable_control_plane_pass_rate": 0,
+    "mixed_version_compatibility_pass_rate": 0,
+    "zero_downtime_upgrade_pass_rate": 0,
+    "rollback_pass_rate": 0,
+    "airgap_update_pass_rate": 0,
+    "tenant_migration_pass_rate": 0,
+    "dr_recovery_pass_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "critical_data_loss": 1,
+    "cross_tenant_access": 1,
+    "unsigned_updates_accepted": 1,
+    "unresolved_schema_incompatibilities": 1,
+    "incompatible_runner_leases": 1,
+    "orphaned_workflows": 1,
+    "residency_violations": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": []
+}

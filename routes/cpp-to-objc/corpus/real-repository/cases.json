@@ -1,0 +1,34 @@
+[
+  {
+    "args": [
+      true,
+      true,
+      false
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      true,
+      false,
+      false
+    ],
+    "expected": false
+  },
+  {
+    "args": [
+      false,
+      false,
+      true
+    ],
+    "expected": true
+  },
+  {
+    "args": [
+      false,
+      false,
+      false
+    ],
+    "expected": false
+  }
+]

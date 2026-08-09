@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-developer-workflow",
+  "version": "0.1.0",
+  "status": "research",
+  "owner": "TODO",
+  "maintenance_owner": "TODO",
+  "scope": {
+    "migration_route": "java-to-csharp",
+    "source_artifact_digest": "sha256:TODO",
+    "target_artifact_digest": "sha256:TODO",
+    "repository_provider": "github",
+    "repository_id": "org/repo",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:TODO"
+  },
+  "contracts": {
+    "ide_protocol": "protocol/ide-protocol.json",
+    "cli_contract": "cli/contract.json",
+    "pr_bot_policy": "pr-bot/policy.json",
+    "ownership_policy": "ownership/policy.json",
+    "telemetry_policy": "telemetry/policy.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workflows": "corpus/representative-workflows"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/certification.json"
+  },
+  "tags": [
+    "batch36",
+    "developer-experience"
+  ]
+}

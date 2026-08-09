@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch35/frontend-formal-external-route-block-execution-v2.schema.json",
+  "$ref": "../batch32/frontend-formal-external-route-block-execution-v2.schema.json"
+}

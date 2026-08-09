@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "extension_id": "sample.publisher.extension",
+  "name": "Sample extension",
+  "kind": "transformation-recipe",
+  "version": "0.1.0",
+  "publisher_id": "sample-publisher",
+  "product_compatibility": {
+    "product": "TODO",
+    "protocol": "1.x",
+    "sdk": "1.x"
+  },
+  "entrypoints": [
+    {
+      "name": "execute",
+      "operation": "transform",
+      "handler": "sample.extension:execute"
+    }
+  ],
+  "capabilities": [
+    "typed-transform"
+  ],
+  "permissions": [
+    "workspace-read",
+    "artifact-read",
+    "artifact-write",
+    "evidence-write"
+  ],
+  "dependencies": [],
+  "configuration_schema": "schemas/config.schema.json",
+  "lifecycle": {
+    "activate": "activate",
+    "health": "health",
+    "quiesce": "quiesce",
+    "shutdown": "shutdown",
+    "uninstall": "uninstall"
+  },
+  "artifacts": {
+    "package_ref": "releases/sample/package.tgz",
+    "package_digest": "sha256:deadbeef",
+    "signature_ref": "releases/sample/signature.sig",
+    "sbom_ref": "releases/sample/sbom.json",
+    "provenance_ref": "releases/sample/provenance.json"
+  },
+  "data_classification": [
+    "source-code"
+  ],
+  "side_effects": []
+}

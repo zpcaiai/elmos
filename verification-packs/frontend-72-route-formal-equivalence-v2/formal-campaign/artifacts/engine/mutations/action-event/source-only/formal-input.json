@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "action-event",
+  "obligation_symbol": "diff_action_event",
+  "variant": "SOURCE_ONLY",
+  "pointer": "/actionEvent/acceptedEvents/0",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:d3b4903597a9fc27b4fff29f5a10c8c04b68320406a11def8dcc14527d98e0b1",
+  "canonical_block_digest": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba",
+  "mutant_block_digest": "sha256:1dfc508b9cbea34fb425cc4d05266326c8ff8be52a6d90db4cb6d9b275181ed4",
+  "counterexample_replay": {
+    "block_id": "action-event",
+    "pointer": "/actionEvent/acceptedEvents/0",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "event": "BOOT",
+      "keyboardKey": "NONE",
+      "handled": true,
+      "action": "BOOT"
+    },
+    "mutant_observation": {
+      "event": "BOOT",
+      "keyboardKey": "NONE",
+      "handled": false,
+      "action": "BOOT"
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

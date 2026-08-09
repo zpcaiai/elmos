@@ -1,0 +1,183 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/csharp-to-typescript/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "dist/migrated.js",
+    "dist/route_harness.js",
+    "source-runtime/bin/Release/net10.0/SourceHarness",
+    "source-runtime/bin/Release/net10.0/SourceHarness.deps.json",
+    "source-runtime/bin/Release/net10.0/SourceHarness.dll",
+    "source-runtime/bin/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/bin/Release/net10.0/SourceHarness.runtimeconfig.json",
+    "source-runtime/obj/Release/net10.0/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfo.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.AssemblyInfoInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GeneratedMSBuildEditorConfig.editorconfig",
+    "source-runtime/obj/Release/net10.0/SourceHarness.GlobalUsings.g.cs",
+    "source-runtime/obj/Release/net10.0/SourceHarness.assets.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.CoreCompileInputs.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.csproj.FileListAbsolute.txt",
+    "source-runtime/obj/Release/net10.0/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/SourceHarness.genruntimeconfig.cache",
+    "source-runtime/obj/Release/net10.0/SourceHarness.pdb",
+    "source-runtime/obj/Release/net10.0/apphost",
+    "source-runtime/obj/Release/net10.0/ref/SourceHarness.dll",
+    "source-runtime/obj/Release/net10.0/refint/SourceHarness.dll",
+    "source-runtime/obj/SourceHarness.csproj.nuget.dgspec.json",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.props",
+    "source-runtime/obj/SourceHarness.csproj.nuget.g.targets",
+    "source-runtime/obj/project.assets.json",
+    "source-runtime/obj/project.nuget.cache"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 1551,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:ac11966ed2b8dced2460bfab0da46e9e0439080c1f45f328ffc24fdf52cf7dea"
+    },
+    {
+      "bytes": 10736,
+      "path": "chunk-map.json",
+      "sha256": "sha256:fd23ab8872d234c46cf92409abb753817b50d7858c035cd4d0d8ab8944634228"
+    },
+    {
+      "bytes": 3062,
+      "path": "formal-composition.json",
+      "sha256": "sha256:b6b927f46cba0a80d46dc02c3455b625caf2f0275fbd3a1a208cd711be43bf48"
+    },
+    {
+      "bytes": 1390,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:70a41aff47ba5f8e3ba0a24b79b853c09da96b512bd40e084def661c4026f27c"
+    },
+    {
+      "bytes": 7876,
+      "path": "formal-input.json",
+      "sha256": "sha256:237a767011c721981b7673a5a3fa6f75104adac326b15b393e5f611a7ad80f9c"
+    },
+    {
+      "bytes": 2440,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:d2217599547b707421553c911b2cec77a605352bb53f52be5cfc0d9419676f94"
+    },
+    {
+      "bytes": 255,
+      "path": "inputs/Clamp.cs",
+      "sha256": "sha256:36be029551549283df08ef3633bc908edd016f4654bb47baaf7e9f04b20df4a6"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 3594,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:61cb06dfa2196210071830c3f5ca298d8db9ab87f76c5d705aeb2e3d8a2f4035"
+    },
+    {
+      "bytes": 517,
+      "path": "migrated.ts",
+      "sha256": "sha256:de917de5375f472c26a98bf3462380ce463472251fe6692aef42d4c1dd1a99e0"
+    },
+    {
+      "bytes": 7423,
+      "path": "route-evidence.json",
+      "sha256": "sha256:de913a67eb35fca9698e9667d4008484bbad055d697326b116372e5f9447be7c"
+    },
+    {
+      "bytes": 537,
+      "path": "route_harness.ts",
+      "sha256": "sha256:e5094d0a239f55239155ec02c4df908c84b97236c4b6cf2f49de406f4a205ce0"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 812,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:52c55a9c0572cf4ff40337ab606759c14f55c21562101a524d1726b2626a37ed"
+    },
+    {
+      "bytes": 255,
+      "path": "source-runtime/Clamp.cs",
+      "sha256": "sha256:36be029551549283df08ef3633bc908edd016f4654bb47baaf7e9f04b20df4a6"
+    },
+    {
+      "bytes": 867,
+      "path": "source-runtime/Program.cs",
+      "sha256": "sha256:bb8b73c0b9d0918a3cf4a8e94fdde7cc63b48ab0f4762b2b1076733421a73004"
+    },
+    {
+      "bytes": 262,
+      "path": "source-runtime/SourceHarness.csproj",
+      "sha256": "sha256:199965fda9f51346aecced6f579b49326518d08f6b361be05a848e6ac08c9703"
+    },
+    {
+      "bytes": 812,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:52c55a9c0572cf4ff40337ab606759c14f55c21562101a524d1726b2626a37ed"
+    },
+    {
+      "bytes": 826,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:0d72fb6fbe1338ba1d04b41aa4f60919743e2541d9ae399f8e47fc08a405605e"
+    },
+    {
+      "bytes": 189,
+      "path": "tsconfig.json",
+      "sha256": "sha256:7e16f4a363edd4a318dd139d684a3cd0445ef3b449044fcf892fc5cb2366cd13"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "csharp-to-typescript",
+  "schema_version": 1,
+  "total_bytes": 43863
+}

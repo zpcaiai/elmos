@@ -1,0 +1,206 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:1a95c9e6b289c4da116eb0c7af05079d4ac8cb3896786e130cf932d174a5d3e8",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:0010333c5e6f25aaa875fdc6e98fd61beb909dcba3e0e66cb72bf2d0afc2f586",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:1c1991cf6e4f2d4e0dbdf888267ccb1dd02716d38664550e688f70ac6c70d782",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:a4797935f3a05b8299678052d2543602cf1c51e0cbfd308f74cebc88e3e0cf4e",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:a4797935f3a05b8299678052d2543602cf1c51e0cbfd308f74cebc88e3e0cf4e",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:a4797935f3a05b8299678052d2543602cf1c51e0cbfd308f74cebc88e3e0cf4e",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:825cfdb80040dcac74e056f5808935360725bece39fbdfb9f18e552df26ec574",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      },
+      {
+        "formal_input_sha256": "sha256:a4797935f3a05b8299678052d2543602cf1c51e0cbfd308f74cebc88e3e0cf4e",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:46520658456deafb77b019a9a59546db6e82efcbe28459c8daca7ced7babc413",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:825cfdb80040dcac74e056f5808935360725bece39fbdfb9f18e552df26ec574",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:a47cc5fbcc9e05f09b76473fe84b84bb4e89804d2bac1e01e5a971e01dcdb66b",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "python-to-java",
+  "route_maturity": "LIMITED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:0431ee5ee6595b149fb92a211b72081b0d9bbbfad98fbcae1f9004acbe6b008a",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:6eeace3446cfa818fdc03e1e3f4e05f76fe74488101641858ace58e74b14d306"
+  },
+  "semantic_ir_sha256": "sha256:0431ee5ee6595b149fb92a211b72081b0d9bbbfad98fbcae1f9004acbe6b008a",
+  "source": {
+    "analyzer": "CPython ast",
+    "analyzer_version": "3.12.12",
+    "language": "python",
+    "path": "pricing.py",
+    "sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.py",
+    "artifact_sha256": "sha256:a33aeebeec95f4ad3c9caaefeeb68bf40224782f7abeb834a9e2d0b31325ac0d",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "-m",
+          "py_compile",
+          "pricing.py",
+          "source_harness.py"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/polyglot-route-engine/.venv/bin/python",
+          "source_harness.py"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":120}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":5}\n"
+      }
+    ],
+    "language": "python",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":120}",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":5}",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED"
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "java",
+    "path": "Migrated.java",
+    "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "Migrated.java",
+          "RouteHarness.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+          "-cp",
+          ".",
+          "RouteHarness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n"
+      }
+    ],
+    "language": "java",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTIw",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "NQ==",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED"
+  }
+}

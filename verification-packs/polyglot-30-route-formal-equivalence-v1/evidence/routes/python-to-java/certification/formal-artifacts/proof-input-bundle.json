@@ -1,0 +1,83 @@
+{
+  "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+  "route_key": "python-to-java",
+  "runs": [
+    {
+      "composition": {
+        "bytes": 2956,
+        "path": "certification/artifacts/development/formal-composition.json",
+        "sha256": "sha256:1c1991cf6e4f2d4e0dbdf888267ccb1dd02716d38664550e688f70ac6c70d782"
+      },
+      "corpus": "development",
+      "formal_input": {
+        "bytes": 6484,
+        "path": "certification/artifacts/development/formal-input.json",
+        "sha256": "sha256:a4797935f3a05b8299678052d2543602cf1c51e0cbfd308f74cebc88e3e0cf4e"
+      },
+      "property_status": "PROVED",
+      "result": {
+        "bytes": 2334,
+        "path": "certification/artifacts/development/formal-proof-result.json",
+        "sha256": "sha256:46520658456deafb77b019a9a59546db6e82efcbe28459c8daca7ced7babc413"
+      },
+      "smt2": {
+        "bytes": 981,
+        "path": "certification/artifacts/development/formal-equivalence.smt2",
+        "sha256": "sha256:825cfdb80040dcac74e056f5808935360725bece39fbdfb9f18e552df26ec574"
+      },
+      "status": "PROVED_UNDER_ASSUMPTIONS"
+    },
+    {
+      "composition": {
+        "bytes": 2954,
+        "path": "certification/artifacts/holdout/formal-composition.json",
+        "sha256": "sha256:d225d2a285bea17bcdac1d298a970d3acc4e1b630738b5fede8c702e7e67201b"
+      },
+      "corpus": "holdout",
+      "formal_input": {
+        "bytes": 7051,
+        "path": "certification/artifacts/holdout/formal-input.json",
+        "sha256": "sha256:112dae3708cef27b07655a1b63eaedf4c85d87426d646cd253adf9c075f20980"
+      },
+      "property_status": "PROVED",
+      "result": {
+        "bytes": 2332,
+        "path": "certification/artifacts/holdout/formal-proof-result.json",
+        "sha256": "sha256:c5b0272b5db4e02b091ab64d1ccc8399cbcdbd68814a7bcfa93bc669a06abacb"
+      },
+      "smt2": {
+        "bytes": 977,
+        "path": "certification/artifacts/holdout/formal-equivalence.smt2",
+        "sha256": "sha256:a422ee088d355d74df7217c1221be4b2d05651f1374c8787c0c46d3a5074d50d"
+      },
+      "status": "PROVED_UNDER_ASSUMPTIONS"
+    },
+    {
+      "composition": {
+        "bytes": 2952,
+        "path": "certification/artifacts/real-repository/formal-composition.json",
+        "sha256": "sha256:b8df8be3fb218f289f86cff9ad56416eaa762b69ce87925329a7b3701a2505fe"
+      },
+      "corpus": "real-repository",
+      "formal_input": {
+        "bytes": 6478,
+        "path": "certification/artifacts/real-repository/formal-input.json",
+        "sha256": "sha256:8b9b657590eb38a7a2cb80ebab74a2cccca767b6dab8be5adfc4e2c901051d4a"
+      },
+      "property_status": "PROVED",
+      "result": {
+        "bytes": 2330,
+        "path": "certification/artifacts/real-repository/formal-proof-result.json",
+        "sha256": "sha256:11b4417c0c6e395fc7a4463a9c78baf50293ef0cdb6b29150ad842a9bb7fb344"
+      },
+      "smt2": {
+        "bytes": 973,
+        "path": "certification/artifacts/real-repository/formal-equivalence.smt2",
+        "sha256": "sha256:4c01419e493446416ae8cd1e937423c288909ddffa0e348fb5fa5f994ca97e7d"
+      },
+      "status": "PROVED_UNDER_ASSUMPTIONS"
+    }
+  ],
+  "same_input_required": true,
+  "schema_version": 1
+}

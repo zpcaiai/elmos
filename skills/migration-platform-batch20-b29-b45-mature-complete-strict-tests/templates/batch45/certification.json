@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "example-mature-product-certification",
+  "status": "experimental",
+  "metrics": {
+    "functional_depth_pass_rate": 0,
+    "certified_route_claim_accuracy": 0,
+    "semantic_behavior_pass_rate": 0,
+    "scale_slo_pass_rate": 0,
+    "security_governance_pass_rate": 0,
+    "sre_dr_pass_rate": 0,
+    "maintainability_pass_rate": 0,
+    "developer_experience_pass_rate": 0,
+    "deployment_matrix_pass_rate": 0,
+    "ecosystem_pass_rate": 0,
+    "economics_pass_rate": 0,
+    "customer_outcome_pass_rate": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "critical_open_product_risks": 1,
+    "unsupported_marketing_claims": 1,
+    "unknown_p0_correctness": 1,
+    "critical_security_findings": 1,
+    "unrecovered_dr_failures": 1,
+    "unaccepted_customer_p0_differences": 1,
+    "nonzero_financial_reconciliation_difference": 1,
+    "conflicted_independent_reviews": 1,
+    "expired_mandatory_evidence": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": [],
+  "approved_by": []
+}

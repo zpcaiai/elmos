@@ -1,0 +1,14 @@
+{
+  "corpus": "negative",
+  "dataset_class": "local-negative",
+  "dataset_digest": "sha256:bcf08032ba35d91bb061712fbdee1c4f498ee96d1215f5e00497f921acbdfa1a",
+  "evidence_refs": [
+    "evidence/route-set.json"
+  ],
+  "notes": [
+    "Fail-closed missing-function and evidence-tamper controls."
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:c1fd6ae6d02b401ca9dff0dcd7ff864f2cc44421e2065a1f1624f73a7167a4ff",
+  "status": "passed"
+}

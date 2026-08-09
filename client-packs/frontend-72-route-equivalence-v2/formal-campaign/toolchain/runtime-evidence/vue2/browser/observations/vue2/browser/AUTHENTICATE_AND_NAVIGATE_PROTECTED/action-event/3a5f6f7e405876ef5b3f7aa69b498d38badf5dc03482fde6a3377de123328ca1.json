@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "AUTHENTICATE",
+    "event": "AUTHENTICATE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:b69840b42143319b2bbe88124d17a91a05bfd136e73f98756fc39c8ab2703d40",
+      "block_id": "action-event",
+      "byte_count": 3333,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue2/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-native-event-outcome-observer-trace/458ff3d88eca5654dfa8a473e2e7d64c23be2fce0e43121fa5b177c5dfdb9c37.json",
+      "profile_id": "vue2",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+      "sha256": "sha256:458ff3d88eca5654dfa8a473e2e7d64c23be2fce0e43121fa5b177c5dfdb9c37"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:245f3a2309d645c021c33cfe278af5ad7a2bd774e9c20aafa15e7b97f50e2d2e",
+        "byte_count": 5313,
+        "channel": "browser",
+        "path": "traces/vue2/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-framework-event-trace/396c624bca7201a13690d5add35fb66b5d26b00b89654b9ad12b8e0c6c0db04d.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:396c624bca7201a13690d5add35fb66b5d26b00b89654b9ad12b8e0c6c0db04d"
+      }
+    ]
+  },
+  "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+  "schema_version": "1.0"
+}

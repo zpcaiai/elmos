@@ -38,6 +38,9 @@ REQUIRED_RUNTIME_FILES = [
     ".agents/skills/elmos-project-synthesis/agents/openai.yaml",
     ".agents/skills/elmos-project-synthesis/scripts/synthesize.py",
     "contracts/project-synthesis-schema/synthesis-request-v1.schema.json",
+    "contracts/project-synthesis-schema/project-structure-v1.schema.json",
+    "contracts/project-synthesis-schema/declared-dependency-graph-v1.schema.json",
+    "contracts/project-synthesis-schema/project-insights-v1.schema.json",
     "engines/project-synthesis-engine/pyproject.toml",
     "engines/project-synthesis-engine/uv.lock",
     "engines/project-synthesis-engine/scripts/run_acceptance.py",
@@ -47,7 +50,17 @@ REQUIRED_RUNTIME_FILES = [
 def check_runtime_files() -> None:
     """Validate the tracked repository-side files, which no source package gates."""
     for relative in REQUIRED_RUNTIME_FILES:
-        require((ROOT / relative).is_file(), f"required integration file is missing: {relative}")
+        path = ROOT / relative
+        require(path.is_file(), f"required integration file is missing: {relative}")
+        if path.name.endswith(".schema.json") and path.is_file():
+            try:
+                schema = load_json(path)
+            except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                require(False, f"runtime Schema is not valid JSON: {relative}: {exc}")
+            else:
+                require(isinstance(schema, dict), f"runtime Schema root must be an object: {relative}")
+                require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", f"runtime Schema draft is invalid: {relative}")
+                require(isinstance(schema.get("$id"), str) and bool(schema["$id"]), f"runtime Schema identity is missing: {relative}")
 
 
 def fail_on_errors() -> None:

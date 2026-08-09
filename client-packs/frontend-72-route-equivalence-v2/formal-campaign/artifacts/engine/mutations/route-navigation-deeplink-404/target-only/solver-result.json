@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_version": "Z3 version 4.16.0 - 64 bit",
+  "identity_status": "VERIFIED",
+  "invocation": [
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "-in"
+  ],
+  "options": {
+    "args": [
+      "-in"
+    ],
+    "timeout_ms": 10000
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_version": "v26.0.0"
+  },
+  "exit_code": 0,
+  "stdout": "sat\n",
+  "stderr": "",
+  "outcome": "SAT",
+  "proof_status": "REFUTED",
+  "unconditional_proof": false,
+  "route_id": "mutation:route-navigation-deeplink-404:TARGET_ONLY",
+  "formal_input_digest": "sha256:c821d81fa8d19f6f186d4d9957f9b67319b3b65e3b38e08e010975258545dc27",
+  "solver_input_digest": "sha256:8ec8278f8ff3f37b617e3202ffeae2bb5c7d50ca1a648d8a790f4eb7173e4d5c",
+  "smt2_digest": "sha256:8ec8278f8ff3f37b617e3202ffeae2bb5c7d50ca1a648d8a790f4eb7173e4d5c",
+  "mutation_formal_input_path": "mutations/route-navigation-deeplink-404/target-only/formal-input.json",
+  "mutation_solver_input_path": "mutations/route-navigation-deeplink-404/target-only/proof.smt2",
+  "expected_outcome": "SAT",
+  "replay_status": "PASSED"
+}

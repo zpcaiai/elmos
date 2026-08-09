@@ -1,0 +1,204 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:479b243488ad2cb377d341833a717c196f4346afcfb5f957a3ccb54d775499ce",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:32702469310dbb4eb2b63272496e0b95bf79b6038859a9a2e4086cddb667e70c",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:090cefb5750895ff076f80e7baa7b6e6f57e8fd41a5dd3d7f7d861db5f4cea35",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:ed00b043d48cbc544dad0877d6563681b6e08b2ae5d8ac77842af27f91571a31",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:ed00b043d48cbc544dad0877d6563681b6e08b2ae5d8ac77842af27f91571a31",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:ed00b043d48cbc544dad0877d6563681b6e08b2ae5d8ac77842af27f91571a31",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:70a570ee7418182313b8aff4538db32e2b9149454deeb1ca841d6d04dc8a109e",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      },
+      {
+        "formal_input_sha256": "sha256:ed00b043d48cbc544dad0877d6563681b6e08b2ae5d8ac77842af27f91571a31",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:c67551885638502106d76960a550a47f552ac3baed2c02a1e6a671b762748801",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:70a570ee7418182313b8aff4538db32e2b9149454deeb1ca841d6d04dc8a109e",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:b2047ed779b037c8a668f6bf6418348419c10f6a2656df2d1a55a8d06e75cf08",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "typescript-to-java",
+  "route_maturity": "LIMITED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:47597f8105a4afb19a72ee7c2bdc647b06e14b8d9299f9847dc78bf7ebe143af",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:9b303db491cf7f587eb13395d850351cc45dff656d66c36589a615027053b7c5",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:79f7e4024b3d8c398565a6a6d20f77c70db04fdc8f18df8b6fe9b03b20d63f04"
+  },
+  "semantic_ir_sha256": "sha256:9b303db491cf7f587eb13395d850351cc45dff656d66c36589a615027053b7c5",
+  "source": {
+    "analyzer": "TypeScript Compiler API",
+    "analyzer_version": "5.9.2",
+    "language": "typescript",
+    "path": "pricing.ts",
+    "sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.ts",
+    "artifact_sha256": "sha256:d6d97571aa30fc10c74ced1903a0ec6c3db78ebfe666f33e4ff825681525c9fd",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/DevProjects/AIProjects/elmos/engines/frontend-client-engine/node_modules/.bin/tsc",
+          "-p",
+          "tsconfig.json"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/node",
+          "dist/source_harness.js"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\tjson\t{\"case_id\":0,\"value\":120}\nELMOS_OBSERVATION\tjson\t{\"case_id\":1,\"value\":0}\nELMOS_OBSERVATION\tjson\t{\"case_id\":2,\"value\":5}\n"
+      }
+    ],
+    "language": "typescript",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "json",
+        "raw": "{\"case_id\":0,\"value\":120}",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "json",
+        "raw": "{\"case_id\":1,\"value\":0}",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "json",
+        "raw": "{\"case_id\":2,\"value\":5}",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED"
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "java",
+    "path": "Migrated.java",
+    "sha256": "sha256:edc7e7c0670307c6dd668b4a071568f927391fb56d231256c875837fc29efe8a"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "Migrated.java",
+          "RouteHarness.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+          "-cp",
+          ".",
+          "RouteHarness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTIwLjA=\nELMOS_OBSERVATION\t1\tb64\tMC4w\nELMOS_OBSERVATION\t2\tb64\tNS4w\n"
+      }
+    ],
+    "language": "java",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTIwLjA=",
+        "status": "RETURNED",
+        "value": 120.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MC4w",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "NS4w",
+        "status": "RETURNED",
+        "value": 5.0
+      }
+    ],
+    "status": "PASSED"
+  }
+}

@@ -11,6 +11,7 @@ from typing import Any, cast
 from .deployment_guidance import render_deployment_guidance
 from .dotnet_target import render_dotnet
 from .go_target import render_go
+from .insights import render_generation_insights, render_insights_markdown
 from .java_target import render_java
 from .kotlin_target import render_kotlin
 from .models import TARGET_PROFILES, SynthesisRequest, request_payload, sha256_json
@@ -21,13 +22,19 @@ from .project_documentation import (
     DOCUMENTATION_STATUS,
     render_project_documentation,
 )
+from .project_graphs import (
+    DEPENDENCY_GRAPH_PATH,
+    PROJECT_STRUCTURE_PATH,
+    render_declared_dependency_graph,
+    render_project_structure,
+)
 from .python_target import render_python
 from .rendering import clean, pretty_json
 from .rust_target import render_rust
 from .typescript_target import render_typescript
 
-ENGINE_VERSION = "1.3.0"
-COMPATIBLE_MANIFEST_VERSIONS = frozenset({"1.2.0", ENGINE_VERSION})
+ENGINE_VERSION = "1.4.0"
+COMPATIBLE_MANIFEST_VERSIONS = frozenset({"1.2.0", "1.3.0", ENGINE_VERSION})
 
 
 class WorkspaceConflictError(RuntimeError):
@@ -201,6 +208,12 @@ def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
             "path": "docs/CHANGE_HISTORY.md",
             "status": DOCUMENTATION_STATUS,
         },
+        {
+            "id": "project-insights-document",
+            "kind": "project-insights-document",
+            "path": "docs/PROJECT_INSIGHTS.md",
+            "status": DOCUMENTATION_STATUS,
+        },
     ]
     edges: list[dict[str, str]] = [
         {"from": "approved-request", "to": "psir", "relation": "normalizes-to"},
@@ -209,6 +222,11 @@ def _render_asset_graph(request: SynthesisRequest) -> dict[str, Any]:
         {"from": "project-blueprint", "to": "database-design-document", "relation": "documents-data"},
         {"from": "database-design-document", "to": "migration-guide", "relation": "governs-migration"},
         {"from": "approved-request", "to": "change-history", "relation": "records-impact"},
+        {
+            "from": "project-blueprint",
+            "to": "project-insights-document",
+            "relation": "summarizes-evidence",
+        },
     ]
     for target in request.targets:
         source_id = f"{target.language}-source"
@@ -383,7 +401,9 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `requirements/project-blueprint.json`: selected language/runtime/build profiles.
         - `requirements/asset-graph.json`: generated assets and missing evidence links.
         - `requirements/build-graph.json`: per-target generate/build/test/startup dependencies.
+        - `requirements/project-insights.json`: structure, semantic mapping, behavior, and pairwise evidence state.
         - `requirements/source-provenance.json`: imported file, URL, Skill, and description digests.
+        - `docs/PROJECT_INSIGHTS.md`: Mermaid structure graph and explicit equivalence matrices.
         - `docs/ARCHITECTURE.md`: architecture baseline, boundaries, targets, decisions, and review status.
         - `docs/DATABASE_DESIGN.md`: logical/physical data model, relations, constraints, indexes, and RLS.
         - `docs/MIGRATION_GUIDE.md`: upgrade, data migration, verification, rollback, and evidence plan.
@@ -466,11 +486,10 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         }[target.language](request, target.port)
         prefix = _target_directory(target.language)
         for relative, content in rendered.items():
-            path = (
-                relative
-                if request.requires_database and relative == "deploy/kubernetes.yaml"
-                else f"{prefix}/{relative}"
-            )
+            if request.requires_database and relative == "deploy/kubernetes.yaml":
+                path = relative if len(request.targets) == 1 else f"deploy/{target.language}-kubernetes.yaml"
+            else:
+                path = f"{prefix}/{relative}"
             if path in files:
                 raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
             files[path] = content
@@ -495,6 +514,28 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         if path in files:
             raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
         files[path] = content
+
+    insight_path = "requirements/project-insights.json"
+    insight_report_path = "docs/PROJECT_INSIGHTS.md"
+    managed_paths = [
+        *files,
+        PROJECT_STRUCTURE_PATH,
+        DEPENDENCY_GRAPH_PATH,
+        insight_path,
+        insight_report_path,
+    ]
+    project_structure = render_project_structure(request, managed_paths)
+    declared_dependencies = render_declared_dependency_graph(request)
+    project_insights = render_generation_insights(
+        request,
+        project_structure=project_structure,
+        declared_dependencies=declared_dependencies,
+    )
+    files[PROJECT_STRUCTURE_PATH] = pretty_json(project_structure)
+    files[DEPENDENCY_GRAPH_PATH] = pretty_json(declared_dependencies)
+    files[insight_path] = pretty_json(project_insights)
+    files[insight_report_path] = render_insights_markdown(request, project_insights)
+
     manifest_entries = [
         {
             "path": path,
@@ -504,6 +545,7 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         }
         for path, content in sorted(files.items())
     ]
+    manifest_entry_by_path = {entry["path"]: entry for entry in manifest_entries}
     manifest = {
         "schema_version": "1.1.0",
         "engine": "elmos.project-synthesis",
@@ -519,6 +561,28 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             "external_review_status": "NOT_RUN",
             "paths": sorted(DOCUMENT_SOURCE_REFS),
         },
+        "insights": {
+            "schema_version": project_insights["schema_version"],
+            "status": project_insights["stage"],
+            "path": insight_path,
+            "report_path": insight_report_path,
+            "direct_semantic_equivalence_status": "NOT_RUN",
+            "direct_behavior_equivalence_status": "NOT_RUN",
+        },
+        "graphs": [
+            {
+                "kind": "project-structure",
+                "path": PROJECT_STRUCTURE_PATH,
+                "schema_id": "elmos.project-synthesis.project-structure.v1",
+                "sha256": manifest_entry_by_path[PROJECT_STRUCTURE_PATH]["sha256"],
+            },
+            {
+                "kind": "declared-dependency",
+                "path": DEPENDENCY_GRAPH_PATH,
+                "schema_id": "elmos.project-synthesis.declared-dependency-graph.v1",
+                "sha256": manifest_entry_by_path[DEPENDENCY_GRAPH_PATH]["sha256"],
+            },
+        ],
         "files": manifest_entries,
     }
     files[".elmos/generation-manifest.json"] = pretty_json(manifest)

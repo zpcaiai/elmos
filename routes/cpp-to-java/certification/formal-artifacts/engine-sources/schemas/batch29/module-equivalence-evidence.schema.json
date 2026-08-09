@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/module-equivalence-evidence.schema.json",
+  "title": "Batch29TypedPureModuleEquivalenceEvidence",
+  "type": "object",
+  "required": ["schema_version", "kind", "profile", "status", "local_verification_status", "route", "module_input_sha256", "module_contract", "functions", "composition", "artifact_refs", "certification_status", "external_verification_status"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "typed-pure-module-equivalence"},
+    "profile": {"const": "typed-pure-module-v1"},
+    "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
+    "local_verification_status": {"enum": ["PASSED", "BLOCKED", "FAILED", "NOT_RUN"]},
+    "route": {"$ref": "#/$defs/exact_specialized_route"},
+    "module_input_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+    "module_input": {"type": "object", "minProperties": 1},
+    "module_contract": {
+      "type": "object",
+      "required": ["source_symbols", "target_symbols", "manifest_symbols", "exact_symbol_set", "exact_signature_set", "independence"],
+      "properties": {
+        "source_symbols": {"$ref": "#/$defs/symbols"},
+        "target_symbols": {"$ref": "#/$defs/symbols"},
+        "manifest_symbols": {"$ref": "#/$defs/symbols"},
+        "exact_symbol_set": {"type": "boolean"},
+        "exact_signature_set": {"type": "boolean"},
+        "independence": {"type": "object", "minProperties": 1, "additionalProperties": {"type": ["array", "boolean", "string"]}}
+      },
+      "additionalProperties": false
+    },
+    "functions": {"type": "array", "items": {"$ref": "#/$defs/function"}},
+    "composition": {
+      "type": "object",
+      "required": ["rule", "input_domain", "out_of_domain_arithmetic_behavior", "function_count", "passed_function_count", "status", "proof_strength", "original_source_bytes_theorem", "source_compiler_runtime_soundness", "target_compiler_runtime_soundness"],
+      "properties": {
+        "rule": {"type": "string", "minLength": 1},
+        "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+        "out_of_domain_arithmetic_behavior": {"const": "BLOCKED_NOT_EQUIVALENTLY_MODELED"},
+        "function_count": {"type": "integer", "minimum": 0},
+        "passed_function_count": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
+        "proof_strength": {"enum": ["THEOREM", "PROVED_UNDER_ASSUMPTIONS", "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS", "BOUNDED", "NONE"]},
+        "original_source_bytes_theorem": {"type": "boolean"},
+        "source_compiler_runtime_soundness": {"enum": ["PROVED", "NOT_RUN"]},
+        "target_compiler_runtime_soundness": {"enum": ["PROVED", "NOT_RUN"]},
+        "analyzer_and_emitter_soundness": {"enum": ["PROVED", "ASSUMPTION", "NOT_RUN"]}
+      },
+      "additionalProperties": false
+    },
+    "artifact_refs": {"type": "array", "items": {"$ref": "#/$defs/artifact_ref"}},
+    "source_validation": {"type": "object"},
+    "target_validation": {"type": "object"},
+    "unsupported_semantics": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "certification_status": {"const": "NOT_CERTIFIED"},
+    "external_verification_status": {"const": "NOT_RUN"},
+    "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASSED"}}, "required": ["status"]},
+      "then": {
+        "required": ["module_input", "source_validation", "target_validation", "unsupported_semantics"],
+        "properties": {
+          "local_verification_status": {"const": "PASSED"},
+          "module_input_sha256": {"$ref": "#/$defs/sha256"},
+          "functions": {"minItems": 3},
+          "artifact_refs": {"minItems": 19},
+          "composition": {"properties": {"function_count": {"minimum": 3}, "passed_function_count": {"minimum": 3}, "status": {"const": "PASSED"}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "NOT_RUN"}}, "required": ["status"]},
+      "then": {
+        "required": ["limitations"],
+        "properties": {
+          "local_verification_status": {"const": "NOT_RUN"},
+          "module_input_sha256": {"type": "null"},
+          "functions": {"maxItems": 0},
+          "artifact_refs": {"maxItems": 0},
+          "composition": {"properties": {"function_count": {"const": 0}, "passed_function_count": {"const": 0}, "status": {"const": "NOT_RUN"}, "proof_strength": {"const": "NONE"}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "exact_specialized_route": {
+      "oneOf": [
+        {"const": {"route_key": "cpp-to-objc", "source_language": "cpp", "target_language": "objc"}},
+        {"const": {"route_key": "objc-to-cpp", "source_language": "objc", "target_language": "cpp"}},
+        {"const": {"route_key": "cpp-to-swift", "source_language": "cpp", "target_language": "swift"}},
+        {"const": {"route_key": "swift-to-cpp", "source_language": "swift", "target_language": "cpp"}},
+        {"const": {"route_key": "objc-to-swift", "source_language": "objc", "target_language": "swift"}},
+        {"const": {"route_key": "swift-to-objc", "source_language": "swift", "target_language": "objc"}},
+        {"const": {"route_key": "cpp-to-java", "source_language": "cpp", "target_language": "java"}},
+        {"const": {"route_key": "java-to-cpp", "source_language": "java", "target_language": "cpp"}}
+      ]
+    },
+    "symbols": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "artifact_ref": {
+      "type": "object",
+      "required": ["role", "path", "sha256", "bytes"],
+      "properties": {
+        "role": {"enum": ["source-module-semantic-ir", "target-module-semantic-ir", "source-module-observations", "target-module-observations", "original-source-module-artifact", "emitted-target-module-artifact", "module-formal-input", "formal-function-input", "formal-function-smt2", "formal-function-result", "source-module-validation", "target-module-validation", "module-case-manifest"]},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "layer": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {"status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]}},
+      "additionalProperties": true
+    },
+    "formal_layer": {
+      "type": "object",
+      "required": ["status", "property_status", "proof_strength", "assumptions", "formal_input_path", "formal_input_sha256", "solver_input_path", "solver_input_sha256", "formal_result_path", "formal_result_sha256"],
+      "properties": {
+        "status": {"enum": ["PROVED_UNDER_ASSUMPTIONS", "FAILED", "INVALID", "UNSUPPORTED", "VACUOUS", "UNKNOWN", "TIMEOUT", "NOT_RUN"]},
+        "property_status": {"enum": ["PROVED", "COUNTEREXAMPLE", "INVALID", "UNSUPPORTED", "VACUOUS", "UNKNOWN", "TIMEOUT", "NOT_RUN"]},
+        "proof_strength": {"enum": ["THEOREM", "THEOREM_UNDER_ASSUMPTIONS", "PROVED_UNDER_ASSUMPTIONS", "BOUNDED", "AXIOM", "NONE"]},
+        "assumptions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "formal_input_path": {"type": "string", "minLength": 1},
+        "formal_input_sha256": {"$ref": "#/$defs/sha256"},
+        "solver_input_path": {"type": "string", "minLength": 1},
+        "solver_input_sha256": {"$ref": "#/$defs/sha256"},
+        "formal_result_path": {"type": "string", "minLength": 1},
+        "formal_result_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": true
+    },
+    "function": {
+      "type": "object",
+      "required": ["symbol", "signature", "status", "case_manifest_sha256", "layers"],
+      "properties": {
+        "symbol": {"type": "string", "minLength": 1},
+        "signature": {"type": "object", "minProperties": 1},
+        "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
+        "case_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "layers": {
+          "type": "object",
+          "required": ["semantic", "chunk", "behavior", "formal"],
+          "properties": {"semantic": {"$ref": "#/$defs/layer"}, "chunk": {"$ref": "#/$defs/layer"}, "behavior": {"$ref": "#/$defs/layer"}, "formal": {"$ref": "#/$defs/formal_layer"}},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

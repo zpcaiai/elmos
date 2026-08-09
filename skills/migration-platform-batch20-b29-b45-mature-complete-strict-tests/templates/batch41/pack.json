@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "example-knowledge-flywheel",
+  "pack_key": "example-knowledge-flywheel",
+  "version": "0.1.0",
+  "owner": "REPLACE_ME",
+  "status": "experimental",
+  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "environment_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "required_batches": [
+    21,
+    24,
+    25,
+    29,
+    30,
+    31,
+    32,
+    33,
+    35,
+    37
+  ],
+  "support_matrix": "support-matrix.json",
+  "profile": "profile.json",
+  "certification": "certification/certification.json"
+}

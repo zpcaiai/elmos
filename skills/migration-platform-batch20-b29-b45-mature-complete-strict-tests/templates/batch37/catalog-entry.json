@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "extension_id": "sample.publisher.extension",
+  "release_digest": "sha256:sample-release",
+  "publisher_id": "sample-publisher",
+  "title": "Sample Extension",
+  "summary": "Representative certified extension",
+  "categories": [
+    "migration"
+  ],
+  "certification_status": "certified",
+  "compatibility": {
+    "product_versions": [
+      "1.0.0"
+    ],
+    "editions": [
+      "enterprise"
+    ],
+    "regions": [
+      "global"
+    ]
+  },
+  "permissions_summary": [
+    "artifact-read"
+  ],
+  "discoverable": true,
+  "ranking_eligible": true,
+  "documentation_refs": [
+    "catalog/evidence.txt"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-route-composition",
+  "route_id": "vue3--to--harmony-arkui",
+  "source_lifting": {
+    "profile_id": "vue3",
+    "project_digest": "sha256:2f2ba603f52fa47e6b94086ac635b2dea2817e9dd976c1514a3ec8d6cd4ca088",
+    "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
+  },
+  "target_lowering_relift": {
+    "profile_id": "harmony-arkui",
+    "project_digest": "sha256:f9a00b024d2d7c3358326e74e12b33a34690ad91a5c405488909c5288e07ee4f",
+    "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13"
+  },
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "semantic_equal": true,
+  "chunk_equal": true,
+  "model_behavior_equal": true,
+  "solver_outcome": "UNSAT",
+  "vacuity_outcome": "SAT",
+  "cross_channel_equivalence": {
+    "browser": "NOT_RUN",
+    "harmonyos": "NOT_RUN"
+  },
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE",
+  "status": "PROVED_UNDER_ASSUMPTIONS"
+}

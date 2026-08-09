@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "source_snapshot_digest",
+    "resources",
+    "modules",
+    "variables",
+    "outputs",
+    "policies",
+    "obligations",
+    "source_map"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "source_snapshot_digest": {
+      "type": "string"
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "logical_name",
+          "provider_neutral_type",
+          "source_refs",
+          "depends_on",
+          "properties",
+          "lifecycle",
+          "security"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "logical_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provider_neutral_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "object"
+          },
+          "lifecycle": {
+            "type": "object"
+          },
+          "security": {
+            "type": "object"
+          },
+          "data_classification": {
+            "type": "string"
+          },
+          "obligations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "source_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_id",
+          "source_refs"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

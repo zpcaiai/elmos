@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "id": "example-agent-factory",
+  "capabilities": [
+    {
+      "capability_id": "b42-mature-agent-migration-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-team-topology-responsibility",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-migration-planner-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-deterministic-execution-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-language-framework-specialist-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-verification-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-policy-enforcement-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-supervisor-coordination-agent",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-human-approval-takeover",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-tool-registry-permission",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-minimal-context-evidence-builder",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-memory-state-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-multi-model-routing-provider-failover",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-budget-cost-resource",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-eval-benchmark",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-shadow-canary-bounded-rollout",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-red-team-adversarial-eval",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-incident-kill-switch-rollback",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-automatic-recipe-candidate-generation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-agent-autonomy-level-promotion-demotion",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-multiagent-conflict-consensus-arbitration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b42-mature-agent-certification-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    }
+  ]
+}

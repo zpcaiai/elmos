@@ -1,0 +1,237 @@
+{
+  "actual_source": "ALLOWLISTED_RUNTIME_CAPTURE",
+  "capture": {
+    "events": [
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313690749,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "fail"
+        },
+        "timestamp": 1786313690749,
+        "type": "input"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "fail"
+        },
+        "timestamp": 1786313690783,
+        "type": "change"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "CANCEL",
+            "data-run-scenario": "API_ERROR_CANCEL_STALE_RESPONSE",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313690783,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "CANCEL",
+            "data-run-scenario": "API_ERROR_CANCEL_STALE_RESPONSE",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313690783,
+        "type": "click"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "fail"
+        },
+        "timestamp": 1786313690783,
+        "type": "input"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {},
+          "tag": null,
+          "value": null
+        },
+        "timestamp": 1786313690783,
+        "type": "popstate"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313709497,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "fail"
+        },
+        "timestamp": 1786313709497,
+        "type": "input"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "fail"
+        },
+        "timestamp": 1786313709551,
+        "type": "change"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "CANCEL",
+            "data-run-scenario": "API_ERROR_CANCEL_STALE_RESPONSE",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313709551,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "CANCEL",
+            "data-run-scenario": "API_ERROR_CANCEL_STALE_RESPONSE",
+            "type": "button"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313709552,
+        "type": "click"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "fail"
+        },
+        "timestamp": 1786313709552,
+        "type": "input"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {},
+          "tag": null,
+          "value": null
+        },
+        "timestamp": 1786313709552,
+        "type": "popstate"
+      }
+    ]
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-trace-artifact",
+  "profile_id": "jquery",
+  "role": "browser-framework-event-trace",
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

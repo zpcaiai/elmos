@@ -1,0 +1,6 @@
+.PHONY: validate-b37 test-b37
+validate-b37:
+	python3 scripts/batch37/validate_skill_bundle.py .agents/skills
+	python3 -m unittest tests/batch37/test_toolkit.py tests/batch37/test_closure_toolkit.py
+
+test-b37: validate-b37

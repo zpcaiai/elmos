@@ -1,0 +1,206 @@
+{
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:22ffddd938e01a1f7da1bfd1efd616a4e70051da06d215ac43da475674903346",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:34ad0ced9ae390e447f42d98fa4f980fae535de7cd6a15ae045d64148a28c1a2",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 13,
+    "required_source_chunk_count": 13,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "development",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:1f33f97964028d06a3e82bd4acc98e4b2eae4b6207411f1f380dc745b4e88907",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:1a7c1622616eee670f15ad43b339026f566dcc07dd47d67002f607d5b866c40f",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:1a7c1622616eee670f15ad43b339026f566dcc07dd47d67002f607d5b866c40f",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:1a7c1622616eee670f15ad43b339026f566dcc07dd47d67002f607d5b866c40f",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:4425bd7d4fc55c0fa46a6cf889211add88b120c3cc72057fcf092e52f152000f",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      },
+      {
+        "formal_input_sha256": "sha256:1a7c1622616eee670f15ad43b339026f566dcc07dd47d67002f607d5b866c40f",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:d40c0c8f74075cd96f1a326fe6b58f53493d332bcee90737467fad1de2e6902e",
+        "status": "PROVED",
+        "strength": "THEOREM"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:4425bd7d4fc55c0fa46a6cf889211add88b120c3cc72057fcf092e52f152000f",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:3e026dc0e09d5b35222530edbced5b4f318469b13506697891c6d713399c8019",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "route": "go-to-csharp",
+  "route_maturity": "LIMITED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:91e74de1f8a518ef8ca21e9a0253b689829d3258532ffd1c078097600079ce40"
+  },
+  "semantic_ir_sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798",
+  "source": {
+    "analyzer": "go/parser AST",
+    "analyzer_version": "go1.25.0",
+    "language": "go",
+    "path": "pricing.go",
+    "sha256": "sha256:3cfb29fc1c83f2ace19a135fad0b124fcb525bf6cec5c0252cd7ad5664c8accf"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "pricing.go",
+    "artifact_sha256": "sha256:3cfb29fc1c83f2ace19a135fad0b124fcb525bf6cec5c0252cd7ad5664c8accf",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Users/stephen/.local/bin/go",
+          "test",
+          "-v",
+          "-count=1",
+          "-run",
+          "^TestElmosSourceBehavior$",
+          "pricing.go",
+          "source_behavior_test.go"
+        ],
+        "stderr": "",
+        "stdout": "=== RUN   TestElmosSourceBehavior\nELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n--- PASS: TestElmosSourceBehavior (0.00s)\nPASS\nok  \tcommand-line-arguments\t0.432s\n"
+      }
+    ],
+    "language": "go",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTIw",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "NQ==",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "role": "source",
+    "status": "PASSED"
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "csharp",
+    "path": "Migrated.cs",
+    "sha256": "sha256:2896064edaaaffbc1b94d04ef087d84b2ff894bfe32749821476f8d580d0563e"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/bin/dotnet",
+          "build",
+          "RouteHarness.csproj",
+          "-c",
+          "Release"
+        ],
+        "stderr": "",
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-go-to-csharp-4lhpnhli/development/RouteHarness.csproj (in 33 ms).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-go-to-csharp-4lhpnhli/development/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.58\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/bin/dotnet",
+          "run",
+          "--project",
+          "RouteHarness.csproj",
+          "-c",
+          "Release",
+          "--no-build"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTIw\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNQ==\n"
+      }
+    ],
+    "language": "csharp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTIw",
+        "status": "RETURNED",
+        "value": 120
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "NQ==",
+        "status": "RETURNED",
+        "value": 5
+      }
+    ],
+    "status": "PASSED"
+  }
+}

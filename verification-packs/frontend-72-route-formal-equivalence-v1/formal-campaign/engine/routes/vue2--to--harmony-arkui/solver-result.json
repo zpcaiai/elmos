@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_version": "Z3 version 4.16.0 - 64 bit",
+  "identity_status": "VERIFIED",
+  "invocation": [
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "-in"
+  ],
+  "options": {
+    "args": [
+      "-in"
+    ],
+    "timeout_ms": 10000
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_version": "v26.0.0"
+  },
+  "exit_code": 0,
+  "stdout": "unsat\n",
+  "stderr": "",
+  "outcome": "UNSAT",
+  "proof_status": "PROVED_UNDER_ASSUMPTIONS",
+  "unconditional_proof": false,
+  "route_id": "vue2--to--harmony-arkui",
+  "formal_input_digest": "sha256:099996d77c53ca880c40628baa4312452c3bb692169c205f6b9b0fcbed401d7c",
+  "solver_input_digest": "sha256:9aa8c8ae90779a98275a6b884530614eb3ff12556c831af579d1b9ab72ad904a",
+  "smt2_digest": "sha256:9aa8c8ae90779a98275a6b884530614eb3ff12556c831af579d1b9ab72ad904a"
+}

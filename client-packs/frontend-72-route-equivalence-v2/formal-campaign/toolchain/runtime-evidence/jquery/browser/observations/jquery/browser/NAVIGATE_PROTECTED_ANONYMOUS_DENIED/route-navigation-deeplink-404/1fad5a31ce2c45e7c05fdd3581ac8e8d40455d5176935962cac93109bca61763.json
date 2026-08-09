@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": false,
+    "resolution": "AUTH_DENIED_FALLBACK",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:6188f9c69a85b8880a113f6ec05d831eb97400c8dac40ed72dead4c77feaea82",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2434,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-route-dom-url-observer-trace/f92bd6376869a14c4f03b209bc7765478936ce7a11d7be0ff153943a85414878.json",
+      "profile_id": "jquery",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:f92bd6376869a14c4f03b209bc7765478936ce7a11d7be0ff153943a85414878"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:8a832b04164de53bde9714cb9e81e857b346fa521fbe75222a460b6558b3cdcc",
+        "byte_count": 39878,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/2dd5a1d4b381843be2c2fc6689120d3752a85acc2c709d280736951f5fd02826.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:2dd5a1d4b381843be2c2fc6689120d3752a85acc2c709d280736951f5fd02826"
+      },
+      {
+        "artifact_id": "sha256:bb3c1cbcb67810e5aca3719a93a500fdff335106af24e3d094d2eedbd48caa47",
+        "byte_count": 5299,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-framework-event-trace/2b0f5d55a1f9b827492ca811b920d5a22e714ac530bd4e9734ddf1701c1131b1.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:2b0f5d55a1f9b827492ca811b920d5a22e714ac530bd4e9734ddf1701c1131b1"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

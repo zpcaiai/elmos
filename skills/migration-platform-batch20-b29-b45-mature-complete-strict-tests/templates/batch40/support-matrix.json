@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "id": "example-supply-chain-compliance",
+  "capabilities": [
+    {
+      "capability_id": "b40-software-supply-chain-compliance-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-secure-sdlc-ssdf-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-threat-modeling",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-security-architecture-review",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-secure-code-review-sensitive-change",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-sast-integration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-dast-iast-integration",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-dependency-sca-governance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-secret-scanning-credential-leakage",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-container-kubernetes-iac-security-scan",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-sbom-component-identity",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-vex-vulnerability-applicability",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-license-ip-code-provenance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-artifact-container-signing",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-slsa-provenance-build-attestation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-isolated-build-trusted-builder",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-runner-update-supply-chain-security",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-ai-ml-bom-model-provenance",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-vulnerability-lifecycle-patch-sla",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-psirt-product-security-incident",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-iso-soc-industry-control-crosswalk",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-customer-audit-evidence-automation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-independent-pentest-code-audit-certification",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b40-supply-chain-compliance-certification-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    }
+  ]
+}

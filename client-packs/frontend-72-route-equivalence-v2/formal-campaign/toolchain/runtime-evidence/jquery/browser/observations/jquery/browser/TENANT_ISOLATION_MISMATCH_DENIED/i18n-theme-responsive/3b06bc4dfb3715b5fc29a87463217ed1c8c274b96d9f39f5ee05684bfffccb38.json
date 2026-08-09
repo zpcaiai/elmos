@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:30ed01c213baa8b9dfc287197a8a03f351189963ba8bc84a38d3f9a45a7612c8",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1988,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-computed-layout-i18n-theme-observer-trace/d4b370e8ea77e341e3bba7e965a23118c746cbbe4396bd6d2316faba0cb764dd.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:d4b370e8ea77e341e3bba7e965a23118c746cbbe4396bd6d2316faba0cb764dd"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:f6d4ad73c8e0a00724d2bd8fbd101419d287d5ab33826a74ce6fe50987b512f9",
+        "byte_count": 39901,
+        "channel": "browser",
+        "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/7cc01922e1788870a60dd77aec5488064a40d7e1d2059761f1fad6900f3daf4f.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:7cc01922e1788870a60dd77aec5488064a40d7e1d2059761f1fad6900f3daf4f"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

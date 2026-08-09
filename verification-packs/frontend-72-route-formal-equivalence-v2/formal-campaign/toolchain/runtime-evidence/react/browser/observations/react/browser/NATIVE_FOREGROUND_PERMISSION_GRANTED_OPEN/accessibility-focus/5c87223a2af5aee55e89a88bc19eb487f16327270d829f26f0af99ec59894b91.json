@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3d426d5d026e003695bb0cdc12a7bbecaf296ec162312c41037c0bf282a00ac2",
+      "block_id": "accessibility-focus",
+      "byte_count": 555886,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-tree-focus-observer-trace/72d697eb82511e7fc809f367124236d2cf241e619f19797047ec9a3d8dae04a9.json",
+      "profile_id": "react",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:72d697eb82511e7fc809f367124236d2cf241e619f19797047ec9a3d8dae04a9"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:ceb7ef38a1126598c179600c54720765bcb4cc2a34f4172634f598c85d378b5f",
+        "byte_count": 556854,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-axe-trace/daa92422947f8635d89235283ecb650d62bf82921eb783ad6cfbfef2fe2ba9b0.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:daa92422947f8635d89235283ecb650d62bf82921eb783ad6cfbfef2fe2ba9b0"
+      },
+      {
+        "artifact_id": "sha256:96981ba157c540b06bb94ad0f46eb7d5a49d502c38ebc8161f20b18c77b05bda",
+        "byte_count": 5356,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-framework-event-trace/27e65891554ebbf47a8401d6b64cd5dc8e8055f6a4209fd38b22a5690c99965b.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:27e65891554ebbf47a8401d6b64cd5dc8e8055f6a4209fd38b22a5690c99965b"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

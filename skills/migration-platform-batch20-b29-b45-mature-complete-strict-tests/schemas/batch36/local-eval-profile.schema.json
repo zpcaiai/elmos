@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/local-eval-profile.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_key",
+    "toolchain_digest",
+    "sandbox",
+    "stages",
+    "budgets",
+    "remote_fallback"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_key": {
+      "type": "string"
+    },
+    "toolchain_digest": {
+      "type": "string"
+    },
+    "sandbox": {
+      "type": "object",
+      "required": [
+        "network",
+        "workspace",
+        "arbitrary_shell"
+      ],
+      "properties": {
+        "network": {
+          "enum": [
+            "deny",
+            "allowlist"
+          ]
+        },
+        "workspace": {
+          "enum": [
+            "ephemeral-copy",
+            "read-only-plus-overlay"
+          ]
+        },
+        "arbitrary_shell": {
+          "const": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "command_ref",
+          "required_for_risk"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "command_ref": {
+            "type": "string"
+          },
+          "required_for_risk": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "P0",
+                "P1",
+                "P2",
+                "P3"
+              ]
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "required": [
+        "wall_time_seconds",
+        "cpu_seconds",
+        "memory_mb",
+        "disk_mb"
+      ],
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "remote_fallback": {
+      "enum": [
+        "disabled",
+        "policy-approved",
+        "required-for-p0"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

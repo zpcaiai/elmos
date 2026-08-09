@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:e3c00a12c8beb311c3d3ea7fd78a936440d5d07b0699181af87a6b49f443bc2f",
+      "block_id": "form-binding-validation",
+      "byte_count": 1494,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/jquery/browser/BOOT_PUBLIC/browser-form-validity-observer-trace/36a596d462615ea726b23a61734f523e50daf2c86fdf321f00f8ed5858cdb853.json",
+      "profile_id": "jquery",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "BOOT_PUBLIC",
+      "sha256": "sha256:36a596d462615ea726b23a61734f523e50daf2c86fdf321f00f8ed5858cdb853"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:bda813462cf370b9199d0e6b131cf0c2e23e3e4d26ce1ccf5ae04727d0aef36a",
+        "byte_count": 39838,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BOOT_PUBLIC/browser-dom-snapshot/3823e2b8bcad5162fa9d965a4e4a2dd11b62ce6ab10353953ac95333a8d3231c.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:3823e2b8bcad5162fa9d965a4e4a2dd11b62ce6ab10353953ac95333a8d3231c"
+      },
+      {
+        "artifact_id": "sha256:db620f3494a22c41118eaa99d55f3364017a0e65c96f017410872e40f3573c72",
+        "byte_count": 5163,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BOOT_PUBLIC/browser-framework-event-trace/58d9f83521e2d94b2b2372b864c21c41730035337c7ee7f2afd024033ba42eea.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:58d9f83521e2d94b2b2372b864c21c41730035337c7ee7f2afd024033ba42eea"
+      },
+      {
+        "artifact_id": "sha256:67b56f9c206978a84326d468f601f4734b90bc99f1334411c67b5a56a1d1309f",
+        "byte_count": 544463,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BOOT_PUBLIC/browser-accessibility-axe-trace/3a965090612091d88e9d79e49455037d84ebf610df74b3d79fd05a51f8b18d80.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:3a965090612091d88e9d79e49455037d84ebf610df74b3d79fd05a51f8b18d80"
+      }
+    ]
+  },
+  "scenario_id": "BOOT_PUBLIC",
+  "schema_version": "1.0"
+}

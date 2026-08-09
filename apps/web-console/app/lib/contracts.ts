@@ -53,6 +53,198 @@ export type GenerationTargetId =
   | "php"
   | "rust";
 
+export type EvidenceChartStatus =
+  | "PASSED"
+  | "FAILED"
+  | "NOT_RUN"
+  | "UNKNOWN"
+  | "NOT_APPLICABLE";
+
+export type GenerationInsightGraphNode = {
+  id: string;
+  label: string;
+  kind:
+    | "baseline"
+    | "semantic-ir"
+    | "architecture"
+    | "documentation"
+    | "deployment"
+    | "evidence"
+    | "generated-target";
+  path: string;
+  status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+  language?: GenerationTargetId;
+};
+
+export type GenerationInsightGraph = {
+  graph_kind: "project-synthesis-insight-graph";
+  nodes: GenerationInsightGraphNode[];
+  edges: Array<{
+    from: string;
+    to: string;
+    relation: "normalizes" | "plans" | "documents" | "configures" | "generates" | "requires-verification";
+  }>;
+  node_count: number;
+  edge_count: number;
+  target_count: number;
+};
+
+export type GenerationProjectStructureNode = {
+  id: string;
+  kind:
+    | "repository"
+    | "requirements"
+    | "documentation"
+    | "deployment"
+    | "continuous-integration"
+    | "repository-metadata"
+    | "operations"
+    | "observability"
+    | "security"
+    | "database"
+    | "application"
+    | "build-manifest"
+    | "api-contract"
+    | "container"
+    | "test-root"
+    | "source-root"
+    | "configuration"
+    | "application-support";
+  path: string;
+  label: string;
+  ownership: "managed";
+  file_count: number;
+  status: "REPRESENTED";
+  language?: GenerationTargetId;
+  framework?: string;
+  runtime?: string;
+};
+
+export type GenerationProjectStructure = {
+  schema_version: "1.0.0";
+  graph_kind: "elmos.project-structure";
+  project: {
+    id: string;
+    name: string;
+    repository_mode: "polyglot-monorepo";
+    approved_payload_sha256: string;
+  };
+  nodes: GenerationProjectStructureNode[];
+  edges: Array<{ from: string; to: string; type: "contains" }>;
+  coverage: {
+    scope: "managed-generated-artifacts";
+    managed_file_count: number;
+    classified_file_count: number;
+    declared_application_count: number;
+    represented_application_count: number;
+    unclassified_paths: string[];
+    status: "PASSED" | "FAILED" | "UNKNOWN";
+  };
+};
+
+export type GenerationDeclaredDependencyNode = {
+  id: string;
+  kind: "application" | "runtime" | "framework" | "build-tool" | "provider";
+  coordinate: string;
+  version_source: "project-blueprint" | "runtime-manifest" | "emitter-build-manifest";
+};
+
+export type GenerationDeclaredDependencyGraph = {
+  schema_version: "1.0.0";
+  graph_kind: "elmos.declared-dependency-graph";
+  project_id: string;
+  nodes: GenerationDeclaredDependencyNode[];
+  edges: Array<{
+    from: string;
+    to: string;
+    type: "requires" | "uses" | "builds-with" | "persists-to";
+    scope: "runtime" | "application" | "build";
+    evidence_status: "DECLARED";
+  }>;
+  resolution: {
+    status: "PASSED" | "FAILED" | "NOT_RUN";
+    resolved_graph_refs: string[];
+  };
+  complete: boolean;
+  issues: string[];
+};
+
+export type GenerationSemanticInsight = {
+  relation: "APPROVED_REQUIREMENTS_TO_GENERATED_TARGETS";
+  mapping_status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+  equivalence_status: EvidenceChartStatus;
+  subjects: Array<{
+    id: string;
+    label: string;
+    source_count: number;
+    mapped_count: number;
+    mapping_status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+    semantic_equivalence_status: EvidenceChartStatus;
+    evidence_strength: "HASH_BOUND_TRACEABILITY";
+  }>;
+  source_subject_count: number;
+  mapped_subject_count: number;
+  limitations: string[];
+};
+
+export type GenerationBehaviorInsight = {
+  profile: "native-build-test-startup-v1";
+  status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+  targets: Array<{
+    language: GenerationTargetId;
+    status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+    exact_toolchain_status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+    build_analysis: {
+      total: number;
+      status_counts: Record<EvidenceChartStatus, number>;
+    };
+    startup_status: Exclude<EvidenceChartStatus, "NOT_APPLICABLE">;
+  }>;
+  cross_target_matrix: Array<{
+    source: GenerationTargetId;
+    target: GenerationTargetId;
+    semantic_status: EvidenceChartStatus;
+    behavior_status: EvidenceChartStatus;
+    reason: "SAME_TARGET" | "DIRECT_PAIRWISE_SOURCE_TARGET_COMPARISON_NOT_EXECUTED" | string;
+  }>;
+  limitations: string[];
+};
+
+export type GenerationCoverageDimensionId =
+  | "project-structure"
+  | "requirements-traceability"
+  | "native-target-verification"
+  | "direct-semantic-equivalence"
+  | "direct-behavior-equivalence";
+
+export type GenerationInsights = {
+  schema_version: "1.0.0";
+  kind: "elmos.project-generation-insights";
+  stage: "GENERATED" | "VERIFIED";
+  project: {
+    id: string;
+    name: string;
+    request_sha256: string;
+    approved_payload_sha256: string;
+  };
+  claim_ceiling: "LOCAL_ENGINEERING_EVIDENCE";
+  project_structure?: GenerationProjectStructure;
+  declared_dependencies?: GenerationDeclaredDependencyGraph;
+  structure: GenerationInsightGraph;
+  semantic: GenerationSemanticInsight;
+  behavior: GenerationBehaviorInsight;
+  coverage: Array<{
+    id: GenerationCoverageDimensionId;
+    label: string;
+    status: EvidenceChartStatus;
+    passed: number;
+    total: number;
+  }>;
+  verification_status?: "PASSED" | "FAILED" | "PARTIAL" | "NOT_RUN" | "UNKNOWN";
+  external_verification_status: "NOT_RUN";
+  certification_status: "NOT_CERTIFIED";
+};
+
 export type GenerationTarget = {
   id: GenerationTargetId;
   language: string;
@@ -328,6 +520,7 @@ export type GenerationJob = {
   artifactSize?: number;
   artifacts: GenerationArtifact[];
   recoveryAttempts?: number;
+  insights?: GenerationInsights;
   reason?: string;
   logs: GenerationJobLog[];
   runtime: GenerationRuntime;
@@ -386,10 +579,13 @@ export type SpringRouteDescriptor = {
 };
 
 export type TranslationLanguageId =
+  | "cpp"
   | "java"
   | "csharp"
   | "go"
+  | "objc"
   | "rust"
+  | "swift"
   | "python"
   | "typescript";
 
@@ -403,6 +599,8 @@ export type TranslationLanguage = {
 
 export type RouteEvidenceStatus = "PASSED" | "NOT_RUN" | "FAILED";
 
+export type RepositoryRouteExecutionStatus = RouteEvidenceStatus;
+
 export type DirectedLanguageRoute = {
   id: string;
   source: TranslationLanguageId;
@@ -411,6 +609,11 @@ export type DirectedLanguageRoute = {
   status: "EXPERIMENTAL" | "LIMITED" | "SUPPORTED" | "CERTIFIED" | "BLOCKED";
   readiness: "LOCAL_PROFILE_PASSED" | "NOT_RUN";
   localExecution: RouteEvidenceStatus;
+  repositoryExecutionStatus: RepositoryRouteExecutionStatus;
+  repositoryProfile: string | null;
+  repositoryEvidenceRef: string | null;
+  repositoryEvidenceSha256: string | null;
+  repositoryEvidenceBytes: number | null;
   independentVerification: RouteEvidenceStatus;
   externalVerification: RouteEvidenceStatus;
   sourceVersion: string;
@@ -429,8 +632,10 @@ export type TranslationCapabilityResponse = {
   routes: DirectedLanguageRoute[];
   routePackageCount: number;
   certifiedRouteCount: number;
+  repositoryExecutableRouteCount: number;
   repositoryPlanning: "LOCAL_MANIFEST_SUPPORTED";
   localExecutionEvidence: "PASSED_LOCAL" | "NOT_RUN" | "FAILED";
+  repositoryExecutionEvidence: RepositoryRouteExecutionStatus;
   independentVerificationEvidence: RouteEvidenceStatus;
   externalExecutionEvidence: RouteEvidenceStatus;
   certificationStatus: "NOT_CERTIFIED" | "CERTIFIED";
@@ -450,6 +655,41 @@ export type TranslationJobLog = {
   message: string;
 };
 
+export type TranslationSemanticCoverageStatus =
+  | "BLOCKED"
+  | "FAILED"
+  | "NOT_RUN"
+  | "PASSED"
+  | "UNKNOWN";
+
+export type TranslationSemanticCoverage = {
+  profile: "compiler-semantic-symbol-coverage-v1";
+  sourceLanguage: TranslationLanguageId;
+  inventoryStatus: "PASSED" | "FAILED" | "NOT_RUN";
+  status: "PASSED" | "LIMITED";
+  complete: boolean;
+  subjectCount: number;
+  statusCounts: Record<TranslationSemanticCoverageStatus, number>;
+};
+
+export type TranslationBehaviorCoverageStatus = "FAILED" | "NOT_RUN" | "PASSED" | "UNKNOWN";
+
+export type TranslationBehaviorCoverage = {
+  profile: "typed-pure-function-v1";
+  status: TranslationBehaviorCoverageStatus;
+  complete: boolean;
+  workUnitCount: number;
+  accountedWorkUnitCount: number;
+  attemptedWorkUnitCount: number;
+  unresolvedWorkUnitCount: number;
+  behaviorCaseCount: number;
+  behaviorCaseCountScope: "PASSED_WORK_UNITS_ONLY";
+  statusCounts: Record<TranslationBehaviorCoverageStatus, number>;
+  evidenceStrength: "LOCAL_SOURCE_TARGET_RUNTIME_COMPARISON";
+  independentVerificationStatus: "NOT_RUN";
+  externalVerificationStatus: "NOT_RUN";
+};
+
 export type TranslationJob = {
   id: string;
   tenantId: string;
@@ -462,6 +702,11 @@ export type TranslationJob = {
   casesBundleId: string;
   sourceLanguage: TranslationLanguageId;
   targetLanguage: TranslationLanguageId;
+  repositoryExecutionStatus: "PASSED";
+  repositoryProfile: string;
+  repositoryEvidenceRef: string;
+  repositoryEvidenceSha256: string;
+  repositoryEvidenceBytes: number;
   status: "QUEUED" | "RUNNING" | "COMPLETE" | "PARTIAL" | "BLOCKED" | "CANCELLED";
   stage: "queued" | "pipeline" | "metering" | "complete" | "blocked" | "cancelled" | "restart-recovery";
   progress: number;
@@ -475,7 +720,25 @@ export type TranslationJob = {
   workUnitCount?: number;
   includedUnitCount?: number;
   statusCounts?: Record<string, number>;
-  buildVerification?: { status: string; command?: string[]; toolchain?: string };
+  repositoryComplete?: boolean;
+  projectGraph?: {
+    path: "project-graph.json";
+    graph_id: string;
+    graph_sha256: string;
+    snapshot_sha256: string;
+    repository_complete: boolean;
+    completeness_status: "COMPLETE" | "INCOMPLETE";
+    obligation_count: number;
+    obligation_status_counts: Record<"FAILED" | "NOT_RUN" | "PASSED" | "UNKNOWN", number>;
+    verification_status: "PASSED";
+  };
+  semanticCoverage?: TranslationSemanticCoverage;
+  behaviorCoverage?: TranslationBehaviorCoverage;
+  buildVerification?: {
+    status: "PASSED";
+    commands: Array<{ command: string[]; stdout: string; stderr: string }>;
+    toolchain: { language: TranslationLanguageId; version: string };
+  };
   independentVerificationStatus: "NOT_RUN";
   externalVerificationStatus: "NOT_RUN";
   certificationStatus: "NOT_CERTIFIED";
@@ -499,7 +762,7 @@ export type TranslationRepositoryWorkUnit = {
   source_bytes: number;
   status: "DISCOVERY_REQUIRED";
   execution_status: "NOT_RUN";
-  required_inputs: ["function_name", "behavior_cases_json"];
+  required_inputs: ["behavior_cases_json_per_discovered_function"];
   declared_profile: "typed-pure-function-v1";
   unsupported_until_discovered: string[];
 };
@@ -559,6 +822,12 @@ export type TranslationRepositoryPlan = {
   file_count: number;
   source_file_count: number;
   source_bytes: number;
+  repository_scale: "small" | "medium";
+  repository_limits: {
+    maximum_source_files: number;
+    maximum_source_bytes: number;
+    maximum_bytes_per_file: number;
+  };
   language_counts: Record<TranslationLanguageId, number>;
   ignored_symlink_count: number;
   work_units: TranslationRepositoryWorkUnit[];

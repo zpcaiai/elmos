@@ -1,0 +1,13 @@
+:root { color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: #f5f7fb; color: #172033; }
+a { color: inherit; }
+.shell { min-height: 100vh; display: grid; grid-template-columns: minmax(14rem, 20rem) 1fr; }
+.nav { padding: 1.5rem; background: #15223d; color: #fff; }
+.nav a { display: block; padding: .7rem .8rem; margin: .25rem 0; border-radius: .6rem; }
+.nav a:focus-visible { outline: 3px solid #fbbf24; outline-offset: 2px; }
+.content { padding: clamp(1.25rem, 4vw, 4rem); }
+.card { max-width: 52rem; padding: 2rem; border-radius: 1rem; background: #fff; color: #172033; box-shadow: 0 1rem 3rem #17203318; }
+.status { display: inline-block; margin-top: 1rem; padding: .4rem .65rem; border-radius: 999px; background: #fff4ce; color: #6b4f00; }
+@media (max-width: 720px) { .shell { grid-template-columns: 1fr; } .nav { position: static; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }

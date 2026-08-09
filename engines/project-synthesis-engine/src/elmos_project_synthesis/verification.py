@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from .insights import verified_generation_insights
 from .models import SUPPORTED_PROFILE_TARGETS
 from .production_contract import (
     ENV_AUTH_AUDIENCE,
@@ -30,6 +31,7 @@ from .production_contract import (
     LOCAL_AUDIENCE,
     LOCAL_ISSUER,
 )
+from .project_graphs import validate_workspace_graphs
 
 LOCAL_TOOLCHAIN_ROOT = Path(
     os.getenv(
@@ -218,9 +220,7 @@ def _gradle_proxy_system_properties() -> list[str]:
 
 def _gradle_repository_property() -> list[str]:
     """Return an explicitly reviewed HTTPS Maven repository override."""
-    configured = os.environ.get(
-        "ELMOS_PROJECT_SYNTHESIS_GRADLE_REPOSITORY", ""
-    ).strip()
+    configured = os.environ.get("ELMOS_PROJECT_SYNTHESIS_GRADLE_REPOSITORY", "").strip()
     if not configured:
         return []
     try:
@@ -273,11 +273,7 @@ def _run(
     if not 30 <= timeout_seconds <= 900:
         raise ValueError("COMMAND_TIMEOUT_OUT_OF_RANGE")
     effective_command = list(command)
-    if (
-        language == "kotlin"
-        and effective_command
-        and Path(effective_command[0]).name == "gradle"
-    ):
+    if language == "kotlin" and effective_command and Path(effective_command[0]).name == "gradle":
         effective_command[1:1] = [
             *_gradle_proxy_system_properties(),
             *_gradle_repository_property(),
@@ -294,15 +290,17 @@ def _run(
             # the uv-supported path behind managed TLS proxies and avoids
             # rustls `close_notify` failures observed on otherwise valid HTTPS.
             process_environment["UV_NATIVE_TLS"] = "true"
-        if language == "kotlin" and not os.environ.get(
-            "ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY"
-        ):
+        if language == "kotlin" and not os.environ.get("ELMOS_PROJECT_SYNTHESIS_GRADLE_PROXY"):
             # Gradle may consume ambient shell proxy variables even when no JVM
             # proxy properties were requested. Keep the default Maven Central
             # path direct; an explicitly reviewed Gradle proxy remains opt-in.
             for proxy_name in (
-                "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
-                "http_proxy", "https_proxy", "all_proxy",
+                "HTTP_PROXY",
+                "HTTPS_PROXY",
+                "ALL_PROXY",
+                "http_proxy",
+                "https_proxy",
+                "all_proxy",
             ):
                 process_environment.pop(proxy_name, None)
         completed = subprocess.run(  # noqa: S603
@@ -316,14 +314,10 @@ def _run(
         )
     except subprocess.TimeoutExpired as error:
         stdout = (
-            error.stdout.decode("utf-8", errors="replace")
-            if isinstance(error.stdout, bytes)
-            else error.stdout or ""
+            error.stdout.decode("utf-8", errors="replace") if isinstance(error.stdout, bytes) else error.stdout or ""
         )
         stderr = (
-            error.stderr.decode("utf-8", errors="replace")
-            if isinstance(error.stderr, bytes)
-            else error.stderr or ""
+            error.stderr.decode("utf-8", errors="replace") if isinstance(error.stderr, bytes) else error.stderr or ""
         )
         return _result(
             language=language,
@@ -534,8 +528,12 @@ def _health_response_matches(
 
 
 _PROXY_ENVIRONMENT_NAMES = (
-    "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
-    "http_proxy", "https_proxy", "all_proxy",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
 )
 
 
@@ -920,9 +918,7 @@ def runtime_commands(
     overrides = dict(port_overrides or {})
     unknown_languages = set(overrides) - application_languages
     if unknown_languages:
-        raise ValueError(
-            f"RUNTIME_PORT_OVERRIDE_LANGUAGE_UNKNOWN:{','.join(sorted(unknown_languages))}"
-        )
+        raise ValueError(f"RUNTIME_PORT_OVERRIDE_LANGUAGE_UNKNOWN:{','.join(sorted(unknown_languages))}")
     for language, override in overrides.items():
         if isinstance(override, bool) or not isinstance(override, int) or not 1024 <= override <= 65535:
             raise ValueError(f"RUNTIME_PORT_OVERRIDE_INVALID:{language}:{override}")
@@ -1146,6 +1142,9 @@ def verify_workspace(
     use_ephemeral_runtime_ports: bool = False,
 ) -> dict[str, Any]:
     root = workspace.resolve(strict=True)
+    # Validate all digest-bound generated structure contracts before resolving
+    # or executing any native toolchain command.
+    validate_workspace_graphs(root)
     applications = _blueprint(root).get("applications", [])
     selected: set[str] = set()
     for item in applications:
@@ -1186,9 +1185,7 @@ def verify_workspace(
             results.append(_missing("python", "uv"))
         else:
             python_workspace = root / "python"
-            venv_bin = python_workspace / ".venv" / (
-                "Scripts" if os.name == "nt" else "bin"
-            )
+            venv_bin = python_workspace / ".venv" / ("Scripts" if os.name == "nt" else "bin")
             executable_suffix = ".exe" if os.name == "nt" else ""
             lock_was_cached = _restore_cached_python_lock(python_workspace)
             python_commands = (
@@ -1227,9 +1224,7 @@ def verify_workspace(
                 build_passed.add("csharp")
 
     rust_production_profile = any(
-        isinstance(item, dict)
-        and item.get("language") == "rust"
-        and item.get("storage") == "postgresql"
+        isinstance(item, dict) and item.get("language") == "rust" and item.get("storage") == "postgresql"
         for item in applications
     )
     rust_release_arguments = ["--release"] if rust_production_profile else []
@@ -1347,14 +1342,10 @@ def verify_workspace(
                 ),
                 requires_integration=bool(plan.get("requires_integration", False)),
                 blocking_reason=(
-                    str(plan["blocking_reason"])
-                    if isinstance(plan.get("blocking_reason"), str)
-                    else None
+                    str(plan["blocking_reason"]) if isinstance(plan.get("blocking_reason"), str) else None
                 ),
                 startup_timeout_seconds=int(plan.get("startup_timeout_seconds", 30)),
-                integration_timeout_seconds=int(
-                    plan.get("integration_timeout_seconds", 120)
-                ),
+                integration_timeout_seconds=int(plan.get("integration_timeout_seconds", 120)),
             )
         )
 
@@ -1364,7 +1355,7 @@ def verify_workspace(
         name: (_resolve_tool(name) is not None)
         for name in ("java", "mvn", "uv", "dotnet", "node", "pnpm", "go", "gradle", "php", "cargo")
     }
-    return {
+    evidence: dict[str, Any] = {
         "schema_version": "1.1.0",
         "status": status,
         "workspace": str(root),
@@ -1378,3 +1369,5 @@ def verify_workspace(
         "external_certification_status": "NOT_RUN",
         "results": results,
     }
+    evidence["insights"] = verified_generation_insights(root, evidence)
+    return evidence

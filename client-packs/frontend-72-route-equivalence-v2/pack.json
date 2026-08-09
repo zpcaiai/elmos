@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v2",
+  "version": "2.0.0",
+  "mode": "assessment",
+  "status": "experimental",
+  "owner": "frontend-client-platform-team",
+  "maintenance_owner": "frontend-client-platform-team",
+  "ux_owner": "frontend-experience-team",
+  "accessibility_owner": "accessibility-team",
+  "source": {
+    "stack": "angular",
+    "versions": [
+      "22.0.8"
+    ],
+    "language": "TypeScript",
+    "language_versions": [
+      "6.0.3"
+    ],
+    "runtime": "Node.js",
+    "runtime_versions": [
+      "26.0.0"
+    ],
+    "build_tool": "Angular CLI 22.0.8",
+    "package_manager": "npm 11.12.1",
+    "router": [
+      "Angular Router 22.0.8"
+    ],
+    "renderer": [
+      "CSR"
+    ],
+    "state": [
+      "Angular signals"
+    ],
+    "forms": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "styling": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "design_system": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "api_client": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "identity": [
+      "metadata-only-NOT_RUN"
+    ],
+    "i18n": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "test_tools": [
+      "Angular build and browser E2E profile"
+    ],
+    "browsers": [
+      "browser-execution-NOT_RUN"
+    ],
+    "devices": []
+  },
+  "target": {
+    "stack": "flutter",
+    "versions": [
+      "3.44.1"
+    ],
+    "language": "Dart",
+    "language_versions": [
+      "3.12.1"
+    ],
+    "runtime": "Flutter Engine",
+    "runtime_versions": [
+      "3.44.1"
+    ],
+    "build_tool": "flutter 3.44.1",
+    "package_manager": "pub 3.12.1",
+    "router": [
+      "MaterialApp named routes"
+    ],
+    "renderer": [
+      "Flutter widgets"
+    ],
+    "state": [
+      "ChangeNotifier-compatible generated boundary"
+    ],
+    "forms": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "styling": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "design_system": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "api_client": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "identity": [
+      "metadata-only-NOT_RUN"
+    ],
+    "i18n": [
+      "formal-campaign-NOT_RUN"
+    ],
+    "test_tools": [
+      "flutter_test 3.44.1"
+    ],
+    "browsers": [
+      "browser-execution-NOT_RUN"
+    ],
+    "devices": [
+      "ANDROID",
+      "IOS"
+    ]
+  },
+  "scope": {
+    "journeys": [
+      "bounded-frontend-interaction-v1-model"
+    ],
+    "routes": [
+      "angular--to--flutter",
+      "angular--to--harmony-arkui",
+      "angular--to--jquery",
+      "angular--to--react",
+      "angular--to--react-native",
+      "angular--to--svelte",
+      "angular--to--vue2",
+      "angular--to--vue3",
+      "flutter--to--angular",
+      "flutter--to--harmony-arkui",
+      "flutter--to--jquery",
+      "flutter--to--react",
+      "flutter--to--react-native",
+      "flutter--to--svelte",
+      "flutter--to--vue2",
+      "flutter--to--vue3",
+      "harmony-arkui--to--angular",
+      "harmony-arkui--to--flutter",
+      "harmony-arkui--to--jquery",
+      "harmony-arkui--to--react",
+      "harmony-arkui--to--react-native",
+      "harmony-arkui--to--svelte",
+      "harmony-arkui--to--vue2",
+      "harmony-arkui--to--vue3",
+      "jquery--to--angular",
+      "jquery--to--flutter",
+      "jquery--to--harmony-arkui",
+      "jquery--to--react",
+      "jquery--to--react-native",
+      "jquery--to--svelte",
+      "jquery--to--vue2",
+      "jquery--to--vue3",
+      "react--to--angular",
+      "react--to--flutter",
+      "react--to--harmony-arkui",
+      "react--to--jquery",
+      "react--to--react-native",
+      "react--to--svelte",
+      "react--to--vue2",
+      "react--to--vue3",
+      "react-native--to--angular",
+      "react-native--to--flutter",
+      "react-native--to--harmony-arkui",
+      "react-native--to--jquery",
+      "react-native--to--react",
+      "react-native--to--svelte",
+      "react-native--to--vue2",
+      "react-native--to--vue3",
+      "svelte--to--angular",
+      "svelte--to--flutter",
+      "svelte--to--harmony-arkui",
+      "svelte--to--jquery",
+      "svelte--to--react",
+      "svelte--to--react-native",
+      "svelte--to--vue2",
+      "svelte--to--vue3",
+      "vue2--to--angular",
+      "vue2--to--flutter",
+      "vue2--to--harmony-arkui",
+      "vue2--to--jquery",
+      "vue2--to--react",
+      "vue2--to--react-native",
+      "vue2--to--svelte",
+      "vue2--to--vue3",
+      "vue3--to--angular",
+      "vue3--to--flutter",
+      "vue3--to--harmony-arkui",
+      "vue3--to--jquery",
+      "vue3--to--react",
+      "vue3--to--react-native",
+      "vue3--to--svelte",
+      "vue3--to--vue2"
+    ],
+    "component_roots": [
+      "exact-nine-profile-generated-projects"
+    ],
+    "excluded": [
+      "arbitrary-customer-source",
+      "independent-holdout",
+      "representative-customer-workloads",
+      "certification",
+      "incomplete-actual-runtime-matrix"
+    ]
+  },
+  "paths": {
+    "source_fingerprint": "source-fingerprint/fingerprint.json",
+    "ui_ir": "ui-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "acceptance_profile": "acceptance/acceptance-profile.json",
+    "support_matrix": "support-matrix.json",
+    "evidence": "certification/evidence.json",
+    "certification": "certification/certification.json"
+  },
+  "gates": {
+    "build": "required",
+    "startup_or_launch": "required",
+    "p0_journeys": "required",
+    "visual": "required",
+    "accessibility": "required",
+    "security": "required",
+    "holdout": "required"
+  },
+  "frontend_formal_route_campaign_v2": "formal-campaign/frontend-formal-route-campaign-v2.json",
+  "frontend_formal_campaign_v2_digest": "sha256:7ffea4cb0649f244a79749c70d6456a13363b495c11be955975932f56734ea71",
+  "frontend_formal_scope_v2_digest": "sha256:a2f1536abaca4236795e898b90737a22dfa59ffd2dce66ecc0df35f4c8e89b74",
+  "frontend_formal_peer_v2": {
+    "pack_key": "frontend-72-route-formal-equivalence-v2",
+    "campaign_sha256": "sha256:7ffea4cb0649f244a79749c70d6456a13363b495c11be955975932f56734ea71",
+    "scope_digest": "sha256:a2f1536abaca4236795e898b90737a22dfa59ffd2dce66ecc0df35f4c8e89b74"
+  }
+}

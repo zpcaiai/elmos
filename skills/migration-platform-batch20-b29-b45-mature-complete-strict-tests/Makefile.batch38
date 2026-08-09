@@ -1,0 +1,4 @@
+batch38-validate:
+	python3 scripts/batch38/validate_skill_bundle.py .
+
+	python3 -m unittest tests/batch38/test_toolkit.py

@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Migration Platform API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/projects:
+    post:
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /api/v1/migrations:
+    post:
+      operationId: createMigration
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMigrationRequest'
+      responses:
+        '201':
+          description: Migration created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Migration'
+  /api/v1/migrations/{migrationId}:
+    get:
+      operationId: getMigration
+      parameters:
+        - name: migrationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Migration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Migration'
+        '404': { description: Not found }
+  /api/v1/overview:
+    get:
+      operationId: getOverview
+      responses:
+        '200':
+          description: Console overview
+  /api/v1/demo/bootstrap:
+    post:
+      operationId: bootstrapDemo
+      responses:
+        '201':
+          description: Demo project, migration, and task created
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema: { type: string, maxLength: 200 }
+  schemas:
+    CreateProjectRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+    Project:
+      type: object
+      required: [projectId, tenantId, name, createdAt]
+      properties:
+        projectId: { type: string, format: uuid }
+        tenantId: { type: string, format: uuid }
+        name: { type: string }
+        createdAt: { type: string, format: date-time }
+    CreateMigrationRequest:
+      type: object
+      required: [projectId, sourceRepository, sourceLanguage, targetLanguage, targetFramework]
+      properties:
+        projectId: { type: string, format: uuid }
+        sourceRepository: { type: string }
+        sourceLanguage: { type: string }
+        targetLanguage: { type: string }
+        targetFramework: { type: string }
+    Migration:
+      type: object
+      required:
+        - migrationId
+        - tenantId
+        - projectId
+        - sourceRepository
+        - sourceLanguage
+        - targetLanguage
+        - targetFramework
+        - status
+      properties:
+        migrationId: { type: string, format: uuid }
+        tenantId: { type: string, format: uuid }
+        projectId: { type: string, format: uuid }
+        sourceRepository: { type: string }
+        sourceLanguage: { type: string }
+        targetLanguage: { type: string }
+        targetFramework: { type: string }
+        status: { type: string }
+        currentPhase: { type: string }
+        riskTier: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "gate_id",
+    "status",
+    "metrics",
+    "blockers",
+    "evidence_digest"
+  ],
+  "properties": {
+    "gate_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "blockers": {
+      "type": "array"
+    },
+    "evidence_digest": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

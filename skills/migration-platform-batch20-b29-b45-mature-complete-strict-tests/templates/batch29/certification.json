@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "route_key": "java-to-csharp",
+  "route_version": "0.1.0",
+  "status": "experimental",
+  "gate_results": {},
+  "metrics": {},
+  "evidence_refs": [],
+  "issued_at": "",
+  "next_review_at": ""
+}

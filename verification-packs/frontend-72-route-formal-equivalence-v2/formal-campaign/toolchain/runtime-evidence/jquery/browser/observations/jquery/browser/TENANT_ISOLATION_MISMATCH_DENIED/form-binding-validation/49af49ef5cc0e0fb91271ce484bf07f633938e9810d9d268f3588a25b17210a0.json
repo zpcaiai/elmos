@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": true,
+    "valid": true,
+    "value": "ok"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:b117c3551792a829e81c9fbf265a6c56151ca89c479a7fcae1e811869e514310",
+      "block_id": "form-binding-validation",
+      "byte_count": 1523,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-form-validity-observer-trace/7655d3f712a487615e92f5139e8080522d7f619ce0e0e1d1b3815896a295835d.json",
+      "profile_id": "jquery",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:7655d3f712a487615e92f5139e8080522d7f619ce0e0e1d1b3815896a295835d"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:f6d4ad73c8e0a00724d2bd8fbd101419d287d5ab33826a74ce6fe50987b512f9",
+        "byte_count": 39901,
+        "channel": "browser",
+        "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/7cc01922e1788870a60dd77aec5488064a40d7e1d2059761f1fad6900f3daf4f.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:7cc01922e1788870a60dd77aec5488064a40d7e1d2059761f1fad6900f3daf4f"
+      },
+      {
+        "artifact_id": "sha256:fc76b372c6cc1ea77f5f8b1aca70e52fa303c67e125a34a5a4cb64aca4f626e3",
+        "byte_count": 7480,
+        "channel": "browser",
+        "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-framework-event-trace/3ca92bac6c58c854d555eb67f814ee59adfd271e8b0a6e936fe39b08af5983b6.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:3ca92bac6c58c854d555eb67f814ee59adfd271e8b0a6e936fe39b08af5983b6"
+      },
+      {
+        "artifact_id": "sha256:3b9ac06f286a321a90a7fa27f09fafd0ee41d8868ed5a670863b25ac28d802c5",
+        "byte_count": 543886,
+        "channel": "browser",
+        "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-accessibility-axe-trace/fdc3940c2497b12e027e6e810c9c0335cba5117ec4c52ef4fec4446d9915280f.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:fdc3940c2497b12e027e6e810c9c0335cba5117ec4c52ef4fec4446d9915280f"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

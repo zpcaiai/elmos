@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "ELMOS 有界前端交互验证"
+    },
+    {
+      "name": "module_desc",
+      "value": "ELMOS generated ArkUI module"
+    },
+    {
+      "name": "ability_desc",
+      "value": "ELMOS generated entry ability"
+    }
+  ]
+}

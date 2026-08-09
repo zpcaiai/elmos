@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "ELMOS 有界导航验证",
+    "slug": "formal-reactnative",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "scheme": "formal-reactnative",
+    "ios": {
+      "bundleIdentifier": "io.elmos.formalfrontend",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "io.elmos.formalfrontend"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

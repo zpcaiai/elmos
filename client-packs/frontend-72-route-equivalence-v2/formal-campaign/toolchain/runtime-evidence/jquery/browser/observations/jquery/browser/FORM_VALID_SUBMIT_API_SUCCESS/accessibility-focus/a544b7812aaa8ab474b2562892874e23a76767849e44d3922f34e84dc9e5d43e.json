@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": "result",
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": true,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:dbd26c9e006f8ce24dd17fd529bc5b0d96805970656acd0d76d2bff94c08e011",
+      "block_id": "accessibility-focus",
+      "byte_count": 543925,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-accessibility-tree-focus-observer-trace/2e60c20edeed4169a03e0a3fa7c72e71d3cced7ca77c49adb55b40c930f60159.json",
+      "profile_id": "jquery",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:2e60c20edeed4169a03e0a3fa7c72e71d3cced7ca77c49adb55b40c930f60159"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:86cf04c8f6d66da8b4a133e290baf069b6fffabc19f4a4c3c1b61ffec5db870e",
+        "byte_count": 545511,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-accessibility-axe-trace/d4997f960f099deb11d79d231e76965e6c5b7401d07af18f3573c93c5182c319.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:d4997f960f099deb11d79d231e76965e6c5b7401d07af18f3573c93c5182c319"
+      },
+      {
+        "artifact_id": "sha256:0924969f5cf9e871cab3059581952204b0fe0f0cb99979159fcd82a336cdf4cf",
+        "byte_count": 8333,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-event-trace/7ea6f6f9774ab36cf42cd81606dfc85598dbaed62d0d56673b0b37796eb8e3b1.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:7ea6f6f9774ab36cf42cd81606dfc85598dbaed62d0d56673b0b37796eb8e3b1"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "pack_key",
+    "status",
+    "exact_tuple",
+    "metrics",
+    "restrictions",
+    "evidence_refs",
+    "approved_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "research",
+        "experimental",
+        "limited",
+        "certified",
+        "deprecated",
+        "blocked"
+      ]
+    },
+    "exact_tuple": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "approved_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

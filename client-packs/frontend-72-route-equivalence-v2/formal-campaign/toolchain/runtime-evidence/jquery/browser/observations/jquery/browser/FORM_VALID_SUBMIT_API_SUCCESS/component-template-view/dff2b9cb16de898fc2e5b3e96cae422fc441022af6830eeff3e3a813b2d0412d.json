@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.account",
+    "text": "账户内容",
+    "title": "账户",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a0c03a61bb6cf05c5a2457af029cc5b596b4c5fcbca18ab14ed3a22598a3e07c",
+      "block_id": "component-template-view",
+      "byte_count": 1517,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-rendered-component-observer-trace/b0fdf80b852f8d82377997c716fb03e2b61dde0fad80c615314fcfa34950242c.json",
+      "profile_id": "jquery",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:b0fdf80b852f8d82377997c716fb03e2b61dde0fad80c615314fcfa34950242c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:c714212b3b957e7e8d9690988768d725aa63ba6f2685ea415b1cac9c47440314",
+        "byte_count": 39950,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/ec0dc2cc9198afa080360f6121d3fcbd4450def0eb4755b00d17aae2899d33d8.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:ec0dc2cc9198afa080360f6121d3fcbd4450def0eb4755b00d17aae2899d33d8"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

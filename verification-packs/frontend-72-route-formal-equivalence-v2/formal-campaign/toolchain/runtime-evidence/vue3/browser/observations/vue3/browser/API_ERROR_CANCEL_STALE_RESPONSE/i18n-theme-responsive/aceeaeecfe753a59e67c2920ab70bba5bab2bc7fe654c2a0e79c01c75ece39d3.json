@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:4f71d174b6562cd3dc626cfb794ab6a1b677d9fcc45d552cb8e2c89b95b17203",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2018,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue3/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-computed-layout-i18n-theme-observer-trace/53ca3ce23c6a8bc706213bbf76079227adaec13f5cce95aa7700367037dd8e24.json",
+      "profile_id": "vue3",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:53ca3ce23c6a8bc706213bbf76079227adaec13f5cce95aa7700367037dd8e24"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:951f425efafa727b1fef2622f4fd9b5f82c237d5b85686337d2286db9dbd4697",
+        "byte_count": 40660,
+        "channel": "browser",
+        "path": "traces/vue3/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-dom-snapshot/f4dc9671171aca11ad90ecb0bc9da2deed828cf56ed98cf9523b6a9e0e513cd8.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:f4dc9671171aca11ad90ecb0bc9da2deed828cf56ed98cf9523b6a9e0e513cd8"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

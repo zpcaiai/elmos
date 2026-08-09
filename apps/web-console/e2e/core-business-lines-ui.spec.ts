@@ -63,6 +63,12 @@ test("跨语言整库范围只保存发现与拆分交接，不伪造执行结�
       file_count: 1,
       source_file_count: 1,
       source_bytes: 128,
+      repository_scale: "small",
+      repository_limits: {
+        maximum_source_files: 5000,
+        maximum_source_bytes: 67108864,
+        maximum_bytes_per_file: 2097152,
+      },
       language_counts: { java: 1, csharp: 0, go: 0, rust: 0, python: 0, typescript: 0 },
       ignored_symlink_count: 0,
       work_units: [{
@@ -73,7 +79,7 @@ test("跨语言整库范围只保存发现与拆分交接，不伪造执行结�
         source_bytes: 128,
         status: "DISCOVERY_REQUIRED",
         execution_status: "NOT_RUN",
-        required_inputs: ["function_name", "behavior_cases_json"],
+        required_inputs: ["behavior_cases_json_per_discovered_function"],
         declared_profile: "typed-pure-function-v1",
         unsupported_until_discovered: ["object_graph", "database"],
       }],
@@ -201,6 +207,12 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
     file_count: 1,
     source_file_count: 1,
     source_bytes: 128,
+    repository_scale: "small",
+    repository_limits: {
+      maximum_source_files: 5000,
+      maximum_source_bytes: 67108864,
+      maximum_bytes_per_file: 2097152,
+    },
     language_counts: { java: 1, csharp: 0, go: 0, rust: 0, python: 0, typescript: 0 },
     ignored_symlink_count: 0,
     work_units: [{
@@ -211,7 +223,7 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
       source_bytes: 128,
       status: "DISCOVERY_REQUIRED",
       execution_status: "NOT_RUN",
-      required_inputs: ["function_name", "behavior_cases_json"],
+      required_inputs: ["behavior_cases_json_per_discovered_function"],
       declared_profile: "typed-pure-function-v1",
       unsupported_until_discovered: ["object_graph"],
     }],
@@ -253,36 +265,42 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
   }
 });
 
-test("跨语言整库受控任务完成真实回放、构建、恢复和摘要校验下载", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name !== "chromium", "有副作用的代表整库旅程只执行一次");
-  test.setTimeout(180_000);
+test("片段级本地通过不能放行仓库级 NOT_RUN 路线", async ({ page, request }) => {
+  const capabilityResponse = await request.get("/api/capabilities/translation");
+  expect(capabilityResponse.ok()).toBe(true);
+  const capability = await capabilityResponse.json();
+  expect(capability.routes.length).toBeGreaterThan(0);
+  expect(capability.routes.some((route: { localExecution: string }) =>
+    route.localExecution === "PASSED")).toBe(true);
+  expect(capability.routes.every((route: {
+    repositoryExecutionStatus: string;
+    repositoryProfile: string | null;
+    repositoryEvidenceRef: string | null;
+  }) => route.repositoryExecutionStatus === "NOT_RUN"
+    && route.repositoryProfile === null
+    && route.repositoryEvidenceRef === null)).toBe(true);
+  expect(capability.repositoryExecutableRouteCount).toBe(0);
+  expect(capability.repositoryExecutionEvidence).toBe("NOT_RUN");
 
   await page.goto("/translation");
-  await page.getByLabel("跨语言租户标识").fill("local-e2e");
-  await page.getByLabel("跨语言执行者标识").fill("user:e2e");
-  await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
-  await page.getByLabel("受控源码工作区 ID").fill("pure-python");
-  await page.getByLabel("独立行为用例包 ID").fill("pure-python-holdout");
-  await page.getByRole("button", { name: /python 到 typescript/i }).click();
-  await page.getByRole("button", { name: "启动整库转换" }).click();
+  await expect(page.locator(".route-profile-facts")).toContainText("仓库执行NOT_RUN");
+  await expect(page.getByRole("button", { name: "启动整库转换" })).toBeDisabled();
 
-  await expect(page.getByText("COMPLETE", { exact: true }).last()).toBeVisible({ timeout: 120_000 });
-  await expect(page.getByText("PASSED", { exact: true }).last()).toBeVisible();
-  const jobId = await page.getByText(/[0-9a-f]{8}-[0-9a-f-]{27}/).last().textContent();
-  expect(jobId).toMatch(/^[0-9a-f-]{36}$/);
-
-  await page.reload();
-  await page.getByLabel("跨语言租户标识").fill("local-e2e");
-  await page.getByLabel("跨语言执行者标识").fill("user:e2e");
-  await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
-  await expect(page.getByLabel("恢复任务 UUID")).toHaveValue(jobId ?? "");
-  await page.getByRole("button", { name: "恢复任务" }).click();
-  await expect(page.getByText("COMPLETE", { exact: true }).last()).toBeVisible();
-
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "下载摘要校验归档" }).click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("python-to-typescript-complete.zip");
+  // UI disabling is advisory. The server repeats the independent repository
+  // admission so a forged POST cannot reuse snippet-level PASSED_LOCAL.
+  const rejected = await request.post("/api/translation/jobs", {
+    headers: {
+      authorization: "Bearer elmos-e2e-local-token-32-characters",
+      "x-elmos-tenant": "local-e2e",
+      "x-elmos-actor": "user:e2e",
+    },
+    data: {
+      workspaceId: "pure-python",
+      casesBundleId: "pure-python-holdout",
+      sourceLanguage: "python",
+      targetLanguage: "typescript",
+    },
+  });
+  expect(rejected.status()).toBe(409);
+  expect((await rejected.json()).reason).toBe("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
 });

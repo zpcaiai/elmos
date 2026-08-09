@@ -1,0 +1,5 @@
+validate-b38-45-tests:
+	python3 scripts/test-suite-b38-45/validate_skill_bundle.py .
+	python3 scripts/test-suite-b38-45/validate_test_catalog.py test-suites/batch38-45-strict/cases/catalog.json
+	python3 scripts/test-suite-b38-45/validate_coverage_matrix.py test-suites/batch38-45-strict/coverage-matrix.json
+	python3 -m unittest tests/test-suite-b38-45/test_toolkit.py

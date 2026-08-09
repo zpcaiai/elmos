@@ -1,0 +1,553 @@
+{
+  "actual_source": "ALLOWLISTED_RUNTIME_CAPTURE",
+  "capture": {
+    "events": [
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "document",
+        "url": "http://127.0.0.1:55967/"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/@vite/client"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/main.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/main.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.js?v=2ff4d048"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/pinia.js?v=f4c03111"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/App.vue"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/router.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/styles.css"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/@vite/client"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.js?v=2ff4d048"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.runtime.esm-bundler-DJa8Dn_V.js?v=618c6cc9"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/App.vue"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/router.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/styles.css"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/routes.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/ElmosInteractionPanel.vue"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/@id/__x00__plugin-vue:export-helper"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue-router.js?v=8dde7cf7"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/views/GeneratedPage.vue"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/pinia.js?v=f4c03111"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/routes.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/ElmosInteractionPanel.vue"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/@id/__x00__plugin-vue:export-helper"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.runtime.esm-bundler-DJa8Dn_V.js?v=618c6cc9"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/views/GeneratedPage.vue"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue-router.js?v=8dde7cf7"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "document",
+        "url": "http://127.0.0.1:55967/"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/@vite/client"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/main.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/@vite/client"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/main.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.js?v=2ff4d048"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/pinia.js?v=f4c03111"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/App.vue"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/router.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/styles.css"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.js?v=2ff4d048"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.runtime.esm-bundler-DJa8Dn_V.js?v=618c6cc9"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/pinia.js?v=f4c03111"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/App.vue"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/router.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/styles.css"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue.runtime.esm-bundler-DJa8Dn_V.js?v=618c6cc9"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/routes.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/ElmosInteractionPanel.vue"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/@id/__x00__plugin-vue:export-helper"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue-router.js?v=8dde7cf7"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/views/GeneratedPage.vue"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/routes.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/ElmosInteractionPanel.vue"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/@id/__x00__plugin-vue:export-helper"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/views/GeneratedPage.vue"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/node_modules/.vite/deps/vue-router.js?v=8dde7cf7"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55967/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55967/src/elmos-interaction-runtime.ts"
+      }
+    ]
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-trace-artifact",
+  "profile_id": "vue3",
+  "role": "browser-network-trace",
+  "scenario_id": "LOCALE_EN_US_WIDE_721",
+  "schema_version": "1.0"
+}

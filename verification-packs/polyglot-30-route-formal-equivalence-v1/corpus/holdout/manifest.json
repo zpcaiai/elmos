@@ -1,0 +1,14 @@
+{
+  "corpus": "holdout",
+  "dataset_class": "local-separated-holdout",
+  "dataset_digest": "sha256:b72cedc152f987c59f56052fbf9e4aaf3e1d9a96fd81b5909763cba2caf83b21",
+  "evidence_refs": [
+    "evidence/route-set.json"
+  ],
+  "notes": [
+    "Locally separated holdout; independent external verifier NOT_RUN."
+  ],
+  "schema_version": 1,
+  "source_digest": "sha256:c1fd6ae6d02b401ca9dff0dcd7ff864f2cc44421e2065a1f1624f73a7167a4ff",
+  "status": "passed"
+}

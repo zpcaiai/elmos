@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": false,
+    "resolution": "AUTH_DENIED_FALLBACK",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7cd07d35ece1bacd759d52acb50d993c6c87f4955cb02d1c3619f186e69402fa",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2433,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-route-dom-url-observer-trace/1e268d5f04bcab35cab866d4b7f17a2647639a3c1ff4f76efc756a61e71359f2.json",
+      "profile_id": "react",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:1e268d5f04bcab35cab866d4b7f17a2647639a3c1ff4f76efc756a61e71359f2"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:cbd7b5de87c84b74456ac0e666570eb5bbbe098a5bd73eea87ec2eea7ed60bb5",
+        "byte_count": 40387,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/e410e0604b12f432e6df5119d6fd14f84a45c9292eec77b82458eb5342151018.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:e410e0604b12f432e6df5119d6fd14f84a45c9292eec77b82458eb5342151018"
+      },
+      {
+        "artifact_id": "sha256:66b5f03094371e9ee427aa868294c43596f48c57444aec305e387f3a45ff4c58",
+        "byte_count": 5298,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-framework-event-trace/e6f21db6d7c761f164c3809e9b28bd4f6b29b68f7ff31001a50dd10560c9977e.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:e6f21db6d7c761f164c3809e9b28bd4f6b29b68f7ff31001a50dd10560c9977e"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

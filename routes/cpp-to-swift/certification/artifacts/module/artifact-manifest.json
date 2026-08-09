@@ -1,0 +1,315 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/cpp-to-swift/certification/artifacts/module",
+  "corpus": "module",
+  "excluded_files": [
+    "source-runtime/000/source_harness",
+    "source-runtime/001/source_harness",
+    "source-runtime/002/source_harness",
+    "source-runtime/003/source_harness",
+    "source-runtime/004/source_harness",
+    "target-runtime/000/route_harness",
+    "target-runtime/001/route_harness",
+    "target-runtime/002/route_harness",
+    "target-runtime/003/route_harness",
+    "target-runtime/004/route_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 49,
+  "files": [
+    {
+      "bytes": 1363,
+      "path": "formal-function-000-input.json",
+      "sha256": "sha256:35e6fb703e77b86c031aeb7f5a5f447f2ae7b9685133fed4dd32411f12771087"
+    },
+    {
+      "bytes": 2418,
+      "path": "formal-function-000-result.json",
+      "sha256": "sha256:e13e649260f90f840436ea8bce56028ca7bec04e03e4c621ddc2c275f68f09e3"
+    },
+    {
+      "bytes": 1299,
+      "path": "formal-function-000.smt2",
+      "sha256": "sha256:ce381bc6c948b8dd529362d7b020f71d7184b7bd587f6ed31adde4542bf677a2"
+    },
+    {
+      "bytes": 1820,
+      "path": "formal-function-001-input.json",
+      "sha256": "sha256:8595e7e064688f60b6701e4f32656950b421661a3575bf1fc41d1ec1478cb6fc"
+    },
+    {
+      "bytes": 2427,
+      "path": "formal-function-001-result.json",
+      "sha256": "sha256:1e75e97a969b0482e1f64389c5375a8292ba1563d625373127bbafb59cb5d124"
+    },
+    {
+      "bytes": 2023,
+      "path": "formal-function-001.smt2",
+      "sha256": "sha256:bcaf1db4bfeed7c65ecf640fbdaddead2a984824d67a6924acc2106a10ca2730"
+    },
+    {
+      "bytes": 2219,
+      "path": "formal-function-002-input.json",
+      "sha256": "sha256:5b93beb1badeee8911c87fa40053c8ad5c66a8b8f2d940de0c1908dba6d3ca91"
+    },
+    {
+      "bytes": 2454,
+      "path": "formal-function-002-result.json",
+      "sha256": "sha256:78473fddc2e9d3cda204f682baa144116cb6f8987860f23c93a0cf4490ce8b82"
+    },
+    {
+      "bytes": 1921,
+      "path": "formal-function-002.smt2",
+      "sha256": "sha256:afa74ce4830a3de52aad11e22bb4ea57c55b2a074d2d8ce0adaafc25abc03966"
+    },
+    {
+      "bytes": 2225,
+      "path": "formal-function-003-input.json",
+      "sha256": "sha256:d20d65ab198e4e628a56a1090f2fc4494e17a6cd9caa264d28a46f03a30bb884"
+    },
+    {
+      "bytes": 2738,
+      "path": "formal-function-003-result.json",
+      "sha256": "sha256:44b91a499cbe49cd081de373e21e6650cc64051ed7a20745d0772a365b3e3e24"
+    },
+    {
+      "bytes": 2583,
+      "path": "formal-function-003.smt2",
+      "sha256": "sha256:a3715c30e8eba67d90a371bc4a077d8b5a35eb68de675b2e42613a897a3422ff"
+    },
+    {
+      "bytes": 1379,
+      "path": "formal-function-004-input.json",
+      "sha256": "sha256:1a2c89a1875706222e95cabd4d713571325b9c8a1b4ebb955e7654734c1d5f6c"
+    },
+    {
+      "bytes": 2424,
+      "path": "formal-function-004-result.json",
+      "sha256": "sha256:cc0f7e0672600df3c2c43c9d92f99b5148127277326d4112ca2090345d9bb98d"
+    },
+    {
+      "bytes": 1795,
+      "path": "formal-function-004.smt2",
+      "sha256": "sha256:63271d76397159327debfac9526f7cf620a28e314815dc08c35173fac93a15a3"
+    },
+    {
+      "bytes": 748,
+      "path": "migrated.swift",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 2794,
+      "path": "module-case-manifest.json",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 1265,
+      "path": "module-formal-input.json",
+      "sha256": "sha256:93af9955562ed5cf77c647894e5ececf45ec1cdb8341fd259b023972c2798d03"
+    },
+    {
+      "bytes": 742,
+      "path": "source-module-artifact/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2903,
+      "path": "source-module-inventory.json",
+      "sha256": "sha256:68f2b4ca55c3c77cdbf6e57aa054c63093c9604274656890ab604420852ba86c"
+    },
+    {
+      "bytes": 1881,
+      "path": "source-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7670,
+      "path": "source-module-semantic-ir.json",
+      "sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071"
+    },
+    {
+      "bytes": 8433,
+      "path": "source-module-validation.json",
+      "sha256": "sha256:a13ced4cd2462d515b3fae9caafe512e2a9ee531f15c5ee1541413fe87131e52"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/000/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2214,
+      "path": "source-runtime/000/source_harness.cpp",
+      "sha256": "sha256:3102f027c188be9cd24909a520ee2e4222ebc11aadbff694761b6a6659340a41"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/001/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2126,
+      "path": "source-runtime/001/source_harness.cpp",
+      "sha256": "sha256:9077a4099bfd7d59cc50d976860e7718a82e520245e0b16aae9658b5c34561aa"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/002/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2300,
+      "path": "source-runtime/002/source_harness.cpp",
+      "sha256": "sha256:6060707e65d6cbdba30bf1e7c67bdfc3d00ad9694146cfc8beb85390364c89f3"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/003/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2513,
+      "path": "source-runtime/003/source_harness.cpp",
+      "sha256": "sha256:05679c86decbee7352f4a8f59c0d9ede2f9e3914db2063e3bebcc3e59bbcdb98"
+    },
+    {
+      "bytes": 742,
+      "path": "source-runtime/004/equivalence_module.cpp",
+      "sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576"
+    },
+    {
+      "bytes": 2087,
+      "path": "source-runtime/004/source_harness.cpp",
+      "sha256": "sha256:a43b17ebfdcfb69876a7f53ab234b3f546e8799736700caeb7e44dff4d43c53c"
+    },
+    {
+      "bytes": 42768,
+      "path": "target-module-inventory.json",
+      "sha256": "sha256:2b4dcc620b167987953e3f1384b2bf30855f6af60f24c9b981d912139421fda1"
+    },
+    {
+      "bytes": 1881,
+      "path": "target-module-observations.json",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 7791,
+      "path": "target-module-semantic-ir.json",
+      "sha256": "sha256:57d5fde8c8fc7c010755c0d66d1983cd1bd886f492b2c834d1d4ee3ba06aeafb"
+    },
+    {
+      "bytes": 8733,
+      "path": "target-module-validation.json",
+      "sha256": "sha256:d8861fcf84feb684f3bc86c66780a0885fbb34abacd22840887d93d92d5784f1"
+    },
+    {
+      "bytes": 1088,
+      "path": "target-runtime/000/main.swift",
+      "sha256": "sha256:6dd7ff9c30fdc6100d53679e539f0a50090bd09f33f63d03639bbdae4877b100"
+    },
+    {
+      "bytes": 748,
+      "path": "target-runtime/000/migrated.swift",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 1152,
+      "path": "target-runtime/001/main.swift",
+      "sha256": "sha256:d617856da7a9c95d8393693b600b65376d3f0923c2fe85e12fa8b478d722010f"
+    },
+    {
+      "bytes": 748,
+      "path": "target-runtime/001/migrated.swift",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 1338,
+      "path": "target-runtime/002/main.swift",
+      "sha256": "sha256:60d99f1d28eefc5e1fbf61742f482a1a114b51403363abf738216be44e0e4ebc"
+    },
+    {
+      "bytes": 748,
+      "path": "target-runtime/002/migrated.swift",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 1426,
+      "path": "target-runtime/003/main.swift",
+      "sha256": "sha256:cc8a290a6753b3764cd83b6db419fabfdeacbd3f83c9a146a0ce2b17fd3748c8"
+    },
+    {
+      "bytes": 748,
+      "path": "target-runtime/003/migrated.swift",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 1117,
+      "path": "target-runtime/004/main.swift",
+      "sha256": "sha256:2b54144f6cfefea02d898e66926dd9b1b0814b0be89fe2ce2a5271eacadd2f8d"
+    },
+    {
+      "bytes": 748,
+      "path": "target-runtime/004/migrated.swift",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 182501,
+      "path": "typed-pure-module-equivalence.json",
+      "sha256": "sha256:dc410d65b7f8fe3aa24771352ed8a4a5f53332eded0caf94f1d7715bf5b0f9d8"
+    },
+    {
+      "bytes": 7735,
+      "path": "whole-file-module-closure.json",
+      "sha256": "sha256:c936cece4b3e6526b7faef0fec852213f433b6654cd65d9a763178265c537bc8"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "cpp-to-swift",
+  "schema_version": 1,
+  "total_bytes": 333744
+}

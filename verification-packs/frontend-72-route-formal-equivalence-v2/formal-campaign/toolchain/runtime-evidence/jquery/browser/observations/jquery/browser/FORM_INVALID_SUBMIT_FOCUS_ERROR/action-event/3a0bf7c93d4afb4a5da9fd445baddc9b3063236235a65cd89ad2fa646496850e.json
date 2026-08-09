@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "BLOCK",
+    "event": "SUBMIT",
+    "handled": true,
+    "keyboardKey": "Enter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0746a0549922d8ec1b2eb9518dbfb744946ab5860e04f69bba90d08be22518a7",
+      "block_id": "action-event",
+      "byte_count": 3255,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-native-event-outcome-observer-trace/00882b4bd8d0f2d618ff05d313555c640932cb6c9a9b4efe924f1352ecd200dd.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:00882b4bd8d0f2d618ff05d313555c640932cb6c9a9b4efe924f1352ecd200dd"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:3188d07f0331f97d228f52c3ba7196bbda424caeee3fbbd999e97543f43ce447",
+        "byte_count": 8791,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/c705df5e4766f16104db00a0f636bc0917136ecb41b361eb7bd2be9b204ec555.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:c705df5e4766f16104db00a0f636bc0917136ecb41b361eb7bd2be9b204ec555"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

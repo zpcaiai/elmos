@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:df39ac49ba97cc1441e1085c9203d3f5ac76949390425acdb9ddbc7653aafca6",
+      "block_id": "component-template-view",
+      "byte_count": 1502,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/vue3/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-rendered-component-observer-trace/bb69de3205cfe556ba5a11eb4bc50b510dd2ef7b46738ec765101db442fe198f.json",
+      "profile_id": "vue3",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:bb69de3205cfe556ba5a11eb4bc50b510dd2ef7b46738ec765101db442fe198f"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:c25d40e6378c560dd32646f748eebbf71d8f64fc95310ebc0274f5a9d1a27bc2",
+        "byte_count": 40641,
+        "channel": "browser",
+        "path": "traces/vue3/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-dom-snapshot/eda92cb066f14a90544fda58fc7af1286fc9abda72842c2e4f86dd7c35269428.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:eda92cb066f14a90544fda58fc7af1286fc9abda72842c2e4f86dd7c35269428"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

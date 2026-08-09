@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "NATIVE_DEEPLINK",
+    "event": "NATIVE_DEEPLINK",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0888d0f87d63c311d4d4b6ff63b9dfcd6f16026a1c463ab0dcdc9c2b0fc53d96",
+      "block_id": "action-event",
+      "byte_count": 3407,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-native-event-outcome-observer-trace/9c9762018380e4ff0ecc6dba565ca0493a2dba1d70ed909aef0e75b0c337e85a.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+      "sha256": "sha256:9c9762018380e4ff0ecc6dba565ca0493a2dba1d70ed909aef0e75b0c337e85a"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:297e934791492420617f12ad5cc6e6d1f5d9fa9fe5e4684acf90278e5b9f838a",
+        "byte_count": 5417,
+        "channel": "browser",
+        "path": "traces/jquery/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-framework-event-trace/084cf014a69e79f66452f1f225a4332f7b56ca96d33287fb9fe2fd10b410fe1a.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "sha256": "sha256:084cf014a69e79f66452f1f225a4332f7b56ca96d33287fb9fe2fd10b410fe1a"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+  "schema_version": "1.0"
+}

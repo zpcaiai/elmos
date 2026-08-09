@@ -1,0 +1,2490 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-interaction-formal-profile-project",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "profile_id": "harmony-arkui",
+  "framework_version": "6.0.0(20)",
+  "platforms": [
+    "HARMONYOS"
+  ],
+  "required_runtime_channels": [
+    "harmonyos"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:f9a00b024d2d7c3358326e74e12b33a34690ad91a5c405488909c5288e07ee4f",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 30,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".elmos-harmony-runner.json",
+      "sha256": "sha256:30f903ed53081f38ccc6274b9399ece7dd24fa89c36810d3ed3457d91d5dc1eb",
+      "byte_count": 168
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:ae6d0f286b924f46b0e71d2863a4b01e5250f793bff40ea0ee47be96a214cc0c",
+      "byte_count": 393
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": "AppScope/app.json5",
+      "sha256": "sha256:08afaa567c288ea4e4f9a0a0c7c9fbcb40fd6b4199df844962253f60d599b477",
+      "byte_count": 215
+    },
+    {
+      "path": "AppScope/resources/base/element/string.json",
+      "sha256": "sha256:1b7cff6e32bc222d4412a2eb42f8acaff171f8e1c49ea611d86f5f35567c9d91",
+      "byte_count": 108
+    },
+    {
+      "path": "AppScope/resources/base/media/app_icon.svg",
+      "sha256": "sha256:40ef78078f168f8b38978832f6e08778e03b7dc7bb9c1e6e01d7fefa163528c2",
+      "byte_count": 198
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:17c7e5c439f379634e720a53c9dd8feb444cebf8e5472fa14360f399dfd2f302",
+      "byte_count": 2034
+    },
+    {
+      "path": "build-profile.json5",
+      "sha256": "sha256:b20a4c9f2442f08e5d44af5b633f48458cbffc447bd83250126173f7fecd6f4e",
+      "byte_count": 721
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:a1d0317c3eb93f44cb13a5dc197f487a4dc2cbb8eb01e01cd6461eab5790ab54",
+      "byte_count": 1225
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:0bb156300fb0aae93e152f2e6e4a8e083fbee08b72c180bcaae3861cfc347a46",
+      "byte_count": 322
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:4b5a4c7f204745456fde47b7fdaa5d08c1f8120c50f1ece3bcf4a2a0ac6ee562",
+      "byte_count": 3369
+    },
+    {
+      "path": "entry/build-profile.json5",
+      "sha256": "sha256:46d1b87a9913197745942b7aad13d81bf029e71fd07436ed5cf5bfbbb15d01eb",
+      "byte_count": 106
+    },
+    {
+      "path": "entry/hvigorfile.ts",
+      "sha256": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+      "byte_count": 103
+    },
+    {
+      "path": "entry/oh-package.json5",
+      "sha256": "sha256:fc64a49ce785a9458e67d8619af76f448b69b15e277ab83787163a8c3a847b16",
+      "byte_count": 158
+    },
+    {
+      "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+      "sha256": "sha256:3e9c1df4c8ccfd8b7d7ac86027a4ef935d860fa99e3c3f5fb5ebeb372a62be9f",
+      "byte_count": 26513
+    },
+    {
+      "path": "entry/src/main/ets/elmos-bounded-navigation.ets",
+      "sha256": "sha256:38c6cf57227c154651791f3b88b01cdd1e7c3a1bf8dea736ee9b7f6a9cdcc537",
+      "byte_count": 1045
+    },
+    {
+      "path": "entry/src/main/ets/elmos-interaction-runtime.ets",
+      "sha256": "sha256:e2d83583d4d9fc0688fc6f2f53829f6dd7903fdb2b8afd1fdbfcc3b557a7a95c",
+      "byte_count": 5866
+    },
+    {
+      "path": "entry/src/main/ets/entryability/EntryAbility.ets",
+      "sha256": "sha256:ad7862f2ffa057033d04e6ae08d5ac5eb68ca3ff22e734e1a948c23434d6c97c",
+      "byte_count": 342
+    },
+    {
+      "path": "entry/src/main/ets/pages/Index.ets",
+      "sha256": "sha256:471c6ef7cda764e3ca6071e53474d823b37d89eec4c24b21fcd738f2a16de76b",
+      "byte_count": 2706
+    },
+    {
+      "path": "entry/src/main/module.json5",
+      "sha256": "sha256:fe2ec957ec43659d01304b010f4c90697baea9f35e3ee5f824ee973cf39f7131",
+      "byte_count": 759
+    },
+    {
+      "path": "entry/src/main/resources/base/element/string.json",
+      "sha256": "sha256:21c61a373c652e2ffb067ab4c821f31a264656e6580afbee1f980ee5ec09e471",
+      "byte_count": 286
+    },
+    {
+      "path": "entry/src/main/resources/base/profile/main_pages.json",
+      "sha256": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+      "byte_count": 37
+    },
+    {
+      "path": "entry/src/main/resources/rawfile/ui_ir.json",
+      "sha256": "sha256:8f9072a7d6611545c72509a57b354ca76702258807788549912d96bcec26de48",
+      "byte_count": 6518
+    },
+    {
+      "path": "hvigorfile.ts",
+      "sha256": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+      "byte_count": 103
+    },
+    {
+      "path": "oh-package.json5",
+      "sha256": "sha256:c7b9b25fc6abf7ebeaf49bc87ac21dce52e02417a8eeed32ebf1930e4482cb63",
+      "byte_count": 178
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:6476e79a4e581181e43b54b892288dec7780c0801deda4e868ff7c1d7d2d2076",
+      "byte_count": 309
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:e0800865800432d619c365cfe0b6643cd21d846e04d767ccdf29318321101693",
+      "byte_count": 830
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:bf18bc9aa28309f70443bbee21c446d5994178172c70a9efd70a95e3ff9bd92f",
+      "byte_count": 9964
+    }
+  ],
+  "source_kind": "GENERATED_FIXTURE",
+  "source_fixture_path": "generated-fixtures/harmony-arkui/typed-ui-interaction-ir.json",
+  "source_fixture_digest": "sha256:8ea380704aba43a18af394f9124a3ea37f457a1d35a7ae72b4d65d8eecbc2cb3",
+  "source_fixture_byte_count": 8426,
+  "interaction_source_path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+  "navigation_compatibility_path": "entry/src/main/ets/elmos-bounded-navigation.ets",
+  "relift_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "relift_block_digests": {
+    "route-navigation-deeplink-404": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
+    "component-template-view": "sha256:81ed2300ebb97d99029d3f7644f21e0870800a6294f698b957929adf8e9ab14f",
+    "state-management": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f",
+    "action-event": "sha256:b236128e14d3869816eef701eb1484e3e396d3458b8a79bb3359eec3a4fd78ba",
+    "effect-lifecycle": "sha256:f367fdc5dfa72597f0b9b123333458de8a84bd926066e1edbecd26e3909278d4",
+    "form-binding-validation": "sha256:85678faadb440b74d25a9b1399797019e570368b886044eb8c60dce40e3df43e",
+    "api-network": "sha256:6a37085a8cdc8449e6b5b4ded859196f7abfc54d3b99796993c3740274387b0d",
+    "identity-permission": "sha256:950031a9626fdfb8d77c4b7e3d81b3fdd5999af3c3c5d0611a13994b0de46b0b",
+    "rendering-hydration": "sha256:d9fe7ce868eae8dabc6b0622abed36c351a16641b8ad5e175018a7043380cb99",
+    "accessibility-focus": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df",
+    "i18n-theme-responsive": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
+    "native-platform": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
+  },
+  "runtime_driver_contract": {
+    "schema_version": "1.0",
+    "kind": "bounded-interaction-native-semantics-driver-contract",
+    "framework_binding": "ARKUI_STATE_COMPONENT_UITEST_SEMANTICS",
+    "runtime_evidence_eligibility": "ELIGIBLE_LOCAL_ACTUAL_RUNTIME_EXECUTION",
+    "runtime_status": "NOT_RUN",
+    "independent_runtime_oracle": "NOT_RUN",
+    "customer_runtime_evidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+    "required_runtime_channels": [
+      "harmonyos"
+    ],
+    "observer_protocol": "block-specific-runtime-observation-v1",
+    "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+    "self_reported_reducer_json_allowed": false,
+    "legacy_runtime_observed_allowed": false,
+    "declaration_payload_allowed_keys": [
+      "schema_version",
+      "kind",
+      "block_id",
+      "status",
+      "observer_kind",
+      "measurement_surface",
+      "reason"
+    ],
+    "block_observer_contracts": {
+      "route-navigation-deeplink-404": {
+        "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+        "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+        "browser_status": "PASSED",
+        "browser_reason": "history and rendered route DOM are independently captured",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when native navigation semantics are captured on a real runtime channel"
+      },
+      "component-template-view": {
+        "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+        "measurement_surface": "active route heading/text/visibility attrs",
+        "browser_status": "PASSED",
+        "browser_reason": "rendered heading, text, visibility, and route attributes are captured",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when the rendered native component semantics are captured on a real runtime channel"
+      },
+      "state-management": {
+        "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+        "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+        "browser_status": "PASSED",
+        "browser_reason": "framework state transition is rendered as raw attributes",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when native framework state before, after, and saturation are captured"
+      },
+      "action-event": {
+        "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+        "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+        "browser_status": "PASSED",
+        "browser_reason": "native browser events and rendered handler outcome are captured",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when the native input event and handler outcome are captured"
+      },
+      "effect-lifecycle": {
+        "observer_kind": "FRAMEWORK_LIFECYCLE_TRACE_OBSERVER",
+        "measurement_surface": "ordered [data-elmos-lifecycle-event]",
+        "browser_status": "NOT_RUN",
+        "browser_reason": "the bounded browser driver does not remount and dispose the framework component per scenario",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when ordered native mount, background, foreground, and dispose events are captured"
+      },
+      "form-binding-validation": {
+        "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+        "measurement_surface": "control value+ValidityState+error DOM+focus",
+        "browser_status": "PASSED",
+        "browser_reason": "live form control, browser ValidityState, error DOM, and active element are captured",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when native control value, validation, error semantics, and focus are captured"
+      },
+      "api-network": {
+        "observer_kind": "BROWSER_NETWORK_OBSERVER",
+        "measurement_surface": "Playwright request/response/requestfailed + app abort/stale marker",
+        "browser_status": "NOT_RUN",
+        "browser_reason": "the bounded browser diagnostic does not yet prove timeout, retry, tenant cache, and unmount cancellation as one complete API contract",
+        "native_status": "NOT_RUN",
+        "native_reason": "a single native adapter call does not prove timeout, retry, tenant cache, and unmount cancellation"
+      },
+      "identity-permission": {
+        "observer_kind": "AUTHORITY_ADAPTER_OBSERVER",
+        "measurement_surface": "[data-elmos-auth-decision] only if real adapter trace",
+        "browser_status": "NOT_RUN",
+        "browser_reason": "no real authority adapter is installed in the bounded local browser profile",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when a real native authority adapter decision trace is captured"
+      },
+      "rendering-hydration": {
+        "observer_kind": "SSR_HYDRATION_OBSERVER",
+        "measurement_surface": "server markup digest+hydration warnings/mutations/effect count",
+        "browser_status": "NOT_RUN",
+        "browser_reason": "the generated browser profiles are client rendered and expose no SSR hydration boundary",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when the applicable native rendering lifecycle and mutation surface is captured"
+      },
+      "accessibility-focus": {
+        "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+        "measurement_surface": "aria snapshot+axe+active element+keyboard",
+        "browser_status": "PASSED",
+        "browser_reason": "accessibility tree, axe, focus, and keyboard events are captured by the browser driver",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when native accessibility semantics, focus, and input events are captured"
+      },
+      "i18n-theme-responsive": {
+        "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+        "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+        "browser_status": "PASSED",
+        "browser_reason": "document language, rendered text, computed styles, and element geometry are captured",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when native locale, rendered text, theme tokens, and measured layout are captured"
+      },
+      "native-platform": {
+        "observer_kind": "NATIVE_ADAPTER_DEVICE_OBSERVER",
+        "measurement_surface": "native semantics+lifecycle+permission+adapter trace",
+        "browser_status": "NOT_RUN",
+        "browser_reason": "a browser channel cannot supply device identity or a native adapter trace",
+        "native_status": "PASSED",
+        "native_reason": "eligible only when real device semantics, lifecycle, permission, and adapter traces are captured"
+      }
+    },
+    "browser_required_not_run_blocks": [
+      "effect-lifecycle",
+      "api-network",
+      "identity-permission",
+      "rendering-hydration",
+      "native-platform"
+    ],
+    "native_required_not_run_blocks": [
+      "api-network"
+    ],
+    "native_route_without_real_device_channel_status": "NOT_RUN",
+    "root_selector": "NOT_APPLICABLE",
+    "ready_selector": "NOT_APPLICABLE",
+    "scenario_row_selector_template": "NOT_APPLICABLE",
+    "scenario_action_selector_template": "NOT_APPLICABLE",
+    "runtime_source_attribute": "SEMANTICS_LABEL",
+    "runtime_source_value": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+    "completion_attribute": "SEMANTICS_LABEL",
+    "completion_value": "PARTIAL_OR_COMPLETE_FROM_BLOCK_STATUSES",
+    "sequence_attribute": "SEMANTICS_LABEL",
+    "query_selector": "ValueKey(elmos-query)",
+    "block_selector_template": "ValueKey(block:${scenario_id}:${block_id})",
+    "network_intercept_path": "ADAPTER_TRACE",
+    "channel_projection_contract": {
+      "schema_version": "1.0",
+      "kind": "bounded-interaction-channel-projection-contract",
+      "projection": "STRICT_RUNTIME_OBSERVATION_V1",
+      "model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+      "block_actual_keys": {
+        "route-navigation-deeplink-404": [
+          "requestedPath",
+          "selectedRouteId",
+          "selectedPath",
+          "resolution",
+          "deepLink",
+          "requiresAuth"
+        ],
+        "component-template-view": [
+          "componentId",
+          "key",
+          "title",
+          "text",
+          "visible"
+        ],
+        "state-management": [
+          "stateId",
+          "before",
+          "after",
+          "saturated"
+        ],
+        "action-event": [
+          "event",
+          "keyboardKey",
+          "handled",
+          "action"
+        ],
+        "effect-lifecycle": [
+          "lifecycle",
+          "effect",
+          "executions",
+          "cleanup",
+          "staleResponseIgnored"
+        ],
+        "form-binding-validation": [
+          "formId",
+          "fieldId",
+          "value",
+          "submitted",
+          "valid",
+          "errorCode"
+        ],
+        "api-network": [
+          "operationId",
+          "called",
+          "method",
+          "path",
+          "outcome",
+          "canceled",
+          "staleIgnored",
+          "cacheKey"
+        ],
+        "identity-permission": [
+          "role",
+          "permission",
+          "permissionGranted",
+          "tenantMatch",
+          "authorized",
+          "serverAuthorityRequired"
+        ],
+        "rendering-hydration": [
+          "mode",
+          "requested",
+          "status",
+          "duplicateEffects",
+          "mismatchVisible"
+        ],
+        "accessibility-focus": [
+          "mainRole",
+          "headingLevel",
+          "formLabel",
+          "errorRole",
+          "liveRegion",
+          "keyboardSubmit",
+          "focusTarget"
+        ],
+        "i18n-theme-responsive": [
+          "requestedLocale",
+          "locale",
+          "requestedTheme",
+          "theme",
+          "viewportWidth",
+          "columns"
+        ],
+        "native-platform": [
+          "boundary",
+          "lifecycle",
+          "attempted",
+          "permission",
+          "available",
+          "outcome",
+          "recovery"
+        ]
+      },
+      "scenario_ids": [
+        "BOOT_PUBLIC",
+        "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "FORM_VALID_SUBMIT_API_SUCCESS",
+        "API_ERROR_CANCEL_STALE_RESPONSE",
+        "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "LOCALE_THEME_VIEWPORT_CHANGE",
+        "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "TENANT_ISOLATION_MISMATCH_DENIED",
+        "API_NETWORK_ERROR",
+        "HYDRATE_MISMATCH_ERROR",
+        "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "LOCALE_EN_US_WIDE_721",
+        "UNSUPPORTED_THEME_FALLBACK",
+        "BREAKPOINT_720_COMPACT",
+        "NAVIGATE_HELP_PUBLIC",
+        "KEYBOARD_ENTER_SUBMIT"
+      ],
+      "channels": {
+        "harmonyos": {
+          "status": "NOT_RUN",
+          "native_execution_allowed": true,
+          "scenarios": [
+            {
+              "scenario_id": "BOOT_PUBLIC",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "BOOT",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "BOOT"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "MOUNT",
+                  "effect": "LOAD_ON_MOUNT",
+                  "executions": 1,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "MATCH",
+                  "status": "MATCHED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:426640f913d8da7b0950947915b322d82a233a39b69f9a05448f5031ea62be01",
+                "effect-lifecycle": "sha256:350685317556e518caac37cb29e5f700905a7a2ec3053bb1d6e8526161681c21",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:ffec9d41017f3398c1e6ded541ab5ff514874c268f00820a8ea845e4a8c74615",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "AUTH_DENIED_FALLBACK",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "NAVIGATE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "NAVIGATE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": false,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:0d893ec6d3154c4a398deaa8cc17e97fe6d4a082fb80c743636204087c6d63a6",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:1c0d168c9c1bedd317317d6d98eb37eef1d008170b571fd1cd94ab3753a89a4a",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:5422c46c3d0bee7e4bca0efc74d397314d94a7f1e8ccab0df17fdce42f73ecd7",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.account",
+                  "selectedPath": "/account",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": true
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.account",
+                  "title": "账户",
+                  "text": "账户内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 1,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "AUTHENTICATE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "AUTHENTICATE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:b47db38646e931103a13644c367155aef03dd346f69be5d09e36c7f78bec860e",
+                "component-template-view": "sha256:1c115d0c58137fa49280290d6f34d22a587bd72efcee605087572554c6eed25f",
+                "state-management": "sha256:ebedefb39917676e107d7358b6039465eb297763451ca65ab266a0f7b92dc19a",
+                "action-event": "sha256:f8fe54ad77a85d56f36cdac47d2a510db500d40657930f40ea2aca3b5e319bc7",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.account",
+                  "selectedPath": "/account",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": true
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.account",
+                  "title": "账户",
+                  "text": "账户内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "SUBMIT",
+                  "keyboardKey": "Enter",
+                  "handled": true,
+                  "action": "BLOCK"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "x",
+                  "submitted": true,
+                  "valid": false,
+                  "errorCode": "QUERY_TOO_SHORT"
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:x"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": "alert",
+                  "liveRegion": "polite",
+                  "keyboardSubmit": true,
+                  "focusTarget": "query"
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:b47db38646e931103a13644c367155aef03dd346f69be5d09e36c7f78bec860e",
+                "component-template-view": "sha256:1c115d0c58137fa49280290d6f34d22a587bd72efcee605087572554c6eed25f",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:1791e5a8babeadcdb143ba97eab3ec2bf75ad869cd21e01b151fc4d3766d1bc6",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:88540f6927ac404b8f89961db7379136a7452f84b12fefde455035b02d1fddf5",
+                "api-network": "sha256:18ca436ab1d1ae1e740b0b13027d3bf8855d6b14055b84e8c28db3f01741e62c",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:426950f5053e812ec2087d3ed617297b117075ec604884cc5aeacfd16bad2e9f",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.account",
+                  "selectedPath": "/account",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": true
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.account",
+                  "title": "账户",
+                  "text": "账户内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 2,
+                  "saturated": true
+                },
+                "action-event": {
+                  "event": "SUBMIT",
+                  "keyboardKey": "Enter",
+                  "handled": true,
+                  "action": "SUBMIT_ACCEPTED"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "ok",
+                  "submitted": true,
+                  "valid": true,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": true,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "SUCCESS",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:ok"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": true,
+                  "focusTarget": "result"
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:b47db38646e931103a13644c367155aef03dd346f69be5d09e36c7f78bec860e",
+                "component-template-view": "sha256:1c115d0c58137fa49280290d6f34d22a587bd72efcee605087572554c6eed25f",
+                "state-management": "sha256:937980e166400e668b03f77744af36fd8e4d332f5bee0b867e82c11fe3c3bc81",
+                "action-event": "sha256:eb70f5ab342b55845a24f7c453d76f4bebbf6b47abea3007b7b9fce6930fa65c",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:028ba7079c00730e53f0c2a1c8880582a2ae6e3d9458487568e6f4236f1034f2",
+                "api-network": "sha256:46ff581119853e5d93d2daa4d613f7d3809e4d207223f60d703a7cf040c6ef37",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:327ea63f1893215579946d9ac152cef2dfa6237dc21a285ceb0919a382861f19",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.account",
+                  "selectedPath": "/account",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": true
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.account",
+                  "title": "账户",
+                  "text": "账户内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "CANCEL",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "CANCEL"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "UNMOUNT",
+                  "effect": "CANCEL_ON_UNMOUNT",
+                  "executions": 0,
+                  "cleanup": true,
+                  "staleResponseIgnored": true
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "fail",
+                  "submitted": false,
+                  "valid": true,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": true,
+                  "staleIgnored": true,
+                  "cacheKey": "tenant-a:fail"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:b47db38646e931103a13644c367155aef03dd346f69be5d09e36c7f78bec860e",
+                "component-template-view": "sha256:1c115d0c58137fa49280290d6f34d22a587bd72efcee605087572554c6eed25f",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:b0634cc3f830feabf55d6fa257b343f83daca9ce28f73d1ad6a4dbbebae3fe84",
+                "effect-lifecycle": "sha256:aaf7081d22bcd78aa357f26932420139e457b55231b6e6712f6ce9285b147ccf",
+                "form-binding-validation": "sha256:9134fdbe161e9b2f51169954bc110828c91a6e32bd236ef0f774c9ac86d549f2",
+                "api-network": "sha256:d136587b2fc95b2ef6c5e0bd260768eb39d90c375fcb04d430b9277709ec8db2",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "HYDRATE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "HYDRATE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "UNMOUNT",
+                  "effect": "CANCEL_ON_UNMOUNT",
+                  "executions": 0,
+                  "cleanup": true,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": true,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "MATCH",
+                  "status": "MATCHED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:000a544b629ae23f3d8258ee8750188f3fb403215a5c3d785b8cf3f5b15b112b",
+                "effect-lifecycle": "sha256:b4950098e918714ef6c983b101062549940980f732460abe091377f505624ccb",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:36fa0d63f58ea875b993fab5d3065829eaf97740a17f89e1a048edb0ad90ae1c",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:ffec9d41017f3398c1e6ded541ab5ff514874c268f00820a8ea845e4a8c74615",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "DISPLAY_CHANGE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "DISPLAY_CHANGE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "fr-FR",
+                  "locale": "en-US",
+                  "requestedTheme": "DARK",
+                  "theme": "DARK",
+                  "viewportWidth": 480,
+                  "columns": 1
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:77538ef615e9d8b2ec63a4109bf803180bae61addd09458ed1c401805bb6a794",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:594d4d3b0485a1850f16c34017e5627703c53cf82fc5bfed22451013f5d96100",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "NATIVE_DEEPLINK",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "NATIVE_DEEPLINK"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "BACKGROUND",
+                  "attempted": true,
+                  "permission": "DENIED",
+                  "available": true,
+                  "outcome": "NO_OP_REPORTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:cfc95aded8a391443c465357908372269ceecf2a22ec009a1f16fb66f7f5de12",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:0b638fdeb477eaa64dd13966b08513aed44c90a3cf37065433258e1e46a82634"
+              }
+            },
+            {
+              "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "AUTH_DENIED_FALLBACK",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "SUBMIT",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "BLOCK"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "ok",
+                  "submitted": true,
+                  "valid": true,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:ok"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": false,
+                  "authorized": false,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": "result"
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:0d893ec6d3154c4a398deaa8cc17e97fe6d4a082fb80c743636204087c6d63a6",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:64a4e93d542cc10a14be3a2f2854f15370f09c839bf6cef7cb48c0c8ec858ff8",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:028ba7079c00730e53f0c2a1c8880582a2ae6e3d9458487568e6f4236f1034f2",
+                "api-network": "sha256:1d389d3448ef46f8799ca955c692b1c6894f2f788e514bd7d3a539498c200043",
+                "identity-permission": "sha256:af2ad868263859bf040ccbb2456c0374e946484f5e9f52a875f0ff2e44f15b6f",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:a452cd28d638dcf0f5dbda719afd1bb80ba6c247681aea9c35eb1829e76eec0e",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "API_NETWORK_ERROR",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.account",
+                  "selectedPath": "/account",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": true
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.account",
+                  "title": "账户",
+                  "text": "账户内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "SUBMIT",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "SUBMIT_ACCEPTED"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "ok",
+                  "submitted": true,
+                  "valid": true,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": true,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "ERROR",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:ok"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": "result"
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:b47db38646e931103a13644c367155aef03dd346f69be5d09e36c7f78bec860e",
+                "component-template-view": "sha256:1c115d0c58137fa49280290d6f34d22a587bd72efcee605087572554c6eed25f",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:38334eaab1e7a4f5f375fdc264cffe87fc4913bf77406dfee6fc67203ae3b544",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:028ba7079c00730e53f0c2a1c8880582a2ae6e3d9458487568e6f4236f1034f2",
+                "api-network": "sha256:95f0f174167ad67ddd9f6566be53adf2216745c81ce8afc8d1bc8f9090f1b122",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:a452cd28d638dcf0f5dbda719afd1bb80ba6c247681aea9c35eb1829e76eec0e",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "HYDRATE_MISMATCH_ERROR",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "HYDRATE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "HYDRATE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "MOUNT",
+                  "effect": "LOAD_ON_MOUNT",
+                  "executions": 1,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "MISMATCH",
+                  "status": "RENDER_ERROR",
+                  "duplicateEffects": false,
+                  "mismatchVisible": true
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:000a544b629ae23f3d8258ee8750188f3fb403215a5c3d785b8cf3f5b15b112b",
+                "effect-lifecycle": "sha256:350685317556e518caac37cb29e5f700905a7a2ec3053bb1d6e8526161681c21",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:6ec3c39103c03e97bb7a05b8b7d42b2dd544a2474860e2cb2418ebe057cedaf3",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "NATIVE_DEEPLINK",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "NATIVE_DEEPLINK"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": true,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "OPENED",
+                  "recovery": "NOT_REQUIRED"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:cfc95aded8a391443c465357908372269ceecf2a22ec009a1f16fb66f7f5de12",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:9deab7d798d754f1def5c0c0604b2ccebafd136a141d6a55c047da64e91a54e3"
+              }
+            },
+            {
+              "scenario_id": "LOCALE_EN_US_WIDE_721",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "DISPLAY_CHANGE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "DISPLAY_CHANGE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "en-US",
+                  "locale": "en-US",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 721,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:77538ef615e9d8b2ec63a4109bf803180bae61addd09458ed1c401805bb6a794",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:64982791b5055466d16455d073baffea1a565d20e4e9922c768151d3bf8a604f",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "DISPLAY_CHANGE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "DISPLAY_CHANGE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "SEPIA",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:77538ef615e9d8b2ec63a4109bf803180bae61addd09458ed1c401805bb6a794",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:844a8b90ff81959855581425ef0515c7e4b28987ad42b86a0bb50ef759100369",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "BREAKPOINT_720_COMPACT",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/",
+                  "selectedRouteId": "route.home",
+                  "selectedPath": "/",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.home",
+                  "title": "首页",
+                  "text": "首页内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "DISPLAY_CHANGE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "DISPLAY_CHANGE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 720,
+                  "columns": 1
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:72e12e655551038b69a16c80bd2c71c11d9a5be08201c9ac766af60ff434edab",
+                "component-template-view": "sha256:46f774e549da2e3adbb825a2b15dc22bed4d85f7ca8f6853996b3bc7ec47a844",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:77538ef615e9d8b2ec63a4109bf803180bae61addd09458ed1c401805bb6a794",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:de8665d7259150f6a7bbdc259c20a9dababedb6e632458bd094c1305821efba4",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "NAVIGATE_HELP_PUBLIC",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/help",
+                  "selectedRouteId": "route.help",
+                  "selectedPath": "/help",
+                  "resolution": "DECLARED",
+                  "deepLink": false,
+                  "requiresAuth": false
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.help",
+                  "title": "帮助",
+                  "text": "帮助内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "NAVIGATE",
+                  "keyboardKey": "NONE",
+                  "handled": true,
+                  "action": "NAVIGATE"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "",
+                  "submitted": false,
+                  "valid": false,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": false,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "NOT_CALLED",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:"
+                },
+                "identity-permission": {
+                  "role": "ANONYMOUS",
+                  "permission": "search:execute",
+                  "permissionGranted": false,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": false,
+                  "focusTarget": null
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:ce5f350a3af05e113127c478c59c23bc397394e2f8e520967845c0f204e8c61f",
+                "component-template-view": "sha256:f72795720979cebfdfb2cf7d2ee01258eb9bb18d3147e37abbb5a0d577ffb395",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:1c0d168c9c1bedd317317d6d98eb37eef1d008170b571fd1cd94ab3753a89a4a",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:cdb3b45585eb45b64e66fda14b9edd617da3fd1bb7b8b187711cfd720e2604b2",
+                "api-network": "sha256:3562538bfea50c4c7c588ffcb7f77db5aba9f0620fdf631c304cb338fa690696",
+                "identity-permission": "sha256:a6273f3dbbd620a29f695ac734972e6456591a05d4c6241fe45f4a8d0ddc052d",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:783fc07f456243386c36f9b3a93b9c9740eb2374830aaadc940671d8a0f07a24",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            },
+            {
+              "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+              "blocks": {
+                "route-navigation-deeplink-404": {
+                  "requestedPath": "/account",
+                  "selectedRouteId": "route.account",
+                  "selectedPath": "/account",
+                  "resolution": "DECLARED",
+                  "deepLink": true,
+                  "requiresAuth": true
+                },
+                "component-template-view": {
+                  "componentId": "interaction.shell",
+                  "key": "route.account",
+                  "title": "账户",
+                  "text": "账户内容",
+                  "visible": true
+                },
+                "state-management": {
+                  "stateId": "bounded.counter",
+                  "before": 0,
+                  "after": 0,
+                  "saturated": false
+                },
+                "action-event": {
+                  "event": "BOOT",
+                  "keyboardKey": "Enter",
+                  "handled": true,
+                  "action": "SUBMIT_ACCEPTED"
+                },
+                "effect-lifecycle": {
+                  "lifecycle": "ACTIVE",
+                  "effect": "NONE",
+                  "executions": 0,
+                  "cleanup": false,
+                  "staleResponseIgnored": false
+                },
+                "form-binding-validation": {
+                  "formId": "search",
+                  "fieldId": "query",
+                  "value": "ok",
+                  "submitted": true,
+                  "valid": true,
+                  "errorCode": null
+                },
+                "api-network": {
+                  "operationId": "search",
+                  "called": true,
+                  "method": "POST",
+                  "path": "/api/search",
+                  "outcome": "SUCCESS",
+                  "canceled": false,
+                  "staleIgnored": false,
+                  "cacheKey": "tenant-a:ok"
+                },
+                "identity-permission": {
+                  "role": "MEMBER",
+                  "permission": "search:execute",
+                  "permissionGranted": true,
+                  "tenantMatch": true,
+                  "authorized": true,
+                  "serverAuthorityRequired": true
+                },
+                "rendering-hydration": {
+                  "mode": "HYDRATABLE_CSR",
+                  "requested": "NONE",
+                  "status": "NOT_ATTEMPTED",
+                  "duplicateEffects": false,
+                  "mismatchVisible": false
+                },
+                "accessibility-focus": {
+                  "mainRole": "main",
+                  "headingLevel": 1,
+                  "formLabel": "搜索",
+                  "errorRole": null,
+                  "liveRegion": "polite",
+                  "keyboardSubmit": true,
+                  "focusTarget": "result"
+                },
+                "i18n-theme-responsive": {
+                  "requestedLocale": "zh-CN",
+                  "locale": "zh-CN",
+                  "requestedTheme": "LIGHT",
+                  "theme": "LIGHT",
+                  "viewportWidth": 1024,
+                  "columns": 2
+                },
+                "native-platform": {
+                  "boundary": "ADAPTER",
+                  "lifecycle": "FOREGROUND",
+                  "attempted": false,
+                  "permission": "GRANTED",
+                  "available": true,
+                  "outcome": "NOT_ATTEMPTED",
+                  "recovery": "FOREGROUND_RETRY"
+                }
+              },
+              "block_digests": {
+                "route-navigation-deeplink-404": "sha256:b47db38646e931103a13644c367155aef03dd346f69be5d09e36c7f78bec860e",
+                "component-template-view": "sha256:1c115d0c58137fa49280290d6f34d22a587bd72efcee605087572554c6eed25f",
+                "state-management": "sha256:e881a85f8aca1cd2766694afbbdfd01d8f5969759117120206cce74993c8463a",
+                "action-event": "sha256:49824c47ef8d51723758f46dd806f4dad1cbde3b1f168ec1393208ded06265f3",
+                "effect-lifecycle": "sha256:b8c3664a57a5f3793adaa10e98bcf8c0c08398e3bb27e7ca29725f7e41fa1856",
+                "form-binding-validation": "sha256:028ba7079c00730e53f0c2a1c8880582a2ae6e3d9458487568e6f4236f1034f2",
+                "api-network": "sha256:46ff581119853e5d93d2daa4d613f7d3809e4d207223f60d703a7cf040c6ef37",
+                "identity-permission": "sha256:4b022c3f7cfcdb5725a9a64912a33f5612dc7634a84dfc355335ec55b6bb3939",
+                "rendering-hydration": "sha256:9b94fb44673c4c263b154f53746431ac7dbe37ace6d6d431e6d2960575e84308",
+                "accessibility-focus": "sha256:327ea63f1893215579946d9ac152cef2dfa6237dc21a285ceb0919a382861f19",
+                "i18n-theme-responsive": "sha256:78984ed2f0ad6d3bdac38fc1fef82754b55960b84b7ab8204416d87a5df96349",
+                "native-platform": "sha256:3d77c0b40c5d61b679cf4e04f8df1b3a2e751ddf229969aa0c3321f79ca01e76"
+              }
+            }
+          ]
+        }
+      },
+      "oracle_provenance": "SAME_PRODUCER_CHANNEL_PROJECTION_NOT_INDEPENDENT",
+      "arbitrary_customer_runtime": "NOT_PROVED"
+    },
+    "channel_projection_contract_digest": "sha256:3ffa3d013f729be66a7bfeb498a84d77fdc5dd2391372df4a56f4a1ecd4d3a3c",
+    "native_adapter_evidence": "NOT_RUN",
+    "browser_or_device_evidence": "NOT_RUN"
+  },
+  "target_build": "NOT_RUN",
+  "target_runtime": "NOT_RUN",
+  "manifest_digest": "sha256:68ef663eb8cec7d605b7403884a9bbe03eee243b14f50102e144c6418603cf24"
+}

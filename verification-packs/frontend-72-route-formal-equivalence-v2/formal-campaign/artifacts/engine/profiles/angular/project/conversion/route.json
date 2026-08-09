@@ -1,0 +1,11 @@
+{
+  "routeId": "flutter--to--angular",
+  "source": "flutter",
+  "target": "angular",
+  "sourceProfileVersion": "3.44.1",
+  "targetProfileVersion": "22.0.8",
+  "supportState": "ADAPTER_REQUIRED",
+  "semanticConversionEvidence": "NOT_RUN",
+  "runtimeEvidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "state-management",
+  "obligation_symbol": "diff_state_management",
+  "variant": "REFERENCE_ONLY",
+  "pointer": "/stateManagement/initial",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:a0122dac866056016946897450a4efaea8557e5a014a1b99916176dd55387bf5",
+  "canonical_block_digest": "sha256:2fe9f50593966b4e87a3e2d751ce4ff0e79dd6bf7297933c61dc1dcec58d4d1f",
+  "mutant_block_digest": "sha256:b0d8d505072818fe6555672e3d1121fd2b0f4c17eb6995d4fb872ac5d3d91365",
+  "counterexample_replay": {
+    "block_id": "state-management",
+    "pointer": "/stateManagement/initial",
+    "influence_class": "TRANSITION",
+    "scenario_id": "BOOT_PUBLIC",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "stateId": "bounded.counter",
+      "initial": 0,
+      "minimum": 0,
+      "maximum": 2,
+      "transition": "SATURATING_INCREMENT",
+      "before": 0,
+      "after": 0,
+      "saturated": false
+    },
+    "mutant_observation": {
+      "stateId": "bounded.counter",
+      "initial": 1,
+      "minimum": 0,
+      "maximum": 2,
+      "transition": "SATURATING_INCREMENT",
+      "before": 0,
+      "after": 1,
+      "saturated": false
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

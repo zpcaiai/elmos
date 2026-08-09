@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:91cc0769c71fbd51d01daa186d109407f641d46c6ed20f154687e10a3ed8074d",
+      "block_id": "component-template-view",
+      "byte_count": 1496,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/vue3/browser/BREAKPOINT_720_COMPACT/browser-rendered-component-observer-trace/07a2b3332640c04a74c2e91d00d3a189e5950fdc9f80042890b7ab86f88bbc96.json",
+      "profile_id": "vue3",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:07a2b3332640c04a74c2e91d00d3a189e5950fdc9f80042890b7ab86f88bbc96"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:25172c4763b5cf26e90e48f9e0122b1f975af9915aa07dc5987600ef3b1dfe68",
+        "byte_count": 40635,
+        "channel": "browser",
+        "path": "traces/vue3/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/7e62deb2f8d3e1939c01c681da45f7bfa23c395447772bed2852782e19145747.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:7e62deb2f8d3e1939c01c681da45f7bfa23c395447772bed2852782e19145747"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

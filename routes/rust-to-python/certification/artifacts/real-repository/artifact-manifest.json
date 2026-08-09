@@ -1,0 +1,150 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/rust-to-python/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "__pycache__/migrated.cpython-312.pyc",
+    "__pycache__/route_harness.cpython-312.pyc",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1564,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:667aab66d70c47302b3f324693ee530e826c0263d6aa60020c93083babd00072"
+    },
+    {
+      "bytes": 8462,
+      "path": "chunk-map.json",
+      "sha256": "sha256:e858259d36c9d4b83bc7a554a26ef8a1fb5bf33c4635da77512f2e4e2efb9926"
+    },
+    {
+      "bytes": 2956,
+      "path": "formal-composition.json",
+      "sha256": "sha256:6ddb31c2273c0c9e8de97b037ced6590cc0b69c1666f7304c25f2c2174d55399"
+    },
+    {
+      "bytes": 973,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:fe1f6240f8d56fc06557db812cdd986428615716a46d9f67c037d7fab4155dc1"
+    },
+    {
+      "bytes": 7506,
+      "path": "formal-input.json",
+      "sha256": "sha256:98960e9ca988369cd499d4c538110c6b9b00d7af44dbdf0499e1d32ca0343d69"
+    },
+    {
+      "bytes": 2334,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:be807d0d7fa1359d16b60ea8697ea795eafabb04d47f488049ceb19aca2a9c78"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 119,
+      "path": "inputs/difference.rs",
+      "sha256": "sha256:96556b66668b47f0a6efc9c06af7e653abae65a5796e42fc7f65686ee5393f91"
+    },
+    {
+      "bytes": 3444,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:9aefb35bd9678b27fddd103cffb37639571ad7ac64dac598bf5b38721ee5ffb3"
+    },
+    {
+      "bytes": 768,
+      "path": "migrated.py",
+      "sha256": "sha256:8a38076f8034d99d5ba9d5c8914762a2dbc922b900ac30b5ff7deff4e60b31ff"
+    },
+    {
+      "bytes": 7011,
+      "path": "route-evidence.json",
+      "sha256": "sha256:fdcba655f9de35ba99852be38ce8bf2f7b97cf4af32c4d926acaec14f3a8d147"
+    },
+    {
+      "bytes": 570,
+      "path": "route_harness.py",
+      "sha256": "sha256:c6a516a299f5edb482ffa75efab25b154ea4792646e574c1e0979678400f3f09"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 673,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:077c1de7b83998e93e981d5d5260dbb6e57a79fe1975317a95d3606e5458498b"
+    },
+    {
+      "bytes": 119,
+      "path": "source-runtime/difference.rs",
+      "sha256": "sha256:96556b66668b47f0a6efc9c06af7e653abae65a5796e42fc7f65686ee5393f91"
+    },
+    {
+      "bytes": 467,
+      "path": "source-runtime/source_harness.rs",
+      "sha256": "sha256:48443a07251fa4a13cde7db34d43cc574f87f35f9835cfb0aeb0bd9bd2c32ffe"
+    },
+    {
+      "bytes": 673,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:077c1de7b83998e93e981d5d5260dbb6e57a79fe1975317a95d3606e5458498b"
+    },
+    {
+      "bytes": 662,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:1a932e5cac6b238c54fe5aa4cb8d1d9f8c88774b1be747216dfbfbaad71792d6"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "rust-to-python",
+  "schema_version": 1,
+  "total_bytes": 38756
+}

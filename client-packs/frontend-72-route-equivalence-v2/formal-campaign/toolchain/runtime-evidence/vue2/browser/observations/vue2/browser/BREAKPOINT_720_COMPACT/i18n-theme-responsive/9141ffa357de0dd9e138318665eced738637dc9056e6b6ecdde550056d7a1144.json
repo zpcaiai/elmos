@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 1,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 720
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:1aea698f838cd74df498c7b10f10d274659dd40a6f657eb254cea471f2d44418",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2006,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-computed-layout-i18n-theme-observer-trace/5f45de4e89a2a274ebff395a22e8c090d3280fef9108997f89416704a0287b23.json",
+      "profile_id": "vue2",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:5f45de4e89a2a274ebff395a22e8c090d3280fef9108997f89416704a0287b23"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e8722424edca1cf9da9274a87efd30c13c06c6f989677dac00d31f3b8148eec5",
+        "byte_count": 40411,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/21e5f2844bfef130d5d5cc3e7755033bb368655dbc78f7cb345dc79d76a0f738.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:21e5f2844bfef130d5d5cc3e7755033bb368655dbc78f7cb345dc79d76a0f738"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

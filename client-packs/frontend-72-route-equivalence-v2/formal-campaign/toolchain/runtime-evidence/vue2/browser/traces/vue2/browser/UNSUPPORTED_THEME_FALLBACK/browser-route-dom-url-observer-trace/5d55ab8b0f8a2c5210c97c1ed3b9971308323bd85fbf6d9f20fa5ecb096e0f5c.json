@@ -1,0 +1,81 @@
+{
+  "actual_source": "ALLOWLISTED_BLOCK_OBSERVER_CAPTURE",
+  "block_id": "route-navigation-deeplink-404",
+  "capture": {
+    "browser_matrix": [
+      {
+        "browser_id": "google-chrome",
+        "measurement": {
+          "active_route_attributes": {
+            "data-deep-link": "true",
+            "data-requires-auth": "false",
+            "data-route-id": "route.home",
+            "data-route-path": "/"
+          },
+          "declared_routes": [
+            {
+              "deep_link": true,
+              "requires_auth": false,
+              "route_id": "route.home",
+              "route_path": "/"
+            },
+            {
+              "deep_link": true,
+              "requires_auth": true,
+              "route_id": "route.account",
+              "route_path": "/account"
+            },
+            {
+              "deep_link": false,
+              "requires_auth": false,
+              "route_id": "route.help",
+              "route_path": "/help"
+            }
+          ],
+          "page_url": "http://127.0.0.1:55775/"
+        }
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "measurement": {
+          "active_route_attributes": {
+            "data-deep-link": "true",
+            "data-requires-auth": "false",
+            "data-route-id": "route.home",
+            "data-route-path": "/"
+          },
+          "declared_routes": [
+            {
+              "deep_link": true,
+              "requires_auth": false,
+              "route_id": "route.home",
+              "route_path": "/"
+            },
+            {
+              "deep_link": true,
+              "requires_auth": true,
+              "route_id": "route.account",
+              "route_path": "/account"
+            },
+            {
+              "deep_link": false,
+              "requires_auth": false,
+              "route_id": "route.help",
+              "route_path": "/help"
+            }
+          ],
+          "page_url": "http://127.0.0.1:55775/"
+        }
+      }
+    ],
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "observer_contract": "block-specific-runtime-observation-v1"
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-block-observer-trace-artifact",
+  "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+  "profile_id": "vue2",
+  "role": "browser-route-dom-url-observer-trace",
+  "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+  "schema_version": "1.0"
+}

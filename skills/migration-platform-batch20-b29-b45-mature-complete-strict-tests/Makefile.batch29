@@ -1,0 +1,13 @@
+.PHONY: b29-skills-test b29-route-validate b29-route-gate
+
+b29-skills-test:
+	python3 scripts/batch29/validate_skill_bundle.py
+	python3 -m unittest tests/batch29/test_toolkit.py
+
+b29-route-validate:
+	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
+	python3 scripts/batch29/validate_route.py routes/$(ROUTE)
+
+b29-route-gate:
+	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
+	python3 scripts/batch29/run_route_gate.py routes/$(ROUTE)

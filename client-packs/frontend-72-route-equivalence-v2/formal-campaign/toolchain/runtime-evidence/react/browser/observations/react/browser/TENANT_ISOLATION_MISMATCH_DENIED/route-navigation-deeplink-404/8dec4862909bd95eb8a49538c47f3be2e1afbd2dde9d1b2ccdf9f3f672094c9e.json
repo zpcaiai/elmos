@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": false,
+    "resolution": "AUTH_DENIED_FALLBACK",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:476648ab8be3b0a721713b177bf47268787c740bef4c407abc54baa2383d55c1",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2430,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/react/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-route-dom-url-observer-trace/8ee9900fea3761b0f66f62ff68b54553f5c794c37bcf773a321e065be0209872.json",
+      "profile_id": "react",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:8ee9900fea3761b0f66f62ff68b54553f5c794c37bcf773a321e065be0209872"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:27f4fdddd52a154c326acfb68eca6703d42b357c516c51ffaaef359b74e210f6",
+        "byte_count": 40410,
+        "channel": "browser",
+        "path": "traces/react/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/eda7d6353bdef4d79d53175fac03e7348615e298cbb200ca8d0c63002f5a8faf.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:eda7d6353bdef4d79d53175fac03e7348615e298cbb200ca8d0c63002f5a8faf"
+      },
+      {
+        "artifact_id": "sha256:8884da9df972ca2a854d2ad7f1d3dc88140f8d7295b24f2d5521c75f00aaa38d",
+        "byte_count": 7479,
+        "channel": "browser",
+        "path": "traces/react/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-framework-event-trace/ac524364693f7e153b3a3a130635573410ada0eb24c6873ae20d8c4f9dfa2965.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:ac524364693f7e153b3a3a130635573410ada0eb24c6873ae20d8c4f9dfa2965"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

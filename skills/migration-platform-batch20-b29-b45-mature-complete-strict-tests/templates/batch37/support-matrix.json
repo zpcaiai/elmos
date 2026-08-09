@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-marketplace",
+  "capabilities": [
+    {
+      "capability": "extension-manifest-abi",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "conditions": [
+        "exact product compatibility required"
+      ]
+    },
+    {
+      "capability": "sandbox-execution",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "conditions": [
+        "approved isolation runtime required"
+      ]
+    },
+    {
+      "capability": "publication-install-revoke",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "conditions": [
+        "signed immutable release required"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-bounded-navigation-layered-result",
+  "route_id": "harmony-arkui--to--svelte",
+  "proof_profile": "bounded-navigation-v1",
+  "links": {
+    "formal_input_path": "routes/harmony-arkui--to--svelte/formal-input.json",
+    "formal_input_digest": "sha256:89a4ac3c7ea3abdc61b064163fb1420d9fa3ef7ff2b99eaac0e93b6d7c8f38c9",
+    "smt2_path": "routes/harmony-arkui--to--svelte/proof.smt2",
+    "smt2_digest": "sha256:d2500550e2a58a763aa0eb9d92a5edda32dc8cf172e6cd83e54cff7badc7ef04",
+    "solver_result_path": "routes/harmony-arkui--to--svelte/solver-result.json",
+    "solver_result_digest": "sha256:3189d6a4373fc4c341921f0609579462c691b15e11f461308560dc48ef806a92",
+    "source_model_path": "routes/harmony-arkui--to--svelte/source-model.json",
+    "source_model_digest": "sha256:be191243a5ca4cac3ef3d780088c1199d1d6069598011f8cddeff34d487ebac2",
+    "target_model_path": "routes/harmony-arkui--to--svelte/target-model.json",
+    "target_model_digest": "sha256:a04196dca4364ce59215a0100a8c3f16b6c1acb35df1dac04a613afd2375ce5e",
+    "behavior_path": "routes/harmony-arkui--to--svelte/behavior.json",
+    "behavior_digest": "sha256:18874c140e01cc56cbc0ff0113cb04943938a273310344b45e99b3fbb01d7be9",
+    "chunks_path": "routes/harmony-arkui--to--svelte/chunks.json",
+    "chunks_digest": "sha256:3f58e314c033f413ab4ff5a13716be231f64a52e2363c0e51381a48609436df2",
+    "composition_path": "routes/harmony-arkui--to--svelte/composition.json",
+    "composition_digest": "sha256:9c1ef545637bfa0bb996b90d36bcdf3b87032218eb5bcaf70a11b975bf835935"
+  },
+  "layers": {
+    "emitted_source_relift": "PASSED",
+    "emitted_target_relift": "PASSED",
+    "semantic": "PASSED",
+    "chunk": "PASSED",
+    "behavior": "PASSED",
+    "smt_solver": "UNSAT",
+    "framework_native_build": "NOT_RUN",
+    "framework_native_runtime": "NOT_RUN",
+    "independent_external_verification": "NOT_RUN"
+  },
+  "status": "PROVED_UNDER_ASSUMPTIONS",
+  "unconditional_proof": false,
+  "certification": "NOT_CERTIFIED",
+  "assumptions": [
+    "The proof covers only the canonical bounded-navigation-v1 IR and ELMOS-emitted profile projects, not arbitrary customer source.",
+    "TypeScript AST plus strict bounded Vue/Svelte template, ArkUI shell, and Dart/base64 parsers faithfully re-lift the generated grammar; native compiler AST evidence remains NOT_RUN where unavailable.",
+    "Route requiresAuth and deepLink values are observable metadata; identity enforcement and native deep-link dispatch are outside this bounded proof.",
+    "Framework, compiler, router, browser, device, and runtime soundness are assumptions until independent real toolchain and journey evidence passes.",
+    "SHA-256 is used for artifact identity and drift detection, not as the semantic equivalence proof rule."
+  ]
+}

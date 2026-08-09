@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:f746064ef6a2f6325f1ad0b760e8c4d530d1dbae39d9f06681af7c409f7cd00c",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1991,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-computed-layout-i18n-theme-observer-trace/bf2bd6e98bf786e28a86ac1eaaf51b3dffe2ddb651febd41354699ee79d9c327.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+      "sha256": "sha256:bf2bd6e98bf786e28a86ac1eaaf51b3dffe2ddb651febd41354699ee79d9c327"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:437cb69569ad7e0dfc2f65126316ae5a97339991623b1817fa61366231309315",
+        "byte_count": 39868,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-dom-snapshot/ba6a7eab667e39c5ad1e932f9b9f715ff695a5fcc7ea13d29bdd06c1c7645b03.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:ba6a7eab667e39c5ad1e932f9b9f715ff695a5fcc7ea13d29bdd06c1c7645b03"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "example-finops-economics",
+  "status": "experimental",
+  "metrics": {
+    "metering_completeness": 0,
+    "cost_allocation_reconciliation_rate": 0,
+    "unit_cost_trace_coverage": 0,
+    "billing_reconciliation_rate": 0,
+    "margin_model_accuracy_rate": 0,
+    "budget_guardrail_pass_rate": 0,
+    "forecast_interval_coverage": 0,
+    "customer_value_evidence_coverage": 0,
+    "evidence_trace_coverage": 0
+  },
+  "zero_tolerance": {
+    "duplicate_meter_events": 1,
+    "unallocated_material_costs": 1,
+    "nonzero_billing_reconciliation_difference": 1,
+    "security_gate_bypasses_for_cost": 1,
+    "unapproved_negative_margin_deals": 1,
+    "customer_data_loss_from_budget_stops": 1,
+    "unexplained_price_overrides": 1,
+    "test_integrity_violations": 1
+  },
+  "evidence_refs": [],
+  "approved_by": []
+}

@@ -1,0 +1,325 @@
+{
+  "actual_source": "ALLOWLISTED_RUNTIME_CAPTURE",
+  "capture": {
+    "events": [
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313701466,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "ok"
+        },
+        "timestamp": 1786313701467,
+        "type": "input"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "ok"
+        },
+        "timestamp": 1786313701469,
+        "type": "change"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "BOOT",
+            "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+            "type": "submit"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313701469,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": "Enter",
+        "target": {
+          "attributes": {
+            "data-elmos-event": "BOOT",
+            "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+            "type": "submit"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313701470,
+        "type": "keydown"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "BOOT",
+            "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+            "type": "submit"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313701470,
+        "type": "click"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "form"
+          },
+          "tag": "form",
+          "value": null
+        },
+        "timestamp": 1786313701470,
+        "type": "submit"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "ok"
+        },
+        "timestamp": 1786313701470,
+        "type": "input"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {},
+          "tag": null,
+          "value": null
+        },
+        "timestamp": 1786313701470,
+        "type": "popstate"
+      },
+      {
+        "browser_id": "google-chrome",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "id": "elmos-result"
+          },
+          "tag": "output",
+          "value": ""
+        },
+        "timestamp": 1786313701500,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": ""
+        },
+        "timestamp": 1786313723132,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "ok"
+        },
+        "timestamp": 1786313723134,
+        "type": "input"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "ok"
+        },
+        "timestamp": 1786313723139,
+        "type": "change"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "BOOT",
+            "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+            "type": "submit"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313723139,
+        "type": "focusin"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": "Enter",
+        "target": {
+          "attributes": {
+            "data-elmos-event": "BOOT",
+            "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+            "type": "submit"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313723140,
+        "type": "keydown"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-event": "BOOT",
+            "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+            "type": "submit"
+          },
+          "tag": "button",
+          "value": ""
+        },
+        "timestamp": 1786313723140,
+        "type": "click"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "form"
+          },
+          "tag": "form",
+          "value": null
+        },
+        "timestamp": 1786313723140,
+        "type": "submit"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "data-elmos-control": "query",
+            "data-field-id": "search.query",
+            "id": "elmos-query",
+            "name": "query"
+          },
+          "tag": "input",
+          "value": "ok"
+        },
+        "timestamp": 1786313723140,
+        "type": "input"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {},
+          "tag": null,
+          "value": null
+        },
+        "timestamp": 1786313723141,
+        "type": "popstate"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "defaultPrevented": false,
+        "key": null,
+        "target": {
+          "attributes": {
+            "id": "elmos-result"
+          },
+          "tag": "output",
+          "value": ""
+        },
+        "timestamp": 1786313723152,
+        "type": "focusin"
+      }
+    ]
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-trace-artifact",
+  "profile_id": "jquery",
+  "role": "browser-framework-event-trace",
+  "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+  "schema_version": "1.0"
+}

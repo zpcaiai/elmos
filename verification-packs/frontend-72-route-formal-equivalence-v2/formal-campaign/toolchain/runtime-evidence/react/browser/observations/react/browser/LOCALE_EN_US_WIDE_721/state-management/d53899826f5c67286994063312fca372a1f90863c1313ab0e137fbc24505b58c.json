@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3f4926fcbfa6a3fd5bb64c68354e3f7a773e445dd1d8907cc203556c3915655b",
+      "block_id": "state-management",
+      "byte_count": 1216,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/react/browser/LOCALE_EN_US_WIDE_721/browser-framework-state-transition-observer-trace/c8ae5497d2850d1def4b9a3052fe69fb7ca2221d86830cef276dd2cd6daae6f5.json",
+      "profile_id": "react",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "LOCALE_EN_US_WIDE_721",
+      "sha256": "sha256:c8ae5497d2850d1def4b9a3052fe69fb7ca2221d86830cef276dd2cd6daae6f5"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:80609efa4bcb9d522e08828bad3da211005cbcea4069bfaa533715b0af754b3c",
+        "byte_count": 5252,
+        "channel": "browser",
+        "path": "traces/react/browser/LOCALE_EN_US_WIDE_721/browser-framework-event-trace/ac143e85e6acdf733e9e4d6b83dc20cd965a82a2638f444495c7da0069780443.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:ac143e85e6acdf733e9e4d6b83dc20cd965a82a2638f444495c7da0069780443"
+      },
+      {
+        "artifact_id": "sha256:eaecd3d10b4b87145a2f2b98c659eca4bb6ed7823449b038f0f2f33d0397bc54",
+        "byte_count": 40399,
+        "channel": "browser",
+        "path": "traces/react/browser/LOCALE_EN_US_WIDE_721/browser-dom-snapshot/121cd86a7a2701db8352e0207c03ab6866228ccc16a5958aa4a65443b9886cb9.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:121cd86a7a2701db8352e0207c03ab6866228ccc16a5958aa4a65443b9886cb9"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_EN_US_WIDE_721",
+  "schema_version": "1.0"
+}

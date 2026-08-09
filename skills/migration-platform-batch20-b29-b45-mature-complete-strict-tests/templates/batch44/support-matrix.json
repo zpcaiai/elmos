@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "id": "example-finops-economics",
+  "capabilities": [
+    {
+      "capability_id": "b44-migration-finops-economics-factory",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-cost-taxonomy-cost-center-economic-model",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-runner-model-storage-network-metering",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-cost-allocation-showback-chargeback",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-verified-migrated-workload-unit-cost",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-runner-compute-fleet-economics",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-model-token-provider-agent-economics",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-artifact-storage-retention-egress-economics",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-human-review-expert-cost",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-support-hypercare-production-operations-cost",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-product-packaging-pricing-model",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-assessment-poc-project-quoting",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-customer-project-route-edition-margin",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-budget-quota-cost-guardrail",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-cache-incremental-analysis-cost-optimization",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-model-runner-provider-intelligent-routing",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-cost-scenario-rolling-forecast",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-customer-roi-tco-value-model",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-usage-billing-financial-reconciliation",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    },
+    {
+      "capability_id": "b44-economics-maturity-certification-gate",
+      "status": "experimental",
+      "owner": "REPLACE_ME",
+      "evidence_refs": []
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "ELMOS 有界前端交互验证",
+    "slug": "interaction-reactnative",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "scheme": "interaction-reactnative",
+    "ios": {
+      "bundleIdentifier": "io.elmos.frontendinteraction",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "io.elmos.frontendinteraction"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

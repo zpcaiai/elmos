@@ -1,0 +1,519 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch32/frontend-formal-route-campaign.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_key",
+    "version",
+    "proof_profile",
+    "campaign_status",
+    "certification_status",
+    "artifact_root",
+    "profile_count",
+    "route_count",
+    "profiles",
+    "semantic_blocks",
+    "routes",
+    "artifacts",
+    "engine_campaign_artifact_id",
+    "implementation",
+    "toolchain_evidence",
+    "replay",
+    "corpora",
+    "independent_verification",
+    "assumptions",
+    "unsupported_semantics",
+    "unconditional_proof",
+    "peer_binding",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "campaign_key": { "const": "frontend-72-route-formal-equivalence-v1" },
+    "version": { "const": "1.0.0" },
+    "proof_profile": { "const": "bounded-navigation-v1" },
+    "campaign_status": {
+      "enum": ["NOT_RUN", "LOCAL_EXECUTED", "BLOCKED", "FAILED"]
+    },
+    "certification_status": { "enum": ["NOT_CERTIFIED", "CERTIFIED"] },
+    "artifact_root": { "const": "formal-campaign" },
+    "profile_count": { "const": 9 },
+    "route_count": { "const": 72 },
+    "profiles": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profile",
+          "profile_digest",
+          "project_digest",
+          "project_files",
+          "artifact_ids"
+        ],
+        "properties": {
+          "profile": { "$ref": "#/$defs/exactProfile" },
+          "profile_digest": { "$ref": "#/$defs/sha256" },
+          "project_digest": { "$ref": "#/$defs/sha256" },
+          "project_files": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["relative_path", "artifact_id"],
+              "properties": {
+                "relative_path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+                },
+                "artifact_id": { "$ref": "#/$defs/nonEmpty" }
+              }
+            }
+          },
+          "artifact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/nonEmpty" }
+          }
+        }
+      }
+    },
+    "semantic_blocks": {
+      "const": [
+        "route-navigation-deeplink-404",
+        "component-template-view",
+        "state-management",
+        "action-event",
+        "effect-lifecycle",
+        "form-binding-validation",
+        "api-network",
+        "identity-permission",
+        "rendering-hydration",
+        "accessibility-focus",
+        "i18n-theme-responsive",
+        "native-platform"
+      ]
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 72,
+      "maxItems": 72,
+      "items": { "$ref": "#/$defs/route" }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/artifactRef" }
+    },
+    "engine_campaign_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+    "implementation": { "$ref": "#/$defs/fingerprintBundle" },
+    "toolchain_evidence": { "$ref": "#/$defs/toolchainEvidence" },
+    "replay": {
+      "allOf": [
+        { "$ref": "#/$defs/fingerprintBundle" },
+        {
+          "type": "object",
+          "required": ["command"],
+          "properties": {
+            "command": {
+              "type": "array",
+              "minItems": 3,
+              "items": { "$ref": "#/$defs/nonEmpty" }
+            }
+          }
+        }
+      ]
+    },
+    "corpora": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["development", "negative", "holdout", "representative_workloads"],
+      "properties": {
+        "development": { "$ref": "#/$defs/corpus" },
+        "negative": { "$ref": "#/$defs/corpus" },
+        "holdout": { "$ref": "#/$defs/corpus" },
+        "representative_workloads": { "$ref": "#/$defs/corpus" }
+      }
+    },
+    "independent_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "verifier", "artifact_ids"],
+      "properties": {
+        "status": { "enum": ["NOT_RUN", "PASSED", "FAILED", "BLOCKED"] },
+        "verifier": { "type": ["string", "null"] },
+        "artifact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmpty" }
+    },
+    "unsupported_semantics": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmpty" }
+    },
+    "unconditional_proof": { "type": "boolean" },
+    "peer_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batch32_pack_key", "batch35_pack_key", "scope_digest"],
+      "properties": {
+        "batch32_pack_key": { "const": "frontend-72-route-equivalence-v1" },
+        "batch35_pack_key": { "const": "frontend-72-route-formal-equivalence-v1" },
+        "scope_digest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/nonEmpty" }
+    }
+  },
+  "$defs": {
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "path", "sha256", "bytes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmpty" },
+        "role": { "$ref": "#/$defs/nonEmpty" },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+        },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "fingerprintBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_artifact_id", "artifact_ids", "fingerprint"],
+      "properties": {
+        "manifest_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "fingerprint": { "$ref": "#/$defs/sha256" },
+        "command": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        }
+      }
+    },
+    "corpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "manifest_artifact_id", "case_ids"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmpty" },
+        "status": { "enum": ["NOT_RUN", "PASSED", "FAILED", "BLOCKED"] },
+        "manifest_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "case_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id",
+        "source_profile_id",
+        "target_profile_id",
+        "source_profile_digest",
+        "target_profile_digest",
+        "source_project_digest",
+        "target_project_digest",
+        "route_evidence_artifact_id",
+        "artifact_ids",
+        "semantic_status",
+        "chunk_status",
+        "behavior_status",
+        "formal_status",
+        "composition_status",
+        "runtime_evidence_status",
+        "source_build_status",
+        "target_build_status"
+      ],
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "pattern": "^(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)--to--(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)$"
+        },
+        "source_profile_id": { "$ref": "#/$defs/profileId" },
+        "target_profile_id": { "$ref": "#/$defs/profileId" },
+        "source_profile_digest": { "$ref": "#/$defs/sha256" },
+        "target_profile_digest": { "$ref": "#/$defs/sha256" },
+        "source_project_digest": { "$ref": "#/$defs/sha256" },
+        "target_project_digest": { "$ref": "#/$defs/sha256" },
+        "route_evidence_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "semantic_status": { "$ref": "#/$defs/layerStatus" },
+        "chunk_status": { "$ref": "#/$defs/layerStatus" },
+        "behavior_status": { "$ref": "#/$defs/layerStatus" },
+        "formal_status": { "$ref": "#/$defs/formalStatus" },
+        "composition_status": {
+          "enum": ["PROVED", "PROVED_UNDER_ASSUMPTIONS", "REFUTED", "NOT_PROVED"]
+        },
+        "runtime_evidence_status": {
+          "enum": ["MODEL_ONLY", "BROWSER_PASSED", "DEVICE_PASSED", "NOT_RUN", "FAILED"]
+        },
+        "source_build_status": { "$ref": "#/$defs/executionStatus" },
+        "target_build_status": { "$ref": "#/$defs/executionStatus" }
+      }
+    },
+    "executionStatus": { "enum": ["PASSED", "FAILED", "NOT_RUN"] },
+    "toolchainEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provided", "status", "artifact_id", "artifact_sha256",
+        "engine_campaign_sha256", "producer_fingerprint", "profile_bindings",
+        "route_bindings", "boundaries"
+      ],
+      "properties": {
+        "provided": { "type": "boolean" },
+        "status": { "enum": ["PASSED", "PARTIAL", "FAILED", "NOT_RUN"] },
+        "artifact_id": { "type": ["string", "null"], "minLength": 1 },
+        "artifact_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "engine_campaign_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "producer_fingerprint": { "$ref": "#/$defs/sha256" },
+        "profile_bindings": {
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "profile_id", "project_digest", "execution_id", "toolchain_status",
+              "target_build_status", "browser_status", "browser_probe_count",
+              "browser_pass_count"
+            ],
+            "properties": {
+              "profile_id": { "$ref": "#/$defs/profileId" },
+              "project_digest": { "$ref": "#/$defs/sha256" },
+              "execution_id": {
+                "type": ["string", "null"],
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "toolchain_status": { "$ref": "#/$defs/executionStatus" },
+              "target_build_status": { "$ref": "#/$defs/executionStatus" },
+              "browser_status": { "$ref": "#/$defs/executionStatus" },
+              "browser_probe_count": { "type": "integer", "minimum": 0 },
+              "browser_pass_count": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "route_bindings": {
+          "type": "array",
+          "minItems": 72,
+          "maxItems": 72,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "route_id", "source_execution_id", "target_execution_id",
+              "source_build_status", "target_build_status", "source_browser_status",
+              "target_browser_status", "native_behavior_status"
+            ],
+            "properties": {
+              "route_id": { "type": "string", "minLength": 1 },
+              "source_execution_id": {
+                "type": ["string", "null"],
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "target_execution_id": {
+                "type": ["string", "null"],
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "source_build_status": { "$ref": "#/$defs/executionStatus" },
+              "target_build_status": { "$ref": "#/$defs/executionStatus" },
+              "source_browser_status": { "$ref": "#/$defs/executionStatus" },
+              "target_browser_status": { "$ref": "#/$defs/executionStatus" },
+              "native_behavior_status": { "$ref": "#/$defs/executionStatus" }
+            }
+          }
+        },
+        "boundaries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "build_is_behavior", "model_is_native", "device_or_simulator_status",
+            "independent_verification", "certification"
+          ],
+          "properties": {
+            "build_is_behavior": { "const": false },
+            "model_is_native": { "const": false },
+            "device_or_simulator_status": { "const": "NOT_RUN" },
+            "independent_verification": { "const": "NOT_RUN" },
+            "certification": { "const": "NOT_CERTIFIED" }
+          }
+        }
+      }
+    },
+    "profileId": {
+      "enum": [
+        "angular",
+        "flutter",
+        "harmony-arkui",
+        "jquery",
+        "react",
+        "react-native",
+        "svelte",
+        "vue2",
+        "vue3"
+      ]
+    },
+    "layerStatus": { "enum": ["PASSED", "FAILED", "NOT_RUN"] },
+    "formalStatus": {
+      "enum": [
+        "PROVED",
+        "PROVED_UNDER_ASSUMPTIONS",
+        "REFUTED",
+        "NOT_PROVED",
+        "UNKNOWN",
+        "TIMEOUT",
+        "NOT_RUN",
+        "AXIOM",
+        "BOUNDED"
+      ]
+    },
+    "exactProfile": {
+      "oneOf": [
+        { "const": {
+          "id": "angular", "label": "Angular", "framework_version": "22.0.8",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["WEB"],
+          "language": "TypeScript", "language_version": "6.0.3", "runtime": "Node.js",
+          "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Angular CLI",
+          "build_tool_version": "22.0.8", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "Angular Router 22.0.8", "state": "Angular signals", "rendering": "CSR",
+          "test_tool": "Angular build and browser E2E profile", "runner_profile": "MODERN_WEB",
+          "required_project_files": ["package.json", "angular.json", "src/main.ts", "src/app/app.component.ts"]
+        } },
+        { "const": {
+          "id": "flutter", "label": "Flutter", "framework_version": "3.44.1",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["ANDROID", "IOS", "WEB"],
+          "language": "Dart", "language_version": "3.12.1", "runtime": "Flutter Engine",
+          "runtime_version": "3.44.1", "build_tool": "flutter", "build_tool_version": "3.44.1",
+          "package_manager": "pub", "package_manager_version": "3.12.1", "router": "MaterialApp named routes",
+          "state": "ChangeNotifier-compatible generated boundary", "rendering": "Flutter widgets",
+          "test_tool": "flutter_test 3.44.1", "runner_profile": "MOBILE_CROSS_PLATFORM",
+          "required_project_files": ["pubspec.yaml", "analysis_options.yaml", "lib/main.dart", "test/widget_test.dart"]
+        } },
+        { "const": {
+          "id": "harmony-arkui", "label": "HarmonyOS ArkUI", "framework_version": "6.0.0(20)",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["HARMONYOS"],
+          "language": "ArkTS", "language_version": "HarmonyOS 6.0.0 API 20", "runtime": "HarmonyOS",
+          "runtime_version": "6.0.0(20)", "build_tool": "Hvigor",
+          "build_tool_version": "DevEco Studio 6.0.0 Release bundled", "package_manager": "ohpm",
+          "package_manager_version": "DevEco Studio 6.0.0 Release bundled", "router": "ArkUI Navigation",
+          "state": "ArkUI observed state", "rendering": "ArkUI declarative rendering", "test_tool": "Hypium profile",
+          "runner_profile": "HARMONYOS",
+          "required_project_files": ["build-profile.json5", "AppScope/app.json5", "entry/src/main/module.json5", "entry/src/main/ets/pages/Index.ets"]
+        } },
+        { "const": {
+          "id": "jquery", "label": "jQuery compatibility target", "framework_version": "4.0.0",
+          "profile_version": "1.0.0", "status": "LEGACY_CONDITIONAL", "platforms": ["WEB"],
+          "language": "TypeScript", "language_version": "7.0.2", "runtime": "Node.js",
+          "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Vite",
+          "build_tool_version": "8.1.5", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "History API adapter", "state": "Explicit immutable store",
+          "rendering": "CSR with isolated DOM ownership", "test_tool": "Vitest 4.1.10",
+          "runner_profile": "WEB_LEGACY",
+          "required_project_files": ["package.json", "vite.config.ts", "index.html", "src/main.ts"]
+        } },
+        { "const": {
+          "id": "react", "label": "React", "framework_version": "19.2.8",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["WEB"],
+          "language": "TypeScript", "language_version": "7.0.2", "runtime": "Node.js",
+          "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Vite",
+          "build_tool_version": "8.1.5", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "react-router-dom 7.18.1", "state": "React reducer/context", "rendering": "CSR",
+          "test_tool": "Vitest 4.1.10", "runner_profile": "MODERN_WEB",
+          "required_project_files": ["package.json", "vite.config.ts", "src/main.tsx", "src/App.tsx"]
+        } },
+        { "const": {
+          "id": "react-native", "label": "React Native with Expo", "framework_version": "0.86.0",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["ANDROID", "IOS", "WEB"],
+          "language": "TypeScript", "language_version": "6.0.3", "runtime": "Expo",
+          "runtime_version": "57.0.8", "node_version": "26.0.0", "build_tool": "Expo CLI",
+          "build_tool_version": "57.0.10", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "React Navigation 7.3.14", "state": "React reducer/context",
+          "rendering": "Native renderer with Hermes", "test_tool": "TypeScript and device E2E profile",
+          "runner_profile": "MOBILE_CROSS_PLATFORM",
+          "required_project_files": ["package.json", "app.json", "App.tsx", "src/navigation.tsx"]
+        } },
+        { "const": {
+          "id": "svelte", "label": "Svelte", "framework_version": "5.56.8",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["WEB"],
+          "language": "TypeScript", "language_version": "6.0.3", "runtime": "Node.js",
+          "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Vite",
+          "build_tool_version": "8.1.5", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "History API adapter", "state": "Svelte runes", "rendering": "CSR",
+          "test_tool": "Vitest 4.1.10", "runner_profile": "MODERN_WEB",
+          "required_project_files": ["package.json", "svelte.config.js", "vite.config.ts", "src/main.ts", "src/App.svelte"]
+        } },
+        { "const": {
+          "id": "vue2", "label": "Vue 2 compatibility target", "framework_version": "2.7.16",
+          "profile_version": "1.0.0", "status": "LEGACY_CONDITIONAL", "platforms": ["WEB"],
+          "language": "JavaScript", "language_version": "ECMAScript 2022", "runtime": "Node.js",
+          "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Vite",
+          "build_tool_version": "7.3.6", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "vue-router 3.6.5", "state": "Vue.observable", "rendering": "CSR",
+          "test_tool": "Vitest 4.1.10", "runner_profile": "WEB_LEGACY",
+          "required_project_files": ["package.json", "vite.config.js", "src/main.js", "src/App.vue"]
+        } },
+        { "const": {
+          "id": "vue3", "label": "Vue 3", "framework_version": "3.5.40",
+          "profile_version": "1.0.0", "status": "ACTIVE", "platforms": ["WEB"],
+          "language": "TypeScript", "language_version": "6.0.3", "runtime": "Node.js",
+          "runtime_version": "26.0.0", "node_version": "26.0.0", "build_tool": "Vite",
+          "build_tool_version": "8.1.5", "package_manager": "npm", "package_manager_version": "11.12.1",
+          "router": "vue-router 4.6.4", "state": "Pinia 4.0.2", "rendering": "CSR",
+          "test_tool": "Vitest 4.1.10", "runner_profile": "MODERN_WEB",
+          "required_project_files": ["package.json", "vite.config.ts", "src/main.ts", "src/App.vue"]
+        } }
+      ]
+    }
+  }
+}

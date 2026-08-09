@@ -16,7 +16,7 @@ GA、生产就绪和外部认证仍为 `EXTERNAL_GATE_REQUIRED`。** 后一类�
 | 业务线 | 用户入口与核心实现 | 仓库内闭环与验证 | 当前状态 | 尚需外部证据 |
 | --- | --- | --- | --- | --- |
 | Spring 老项目翻新 M30 | `/spring`、Spring 指纹探测器、受控代理、Java Worker、`spring-boot-2-7-18-to-3-5-3` Pack | 区分经典 Spring 与 Boot，识别 XML/注解、Jakarta 和 MVC/WebFlux 阻断；浏览器代理操作绑定最长 24 小时短期令牌、唯一租户与 Actor；真实任务、Run UUID 身份恢复、取消/重试、日志、独立摘要验证、产物与运行态形成闭环；下载响应绑定长度、ETag 与 SHA-256，浏览器复算字节摘要后才交付；Gradle 2.x 区间精确声明为 `[2.0.0,3.0.0)`，已接入 Gradle 8.14.3 隔离构建/测试/启动与 OpenRewrite Gradle 插件入口，精确 tuple 证据保持 `NOT_RUN` | `REPOSITORY_CLOSED` | 客户源仓真实基线、目标启动/数据/安全等价、Gradle 真实 tuple、独立 holdout 与外部认证保持 `NOT_RUN` |
-| 全库跨语言转换 M29 | `/translation`、30 个方向 Route Pack、polyglot-route engine、持久受控 Runner | 六种语言（Java、Python、C#、Go、Rust、TypeScript）两两成对形成 30 条方向独立路线，全部 `status=limited` / `local_execution_status=PASSED_LOCAL`；`typed-pure-function-v1` 已完成开发、holdout、代表性编译与行为回放；`repository-pipeline` 合并确定性只读清单、编译器发现、逐单元行为回放、绑定快照/源码/语料摘要且验证目标字节的断点检查点、命名空间隔离装配、真实整库构建与内容寻址 ZIP；UI 以租户/Actor/短期令牌启动、恢复、取消任务并在下载时复算 SHA-256；缺少行为用例、漂移、跳过或失败只能得到 `PARTIAL`/阻断，不会扩张为整库成功 | `REPOSITORY_CLOSED` | 对象图、异常、异步、I/O、框架、数据库、并发、真实客户整库逐单元执行、独立验证与外部认证保持 `NOT_RUN` |
+| 全库跨语言转换 M29 | `/translation`、72 个受治理 Route Pack、9 语言 polyglot-route engine、持久受控 Runner | 9 种引擎语言的 72 个有向方向已在 `typed-pure-function-v1` 单函数仓库夹具上完成本机源运行、目标编译/运行与行为比对；旧 30、专业 8 与补全 34 三个来源集合现组成显式 9×8 清单。`repository-pipeline` 已接入内容寻址清单、项目图、逐单元重验、命名空间装配、目标构建和内容寻址 ZIP，并对排除目录、未迁移的符号/依赖/资源/配置/测试、证据漂移及部分覆盖失败关闭。当前 72 个 Route Pack 全部 `local_execution_status=NOT_RUN`，仓库执行证据为 0 | `LIMITED` | 跨文件调用/对象图、异常、异步、I/O、框架、数据库、并发、八种非 Python 源的完整编译器符号枚举仍在闭合；144 个 SMALL/MEDIUM 独立仓库工作负载、真实客户整库、独立验证与外部认证保持 `NOT_RUN` |
 | 多语言项目生成 B46-B95 | `/generation`、生成 API、本地 Runner、project-synthesis engine、Batch 66-95 Skills | 8 个精确目标；草稿、结构化分析、开放问题、一次性审阅摘要、显式批准、生成/验证、文件摘要复算、归档下载、启动健康探针与停止形成闭环；刷新后可用完整 UUID、租户、Actor 和重新输入的短期令牌恢复原子持久化任务；生成 CI Action 与基础镜像均固定到不可变摘要；全部八种语言已完成真实生成、精确工具链构建、测试、启动探针和清理；`run_production_matrix.py` 对 8 × JWT/OIDC 共 16 个 PostgreSQL 17.5 Profile 执行迁移、鉴权负向路径、CRUD 与 RLS 跨租户隔离；Java/Python 多实体和其余六目标单实体的生产边界成为前后端共同契约，需求分析后立即阻断不兼容批准 | `REPOSITORY_CLOSED` | 外部托管 PostgreSQL、真实 IdP、完整传递依赖 SBOM/签名、真实 rootless 生产 Runner、设备/集群/云部署、恢复/DR、独立用户验收、外部验证及生产交付保持 `NOT_RUN` |
 | Git 仓库接入与修改 | `/repositories`、Web BFF、repository-workspace control-plane API、JGit 工作区 | GitHub、Gitee 与通用 HTTPS Git 统一接入；远端引用先解析为 advertised 精确提交，浅拉取后再次比对提交；源码、测试、说明、配置、本地和云部署文件分类、读取、新建、修改与删除闭环；租户/Actor、短期用户门禁、内部密钥、owner-only 私库凭据引用、显式路径批准、旧 SHA-256 并发保护、CODEOWNERS 审批、密钥/二进制/符号链接保护及操作日志闭环；子模块/LFS 未独立授权时保持只读 | `REPOSITORY_CLOSED` | 私有 GitHub/Gitee/自建实例实仓 E2E、子模块逐仓授权、LFS 对象完整水合、远端分支保护/PR/推送和部署均保持 `NOT_RUN`，必须另行授权 |
 | 工作区与 Private Runner | workspace-service、workspace manager、egress proxy、Compose 服务拓扑 | 工作区和秘密租约请求在提供者访问前完成身份、类型与 TTL 校验；策略/依赖故障返回稳定响应；默认拒绝出口 | `REPOSITORY_CLOSED` | 真实 rootless Runner 隔离、工作负载身份、远端证明、秘密租约与撤销演练保持 `NOT_RUN` |
@@ -91,7 +91,7 @@ Web liveness 与 readiness 分别由 `/api/health?probe=liveness` 和
 ## CI 业务线映射
 
 CI 分别验证 Java reactor、商业计费 PostgreSQL 17/Flyway/RLS、.NET engine、Python engine、
-frontend-client engine、30 条有向语言路线、project-synthesis engine、八语言精确工具链及
+frontend-client engine、72 条显式有向语言路线、project-synthesis engine、八语言精确工具链及
 16 个 PostgreSQL JWT/OIDC 生产 Profile，并在 Chromium 桌面/移动视口运行关键 Web
 旅程。Project Synthesis 作业额外验证 Batch 97-104 与 Product Closure/Convergence
 分发。所有依赖安装均使用锁文件或不可变 Action 摘要；任一验证失败都会阻止 CI 成功。

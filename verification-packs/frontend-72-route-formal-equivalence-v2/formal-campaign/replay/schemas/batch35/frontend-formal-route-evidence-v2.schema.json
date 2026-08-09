@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch35/frontend-formal-route-evidence-v2.schema.json",
+  "$comment": "Batch35 intentionally delegates to the authoritative Batch32 v2 route-evidence schema, including formalEvidence proof conditionals.",
+  "$ref": "../batch32/frontend-formal-route-evidence-v2.schema.json"
+}

@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:232aa3a2bbe7b7d816ded334956d0cbea6f5857a5cdf380a6c60e2f2722f54ee",
+      "block_id": "state-management",
+      "byte_count": 1226,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-state-transition-observer-trace/0271c713bbd2dd73590b63f6bd2b3e9e7819a3c8172752d5d48725bf34ce79d5.json",
+      "profile_id": "react",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:0271c713bbd2dd73590b63f6bd2b3e9e7819a3c8172752d5d48725bf34ce79d5"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0c6eceae27b9b346ff568e1af707ee154848b52d8db380c86ad8098c49607a09",
+        "byte_count": 8790,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59"
+      },
+      {
+        "artifact_id": "sha256:8b79626bc7963a0f86e721c2c33ad5c40dc361483584291844df849d01bf6dea",
+        "byte_count": 40763,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/8a6a70a5b175d7ca86ca108a577b24512adc1071657aea10e0a2c89eb5897176.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:8a6a70a5b175d7ca86ca108a577b24512adc1071657aea10e0a2c89eb5897176"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

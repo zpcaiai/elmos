@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a1002297e9635ccaf5fc844c2139b09c96af80b91fc9b3462b9b71f71a927b6f",
+      "block_id": "accessibility-focus",
+      "byte_count": 542807,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/jquery/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-accessibility-tree-focus-observer-trace/a11cc87c135e99f759b91908fc148032f38fc75137013566e0848562e3cfda40.json",
+      "profile_id": "jquery",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:a11cc87c135e99f759b91908fc148032f38fc75137013566e0848562e3cfda40"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:d149a21a3ccc5ff3dc307169d7ee9fb8a6e84b7fd8293403331629f7781c88fc",
+        "byte_count": 543865,
+        "channel": "browser",
+        "path": "traces/jquery/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-accessibility-axe-trace/5221e4a547493f2034fc9fa5233694721fe4a76b2e80a09d115e2408997bed28.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:5221e4a547493f2034fc9fa5233694721fe4a76b2e80a09d115e2408997bed28"
+      },
+      {
+        "artifact_id": "sha256:6df9e80c4fa95ae74edf2186a8cd05f4e92eedf376b72afe562f248a1cbe35c7",
+        "byte_count": 6165,
+        "channel": "browser",
+        "path": "traces/jquery/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-framework-event-trace/7768f00bb9b1b58b75301ce27a475e76f372ba86c538aca36d4635f30370ac92.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:7768f00bb9b1b58b75301ce27a475e76f372ba86c538aca36d4635f30370ac92"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

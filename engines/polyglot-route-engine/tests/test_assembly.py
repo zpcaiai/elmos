@@ -9,6 +9,7 @@ run_batch -> assemble_project -> verify_assembled_project` pipeline, mirroring
 `test_repository_pipeline.py`'s conventions, and therefore does require the
 real Python and TypeScript toolchains pinned by `toolchains.py`.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -26,7 +27,7 @@ from elmos_polyglot_route.assembly import (
 )
 from elmos_polyglot_route.batch import run_batch
 from elmos_polyglot_route.discovery import Verdict, discover_repository
-from elmos_polyglot_route.models import RouteError
+from elmos_polyglot_route.models import Language, RouteError
 from elmos_polyglot_route.repository import plan_repository
 
 
@@ -34,10 +35,34 @@ def _digest(content: str) -> str:
     return "sha256:" + hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
+def _evidence_text(target_path: str, content: str) -> str:
+    payload = {
+        "status": "PASSED_LOCAL_UNCERTIFIED",
+        "behavior_case_count": 1,
+        "behavior_pass_rate": 1.0,
+        "target": {"path": target_path, "sha256": _digest(content)},
+        "source_validation": {
+            "status": "PASSED",
+            "case_count": 1,
+            "observations": [{"case": 0, "status": "PASSED"}],
+        },
+        "validation": {
+            "status": "PASSED",
+            "case_count": 1,
+            "observations": [{"case": 0, "status": "PASSED"}],
+        },
+    }
+    return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
 def _write_unit(batch_output: Path, unit_id: str, target_path: str, content: str) -> None:
     directory = batch_output / "units" / unit_id
     directory.mkdir(parents=True)
     (directory / target_path).write_text(content, encoding="utf-8")
+    (directory / "route-evidence.json").write_text(
+        _evidence_text(target_path, content),
+        encoding="utf-8",
+    )
 
 
 def _passed_unit(unit_id: str, target_path: str, content: str, *, function_name: str = "calculate") -> dict[str, Any]:
@@ -49,19 +74,33 @@ def _passed_unit(unit_id: str, target_path: str, content: str, *, function_name:
         "target_path": target_path,
         "target_sha256": _digest(content),
         "evidence_path": f"units/{unit_id}/route-evidence.json",
+        "evidence_sha256": _digest(_evidence_text(target_path, content)),
+        "behavior_case_count": 1,
     }
 
 
 def _batch_report(target_language: str, units: list[dict[str, Any]]) -> dict[str, Any]:
+    status_counts = {
+        status: sum(1 for unit in units if unit.get("status") == status)
+        for status in ("PASSED", "FAILED", "SKIPPED_NOT_READY", "SKIPPED_NO_CASES")
+        if any(unit.get("status") == status for unit in units)
+    }
+    attempted_count = status_counts.get("PASSED", 0) + status_counts.get("FAILED", 0)
+    complete = status_counts == {"PASSED": len(units)}
     return {
         "schema_version": "1.0.0",
         "kind": "elmos.repository-batch-report",
-        "status": "PARTIAL",
+        "status": "COMPLETE" if complete else "PARTIAL",
         "repository_ref": "local:customer-repository",
         "snapshot_sha256": "deadbeef",
         "route_id": f"python-to-{target_language}",
         "source_language": "python",
         "target_language": target_language,
+        "work_unit_count": len(units),
+        "selected_count": len(units),
+        "attempted_count": attempted_count,
+        "unattempted_count": len(units) - attempted_count,
+        "status_counts": status_counts,
         "units": units,
     }
 
@@ -69,12 +108,22 @@ def _batch_report(target_language: str, units: list[dict[str, Any]]) -> dict[str
 PYTHON_UNIT_A = "def calculate(a: int, b: int) -> int:\n    return a + b\n"
 PYTHON_UNIT_B = "def calculate(a: int, b: int) -> int:\n    return a - b\n"
 JAVA_UNIT = (
-    "public final class Migrated {\n"
-    "    public static long add(long a, long b) {\n"
-    "        return (a + b);\n"
-    "    }\n"
-    "}\n"
+    "public final class Migrated {\n    public static long add(long a, long b) {\n        return (a + b);\n    }\n}\n"
 )
+
+ADDITIONAL_TARGET_UNITS = {
+    "go": ("migrated.go", "package main\n\nfunc calculate(a int64, b int64) int64 { return a + b }\n"),
+    "rust": ("migrated.rs", "fn calculate(a: i64, b: i64) -> i64 { a + b }\n"),
+    "cpp": (
+        "migrated.cpp",
+        "#include <cstdint>\n\nstd::int64_t calculate(std::int64_t a, std::int64_t b) { return a + b; }\n",
+    ),
+    "objc": (
+        "migrated.m",
+        "#import <Foundation/Foundation.h>\n\nlong long calculate(long long a, long long b) { return a + b; }\n",
+    ),
+    "swift": ("migrated.swift", "func calculate(_ a: Int, _ b: Int) -> Int { a + b }\n"),
+}
 
 
 def test_assemble_places_python_units_under_collision_free_modules(tmp_path: Path) -> None:
@@ -125,6 +174,104 @@ def test_assemble_wraps_each_java_unit_in_its_own_package(tmp_path: Path) -> Non
     assert (destination / "pom.xml").is_file()
 
 
+@pytest.mark.parametrize(
+    ("target_language", "expected_path", "build_files"),
+    [
+        ("go", "units/wu00001/migrated.go", {"go.mod"}),
+        ("rust", "src/wu00001.rs", {"Cargo.toml", "src/lib.rs"}),
+        ("cpp", "src/wu00001/migrated.cpp", {"CMakeLists.txt"}),
+        ("objc", "src/wu00001/migrated.m", {"CMakeLists.txt"}),
+        ("swift", "Sources/Wu00001/migrated.swift", {"Package.swift"}),
+    ],
+)
+def test_assemble_supports_every_additional_target_project_shape(
+    tmp_path: Path,
+    target_language: str,
+    expected_path: str,
+    build_files: set[str],
+) -> None:
+    target_path, content = ADDITIONAL_TARGET_UNITS[target_language]
+    batch_output = tmp_path / "batch"
+    _write_unit(batch_output, "WU-00001", target_path, content)
+    report = _batch_report(
+        target_language,
+        [_passed_unit("WU-00001", target_path, content)],
+    )
+
+    destination = tmp_path / "assembled"
+    manifest = assemble_project(report, batch_output, destination)
+
+    assert manifest["included_units"][0]["assembled_path"] == expected_path
+    assert (destination / expected_path).is_file()
+    assert set(manifest["build_files"]) == build_files
+    assert all((destination / relative).is_file() for relative in build_files)
+    if target_language == "go":
+        assert (destination / expected_path).read_text(encoding="utf-8").startswith("package wu00001\n")
+    if target_language == "rust":
+        assert (destination / "src" / "lib.rs").read_text(encoding="utf-8") == "pub mod wu00001;\n"
+    if target_language in {"cpp", "objc"}:
+        cmake = (destination / "CMakeLists.txt").read_text(encoding="utf-8")
+        assert "add_library(elmos_migrated SHARED" in cmake
+        assert expected_path in cmake
+
+
+@pytest.mark.parametrize("target_language", ["cpp", "objc"])
+def test_native_assembly_links_all_units_in_one_target_to_expose_symbol_collisions(
+    tmp_path: Path,
+    target_language: Language,
+) -> None:
+    target_path, content = ADDITIONAL_TARGET_UNITS[target_language]
+    batch_output = tmp_path / "batch"
+    _write_unit(batch_output, "WU-00001", target_path, content)
+    _write_unit(batch_output, "WU-00002", target_path, content)
+    destination = tmp_path / "assembled"
+
+    assemble_project(
+        _batch_report(
+            target_language,
+            [
+                _passed_unit("WU-00001", target_path, content),
+                _passed_unit("WU-00002", target_path, content),
+            ],
+        ),
+        batch_output,
+        destination,
+    )
+
+    cmake = (destination / "CMakeLists.txt").read_text(encoding="utf-8")
+    assert "add_library(elmos_migrated SHARED" in cmake
+    assert "src/wu00001/migrated" in cmake
+    assert "src/wu00002/migrated" in cmake
+
+    with pytest.raises(RouteError, match="ASSEMBLY_BUILD_VERIFICATION_FAILED"):
+        verify_assembled_project(target_language, destination)
+
+
+@pytest.mark.parametrize("target_language", ["go", "rust", "cpp", "objc", "swift"])
+def test_verify_assembled_project_builds_every_additional_target(
+    tmp_path: Path,
+    target_language: Language,
+) -> None:
+    target_path, content = ADDITIONAL_TARGET_UNITS[target_language]
+    batch_output = tmp_path / "batch"
+    _write_unit(batch_output, "WU-00001", target_path, content)
+    destination = tmp_path / "assembled"
+    assemble_project(
+        _batch_report(
+            target_language,
+            [_passed_unit("WU-00001", target_path, content)],
+        ),
+        batch_output,
+        destination,
+    )
+
+    verified = verify_assembled_project(target_language, destination)
+
+    assert verified["build_verification_status"] == "PASSED"
+    assert verified["build_verification"]["commands"]
+    assert (destination / "docs" / "LOCAL_RUN.md").is_file()
+
+
 def test_assemble_excludes_non_passed_units_but_records_them(tmp_path: Path) -> None:
     batch_output = tmp_path / "batch"
     _write_unit(batch_output, "WU-00001", "migrated.py", PYTHON_UNIT_A)
@@ -153,6 +300,72 @@ def test_assemble_rejects_content_that_drifted_from_the_recorded_hash(tmp_path: 
     report = _batch_report("python", [unit])
 
     with pytest.raises(RouteError, match="ASSEMBLY_UNIT_CONTENT_DRIFTED"):
+        assemble_project(report, batch_output, tmp_path / "assembled")
+
+
+def test_assemble_requires_target_and_behavior_evidence_digests(tmp_path: Path) -> None:
+    batch_output = tmp_path / "batch"
+    _write_unit(batch_output, "WU-00001", "migrated.py", PYTHON_UNIT_A)
+    missing_target = _passed_unit("WU-00001", "migrated.py", PYTHON_UNIT_A)
+    missing_target.pop("target_sha256")
+    with pytest.raises(RouteError, match="ASSEMBLY_UNIT_TARGET_DIGEST_REQUIRED"):
+        assemble_project(
+            _batch_report("python", [missing_target]),
+            batch_output,
+            tmp_path / "missing-target-digest",
+        )
+
+    missing_evidence = _passed_unit("WU-00001", "migrated.py", PYTHON_UNIT_A)
+    missing_evidence.pop("evidence_sha256")
+    with pytest.raises(RouteError, match="ASSEMBLY_UNIT_EVIDENCE_DIGEST_REQUIRED"):
+        assemble_project(
+            _batch_report("python", [missing_evidence]),
+            batch_output,
+            tmp_path / "missing-evidence-digest",
+        )
+
+
+def test_assemble_rejects_self_reported_batch_counter_drift(tmp_path: Path) -> None:
+    batch_output = tmp_path / "batch"
+    _write_unit(batch_output, "WU-00001", "migrated.py", PYTHON_UNIT_A)
+    report = _batch_report("python", [_passed_unit("WU-00001", "migrated.py", PYTHON_UNIT_A)])
+    report["work_unit_count"] = 99
+
+    with pytest.raises(RouteError, match="ASSEMBLY_BATCH_STATUS_COUNTS_INVALID"):
+        assemble_project(report, batch_output, tmp_path / "assembled")
+
+
+def test_assemble_rejects_symlinked_unit_directory(tmp_path: Path) -> None:
+    external = tmp_path / "external"
+    _write_unit(external, "WU-00001", "migrated.py", PYTHON_UNIT_A)
+    batch_output = tmp_path / "batch"
+    (batch_output / "units").mkdir(parents=True)
+    (batch_output / "units" / "WU-00001").symlink_to(
+        external / "units" / "WU-00001",
+        target_is_directory=True,
+    )
+    report = _batch_report(
+        "python",
+        [_passed_unit("WU-00001", "migrated.py", PYTHON_UNIT_A)],
+    )
+
+    with pytest.raises(RouteError, match="ASSEMBLY_UNIT_SOURCE_MISSING"):
+        assemble_project(report, batch_output, tmp_path / "assembled")
+
+
+def test_assemble_rejects_symlinked_unit_source_file(tmp_path: Path) -> None:
+    external = tmp_path / "external.py"
+    external.write_text(PYTHON_UNIT_A, encoding="utf-8")
+    batch_output = tmp_path / "batch"
+    unit = batch_output / "units" / "WU-00001"
+    unit.mkdir(parents=True)
+    (unit / "migrated.py").symlink_to(external)
+    report = _batch_report(
+        "python",
+        [_passed_unit("WU-00001", "migrated.py", PYTHON_UNIT_A)],
+    )
+
+    with pytest.raises(RouteError, match="ASSEMBLY_UNIT_SOURCE_MISSING"):
         assemble_project(report, batch_output, tmp_path / "assembled")
 
 

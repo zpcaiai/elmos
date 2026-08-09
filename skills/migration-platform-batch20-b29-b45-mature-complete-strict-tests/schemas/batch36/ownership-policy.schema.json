@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/ownership-policy.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_key",
+    "default_ownership",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "policy_key": {
+      "type": "string"
+    },
+    "default_ownership": {
+      "enum": [
+        "platform-owned",
+        "customer-owned",
+        "shared",
+        "generated-once",
+        "protected"
+      ]
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "selector",
+          "ownership",
+          "regeneration_policy",
+          "owners"
+        ],
+        "properties": {
+          "selector": {
+            "type": "string"
+          },
+          "ownership": {
+            "enum": [
+              "platform-owned",
+              "customer-owned",
+              "shared",
+              "generated-once",
+              "protected"
+            ]
+          },
+          "regeneration_policy": {
+            "enum": [
+              "replace",
+              "semantic-merge",
+              "preserve",
+              "block"
+            ]
+          },
+          "owners": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "approval_required": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

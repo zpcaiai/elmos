@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7ffc55dffad4f7461567968622c5e96fd2cd732a804d6a012a8871040b1812b8",
+      "block_id": "component-template-view",
+      "byte_count": 1497,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/react/browser/HYDRATE_MISMATCH_ERROR/browser-rendered-component-observer-trace/e832abf507dfbd27020b3575e3a8bfcc09e5c8c7ed593564f9a3e8bba1841a2c.json",
+      "profile_id": "react",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:e832abf507dfbd27020b3575e3a8bfcc09e5c8c7ed593564f9a3e8bba1841a2c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:1fd552363afd5087fa74860dc790349e6246180d418e07b618fac2cdc3a846d0",
+        "byte_count": 40370,
+        "channel": "browser",
+        "path": "traces/react/browser/HYDRATE_MISMATCH_ERROR/browser-dom-snapshot/d7ba439fcfc92228201a07eb2c06319fee9d9b61be361064f6e204c34b7e0cc9.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:d7ba439fcfc92228201a07eb2c06319fee9d9b61be361064f6e204c34b7e0cc9"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

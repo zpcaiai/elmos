@@ -54,7 +54,7 @@ def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language)
         if source != target
     ],
 )
-def test_every_directed_route_compiles_and_matches_behavior(
+def test_every_repository_direction_compiles_and_matches_behavior(
     tmp_path: Path,
     source_language: Language,
     target_language: Language,
@@ -67,10 +67,11 @@ def test_every_directed_route_compiles_and_matches_behavior(
         "calculate",
         ROOT / "fixtures" / "behavior-cases.json",
         tmp_path / f"{source_language}-to-{target_language}",
+        repository_execution_mode=True,
     )
-    assert report["status"] == "PASSED"
+    assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["behavior_pass_rate"] == 1.0
-    assert report["critical_unknown_semantics"] == 0
+    assert report["critical_unknown_semantics"] == 1
     assert report["certification_status"] == "EXPERIMENTAL"
     assert report["external_certification_status"] == "NOT_RUN"
 
@@ -105,8 +106,9 @@ def test_independent_corpora_compile_and_match_behavior(
         function_name,
         ROOT / "fixtures" / corpus / "cases.json",
         tmp_path / corpus / f"{source_language}-to-{target_language}",
+        repository_execution_mode=True,
     )
-    assert report["status"] == "PASSED"
+    assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["behavior_case_count"] == 3
 
 
@@ -139,6 +141,18 @@ def test_repository_inventory_is_content_addressed_and_decomposes_work_units(tmp
         "fn calculate(value: i64) -> i64 { return value }\n",
         encoding="utf-8",
     )
+    (repository / "src" / "pricing.cpp").write_text(
+        "long calculate(long value) { return value; }\n",
+        encoding="utf-8",
+    )
+    (repository / "src" / "pricing.m").write_text(
+        "long calculate(long value) { return value; }\n",
+        encoding="utf-8",
+    )
+    (repository / "src" / "pricing.swift").write_text(
+        "func calculate(_ value: Int) -> Int { value }\n",
+        encoding="utf-8",
+    )
     (repository / "node_modules").mkdir()
     (repository / "node_modules" / "ignored.ts").write_text("export const ignored = true;\n", encoding="utf-8")
 
@@ -146,12 +160,17 @@ def test_repository_inventory_is_content_addressed_and_decomposes_work_units(tmp
 
     assert plan["status"] == "PLANNED"
     assert plan["route_id"] == "java-to-python"
-    assert plan["file_count"] == 4
+    assert plan["file_count"] == 7
     assert plan["source_file_count"] == 1
     assert plan["language_counts"]["java"] == 1
     assert plan["language_counts"]["python"] == 1
     assert plan["language_counts"]["go"] == 1
     assert plan["language_counts"]["rust"] == 1
+    assert plan["language_counts"]["cpp"] == 1
+    assert plan["language_counts"]["objc"] == 1
+    assert plan["language_counts"]["swift"] == 1
+    assert plan["repository_scale"] == "small"
+    assert plan["repository_limits"]["maximum_source_files"] == 5_000
     assert plan["work_units"][0]["source_path"] == "src/Price.java"
     assert plan["work_units"][0]["execution_status"] == "NOT_RUN"
     assert plan["certification_status"] == "NOT_CERTIFIED"
@@ -169,3 +188,24 @@ def test_repository_inventory_rejects_symlink_root_and_same_language(tmp_path: P
         plan_repository(alias, "local:inventory-fixture", "python", "java")
     with pytest.raises(RouteError, match="SOURCE_AND_TARGET_MUST_DIFFER"):
         plan_repository(repository, "local:inventory-fixture", "python", "python")
+
+
+def test_repository_inventory_classifies_a_medium_source_estate(tmp_path: Path) -> None:
+    repository = tmp_path / "medium-repository"
+    repository.mkdir()
+    for index in range(501):
+        (repository / f"unit_{index:03d}.py").write_text(
+            f"def value_{index}(value: int) -> int:\n    return value\n",
+            encoding="utf-8",
+        )
+
+    plan = plan_repository(repository, "local:medium-repository", "python", "java")
+
+    assert plan["repository_scale"] == "medium"
+    assert plan["source_file_count"] == 501
+    assert len(plan["work_units"]) == 501
+    assert plan["repository_limits"] == {
+        "maximum_source_files": 5_000,
+        "maximum_source_bytes": 64 * 1024 * 1024,
+        "maximum_bytes_per_file": 2 * 1024 * 1024,
+    }

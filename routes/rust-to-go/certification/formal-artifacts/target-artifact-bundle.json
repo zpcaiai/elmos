@@ -1,0 +1,25 @@
+{
+  "route_key": "rust-to-go",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 361,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.go",
+      "sha256": "sha256:606e5af0c37b299ae616f4f1c0476f33dfe3ef005d5c92584609e9a35c42ae3f"
+    },
+    {
+      "bytes": 174,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.go",
+      "sha256": "sha256:8722e81c3ce037f65fdedcc2229f83b8a0580889ac4b74bd6264beab4cbdf077"
+    },
+    {
+      "bytes": 386,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.go",
+      "sha256": "sha256:d185faa9da215e65ba6105004e01cb044955ef6af5c02d7e54a1e0144f511487"
+    }
+  ]
+}

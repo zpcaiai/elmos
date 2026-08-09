@@ -1,0 +1,11 @@
+{
+  "weights": {
+    "customer_demand": 2.0,
+    "migration_value": 2.0,
+    "representative_workload_access": 1.5,
+    "tooling_feasibility": 1.0,
+    "licensing_access": 1.0,
+    "data_risk": -1.5
+  },
+  "candidates": []
+}

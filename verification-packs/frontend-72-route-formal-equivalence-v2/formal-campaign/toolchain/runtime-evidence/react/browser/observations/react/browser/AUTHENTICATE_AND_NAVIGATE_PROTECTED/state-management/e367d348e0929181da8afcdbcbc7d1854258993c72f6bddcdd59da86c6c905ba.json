@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 1,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:e545b05b22f7f155f1049bca689139bba1dee2fc5845268d471fac75d3a144c7",
+      "block_id": "state-management",
+      "byte_count": 1230,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/react/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-framework-state-transition-observer-trace/c16fe6ec4b647069357116bc7047d00b6440f8a28fc7beeadbd2bc78b0fb47da.json",
+      "profile_id": "react",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+      "sha256": "sha256:c16fe6ec4b647069357116bc7047d00b6440f8a28fc7beeadbd2bc78b0fb47da"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:d89a4eba6de77a16322989fc5fc21339c6674b09c0ec8dfc7a17f025a5cd9d92",
+        "byte_count": 5314,
+        "channel": "browser",
+        "path": "traces/react/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-framework-event-trace/3b93e00774c8bda8369ac30089ee8dfb3fc6ba234a4132f4ff83f5babd34389f.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:3b93e00774c8bda8369ac30089ee8dfb3fc6ba234a4132f4ff83f5babd34389f"
+      },
+      {
+        "artifact_id": "sha256:d62db7b7dceb2448999fcb470c070eac2e3feaedda8a3c8e6f99f4dba0ddda40",
+        "byte_count": 40445,
+        "channel": "browser",
+        "path": "traces/react/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-dom-snapshot/c900e43229951623cca9875ed1232bbf5dec5caeb0bf9039252dc5ab0e1f676e.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:c900e43229951623cca9875ed1232bbf5dec5caeb0bf9039252dc5ab0e1f676e"
+      }
+    ]
+  },
+  "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:1d6d3754b941f97cc6929a4b3adf36f7a6d70128450361d7bbda06447eae2711",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2001,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-computed-layout-i18n-theme-observer-trace/7e48004b9f23a79376198517a4ff9b5b937b0b86323d7f9d56725f142a64e66e.json",
+      "profile_id": "react",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:7e48004b9f23a79376198517a4ff9b5b937b0b86323d7f9d56725f142a64e66e"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:75b69f09e56e2fd3bccb62aea88e13f8feb91798768672ab0daa5228446a3e67",
+        "byte_count": 40459,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

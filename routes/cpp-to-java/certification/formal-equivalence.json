@@ -1,0 +1,1084 @@
+{
+  "artifact_id": "artifact-0b0bb08c601bdfdd3d101393255425ef63dfc9305b8e04746c5d15b62ec1a10c",
+  "artifact_refs": [
+    {
+      "artifact_id": "artifact-68ab26998c32db540e45b8e612272c969c57aab2d2b9e3fd0309da2f04ba6731",
+      "bytes": 205,
+      "path": "certification/artifacts/development/Migrated.java",
+      "role": "target-artifact",
+      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+    },
+    {
+      "artifact_id": "artifact-5740af275b3836cf6dea8e76570ae1723dfa5e4a986f742e1b1599ab6ea6668f",
+      "bytes": 793,
+      "path": "certification/artifacts/development/RouteHarness.java",
+      "role": "corpus-artifact",
+      "sha256": "sha256:e2db4a05b58371a899e51cae618bc9febafeb3a30dd83b83716692cddacd0257"
+    },
+    {
+      "artifact_id": "artifact-df6de7233ce26e73ef56cd3cdee9705a5b32f48d44c403874828d6e8f7c22008",
+      "bytes": 4068,
+      "path": "certification/artifacts/development/artifact-manifest.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:b58c2effce7c81c56ab8d780960bf94572b0282d77300ebd0ec6a4c868830040"
+    },
+    {
+      "artifact_id": "artifact-7726f1e1ff0c4661ed98cb01f79e8d75e350668ad606685d35570b11938d7e04",
+      "bytes": 1492,
+      "path": "certification/artifacts/development/behavior-equivalence.json",
+      "role": "behavior-result",
+      "sha256": "sha256:82ba3a3ae51e7ec872fe04c894f5261b8a9d1f2a68a2f00fa9b11ff2d4fb7be3"
+    },
+    {
+      "artifact_id": "artifact-9639f206eb794d55e059b31c8d4a09cb2f533111ccbbd313eeb574e246c10806",
+      "bytes": 12329,
+      "path": "certification/artifacts/development/chunk-map.json",
+      "role": "chunk-map",
+      "sha256": "sha256:a1249d9438c0c4eb6c1e9a2902db944ea834e440a3a1002b0d2a3e11708e7c4a"
+    },
+    {
+      "artifact_id": "artifact-3be14dde225e65b424b5977042821fbe845e444b7cd66c9dfdaf4aa5c156302d",
+      "bytes": 3166,
+      "path": "certification/artifacts/development/formal-composition.json",
+      "role": "formal-composition",
+      "sha256": "sha256:d81fc93272253f8ccc1b313754cd85676d74771eeb76467d603520943b3c515f"
+    },
+    {
+      "artifact_id": "artifact-63756a1681d6602d7aa13dd840d0fff195b13a6ab4c14aa1bdbad260e1a66d4a",
+      "bytes": 2030,
+      "path": "certification/artifacts/development/formal-equivalence.smt2",
+      "role": "solver-input",
+      "sha256": "sha256:9de1db61ce4e375bacb32fadd9d4fde34d491c8be23bb2e26de65d7b68b95dc8"
+    },
+    {
+      "artifact_id": "artifact-02c1e341838e3b6faa683d3644b70dd21eff1b4475b6f1efcbcafff7c5a8cf00",
+      "bytes": 8476,
+      "path": "certification/artifacts/development/formal-input.json",
+      "role": "formal-input",
+      "sha256": "sha256:6eba8f5c0bd731b2e2da6b43a5863bc5229498c84a06560e2a209c580972b7ca"
+    },
+    {
+      "artifact_id": "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",
+      "bytes": 2508,
+      "path": "certification/artifacts/development/formal-proof-result.json",
+      "role": "solver-result",
+      "sha256": "sha256:9f5ec09836e643d7ef7712d419e4f87e330fc493b996405f2c4dc2a4db696d48"
+    },
+    {
+      "artifact_id": "artifact-2f015444420080fb519a75708e4754f3385dddb9ce73dd1bdab9f4e6a2242fe6",
+      "bytes": 205,
+      "path": "certification/artifacts/development/inputs/cases.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
+    },
+    {
+      "artifact_id": "artifact-fdf846d25b36c60a2e2a568b17330544f92417d13696bfaeed0f0fb83e2b7f91",
+      "bytes": 150,
+      "path": "certification/artifacts/development/inputs/pricing.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
+    },
+    {
+      "artifact_id": "artifact-f31e185813fb91bc4ff096e890fb29c9bc01e17c7d5f676da336d8f4cf8cd816",
+      "bytes": 3619,
+      "path": "certification/artifacts/development/layered-equivalence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:252a7ff49c731482c79a7719987d16ac04c59e64d02a3aaca6453c9fa23cb2d3"
+    },
+    {
+      "artifact_id": "artifact-26a5135764d398fe0c518b110e62f568e43bd175fc8bd65a36c79866a53df44d",
+      "bytes": 8050,
+      "path": "certification/artifacts/development/route-evidence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:b19fffb80c20f9a612f7a185520fde779b7176fa7de82a9d9fec8d615a7f0b8d"
+    },
+    {
+      "artifact_id": "artifact-d65b9e6abe5418e061d7bcca381b227ed19556bbd41d81767cb24583259649ba",
+      "bytes": 309,
+      "path": "certification/artifacts/development/semantic-equivalence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "artifact_id": "artifact-0878376b362f6b562cec67c9272baf004e8f026cc0e04f6d9d23fa721257849e",
+      "bytes": 1597,
+      "path": "certification/artifacts/development/semantic-ir.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:566a1d2bbe548243e37dc7cd6600a1de27f28c0965d93fca0dbb87d04d8e1ea1"
+    },
+    {
+      "artifact_id": "artifact-82e6238f58e47d0ea6f8a854f3935397ecbbc7783a25cfa311bf108218f6b519",
+      "bytes": 150,
+      "path": "certification/artifacts/development/source-runtime/pricing.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
+    },
+    {
+      "artifact_id": "artifact-ce6934ae3e402e1b6fa71f16a17091e70841278ebf39ac660345079dc57ab2d4",
+      "bytes": 1871,
+      "path": "certification/artifacts/development/source-runtime/source_harness.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:b1887201d960898eb9a923e514cf6e2603156590f60b23c424886dca2b89cfb6"
+    },
+    {
+      "artifact_id": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240",
+      "bytes": 1597,
+      "path": "certification/artifacts/development/source-semantic-ir.json",
+      "role": "source-ir",
+      "sha256": "sha256:566a1d2bbe548243e37dc7cd6600a1de27f28c0965d93fca0dbb87d04d8e1ea1"
+    },
+    {
+      "artifact_id": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc",
+      "bytes": 1594,
+      "path": "certification/artifacts/development/target-semantic-ir.normalized.json",
+      "role": "target-ir",
+      "sha256": "sha256:0cf9be59aa8b634be52f6d9dee18a45f7d47eb4de3b7ada661b5b81c828a5b00"
+    },
+    {
+      "artifact_id": "artifact-a77ef95aa5e39be6ba6874a58a27247646b70fcaa68190a0bd49bd438cd4cbe0",
+      "bytes": 112,
+      "path": "certification/artifacts/holdout/Migrated.java",
+      "role": "target-artifact",
+      "sha256": "sha256:2405a95bd9740706155e091b2ef1672fcf1e60ad75826a354e39d113c60d1a39"
+    },
+    {
+      "artifact_id": "artifact-6c17f3167a733cc91e8ea7c2c9e7197f4c967175415080140c360674f1dae6ce",
+      "bytes": 2266,
+      "path": "certification/artifacts/holdout/RouteHarness.java",
+      "role": "corpus-artifact",
+      "sha256": "sha256:bf2456ab45315abd47c2aba8c06138fcef3fcd650953ceb2796a8155146d6dd3"
+    },
+    {
+      "artifact_id": "artifact-69531e588fa25d87bf3925cce92591fb9fb01fc87ff3259b029380a863d0d5e2",
+      "bytes": 4063,
+      "path": "certification/artifacts/holdout/artifact-manifest.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:651f8df5bcf3346da7bdfdec18cc0df40ab957b59ab0f3bb21e9df5570620c2a"
+    },
+    {
+      "artifact_id": "artifact-4af2d8dd5b6c3b1788098be1867fb61410b8231b131f31d8f9fbdc496141209b",
+      "bytes": 2706,
+      "path": "certification/artifacts/holdout/behavior-equivalence.json",
+      "role": "behavior-result",
+      "sha256": "sha256:8e4696a44dc2d217bfa281e86b9db348748d51a606d4416f11f50452c6a22fd6"
+    },
+    {
+      "artifact_id": "artifact-d27b995082be51999e0aed1159b34698cbb88334ff187f3349286fb499e40201",
+      "bytes": 4521,
+      "path": "certification/artifacts/holdout/chunk-map.json",
+      "role": "chunk-map",
+      "sha256": "sha256:c183cfae93bdbed26e02a5a2c3e95d7564c14a8bfdf0700a2fde05e8bcdac9bd"
+    },
+    {
+      "artifact_id": "artifact-283a0c0243ddb019e2af16831a9da72446019c71307a7c7c9cd0a8b3537ba708",
+      "bytes": 3229,
+      "path": "certification/artifacts/holdout/formal-composition.json",
+      "role": "formal-composition",
+      "sha256": "sha256:74dfa73a25786842b5911ef312e7f781f7a882b2f334aa4fe347920a1625d4c9"
+    },
+    {
+      "artifact_id": "artifact-0c7d4010eaa877101d7e3c428b3e71f2370a7cf95da06c5934dceb56c3ef4594",
+      "bytes": 1162,
+      "path": "certification/artifacts/holdout/formal-equivalence.smt2",
+      "role": "solver-input",
+      "sha256": "sha256:bf523a03de77719f22c8f2badfb24e5ece88befbf3d5efaa5437f1ee50b21b88"
+    },
+    {
+      "artifact_id": "artifact-c3d18527f55cd52b2951277b5e372b94f7c5e161b02313e3443267a1e70ac4d0",
+      "bytes": 5616,
+      "path": "certification/artifacts/holdout/formal-input.json",
+      "role": "formal-input",
+      "sha256": "sha256:403d04d9af6844e66ff681fb1eb6bb2d355d2f242db7f78de13852bbac78651f"
+    },
+    {
+      "artifact_id": "artifact-b9da1b4c822bf936b92e7801a7dda66c113b7463929b0b4ee34d5c7354d9d2f9",
+      "bytes": 2571,
+      "path": "certification/artifacts/holdout/formal-proof-result.json",
+      "role": "solver-result",
+      "sha256": "sha256:5cf9c470d5b3323648e8536f751dcb30bc48ac96d990ccf5b53bf3cb3098a11b"
+    },
+    {
+      "artifact_id": "artifact-12919f3a1cdcd0f14b55f61f7f85681f0a9955979735b98d70f35ceacaa82c25",
+      "bytes": 427,
+      "path": "certification/artifacts/holdout/inputs/cases.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:e06552cc526e8f4177c9b7cb8a50f19055c7c555d118f7bad88888af297bdfa1"
+    },
+    {
+      "artifact_id": "artifact-e4b0fdbd7c3ff375eea62c583bfc87ea6874bd3f2bf696817a6fed76ad3cd1b7",
+      "bytes": 50,
+      "path": "certification/artifacts/holdout/inputs/echo_number.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:0c81943e3ce45f1df9df4c45dab0c8e5fccb1f9a4a10c4268305c964e867afc5"
+    },
+    {
+      "artifact_id": "artifact-89beae3175a0161b239f4f76c3c73499857e277441c302b68cef1b3b282a3a36",
+      "bytes": 3680,
+      "path": "certification/artifacts/holdout/layered-equivalence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:2d2005811e8a9b5400774a0d7063573ddfc7f82ee604a15932b6af8d62834039"
+    },
+    {
+      "artifact_id": "artifact-f86d3c2fb3124f294d757c3738ed13104787413597de39d50128ce295dbc4bfe",
+      "bytes": 9196,
+      "path": "certification/artifacts/holdout/route-evidence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:2c0c139108af500ea10a59f84ce3110014e517bf2dbef0779157ad9b07130923"
+    },
+    {
+      "artifact_id": "artifact-29ac964a1b3d91c7501060aaff33cd85b9d71f119a85f923c93064bddb8a7481",
+      "bytes": 309,
+      "path": "certification/artifacts/holdout/semantic-equivalence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:1ecc40402a160340c4d61282f5a09f72ebb06c83af9d56095992df8d9a6948fe"
+    },
+    {
+      "artifact_id": "artifact-ef6153fc0eeab51a23ca861aadd91b9d01fd34e629d2fbb27ede9eb72096b73f",
+      "bytes": 661,
+      "path": "certification/artifacts/holdout/semantic-ir.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:bb070d3f8f7b0ad19f4e631b69d90be10f237948c4b2c58e83c363bf51a77e1a"
+    },
+    {
+      "artifact_id": "artifact-106d99a2ad2d14cbe2368b4afebb605100f9891f15dc56dd26edc7b426e937d8",
+      "bytes": 50,
+      "path": "certification/artifacts/holdout/source-runtime/echo_number.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:0c81943e3ce45f1df9df4c45dab0c8e5fccb1f9a4a10c4268305c964e867afc5"
+    },
+    {
+      "artifact_id": "artifact-1e5b470db9cd2d6e755e5ef18c4e5558bf6354475c327e97a7312013135f7d58",
+      "bytes": 2555,
+      "path": "certification/artifacts/holdout/source-runtime/source_harness.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:ad87bcb4404dcdda13007e619ecd41aea2712b70f3068fce19a0e76b442c80ae"
+    },
+    {
+      "artifact_id": "artifact-0ee9467a6c47e074228503193e6f51160c800317aee6fca37e3b8f1c3a07383e",
+      "bytes": 661,
+      "path": "certification/artifacts/holdout/source-semantic-ir.json",
+      "role": "source-ir",
+      "sha256": "sha256:bb070d3f8f7b0ad19f4e631b69d90be10f237948c4b2c58e83c363bf51a77e1a"
+    },
+    {
+      "artifact_id": "artifact-1137966695e79e4cf17abd46f22509342f900591f2e405df121340311213f652",
+      "bytes": 622,
+      "path": "certification/artifacts/holdout/target-semantic-ir.normalized.json",
+      "role": "target-ir",
+      "sha256": "sha256:99618423dbb5862b32ff2c5557952443eb2848dcc6a2b96e4998c558bc1cf3bc"
+    },
+    {
+      "artifact_id": "artifact-e072942b5db3bca90824f2f27df91bcd692fdbc09917b4c944a09a0c42388cb1",
+      "bytes": 224,
+      "path": "certification/artifacts/real-repository/Migrated.java",
+      "role": "target-artifact",
+      "sha256": "sha256:3665906d657f729a38287afde93213aada2208046a872b7f2af893f5e3fcf948"
+    },
+    {
+      "artifact_id": "artifact-a7415a67d6e05daace6299dbc5da722214f313165a3ce19b73ca2f485c00c231",
+      "bytes": 1085,
+      "path": "certification/artifacts/real-repository/RouteHarness.java",
+      "role": "corpus-artifact",
+      "sha256": "sha256:7c6bdd1e6f34bb0128a50286dad42864b55b8aa959ac174c7519ec01c12b0a19"
+    },
+    {
+      "artifact_id": "artifact-b2b1e8a013530c206b9e9058b4ece67891062d620c6d5049392960a5a926cc70",
+      "bytes": 4079,
+      "path": "certification/artifacts/real-repository/artifact-manifest.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:4071091e8c9e70dbb5ad9b1ef177ac9f369f7f2ab29cca4a5cc003f13cd065f9"
+    },
+    {
+      "artifact_id": "artifact-028b3a4fed5ff0d5c8b1a93c938e4e56ecf69ac1f8e5ec0f7c4849f229f4248b",
+      "bytes": 1929,
+      "path": "certification/artifacts/real-repository/behavior-equivalence.json",
+      "role": "behavior-result",
+      "sha256": "sha256:ea08df4b4aeaee0a40346502a171b4dc718f7b709b9c2313a4725945d3c0432d"
+    },
+    {
+      "artifact_id": "artifact-60b3e45411fdec7e3b4bec9190c232990a2d910d6aa6005f89567dc8792a6ea3",
+      "bytes": 13174,
+      "path": "certification/artifacts/real-repository/chunk-map.json",
+      "role": "chunk-map",
+      "sha256": "sha256:7fe9ac123484dc9dd2f7a3c3ff5f7156eda06c8c0fccda079f84020a2354f7b8"
+    },
+    {
+      "artifact_id": "artifact-37e9167aef6a74763a57634f7a18103fb3b3a131bf4de0a0435059e5dc74099e",
+      "bytes": 3193,
+      "path": "certification/artifacts/real-repository/formal-composition.json",
+      "role": "formal-composition",
+      "sha256": "sha256:b6579da34cb9f9db77a6f7c35cf9e46e4f22584d5a6678cfd856586496bc603c"
+    },
+    {
+      "artifact_id": "artifact-eb7bc413a439d3a2bd38060f344d12e61d98f7f2fc0fe7353a8750b246521abb",
+      "bytes": 2000,
+      "path": "certification/artifacts/real-repository/formal-equivalence.smt2",
+      "role": "solver-input",
+      "sha256": "sha256:455ef90e613e81e2349600d667076d600f357808de06080ce285dea5da71e03f"
+    },
+    {
+      "artifact_id": "artifact-725bc005723e47aa15553c1360cbc3ff053c394446774493c0b3ec1bfb4c1cd9",
+      "bytes": 8746,
+      "path": "certification/artifacts/real-repository/formal-input.json",
+      "role": "formal-input",
+      "sha256": "sha256:e3ab01446984ffc22bad5bbb30232a7ed6645ca81d7c88d3ffebd3c9f1d8c5e0"
+    },
+    {
+      "artifact_id": "artifact-cdde08b8d2b7825eecd97a9c6244499e45d3825bcb79763a8247bc7e2e4b7b19",
+      "bytes": 2535,
+      "path": "certification/artifacts/real-repository/formal-proof-result.json",
+      "role": "solver-result",
+      "sha256": "sha256:f4650511cb4e80466189aa946162b5cbc66b8e2514076ba9f2273162fdaefb3e"
+    },
+    {
+      "artifact_id": "artifact-80bee35fa24a0f776c05e23a93934cfd89f0aff2ce1ec2ed0c575092ab92b5cf",
+      "bytes": 357,
+      "path": "certification/artifacts/real-repository/inputs/cases.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:a76b8ea8492b53067da2944118305bfbdb664abc5db2b3ec060e77712cde97be"
+    },
+    {
+      "artifact_id": "artifact-b3dbabf434f55df38d6d6b552271c8765164a31d58d9a660a81f5ea2792715ca",
+      "bytes": 128,
+      "path": "certification/artifacts/real-repository/inputs/decision.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:93b5698cae229d9ecae4402fe8cd2f8a16374872b048208702de588f803bfd7f"
+    },
+    {
+      "artifact_id": "artifact-2f161556de04adf229a5ec25ca10e33a85361fea316c1802a77b082a05a28cf7",
+      "bytes": 3646,
+      "path": "certification/artifacts/real-repository/layered-equivalence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:4370b09f2eb3df6df81a26d69724fade82605f05920d6f9657cd8f88d23aa7ce"
+    },
+    {
+      "artifact_id": "artifact-a54a85ed7addd4d083b6f06ab716a7586bf351c498c6dc75a6fb226537875483",
+      "bytes": 8426,
+      "path": "certification/artifacts/real-repository/route-evidence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:9bd1f286aaf6881e1be158d89ca1b92ffbe5465040d28226d2a7190566bba97e"
+    },
+    {
+      "artifact_id": "artifact-867bfb61266e439853e4ada0da98f0a1e423dfddb19f716320c7fcf3bba77c1c",
+      "bytes": 309,
+      "path": "certification/artifacts/real-repository/semantic-equivalence.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:c819d943ce49a388cc0a8308c4a303304ebca454d97fb2f994c6ec94a2ddc9d6"
+    },
+    {
+      "artifact_id": "artifact-5def938d7d50dddf906fc1c276e0c664768a6379daa99c555b5c3fa1e30511b6",
+      "bytes": 1710,
+      "path": "certification/artifacts/real-repository/semantic-ir.json",
+      "role": "corpus-artifact",
+      "sha256": "sha256:8ff081b19023f500c61ed5f5fa88a219a5cb17167ce8b2820fadb62db2d49dfc"
+    },
+    {
+      "artifact_id": "artifact-7cbb0deb91eb9a6fce7216e98c214acacdc699adefdd0f28bbf9c0770f9a0d62",
+      "bytes": 128,
+      "path": "certification/artifacts/real-repository/source-runtime/decision.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:93b5698cae229d9ecae4402fe8cd2f8a16374872b048208702de588f803bfd7f"
+    },
+    {
+      "artifact_id": "artifact-6f28c5c7aa3ee63aa20457d9b57751565ab374a0722c06b613bc921e52725072",
+      "bytes": 2247,
+      "path": "certification/artifacts/real-repository/source-runtime/source_harness.cpp",
+      "role": "corpus-artifact",
+      "sha256": "sha256:ba2eab1b7f4aaa27b130501c3f215547172351d65a9576340e26c6a60b746d1f"
+    },
+    {
+      "artifact_id": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b",
+      "bytes": 1710,
+      "path": "certification/artifacts/real-repository/source-semantic-ir.json",
+      "role": "source-ir",
+      "sha256": "sha256:8ff081b19023f500c61ed5f5fa88a219a5cb17167ce8b2820fadb62db2d49dfc"
+    },
+    {
+      "artifact_id": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5",
+      "bytes": 1706,
+      "path": "certification/artifacts/real-repository/target-semantic-ir.normalized.json",
+      "role": "target-ir",
+      "sha256": "sha256:19e10c85e9b6e46ef64fb33cedc675dcf8950f4fa7d4350f7b800705054e9435"
+    },
+    {
+      "artifact_id": "artifact-056d86f59ef0df0a8ef737f23af9daa959c212c7597723311412bdc6ea3356e2",
+      "bytes": 11665,
+      "path": "certification/formal-artifacts/engine-source-manifest.json",
+      "role": "engine-source-manifest",
+      "sha256": "sha256:7af3541cc67a1c47d9012e9c97a468232f5886555a04953ac98cc4f92bcc5534"
+    },
+    {
+      "artifact_id": "artifact-ccdf47235cc871273de16e1171ff376ac09a919c689a80c0a642f0eb0e337675",
+      "bytes": 493,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/csharp/Elmos.Csharp.EmittedAnalyzer.csproj",
+      "role": "engine-source",
+      "sha256": "sha256:60613d99e3a9fd8e6ca516472e70903e62fd76b4ae804693956de356df03979b"
+    },
+    {
+      "artifact_id": "artifact-7e7c73e25860beccb88eea34f97ac85053c7159f4b582cdf0af982bd0910c07a",
+      "bytes": 7575,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/csharp/Program.cs",
+      "role": "engine-source",
+      "sha256": "sha256:98de0543780e59ae852f9d9992434b29b79a36b3ce9e5ae87730c889ccdaf36d"
+    },
+    {
+      "artifact_id": "artifact-b3d87f554f2021c7054f30bc384dc8cf277491b73c32cf3a45ea0d90b84d3e62",
+      "bytes": 5758,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/go/analyzer.go",
+      "role": "engine-source",
+      "sha256": "sha256:1313df7dc46a16a0696ef59950c31939ac86f6dc3fbe8738d997f31c4152c5d9"
+    },
+    {
+      "artifact_id": "artifact-43fef68ce7d365480929633a9e8d2f14bfd2b5d5f661fc1cd0466efaf77f5bea",
+      "bytes": 21377,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/java/Analyzer.java",
+      "role": "engine-source",
+      "sha256": "sha256:3fffa24e76dc094ad2f312d864c4e5311ec0389a26dc69cee81fcdea991abbbc"
+    },
+    {
+      "artifact_id": "artifact-bcd6686599511fdb71b8bc39e2341f5e57a04c3754f1b7709cc9829e99f40501",
+      "bytes": 2412,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/rust/Cargo.lock",
+      "role": "engine-source",
+      "sha256": "sha256:ecc73f65c73dc6cd97b8c966c4f1ae137f713dbe58d2a3fbacb19f40b595304e"
+    },
+    {
+      "artifact_id": "artifact-9b5815de15141513b53e54a85ae67e3a5d9bb63ec0b7325c9999a44fe518dd68",
+      "bytes": 193,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/rust/Cargo.toml",
+      "role": "engine-source",
+      "sha256": "sha256:e52e24ea6ec09822c659d4c591393346c0695e6fc9c022c012718ac96d9a63c8"
+    },
+    {
+      "artifact_id": "artifact-1d001d763b75e2b72b9152f13248102e6e9bcfcce0064d28600274decd2ab2a8",
+      "bytes": 9960,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/rust/src/main.rs",
+      "role": "engine-source",
+      "sha256": "sha256:3bc38352ccd343b9fd6308427146c4767a8e756f8945e8d770c58889e7c05f47"
+    },
+    {
+      "artifact_id": "artifact-ddd49b3b44dc20e81be2986d1025bc6cf7211edb0af5474694cdfb4977623cdd",
+      "bytes": 312,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/swift/Package.resolved",
+      "role": "engine-source",
+      "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
+    },
+    {
+      "artifact_id": "artifact-bd3041832844a1384d2bb36c78dda67bbb5c516340f350b6ea7a5c39c316157e",
+      "bytes": 1459,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/swift/Package.swift",
+      "role": "engine-source",
+      "sha256": "sha256:d04fa34bedae2ae5ff4f5961030f23f95d73037b83a260891308f842aeae1f62"
+    },
+    {
+      "artifact_id": "artifact-8f20f028aff7383a29134884ad3ec57ab72110c402610f9c6470a85ce95e4df6",
+      "bytes": 23036,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift",
+      "role": "engine-source",
+      "sha256": "sha256:f58a15e30acd559f03d46392683549f6c1163cf23f6db248d3536b1041411852"
+    },
+    {
+      "artifact_id": "artifact-5dc37f54fe0b5d375f62b0a9858c635728800a61a96e052f1dc1b7f0eeb988ad",
+      "bytes": 9019,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/typescript/analyzer.mjs",
+      "role": "engine-source",
+      "sha256": "sha256:154aaefa6eb07aefe61ccb3b66d1c9942199a7b867c5dbb08d92452ad00f0f31"
+    },
+    {
+      "artifact_id": "artifact-47a708e7d82505dbce0cd977e47fb4ffb9e1f2c72a56a2c55d49febd57b80558",
+      "bytes": 858,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/pyproject.toml",
+      "role": "engine-source",
+      "sha256": "sha256:45b26552ff0fe150b29a8743a4a4074e15f477ed2f3396ceae0d17dd4c4dc7ed"
+    },
+    {
+      "artifact_id": "artifact-c1a11c40eab004239239244f4d2fd68b56665dd073042c65483fb84098196031",
+      "bytes": 110,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/__init__.py",
+      "role": "engine-source",
+      "sha256": "sha256:50d2d22c270c85a1e749f72f9238f9077a6884f4f2eb70e9e1c5a8a79c75a416"
+    },
+    {
+      "artifact_id": "artifact-2cf964ea773ea5f7820a4ff17c564ccdd73afccd6f0a91c8fe0818c12a18e78f",
+      "bytes": 8473,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/canonical.py",
+      "role": "engine-source",
+      "sha256": "sha256:79a49cf0bd67136c8c04bce50610594dfbf29cf0dbcf97e876eb822a9763527b"
+    },
+    {
+      "artifact_id": "artifact-d342043342001cb5d1e0074b3b07e0bdb6049575992ced79a467fd91c018fb04",
+      "bytes": 27106,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
+      "role": "engine-source",
+      "sha256": "sha256:a59e6ebbdf1c045b2fd47d3a40321006c71dda6c753cbd43f8fefdbcac05d4eb"
+    },
+    {
+      "artifact_id": "artifact-80624ce6ec47d2f43ed67a14bac6057448b7f4cc194b5c153b395e551897284c",
+      "bytes": 46034,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
+      "role": "engine-source",
+      "sha256": "sha256:c311fd5881b8a4e8bea0fa963cb519a887f05d72dfb98eb19461168f23b60405"
+    },
+    {
+      "artifact_id": "artifact-c7b4e269f394a8dce53fb1c9bee212d4aa0a2a5a86f6cd540839262d9cb0c5aa",
+      "bytes": 45523,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/engine.py",
+      "role": "engine-source",
+      "sha256": "sha256:0259924a13f06a9252c4825f836288cc4a50745ffcd9d3b29e7a2f0a6cf3da37"
+    },
+    {
+      "artifact_id": "artifact-7c8f94d9e15903a0e49c17679dcb95a5b1a7c3292407074e0ec5eb3527d27f07",
+      "bytes": 83765,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/equivalence.py",
+      "role": "engine-source",
+      "sha256": "sha256:9268897f184901b5bc5ba85efc6595c9ec8defe0ff752bc59f8d0fb74b9e3d36"
+    },
+    {
+      "artifact_id": "artifact-cd620c6c333f10d493b9d038a427f51fab560fe552f246c4f56e888c43c5c6c3",
+      "bytes": 16567,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/models.py",
+      "role": "engine-source",
+      "sha256": "sha256:654841cc8940ff4618a9c1fcb60bdef1716d9d2b4532ab25b737fcda96d5dd39"
+    },
+    {
+      "artifact_id": "artifact-cfca6b4bc5de6de40263acf287452c6539ee4c7b502c49cdf268461cb5f896a0",
+      "bytes": 8517,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/native.py",
+      "role": "engine-source",
+      "sha256": "sha256:0e9db8a2bfded4c8c244001afb52dc333b8eafd68efcd79b0f0cc61d0d07e3cf"
+    },
+    {
+      "artifact_id": "artifact-23ceceec93d84491068656399f92e4180894fd0de825b7b6df1cbd212e8ad61c",
+      "bytes": 10632,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py",
+      "role": "engine-source",
+      "sha256": "sha256:c6a9176ff2a3a9ae749f23b703bca8932f3060f8b1a27033b3c5295f5e4077d3"
+    },
+    {
+      "artifact_id": "artifact-a9dd9f2c307824245d184946e4b75df2625b7f83d624795839aa3f6e78da09f0",
+      "bytes": 10729,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
+      "role": "engine-source",
+      "sha256": "sha256:38dd84cefed90a3259e356a493c0624713c2e04ec90ca55ca06a0a1484c01c7f"
+    },
+    {
+      "artifact_id": "artifact-e743fda8b420c842e916b1bd356b92c9aa26b1331e67e042303d8d529520227d",
+      "bytes": 7116,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/types.py",
+      "role": "engine-source",
+      "sha256": "sha256:405bb9fa45127d5228d50988e60d1e2942e1762a9e17ce496408fc99fc328b36"
+    },
+    {
+      "artifact_id": "artifact-d11cb3693184b99b6e8423041897583660027de4f3c3a5f66e216ec451c5df26",
+      "bytes": 43818,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/validation.py",
+      "role": "engine-source",
+      "sha256": "sha256:1612ca7f86b9209f565c4848aba00e42312ffd131988be4626f7539abc7729f1"
+    },
+    {
+      "artifact_id": "artifact-aa19699f7cf7da3950798b6b6980f966cf85f1455cc3898b0b1b7c60c1accb6d",
+      "bytes": 26669,
+      "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock",
+      "role": "engine-source",
+      "sha256": "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+    },
+    {
+      "artifact_id": "artifact-5b2ff6adf59eb6f45087777a29df018461eeecb6e97252ec42cfa5ed490c7609",
+      "bytes": 11670,
+      "path": "certification/formal-artifacts/engine-sources/schemas/batch29/formal-equivalence-evidence.schema.json",
+      "role": "engine-source",
+      "sha256": "sha256:c4821219c01e037ca86bb749f7790a892b612e2c6d0cfd382eb40c503a0280c7"
+    },
+    {
+      "artifact_id": "artifact-f368cfb66390af7fa3823c07c673512109298d0169804b28f96c1a70df109ac3",
+      "bytes": 2095,
+      "path": "certification/formal-artifacts/engine-sources/schemas/batch29/module-case-manifest.schema.json",
+      "role": "engine-source",
+      "sha256": "sha256:524d6473cf49ba1880694208fc5dee5f693c74b19902f5198d4823ffcba62cad"
+    },
+    {
+      "artifact_id": "artifact-c9279ab67d0d79e926dad5e16cc97a1de7e4a26da40aa6f95fa8599ec69fe4ee",
+      "bytes": 8681,
+      "path": "certification/formal-artifacts/engine-sources/schemas/batch29/module-equivalence-evidence.schema.json",
+      "role": "engine-source",
+      "sha256": "sha256:03c025beaff2f442a5ed90838637fb5c28ac13d8ef513435e37289130a0b4bb6"
+    },
+    {
+      "artifact_id": "artifact-c50810149a62eb9dc989905ca5892626e8db17bb04a6e1567d313251fe6b93c0",
+      "bytes": 1930,
+      "path": "certification/formal-artifacts/engine-sources/schemas/batch29/route-certification.schema.json",
+      "role": "engine-source",
+      "sha256": "sha256:4a573fa208f5f529d386f1417ba56592fdcf5f8f723d6dc7f0e0d4fc3e0f8b15"
+    },
+    {
+      "artifact_id": "artifact-cec9e6e0420b1a4b6da8c6ef6a5919e605d136780edfdb927caba202dc4058ef",
+      "bytes": 1834,
+      "path": "certification/formal-artifacts/engine-sources/scripts/batch29/route_sets.py",
+      "role": "engine-source",
+      "sha256": "sha256:768408a8e9bca3fd60c502f50d46f25ab9ba934f518c4f5008a5083e242b695e"
+    },
+    {
+      "artifact_id": "artifact-bec960ebee366a74c0e6ceb09dbe3f9b04b61fc38915af7863cb2793c024baa6",
+      "bytes": 109543,
+      "path": "certification/formal-artifacts/engine-sources/scripts/batch29/run_polyglot_routes.py",
+      "role": "engine-source",
+      "sha256": "sha256:b2e3e87b596f78efddc8d3fb196a9669686ddac0417246e68aac68d05ca15333"
+    },
+    {
+      "artifact_id": "artifact-425efbb1c7db3860d3d6d2c097217b04e3436fd393bcbdb13b55884d9f997924",
+      "bytes": 24044,
+      "path": "certification/formal-artifacts/engine-sources/scripts/batch29/run_route_gate.py",
+      "role": "engine-source",
+      "sha256": "sha256:7f99fa9ac1b45469738a39f2b444bc9dd5bab9c931aceef8290dddf77e80d74d"
+    },
+    {
+      "artifact_id": "artifact-f43d107e4f666c6dc2f8c1526eb993e502881dcb05e8c2ecac6bbf025f6e8cf6",
+      "bytes": 194937,
+      "path": "certification/formal-artifacts/engine-sources/scripts/batch29/validate_route.py",
+      "role": "engine-source",
+      "sha256": "sha256:41c8e19d7b6e07555d72a64475345202abfb8f94ad007d7504599d17d571f227"
+    },
+    {
+      "artifact_id": "artifact-87818eea13b1223e5c8520a16b1741701fce9248e285442d2f792f6d49b34df3",
+      "bytes": 22114,
+      "path": "certification/formal-artifacts/engine-sources/scripts/operations/validate_translation_route_matrix.py",
+      "role": "engine-source",
+      "sha256": "sha256:c0b6f55884cc9d0f57ce99322212151d25087c71c5c70e9e326623d361b74f89"
+    },
+    {
+      "artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
+      "bytes": 978,
+      "path": "certification/formal-artifacts/environment.json",
+      "role": "environment",
+      "sha256": "sha256:19941a9785e2b7507eae1e738eaed061a228b86f6279c9d9e04664e2eec8ff1a"
+    },
+    {
+      "artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
+      "bytes": 3181,
+      "path": "certification/formal-artifacts/proof-input-bundle.json",
+      "role": "proof-input-bundle",
+      "sha256": "sha256:ba283a019ad72f7a76e7bafe82a24f5208668cef91cba606e6c306f7f1acfba3"
+    },
+    {
+      "artifact_id": "artifact-c004e557f61fe6c7c84d9f8ceccd870d427f013c3de8f22bc6b947d7fec0696d",
+      "bytes": 3684,
+      "path": "certification/formal-artifacts/source-semantic-ir.normalized.json",
+      "role": "source-ir",
+      "sha256": "sha256:1275a9f160c77add0baf960c24728a09dad2ea38bf95870308040f10427c35e0"
+    },
+    {
+      "artifact_id": "artifact-0b0bb08c601bdfdd3d101393255425ef63dfc9305b8e04746c5d15b62ec1a10c",
+      "bytes": 795,
+      "path": "certification/formal-artifacts/target-artifact-bundle.json",
+      "role": "target-artifact",
+      "sha256": "sha256:e1d779b17118377401a3efb5a030e293572cc692972a1f0ba8a9a92d336dec20"
+    },
+    {
+      "artifact_id": "artifact-8dcde76789e85e05f1b20e064cd4d8d281ccce754aa7513925136fb2e716b405",
+      "bytes": 3684,
+      "path": "certification/formal-artifacts/target-semantic-ir.normalized.json",
+      "role": "target-ir",
+      "sha256": "sha256:1275a9f160c77add0baf960c24728a09dad2ea38bf95870308040f10427c35e0"
+    }
+  ],
+  "artifact_sha256": "sha256:e1d779b17118377401a3efb5a030e293572cc692972a1f0ba8a9a92d336dec20",
+  "behavior_equivalence": {
+    "canonical_oracle_passed": true,
+    "counterexamples": [],
+    "evidence_artifact_ids": [
+      "artifact-7726f1e1ff0c4661ed98cb01f79e8d75e350668ad606685d35570b11938d7e04",
+      "artifact-4af2d8dd5b6c3b1788098be1867fb61410b8231b131f31d8f9fbdc496141209b",
+      "artifact-028b3a4fed5ff0d5c8b1a93c938e4e56ecf69ac1f8e5ec0f7c4849f229f4248b"
+    ],
+    "passed_cases": 12,
+    "source_runtime_artifact_ids": [
+      "artifact-7726f1e1ff0c4661ed98cb01f79e8d75e350668ad606685d35570b11938d7e04",
+      "artifact-4af2d8dd5b6c3b1788098be1867fb61410b8231b131f31d8f9fbdc496141209b",
+      "artifact-028b3a4fed5ff0d5c8b1a93c938e4e56ecf69ac1f8e5ec0f7c4849f229f4248b"
+    ],
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_artifact_ids": [
+      "artifact-7726f1e1ff0c4661ed98cb01f79e8d75e350668ad606685d35570b11938d7e04",
+      "artifact-4af2d8dd5b6c3b1788098be1867fb61410b8231b131f31d8f9fbdc496141209b",
+      "artifact-028b3a4fed5ff0d5c8b1a93c938e4e56ecf69ac1f8e5ec0f7c4849f229f4248b"
+    ],
+    "target_runtime_passed": true,
+    "total_cases": 12
+  },
+  "environment_artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
+  "environment_sha256": "sha256:19941a9785e2b7507eae1e738eaed061a228b86f6279c9d9e04664e2eec8ff1a",
+  "formal_proof": {
+    "assumptions": [
+      "canonical-finite-input-domain:source:value",
+      "canonical-finite-input-domain:target:value",
+      "canonical-no-error-domain:source",
+      "canonical-no-error-domain:target",
+      "canonical-semantics-encoding-soundness:z3-l0-v1",
+      "emitter-normalization-soundness:java",
+      "same-input:fallback:fallback",
+      "same-input:left:left",
+      "same-input:right:right",
+      "same-input:subtotal:subtotal",
+      "same-input:tax:tax",
+      "same-input:value:value",
+      "source-analyzer-soundness:cpp",
+      "source-compiler-runtime-soundness-not-discharged:cpp",
+      "target-analyzer-soundness:java",
+      "target-compiler-runtime-soundness-not-discharged:java",
+      "target-language-primitive-compensation-soundness:java"
+    ],
+    "input_artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
+    "input_digest": "sha256:ba283a019ad72f7a76e7bafe82a24f5208668cef91cba606e6c306f7f1acfba3",
+    "obligations": [
+      {
+        "assumptions": [
+          "canonical-no-error-domain:source",
+          "canonical-no-error-domain:target",
+          "canonical-semantics-encoding-soundness:z3-l0-v1",
+          "emitter-normalization-soundness:java",
+          "same-input:subtotal:subtotal",
+          "same-input:tax:tax",
+          "source-analyzer-soundness:cpp",
+          "source-compiler-runtime-soundness-not-discharged:cpp",
+          "target-analyzer-soundness:java",
+          "target-compiler-runtime-soundness-not-discharged:java",
+          "target-language-primitive-compensation-soundness:java"
+        ],
+        "detail": "Z3 returned UNSAT for source/target divergence with same-input constraints.",
+        "formal_input_artifact_id": "artifact-02c1e341838e3b6faa683d3644b70dd21eff1b4475b6f1efcbcafff7c5a8cf00",
+        "input_digest": "sha256:9de1db61ce4e375bacb32fadd9d4fde34d491c8be23bb2e26de65d7b68b95dc8",
+        "obligation_id": "cpp-to-java:development:L0-DENOTATIONAL-EQUIVALENCE",
+        "scope": "development:typed-pure-function-v1",
+        "solver_input_artifact_id": "artifact-63756a1681d6602d7aa13dd840d0fff195b13a6ab4c14aa1bdbad260e1a66d4a",
+        "solver_result_artifact_id": "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",
+        "status": "PROVED_UNDER_ASSUMPTIONS"
+      },
+      {
+        "assumptions": [
+          "canonical-finite-input-domain:source:value",
+          "canonical-finite-input-domain:target:value",
+          "canonical-no-error-domain:source",
+          "canonical-no-error-domain:target",
+          "canonical-semantics-encoding-soundness:z3-l0-v1",
+          "emitter-normalization-soundness:java",
+          "same-input:value:value",
+          "source-analyzer-soundness:cpp",
+          "source-compiler-runtime-soundness-not-discharged:cpp",
+          "target-analyzer-soundness:java",
+          "target-compiler-runtime-soundness-not-discharged:java",
+          "target-language-primitive-compensation-soundness:java"
+        ],
+        "detail": "Z3 returned UNSAT for source/target divergence with same-input constraints.",
+        "formal_input_artifact_id": "artifact-c3d18527f55cd52b2951277b5e372b94f7c5e161b02313e3443267a1e70ac4d0",
+        "input_digest": "sha256:bf523a03de77719f22c8f2badfb24e5ece88befbf3d5efaa5437f1ee50b21b88",
+        "obligation_id": "cpp-to-java:holdout:L0-DENOTATIONAL-EQUIVALENCE",
+        "scope": "holdout:typed-pure-function-v1",
+        "solver_input_artifact_id": "artifact-0c7d4010eaa877101d7e3c428b3e71f2370a7cf95da06c5934dceb56c3ef4594",
+        "solver_result_artifact_id": "artifact-b9da1b4c822bf936b92e7801a7dda66c113b7463929b0b4ee34d5c7354d9d2f9",
+        "status": "PROVED_UNDER_ASSUMPTIONS"
+      },
+      {
+        "assumptions": [
+          "canonical-no-error-domain:source",
+          "canonical-no-error-domain:target",
+          "canonical-semantics-encoding-soundness:z3-l0-v1",
+          "emitter-normalization-soundness:java",
+          "same-input:fallback:fallback",
+          "same-input:left:left",
+          "same-input:right:right",
+          "source-analyzer-soundness:cpp",
+          "source-compiler-runtime-soundness-not-discharged:cpp",
+          "target-analyzer-soundness:java",
+          "target-compiler-runtime-soundness-not-discharged:java",
+          "target-language-primitive-compensation-soundness:java"
+        ],
+        "detail": "Z3 returned UNSAT for source/target divergence with same-input constraints.",
+        "formal_input_artifact_id": "artifact-725bc005723e47aa15553c1360cbc3ff053c394446774493c0b3ec1bfb4c1cd9",
+        "input_digest": "sha256:455ef90e613e81e2349600d667076d600f357808de06080ce285dea5da71e03f",
+        "obligation_id": "cpp-to-java:real-repository:L0-DENOTATIONAL-EQUIVALENCE",
+        "scope": "real-repository:typed-pure-function-v1",
+        "solver_input_artifact_id": "artifact-eb7bc413a439d3a2bd38060f344d12e61d98f7f2fc0fe7353a8750b246521abb",
+        "solver_result_artifact_id": "artifact-cdde08b8d2b7825eecd97a9c6244499e45d3825bcb79763a8247bc7e2e4b7b19",
+        "status": "PROVED_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "replay": {
+      "command": [
+        "uv",
+        "--directory",
+        "../../engines/polyglot-route-engine",
+        "run",
+        "--locked",
+        "python",
+        "../../scripts/batch29/run_polyglot_routes.py",
+        "--repo-root",
+        "../..",
+        "--route",
+        "cpp-to-java"
+      ],
+      "cwd": ".",
+      "expected_exit_code": 0,
+      "expected_result_artifact_id": "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",
+      "expected_result_sha256": "sha256:9f5ec09836e643d7ef7712d419e4f87e330fc493b996405f2c4dc2a4db696d48"
+    },
+    "result_artifact_ids": [
+      "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",
+      "artifact-b9da1b4c822bf936b92e7801a7dda66c113b7463929b0b4ee34d5c7354d9d2f9",
+      "artifact-cdde08b8d2b7825eecd97a9c6244499e45d3825bcb79763a8247bc7e2e4b7b19"
+    ],
+    "solver": "z3",
+    "solver_options": {
+      "random_seed": 0,
+      "timeout_ms": 30000
+    },
+    "solver_version": "4.16.0",
+    "status": "PROVED_UNDER_ASSUMPTIONS"
+  },
+  "route_key": "cpp-to-java",
+  "route_manifest_sha256": "sha256:825833f57c92201e8a7e90b8ad867dde28fdb991f0fe09bb4f3b0b274d529907",
+  "schema_version": 2,
+  "semantic_chunks": {
+    "ambiguous": 0,
+    "chunks": [
+      {
+        "chunk_id": "development:sha256:0e8d8e2ad9c1b7f0166f9e175189681944bc7a24906c75ee48deb73b72af9fd7",
+        "semantic_hash": "sha256:d81a445a068ccdb1ced9c52c7721771b39cca948e954626ee2ca1a55a70f66b8",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0"
+      },
+      {
+        "chunk_id": "development:sha256:a391606f4249dfd75f0ed685f182e29882607117cf7c738675bda1145fbeb65f",
+        "semantic_hash": "sha256:d3886e8e06272286ead7a18eaa71c6c99e444d11e495208da78eac4089276516",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/parameters/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/parameters/0"
+      },
+      {
+        "chunk_id": "development:sha256:0eeca90ac4fde1cfbdc2c85d9c05291394a7f608835557ac5542581a9858a718",
+        "semantic_hash": "sha256:f9f292032ffa50846d1bdfffc6ee2230b4ad6c110021479e3d3b0a33626ae504",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/parameters/1",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/parameters/1"
+      },
+      {
+        "chunk_id": "development:sha256:c2483d864c58d788c1d48631101bb9ebde4d7afb37d790f4b9ce23056215439c",
+        "semantic_hash": "sha256:7daf3225fb278fa05ca1bd6f07a7b327ca088fe121d0ca0d4c5ab8e9f64b34ae",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/0"
+      },
+      {
+        "chunk_id": "development:sha256:56888695bfc92f45f2da0174eccfb45e9d07c3fd88b85d0b42d2b73804959f9c",
+        "semantic_hash": "sha256:770787d477c266baf77799eda6881dfa977692b2104ad741f29414925d66ed13",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/0/condition",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/0/condition"
+      },
+      {
+        "chunk_id": "development:sha256:05e1d6b65e8b0efdae57ec96a48bd3ba3f601a654e571fa1ce31da7429f16419",
+        "semantic_hash": "sha256:a1b2f233d6f52fe3bf25c4efddbaedb7aa43d853c6d7e5a5e08fc65d4ebdaad1",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/0/condition/left",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/0/condition/left"
+      },
+      {
+        "chunk_id": "development:sha256:e41ab8a855e9d5638c496f8f0a490e325cb2feea12ed79b18ffe0714e62ed12c",
+        "semantic_hash": "sha256:1526b7aaf763a65b7048cabaf1fd23df885f6fd4eb6b9c5c377de16f11e074db",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/0/condition/right",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/0/condition/right"
+      },
+      {
+        "chunk_id": "development:sha256:c967ba4e3e7edbf686d39fa92270ca745da2815b80cd7ed2bc42fe714d3b03c9",
+        "semantic_hash": "sha256:dc9ecb03dcc8d19e75e45f8195f28956d87876e4bf895a2e535b787a3aa0bfc5",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/0/then/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/0/then/0"
+      },
+      {
+        "chunk_id": "development:sha256:be6fc3b656da40271b3b329c0eef54dfc92ea0daaa939b9506e6708195a2d7fc",
+        "semantic_hash": "sha256:1526b7aaf763a65b7048cabaf1fd23df885f6fd4eb6b9c5c377de16f11e074db",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/0/then/0/expression",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/0/then/0/expression"
+      },
+      {
+        "chunk_id": "development:sha256:4e6686dc77d5c1fb5a6a013c19a94d0065a69bfe3fcb7473a8e550de8ad75320",
+        "semantic_hash": "sha256:25eeb7e2cfbcfd67c33d8e81a0f82ce25960e302727e29e38efbaa60f146ca3a",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/1",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/1"
+      },
+      {
+        "chunk_id": "development:sha256:569ef96adab707b2afe915581bad0c046ab268b0755fbeb35689021703aa70ad",
+        "semantic_hash": "sha256:7264546493057e9b128acddef2e5caff3c93d7564790fc94080dfc4c3bc221ec",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/1/expression",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/1/expression"
+      },
+      {
+        "chunk_id": "development:sha256:36ad2fa09836dd44007bfde90c4b45f2bd30701dccfe8b6a219c604549c090b9",
+        "semantic_hash": "sha256:a1b2f233d6f52fe3bf25c4efddbaedb7aa43d853c6d7e5a5e08fc65d4ebdaad1",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/1/expression/left",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/1/expression/left"
+      },
+      {
+        "chunk_id": "development:sha256:531a5a8592e2300b63ccc680809d126e225ce824916109f982c1340fe5ebcbd2",
+        "semantic_hash": "sha256:95555cd7b9f8754e00c3e500e587b3f9287405e94fb2a8c21e117a2b753b4974",
+        "source_ref": "artifact-8c6aa51be20d865c2e3d49f02db39ecdc7b171c0797632ccab92cb246787f240#/functions/0/body/1/expression/right",
+        "status": "MATCHED",
+        "target_ref": "artifact-f9fcc8df523630ad0092a444a46cfcd16a6401f116a3fdf206690dcf2dfb49dc#/functions/0/body/1/expression/right"
+      },
+      {
+        "chunk_id": "holdout:sha256:68d912a20fd8679bb23d369caf2410661c1c8cd1cf56f0016b52e61c5ca8d928",
+        "semantic_hash": "sha256:393bb9004fe6877705236fb07ebba71e7ba70e2a7f687bc1b6702cc9fb1debd2",
+        "source_ref": "artifact-0ee9467a6c47e074228503193e6f51160c800317aee6fca37e3b8f1c3a07383e#/functions/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-1137966695e79e4cf17abd46f22509342f900591f2e405df121340311213f652#/functions/0"
+      },
+      {
+        "chunk_id": "holdout:sha256:fcbf3b34d03ad0b6c70a5d1b7cc4f98db6cd875f8a71c139c76c2521635cacfe",
+        "semantic_hash": "sha256:4c6e93c24ca331620e870b929cbd51b4d004515bc76e600df3d50d65d084cf80",
+        "source_ref": "artifact-0ee9467a6c47e074228503193e6f51160c800317aee6fca37e3b8f1c3a07383e#/functions/0/parameters/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-1137966695e79e4cf17abd46f22509342f900591f2e405df121340311213f652#/functions/0/parameters/0"
+      },
+      {
+        "chunk_id": "holdout:sha256:4b2f9c2238f1f46f8c38e31aa57ca46435a015f2755aac8c36c9dde28780a28e",
+        "semantic_hash": "sha256:791ff6c68a23e38a5b1c986d31b9de40243f26ab65cc4e5297a69e1a1f440d42",
+        "source_ref": "artifact-0ee9467a6c47e074228503193e6f51160c800317aee6fca37e3b8f1c3a07383e#/functions/0/body/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-1137966695e79e4cf17abd46f22509342f900591f2e405df121340311213f652#/functions/0/body/0"
+      },
+      {
+        "chunk_id": "holdout:sha256:eb87a20a74947e4a63dc4b967cca2ea95e053aab1c8f641bb8fb31198937cc51",
+        "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+        "source_ref": "artifact-0ee9467a6c47e074228503193e6f51160c800317aee6fca37e3b8f1c3a07383e#/functions/0/body/0/expression",
+        "status": "MATCHED",
+        "target_ref": "artifact-1137966695e79e4cf17abd46f22509342f900591f2e405df121340311213f652#/functions/0/body/0/expression"
+      },
+      {
+        "chunk_id": "real-repository:sha256:9330357c39ab10fc2189a72730e62a488c84355b8ea972371050c212f86da7fc",
+        "semantic_hash": "sha256:3b779aa91455a93cd33441b94da26630eb32225179b31516df383ecf246e2677",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0"
+      },
+      {
+        "chunk_id": "real-repository:sha256:44e919f7eb1a714d96045541d434217c04b04e42e2a44014f77496b491f60260",
+        "semantic_hash": "sha256:40010c4f843bc474b504ca90667b45caf8d69555824e6e9a2e994d81e65f0bfd",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/parameters/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/parameters/0"
+      },
+      {
+        "chunk_id": "real-repository:sha256:46059fdb4f40d283741a8ebf52b7ec89032483da186359b82efbadd070cc2b1f",
+        "semantic_hash": "sha256:d6b7aa9052edf1441eff4f00fb36b2ec17e72621181f22c62ee5e7e1721ab279",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/parameters/1",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/parameters/1"
+      },
+      {
+        "chunk_id": "real-repository:sha256:8bf7d62cc6e29ff570b78fa9877b074e5df7da787a1d5899d9abc736f015f367",
+        "semantic_hash": "sha256:9671fcef8670c4c97eb3c39ec6fb257454c35ff9dd574c3fcab80ce4c85b2fac",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/parameters/2",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/parameters/2"
+      },
+      {
+        "chunk_id": "real-repository:sha256:d896bfbc2b90e65294242445823fecde4367a4505c3723b0e962a0bc97354f5b",
+        "semantic_hash": "sha256:50f5b29454841684c7183f29a642dcfa74999210a6fead5596ddbcb5f96cf6b0",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0"
+      },
+      {
+        "chunk_id": "real-repository:sha256:dda0760e72d7bc941a9b841bd38e90d8f388108c1610ea18185248541248e941",
+        "semantic_hash": "sha256:1a6d89ae584ff0aec5eefb01376289b6bae8a3950a0821525865630e43c3289b",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/condition",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/condition"
+      },
+      {
+        "chunk_id": "real-repository:sha256:72ae89ade3853f45292b6fd3001dc020693d479c7f1b9f9df2c31cc90f63ee4c",
+        "semantic_hash": "sha256:a2ad8a74ee018071718d36a45f7c78eab25dcfe40c3db49ae133360656dce541",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/condition/left",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/condition/left"
+      },
+      {
+        "chunk_id": "real-repository:sha256:3493841934f72f8277d61c5bae98d622d5aba68a5c8288dde2d1732357993ed4",
+        "semantic_hash": "sha256:6a7a75b8577de0e17c331bc3bf9ecdb9a9be63fb3433a3278b7478b3a271da20",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/condition/left/left",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/condition/left/left"
+      },
+      {
+        "chunk_id": "real-repository:sha256:5a371ccec7555c92c53f4e488e042287c3c2f0c004ab8983695ec93f5f7e8bf6",
+        "semantic_hash": "sha256:36a0598f311fa31ea2246e83b4504fae8b3e4a541de7e3bd7f50f148326304a2",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/condition/left/right",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/condition/left/right"
+      },
+      {
+        "chunk_id": "real-repository:sha256:6825475e7e3f52e0e075069d9b76c6465f9b6b93eba478d21ba0da781bc84854",
+        "semantic_hash": "sha256:7e5f70718bac082fd04fb9fac9011e089d572a152aed9d294ebd9dc088935028",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/condition/right",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/condition/right"
+      },
+      {
+        "chunk_id": "real-repository:sha256:1b2b3eedba881e33b41c13728bfc3698c714e473fd99822bdaec341237dc0f25",
+        "semantic_hash": "sha256:512f6d68a5d3b82c51fcbeb358c001acc7ba71dcd98353f51c7d599dbf8cef46",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/then/0",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/then/0"
+      },
+      {
+        "chunk_id": "real-repository:sha256:5452e61c6669730b5b92aa95c79d8e69a6292b2535aa2f0db4dad611e443185d",
+        "semantic_hash": "sha256:e69b80c524a2f177086b313fc63f82f9a4226ee8468a460777a30c14256bcfc9",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/0/then/0/expression",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/0/then/0/expression"
+      },
+      {
+        "chunk_id": "real-repository:sha256:c98afb2dccf036f07c3f67312300d28de653843145e72b8fb351e6160d30c0ba",
+        "semantic_hash": "sha256:de3b6d9e961c55714732188fbbcc34951a9e7aacd9a564efc9ca7a0c2d992c44",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/1",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/1"
+      },
+      {
+        "chunk_id": "real-repository:sha256:0ed0eac6c5188a8882095c679bd19412bcee44d0a365c8b6c16b8e04f0cf8193",
+        "semantic_hash": "sha256:2c407da4cde1f917da46a9fcc79e483d73fd92153876250e657730ce24f552ec",
+        "source_ref": "artifact-b5639ed8e960fb9de87c022300b3d06d2be62d487eb71b7c0dd3861693332c5b#/functions/0/body/1/expression",
+        "status": "MATCHED",
+        "target_ref": "artifact-717c98fa1bde70a989f692a5f21cbd5fd37a39111851366d07b9e757361bbba5#/functions/0/body/1/expression"
+      }
+    ],
+    "coverage": 1.0,
+    "evidence_artifact_ids": [
+      "artifact-9639f206eb794d55e059b31c8d4a09cb2f533111ccbbd313eeb574e246c10806",
+      "artifact-d27b995082be51999e0aed1159b34698cbb88334ff187f3349286fb499e40201",
+      "artifact-60b3e45411fdec7e3b4bec9190c232990a2d910d6aa6005f89567dc8792a6ea3"
+    ],
+    "matched": 31,
+    "status": "PASSED",
+    "total": 31,
+    "unmatched": 0
+  },
+  "semantic_ir": {
+    "differences": [],
+    "source_ir_artifact_id": "artifact-c004e557f61fe6c7c84d9f8ceccd870d427f013c3de8f22bc6b947d7fec0696d",
+    "source_ir_sha256": "sha256:1275a9f160c77add0baf960c24728a09dad2ea38bf95870308040f10427c35e0",
+    "status": "PASSED",
+    "target_ir_artifact_id": "artifact-8dcde76789e85e05f1b20e064cd4d8d281ccce754aa7513925136fb2e716b405",
+    "target_relift_ir_sha256": "sha256:1275a9f160c77add0baf960c24728a09dad2ea38bf95870308040f10427c35e0",
+    "unknown_or_dropped_nodes": 0
+  },
+  "semantic_profile": "typed-pure-function-v1",
+  "semantic_profile_sha256": "sha256:ea0461c87ba10a762ab0471cee0c6546108ebfab6972d2e21a758b3afaa72440"
+}

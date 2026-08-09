@@ -1,17 +1,24 @@
 {
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": "typed-pure-function-v1",
+  "evidence_format": 2,
   "evidence_refs": [
     "certification/local-development-evidence.json",
     "certification/local-holdout-evidence.json",
-    "certification/local-representative-evidence.json"
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json"
   ],
+  "formal_equivalence": {
+    "bytes": 64536,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:6396ce3c357df85b389e3ffe529639212a48581476c2d97691c95de9f0bb7290"
+  },
   "gate_results": {
     "external_execution": "NOT_RUN",
     "independent_verification": "NOT_RUN",
     "local_execution": "PASSED"
   },
-  "issued_at": "2026-08-05T09:29:27.664161+00:00",
+  "issued_at": "2026-08-09T03:43:01.299173+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,

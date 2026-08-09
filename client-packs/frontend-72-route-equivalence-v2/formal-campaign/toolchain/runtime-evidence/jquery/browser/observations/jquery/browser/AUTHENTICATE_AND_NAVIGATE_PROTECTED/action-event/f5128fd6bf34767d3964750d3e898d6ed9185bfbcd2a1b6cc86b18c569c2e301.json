@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "AUTHENTICATE",
+    "event": "AUTHENTICATE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a153ca251c71ff44f9a74edfd0080e40c4dd83556f59df1b93c499ecbc160651",
+      "block_id": "action-event",
+      "byte_count": 3335,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-native-event-outcome-observer-trace/e3271836dc7a38c6a77eb5a4b132d32aeff8c5386b29130e1d0d01e980a9621b.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+      "sha256": "sha256:e3271836dc7a38c6a77eb5a4b132d32aeff8c5386b29130e1d0d01e980a9621b"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0db0d56e54442566ffa314c046cfc4fd33ee27e86e9094488abbcd7d7711969a",
+        "byte_count": 5315,
+        "channel": "browser",
+        "path": "traces/jquery/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-framework-event-trace/02249d8c1ca83ade9720e309c3b5bd719bed95eae091da5a626f6313bd21c318.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:02249d8c1ca83ade9720e309c3b5bd719bed95eae091da5a626f6313bd21c318"
+      }
+    ]
+  },
+  "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+  "schema_version": "1.0"
+}

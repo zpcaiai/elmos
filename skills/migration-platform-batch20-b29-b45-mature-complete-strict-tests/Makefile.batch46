@@ -1,0 +1,3 @@
+validate-b46:
+	python3 scripts/batch46/validate_skill_bundle.py
+	python3 -m unittest tests/batch46/test_toolkit.py

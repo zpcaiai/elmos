@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v1",
+  "capabilities": [
+    {
+      "id": "route-and-navigation",
+      "domain": "navigation",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign.json"
+      ],
+      "reason": "Bounded local model/formal evidence only; certification remains NOT_CERTIFIED."
+    },
+    {
+      "id": "component-and-view",
+      "domain": "component",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign.json"
+      ],
+      "reason": "Bounded local model/formal evidence only; certification remains NOT_CERTIFIED."
+    },
+    {
+      "id": "state-and-effects",
+      "domain": "state",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign.json"
+      ],
+      "reason": "Bounded local model/formal evidence only; certification remains NOT_CERTIFIED."
+    },
+    {
+      "id": "forms-and-validation",
+      "domain": "forms",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign.json"
+      ],
+      "reason": "Bounded local model/formal evidence only; certification remains NOT_CERTIFIED."
+    },
+    {
+      "id": "identity-and-permission",
+      "domain": "security",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign.json"
+      ],
+      "reason": "Bounded local model/formal evidence only; certification remains NOT_CERTIFIED."
+    },
+    {
+      "id": "accessibility-i18n-visual",
+      "domain": "quality",
+      "status": "experimental",
+      "owner": "frontend-client-platform-team",
+      "source_versions": [
+        "UNSET"
+      ],
+      "target_versions": [
+        "UNSET"
+      ],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign.json"
+      ],
+      "reason": "Bounded local model/formal evidence only; certification remains NOT_CERTIFIED."
+    }
+  ]
+}

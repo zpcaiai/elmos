@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": true,
+    "resolution": "DECLARED",
+    "selectedPath": "/account",
+    "selectedRouteId": "route.account"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:900079dfc091f731bf961097213e524e75fc1a509b953b0ac8588a0a9b64dc84",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2450,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue3/browser/KEYBOARD_ENTER_SUBMIT/browser-route-dom-url-observer-trace/d89eca3d20490c56960c233fd604e8e84605cc10b9da6567b64bb9757d389b90.json",
+      "profile_id": "vue3",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+      "sha256": "sha256:d89eca3d20490c56960c233fd604e8e84605cc10b9da6567b64bb9757d389b90"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:55799c2c6ee37d3386e9d3e7e0c71c56c7f9089f9c59e4724992fe1e8b9ef2e8",
+        "byte_count": 40688,
+        "channel": "browser",
+        "path": "traces/vue3/browser/KEYBOARD_ENTER_SUBMIT/browser-dom-snapshot/a6868401b566674ee75275950dad5b5ce1d5a8310ce3581495ac939a9dcfc4cd.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+        "sha256": "sha256:a6868401b566674ee75275950dad5b5ce1d5a8310ce3581495ac939a9dcfc4cd"
+      },
+      {
+        "artifact_id": "sha256:94c89f97102f10fd9a91e913a11399565e2e2a1409c51f51744a2af50b962085",
+        "byte_count": 8263,
+        "channel": "browser",
+        "path": "traces/vue3/browser/KEYBOARD_ENTER_SUBMIT/browser-framework-event-trace/c9de0ac5a92234e947ca9610174edbd3abff7b718d320288f7fbec157ca2c90e.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+        "sha256": "sha256:c9de0ac5a92234e947ca9610174edbd3abff7b718d320288f7fbec157ca2c90e"
+      }
+    ]
+  },
+  "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+  "schema_version": "1.0"
+}

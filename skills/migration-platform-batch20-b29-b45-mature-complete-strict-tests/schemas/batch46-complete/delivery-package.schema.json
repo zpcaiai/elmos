@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "packages"
+  ],
+  "properties": {
+    "packages": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "inputs",
+          "outputs",
+          "scope",
+          "supported_routes",
+          "human_services",
+          "acceptance",
+          "duration",
+          "pricing",
+          "customer_responsibilities",
+          "exclusions"
+        ],
+        "properties": {
+          "name": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "inputs": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "outputs": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "scope": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "supported_routes": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "human_services": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "acceptance": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "duration": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "pricing": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "customer_responsibilities": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          },
+          "exclusions": {
+            "type": [
+              "array",
+              "object",
+              "string",
+              "number"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,57 @@
+{
+  "actual_source": "ALLOWLISTED_BLOCK_OBSERVER_CAPTURE",
+  "block_id": "form-binding-validation",
+  "capture": {
+    "browser_matrix": [
+      {
+        "browser_id": "google-chrome",
+        "measurement": {
+          "active_element": {
+            "focus_target": null
+          },
+          "control": {
+            "field_id": "query",
+            "form_id": "search",
+            "value": ""
+          },
+          "error_dom": {
+            "error_code": null
+          },
+          "validity_state": {
+            "submitted": false,
+            "valid": false
+          }
+        }
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "measurement": {
+          "active_element": {
+            "focus_target": null
+          },
+          "control": {
+            "field_id": "query",
+            "form_id": "search",
+            "value": ""
+          },
+          "error_dom": {
+            "error_code": null
+          },
+          "validity_state": {
+            "submitted": false,
+            "valid": false
+          }
+        }
+      }
+    ],
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "observer_contract": "block-specific-runtime-observation-v1"
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-block-observer-trace-artifact",
+  "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+  "profile_id": "jquery",
+  "role": "browser-form-validity-observer-trace",
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

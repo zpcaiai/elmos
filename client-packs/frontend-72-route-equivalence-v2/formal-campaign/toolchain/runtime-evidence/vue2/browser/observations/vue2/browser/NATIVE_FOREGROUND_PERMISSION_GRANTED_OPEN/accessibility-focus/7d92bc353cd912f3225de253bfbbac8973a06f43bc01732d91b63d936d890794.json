@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:fb5cacbf919fe67b0ece6e5c074643a8dbc84cc443ab9ec33fb3edb7d997556e",
+      "block_id": "accessibility-focus",
+      "byte_count": 552737,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/vue2/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-tree-focus-observer-trace/51ef0144d3543f53d66a45c0618e94c83ce3f72f8c83f0f27baf94f8d84e9603.json",
+      "profile_id": "vue2",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:51ef0144d3543f53d66a45c0618e94c83ce3f72f8c83f0f27baf94f8d84e9603"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:b0001034d27a998224ba7451cacac38bb7a9d7095cf8efa197992bb1a339b0fb",
+        "byte_count": 553705,
+        "channel": "browser",
+        "path": "traces/vue2/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-axe-trace/441a9483ca071356c3c2c662ec378722ee01b5ff12be3b0b99d3bba70a52ace3.json",
+        "profile_id": "vue2",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:441a9483ca071356c3c2c662ec378722ee01b5ff12be3b0b99d3bba70a52ace3"
+      },
+      {
+        "artifact_id": "sha256:97713ba95a4281b4fe5fd2bacf043983b26f0fb04c9b7f498e89f39b5496999c",
+        "byte_count": 5355,
+        "channel": "browser",
+        "path": "traces/vue2/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-framework-event-trace/7cd9a327a4b9f651a46f2d7ebaa3038c2ee52dd3848aaec6cb85c254d454599d.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:7cd9a327a4b9f651a46f2d7ebaa3038c2ee52dd3848aaec6cb85c254d454599d"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

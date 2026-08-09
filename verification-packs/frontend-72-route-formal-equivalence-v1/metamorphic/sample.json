@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.idempotent",
+  "claim_id": "claim.behavior",
+  "owner": "TODO",
+  "preconditions": [
+    "operation-is-idempotent"
+  ],
+  "transformation": {
+    "kind": "repeat-input"
+  },
+  "expected_relation": {
+    "kind": "same-final-state"
+  },
+  "oracle_refs": [
+    "oracle.business"
+  ],
+  "non_applicable": []
+}

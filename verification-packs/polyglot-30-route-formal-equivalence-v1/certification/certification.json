@@ -1,0 +1,42 @@
+{
+  "approved_at": null,
+  "evidence_refs": [
+    "formal-route-campaign.json",
+    "solver/arithmetic-campaign.json",
+    "evidence/route-set.json"
+  ],
+  "exact_scope": {
+    "environment_digest": "sha256:e3b7d22d2ae5ac65e7f5776a269afc4e84404f72ea36542fdcb6bd27d62f1ad7",
+    "external_certification": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "migration_route": "six-language-complete-directed-matrix-30-routes",
+    "risk_tier": "P0",
+    "route_count": 30,
+    "source_artifact_digest": "sha256:9687fcc58042cdfb7c839cf1de84ced86cc177ea7a7923e873c5afeb2889fc2a",
+    "target_artifact_digest": "sha256:f27cf681ece71c354c34a3ce2a7ebb9e0591998fbf2c76467e33f72d69d5586f",
+    "workload_key": "typed-pure-function-v1"
+  },
+  "limitations": [
+    "NOT_CERTIFIED",
+    "Formal route campaign contains required NOT_RUN obligations.",
+    "Independent verification NOT_RUN.",
+    "External/customer/production validation NOT_RUN.",
+    "L1+ semantics outside declared profile remain unsupported."
+  ],
+  "metrics": {
+    "arithmetic_axiom": 30,
+    "arithmetic_bounded": 3,
+    "arithmetic_proved_64_bit": 7,
+    "arithmetic_proved_under_assumptions": 5,
+    "directed_route_count": 30,
+    "independent_verification_pass_rate": 0.0,
+    "local_behavior_case_count": 270,
+    "locally_exercised_semantic_block_count": 7,
+    "representative_customer_workload_pass_rate": 0.0,
+    "semantic_block_count": 12
+  },
+  "owner": "elmos-polyglot-verification-engineering",
+  "pack_key": "polyglot-30-route-formal-equivalence-v1",
+  "schema_version": 1,
+  "status": "experimental"
+}

@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "SUBMIT_ACCEPTED",
+    "event": "SUBMIT",
+    "handled": true,
+    "keyboardKey": "Enter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3e862876dce88885a3eb8b11ac8c6e560b9e86e81ec4890616e62221b07b29b0",
+      "block_id": "action-event",
+      "byte_count": 4009,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-native-event-outcome-observer-trace/4cf12076e7fc8220dacb93e239463ea1ff322e11e2e68ea4bd6e229196e156cd.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:4cf12076e7fc8220dacb93e239463ea1ff322e11e2e68ea4bd6e229196e156cd"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0924969f5cf9e871cab3059581952204b0fe0f0cb99979159fcd82a336cdf4cf",
+        "byte_count": 8333,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-event-trace/7ea6f6f9774ab36cf42cd81606dfc85598dbaed62d0d56673b0b37796eb8e3b1.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:7ea6f6f9774ab36cf42cd81606dfc85598dbaed62d0d56673b0b37796eb8e3b1"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

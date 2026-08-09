@@ -100,6 +100,90 @@ def complete_pack(pack: Path) -> None:
 
 
 class ToolkitTests(unittest.TestCase):
+    def ui_project_request(self, framework='vue2', version='2.7.16', platform='WEB'):
+        node = {
+            'id': 'node.fixture', 'name': 'fixture', 'kind': 'fixture',
+            'references': [], 'sourceRefs': [],
+        }
+        route = {
+            **node, 'id': 'route.fixture', 'kind': 'route', 'path': '/',
+            'componentId': 'component.fixture', 'requiresAuth': False,
+            'deepLink': True,
+        }
+        component = {
+            **node, 'id': 'component.fixture', 'kind': 'component',
+            'text': 'fixture', 'accessibilityRole': 'main',
+        }
+        groups = {
+            key: [{**node, 'id': f'{key}.fixture', 'kind': key}]
+            for key in (
+                'views', 'states', 'actions', 'effects', 'forms', 'bindings',
+                'permissions', 'resources', 'designTokens', 'accessibility',
+            )
+        }
+        return {
+            'schemaVersion': '1.0', 'projectName': 'fixture-project',
+            'applicationId': 'fixture.application', 'title': 'Fixture',
+            'source': {
+                'framework': framework, 'version': version, 'platform': platform,
+            },
+            'targetFramework': 'react' if framework != 'react' else 'vue3',
+            'packageName': 'fixture_project', 'bundleId': 'io.elmos.fixture',
+            'uiIr': {
+                'schemaVersion': '1.0',
+                'sourceSnapshotDigest': 'sha256:' + '1' * 64,
+                'routes': [route], 'components': [component], **groups,
+                'nativeBoundaries': [], 'unknowns': [],
+            },
+        }
+
+    def test_ui_project_schema_binds_exact_source_profile_and_runtime_node_shape(self):
+        import jsonschema
+        schema = json.loads(
+            (ROOT / 'schemas' / 'batch32' / 'ui-project-generation.schema.json').read_text()
+        )
+        exact_sources = (
+            ('angular', '22.0.8', 'WEB'),
+            ('flutter', '3.44.1', 'ANDROID'),
+            ('harmony-arkui', '6.0.0(20)', 'HARMONYOS'),
+            ('jquery', '4.0.0', 'WEB'),
+            ('react', '19.2.8', 'WEB'),
+            ('react-native', '0.86.0', 'IOS'),
+            ('svelte', '5.56.8', 'WEB'),
+            ('vue2', '2.7.16', 'WEB'),
+            ('vue3', '3.5.40', 'WEB'),
+        )
+        for framework, version, platform in exact_sources:
+            jsonschema.validate(
+                self.ui_project_request(framework, version, platform), schema
+            )
+        for field, value in (('version', '3.0.0'), ('platform', 'ANDROID')):
+            request = self.ui_project_request()
+            request['source'][field] = value
+            with self.assertRaises(jsonschema.ValidationError):
+                jsonschema.validate(request, schema)
+        request = self.ui_project_request()
+        del request['uiIr']['views'][0]['sourceRefs']
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate(request, schema)
+
+    def test_ui_project_schema_requires_owned_described_unknowns(self):
+        import jsonschema
+        schema = json.loads(
+            (ROOT / 'schemas' / 'batch32' / 'ui-project-generation.schema.json').read_text()
+        )
+        request = self.ui_project_request()
+        request['uiIr']['unknowns'] = [{
+            'id': 'unknown.fixture', 'name': 'unknown', 'kind': 'unknown',
+            'references': [], 'sourceRefs': [], 'severity': 'high',
+            'description': 'unsupported fixture behavior',
+            'owner': 'client-platform-team',
+        }]
+        jsonschema.validate(request, schema)
+        del request['uiIr']['unknowns'][0]['owner']
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate(request, schema)
+
     def test_account_usage_corpora_are_independent_and_fail_closed(self):
         pack = ROOT / 'client-packs' / 'elmos-web-console-account-usage'
         subprocess.run([

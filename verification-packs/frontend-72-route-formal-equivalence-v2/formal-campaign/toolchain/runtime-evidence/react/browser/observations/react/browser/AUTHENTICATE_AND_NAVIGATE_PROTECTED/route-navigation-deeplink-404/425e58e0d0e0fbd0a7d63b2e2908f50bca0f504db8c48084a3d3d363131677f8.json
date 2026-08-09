@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": true,
+    "resolution": "DECLARED",
+    "selectedPath": "/account",
+    "selectedRouteId": "route.account"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:21a263595cf82afddb698a74ed20633cc75ef43c59bada0f15a7a47141ee7f84",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2465,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/react/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-route-dom-url-observer-trace/d713bda00f00cfd4a7dc981e31460937b9ff11dd93fc028c23f568c5465907d2.json",
+      "profile_id": "react",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+      "sha256": "sha256:d713bda00f00cfd4a7dc981e31460937b9ff11dd93fc028c23f568c5465907d2"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:d62db7b7dceb2448999fcb470c070eac2e3feaedda8a3c8e6f99f4dba0ddda40",
+        "byte_count": 40445,
+        "channel": "browser",
+        "path": "traces/react/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-dom-snapshot/c900e43229951623cca9875ed1232bbf5dec5caeb0bf9039252dc5ab0e1f676e.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:c900e43229951623cca9875ed1232bbf5dec5caeb0bf9039252dc5ab0e1f676e"
+      },
+      {
+        "artifact_id": "sha256:d89a4eba6de77a16322989fc5fc21339c6674b09c0ec8dfc7a17f025a5cd9d92",
+        "byte_count": 5314,
+        "channel": "browser",
+        "path": "traces/react/browser/AUTHENTICATE_AND_NAVIGATE_PROTECTED/browser-framework-event-trace/3b93e00774c8bda8369ac30089ee8dfb3fc6ba234a4132f4ff83f5babd34389f.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+        "sha256": "sha256:3b93e00774c8bda8369ac30089ee8dfb3fc6ba234a4132f4ff83f5babd34389f"
+      }
+    ]
+  },
+  "scenario_id": "AUTHENTICATE_AND_NAVIGATE_PROTECTED",
+  "schema_version": "1.0"
+}

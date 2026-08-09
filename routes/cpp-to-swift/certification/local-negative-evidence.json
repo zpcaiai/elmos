@@ -1,0 +1,207 @@
+{
+  "cases": [
+    {
+      "case_id": "cpp-long-width",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 41,
+          "path": "corpus/negative/cpp_long_width.cpp",
+          "role": "source",
+          "sha256": "sha256:7786438be7a70c9750e9ee05bf7b6be213d1d1948e3974f02c0c4c53a5042086"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:long",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "cpp-unsigned-domain",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 78,
+          "path": "corpus/negative/cpp_unsigned_domain.cpp",
+          "role": "source",
+          "sha256": "sha256:43072a2d2e51ddf460e29fdf06e122923b510916d86ca9ba412730afdfcc5a7c"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "CPP_UNSUPPORTED_TYPE:unsigned long long",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "missing-symbol-fails-closed",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 150,
+          "path": "corpus/development/pricing.cpp",
+          "role": "source",
+          "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
+        },
+        {
+          "bytes": 205,
+          "path": "corpus/development/cases.json",
+          "role": "cases",
+          "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "FUNCTION_NOT_FOUND:__elmos_missing_function__",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "specialized-non-finite-case-unsupported",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 50,
+          "path": "corpus/holdout/echo_number.cpp",
+          "role": "source",
+          "sha256": "sha256:0c81943e3ce45f1df9df4c45dab0c8e5fccb1f9a4a10c4268305c964e867afc5"
+        },
+        {
+          "bytes": 34,
+          "path": "corpus/negative/non_finite_number_cases.json",
+          "role": "cases",
+          "sha256": "sha256:9f3d71e43aeb4837030e6822cd00d5911d7c72f1cfc3e39890c9b01469d07bf3"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:cpp-to-swift:echoNumber:0",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "specialized-number-arithmetic-unsupported",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 69,
+          "path": "corpus/negative/number_arithmetic.cpp",
+          "role": "source",
+          "sha256": "sha256:08d82442539c74e1ded804614885e2bb4e4f5a1f047dd886f25e36ae11ce356f"
+        },
+        {
+          "bytes": 76,
+          "path": "corpus/negative/number_arithmetic_cases.json",
+          "role": "cases",
+          "sha256": "sha256:00b7757f97d39f8086ee0acd468d4bc6b4414a6d4b2ea13920a12afce65d97bb"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:cpp-to-swift:addNumber",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "specialized-overflow-outside-no-error-domain",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 150,
+          "path": "corpus/development/pricing.cpp",
+          "role": "source",
+          "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
+        },
+        {
+          "bytes": 105,
+          "path": "corpus/negative/canonical_overflow_cases.json",
+          "role": "cases",
+          "sha256": "sha256:6dd10f31cb2b35dafc946829946524222c3b0ebdf64c8f69ec89ccb9391c2dd5"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "SPECIALIZED_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN:cpp-to-swift:calculate:0:IntegerOverflow",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "specialized-string-semantics-unsupported",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 105,
+          "path": "corpus/negative/canonical_string_equality.cpp",
+          "role": "source",
+          "sha256": "sha256:0939cca5352a8dd1004348af7e52040606b93e86339abb3f41b97e6ce6fb2978"
+        },
+        {
+          "bytes": 237,
+          "path": "corpus/negative/canonical_string_cases.json",
+          "role": "cases",
+          "sha256": "sha256:93ac4c8504a0448730f4d38494782dc2eec43a8f26e3f32870809fd233062731"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:cpp-to-swift:same",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "swift-helper-tamper",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 241,
+          "path": "corpus/negative/swift_helper_tamper.swift",
+          "role": "source",
+          "sha256": "sha256:380aebad6fee5349c94890d6d580d838200f2ca65ab2ef651db6a2af5eff058d"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "EMITTED_HELPER_SOURCE_MISMATCH:swift:non_zero_double:elmosNonZero",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "swift-int-requires-int64",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 49,
+          "path": "corpus/negative/swift_int_width.swift",
+          "role": "source",
+          "sha256": "sha256:a28c15735fb69e5fec77db2d0c0ab0bbc0bee62c9e0ad0181cfb9eec98f787db"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    },
+    {
+      "case_id": "undeclared-directed-route-fails-closed",
+      "expected_result": "BLOCKED",
+      "input_refs": [
+        {
+          "bytes": 884,
+          "path": "corpus/negative/undeclared_java_to_java.java",
+          "role": "source-module",
+          "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
+        },
+        {
+          "bytes": 2794,
+          "path": "corpus/negative/undeclared_java_to_java_cases.json",
+          "role": "case-manifest",
+          "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+        }
+      ],
+      "native_analysis": "EXECUTED",
+      "observed_reason": "SOURCE_AND_TARGET_MUST_DIFFER",
+      "status": "PASSED",
+      "target_execution": "NOT_REACHED_BY_DESIGN"
+    }
+  ],
+  "expected_result": "BLOCKED",
+  "external_certification": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "route": "cpp-to-swift",
+  "schema_version": 1,
+  "status": "PASSED",
+  "test_integrity": "PRESERVED"
+}

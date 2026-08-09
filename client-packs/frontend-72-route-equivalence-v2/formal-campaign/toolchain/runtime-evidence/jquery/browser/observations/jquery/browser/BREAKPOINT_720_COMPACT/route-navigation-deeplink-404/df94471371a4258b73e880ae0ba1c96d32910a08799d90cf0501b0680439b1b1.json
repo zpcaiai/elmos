@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3680ec0e3133461ae0761801d745371b2d7f9a62698aa2780874f72c8bd4ad23",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2421,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-route-dom-url-observer-trace/27bce71ae044076e706bd13f1907d1d87e6f65b8f4af1ffe86b28020ac73e679.json",
+      "profile_id": "jquery",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:27bce71ae044076e706bd13f1907d1d87e6f65b8f4af1ffe86b28020ac73e679"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:5ef9432d6b28c6a3b9c08d848af83e81e7bb3ea926756fe4c576cf591f332d1d",
+        "byte_count": 39887,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/347366c67a6e3fc8bb596a9d0c095511ae442b7aaa818aed81802e023b66ac14.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:347366c67a6e3fc8bb596a9d0c095511ae442b7aaa818aed81802e023b66ac14"
+      },
+      {
+        "artifact_id": "sha256:356813a3753ec33e5ae396bd913f56378b6b8ab5615aca5863991782840a103a",
+        "byte_count": 5258,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/7e06d63eb0a8540ef27d058243b2716b031d80c3c7ac61310d7982315b8acdda.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:7e06d63eb0a8540ef27d058243b2716b031d80c3c7ac61310d7982315b8acdda"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

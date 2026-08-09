@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "HYDRATE",
+    "event": "HYDRATE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:d4bd3d95c5b7a3466f72a0f1f54eeb6ae2f2cab09df5ec233e344d709b0a71f0",
+      "block_id": "action-event",
+      "byte_count": 3305,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-native-event-outcome-observer-trace/0dc90aa3a6bdf3bb7c86e379410825bb2d281f51abf34e6678746c42e1e0f831.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+      "sha256": "sha256:0dc90aa3a6bdf3bb7c86e379410825bb2d281f51abf34e6678746c42e1e0f831"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:c66430b1f9004f244d051332660bc73cd81d7a3cfd74db2d11f2d282ead08e01",
+        "byte_count": 5295,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-framework-event-trace/a48dbe8c65ad6c5ba175620634faa9e7c7939ac61eff70ea15c0f99b6725c1de.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:a48dbe8c65ad6c5ba175620634faa9e7c7939ac61eff70ea15c0f99b6725c1de"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

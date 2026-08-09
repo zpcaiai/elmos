@@ -1,0 +1,4 @@
+batch43-validate:
+	python3 scripts/batch43/validate_skill_bundle.py .
+
+	python3 -m unittest tests/batch43/test_toolkit.py

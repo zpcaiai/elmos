@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "vue2",
+  "framework_version": "2.7.16",
+  "platforms": [
+    "WEB"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:743d0bd2952ebe93989e0224bab4448db3b3c9b6d82eeffdfe04a44c19bf257f",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 24,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:45ed317f23d2be2de2ca77a48a0bd15430503377e5fde9af93d9a163964b6e98",
+      "byte_count": 522
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "sha256:89d6abc7cbd516992af9a131693cc021827f6c3bac49e8b06878e258f6cec99c",
+      "byte_count": 75
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "sha256:e8e8584c09cc1d8fbb12fbf9c0f6f84053223ab8a236a5230c3c9b20ff1a017a",
+      "byte_count": 7
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:90ecec7a32facd601712a79c1eca27d0aa9daa7460b790660b4804d8f48c035f",
+      "byte_count": 1968
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:fd4c5c8c898fa4039620a607808c6885003ea584e97e6661e60354983318fd02",
+      "byte_count": 1174
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:86de1fe3a773d44fce2f9ec787e02a52ac21b6907683b9c959e9252b065bf3a0",
+      "byte_count": 310
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:1867120ac6827ec504ada0f648560f02f7285ec6870120b51de33a36706be7b4",
+      "byte_count": 2408
+    },
+    {
+      "path": "index.html",
+      "sha256": "sha256:a922646862f453f68bc9a606d227882a96e49198b878635b019c92faf8a6b9b1",
+      "byte_count": 299
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:d972172ae695b56009b44a8574b92eccae30841c936e1e6e9a2dd90576f1f68e",
+      "byte_count": 436
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:2c5d289b9b9bcc60dd0828885aa6cdd6080ad139d01ea37dab89f787126f4205",
+      "byte_count": 151
+    },
+    {
+      "path": "src/App.vue",
+      "sha256": "sha256:3c729e0f235506910e22524437d2ddc0d8928547521445d2769e82f1135ad22c",
+      "byte_count": 456
+    },
+    {
+      "path": "src/elmos-bounded-navigation.js",
+      "sha256": "sha256:84e0b1a83c05d41639d99a32d46c07e840713b89546467d6d523175a29f19afb",
+      "byte_count": 1909
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "sha256:50e578ab5be7fc52ea04bd349036ff83c50531f8d7f1598f8007dd6d64c4929e",
+      "byte_count": 211
+    },
+    {
+      "path": "src/router.js",
+      "sha256": "sha256:087e45dea7d97912c17450d2638e3c1ef8c8b241afba07d89389c245c19171d3",
+      "byte_count": 434
+    },
+    {
+      "path": "src/routes.js",
+      "sha256": "sha256:fa008e2f739c9600c999106c5e1cf6bde8c5c98725948fa9cc459e6cdf6b8ef5",
+      "byte_count": 95
+    },
+    {
+      "path": "src/routes.test.js",
+      "sha256": "sha256:f647681b29c641f1efb24b00ba607a429af8cc950427f1fba0a34027cca3e020",
+      "byte_count": 328
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "sha256:a80d8095fbf09c981e539bce5d3d6f5e5dc9dfa623faa0f4c185bf8d351957d9",
+      "byte_count": 1085
+    },
+    {
+      "path": "src/views/GeneratedPage.vue",
+      "sha256": "sha256:789b0a59ea148763f1684bdde166c42a5d5c72ab883f8b793532cf2d533afd80",
+      "byte_count": 589
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:4a3d2880671fb60f2096552ff89e93bf2b2deace64422b884eeadfc97db42762",
+      "byte_count": 714
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:b57f50db0b4443564dc23ed7eb2aea41da886f94536a49884cdfd2b7175f14e5",
+      "byte_count": 7147
+    },
+    {
+      "path": "vite.config.js",
+      "sha256": "sha256:3a34baba0d0258095ad95a69574b629a970dde507da200829881217c29b14e0f",
+      "byte_count": 127
+    }
+  ],
+  "manifest_digest": "sha256:203f72f9d1102c3d05d9326a903e477e24bbcaa192126845fac182fdeabcef2c"
+}

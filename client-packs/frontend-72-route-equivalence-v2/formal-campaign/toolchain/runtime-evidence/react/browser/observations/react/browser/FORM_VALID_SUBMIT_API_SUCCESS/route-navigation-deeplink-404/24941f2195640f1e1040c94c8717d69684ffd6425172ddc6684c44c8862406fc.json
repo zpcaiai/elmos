@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": true,
+    "resolution": "DECLARED",
+    "selectedPath": "/account",
+    "selectedRouteId": "route.account"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3db3ad546583abc02ebcb0bc6ec237fcd5d494a3b9b27c5ab49fcbee700f996e",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2459,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-route-dom-url-observer-trace/e8c15e2144583ea4ab69ae7946ad77ed49184bcedce828d90df6ff89d34fc229.json",
+      "profile_id": "react",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:e8c15e2144583ea4ab69ae7946ad77ed49184bcedce828d90df6ff89d34fc229"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:75b69f09e56e2fd3bccb62aea88e13f8feb91798768672ab0daa5228446a3e67",
+        "byte_count": 40459,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0"
+      },
+      {
+        "artifact_id": "sha256:13c85707a8061dd378e9a5c2c76be6fc7d5b61655ec34a7771e021649c1bc912",
+        "byte_count": 8332,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-event-trace/9a58fa084c44a00ce68fad02dc93a84f3e60d2d26cf5a74f307338e26db7e34e.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:9a58fa084c44a00ce68fad02dc93a84f3e60d2d26cf5a74f307338e26db7e34e"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

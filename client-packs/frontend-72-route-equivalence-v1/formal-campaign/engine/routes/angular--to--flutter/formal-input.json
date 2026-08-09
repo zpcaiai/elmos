@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-bounded-navigation-formal-input",
+  "corpus_id": "frontend-bounded-navigation-corpus-v1",
+  "proof_profile": "bounded-navigation-v1",
+  "proof_scope": "canonical bounded navigation IR <-> emitted source re-lift <-> emitted target re-lift",
+  "route_id": "angular--to--flutter",
+  "tuple": {
+    "source_profile": "angular",
+    "source_framework_version": "22.0.8",
+    "target_profile": "flutter",
+    "target_framework_version": "3.44.1"
+  },
+  "source_project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+  "target_project_digest": "sha256:2b82798ddb70ad5dce815065c40df41a36a054a19c8213f0c4f68e6f8582d050",
+  "canonical_model": {
+    "schemaVersion": "1.0",
+    "profile": "bounded-navigation-v1",
+    "projectTitle": "ELMOS 有界导航验证",
+    "navigation": {
+      "label": "主要导航"
+    },
+    "render": {
+      "mainRole": "main",
+      "headingLevel": 1
+    },
+    "fallback": {
+      "strategy": "FIRST_DECLARED_ROUTE"
+    },
+    "routes": [
+      {
+        "id": "route.home",
+        "path": "/",
+        "title": "component.home",
+        "text": "首页内容",
+        "requiresAuth": false,
+        "deepLink": true
+      },
+      {
+        "id": "route.account",
+        "path": "/account",
+        "title": "component.account",
+        "text": "账户内容",
+        "requiresAuth": true,
+        "deepLink": true
+      },
+      {
+        "id": "route.help",
+        "path": "/help",
+        "title": "component.help",
+        "text": "帮助内容",
+        "requiresAuth": false,
+        "deepLink": false
+      }
+    ]
+  },
+  "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+  "source_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+  "target_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+  "source_model_artifact_digest": "sha256:572998378fb109c4bc1dfad1023667d0a79acef30795621ff3ba092ac09b0853",
+  "target_model_artifact_digest": "sha256:8515f35c5c9cbcbc0a8f080b3b0a4fe5744942906a429fcfa2909444e4b364e2",
+  "semantic_equal": true,
+  "behavior_digest": "sha256:18874c140e01cc56cbc0ff0113cb04943938a273310344b45e99b3fbb01d7be9",
+  "behavior_equal": true,
+  "chunk_digest": "sha256:95e948e2e3185e8192ff23da68bcaf9f3a49f323e2809c33f6c4a99e1c0d9453",
+  "chunk_equal": true,
+  "assumptions": [
+    "The proof covers only the canonical bounded-navigation-v1 IR and ELMOS-emitted profile projects, not arbitrary customer source.",
+    "TypeScript AST plus strict bounded Vue/Svelte template, ArkUI shell, and Dart/base64 parsers faithfully re-lift the generated grammar; native compiler AST evidence remains NOT_RUN where unavailable.",
+    "Route requiresAuth and deepLink values are observable metadata; identity enforcement and native deep-link dispatch are outside this bounded proof.",
+    "Framework, compiler, router, browser, device, and runtime soundness are assumptions until independent real toolchain and journey evidence passes.",
+    "SHA-256 is used for artifact identity and drift detection, not as the semantic equivalence proof rule."
+  ],
+  "semantic_blocks": {
+    "proved": [
+      "route-id-path-title-text-auth-deeplink",
+      "navigation-consumer",
+      "render-a11y-consumer",
+      "first-route-fallback"
+    ],
+    "externally_composable_not_run": [
+      "certified-component-v1"
+    ],
+    "unsupported_not_proved": [
+      "state",
+      "action",
+      "effect",
+      "form",
+      "binding",
+      "permission-enforcement",
+      "resource",
+      "design-token",
+      "native-boundary",
+      "component-state-action"
+    ]
+  },
+  "arbitrary_customer_source": "NOT_PROVED",
+  "compiler_framework_runtime_soundness": "ASSUMED_NOT_PROVED"
+}

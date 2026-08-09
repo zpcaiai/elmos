@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": "QUERY_TOO_SHORT",
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": true,
+    "valid": false,
+    "value": "x"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:01860626a55f9609ed5600e1235c961fc9e1db4696a4fffb37e83770223782f2",
+      "block_id": "form-binding-validation",
+      "byte_count": 1545,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-form-validity-observer-trace/adab19bd22680c5f87a7821d75e089f831e57c2ebadfb61f40a95d577da72e66.json",
+      "profile_id": "react",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:adab19bd22680c5f87a7821d75e089f831e57c2ebadfb61f40a95d577da72e66"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:8b79626bc7963a0f86e721c2c33ad5c40dc361483584291844df849d01bf6dea",
+        "byte_count": 40763,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/8a6a70a5b175d7ca86ca108a577b24512adc1071657aea10e0a2c89eb5897176.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:8a6a70a5b175d7ca86ca108a577b24512adc1071657aea10e0a2c89eb5897176"
+      },
+      {
+        "artifact_id": "sha256:0c6eceae27b9b346ff568e1af707ee154848b52d8db380c86ad8098c49607a09",
+        "byte_count": 8790,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:dfa20bf567bd8be975d77404791cb0e665a1223a078513422d03e4af4d3b2e59"
+      },
+      {
+        "artifact_id": "sha256:d81059e16e751c2b73acd3a8e90721c7346bfe58414c2086ef355c49359e8bf1",
+        "byte_count": 568196,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-accessibility-axe-trace/3bd97f3eed69460338225165af018017a8ed39314f96a43c88be183c4a4eb845.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:3bd97f3eed69460338225165af018017a8ed39314f96a43c88be183c4a4eb845"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

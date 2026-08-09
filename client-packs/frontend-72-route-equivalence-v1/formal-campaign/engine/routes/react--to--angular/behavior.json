@@ -1,0 +1,415 @@
+{
+  "schema_version": "1.0",
+  "domain": {
+    "id": "bounded-navigation-domain-v1",
+    "operations": [
+      "INITIAL_RENDER",
+      "SELECT_DECLARED_PATH",
+      "SELECT_UNKNOWN_PATH"
+    ],
+    "unknown_path_policy": "FIRST_DECLARED_ROUTE",
+    "framework_native_runtime": "NOT_RUN"
+  },
+  "canonical": {
+    "runtime_kind": "SPEC_INTERPRETER",
+    "observations": [
+      {
+        "trace_id": "canonical:initial",
+        "operation": "INITIAL_RENDER",
+        "input_path": null,
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "canonical:declared-0",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "canonical:declared-1",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/account",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.account",
+          "path": "/account",
+          "title": "component.account",
+          "text": "账户内容",
+          "requiresAuth": true,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "canonical:declared-2",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/help",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.help",
+          "path": "/help",
+          "title": "component.help",
+          "text": "帮助内容",
+          "requiresAuth": false,
+          "deepLink": false
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "canonical:unknown",
+        "operation": "SELECT_UNKNOWN_PATH",
+        "input_path": "/__elmos_unknown_route__",
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      }
+    ]
+  },
+  "independent": {
+    "runtime_kind": "BOUNDED_REFERENCE_INTERPRETER",
+    "observations": [
+      {
+        "trace_id": "reference:0",
+        "operation": "INITIAL_RENDER",
+        "input_path": null,
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "reference:1",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "reference:2",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/account",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.account",
+          "path": "/account",
+          "title": "component.account",
+          "text": "账户内容",
+          "requiresAuth": true,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "reference:3",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/help",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.help",
+          "path": "/help",
+          "title": "component.help",
+          "text": "帮助内容",
+          "requiresAuth": false,
+          "deepLink": false
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "reference:4",
+        "operation": "SELECT_UNKNOWN_PATH",
+        "input_path": "/__elmos_unknown_route__",
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      }
+    ]
+  },
+  "source": {
+    "runtime_kind": "RELIFTED_EMITTED_SOURCE_INTERPRETER",
+    "observations": [
+      {
+        "trace_id": "source:initial",
+        "operation": "INITIAL_RENDER",
+        "input_path": null,
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "source:declared-0",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "source:declared-1",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/account",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.account",
+          "path": "/account",
+          "title": "component.account",
+          "text": "账户内容",
+          "requiresAuth": true,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "source:declared-2",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/help",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.help",
+          "path": "/help",
+          "title": "component.help",
+          "text": "帮助内容",
+          "requiresAuth": false,
+          "deepLink": false
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "source:unknown",
+        "operation": "SELECT_UNKNOWN_PATH",
+        "input_path": "/__elmos_unknown_route__",
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      }
+    ]
+  },
+  "target": {
+    "runtime_kind": "RELIFTED_EMITTED_TARGET_INTERPRETER",
+    "observations": [
+      {
+        "trace_id": "target:initial",
+        "operation": "INITIAL_RENDER",
+        "input_path": null,
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "target:declared-0",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "target:declared-1",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/account",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.account",
+          "path": "/account",
+          "title": "component.account",
+          "text": "账户内容",
+          "requiresAuth": true,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "target:declared-2",
+        "operation": "SELECT_DECLARED_PATH",
+        "input_path": "/help",
+        "resolution": "DECLARED",
+        "route": {
+          "id": "route.help",
+          "path": "/help",
+          "title": "component.help",
+          "text": "帮助内容",
+          "requiresAuth": false,
+          "deepLink": false
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      },
+      {
+        "trace_id": "target:unknown",
+        "operation": "SELECT_UNKNOWN_PATH",
+        "input_path": "/__elmos_unknown_route__",
+        "resolution": "FIRST_DECLARED_FALLBACK",
+        "route": {
+          "id": "route.home",
+          "path": "/",
+          "title": "component.home",
+          "text": "首页内容",
+          "requiresAuth": false,
+          "deepLink": true
+        },
+        "render": {
+          "navigationLabel": "主要导航",
+          "mainRole": "main",
+          "headingLevel": 1
+        }
+      }
+    ]
+  },
+  "equivalent": true,
+  "native_browser_or_device_evidence": "NOT_RUN"
+}

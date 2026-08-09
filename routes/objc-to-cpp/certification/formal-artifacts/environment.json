@@ -1,0 +1,33 @@
+{
+  "authority": "local-engineering-validation",
+  "engine_source_manifest": {
+    "bytes": 11973,
+    "path": "certification/formal-artifacts/engine-source-manifest.json",
+    "sha256": "sha256:fb8add46e6365a9ac9d4c5eace81c4173848ee752af49280169ff389760536c9"
+  },
+  "external_certification": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "platform": "macOS-26.6-arm64-arm-64bit",
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
+  "route_engine_lock": {
+    "path": "engines/polyglot-route-engine/uv.lock",
+    "sha256": "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+  },
+  "route_key": "objc-to-cpp",
+  "schema_version": 1,
+  "solver": {
+    "name": "z3",
+    "version": "4.16.0"
+  },
+  "source_toolchain": [
+    "Objective-C",
+    "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "arm64-apple-darwin25.6.0",
+    "Foundation"
+  ],
+  "target_toolchain": [
+    "C++20",
+    "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "arm64-apple-darwin25.6.0"
+  ]
+}

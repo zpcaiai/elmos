@@ -1,0 +1,732 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v2",
+  "tuples": [
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "angular",
+      "source_version": "22.0.8",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "flutter",
+      "source_version": "3.44.1",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "harmony-arkui",
+      "source_version": "6.0.0(20)",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "jquery",
+      "source_version": "4.0.0",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react",
+      "source_version": "19.2.8",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "react-native",
+      "source_version": "0.86.0",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "svelte",
+      "source_version": "5.56.8",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue2",
+      "source_version": "2.7.16",
+      "target_stack": "vue3",
+      "target_version": "3.5.40",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "angular",
+      "target_version": "22.0.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "flutter",
+      "target_version": "3.44.1",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "harmony-arkui",
+      "target_version": "6.0.0(20)",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "jquery",
+      "target_version": "4.0.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "react",
+      "target_version": "19.2.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "react-native",
+      "target_version": "0.86.0",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "svelte",
+      "target_version": "5.56.8",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    },
+    {
+      "source_stack": "vue3",
+      "source_version": "3.5.40",
+      "target_stack": "vue2",
+      "target_version": "2.7.16",
+      "status": "experimental",
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ]
+    }
+  ],
+  "recertification_triggers": [
+    "engine or generator implementation drift",
+    "scenario/block/profile/route closure drift",
+    "toolchain producer or runtime evidence drift",
+    "solver, replay, oracle or corpus drift"
+  ]
+}

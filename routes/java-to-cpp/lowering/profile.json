@@ -1,0 +1,76 @@
+{
+  "concrete_spans_required": true,
+  "expressions": [
+    "name",
+    "literal",
+    "binary"
+  ],
+  "fail_closed": true,
+  "input_domain": "canonical-finite-no-error-input-domain",
+  "operator_domains": {
+    "boolean_logic": {
+      "operators": [
+        "==",
+        "!=",
+        "&&",
+        "||"
+      ],
+      "status": "conditional"
+    },
+    "finite_number_transport_comparison": {
+      "operators": [
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "==",
+        "!="
+      ],
+      "status": "conditional"
+    },
+    "integer_arithmetic": {
+      "operators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "%"
+      ],
+      "status": "conditional-safe-domain"
+    },
+    "number_arithmetic": {
+      "blocked_operators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "%"
+      ],
+      "operators": [],
+      "status": "BLOCKED"
+    }
+  },
+  "operators": [
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "==",
+    "!=",
+    "&&",
+    "||"
+  ],
+  "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
+  "profile": "typed-pure-function-v1",
+  "schema_version": 1,
+  "statements": [
+    "if",
+    "return"
+  ],
+  "string_semantics": "BLOCKED"
+}

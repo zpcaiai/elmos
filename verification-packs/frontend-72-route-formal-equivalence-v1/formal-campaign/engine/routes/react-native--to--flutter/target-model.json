@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0",
+  "proof_profile": "bounded-navigation-v1",
+  "profile_id": "flutter",
+  "parser": "DART_BOUNDED_BASE64",
+  "source_path": "lib/elmos_bounded_navigation.dart",
+  "source_hash": "sha256:ff491e55d434c814c0b0e14508dcc9cff42c634b340232dd6ff1f58f798d0f0e",
+  "model": {
+    "schemaVersion": "1.0",
+    "profile": "bounded-navigation-v1",
+    "projectTitle": "ELMOS 有界导航验证",
+    "navigation": {
+      "label": "主要导航"
+    },
+    "render": {
+      "mainRole": "main",
+      "headingLevel": 1
+    },
+    "fallback": {
+      "strategy": "FIRST_DECLARED_ROUTE"
+    },
+    "routes": [
+      {
+        "id": "route.home",
+        "path": "/",
+        "title": "component.home",
+        "text": "首页内容",
+        "requiresAuth": false,
+        "deepLink": true
+      },
+      {
+        "id": "route.account",
+        "path": "/account",
+        "title": "component.account",
+        "text": "账户内容",
+        "requiresAuth": true,
+        "deepLink": true
+      },
+      {
+        "id": "route.help",
+        "path": "/help",
+        "title": "component.help",
+        "text": "帮助内容",
+        "requiresAuth": false,
+        "deepLink": false
+      }
+    ]
+  },
+  "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+  "spans": {
+    "": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+    },
+    "/fallback": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:e63001824d28601677ab6e95a8a81ef96bf229cdbc3a8c04ff716a75eb4aa7b2"
+    },
+    "/fallback/strategy": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07"
+    },
+    "/navigation": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:2b2043966199a794e5508adc8b4ec747d702f81a8571e38a705da45c0fe86801"
+    },
+    "/navigation/label": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b"
+    },
+    "/profile": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:5dfdec12e5e573d8d8f66c68c63cb54b8d46cb6a263226abaa3064dbc9ef8f41"
+    },
+    "/projectTitle": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:b637412aaba8cfc2e9e9da648c7e5c94e857e6d9a19c8b4a3b15f157cc374c39"
+    },
+    "/render": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:3dadd274d46d2adc6b5ca331edf259058462f3ebe6f9361408dba99667625bb4"
+    },
+    "/render/headingLevel": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    "/render/mainRole": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30"
+    },
+    "/routes": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:fa3532a1cf80240ac613bc2eb5c43285993bfa51f03070cbd258506f647500c2"
+    },
+    "/routes/0": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:97cf4e3b14c3879f5b3e319b82d89608d06ab0adb826ed98a056fdcf66e4dfff"
+    },
+    "/routes/0/deepLink": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/routes/0/id": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35"
+    },
+    "/routes/0/path": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952"
+    },
+    "/routes/0/requiresAuth": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/routes/0/text": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9"
+    },
+    "/routes/0/title": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:69898acb3a0902eb1592300f4ad00d5e5f7cf5f8b7942c8df06da5c6efcc5e4c"
+    },
+    "/routes/1": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:daef6cfa2a2456c1d3d7afa2cc7028b9eabeaec551a969b1a3b8ac3f11b6ebc2"
+    },
+    "/routes/1/deepLink": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/routes/1/id": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d"
+    },
+    "/routes/1/path": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051"
+    },
+    "/routes/1/requiresAuth": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    },
+    "/routes/1/text": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44"
+    },
+    "/routes/1/title": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:99204dd0904ddbbe15b554299a4cc2b66bab1c156d60a8164e3a1105189160ce"
+    },
+    "/routes/2": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:c4ca22dae99c537d4e913a45717a348aa6361d15b8dd43bb35fd782c65b273f7"
+    },
+    "/routes/2/deepLink": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/routes/2/id": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976"
+    },
+    "/routes/2/path": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08"
+    },
+    "/routes/2/requiresAuth": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+    },
+    "/routes/2/text": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6"
+    },
+    "/routes/2/title": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:de90ff788d055c68f06fee2235ade719215a1f6a2a2c9f699018bb811a1c7e23"
+    },
+    "/schemaVersion": {
+      "path": "lib/elmos_bounded_navigation.dart",
+      "start_byte": 135,
+      "end_byte": 939,
+      "content_hash": "sha256:6239bd26cff765e8993c65df3d7f7fedfbb588f594ed5a78b99c68633b3821b0",
+      "subtree_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc"
+    }
+  },
+  "consumer_binding": {
+    "route_table_is_unique": true,
+    "navigation_consumer": true,
+    "render_consumer": true,
+    "accessibility_consumer": true,
+    "fallback_consumer": true,
+    "consumed_route_fields": [
+      "id",
+      "path",
+      "title",
+      "text",
+      "requiresAuth",
+      "deepLink"
+    ]
+  }
+}

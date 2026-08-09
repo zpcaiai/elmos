@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/events/migration.created.schema.json",
+  "title": "MigrationCreatedData",
+  "type": "object",
+  "required": [
+    "migration_id",
+    "project_id",
+    "source_language",
+    "target_language",
+    "target_framework"
+  ],
+  "properties": {
+    "migration_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "project_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source_language": {
+      "type": "string"
+    },
+    "target_language": {
+      "type": "string"
+    },
+    "target_framework": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_version": "Z3 version 4.16.0 - 64 bit",
+  "identity_status": "VERIFIED",
+  "invocation": [
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "-in"
+  ],
+  "options": {
+    "args": [
+      "-in"
+    ],
+    "timeout_ms": 10000
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_version": "v26.0.0"
+  },
+  "exit_code": 0,
+  "stdout": "unsat\n",
+  "stderr": "",
+  "outcome": "UNSAT",
+  "proof_status": "PROVED_UNDER_ASSUMPTIONS",
+  "unconditional_proof": false,
+  "route_id": "jquery--to--harmony-arkui",
+  "formal_input_digest": "sha256:464c89d598b61d209476a31cea01fb2923218972b06ac4635d23918daf2fea4b",
+  "solver_input_digest": "sha256:7306738f50a711fad8fe4836102af0a6e63769252a772b0cd180d7a9ec27629b",
+  "smt2_digest": "sha256:7306738f50a711fad8fe4836102af0a6e63769252a772b0cd180d7a9ec27629b"
+}

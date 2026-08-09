@@ -1,0 +1,29 @@
+{
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1",
+  "evidence_refs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/local-negative-evidence.json"
+  ],
+  "gate_results": {
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_execution": "NOT_RUN"
+  },
+  "issued_at": "2026-08-09T00:00:00+00:00",
+  "metrics": {
+    "build_green_rate": 0.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 0.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 0.0,
+    "source_map_coverage": 0.0
+  },
+  "next_review_at": "2026-11-09T00:00:00+00:00",
+  "route_key": "objc-to-java",
+  "route_version": "1.0.0",
+  "schema_version": 1,
+  "status": "limited"
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "pack_key": "enterprise-portfolio-scale",
+  "version": "0.1.0",
+  "status": "research",
+  "mode": "scale-certification",
+  "owner": "UNASSIGNED",
+  "maintenance_owner": "UNASSIGNED",
+  "scope": {
+    "tenant_model": "UNSET",
+    "scm_sources": [
+      "UNSET"
+    ],
+    "organizations": [
+      "UNSET"
+    ],
+    "regions": [
+      "UNSET"
+    ],
+    "languages": [
+      "UNSET"
+    ],
+    "build_systems": [
+      "UNSET"
+    ],
+    "inventory_snapshot_at": "UNSET",
+    "repository_target": 1000,
+    "loc_target": 1000000
+  },
+  "contracts": {
+    "inventory": "inventory/portfolio.json",
+    "dependency_graph": "graph/dependencies.json",
+    "work_units": "work-units/plan.json",
+    "scale_profile": "scale/scale-profile.json",
+    "campaign": "campaigns/default.json",
+    "dr_replay": "dr/replay-plan.json"
+  },
+  "support_matrix_path": "support-matrix.json",
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_portfolios": "corpus/representative-portfolios"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/certification.json"
+  },
+  "tags": []
+}

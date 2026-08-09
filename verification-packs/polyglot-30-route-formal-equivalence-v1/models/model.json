@@ -1,0 +1,78 @@
+{
+  "commands": [
+    {
+      "command": "execute",
+      "effects": [
+        "bind-artifact-digests"
+      ],
+      "from": [
+        "declared"
+      ],
+      "guard": "native-evidence-complete",
+      "to": "executed"
+    },
+    {
+      "command": "compose",
+      "effects": [
+        "record-assumptions"
+      ],
+      "from": [
+        "executed"
+      ],
+      "guard": "all-local-layers-pass",
+      "to": "proved-under-assumptions"
+    },
+    {
+      "command": "block",
+      "effects": [
+        "preserve-replay"
+      ],
+      "from": [
+        "declared",
+        "executed",
+        "proved-under-assumptions"
+      ],
+      "guard": "unknown-or-counterexample",
+      "to": "unresolved"
+    },
+    {
+      "command": "certify",
+      "effects": [
+        "bind-independent-evidence"
+      ],
+      "from": [
+        "proved-under-assumptions"
+      ],
+      "guard": "assumptions-discharged-and-independent-verification-passed",
+      "to": "certified"
+    }
+  ],
+  "forbidden_transitions": [
+    {
+      "event": "certify",
+      "from": "declared"
+    },
+    {
+      "event": "certify",
+      "from": "unresolved"
+    }
+  ],
+  "initial_state": "declared",
+  "invariants": [
+    "unknown-never-passes",
+    "bounded-and-axiom-never-equal-theorem",
+    "certified-requires-independent-verification",
+    "route-set-is-exactly-thirty"
+  ],
+  "model_key": "model.route-proof-lifecycle",
+  "owner": "elmos-polyglot-verification-engineering",
+  "schema_version": 1,
+  "states": [
+    "declared",
+    "executed",
+    "proved-under-assumptions",
+    "unresolved",
+    "certified"
+  ],
+  "timeouts": []
+}

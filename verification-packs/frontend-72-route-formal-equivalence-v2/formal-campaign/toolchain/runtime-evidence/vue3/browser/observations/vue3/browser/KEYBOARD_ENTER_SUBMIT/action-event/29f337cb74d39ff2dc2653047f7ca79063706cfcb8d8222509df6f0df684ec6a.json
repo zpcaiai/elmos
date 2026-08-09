@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "SUBMIT_ACCEPTED",
+    "event": "BOOT",
+    "handled": true,
+    "keyboardKey": "Enter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:ded2364e3b8339c30aa29a9172d219c0c30110aa3309ca95747aed3c1b8b0d3e",
+      "block_id": "action-event",
+      "byte_count": 3955,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue3/browser/KEYBOARD_ENTER_SUBMIT/browser-native-event-outcome-observer-trace/23c15e8645add6f574472d1a5d9e5e684767de7cb8f5ce98ba2f84cd097cf68d.json",
+      "profile_id": "vue3",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+      "sha256": "sha256:23c15e8645add6f574472d1a5d9e5e684767de7cb8f5ce98ba2f84cd097cf68d"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:94c89f97102f10fd9a91e913a11399565e2e2a1409c51f51744a2af50b962085",
+        "byte_count": 8263,
+        "channel": "browser",
+        "path": "traces/vue3/browser/KEYBOARD_ENTER_SUBMIT/browser-framework-event-trace/c9de0ac5a92234e947ca9610174edbd3abff7b718d320288f7fbec157ca2c90e.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+        "sha256": "sha256:c9de0ac5a92234e947ca9610174edbd3abff7b718d320288f7fbec157ca2c90e"
+      }
+    ]
+  },
+  "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+  "schema_version": "1.0"
+}

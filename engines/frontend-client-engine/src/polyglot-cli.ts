@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
-import { analyzeTypedFunction } from "./polyglot.js";
+import { analyzeTypedFunction, inventoryTypedModule } from "./polyglot.js";
 
 const [, , sourceArgument, functionName] = process.argv;
 if (!sourceArgument || !functionName) {
@@ -9,5 +9,8 @@ if (!sourceArgument || !functionName) {
 } else {
   const sourcePath = resolve(sourceArgument);
   const source = readFileSync(sourcePath, "utf8");
-  process.stdout.write(JSON.stringify(analyzeTypedFunction(source, basename(sourcePath), functionName)) + "\n");
+  const result = functionName === "--inventory"
+    ? inventoryTypedModule(source, basename(sourcePath))
+    : analyzeTypedFunction(source, basename(sourcePath), functionName);
+  process.stdout.write(JSON.stringify(result) + "\n");
 }

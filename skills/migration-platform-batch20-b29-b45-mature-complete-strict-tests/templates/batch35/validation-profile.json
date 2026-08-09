@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "profile_key": "sample-verification-profile",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.behavior",
+      "description": "Critical migrated behavior remains correct.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.business",
+        "oracle.contract"
+      ],
+      "required_techniques": [
+        "property",
+        "metamorphic",
+        "mutation",
+        "holdout"
+      ]
+    }
+  ],
+  "techniques": [
+    "property",
+    "metamorphic",
+    "mutation",
+    "fuzz",
+    "model",
+    "contract",
+    "security",
+    "concurrency"
+  ],
+  "budgets": {
+    "max_wall_time_minutes": 120,
+    "max_solver_seconds": 60,
+    "max_fuzz_seconds": 300,
+    "max_schedules": 1000,
+    "max_mutants": 500
+  },
+  "stop_conditions": [
+    "critical-oracle-conflict",
+    "budget-exhausted",
+    "unknown-p0-property",
+    "security-violation"
+  ],
+  "approvals": []
+}

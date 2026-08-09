@@ -5,7 +5,9 @@ import argparse
 import json
 from pathlib import Path
 
-LANGUAGES = {"java", "csharp", "go", "rust", "python", "typescript"}
+from route_sets import EVIDENCED_ROUTE_KEYS, SUPPORTED_ROUTE_LANGUAGES
+
+LANGUAGES = set(SUPPORTED_ROUTE_LANGUAGES)
 
 
 def main() -> int:
@@ -19,6 +21,8 @@ def main() -> int:
         p.error("source and target must differ")
     root = Path(a.repo_root).resolve()
     route_key = f"{a.source}-to-{a.target}"
+    if route_key not in EVIDENCED_ROUTE_KEYS:
+        p.error("route is outside the approved explicit nine-language directed matrix")
     route = root / "routes" / route_key
     if route.exists() and not a.force:
         print(f"EXISTS: {route}")

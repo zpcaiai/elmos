@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-equivalence-v1",
+  "source_snapshot_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+  "routes": [],
+  "views": [],
+  "components": [],
+  "states": [],
+  "actions": [],
+  "effects": [],
+  "forms": [],
+  "bindings": [],
+  "permissions": [],
+  "resources": [],
+  "design_tokens": [],
+  "accessibility": [],
+  "source_map": [],
+  "unknowns": []
+}

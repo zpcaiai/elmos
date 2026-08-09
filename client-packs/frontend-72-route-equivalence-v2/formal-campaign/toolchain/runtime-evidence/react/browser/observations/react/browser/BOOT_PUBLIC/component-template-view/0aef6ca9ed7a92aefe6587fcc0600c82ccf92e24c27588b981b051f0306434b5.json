@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0be964ca5df39095a42458bdc004b39c9610fa851b638e09c0ee2489c7b1a485",
+      "block_id": "component-template-view",
+      "byte_count": 1486,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/react/browser/BOOT_PUBLIC/browser-rendered-component-observer-trace/645bbac068c6ad39f01a7fac8e5ad7044421202779ef10e64819f4dd58877020.json",
+      "profile_id": "react",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "BOOT_PUBLIC",
+      "sha256": "sha256:645bbac068c6ad39f01a7fac8e5ad7044421202779ef10e64819f4dd58877020"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:42bdcb6e34e10f0943a6cd29599cde3d5fbb05267296bd41a846fbd1562768c4",
+        "byte_count": 40347,
+        "channel": "browser",
+        "path": "traces/react/browser/BOOT_PUBLIC/browser-dom-snapshot/7ab3bd76a7b223127644511be63d5f9711355c611e904898bd5a57d15d341667.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:7ab3bd76a7b223127644511be63d5f9711355c611e904898bd5a57d15d341667"
+      }
+    ]
+  },
+  "scenario_id": "BOOT_PUBLIC",
+  "schema_version": "1.0"
+}

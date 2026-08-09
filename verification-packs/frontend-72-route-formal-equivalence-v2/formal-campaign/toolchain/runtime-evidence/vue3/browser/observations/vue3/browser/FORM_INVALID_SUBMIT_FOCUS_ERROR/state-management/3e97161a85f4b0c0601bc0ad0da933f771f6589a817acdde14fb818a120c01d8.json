@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:2cfc033dfe0e629f87e32f3fedff00ae81db1ccd77a1b13313b98616a0b3ff79",
+      "block_id": "state-management",
+      "byte_count": 1225,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue3/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-state-transition-observer-trace/134762c21337626379ef94ff93a50e3a44b3821639e6ec1138b1079de15341c5.json",
+      "profile_id": "vue3",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:134762c21337626379ef94ff93a50e3a44b3821639e6ec1138b1079de15341c5"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:5d28f6a59a385e3e6013ef83da238599e48f4ab9fb74287ed2bc8f5efdf5516f",
+        "byte_count": 8789,
+        "channel": "browser",
+        "path": "traces/vue3/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/86de3cb59c5476f0537f10ff274e00bc8f0068231894b798d974df67c39ca0b4.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:86de3cb59c5476f0537f10ff274e00bc8f0068231894b798d974df67c39ca0b4"
+      },
+      {
+        "artifact_id": "sha256:35900b6cf104439de95769b278cf299c32cc50ba105548c17829e100a19b46cf",
+        "byte_count": 40980,
+        "channel": "browser",
+        "path": "traces/vue3/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/0eaf0793195144051e1e67382e7503ec04e1a449c78bf48998cb440b5744f0cb.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:0eaf0793195144051e1e67382e7503ec04e1a449c78bf48998cb440b5744f0cb"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a62fac1218c3dbd33c9e6336a9fa2883544a67d7f9360ab72a00d610cd2ef268",
+      "block_id": "form-binding-validation",
+      "byte_count": 1504,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/jquery/browser/LOCALE_EN_US_WIDE_721/browser-form-validity-observer-trace/cad08312f6576ab21851ac55dbe113dae274c1c06ab7bb4c7e0922300dbdf6b9.json",
+      "profile_id": "jquery",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "LOCALE_EN_US_WIDE_721",
+      "sha256": "sha256:cad08312f6576ab21851ac55dbe113dae274c1c06ab7bb4c7e0922300dbdf6b9"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:9d0015f401fcad56eb9d03a2643711a2ee94e0e28858dbe1301b7962ccf250bb",
+        "byte_count": 39890,
+        "channel": "browser",
+        "path": "traces/jquery/browser/LOCALE_EN_US_WIDE_721/browser-dom-snapshot/3a9d38121de0f1be7c271e620d93384c2a88aed0dd2602ed63358f378c3d4843.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:3a9d38121de0f1be7c271e620d93384c2a88aed0dd2602ed63358f378c3d4843"
+      },
+      {
+        "artifact_id": "sha256:b35ec3dce4262dd7ec33e508090d858189d80fa9b172f2d0a39c6c6b6b0e6e40",
+        "byte_count": 5253,
+        "channel": "browser",
+        "path": "traces/jquery/browser/LOCALE_EN_US_WIDE_721/browser-framework-event-trace/3d004e8dc5e2f671695306ac13a2d08096e0fbe402df29c4e64132fb02e904fe.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:3d004e8dc5e2f671695306ac13a2d08096e0fbe402df29c4e64132fb02e904fe"
+      },
+      {
+        "artifact_id": "sha256:d07228373b12590ff68891e37ddf8df43a138b6eba24e098c13779106e85aafa",
+        "byte_count": 544851,
+        "channel": "browser",
+        "path": "traces/jquery/browser/LOCALE_EN_US_WIDE_721/browser-accessibility-axe-trace/ba4dd9b80afd3d2f8be97b2990335548b8051a6de3cc4c698adff891b262ead3.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:ba4dd9b80afd3d2f8be97b2990335548b8051a6de3cc4c698adff891b262ead3"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_EN_US_WIDE_721",
+  "schema_version": "1.0"
+}

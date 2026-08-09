@@ -1,0 +1,592 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch32/frontend-formal-route-evidence-v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "route_id",
+    "source_profile_id",
+    "target_profile_id",
+    "source_profile_digest",
+    "target_profile_digest",
+    "scenario_manifest_sha256",
+    "scenario_ids",
+    "blocks",
+    "implementation_fingerprint",
+    "replay_fingerprint",
+    "corpus_ids",
+    "artifact_refs",
+    "certification"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "route_id": { "$ref": "#/$defs/routeId" },
+    "source_profile_id": { "$ref": "#/$defs/profileId" },
+    "target_profile_id": { "$ref": "#/$defs/profileId" },
+    "source_profile_digest": { "$ref": "#/$defs/sha256" },
+    "target_profile_digest": { "$ref": "#/$defs/sha256" },
+    "scenario_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "scenario_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmpty" }
+    },
+    "blocks": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "items": { "$ref": "#/$defs/blockEvidence" }
+    },
+    "implementation_fingerprint": { "$ref": "#/$defs/sha256" },
+    "replay_fingerprint": { "$ref": "#/$defs/sha256" },
+    "corpus_ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["development", "negative", "holdout", "representative_workloads"],
+      "properties": {
+        "development": { "$ref": "#/$defs/nonEmpty" },
+        "negative": { "$ref": "#/$defs/nonEmpty" },
+        "holdout": { "$ref": "#/$defs/nonEmpty" },
+        "representative_workloads": { "$ref": "#/$defs/nonEmpty" }
+      }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/artifactRef" }
+    },
+    "certification": { "enum": ["NOT_CERTIFIED", "CERTIFIED"] }
+  },
+  "$defs": {
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "profileId": {
+      "enum": [
+        "angular",
+        "flutter",
+        "harmony-arkui",
+        "jquery",
+        "react",
+        "react-native",
+        "svelte",
+        "vue2",
+        "vue3"
+      ]
+    },
+    "routeId": {
+      "type": "string",
+      "pattern": "^(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)--to--(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)$"
+    },
+    "blockId": {
+      "enum": [
+        "route-navigation-deeplink-404",
+        "component-template-view",
+        "state-management",
+        "action-event",
+        "effect-lifecycle",
+        "form-binding-validation",
+        "api-network",
+        "identity-permission",
+        "rendering-hydration",
+        "accessibility-focus",
+        "i18n-theme-responsive",
+        "native-platform"
+      ]
+    },
+    "runtimeChannel": {
+      "enum": ["browser", "android", "ios", "harmonyos"]
+    },
+    "evidenceStatus": {
+      "enum": ["PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"]
+    },
+    "aggregateStatus": {
+      "enum": ["PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"]
+    },
+    "formalStatus": {
+      "enum": [
+        "PROVED",
+        "PROVED_UNDER_ASSUMPTIONS",
+        "REFUTED",
+        "NOT_PROVED",
+        "UNKNOWN",
+        "TIMEOUT",
+        "NOT_RUN"
+      ]
+    },
+    "safePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "path", "sha256", "bytes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmpty" },
+        "role": { "$ref": "#/$defs/nonEmpty" },
+        "path": { "$ref": "#/$defs/safePath" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "spanRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "pointer", "span", "sha256"],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "pointer": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        },
+        "span": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end"],
+          "properties": {
+            "start": { "type": "integer", "minimum": 0 },
+            "end": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "codeSpanRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "start", "end", "sha256", "parser_node_kind"],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "parser_node_kind": { "$ref": "#/$defs/nonEmpty" }
+      }
+    },
+    "semanticEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_ir",
+        "source_relift_ir",
+        "target_relift_ir",
+        "source_code",
+        "target_code",
+        "semantic_hash",
+        "status"
+      ],
+      "properties": {
+        "canonical_ir": { "$ref": "#/$defs/spanRef" },
+        "source_relift_ir": { "$ref": "#/$defs/spanRef" },
+        "target_relift_ir": { "$ref": "#/$defs/spanRef" },
+        "source_code": { "$ref": "#/$defs/codeSpanRef" },
+        "target_code": { "$ref": "#/$defs/codeSpanRef" },
+        "semantic_hash": { "$ref": "#/$defs/sha256" },
+        "status": { "$ref": "#/$defs/evidenceStatus" }
+      }
+    },
+    "chunkEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "path_scheme",
+        "mapping_count",
+        "semantic_mapping_count",
+        "status"
+      ],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "path_scheme": { "const": "rfc6901-json-pointer-v1" },
+        "mapping_count": { "type": "integer", "minimum": 1 },
+        "semantic_mapping_count": { "type": "integer", "minimum": 1 },
+        "status": { "$ref": "#/$defs/evidenceStatus" }
+      }
+    },
+    "modelBehaviorEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "runtime_kind",
+        "scenario_manifest_sha256",
+        "scenario_count",
+        "pass_count",
+        "reference_oracle_kind",
+        "independent",
+        "status"
+      ],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "runtime_kind": { "const": "RELIFTED_MODEL_INTERPRETER" },
+        "scenario_manifest_sha256": { "$ref": "#/$defs/sha256" },
+        "scenario_count": { "type": "integer", "minimum": 1 },
+        "pass_count": { "type": "integer", "minimum": 0 },
+        "reference_oracle_kind": { "const": "SAME_ENGINE_REFERENCE_REDUCER" },
+        "independent": { "const": false },
+        "status": { "$ref": "#/$defs/evidenceStatus" }
+      }
+    },
+    "formalEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obligation_symbol",
+        "formal_input_artifact_id",
+        "smt_artifact_id",
+        "solver_result_artifact_id",
+        "solver_binary_artifact_id",
+        "solver_binary_sha256",
+        "solver_binary_bytes",
+        "vacuity_input_artifact_id",
+        "vacuity_result_artifact_id",
+        "block_result_artifact_id",
+        "composition_artifact_id",
+        "layered_result_artifact_id",
+        "formal_input_sha256",
+        "solver_input_sha256",
+        "solver_result_sha256",
+        "vacuity_input_sha256",
+        "vacuity_result_sha256",
+        "block_result_sha256",
+        "composition_sha256",
+        "layered_result_sha256",
+        "model_influence_max",
+        "runtime_influence_max",
+        "declaration_echo_excluded",
+        "assumption_precheck",
+        "status",
+        "proof_strength",
+        "assumptions",
+        "unsupported_semantics",
+        "replay_status",
+        "oracle_independence"
+      ],
+      "properties": {
+        "obligation_symbol": {
+          "type": "string",
+          "pattern": "^diff_[a-z0-9_]+$"
+        },
+        "formal_input_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "smt_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "solver_result_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "solver_binary_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "solver_binary_sha256": {
+          "const": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7"
+        },
+        "solver_binary_bytes": { "type": "integer", "minimum": 1 },
+        "vacuity_input_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "vacuity_result_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "block_result_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "composition_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "layered_result_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "formal_input_sha256": { "$ref": "#/$defs/sha256" },
+        "solver_input_sha256": { "$ref": "#/$defs/sha256" },
+        "solver_result_sha256": { "$ref": "#/$defs/sha256" },
+        "vacuity_input_sha256": { "$ref": "#/$defs/sha256" },
+        "vacuity_result_sha256": { "$ref": "#/$defs/sha256" },
+        "block_result_sha256": { "$ref": "#/$defs/sha256" },
+        "composition_sha256": { "$ref": "#/$defs/sha256" },
+        "layered_result_sha256": { "$ref": "#/$defs/sha256" },
+        "model_influence_max": {
+          "enum": ["TRANSITION", "OBSERVABLE_EFFECT", "DECLARATION_ECHO"]
+        },
+        "runtime_influence_max": {
+          "enum": [
+            "FRAMEWORK_OBSERVABLE",
+            "ADAPTER_SEAM_NOT_RUN",
+            "MODEL_ONLY_NOT_RUNTIME",
+            "DECLARATION_ECHO"
+          ]
+        },
+        "declaration_echo_excluded": { "const": true },
+        "assumption_precheck": {
+          "enum": ["SAT_NON_VACUOUS_DOMAIN", "FAILED", "NOT_RUN"]
+        },
+        "status": { "$ref": "#/$defs/formalStatus" },
+        "proof_strength": {
+          "enum": ["theorem", "assumption", "none"]
+        },
+        "assumptions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "unsupported_semantics": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "replay_status": { "$ref": "#/$defs/evidenceStatus" },
+        "oracle_independence": { "const": "NOT_INDEPENDENT_SINGLE_ENGINE" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["status"],
+            "properties": { "status": { "const": "PROVED" } }
+          },
+          "then": {
+            "properties": {
+              "proof_strength": { "const": "theorem" },
+              "assumptions": { "maxItems": 0 },
+              "unsupported_semantics": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["status"],
+            "properties": {
+              "status": { "const": "PROVED_UNDER_ASSUMPTIONS" }
+            }
+          },
+          "then": {
+            "properties": {
+              "proof_strength": { "const": "assumption" },
+              "assumptions": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["status"],
+            "properties": {
+              "status": {
+                "enum": ["REFUTED", "NOT_PROVED", "UNKNOWN", "TIMEOUT", "NOT_RUN"]
+              }
+            }
+          },
+          "then": {
+            "properties": { "proof_strength": { "const": "none" } }
+          }
+        }
+      ]
+    },
+    "channelObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel",
+        "required",
+        "status",
+        "reason",
+        "actual_derived",
+        "model_values_used_as_actual",
+        "observation_artifact_ids",
+        "observation_actual_digests",
+        "observation_digest",
+        "scenario_count",
+        "result_manifest_artifact_id",
+        "runtime_source_artifact_ids",
+        "execution_policy_artifact_id",
+        "raw_probe_artifact_ids",
+        "build_execution_id",
+        "startup_execution_id",
+        "journey_execution_id"
+      ],
+      "properties": {
+        "channel": { "$ref": "#/$defs/runtimeChannel" },
+        "required": { "type": "boolean" },
+        "status": { "$ref": "#/$defs/evidenceStatus" },
+        "reason": { "type": ["string", "null"] },
+        "actual_derived": { "type": "boolean" },
+        "model_values_used_as_actual": { "const": false },
+        "observation_artifact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "observation_actual_digests": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sha256" }
+        },
+        "observation_digest": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "scenario_count": { "type": "integer", "minimum": 0 }
+        ,
+        "result_manifest_artifact_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "runtime_source_artifact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "execution_policy_artifact_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "raw_probe_artifact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "build_execution_id": { "type": ["string", "null"], "minLength": 1 },
+        "startup_execution_id": { "type": ["string", "null"], "minLength": 1 },
+        "journey_execution_id": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+    "endpointRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "required_runtime_channels", "channels"],
+      "properties": {
+        "profile_id": { "$ref": "#/$defs/profileId" },
+        "required_runtime_channels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/runtimeChannel" }
+        },
+        "channels": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["browser", "android", "ios", "harmonyos"],
+          "properties": {
+            "browser": { "$ref": "#/$defs/channelObservation" },
+            "android": { "$ref": "#/$defs/channelObservation" },
+            "ios": { "$ref": "#/$defs/channelObservation" },
+            "harmonyos": { "$ref": "#/$defs/channelObservation" }
+          }
+        }
+      }
+    },
+    "crossChannelEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "required_channel_union",
+        "required_pair_count",
+        "scenario_count",
+        "comparison_count",
+        "pass_count",
+        "projection_policy_artifact_id",
+        "projection_policy_fingerprint",
+        "dimension_closure",
+        "status"
+      ],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "required_channel_union": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/runtimeChannel" }
+        },
+        "required_pair_count": { "type": "integer", "minimum": 1 },
+        "scenario_count": { "type": "integer", "minimum": 1 },
+        "comparison_count": { "type": "integer", "minimum": 0 },
+        "pass_count": { "type": "integer", "minimum": 0 },
+        "projection_policy_artifact_id": { "$ref": "#/$defs/nonEmpty" },
+        "projection_policy_fingerprint": { "$ref": "#/$defs/sha256" },
+        "dimension_closure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["browser", "native", "runtime"],
+          "properties": {
+            "browser": { "$ref": "#/$defs/dimensionClosure" },
+            "native": { "$ref": "#/$defs/dimensionClosure" },
+            "runtime": { "$ref": "#/$defs/dimensionClosure" }
+          }
+        },
+        "status": { "$ref": "#/$defs/evidenceStatus" }
+      }
+    },
+    "dimensionClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicable", "comparison_count", "pass_count", "status"],
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "comparison_count": { "type": "integer", "minimum": 0 },
+        "pass_count": { "type": "integer", "minimum": 0 },
+        "status": { "$ref": "#/$defs/aggregateStatus" }
+      }
+    },
+    "runtimeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["toolchain_evidence_artifact_id", "source", "target", "cross_channel_equivalence"],
+      "properties": {
+        "toolchain_evidence_artifact_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "source": { "$ref": "#/$defs/endpointRuntime" },
+        "target": { "$ref": "#/$defs/endpointRuntime" },
+        "cross_channel_equivalence": { "$ref": "#/$defs/crossChannelEvidence" }
+      }
+    },
+    "independentEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "same_producer",
+        "producer_fingerprint",
+        "artifact_ids",
+        "holdout_status",
+        "representative_status",
+        "customer_status",
+        "authorization_artifact_id",
+        "executor_organization_id",
+        "verifier_organization_id",
+        "replay_status"
+      ],
+      "properties": {
+        "status": { "$ref": "#/$defs/evidenceStatus" },
+        "same_producer": { "type": "boolean" },
+        "producer_fingerprint": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "artifact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmpty" }
+        },
+        "holdout_status": { "$ref": "#/$defs/evidenceStatus" },
+        "representative_status": { "$ref": "#/$defs/evidenceStatus" },
+        "customer_status": { "$ref": "#/$defs/evidenceStatus" },
+        "authorization_artifact_id": { "type": ["string", "null"], "minLength": 1 },
+        "executor_organization_id": { "type": ["string", "null"], "minLength": 1 },
+        "verifier_organization_id": { "type": ["string", "null"], "minLength": 1 },
+        "replay_status": { "$ref": "#/$defs/evidenceStatus" }
+      }
+    },
+    "blockEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "block_id",
+        "semantic",
+        "chunk",
+        "model_behavior",
+        "formal",
+        "runtime",
+        "independent"
+      ],
+      "properties": {
+        "block_id": { "$ref": "#/$defs/blockId" },
+        "semantic": { "$ref": "#/$defs/semanticEvidence" },
+        "chunk": { "$ref": "#/$defs/chunkEvidence" },
+        "model_behavior": { "$ref": "#/$defs/modelBehaviorEvidence" },
+        "formal": { "$ref": "#/$defs/formalEvidence" },
+        "runtime": { "$ref": "#/$defs/runtimeEvidence" },
+        "independent": { "$ref": "#/$defs/independentEvidence" }
+      }
+    }
+  }
+}

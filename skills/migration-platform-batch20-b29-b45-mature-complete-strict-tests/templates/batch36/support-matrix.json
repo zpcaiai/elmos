@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "pack_key": "sample-developer-workflow",
+  "capabilities": [
+    {
+      "capability": "ide-protocol",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "intellij",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "visual-studio",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "vscode",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "cli",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "pr-bot",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "local-preview",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "source-target-navigation",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "explainability",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "quick-fix",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "semantic-conflict",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "ownership",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "local-eval",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "recipe-authoring",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "review",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "offline",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    },
+    {
+      "capability": "telemetry",
+      "status": "experimental",
+      "owner": "TODO",
+      "evidence_refs": [],
+      "constraints": []
+    }
+  ]
+}

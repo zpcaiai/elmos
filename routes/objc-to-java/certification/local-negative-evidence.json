@@ -1,0 +1,23 @@
+{
+  "cases": [
+    {
+      "case_id": "missing-symbol-fails-closed",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "undeclared-directed-route-fails-closed",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    }
+  ],
+  "expected_result": "BLOCKED",
+  "external_certification": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "route": "objc-to-java",
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "test_integrity": "PRESERVED"
+}

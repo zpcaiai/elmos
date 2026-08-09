@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch32/frontend-formal-external-trust-store-v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "trust_store_id",
+    "root_id",
+    "issued_at",
+    "expires_at",
+    "keys",
+    "revocations",
+    "root_authorization"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "kind": {"const": "frontend-formal-external-trust-store-v2"},
+    "trust_store_id": {"$ref": "#/$defs/nonEmpty"},
+    "root_id": {"$ref": "#/$defs/nonEmpty"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "keys": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/evidenceKey"}
+    },
+    "revocations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_ids", "organization_ids", "updated_at"],
+      "properties": {
+        "key_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmpty"}
+        },
+        "organization_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmpty"}
+        },
+        "updated_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "root_authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_key_id",
+        "algorithm",
+        "signed_payload_sha256",
+        "signature_base64"
+      ],
+      "properties": {
+        "root_key_id": {"$ref": "#/$defs/nonEmpty"},
+        "algorithm": {"const": "ed25519"},
+        "signed_payload_sha256": {"$ref": "#/$defs/sha256"},
+        "signature_base64": {"type": "string", "minLength": 40}
+      }
+    }
+  },
+  "$defs": {
+    "nonEmpty": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "evidenceKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key_id",
+        "organization_id",
+        "roles",
+        "public_key_pem",
+        "valid_from",
+        "valid_until",
+        "revoked"
+      ],
+      "properties": {
+        "key_id": {"$ref": "#/$defs/nonEmpty"},
+        "organization_id": {"$ref": "#/$defs/nonEmpty"},
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["AUTHORIZATION", "EXECUTOR", "VERIFIER"]}
+        },
+        "public_key_pem": {
+          "type": "string",
+          "pattern": "^-----BEGIN PUBLIC KEY-----[\\s\\S]+-----END PUBLIC KEY-----\\n?$"
+        },
+        "valid_from": {"type": "string", "format": "date-time"},
+        "valid_until": {"type": "string", "format": "date-time"},
+        "revoked": {"type": "boolean"}
+      }
+    }
+  }
+}

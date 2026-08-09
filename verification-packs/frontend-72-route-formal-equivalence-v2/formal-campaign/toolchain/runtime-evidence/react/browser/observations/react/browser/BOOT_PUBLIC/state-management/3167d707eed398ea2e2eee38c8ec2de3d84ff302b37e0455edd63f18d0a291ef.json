@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:0f2b2daea1e82a2c33bdb4f9b653e46acaaf3b68566387d0f53f66553961c12a",
+      "block_id": "state-management",
+      "byte_count": 1206,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/react/browser/BOOT_PUBLIC/browser-framework-state-transition-observer-trace/22730bb5c395a5a3f61f98e55f9e188bad19b306e0e74c7784757f87601f9d73.json",
+      "profile_id": "react",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "BOOT_PUBLIC",
+      "sha256": "sha256:22730bb5c395a5a3f61f98e55f9e188bad19b306e0e74c7784757f87601f9d73"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:95329edec4c7e6cb62643a7cd728d3bba8204314cc7f022de36e436f0bb1b2b6",
+        "byte_count": 5162,
+        "channel": "browser",
+        "path": "traces/react/browser/BOOT_PUBLIC/browser-framework-event-trace/28119f0291a4772cedc248984044e6b28538883c55800b5efa8a7824b5eff4bc.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:28119f0291a4772cedc248984044e6b28538883c55800b5efa8a7824b5eff4bc"
+      },
+      {
+        "artifact_id": "sha256:42bdcb6e34e10f0943a6cd29599cde3d5fbb05267296bd41a846fbd1562768c4",
+        "byte_count": 40347,
+        "channel": "browser",
+        "path": "traces/react/browser/BOOT_PUBLIC/browser-dom-snapshot/7ab3bd76a7b223127644511be63d5f9711355c611e904898bd5a57d15d341667.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:7ab3bd76a7b223127644511be63d5f9711355c611e904898bd5a57d15d341667"
+      }
+    ]
+  },
+  "scenario_id": "BOOT_PUBLIC",
+  "schema_version": "1.0"
+}

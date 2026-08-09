@@ -16,6 +16,7 @@ The C++ cases are compiled and executed here; Objective-C is parsed by the
 real clang here but needs Foundation (macOS) to link, and Swift needs a Swift
 toolchain, so those two are asserted at the emitted-source level.
 """
+
 from __future__ import annotations
 
 import shutil
@@ -65,18 +66,10 @@ def _function(
     }
 
 
-DIVIDE = _function(
-    "divide", [("a", "integer"), ("b", "integer")], "integer", _binary("/", _name("a"), _name("b"))
-)
-REMAINDER = _function(
-    "rem", [("a", "integer"), ("b", "integer")], "integer", _binary("%", _name("a"), _name("b"))
-)
-STRING_EQUALS = _function(
-    "same", [("a", "string"), ("b", "string")], "boolean", _binary("==", _name("a"), _name("b"))
-)
-STRING_CONCAT = _function(
-    "join", [("a", "string"), ("b", "string")], "string", _binary("+", _name("a"), _name("b"))
-)
+DIVIDE = _function("divide", [("a", "integer"), ("b", "integer")], "integer", _binary("/", _name("a"), _name("b")))
+REMAINDER = _function("rem", [("a", "integer"), ("b", "integer")], "integer", _binary("%", _name("a"), _name("b")))
+STRING_EQUALS = _function("same", [("a", "string"), ("b", "string")], "boolean", _binary("==", _name("a"), _name("b")))
+STRING_CONCAT = _function("join", [("a", "string"), ("b", "string")], "string", _binary("+", _name("a"), _name("b")))
 
 
 # --------------------------------------------------------------------------
@@ -89,7 +82,7 @@ STRING_CONCAT = _function(
     [
         ("cpp", "std::int64_t divide(std::int64_t a, std::int64_t b)"),
         ("objc", "long long divide(long long a, long long b)"),
-        ("swift", "func divide(_ a: Int, _ b: Int) -> Int"),
+        ("swift", "func divide(_ a: Int64, _ b: Int64) -> Int64"),
     ],
 )
 def test_integer_signature(language: str, expected: str) -> None:
@@ -109,9 +102,7 @@ def test_string_and_boolean_signature(language: str, expected: str) -> None:
 
 
 def test_number_maps_to_double_everywhere() -> None:
-    function = _function(
-        "ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b"))
-    )
+    function = _function("ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b")))
     assert "double ratio(double a, double b)" in emit(_ir(function), "cpp").content
     assert "double ratio(double a, double b)" in emit(_ir(function), "objc").content
     assert "func ratio(_ a: Double, _ b: Double) -> Double" in emit(_ir(function), "swift").content
@@ -149,7 +140,7 @@ def test_integer_division_and_remainder_are_checked(language: str) -> None:
         assert "return ElmosCheckedMod(a, b);" in remainder
     else:
         # Swift is the one target of the three that traps on both by itself:
-        # Int division by zero and Int.min / -1 are runtime errors already.
+        # Int64 division by zero and Int64.min / -1 are runtime errors already.
         assert "return (a / b)" in divide
         assert "return (a % b)" in remainder
 
@@ -194,8 +185,22 @@ def test_integer_literal_beyond_int32_gets_the_long_long_suffix(language: str) -
 
 
 def test_swift_integer_literal_needs_no_suffix() -> None:
-    # Swift's Int is 64-bit on every supported platform.
-    assert "return 9007199254740993" in emit(_constant(9007199254740993, "integer"), "swift").content
+    # Int64 makes the exact width part of the emitted source contract.
+    assert "return Int64(9007199254740993)" in emit(_constant(9007199254740993, "integer"), "swift").content
+
+
+def test_swift_widens_integer_operands_in_number_expressions() -> None:
+    compared = _function(
+        "is_negative",
+        [("value", "number")],
+        "boolean",
+        _binary("<", _name("value"), {"kind": "literal", "value": 0}),
+    )
+    assert "(value < Double(Int64(0)))" in emit(_ir(compared), "swift").content
+
+
+def test_swift_widens_integer_return_to_number() -> None:
+    assert "return Double(Int64(0))" in emit(_constant(0, "number"), "swift").content
 
 
 @pytest.mark.parametrize("language", ["cpp", "objc", "swift"])
@@ -331,6 +336,106 @@ def test_objc_string_pointer_comparison_fails_closed(tmp_path: Path) -> None:
 
 
 @requires_clang
+def test_objc_true_false_yes_no_literals_and_nested_branches_lift_exactly(
+    tmp_path: Path,
+) -> None:
+    semantic = _analyze(
+        tmp_path,
+        ".m",
+        "objc",
+        "#import <Foundation/Foundation.h>\n"
+        "BOOL choose(BOOL flag, BOOL objcStyle) {\n"
+        "    if (flag) {\n"
+        "        if (objcStyle) { return YES; }\n"
+        "        return true;\n"
+        "    }\n"
+        "    if (objcStyle) { return NO; }\n"
+        "    return false;\n"
+        "}\n",
+        "choose",
+    )
+
+    values: list[bool] = []
+
+    def visit_statement(statement: Any) -> None:
+        if statement.kind == "return":
+            assert statement.expression is not None
+            assert statement.expression.kind == "literal"
+            values.append(statement.expression.value)
+            return
+        for nested in (*statement.then_body, *statement.else_body):
+            visit_statement(nested)
+
+    for statement in semantic.functions[0].body:
+        visit_statement(statement)
+    assert values == [True, True, False, False]
+
+
+def _boolean_branch_ir() -> SemanticIR:
+    return _ir(
+        {
+            "name": "choose",
+            "parameters": [{"name": "flag", "type": "boolean"}],
+            "return_type": "boolean",
+            "body": [
+                {
+                    "kind": "if",
+                    "condition": {"kind": "name", "value": "flag"},
+                    "then": [
+                        {
+                            "kind": "return",
+                            "expression": {"kind": "literal", "value": True},
+                        }
+                    ],
+                    "else": [
+                        {
+                            "kind": "return",
+                            "expression": {"kind": "literal", "value": False},
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+
+
+@requires_clang
+def test_emitted_objc_boolean_branch_relifts_true_and_false_and_tamper_fails_closed(
+    tmp_path: Path,
+) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source_ir = _boolean_branch_ir()
+    emitted = emit(source_ir, "objc")
+    target = tmp_path / emitted.relative_path
+    target.write_text(emitted.content, encoding="utf-8")
+    relifted = analyze(target, "objc", "choose", emitted_target=True)
+    assert relifted.functions[0].semantic_mapping() == source_ir.functions[0].semantic_mapping()
+
+    tampered = emitted.content.replace("return NO;", "return 2;", 1)
+    assert tampered != emitted.content
+    target.write_text(tampered, encoding="utf-8")
+    with pytest.raises(RouteError, match="OBJC_BOOLEAN_INTEGER_COERCION_OUTSIDE_CERTIFIED_SUBSET"):
+        analyze(target, "objc", "choose", emitted_target=True)
+
+
+@requires_clang
+def test_cpp_true_and_false_literals_in_branches_lift_exactly(tmp_path: Path) -> None:
+    semantic = _analyze(
+        tmp_path,
+        ".cpp",
+        "cpp",
+        "bool choose(bool flag) { if (flag) { return true; } return false; }\n",
+        "choose",
+    )
+    function = semantic.functions[0]
+    assert function.body[0].then_body[0].expression is not None
+    assert function.body[0].then_body[0].expression.value is True
+    assert function.body[1].expression is not None
+    assert function.body[1].expression.value is False
+
+
+@requires_clang
 def test_a_source_that_does_not_compile_fails_closed(tmp_path: Path) -> None:
     with pytest.raises(RouteError, match="SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS"):
         _analyze(tmp_path, ".cpp", "cpp", "int broken(int a) { return a +; }\n", "broken")
@@ -347,9 +452,7 @@ def test_a_source_that_does_not_compile_fails_closed(tmp_path: Path) -> None:
     ("a", "b", "quotient", "remainder"),
     [(7, 2, 3, 1), (-7, 2, -3, -1), (7, -2, -3, 1), (-7, -2, 3, -1)],
 )
-def test_emitted_cpp_truncates_like_java(
-    tmp_path: Path, a: int, b: int, quotient: int, remainder: int
-) -> None:
+def test_emitted_cpp_truncates_like_java(tmp_path: Path, a: int, b: int, quotient: int, remainder: int) -> None:
     source = emit(_ir(DIVIDE, REMAINDER), "cpp").content
     harness = (
         f"{source}\n#include <cstdio>\n"
@@ -364,7 +467,7 @@ def test_emitted_cpp_truncates_like_java(
     binary = tmp_path / "harness"
     assert CLANGXX is not None
     compiled = subprocess.run(
-        [CLANGXX, "-std=c++17", "-Wall", "-Wextra", "-Werror", "-o", str(binary), str(path)],
+        [CLANGXX, "-std=c++20", "-Wall", "-Wextra", "-Werror", "-o", str(binary), str(path)],
         check=False,
         capture_output=True,
         text=True,
@@ -391,7 +494,7 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
 
     source = tmp_path / "pricing.swift"
     source.write_text(
-        "func calculate(_ subtotal: Int, _ tax: Int) -> Int {\n"
+        "func calculate(_ subtotal: Int64, _ tax: Int64) -> Int64 {\n"
         "    if subtotal < 0 {\n"
         "        return 0\n"
         "    }\n"
@@ -417,12 +520,11 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
     [
         ("func f(_ v: Float) -> Float { return v }", "FLOAT_PRECISION"),
         ("func f(_ v: UInt64) -> UInt64 { return v }", "UNSIGNED_TYPE"),
-        ("func f(_ v: Int?) -> Int { return 0 }", "OPTIONAL_TYPE"),
+        ("func f(_ v: Int?) -> Int64 { return 0 }", "OPTIONAL_TYPE"),
+        ("func f(_ v: Int) -> Int64 { return Int64(v) }", "INTEGER_WIDTH"),
     ],
 )
-def test_swift_types_outside_the_subset_fail_closed(
-    tmp_path: Path, declaration: str, reason: str
-) -> None:
+def test_swift_types_outside_the_subset_fail_closed(tmp_path: Path, declaration: str, reason: str) -> None:
     from elmos_polyglot_route.native import analyze
 
     source = tmp_path / "unsupported.swift"

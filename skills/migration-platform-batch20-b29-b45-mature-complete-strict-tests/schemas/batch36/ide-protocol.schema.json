@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/ide-protocol.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "protocol_key",
+    "version",
+    "transport",
+    "authentication",
+    "methods",
+    "security"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "protocol_key": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "transport": {
+      "enum": [
+        "json-rpc-stdio",
+        "json-rpc-local-socket",
+        "https-mtls",
+        "websocket-mtls"
+      ]
+    },
+    "authentication": {
+      "type": "object",
+      "required": [
+        "mode",
+        "tenant_scoped"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "local-process-token",
+            "workload-identity",
+            "mtls",
+            "none-offline"
+          ]
+        },
+        "tenant_scoped": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "methods": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "request_schema",
+          "response_schema",
+          "cancellable",
+          "requires_document_version",
+          "requires_artifact_digest"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
+          },
+          "request_schema": {
+            "type": "string"
+          },
+          "response_schema": {
+            "type": "string"
+          },
+          "cancellable": {
+            "type": "boolean"
+          },
+          "requires_document_version": {
+            "type": "boolean"
+          },
+          "requires_artifact_digest": {
+            "type": "boolean"
+          },
+          "required_permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "path_allowlist",
+        "tool_allowlist",
+        "arbitrary_shell",
+        "secret_access"
+      ],
+      "properties": {
+        "path_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tool_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "arbitrary_shell": {
+          "const": false
+        },
+        "secret_access": {
+          "enum": [
+            "none",
+            "reference-only"
+          ]
+        },
+        "network_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

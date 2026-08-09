@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:eeda057c4904d2c07ee6e8cefb5bce069048adc2733ee8901db57af7b308da78",
+      "block_id": "form-binding-validation",
+      "byte_count": 1523,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-form-validity-observer-trace/4f77a6e5814293927f4d219dc600d342cf487bd258326ea2d7f9e565308d0108.json",
+      "profile_id": "react",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:4f77a6e5814293927f4d219dc600d342cf487bd258326ea2d7f9e565308d0108"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:eb4acc0a4fbd53f7ff31453a79e5154f81bfb07c444c2f9b54496234261b6419",
+        "byte_count": 40421,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-dom-snapshot/04102e1f8152b0283101c186d0ed1def78fcde7db5d4272de2c57a42aa4673a9.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:04102e1f8152b0283101c186d0ed1def78fcde7db5d4272de2c57a42aa4673a9"
+      },
+      {
+        "artifact_id": "sha256:96981ba157c540b06bb94ad0f46eb7d5a49d502c38ebc8161f20b18c77b05bda",
+        "byte_count": 5356,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-framework-event-trace/27e65891554ebbf47a8401d6b64cd5dc8e8055f6a4209fd38b22a5690c99965b.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:27e65891554ebbf47a8401d6b64cd5dc8e8055f6a4209fd38b22a5690c99965b"
+      },
+      {
+        "artifact_id": "sha256:ceb7ef38a1126598c179600c54720765bcb4cc2a34f4172634f598c85d378b5f",
+        "byte_count": 556854,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-accessibility-axe-trace/daa92422947f8635d89235283ecb650d62bf82921eb783ad6cfbfef2fe2ba9b0.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:daa92422947f8635d89235283ecb650d62bf82921eb783ad6cfbfef2fe2ba9b0"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

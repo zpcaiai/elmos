@@ -1,0 +1,563 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/repository-capability-campaign.schema.json",
+  "title": "Batch29RepositoryCapabilityCampaign",
+  "description": "Fail-closed local engineering evidence for every directed route across the nine-language repository matrix.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "campaign_id",
+    "languages",
+    "scope",
+    "routes",
+    "external_verification_status",
+    "certification_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "batch29.repository-capability-campaign.v1"
+    },
+    "kind": {
+      "const": "elmos.batch29.repository-capability-campaign"
+    },
+    "campaign_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+    },
+    "languages": {
+      "const": [
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "profile",
+        "repository_classes",
+        "execution_boundary"
+      ],
+      "properties": {
+        "profile": {
+          "const": "repository-wide-v1"
+        },
+        "repository_classes": {
+          "const": [
+            "SMALL",
+            "MEDIUM"
+          ]
+        },
+        "execution_boundary": {
+          "const": "LOCAL_ENGINEERING"
+        }
+      },
+      "additionalProperties": false
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 72,
+      "maxItems": 72,
+      "items": {
+        "$ref": "#/$defs/route"
+      }
+    },
+    "external_verification_status": {
+      "const": "NOT_RUN"
+    },
+    "certification_status": {
+      "const": "NOT_CERTIFIED"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "language": {
+      "enum": [
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "SKIPPED",
+        "UNSUPPORTED",
+        "NOT_RUN"
+      ]
+    },
+    "artifact_subject": {
+      "type": "object",
+      "required": [
+        "campaign_id",
+        "route_id",
+        "source_language",
+        "target_language",
+        "repository_id",
+        "repository_class",
+        "stage",
+        "role"
+      ],
+      "properties": {
+        "campaign_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+        },
+        "route_id": {
+          "type": "string",
+          "pattern": "^[a-z]+-to-[a-z]+$"
+        },
+        "source_language": {
+          "$ref": "#/$defs/language"
+        },
+        "target_language": {
+          "$ref": "#/$defs/language"
+        },
+        "repository_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+        },
+        "repository_class": {
+          "enum": [
+            "SMALL",
+            "MEDIUM"
+          ]
+        },
+        "stage": {
+          "enum": [
+            "inventory",
+            "source_build",
+            "source_test",
+            "classification",
+            "conversion",
+            "target_build",
+            "target_test"
+          ]
+        },
+        "role": {
+          "enum": [
+            "SOURCE_REPOSITORY_SNAPSHOT",
+            "SOURCE_BUILD_LOG",
+            "SOURCE_TEST_LOG",
+            "CLASSIFICATION_REPORT",
+            "CONVERSION_REPORT",
+            "TARGET_BUILD_LOG",
+            "TARGET_TEST_LOG",
+            "TARGET_REPOSITORY_ARTIFACT"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "role",
+        "subject",
+        "path",
+        "sha256",
+        "bytes",
+        "media_type"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+        },
+        "role": {
+          "enum": [
+            "SOURCE_REPOSITORY_SNAPSHOT",
+            "SOURCE_BUILD_LOG",
+            "SOURCE_TEST_LOG",
+            "CLASSIFICATION_REPORT",
+            "CONVERSION_REPORT",
+            "TARGET_BUILD_LOG",
+            "TARGET_TEST_LOG",
+            "TARGET_REPOSITORY_ARTIFACT"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/artifact_subject"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "media_type": {
+          "const": "application/json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "status",
+        "executor",
+        "verifier",
+        "command",
+        "artifacts"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "executor": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$"
+        },
+        "verifier": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$"
+        },
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "test_execution": {
+      "type": "object",
+      "required": [
+        "status",
+        "executor",
+        "verifier",
+        "command",
+        "artifacts",
+        "tests_total",
+        "tests_passed",
+        "tests_failed",
+        "tests_skipped"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "executor": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$"
+        },
+        "verifier": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$"
+        },
+        "command": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        },
+        "tests_total": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "tests_passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tests_failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tests_skipped": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "inventory": {
+      "type": "object",
+      "required": [
+        "repository_class",
+        "file_count",
+        "source_file_count",
+        "source_bytes",
+        "snapshot"
+      ],
+      "properties": {
+        "repository_class": {
+          "enum": [
+            "SMALL",
+            "MEDIUM"
+          ]
+        },
+        "file_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000
+        },
+        "source_file_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000
+        },
+        "source_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "snapshot": {
+          "$ref": "#/$defs/artifact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "classification": {
+      "type": "object",
+      "required": [
+        "status",
+        "total_units",
+        "classified_units",
+        "ready_units",
+        "unsupported_units",
+        "skipped_units",
+        "failed_units",
+        "unknown_units",
+        "execution"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "total_units": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "classified_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ready_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unsupported_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skipped_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "execution": {
+          "$ref": "#/$defs/execution"
+        }
+      },
+      "additionalProperties": false
+    },
+    "conversion": {
+      "type": "object",
+      "required": [
+        "status",
+        "total_units",
+        "attempted_units",
+        "converted_units",
+        "unsupported_units",
+        "skipped_units",
+        "failed_units",
+        "execution"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "total_units": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "attempted_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "converted_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unsupported_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skipped_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_units": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "execution": {
+          "$ref": "#/$defs/execution"
+        }
+      },
+      "additionalProperties": false
+    },
+    "workload": {
+      "type": "object",
+      "required": [
+        "repository_class",
+        "repository_id",
+        "source_inventory",
+        "source_baseline",
+        "classification",
+        "conversion",
+        "target_repository"
+      ],
+      "properties": {
+        "repository_class": {
+          "enum": [
+            "SMALL",
+            "MEDIUM"
+          ]
+        },
+        "repository_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+        },
+        "source_inventory": {
+          "$ref": "#/$defs/inventory"
+        },
+        "source_baseline": {
+          "type": "object",
+          "required": [
+            "build",
+            "test"
+          ],
+          "properties": {
+            "build": {
+              "$ref": "#/$defs/execution"
+            },
+            "test": {
+              "$ref": "#/$defs/test_execution"
+            }
+          },
+          "additionalProperties": false
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "conversion": {
+          "$ref": "#/$defs/conversion"
+        },
+        "target_repository": {
+          "type": "object",
+          "required": [
+            "whole_repository",
+            "included_units",
+            "excluded_units",
+            "build",
+            "test"
+          ],
+          "properties": {
+            "whole_repository": {
+              "type": "boolean"
+            },
+            "included_units": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "excluded_units": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "build": {
+              "$ref": "#/$defs/execution"
+            },
+            "test": {
+              "$ref": "#/$defs/test_execution"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "route": {
+      "type": "object",
+      "required": [
+        "route_id",
+        "source_language",
+        "target_language",
+        "status",
+        "workloads"
+      ],
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "pattern": "^[a-z]+-to-[a-z]+$"
+        },
+        "source_language": {
+          "$ref": "#/$defs/language"
+        },
+        "target_language": {
+          "$ref": "#/$defs/language"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "workloads": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/workload"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-72-route-formal-equivalence-v1",
+  "version": "1.0.0",
+  "status": "experimental",
+  "owner": "frontend-formal-verification-team",
+  "maintenance_owner": "frontend-client-platform-team",
+  "scope": {
+    "migration_route": "all-directed-pairs-nine-exact-frontend-profiles",
+    "source_artifact_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+    "target_artifact_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+    "workload_key": "bounded-navigation-v1",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:31a41ef1d6fba82572274b028cece6058a6cc785912881142c289efc91c5844c"
+  },
+  "contracts": {
+    "validation_profile": "validation-profile.json",
+    "oracle_registry": "oracle-registry.json",
+    "assurance_case": "assurance/assurance-case.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json"
+  },
+  "tags": [
+    "advanced-verification"
+  ],
+  "frontend_formal_route_campaign": "formal-campaign/frontend-formal-route-campaign.json",
+  "frontend_formal_campaign_digest": "sha256:ecb7dfb77ce3276131fc3983fb238da4f5ecfba49a23cdef3355122552dec8fc",
+  "frontend_formal_scope_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f",
+  "frontend_formal_peer": {
+    "pack_key": "frontend-72-route-equivalence-v1",
+    "campaign_sha256": "sha256:ecb7dfb77ce3276131fc3983fb238da4f5ecfba49a23cdef3355122552dec8fc",
+    "scope_digest": "sha256:c70a595c8d02e9e7045093e6d5bf477a35dd0b7ed54f98a4f3707ab8275e327f"
+  }
+}

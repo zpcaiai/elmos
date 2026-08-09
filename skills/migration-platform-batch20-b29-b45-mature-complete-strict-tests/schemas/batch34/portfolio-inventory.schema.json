@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch34/portfolio-inventory.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pack_key",
+    "snapshot_digest",
+    "captured_at",
+    "coverage",
+    "repositories",
+    "unreachable"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "pack_key": {
+      "type": "string"
+    },
+    "snapshot_digest": {
+      "type": "string"
+    },
+    "captured_at": {
+      "type": "string"
+    },
+    "coverage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "scm_provider",
+          "organization",
+          "name",
+          "default_branch",
+          "baseline_commit",
+          "owner",
+          "status",
+          "criticality",
+          "regions",
+          "languages",
+          "build_systems",
+          "loc",
+          "size_bytes",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "scm_provider": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "default_branch": {
+            "type": "string"
+          },
+          "baseline_commit": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "archived",
+              "mirror",
+              "fork",
+              "shadow",
+              "inaccessible",
+              "deleted"
+            ]
+          },
+          "criticality": {
+            "enum": [
+              "P0",
+              "P1",
+              "P2",
+              "P3"
+            ]
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "build_systems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "loc": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "unreachable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "logical_key",
+          "reason",
+          "owner"
+        ],
+        "properties": {
+          "logical_key": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -15,6 +15,14 @@ _EXTENSIONS: dict[str, Language] = {
     ".ts": "typescript",
     ".go": "go",
     ".rs": "rust",
+    ".cc": "cpp",
+    ".cpp": "cpp",
+    ".cxx": "cpp",
+    ".hh": "cpp",
+    ".hpp": "cpp",
+    ".hxx": "cpp",
+    ".m": "objc",
+    ".swift": "swift",
 }
 _IGNORED_DIRECTORIES = {
     ".git",
@@ -35,14 +43,31 @@ _IGNORED_DIRECTORIES = {
     "vendor",
 }
 _SAFE_REPOSITORY_REF = re.compile(r"^local:[A-Za-z0-9][A-Za-z0-9._/-]{2,170}$")
+_SAFE_WORKSPACE_REF = re.compile(
+    r"^repository-workspace:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@[0-9a-f]{40}$"
+)
 _MAX_FILES = 5_000
 _MAX_SOURCE_BYTES = 64 * 1024 * 1024
 _MAX_FILE_BYTES = 2 * 1024 * 1024
 
 
+def _repository_scale(file_count: int, byte_count: int) -> str:
+    """Classify the bounded repository size without widening the hard limits.
+
+    The repository runner is deliberately scoped to small and medium source
+    estates.  The label is evidence about the inventory size, not a claim that
+    every construct in those files is supported by the active semantic
+    profile.
+    """
+
+    if file_count <= 500 and byte_count <= 8 * 1024 * 1024:
+        return "small"
+    return "medium"
+
+
 def _repository_ref(value: str) -> str:
     repository_ref = value.strip()
-    if _SAFE_REPOSITORY_REF.fullmatch(repository_ref):
+    if _SAFE_REPOSITORY_REF.fullmatch(repository_ref) or _SAFE_WORKSPACE_REF.fullmatch(repository_ref):
         return repository_ref
     if (
         repository_ref.startswith("https://")
@@ -137,7 +162,7 @@ def plan_repository(
             "source_bytes": entry["bytes"],
             "status": "DISCOVERY_REQUIRED",
             "execution_status": "NOT_RUN",
-            "required_inputs": ["function_name", "behavior_cases_json"],
+            "required_inputs": ["behavior_cases_json_per_discovered_function"],
             "declared_profile": "typed-pure-function-v1",
             "unsupported_until_discovered": [
                 "object_graph",
@@ -163,6 +188,12 @@ def plan_repository(
         "file_count": len(inventory),
         "source_file_count": len(source_files),
         "source_bytes": total_bytes,
+        "repository_scale": _repository_scale(len(inventory), total_bytes),
+        "repository_limits": {
+            "maximum_source_files": _MAX_FILES,
+            "maximum_source_bytes": _MAX_SOURCE_BYTES,
+            "maximum_bytes_per_file": _MAX_FILE_BYTES,
+        },
         "language_counts": language_counts,
         "ignored_symlink_count": ignored_symlink_count,
         "work_units": work_units,
@@ -171,7 +202,7 @@ def plan_repository(
         "certification_status": "NOT_CERTIFIED",
         "limitations": [
             "Inventory and work-unit decomposition do not execute source code.",
-            "Every work unit requires an explicit function name and behavior-case corpus.",
+            "Every discovered function requires an independent behavior-case corpus.",
             "Repository-wide success cannot be inferred from typed-pure-function-v1 evidence.",
         ],
     }

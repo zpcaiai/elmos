@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:44288a6a7dcdea3641bad20346b29865d42117f4d09229aa59e4e16095d7d389",
+      "block_id": "state-management",
+      "byte_count": 1215,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue2/browser/LOCALE_EN_US_WIDE_721/browser-framework-state-transition-observer-trace/e64fb94200744270d42382a11f7609a9c40ac3f15858d4fd86f36d3dd5a46592.json",
+      "profile_id": "vue2",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "LOCALE_EN_US_WIDE_721",
+      "sha256": "sha256:e64fb94200744270d42382a11f7609a9c40ac3f15858d4fd86f36d3dd5a46592"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:9429f98ac76107d077eaf674e49e07c23ec2528a9222e41c5b56ca002f5f477f",
+        "byte_count": 5251,
+        "channel": "browser",
+        "path": "traces/vue2/browser/LOCALE_EN_US_WIDE_721/browser-framework-event-trace/64b5b45af6a5cf3c727c92db764dd2bf5ffdeba2b0eabe4627c476b86034f454.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:64b5b45af6a5cf3c727c92db764dd2bf5ffdeba2b0eabe4627c476b86034f454"
+      },
+      {
+        "artifact_id": "sha256:dbada1641e39766517f89bd126b1e8526380a781fbf85edc30090c4e81961318",
+        "byte_count": 40414,
+        "channel": "browser",
+        "path": "traces/vue2/browser/LOCALE_EN_US_WIDE_721/browser-dom-snapshot/10d5b87f3fac88564c590038d2be741dff02cac884cc74d38c9217cc471bc203.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:10d5b87f3fac88564c590038d2be741dff02cac884cc74d38c9217cc471bc203"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_EN_US_WIDE_721",
+  "schema_version": "1.0"
+}

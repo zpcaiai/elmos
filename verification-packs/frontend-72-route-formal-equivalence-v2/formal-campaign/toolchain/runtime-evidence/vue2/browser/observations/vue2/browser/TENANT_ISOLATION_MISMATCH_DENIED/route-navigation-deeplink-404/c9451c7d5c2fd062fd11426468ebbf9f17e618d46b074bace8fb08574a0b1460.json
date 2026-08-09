@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": false,
+    "resolution": "AUTH_DENIED_FALLBACK",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:e47896c32c722e92f66d5486292bea324d11b20804b583367bb0defd93d9d1e6",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2429,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-route-dom-url-observer-trace/297539726b85f5e63bdbf75ffb5e70727525a48ce42df9cc6313b798c61de713.json",
+      "profile_id": "vue2",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:297539726b85f5e63bdbf75ffb5e70727525a48ce42df9cc6313b798c61de713"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:7726f91d805e76fe5843d0eb9e2aeb7e3d6751fdf2c5a9340ea5fb549d8285a0",
+        "byte_count": 40425,
+        "channel": "browser",
+        "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/44034b07cb8fc908ed06dac94c87782f7d5fc573b486b8531484e97bb968a86d.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:44034b07cb8fc908ed06dac94c87782f7d5fc573b486b8531484e97bb968a86d"
+      },
+      {
+        "artifact_id": "sha256:b69be7a2cbf3b7d3c797b62b1e7a57051989e60cbbbdc62f230c92a1b3a4bf67",
+        "byte_count": 7478,
+        "channel": "browser",
+        "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-framework-event-trace/d067fa1db8a096f2292d8f269155f7aab2ba53110cbcb59e377e680724e7c2cc.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:d067fa1db8a096f2292d8f269155f7aab2ba53110cbcb59e377e680724e7c2cc"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

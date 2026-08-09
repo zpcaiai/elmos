@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:9214b13bad7986e99d5ccb1f90f29b45a04b0830c6767b92c30976e150220185",
+      "block_id": "state-management",
+      "byte_count": 1227,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-state-transition-observer-trace/db1f166852032f4668ffd94a212e02e98221d3a9ae10ef58e09858cca1ec9b43.json",
+      "profile_id": "jquery",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:db1f166852032f4668ffd94a212e02e98221d3a9ae10ef58e09858cca1ec9b43"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:3188d07f0331f97d228f52c3ba7196bbda424caeee3fbbd999e97543f43ce447",
+        "byte_count": 8791,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/c705df5e4766f16104db00a0f636bc0917136ecb41b361eb7bd2be9b204ec555.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:c705df5e4766f16104db00a0f636bc0917136ecb41b361eb7bd2be9b204ec555"
+      },
+      {
+        "artifact_id": "sha256:90d28273c267599f3522d1dab218131d4d1c08cae38dda8e6aff62241e6a0b22",
+        "byte_count": 40254,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/d7e206e1ad06930ad5426a34ed91ac383e7be2fb48e8fe75fe31422ac9e00075.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:d7e206e1ad06930ad5426a34ed91ac383e7be2fb48e8fe75fe31422ac9e00075"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

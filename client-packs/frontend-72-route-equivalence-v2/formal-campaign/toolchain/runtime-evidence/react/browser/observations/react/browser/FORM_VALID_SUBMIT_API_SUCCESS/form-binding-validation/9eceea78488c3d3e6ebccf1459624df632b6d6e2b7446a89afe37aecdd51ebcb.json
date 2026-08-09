@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": true,
+    "valid": true,
+    "value": "ok"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:3310cf237d666c23b40408dab93738773d2ebc41dc3b8e52735a7bdb3dbe2f43",
+      "block_id": "form-binding-validation",
+      "byte_count": 1519,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-form-validity-observer-trace/2de761425ee1549521f4ee1f7e789ad90ed17504449dc11785486f80cf2cfc46.json",
+      "profile_id": "react",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:2de761425ee1549521f4ee1f7e789ad90ed17504449dc11785486f80cf2cfc46"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:75b69f09e56e2fd3bccb62aea88e13f8feb91798768672ab0daa5228446a3e67",
+        "byte_count": 40459,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:1416c2da6bc026d4a90752776f281c674495abc456897a43b86588b54b39e7e0"
+      },
+      {
+        "artifact_id": "sha256:13c85707a8061dd378e9a5c2c76be6fc7d5b61655ec34a7771e021649c1bc912",
+        "byte_count": 8332,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-event-trace/9a58fa084c44a00ce68fad02dc93a84f3e60d2d26cf5a74f307338e26db7e34e.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:9a58fa084c44a00ce68fad02dc93a84f3e60d2d26cf5a74f307338e26db7e34e"
+      },
+      {
+        "artifact_id": "sha256:4af33c0d9af4f93eadbea8fc43dff8f5a08c723fb7046ad5aea6fd3378079611",
+        "byte_count": 558266,
+        "channel": "browser",
+        "path": "traces/react/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-accessibility-axe-trace/8a70115a9fc1111f89be5869373eb2580247038ea3af589f62865673aed609f6.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:8a70115a9fc1111f89be5869373eb2580247038ea3af589f62865673aed609f6"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

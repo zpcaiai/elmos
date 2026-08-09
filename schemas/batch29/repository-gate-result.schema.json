@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch29/repository-gate-result.schema.json",
+  "title": "Batch29RepositoryGateResult",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "campaign_id",
+    "campaign_digest",
+    "campaign_schema_digest",
+    "result_schema_digest",
+    "gate_implementation_digest",
+    "evidence_set_digest",
+    "gate_status",
+    "decision",
+    "maximum_local_decision",
+    "certification_decision",
+    "external_verification_status",
+    "expected_route_count",
+    "observed_route_count",
+    "expected_workload_count",
+    "observed_workload_count",
+    "route_status_counts",
+    "repository_class_counts",
+    "verified_artifact_reference_count",
+    "unique_verified_artifact_count",
+    "actor_separation_passed",
+    "failures",
+    "result_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "batch29.repository-gate-result.v1"
+    },
+    "kind": {
+      "const": "elmos.batch29.repository-gate-result"
+    },
+    "campaign_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "campaign_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "campaign_schema_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "result_schema_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "gate_implementation_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "evidence_set_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "gate_status": {
+      "enum": [
+        "PASSED_LOCAL_ENGINEERING",
+        "FAILED"
+      ]
+    },
+    "decision": {
+      "enum": [
+        "READY_FOR_EXTERNAL_GATE",
+        "LIMITED"
+      ]
+    },
+    "maximum_local_decision": {
+      "const": "READY_FOR_EXTERNAL_GATE"
+    },
+    "certification_decision": {
+      "const": "NOT_CERTIFIED"
+    },
+    "external_verification_status": {
+      "const": "NOT_RUN"
+    },
+    "expected_route_count": {
+      "const": 72
+    },
+    "observed_route_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expected_workload_count": {
+      "const": 144
+    },
+    "observed_workload_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "route_status_counts": {
+      "type": "object",
+      "required": [
+        "PASSED",
+        "FAILED",
+        "SKIPPED",
+        "UNSUPPORTED",
+        "NOT_RUN"
+      ],
+      "properties": {
+        "PASSED": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "FAILED": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "SKIPPED": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "UNSUPPORTED": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "NOT_RUN": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "repository_class_counts": {
+      "type": "object",
+      "required": [
+        "SMALL",
+        "MEDIUM"
+      ],
+      "properties": {
+        "SMALL": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "MEDIUM": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "verified_artifact_reference_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unique_verified_artifact_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actor_separation_passed": {
+      "type": "boolean"
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "result_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

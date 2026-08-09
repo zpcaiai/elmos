@@ -1,0 +1,9 @@
+{
+  "case_id": "X-U025-003",
+  "status": "not-run",
+  "artifact_sha256": "",
+  "environment_sha256": "",
+  "evidence_manifest": null,
+  "replay_command": null,
+  "findings": []
+}

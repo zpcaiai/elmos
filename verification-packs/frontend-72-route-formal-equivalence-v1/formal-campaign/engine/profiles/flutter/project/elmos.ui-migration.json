@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "551755bc5b9bd2611cdff68c",
+  "direction": {
+    "routeId": "angular--to--flutter",
+    "source": "angular",
+    "target": "flutter",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "3.44.1",
+    "supportState": "ADAPTER_REQUIRED",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "flutter",
+    "label": "Flutter",
+    "frameworkVersion": "3.44.1",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "ANDROID",
+      "IOS",
+      "WEB"
+    ],
+    "language": "Dart",
+    "languageVersion": "3.12.1",
+    "runtime": "Flutter Engine",
+    "runtimeVersion": "3.44.1",
+    "buildTool": "flutter",
+    "buildToolVersion": "3.44.1",
+    "packageManager": "pub",
+    "packageManagerVersion": "3.12.1",
+    "router": "MaterialApp named routes",
+    "state": "ChangeNotifier-compatible generated boundary",
+    "rendering": "Flutter widgets",
+    "testTool": "flutter_test 3.44.1",
+    "runnerProfile": "MOBILE_CROSS_PLATFORM",
+    "requiredProjectFiles": [
+      "pubspec.yaml",
+      "analysis_options.yaml",
+      "lib/main.dart",
+      "test/widget_test.dart"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:08a1423f533f78544602aeb8417da5c88241987eaea69049d281890e3a8f6c47",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".fvmrc",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      "README.md",
+      "analysis_options.yaml",
+      "assets/ui_ir.json",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "lib/elmos_bounded_navigation.dart",
+      "lib/main.dart",
+      "pubspec.yaml",
+      "scripts/verify.sh",
+      "target-profile/profile.json",
+      "test/widget_test.dart",
+      "ui-ir/model.json"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

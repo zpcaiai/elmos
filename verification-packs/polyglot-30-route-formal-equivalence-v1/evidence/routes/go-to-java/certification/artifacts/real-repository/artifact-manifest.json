@@ -1,0 +1,149 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/go-to-java/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "Migrated.class",
+    "RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 207,
+      "path": "Migrated.java",
+      "sha256": "sha256:97e021241b840368f81ada1e30dc497092d281c8d0aa6cdb1ac376e537171dea"
+    },
+    {
+      "bytes": 965,
+      "path": "RouteHarness.java",
+      "sha256": "sha256:cdc3764a199caebc22dcc5ff60ee1fe88fdd5ede67fe8aa19bca22bebaec2e51"
+    },
+    {
+      "bytes": 1478,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:34b049be7075f6511c864c97c58c2e47e3cf042e4b1f64bc2f2653214e388a14"
+    },
+    {
+      "bytes": 8198,
+      "path": "chunk-map.json",
+      "sha256": "sha256:95a732929a4fa83fc0074b147655546b07888a61844e49fd41b95f59cfc5f362"
+    },
+    {
+      "bytes": 2944,
+      "path": "formal-composition.json",
+      "sha256": "sha256:76910da56e351883be1a63674f1a7144a6b10a12e3f2b8d1b49cf5bd92c9d1c5"
+    },
+    {
+      "bytes": 973,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:9fc3b6b12606e0e2e94f4a76fec06171af7e88770c2934e027e2fef0d00574f7"
+    },
+    {
+      "bytes": 6492,
+      "path": "formal-input.json",
+      "sha256": "sha256:6c15a434c8e41b32d94938e5fc301b2253e3bd9dc33bdd80fcdcb32926ffdc64"
+    },
+    {
+      "bytes": 2322,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:225d74ccff7b61d895c5e50b60c8eff95c0c365652f93714f8ff666fe2cb66e5"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 129,
+      "path": "inputs/difference.go",
+      "sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a"
+    },
+    {
+      "bytes": 3427,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:f69a0bc4866b8e877ff36c7b74d5fbc43ae932a9aeff16b00f8fedcbce1d36bb"
+    },
+    {
+      "bytes": 6840,
+      "path": "route-evidence.json",
+      "sha256": "sha256:14bd1f2ca721d7b763f399a245f74dd73f28d40aff1d5c1a554c2765dbfd12b2"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 663,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:01f0a513a142e37f158bdc84933deabe2692a10edd638e129ee99d9ba778d6b8"
+    },
+    {
+      "bytes": 129,
+      "path": "source-runtime/difference.go",
+      "sha256": "sha256:128bf3460746afc3ea2b184b935e68bdf08fd4ce830959d855686843d4b0cb9a"
+    },
+    {
+      "bytes": 698,
+      "path": "source-runtime/source_behavior_test.go",
+      "sha256": "sha256:eacc0cfecbd6ab53403b4d9d401b37330e127a8af5399edc066ed2145e946a7c"
+    },
+    {
+      "bytes": 663,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:01f0a513a142e37f158bdc84933deabe2692a10edd638e129ee99d9ba778d6b8"
+    },
+    {
+      "bytes": 673,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:1addb9f9d198d35bae0ec6f6cafd2004cb86ac011806a071273db4338e23729c"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "go-to-java",
+  "schema_version": 1,
+  "total_bytes": 37256
+}

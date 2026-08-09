@@ -1,0 +1,15 @@
+{
+  "capabilities": [
+    {
+      "capability_id": "reference-route",
+      "type": "language-route",
+      "version": "1.0.0",
+      "status": "draft",
+      "owner": "language-platform",
+      "constraints": [
+        "not-certified"
+      ],
+      "evidence": []
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/java-to-go/certification/artifacts/real-repository",
+  "corpus": "real-repository",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/Difference.class",
+    "source-runtime/RouteHarness.class"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1478,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:34b049be7075f6511c864c97c58c2e47e3cf042e4b1f64bc2f2653214e388a14"
+    },
+    {
+      "bytes": 8303,
+      "path": "chunk-map.json",
+      "sha256": "sha256:9668bcf6a62ea06bcc43536e5ec2e4c9feeede26514aa0ae957cbcff97aee2bf"
+    },
+    {
+      "bytes": 2940,
+      "path": "formal-composition.json",
+      "sha256": "sha256:229c298d3a20e1f33da68efd8498626f2495f49c442a480114998c10145fa226"
+    },
+    {
+      "bytes": 973,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:7a757ba94bb9b739809f49d25a4156b3c4f3ea634d3e64a4f220778cc37ba370"
+    },
+    {
+      "bytes": 6951,
+      "path": "formal-input.json",
+      "sha256": "sha256:d1f83cd98a946503b8e0304837f1d01bf8695f2282a4f61f32a1580a8cdafcc1"
+    },
+    {
+      "bytes": 2318,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:3a854937524ca7f7f728edc8ff653a5dcac26f2d6c221d6582c60d0d8ac748fb"
+    },
+    {
+      "bytes": 217,
+      "path": "inputs/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 146,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:bb1d6fe0f6fd407596ee64f6057d0d8d02c3579521911cd44f8188a02fb569c8"
+    },
+    {
+      "bytes": 3423,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:0ccf0ccd91a653a9e4b30dc03dbc5ec18cfb9886c418530fb6c308502a460f61"
+    },
+    {
+      "bytes": 386,
+      "path": "migrated.go",
+      "sha256": "sha256:d185faa9da215e65ba6105004e01cb044955ef6af5c02d7e54a1e0144f511487"
+    },
+    {
+      "bytes": 6790,
+      "path": "route-evidence.json",
+      "sha256": "sha256:e407fd1e23ae413e7ce64ebf8f8394620e593d6b6afb7f827e53bf0c494bbc2e"
+    },
+    {
+      "bytes": 634,
+      "path": "route_harness.go",
+      "sha256": "sha256:d6b3f595efeec03458d2f42444d09c5d4b39bce99a1813716a68f70e4d0409eb"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:40af3f7664082101c602e9e70bc3e1f544fab6ba1113c8746ff591d020c17be4"
+    },
+    {
+      "bytes": 675,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:2457a2efd0bdfd283155455d5c85868efd340cfef31f9c1a41812827bb44c8d5"
+    },
+    {
+      "bytes": 217,
+      "path": "source-runtime/Difference.java",
+      "sha256": "sha256:7999ba0439f4e1a7d97cca8083a09fce18408982924278427d8f276e9b476b64"
+    },
+    {
+      "bytes": 971,
+      "path": "source-runtime/RouteHarness.java",
+      "sha256": "sha256:df829a3b595a6fca3e1802a1b0fec335282a2fc0951a9a5a3eb9204fce1ef419"
+    },
+    {
+      "bytes": 675,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:2457a2efd0bdfd283155455d5c85868efd340cfef31f9c1a41812827bb44c8d5"
+    },
+    {
+      "bytes": 661,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:70de5fb05b243e773a69a3a0149b2842d58e5a2966dd4892c9d7aaa9114b8527"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "java-to-go",
+  "schema_version": 1,
+  "total_bytes": 38067
+}

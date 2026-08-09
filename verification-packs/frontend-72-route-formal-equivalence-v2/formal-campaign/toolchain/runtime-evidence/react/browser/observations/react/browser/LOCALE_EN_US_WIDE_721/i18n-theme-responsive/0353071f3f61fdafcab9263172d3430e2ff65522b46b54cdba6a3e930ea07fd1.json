@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "en-US",
+    "requestedLocale": "en-US",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 721
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:9d56f3083caac50d69e5c532988a547305b608f89ab5e488a79a24b24ef895a0",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1995,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/react/browser/LOCALE_EN_US_WIDE_721/browser-computed-layout-i18n-theme-observer-trace/f4720c3c6cdde2c206c0bb2a5816dc8feb7e6492d0728cd53f1cadecb6fc14b4.json",
+      "profile_id": "react",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "LOCALE_EN_US_WIDE_721",
+      "sha256": "sha256:f4720c3c6cdde2c206c0bb2a5816dc8feb7e6492d0728cd53f1cadecb6fc14b4"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:eaecd3d10b4b87145a2f2b98c659eca4bb6ed7823449b038f0f2f33d0397bc54",
+        "byte_count": 40399,
+        "channel": "browser",
+        "path": "traces/react/browser/LOCALE_EN_US_WIDE_721/browser-dom-snapshot/121cd86a7a2701db8352e0207c03ab6866228ccc16a5958aa4a65443b9886cb9.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:121cd86a7a2701db8352e0207c03ab6866228ccc16a5958aa4a65443b9886cb9"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_EN_US_WIDE_721",
+  "schema_version": "1.0"
+}

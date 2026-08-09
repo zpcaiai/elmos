@@ -1,0 +1,25 @@
+{
+  "route_key": "cpp-to-java",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 205,
+      "corpus": "development",
+      "path": "certification/artifacts/development/Migrated.java",
+      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+    },
+    {
+      "bytes": 112,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/Migrated.java",
+      "sha256": "sha256:2405a95bd9740706155e091b2ef1672fcf1e60ad75826a354e39d113c60d1a39"
+    },
+    {
+      "bytes": 224,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/Migrated.java",
+      "sha256": "sha256:3665906d657f729a38287afde93213aada2208046a872b7f2af893f5e3fcf948"
+    }
+  ]
+}

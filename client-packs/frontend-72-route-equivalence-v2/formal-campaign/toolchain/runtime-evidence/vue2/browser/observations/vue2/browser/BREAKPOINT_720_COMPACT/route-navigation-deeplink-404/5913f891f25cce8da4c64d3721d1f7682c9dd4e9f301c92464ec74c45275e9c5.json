@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:72a7f60d0ede97341b89bafcc959db76305ce67382592892d044f9e655f31a78",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2419,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-route-dom-url-observer-trace/edb6504621176aaaa704526326e04e46c3103fba42ccbdaea07583eb4ea3afbd.json",
+      "profile_id": "vue2",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:edb6504621176aaaa704526326e04e46c3103fba42ccbdaea07583eb4ea3afbd"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e8722424edca1cf9da9274a87efd30c13c06c6f989677dac00d31f3b8148eec5",
+        "byte_count": 40411,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/21e5f2844bfef130d5d5cc3e7755033bb368655dbc78f7cb345dc79d76a0f738.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:21e5f2844bfef130d5d5cc3e7755033bb368655dbc78f7cb345dc79d76a0f738"
+      },
+      {
+        "artifact_id": "sha256:25c959e732b6e906a2d01742787778a5f7bd71ca450d2f6b00b75f65a4f0c58b",
+        "byte_count": 5256,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/6a6f72ba810cb137e5d4147b3ee6ff0c5150caa383d5ef038c99f888195d3cb6.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:6a6f72ba810cb137e5d4147b3ee6ff0c5150caa383d5ef038c99f888195d3cb6"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

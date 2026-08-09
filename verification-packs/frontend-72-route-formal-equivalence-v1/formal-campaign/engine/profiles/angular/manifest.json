@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "angular",
+  "framework_version": "22.0.8",
+  "platforms": [
+    "WEB"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:b9e5d56041f0c2a8f26f2ce40394abe97f011bef114a57fe07ad47b5c7284e69",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 24,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:45ed317f23d2be2de2ca77a48a0bd15430503377e5fde9af93d9a163964b6e98",
+      "byte_count": 522
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "sha256:89d6abc7cbd516992af9a131693cc021827f6c3bac49e8b06878e258f6cec99c",
+      "byte_count": 75
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "sha256:e8e8584c09cc1d8fbb12fbf9c0f6f84053223ab8a236a5230c3c9b20ff1a017a",
+      "byte_count": 7
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:ce35f33cd5e02bb472007d158a183f79e7de165dab02be605bbf27fd20d8a8dd",
+      "byte_count": 1865
+    },
+    {
+      "path": "angular.json",
+      "sha256": "sha256:f4551ba9cbcd0f7565f4fdc19410dd55509798040721952cd6aeebacaa1f8d10",
+      "byte_count": 1733
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:9160f9a276e3f829fc912268353fcb3ab98f107ce7a142a8a610067d26128f13",
+      "byte_count": 1063
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:40a08b97685ba704a4af71857615c6b11a13ed53e79a86f31aa8c4cf39f697bc",
+      "byte_count": 307
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:3333296f6d5100ccb3ca71ad47efbe9b17846680da346ffdfd21afb63d5bdffb",
+      "byte_count": 2438
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:73da1a858ece1560f0f9469e9d2a179056d313ebf8fc16ab4f92821d1283ed57",
+      "byte_count": 711
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:2c5d289b9b9bcc60dd0828885aa6cdd6080ad139d01ea37dab89f787126f4205",
+      "byte_count": 151
+    },
+    {
+      "path": "src/app/app.component.ts",
+      "sha256": "sha256:beb62b246ad2b851ea9fb7cbd620116f0e2aab67df2746fe436c0a4d4374e14f",
+      "byte_count": 677
+    },
+    {
+      "path": "src/app/generated-page.component.ts",
+      "sha256": "sha256:1a40d99827f7f3ec281f1210e3d39aa0c75259f85f9e0aa1cd12d21e0bacb27f",
+      "byte_count": 1015
+    },
+    {
+      "path": "src/elmos-bounded-navigation.ts",
+      "sha256": "sha256:da681243607b2d7696960b62cb535c134a1270e72c3298028a2078bbe08e40f0",
+      "byte_count": 1934
+    },
+    {
+      "path": "src/index.html",
+      "sha256": "sha256:bce339be5c329ced857b6c3876beecb6654293b1890287d76b78bbfe684df774",
+      "byte_count": 220
+    },
+    {
+      "path": "src/main.ts",
+      "sha256": "sha256:a2366dc35c61658871e20d481e879732cac9d3f4c6c74ee882a1802a73315f59",
+      "byte_count": 315
+    },
+    {
+      "path": "src/routes.ts",
+      "sha256": "sha256:5db67a1181a56ec8f3567bbd64c57576210490eeeed12004f0dce44aaea2946b",
+      "byte_count": 457
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "sha256:a80d8095fbf09c981e539bce5d3d6f5e5dc9dfa623faa0f4c185bf8d351957d9",
+      "byte_count": 1085
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:8a0800b40cad299e4745d4aa001c94187493b4779fdf796583010ab69a8504ee",
+      "byte_count": 725
+    },
+    {
+      "path": "tsconfig.app.json",
+      "sha256": "sha256:b29187fc248b2d6a52893f5cf3a9e22f45bf1ea12364de1dbfe0bbed053a8fd3",
+      "byte_count": 129
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "sha256:c937f0d2e20a75149b60f7b6eda6da3a9644c380940846f24c24899a486136cc",
+      "byte_count": 584
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:2b834d972872de2b706408e27cfc08df3b11c6af4b28401b96851376031fafce",
+      "byte_count": 7150
+    }
+  ],
+  "manifest_digest": "sha256:393ff96dadbd17f48ed658515bc0d1aad8c9c2a571a6c382566f2a4bb1baac49"
+}

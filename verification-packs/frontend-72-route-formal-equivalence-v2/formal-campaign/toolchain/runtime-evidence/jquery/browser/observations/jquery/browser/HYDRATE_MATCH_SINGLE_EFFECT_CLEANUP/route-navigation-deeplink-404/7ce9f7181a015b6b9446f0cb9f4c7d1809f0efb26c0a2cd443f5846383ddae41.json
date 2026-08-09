@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:b45021bce4a581917f36da897836c90d99dbc7852492b224197734f6bdf6f9cd",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2434,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-route-dom-url-observer-trace/a0d47e5c4890a0bbd0156994dd5276e8b9c08bc1f02da62500b58680b50a2790.json",
+      "profile_id": "jquery",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+      "sha256": "sha256:a0d47e5c4890a0bbd0156994dd5276e8b9c08bc1f02da62500b58680b50a2790"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:437cb69569ad7e0dfc2f65126316ae5a97339991623b1817fa61366231309315",
+        "byte_count": 39868,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-dom-snapshot/ba6a7eab667e39c5ad1e932f9b9f715ff695a5fcc7ea13d29bdd06c1c7645b03.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:ba6a7eab667e39c5ad1e932f9b9f715ff695a5fcc7ea13d29bdd06c1c7645b03"
+      },
+      {
+        "artifact_id": "sha256:c66430b1f9004f244d051332660bc73cd81d7a3cfd74db2d11f2d282ead08e01",
+        "byte_count": 5295,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-framework-event-trace/a48dbe8c65ad6c5ba175620634faa9e7c7939ac61eff70ea15c0f99b6725c1de.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:a48dbe8c65ad6c5ba175620634faa9e7c7939ac61eff70ea15c0f99b6725c1de"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

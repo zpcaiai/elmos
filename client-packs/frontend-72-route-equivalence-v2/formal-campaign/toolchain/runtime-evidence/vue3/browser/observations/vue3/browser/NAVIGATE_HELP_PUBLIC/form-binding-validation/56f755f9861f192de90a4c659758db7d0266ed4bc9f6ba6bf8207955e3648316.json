@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:524d7246e6974b3c4a4e47823d02c9dd59312335570d47e9adb87f1af2f370da",
+      "block_id": "form-binding-validation",
+      "byte_count": 1501,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/vue3/browser/NAVIGATE_HELP_PUBLIC/browser-form-validity-observer-trace/c9f20448c0e743f687a1a90fc7cd74435393e538e765be1599537e1395fdf270.json",
+      "profile_id": "vue3",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "NAVIGATE_HELP_PUBLIC",
+      "sha256": "sha256:c9f20448c0e743f687a1a90fc7cd74435393e538e765be1599537e1395fdf270"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:f21a13f21eb0d5615966ea97a296d0f7cded845e4dbd33b793c762b579dc079f",
+        "byte_count": 40631,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_HELP_PUBLIC/browser-dom-snapshot/4c540e70459d9ee4bccfa41962a3d82cfe133757bbb27282fca150b36949cdb0.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:4c540e70459d9ee4bccfa41962a3d82cfe133757bbb27282fca150b36949cdb0"
+      },
+      {
+        "artifact_id": "sha256:be3fe14ea8c1795f4b03c304ca3009fbdc9fe1fb99557727418a2f9c224a8232",
+        "byte_count": 5222,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_HELP_PUBLIC/browser-framework-event-trace/1ff9f454023c5e14d26857f51329ca7431f638a0b680827822ed9e07699fd477.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:1ff9f454023c5e14d26857f51329ca7431f638a0b680827822ed9e07699fd477"
+      },
+      {
+        "artifact_id": "sha256:fa6f549a0fff32c9671f39203b88ba164e2d5b262eb0b06e90f13e034775b81c",
+        "byte_count": 555658,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_HELP_PUBLIC/browser-accessibility-axe-trace/7abf1e9e28ff31ae1266aaddd7dd611aa33b3ba7029ecbd2ab84e11d70ddaef0.json",
+        "profile_id": "vue3",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NAVIGATE_HELP_PUBLIC",
+        "sha256": "sha256:7abf1e9e28ff31ae1266aaddd7dd611aa33b3ba7029ecbd2ab84e11d70ddaef0"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_HELP_PUBLIC",
+  "schema_version": "1.0"
+}

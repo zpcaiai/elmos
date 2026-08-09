@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": false,
+    "valid": false,
+    "value": ""
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:920cceab10d4a4ca7c1906cf1b33fa3b080654e3104878158332df819e2c4565",
+      "block_id": "form-binding-validation",
+      "byte_count": 1516,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/vue3/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-form-validity-observer-trace/f9fe32165061278dafc3fe94a17287b02e50cf6f8e9c8b27cdefa190f9cdff77.json",
+      "profile_id": "vue3",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:f9fe32165061278dafc3fe94a17287b02e50cf6f8e9c8b27cdefa190f9cdff77"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:a460203bf2cb7f3dea723322dac50bd7ce1d2565c1f675eb877bb93cce2a78fa",
+        "byte_count": 40626,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/531b2fc4c2b060c2cccd54fbed6dc9455c3941f75e5020ae7313515c6a133b34.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:531b2fc4c2b060c2cccd54fbed6dc9455c3941f75e5020ae7313515c6a133b34"
+      },
+      {
+        "artifact_id": "sha256:e782971dfabb29121d3a58a5141009bab7151002d999d0723fdea777394a536c",
+        "byte_count": 5297,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-framework-event-trace/ddd4b5bde2154e49fa50b7e9e90369da9ca5333660b3d747b142772e0526461c.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:ddd4b5bde2154e49fa50b7e9e90369da9ca5333660b3d747b142772e0526461c"
+      },
+      {
+        "artifact_id": "sha256:57e293034daad96f0030b220476d588ba544b6a65b348855a98ea4e02081c323",
+        "byte_count": 554989,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-accessibility-axe-trace/79061adf20accbb610eed824ab289cd2c302acfa3bd8aa6c1d19ddcf3b6f5c0b.json",
+        "profile_id": "vue3",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:79061adf20accbb610eed824ab289cd2c302acfa3bd8aa6c1d19ddcf3b6f5c0b"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

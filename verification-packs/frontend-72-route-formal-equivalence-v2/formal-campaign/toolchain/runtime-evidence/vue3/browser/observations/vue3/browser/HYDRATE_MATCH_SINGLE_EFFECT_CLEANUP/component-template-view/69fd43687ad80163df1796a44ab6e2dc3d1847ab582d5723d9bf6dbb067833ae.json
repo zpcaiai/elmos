@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:92dda7adbe1744cb836756def1d422294387d2ead35e9be269da4cc2111d8f0c",
+      "block_id": "component-template-view",
+      "byte_count": 1509,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/vue3/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-rendered-component-observer-trace/501377ec43f58ca6b254e1c49d02c350b545e6b34ef9a0690bc311672b33bc98.json",
+      "profile_id": "vue3",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+      "sha256": "sha256:501377ec43f58ca6b254e1c49d02c350b545e6b34ef9a0690bc311672b33bc98"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:9391d7de39983592e2e38e937edc45fd3c6457151d623db6e518821d0489150b",
+        "byte_count": 40616,
+        "channel": "browser",
+        "path": "traces/vue3/browser/HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP/browser-dom-snapshot/1d80c929124b21c9f3f082ddc81b93e49ffbf88146b03d50917bf6a1f122eea8.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+        "sha256": "sha256:1d80c929124b21c9f3f082ddc81b93e49ffbf88146b03d50917bf6a1f122eea8"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MATCH_SINGLE_EFFECT_CLEANUP",
+  "schema_version": "1.0"
+}

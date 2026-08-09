@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/account",
+    "requiresAuth": true,
+    "resolution": "DECLARED",
+    "selectedPath": "/account",
+    "selectedRouteId": "route.account"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:59a4a104cedf8ae83da8fa6b19e41881222859c0d6d2ce0cee683a91ddf0be41",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2446,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/vue2/browser/API_NETWORK_ERROR/browser-route-dom-url-observer-trace/4670d3202e8fc8b0596c6bba9e43185eac15282bfdf1a5e041d73e87af883b0f.json",
+      "profile_id": "vue2",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "API_NETWORK_ERROR",
+      "sha256": "sha256:4670d3202e8fc8b0596c6bba9e43185eac15282bfdf1a5e041d73e87af883b0f"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:9a2c0696917dbf3898824b50d5660615adbd98b68440db60718f943488cba0e7",
+        "byte_count": 40500,
+        "channel": "browser",
+        "path": "traces/vue2/browser/API_NETWORK_ERROR/browser-dom-snapshot/a980d5bc12a8cbdeb5d024db78da25d1450d7ba208ac74af95f5b16bbab0d124.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:a980d5bc12a8cbdeb5d024db78da25d1450d7ba208ac74af95f5b16bbab0d124"
+      },
+      {
+        "artifact_id": "sha256:78765e1a6b13c40750c5affe6725576d8709bf2b91f2625e5f168e239df1bcff",
+        "byte_count": 7403,
+        "channel": "browser",
+        "path": "traces/vue2/browser/API_NETWORK_ERROR/browser-framework-event-trace/bd6cb547ce2d749ef8e6390a1e9927d75137f17af8360790c056dd882e752c32.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:bd6cb547ce2d749ef8e6390a1e9927d75137f17af8360790c056dd882e752c32"
+      }
+    ]
+  },
+  "scenario_id": "API_NETWORK_ERROR",
+  "schema_version": "1.0"
+}

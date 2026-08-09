@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "solver_version": "Z3 version 4.16.0 - 64 bit",
+  "identity_status": "VERIFIED",
+  "invocation": [
+    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "-in"
+  ],
+  "options": {
+    "args": [
+      "-in"
+    ],
+    "timeout_ms": 10000
+  },
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node_version": "v26.0.0"
+  },
+  "exit_code": 0,
+  "stdout": "sat\n",
+  "stderr": "",
+  "outcome": "SAT",
+  "proof_status": "REFUTED",
+  "unconditional_proof": false,
+  "route_id": "vue3--to--flutter",
+  "formal_input_digest": "sha256:65dd387c4fd392b1699a86f29e2148778897dd4bd7df9250e4f963340df38175",
+  "solver_input_digest": "sha256:d6de8578bf3a6704f629664ba0bc8275fd1e7f149865da7f73e3a421465f28c7",
+  "smt2_digest": "sha256:d6de8578bf3a6704f629664ba0bc8275fd1e7f149865da7f73e3a421465f28c7",
+  "precheck_status": "PASSED"
+}

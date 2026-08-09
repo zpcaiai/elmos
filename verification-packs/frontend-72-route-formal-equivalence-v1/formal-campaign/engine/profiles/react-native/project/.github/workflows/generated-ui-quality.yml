@@ -1,0 +1,19 @@
+name: generated-ui-quality
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  generated-ui:
+    runs-on: [self-hosted, elmos-expo-57-device]
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Set up exact Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 26.0.0
+      - name: Verify generated project
+        run: bash scripts/verify.sh

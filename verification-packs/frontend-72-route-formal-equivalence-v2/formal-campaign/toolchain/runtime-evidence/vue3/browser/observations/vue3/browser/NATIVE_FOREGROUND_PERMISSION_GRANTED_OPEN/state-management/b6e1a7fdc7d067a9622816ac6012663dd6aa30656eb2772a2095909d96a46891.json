@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:9b67f5fad8b9ed84ede4e19cb869591064b3e2d3f2b8a28cb0e76ff696b5c288",
+      "block_id": "state-management",
+      "byte_count": 1235,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue3/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-framework-state-transition-observer-trace/0cd5415427e9cf91b308d3a999890d3a797fcbaca79525cd4d7a093fc18f4cf9.json",
+      "profile_id": "vue3",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:0cd5415427e9cf91b308d3a999890d3a797fcbaca79525cd4d7a093fc18f4cf9"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:688c3cd86349e81cf1ed88738829d14f379cc4ead8194067486526d5f5162b53",
+        "byte_count": 5355,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-framework-event-trace/a6515a0eb2827c1c007b3e5c9874566f4326ce34727910400e1c25d048e22c7e.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:a6515a0eb2827c1c007b3e5c9874566f4326ce34727910400e1c25d048e22c7e"
+      },
+      {
+        "artifact_id": "sha256:1b650c505b8c57d0873dddd5d5b1c7a92ab32ebe9fbf016482d5a25757c29c6b",
+        "byte_count": 40660,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-dom-snapshot/f0d6b1679b06ca36c4aeef3d6f514850d4e3dcf665b648fe9c1732c7fe944362.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:f0d6b1679b06ca36c4aeef3d6f514850d4e3dcf665b648fe9c1732c7fe944362"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

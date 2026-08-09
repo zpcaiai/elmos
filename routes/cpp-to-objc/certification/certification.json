@@ -1,0 +1,43 @@
+{
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
+  "evidence_format": 2,
+  "evidence_refs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json",
+    "certification/module-equivalence.json",
+    "certification/artifacts/module/artifact-manifest.json"
+  ],
+  "formal_equivalence": {
+    "bytes": 58563,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:86eed56444f345b2d997c1ad91f3fd8c4b456dde9fa52dea5f2287c435532f1d"
+  },
+  "gate_results": {
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_execution": "PASSED",
+    "module_execution": "PASSED"
+  },
+  "issued_at": "2026-08-09T22:38:35.578803+00:00",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "module_equivalence": {
+    "bytes": 196413,
+    "path": "certification/module-equivalence.json",
+    "sha256": "sha256:119edb2f76f75a8f011811423566309fb9f6f889335f6ce1c2555799617fd343"
+  },
+  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "route_key": "cpp-to-objc",
+  "route_version": "1.0.0",
+  "schema_version": 1,
+  "status": "limited"
+}

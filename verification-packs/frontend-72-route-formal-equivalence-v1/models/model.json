@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "model_key": "model.sample",
+  "owner": "TODO",
+  "states": [
+    "created",
+    "completed",
+    "failed"
+  ],
+  "initial_state": "created",
+  "commands": [
+    {
+      "command": "complete",
+      "from": [
+        "created"
+      ],
+      "to": "completed",
+      "guard": "valid",
+      "effects": [
+        "persist-result"
+      ]
+    },
+    {
+      "command": "fail",
+      "from": [
+        "created"
+      ],
+      "to": "failed",
+      "guard": "error",
+      "effects": [
+        "rollback"
+      ]
+    }
+  ],
+  "invariants": [
+    "completed-has-result",
+    "failed-has-no-partial-side-effect"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "completed",
+      "event": "complete"
+    }
+  ],
+  "timeouts": []
+}

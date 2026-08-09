@@ -96,7 +96,7 @@ def test_integer_division_is_checked_in_java_and_csharp() -> None:
     # and Long.MIN_VALUE / -1 errors. C# throws on both without help; Java's
     # `%` and `/` do not, so the emitted class carries its own guard.
     assert "return Migrated.elmosCheckedDiv(a, b);" in emit(_ir(_INTEGER_DIVIDE), "java").content
-    assert "public static long elmosCheckedDiv(long left, long right)" in emit(
+    assert "private static long elmosCheckedDiv(long left, long right)" in emit(
         _ir(_INTEGER_DIVIDE), "java"
     ).content
     assert "return checked(a / b);" in emit(_ir(_INTEGER_DIVIDE), "csharp").content

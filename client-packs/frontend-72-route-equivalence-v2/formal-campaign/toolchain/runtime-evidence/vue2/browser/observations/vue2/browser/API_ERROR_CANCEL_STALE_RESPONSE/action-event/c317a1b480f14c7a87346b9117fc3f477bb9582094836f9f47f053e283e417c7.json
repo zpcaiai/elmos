@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "CANCEL",
+    "event": "CANCEL",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:2fdca1a07c330e93bd3af8110b686c81df1c855008980f25f2407e22e2862bd4",
+      "block_id": "action-event",
+      "byte_count": 2281,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue2/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-native-event-outcome-observer-trace/f95420b327042fcd3e9671b6935a7917630b58e9b8333befda4f4f6c35c116c3.json",
+      "profile_id": "vue2",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:f95420b327042fcd3e9671b6935a7917630b58e9b8333befda4f4f6c35c116c3"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:530597c389b16bffb8e02a2a6ac0fdc8213d6eb8de01dd007eac228d0a3b5ae9",
+        "byte_count": 6163,
+        "channel": "browser",
+        "path": "traces/vue2/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-framework-event-trace/1b75e5f6f48238809a00d0467cb65547931819097506922b5c9aa7b394159759.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:1b75e5f6f48238809a00d0467cb65547931819097506922b5c9aa7b394159759"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

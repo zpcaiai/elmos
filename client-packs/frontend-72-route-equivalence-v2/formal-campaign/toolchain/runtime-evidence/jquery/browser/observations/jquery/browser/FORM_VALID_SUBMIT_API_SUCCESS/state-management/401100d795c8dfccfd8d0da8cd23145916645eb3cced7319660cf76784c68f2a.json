@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 2,
+    "before": 0,
+    "saturated": true,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:c74e4ef881879a78c3aef9fe41e52fba48a27703b45a11c8c39ebd40d6ca8d52",
+      "block_id": "state-management",
+      "byte_count": 1223,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-state-transition-observer-trace/37c6d524e32e8be8db4d56f92c05f857f085441dafd606a525d295240b2302d5.json",
+      "profile_id": "jquery",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+      "sha256": "sha256:37c6d524e32e8be8db4d56f92c05f857f085441dafd606a525d295240b2302d5"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:0924969f5cf9e871cab3059581952204b0fe0f0cb99979159fcd82a336cdf4cf",
+        "byte_count": 8333,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-framework-event-trace/7ea6f6f9774ab36cf42cd81606dfc85598dbaed62d0d56673b0b37796eb8e3b1.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:7ea6f6f9774ab36cf42cd81606dfc85598dbaed62d0d56673b0b37796eb8e3b1"
+      },
+      {
+        "artifact_id": "sha256:c714212b3b957e7e8d9690988768d725aa63ba6f2685ea415b1cac9c47440314",
+        "byte_count": 39950,
+        "channel": "browser",
+        "path": "traces/jquery/browser/FORM_VALID_SUBMIT_API_SUCCESS/browser-dom-snapshot/ec0dc2cc9198afa080360f6121d3fcbd4450def0eb4755b00d17aae2899d33d8.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+        "sha256": "sha256:ec0dc2cc9198afa080360f6121d3fcbd4450def0eb4755b00d17aae2899d33d8"
+      }
+    ]
+  },
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}

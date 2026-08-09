@@ -1,0 +1,16 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "development",
+  "customer_repository": false,
+  "evidence_class": "development-fixture",
+  "function_name": "calculate",
+  "independent": false,
+  "input_domain": "canonical-finite-no-error-input-domain",
+  "rule_authoring_input": true,
+  "schema_version": 1,
+  "source_file": "pricing.m",
+  "source_language": "objc",
+  "type_coverage": [
+    "integer"
+  ]
+}

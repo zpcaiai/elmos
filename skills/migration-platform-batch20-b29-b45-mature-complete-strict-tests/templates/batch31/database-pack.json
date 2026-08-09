@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "pack_key": "unset-to-unset",
+  "version": "0.1.0",
+  "mode": "migration",
+  "status": "research",
+  "owner": "UNASSIGNED",
+  "maintenance_owner": "UNASSIGNED",
+  "data_owner": "UNASSIGNED",
+  "source": {
+    "engine": "UNSET",
+    "versions": [
+      "UNSET"
+    ],
+    "edition": "UNSET",
+    "dialect": "UNSET",
+    "driver_versions": [
+      "UNSET"
+    ],
+    "charset": "UNSET",
+    "collation": "UNSET",
+    "timezone": "UTC",
+    "extensions": []
+  },
+  "target": {
+    "engine": "UNSET",
+    "versions": [
+      "UNSET"
+    ],
+    "edition": "UNSET",
+    "dialect": "UNSET",
+    "driver_versions": [
+      "UNSET"
+    ],
+    "charset": "UNSET",
+    "collation": "UNSET",
+    "timezone": "UTC",
+    "extensions": []
+  },
+  "scope": {
+    "schemas": [],
+    "objects": [],
+    "workload_classes": []
+  },
+  "paths": {
+    "fingerprint": "source-fingerprint",
+    "canonical_ir": "canonical-ir/model.json",
+    "target_profile": "target-profile/profile.json",
+    "migration_plan": "migration/data-migration-plan.json",
+    "certification": "certification"
+  },
+  "gates": {
+    "fingerprint_coverage": 0.95,
+    "canonical_ir_coverage": 0.95,
+    "source_map_coverage": 0.95,
+    "p0_correctness": 1.0,
+    "data_reconciliation": 1.0
+  },
+  "review_by": null
+}

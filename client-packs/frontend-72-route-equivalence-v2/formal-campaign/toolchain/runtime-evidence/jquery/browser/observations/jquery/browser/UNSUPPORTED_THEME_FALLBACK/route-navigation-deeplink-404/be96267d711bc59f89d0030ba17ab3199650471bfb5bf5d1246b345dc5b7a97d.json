@@ -1,0 +1,58 @@
+{
+  "actual": {
+    "deepLink": true,
+    "requestedPath": "/",
+    "requiresAuth": false,
+    "resolution": "DECLARED",
+    "selectedPath": "/",
+    "selectedRouteId": "route.home"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "route-navigation-deeplink-404",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "page.url+[data-elmos-active-route] attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:253c90815a66a0089a7b99ddc81734a933e999f37bc583de72f50774a6b85eed",
+      "block_id": "route-navigation-deeplink-404",
+      "byte_count": 2425,
+      "channel": "browser",
+      "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+      "path": "traces/jquery/browser/UNSUPPORTED_THEME_FALLBACK/browser-route-dom-url-observer-trace/a440cbe9e5ca2f7659bc2ee910a4ccae0bad20a845858be8364c7fb062d70540.json",
+      "profile_id": "jquery",
+      "role": "browser-route-dom-url-observer-trace",
+      "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+      "sha256": "sha256:a440cbe9e5ca2f7659bc2ee910a4ccae0bad20a845858be8364c7fb062d70540"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ROUTER_DOM_URL_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:67b99c1879b754adee7e2b46f26d9edcb42c621c2d42e1f06e11bf1f6ebf06cc",
+        "byte_count": 39893,
+        "channel": "browser",
+        "path": "traces/jquery/browser/UNSUPPORTED_THEME_FALLBACK/browser-dom-snapshot/7dd4f33d8a9c8cdc93d857f5c317dd30b9820d8fa448b70d68c60b19391041b5.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:7dd4f33d8a9c8cdc93d857f5c317dd30b9820d8fa448b70d68c60b19391041b5"
+      },
+      {
+        "artifact_id": "sha256:3404db2a2720b1ee4838eb06bb708f34579fe89a0c593a0110f50a19090dc065",
+        "byte_count": 5278,
+        "channel": "browser",
+        "path": "traces/jquery/browser/UNSUPPORTED_THEME_FALLBACK/browser-framework-event-trace/849c2b7571a5546284bafaa523d0ae1c5900a0f4321dd71a1fd4429b3bda0968.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+        "sha256": "sha256:849c2b7571a5546284bafaa523d0ae1c5900a0f4321dd71a1fd4429b3bda0968"
+      }
+    ]
+  },
+  "scenario_id": "UNSUPPORTED_THEME_FALLBACK",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "angular",
+  "label": "Angular",
+  "frameworkVersion": "22.0.8",
+  "profileVersion": "1.0.0",
+  "status": "ACTIVE",
+  "platforms": [
+    "WEB"
+  ],
+  "language": "TypeScript",
+  "languageVersion": "6.0.3",
+  "runtime": "Node.js",
+  "runtimeVersion": "26.0.0",
+  "nodeVersion": "26.0.0",
+  "buildTool": "Angular CLI",
+  "buildToolVersion": "22.0.8",
+  "packageManager": "npm",
+  "packageManagerVersion": "11.12.1",
+  "router": "Angular Router 22.0.8",
+  "state": "Angular signals",
+  "rendering": "CSR",
+  "testTool": "Angular build and browser E2E profile",
+  "runnerProfile": "MODERN_WEB",
+  "requiredProjectFiles": [
+    "package.json",
+    "angular.json",
+    "src/main.ts",
+    "src/app/app.component.ts"
+  ]
+}

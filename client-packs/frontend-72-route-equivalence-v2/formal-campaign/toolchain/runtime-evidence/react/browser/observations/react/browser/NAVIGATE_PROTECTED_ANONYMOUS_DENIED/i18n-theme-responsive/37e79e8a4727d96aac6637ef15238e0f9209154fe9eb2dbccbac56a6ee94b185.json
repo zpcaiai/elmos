@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:e111cee283ce4022b3febdca6ac7e4ed9ced057eb71dac865c54367e79cdae9b",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2007,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-computed-layout-i18n-theme-observer-trace/30188cea9702bf05652777d29f3529a735850ae13b8138fe3338991c7f008a52.json",
+      "profile_id": "react",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+      "sha256": "sha256:30188cea9702bf05652777d29f3529a735850ae13b8138fe3338991c7f008a52"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:cbd7b5de87c84b74456ac0e666570eb5bbbe098a5bd73eea87ec2eea7ed60bb5",
+        "byte_count": 40387,
+        "channel": "browser",
+        "path": "traces/react/browser/NAVIGATE_PROTECTED_ANONYMOUS_DENIED/browser-dom-snapshot/e410e0604b12f432e6df5119d6fd14f84a45c9292eec77b82458eb5342151018.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+        "sha256": "sha256:e410e0604b12f432e6df5119d6fd14f84a45c9292eec77b82458eb5342151018"
+      }
+    ]
+  },
+  "scenario_id": "NAVIGATE_PROTECTED_ANONYMOUS_DENIED",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,20 @@
+{
+  "input_domain": "canonical-finite-no-error-input-domain",
+  "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
+  "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
+  "schema_version": 1,
+  "source": "java",
+  "string_semantics": "BLOCK",
+  "target": "cpp",
+  "type_evidence_corpora": {
+    "boolean": "corpus/real-repository",
+    "integer": "corpus/development",
+    "number": "corpus/holdout"
+  },
+  "types": [
+    "integer",
+    "number",
+    "boolean"
+  ],
+  "unknown_type_policy": "BLOCK"
+}

@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:b516b7379a3c2e483f846c84df97e9e52df64b2990e18e7a8427dc304ee724fc",
+      "block_id": "state-management",
+      "byte_count": 1216,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue3/browser/BREAKPOINT_720_COMPACT/browser-framework-state-transition-observer-trace/cfabc678469f012f297d6b15d5c4fc5e5ee46f1e8461fcbb19a79dfb41776d98.json",
+      "profile_id": "vue3",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:cfabc678469f012f297d6b15d5c4fc5e5ee46f1e8461fcbb19a79dfb41776d98"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e89580a54c45b0946502e0e5e451672c492dd2590510fa26526de8283148194e",
+        "byte_count": 5256,
+        "channel": "browser",
+        "path": "traces/vue3/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/8803a35799ddd07cfb00cc429c7edc4b857a182e8984f4b550afdcd499c26b77.json",
+        "profile_id": "vue3",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:8803a35799ddd07cfb00cc429c7edc4b857a182e8984f4b550afdcd499c26b77"
+      },
+      {
+        "artifact_id": "sha256:25172c4763b5cf26e90e48f9e0122b1f975af9915aa07dc5987600ef3b1dfe68",
+        "byte_count": 40635,
+        "channel": "browser",
+        "path": "traces/vue3/browser/BREAKPOINT_720_COMPACT/browser-dom-snapshot/7e62deb2f8d3e1939c01c681da45f7bfa23c395447772bed2852782e19145747.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:7e62deb2f8d3e1939c01c681da45f7bfa23c395447772bed2852782e19145747"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

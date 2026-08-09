@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:cc3f94879b5e99f1cc58f3f6224a92b765a1ec31eef2354e7b47a595ae10ed02",
+      "block_id": "state-management",
+      "byte_count": 1218,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-framework-state-transition-observer-trace/caa672c5cd77d8eb1756004f3e37a78c9575f0e095e1fc17f1b11de4885868bb.json",
+      "profile_id": "jquery",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:caa672c5cd77d8eb1756004f3e37a78c9575f0e095e1fc17f1b11de4885868bb"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:5db5df26a884a5221443093bbb481e9d1c57e59d1174772f76d3d9270e0cac41",
+        "byte_count": 5230,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/49591884f13dc4845b831266a1882892a17d4129905fcf8cc22b796c80dadf49.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:49591884f13dc4845b831266a1882892a17d4129905fcf8cc22b796c80dadf49"
+      },
+      {
+        "artifact_id": "sha256:ef02a6c5cc9bba5d9ecc088aa58978e422c05c386f4ae6d9b0bd950f9e247e1c",
+        "byte_count": 39861,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-dom-snapshot/a8237593946e294549625be9ebd7326fcebe98722a56a5308f6c20f9788f9f23.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:a8237593946e294549625be9ebd7326fcebe98722a56a5308f6c20f9788f9f23"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

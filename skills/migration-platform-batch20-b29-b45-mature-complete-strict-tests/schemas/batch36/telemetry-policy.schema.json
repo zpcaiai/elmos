@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/telemetry-policy.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_key",
+    "events",
+    "forbidden_fields",
+    "retention_days",
+    "residency",
+    "individual_performance_monitoring"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "policy_key": {
+      "type": "string"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event",
+          "purpose",
+          "fields",
+          "sampling"
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sampling": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "forbidden_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "retention_days": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "residency": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "individual_performance_monitoring": {
+      "const": false
+    }
+  },
+  "additionalProperties": true
+}

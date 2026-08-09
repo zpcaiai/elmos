@@ -28,6 +28,11 @@ _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "python": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "csharp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
     "typescript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "go": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "rust": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
+    "cpp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
+    "objc": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
+    "swift": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
 }
 
 _TOOLCHAIN_TEXT: dict[Language, str] = {
@@ -35,6 +40,11 @@ _TOOLCHAIN_TEXT: dict[Language, str] = {
     "python": "Python 3.12.12 + setuptools",
     "csharp": ".NET SDK 10.0.301",
     "typescript": "Node.js 26.0.0 + TypeScript 5.9.2",
+    "go": "Go 1.25.0",
+    "rust": "Rust 1.89.0 + Cargo 1.89.0",
+    "cpp": "pinned Apple clang++ + CMake",
+    "objc": "pinned Apple clang + Foundation SDK + CMake",
+    "swift": "pinned Swift 6 toolchain + Swift Package Manager",
 }
 
 _BUILD_COMMANDS: dict[Language, list[str]] = {
@@ -42,6 +52,11 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     "python": ["python -m build"],
     "csharp": ["dotnet pack polyglot-migrated-library.csproj -c Release"],
     "typescript": ["npm install", "npx tsc -p tsconfig.json"],
+    "go": ["go test ./..."],
+    "rust": ["cargo check --offline"],
+    "cpp": ["cmake -S . -B build", "cmake --build build --config Release"],
+    "objc": ["cmake -S . -B build", "cmake --build build --config Release"],
+    "swift": ["swift build -c release --disable-sandbox"],
 }
 
 _PACKAGE_FORMAT: dict[Language, str] = {
@@ -49,7 +64,16 @@ _PACKAGE_FORMAT: dict[Language, str] = {
     "python": "PyPI (pip)",
     "csharp": "NuGet",
     "typescript": "npm",
+    "go": "Go module",
+    "rust": "Cargo crate",
+    "cpp": "CMake static libraries",
+    "objc": "CMake static libraries",
+    "swift": "Swift Package",
 }
+
+_CODEARTIFACT_NATIVE_LANGUAGES: frozenset[Language] = frozenset(
+    {"java", "python", "csharp", "typescript"}
+)
 
 _PUBLISH_PLATFORMS = [
     {
@@ -125,6 +149,24 @@ cd <assembled-project-directory>
 
 def _cloud_markdown(target_language: Language) -> str:
     package_format = _PACKAGE_FORMAT[target_language]
+    if target_language not in _CODEARTIFACT_NATIVE_LANGUAGES:
+        return f"""# 云端发布平台与推荐配置
+
+当前状态：`CONFIGURATION_REQUIRED`；外部发布证据：`NOT_RUN`。
+本文是发布前的配置指导，不代表 ELMOS 已访问任何云账号或已完成发布。
+
+本工程产物格式为 {package_format}。仓库没有为该格式预选外部制品平台；发布前必须由
+负责人根据组织已有的制品仓库、访问控制、区域、保留和计费策略完成平台评审。不得把
+Maven、npm、NuGet 或 PyPI 的发布命令套用到该产物，也不得把本地构建成功记录成云端
+发布证据。
+
+## 发布前硬门槛
+
+- 选择明确支持 {package_format} 或受控通用制品的仓库，并记录账号、区域和数据驻留。
+- 使用最小权限、短期凭据；禁止把令牌写入生成工程或证据包。
+- 先发布不可变预发布版本，记录版本、sha256、时间、操作者和回滚/撤销步骤。
+- 由独立验证者从目标仓库拉取并重新构建；在此之前保持 `NOT_RUN / NOT_CERTIFIED`。
+"""
     rows = "\n".join(
         f"| {platform['name']} | {platform['status']} | {platform['fit']} |" for platform in _PUBLISH_PLATFORMS
     )
@@ -191,6 +233,7 @@ def render_assembly_deployment_guidance(
     target_language: Language,
     included_unit_count: int,
 ) -> dict[str, str]:
+    native_codeartifact = target_language in _CODEARTIFACT_NATIVE_LANGUAGES
     contract: dict[str, Any] = {
         "schema_version": "1.0.0",
         "kind": "elmos.assembly-deployment-guidance",
@@ -211,11 +254,11 @@ def render_assembly_deployment_guidance(
         },
         "cloud": {
             "package_format": _PACKAGE_FORMAT[target_language],
-            "recommended_platform": "aws-codeartifact",
-            "options": _PUBLISH_PLATFORMS,
+            "recommended_platform": "aws-codeartifact" if native_codeartifact else None,
+            "options": _PUBLISH_PLATFORMS if native_codeartifact else [],
             "required_before_apply": [
-                "approved AWS account, region and billing owner",
-                "least-privilege publish-only IAM role",
+                "approved artifact platform, account, region and billing owner",
+                "least-privilege publish-only credential",
                 "a real (non-0.0.0-experimental) semantic version",
                 "a recorded publish evidence trail (version, sha256, timestamp, operator)",
             ],

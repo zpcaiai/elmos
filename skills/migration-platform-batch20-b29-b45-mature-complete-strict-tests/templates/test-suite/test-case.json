@@ -1,0 +1,78 @@
+{
+  "id": "TS-GOV-01-001",
+  "skill": "tst-strict-suite-orchestrator",
+  "batches": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+  ],
+  "capability": "Batch 1–37严格测试总编排",
+  "severity": "P0",
+  "test_type": "happy_path",
+  "title": "Batch 1–37严格测试总编排：在精确版本、不可变Artifact和批准环境中执行完整成功路径",
+  "preconditions": [
+    "suite、profile、artifact和environment均使用不可变版本",
+    "执行身份与审批身份已记录"
+  ],
+  "steps": [
+    "加载严格Profile与Coverage Matrix",
+    "在精确版本、不可变Artifact和批准环境中执行完整成功路径",
+    "收集原始Evidence并计算Digest",
+    "运行对应Validator和Gate"
+  ],
+  "assertions": [
+    "功能结果、状态变化和Evidence必须与契约一致",
+    "任何Release都可追溯到原始Evidence",
+    "P0/P1覆盖完整",
+    "未执行不等于通过",
+    "任何失败均不可被摘要状态覆盖"
+  ],
+  "evidence_required": [
+    "raw-log",
+    "artifact-digest",
+    "environment-manifest",
+    "case-result",
+    "gate-decision"
+  ],
+  "anti_cheat": [
+    "只运行Smoke Test",
+    "用汇总状态替代原始证据",
+    "跳过Holdout"
+  ],
+  "timeout_seconds": 1800,
+  "retries": 0
+}

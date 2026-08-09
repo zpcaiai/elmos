@@ -29,10 +29,11 @@ more than the total:
   into a model and discharged by the solver. `MODELLED_SOURCES` pins each
   transcription to the emitter text it describes, so the model cannot drift
   away from the code it is supposed to be about.
-* THEOREM (typescript) -- weaker. It models the guard *structure* the emitter
-  applies rather than a helper body, and shows that structure characterises
-  exactly the domain on which a binary64 `number` is exact. Only the two guard
-  helpers are pinned.
+* GUARD_ABSTRACTION (typescript) -- conditional evidence only. The model
+  substitutes the canonical error/value into an abstract safe-integer guard;
+  it does not encode IEEE-754 arithmetic, `Number.isSafeInteger`, or the real
+  emitted expression/helper transcription. UNSAT is therefore reported only
+  as PROVED_UNDER_ASSUMPTIONS and never counted as an unconditional proof.
 * AXIOM (java, csharp, rust, swift, cpp, objc) -- not proved at all. Their
   compensation *is* a language primitive specified to have the canonical
   behaviour: Math.addExact, checked(), checked_add, Swift's trapping
@@ -50,15 +51,23 @@ this proves the floor is sound, not that the building exists.
 
 Run directly, or through `tests/test_arithmetic_proof.py`.
 """
+
 from __future__ import annotations
 
+import argparse
+import hashlib
+import json
+import os
+import platform
+import subprocess
 import sys
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Callable
+from pathlib import Path
+from typing import cast
 
-import z3
+import z3  # type: ignore[import-untyped]
 
 WIDTH = 64
 WIDE = 128  # exactly enough for the product of two 64-bit values
@@ -68,6 +77,17 @@ INT_MAX = 2**63 - 1
 SAFE_MAX = 2**53 - 1
 
 OPERATORS = ("+", "-", "*", "/", "%")
+
+PROOF_STATUSES = (
+    "PROVED",
+    "PROVED_UNDER_ASSUMPTIONS",
+    "BOUNDED",
+    "AXIOM",
+    "UNKNOWN",
+    "TIMEOUT",
+    "COUNTEREXAMPLE",
+    "NOT_RUN",
+)
 
 #: Widths the campaign attempts, **64 first**. Every model here is written
 #: in terms of WIDTH rather than a literal 64, and the canonical rules are
@@ -109,15 +129,17 @@ def at_width(width: int) -> Iterator[None]:
 class Obligation:
     target: str
     operator: str
-    kind: str  # "THEOREM" or "AXIOM"
+    kind: str  # "THEOREM", "GUARD_ABSTRACTION", or "AXIOM"
     detail: str
 
 
 @dataclass(frozen=True)
 class Result:
     obligation: Obligation
-    status: str  # "PROVED", "AXIOM", "COUNTEREXAMPLE", "UNKNOWN"
+    status: str
     counterexample: str | None = None
+    solver_inputs: tuple[dict[str, object], ...] = ()
+    assumptions: tuple[str, ...] = ()
 
 
 # --------------------------------------------------------------------------
@@ -316,15 +338,27 @@ def exact_error_model(operator: str) -> Model:
 # executed comparisons across five toolchains -- that covers it today.
 # --------------------------------------------------------------------------
 
+TYPESCRIPT_GUARD_ABSTRACTION_ASSUMPTIONS = (
+    "UNMODELED:IEEE-754-binary64-arithmetic-rounding-and-special-values",
+    "UNMODELED:Number.isSafeInteger-runtime-semantics",
+    "UNMODELED:Math.trunc-and-TypeScript-remainder-runtime-semantics",
+    "UNMODELED:real-emitted-expression-and-helper-transcription",
+    "ASSUMED:pinned-TypeScript-compiler-and-Node-runtime-conformance",
+)
+
 
 def _is_safe(value: z3.BitVecRef) -> z3.BoolRef:
-    return z3.And(
-        value >= z3.BitVecVal(-SAFE_MAX, WIDTH), value <= z3.BitVecVal(SAFE_MAX, WIDTH)
-    )
+    return z3.And(value >= z3.BitVecVal(-SAFE_MAX, WIDTH), value <= z3.BitVecVal(SAFE_MAX, WIDTH))
 
 
 def typescript_model(operator: str) -> Model:
-    """The emitted TypeScript, restricted to its exact domain."""
+    """A guard abstraction, not a transcription of emitted TypeScript.
+
+    The canonical error and value are deliberately reused below. Consequently
+    this model can establish only that the abstract guard predicate is
+    internally consistent. The assumptions above retain every missing bridge
+    to actual JavaScript/TypeScript execution.
+    """
 
     def model(a: z3.BitVecRef, b: z3.BitVecRef) -> tuple[z3.BoolRef, z3.BitVecRef]:
         canonical_errors, canonical_value = canonical(operator, a, b)
@@ -353,11 +387,25 @@ def typescript_restriction(a: z3.BitVecRef, b: z3.BitVecRef) -> z3.BoolRef:
 #: Targets whose compensation is a language primitive, with the citation that
 #: stands in for a proof.
 _AXIOMATISED = {
-    "java": "Math.addExact/subtractExact/multiplyExact throw ArithmeticException exactly on int64 overflow (JLS 15.18, java.lang.Math)",
-    "csharp": "checked() raises OverflowException exactly on int64 overflow; / and % raise DivideByZeroException on 0 and OverflowException on MinValue/-1 (ECMA-334 12.8.3)",
-    "rust": "i64::checked_add/sub/mul/div/rem return None exactly on overflow and on a zero divisor (std::primitive::i64)",
-    "swift": "Int arithmetic operators trap on overflow; / and % trap on 0 and on Int.min / -1 (Swift Programming Language, Advanced Operators)",
-    "cpp": "__builtin_add_overflow/sub/mul report exactly the mathematical overflow; the zero and INT64_MIN/-1 guards are explicit in the helper",
+    "java": (
+        "Math.addExact/subtractExact/multiplyExact throw ArithmeticException exactly "
+        "on int64 overflow (JLS 15.18, java.lang.Math)"
+    ),
+    "csharp": (
+        "checked() raises OverflowException exactly on int64 overflow; / and % raise "
+        "DivideByZeroException on 0 and OverflowException on MinValue/-1 (ECMA-334 12.8.3)"
+    ),
+    "rust": (
+        "i64::checked_add/sub/mul/div/rem return None exactly on overflow and on a zero divisor (std::primitive::i64)"
+    ),
+    "swift": (
+        "Int arithmetic operators trap on overflow; / and % trap on 0 and on Int.min / -1 "
+        "(Swift Programming Language, Advanced Operators)"
+    ),
+    "cpp": (
+        "__builtin_add_overflow/sub/mul report exactly the mathematical overflow; the zero "
+        "and INT64_MIN/-1 guards are explicit in the helper"
+    ),
     "objc": "same __builtin_*_overflow contract as C++, with NSException as the failure mode",
 }
 
@@ -383,13 +431,18 @@ def _sign_splits(a: z3.BitVecRef, b: z3.BitVecRef) -> list[tuple[str, z3.BoolRef
 
 
 def _timeout_ms() -> int:
-    import os
-
     return int(os.environ.get("ELMOS_PROOF_TIMEOUT_MS", "20000"))
 
 
-def _prove(operator: str, model: Model, *, split: bool = True) -> Result | None:
-    """None when the obligation is discharged, otherwise the failure."""
+def _configure_solver(solver: z3.Solver) -> None:
+    solver.set("timeout", _timeout_ms())
+    solver.set("random_seed", 0)
+    solver.set("smt.random_seed", 0)
+
+
+def _theorem_queries(
+    operator: str, model: Model, *, split: bool = True
+) -> list[tuple[str, z3.Solver, z3.BitVecRef, z3.BitVecRef]]:
     a = z3.BitVec("a", WIDTH)
     b = z3.BitVec("b", WIDTH)
     canonical_errors, canonical_value = canonical(operator, a, b)
@@ -399,16 +452,30 @@ def _prove(operator: str, model: Model, *, split: bool = True) -> Result | None:
         z3.Implies(z3.Not(canonical_errors), canonical_value == target_value),
     )
     cases = _sign_splits(a, b) if split else [("all inputs", z3.BoolVal(True))]
+    queries = []
     for label, assumption in cases:
         solver = z3.Solver()
-        solver.set("timeout", _timeout_ms())
+        _configure_solver(solver)
         solver.add(assumption)
         solver.add(z3.Not(claim))
+        queries.append((label, solver, a, b))
+    return queries
+
+
+def _prove(operator: str, model: Model, *, split: bool = True) -> Result | None:
+    """None when the obligation is discharged, otherwise the failure."""
+    for label, solver, a, b in _theorem_queries(operator, model, split=split):
         verdict = solver.check()
         if verdict == z3.unsat:
             continue
         if verdict == z3.unknown:
-            return Result(Obligation("", operator, "THEOREM", label), "UNKNOWN", f"case {label}")
+            reason = solver.reason_unknown()
+            status = "TIMEOUT" if "timeout" in reason.lower() else "UNKNOWN"
+            return Result(
+                Obligation("", operator, "THEOREM", label),
+                status,
+                f"case {label}: {reason}",
+            )
         values = solver.model()
         return Result(
             Obligation("", operator, "THEOREM", label),
@@ -476,9 +543,9 @@ MODELLED_SOURCES: dict[tuple[str, str], tuple[str, str]] = {
     ("python", "*"): ("_PYTHON_HELPERS", "checked_mul"),
     ("python", "/"): ("_PYTHON_HELPERS", "truncating_div"),
     ("python", "%"): ("_PYTHON_HELPERS", "truncating_mod"),
-    # The TypeScript obligation is weaker than the other two: it models the
-    # *guard structure* the emitter applies rather than a helper body, so the
-    # pin covers only the two helpers that structure calls into.
+    # These pins detect helper byte drift only. They do not establish that the
+    # guard abstraction below is a faithful semantic transcription of either
+    # helper, which remains an explicit conditional assumption.
     ("typescript", "safe-integer-guard"): ("_TYPESCRIPT_HELPERS", "safe_integer"),
     ("typescript", "non-zero-guard"): ("_TYPESCRIPT_HELPERS", "non_zero"),
 }
@@ -503,9 +570,9 @@ TRANSCRIPTION_PINS: dict[str, str] = {
 
 
 def _helper_source(registry_name: str, key: str) -> str:
-    from elmos_polyglot_route import emitter
+    from elmos_polyglot_route import emitter  # type: ignore[import-untyped]
 
-    return getattr(emitter, registry_name)[key]
+    return cast(str, getattr(emitter, registry_name)[key])
 
 
 def transcription_digests() -> dict[str, str]:
@@ -528,7 +595,7 @@ def check_transcriptions() -> list[str]:
     return sorted(stale) + sorted(unpinned)
 
 
-def _typescript_verdict(operator: str) -> tuple[str, str]:
+def _typescript_query(operator: str) -> tuple[z3.Solver, z3.BitVecRef, z3.BitVecRef]:
     a = z3.BitVec("a", WIDTH)
     b = z3.BitVec("b", WIDTH)
     canonical_errors, canonical_value = canonical(operator, a, b)
@@ -540,23 +607,26 @@ def _typescript_verdict(operator: str) -> tuple[str, str]:
                 z3.And(z3.Not(canonical_errors), _is_safe(canonical_value)),
                 z3.And(z3.Not(target_errors), target_value == canonical_value),
             ),
-            z3.Implies(
-                z3.Or(canonical_errors, z3.Not(_is_safe(canonical_value))), target_errors
-            ),
+            z3.Implies(z3.Or(canonical_errors, z3.Not(_is_safe(canonical_value))), target_errors),
         ),
     )
     solver = z3.Solver()
-    solver.set("timeout", _timeout_ms())
+    _configure_solver(solver)
     solver.add(z3.Not(claim))
+    return solver, a, b
+
+
+def _typescript_verdict(operator: str) -> tuple[str, str]:
+    solver, a, b = _typescript_query(operator)
     verdict = solver.check()
     if verdict == z3.unsat:
-        return "PROVED", ""
+        return "PROVED_UNDER_ASSUMPTIONS", ""
     if verdict == z3.unknown:
-        return "UNKNOWN", "solver budget exhausted"
+        reason = solver.reason_unknown()
+        status = "TIMEOUT" if "timeout" in reason.lower() else "UNKNOWN"
+        return status, reason
     values = solver.model()
-    return "COUNTEREXAMPLE", (
-        f"a={values.eval(a).as_signed_long()} b={values.eval(b).as_signed_long()}"
-    )
+    return "COUNTEREXAMPLE", (f"a={values.eval(a).as_signed_long()} b={values.eval(b).as_signed_long()}")
 
 
 #: Obligations are discharged in a *fresh process* each. z3's decision cost
@@ -566,70 +636,299 @@ def _typescript_verdict(operator: str) -> tuple[str, str]:
 #: three timed-out queries. Running them in-process made the campaign's answer
 #: depend on the order it happened to ask, which is not a property a proof
 #: report should have.
-def _discharge_isolated(target: str, operator: str) -> tuple[str, str]:
-    import json as _json
-    import os
-    import subprocess
+def _solver_formulations(target: str, operator: str) -> tuple[dict[str, object], ...]:
+    formulations: list[dict[str, object]] = []
+    widths = (64,) if target == "typescript" else LADDER_WIDTHS
+    for width in widths:
+        with at_width(width):
+            if target == "typescript":
+                queries = [("safe-integer-domain", *_typescript_query(operator))]
+            else:
+                queries = [
+                    (label, solver, a, b)
+                    for label, solver, a, b in _theorem_queries(operator, _PROVEN_MODELS[target](operator))
+                ]
+        for label, solver, _a, _b in queries:
+            smt2 = solver.to_smt2()
+            formulations.append(
+                {
+                    "width": width,
+                    "case": label,
+                    "sha256": "sha256:" + hashlib.sha256(smt2.encode("utf-8")).hexdigest(),
+                    "smt2": smt2,
+                    "purpose": (
+                        "guard-abstraction replay input; UNSAT is conditional evidence only"
+                        if target == "typescript"
+                        else "exact replay input; status is taken only from the solver result"
+                    ),
+                    "assumptions": (list(TYPESCRIPT_GUARD_ABSTRACTION_ASSUMPTIONS) if target == "typescript" else []),
+                }
+            )
+    return tuple(formulations)
 
-    completed = subprocess.run(  # noqa: S603 - fixed argv, this module re-entered
-        [sys.executable, __file__, "--obligation", target, operator],
-        capture_output=True,
-        text=True,
-        timeout=1800,
-        env={**os.environ, "PYTHONPATH": os.environ.get("PYTHONPATH", "src")},
-    )
+
+def _discharge_isolated(target: str, operator: str) -> tuple[str, str, tuple[dict[str, object], ...]]:
+    formulations = _solver_formulations(target, operator)
+    try:
+        completed = subprocess.run(  # noqa: S603 - fixed argv, this module re-entered
+            [sys.executable, __file__, "--obligation", target, operator],
+            capture_output=True,
+            text=True,
+            timeout=1800,
+            env={**os.environ, "PYTHONPATH": os.environ.get("PYTHONPATH", "src")},
+        )
+    except subprocess.TimeoutExpired:
+        return "TIMEOUT", "worker exceeded 1800 seconds", formulations
+    worker_result = _parse_worker_result(completed.stdout)
+    if worker_result is not None:
+        # A fail-closed worker intentionally exits non-zero for UNKNOWN,
+        # TIMEOUT, COUNTEREXAMPLE, or a caller-selected --fail-on status. Its
+        # structured result remains the authoritative solver verdict; the
+        # process exit code is policy, not a replacement proof status.
+        status, detail = worker_result
+        return status, detail, formulations
+    diagnostic = completed.stderr.strip()[-200:]
     if completed.returncode != 0:
-        return "UNKNOWN", f"worker failed: {completed.stderr.strip()[-200:]}"
-    payload = _json.loads(completed.stdout.strip().splitlines()[-1])
-    return payload["status"], payload["detail"]
+        return "UNKNOWN", f"worker failed without valid JSON: {diagnostic}", formulations
+    return "UNKNOWN", "worker returned no valid proof-result JSON", formulations
+
+
+def _parse_worker_result(stdout: str) -> tuple[str, str] | None:
+    """Decode the final structured worker line without trusting exit status."""
+    lines = [line.strip() for line in stdout.splitlines() if line.strip()]
+    if not lines:
+        return None
+    try:
+        payload = json.loads(lines[-1])
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    status = payload.get("status")
+    detail = payload.get("detail")
+    if status not in PROOF_STATUSES or not isinstance(detail, str):
+        return None
+    return status, detail
 
 
 def discharge() -> list[Result]:
     results: list[Result] = []
     for target, citation in sorted(_AXIOMATISED.items()):
         for operator in OPERATORS:
-            results.append(
-                Result(Obligation(target, operator, "AXIOM", citation), "AXIOM")
-            )
-    for target, factory in sorted(_PROVEN_MODELS.items()):
+            results.append(Result(Obligation(target, operator, "AXIOM", citation), "AXIOM"))
+    for target, _factory in sorted(_PROVEN_MODELS.items()):
         for operator in OPERATORS:
-            obligation = Obligation(
-                target, operator, "THEOREM", f"emitted helper body for `{operator}`"
-            )
-            status, detail = _discharge_isolated(target, operator)
-            results.append(Result(obligation, status, detail or None))
+            obligation = Obligation(target, operator, "THEOREM", f"emitted helper body for `{operator}`")
+            status, detail, formulations = _discharge_isolated(target, operator)
+            results.append(Result(obligation, status, detail or None, formulations))
     for operator in OPERATORS:
         obligation = Obligation(
             "typescript",
             operator,
-            "THEOREM",
-            "exact on safe integers, fails closed elsewhere",
+            "GUARD_ABSTRACTION",
+            "abstract safe-integer guard consistency; not an IEEE-754 or helper-transcription theorem",
         )
-        status, detail = _discharge_isolated("typescript", operator)
-        results.append(Result(obligation, status, detail or None))
+        status, detail, formulations = _discharge_isolated("typescript", operator)
+        results.append(
+            Result(
+                obligation,
+                status,
+                detail or None,
+                formulations,
+                TYPESCRIPT_GUARD_ABSTRACTION_ASSUMPTIONS,
+            )
+        )
     return results
 
 
-def _run_one(target: str, operator: str) -> int:
-    """Worker entry point: discharge a single obligation and print it as JSON."""
-    import json as _json
-
-    if target == "typescript":
+def _run_one(target: str, operator: str) -> tuple[str, str, bool]:
+    """Discharge one obligation and return its verdict plus input validity."""
+    supported_targets = {*_PROVEN_MODELS, "typescript"}
+    if target not in supported_targets:
+        status = "UNKNOWN"
+        detail = f"unsupported obligation target: {target!r}"
+        valid = False
+    elif operator not in OPERATORS:
+        status = "UNKNOWN"
+        detail = f"unsupported obligation operator: {operator!r}"
+        valid = False
+    elif target == "typescript":
         status, detail = _typescript_verdict(operator)
+        valid = True
     else:
         status, detail = prove_on_ladder(operator, _PROVEN_MODELS[target])
-    print(_json.dumps({"status": status, "detail": detail}))
-    return 0
+        valid = True
+    print(json.dumps({"status": status, "detail": detail}))
+    return status, detail, valid
 
 
-def main() -> int:
-    if "--obligation" in sys.argv:
-        index = sys.argv.index("--obligation")
-        return _run_one(sys.argv[index + 1], sys.argv[index + 2])
-    if "--refresh-pins" in sys.argv:
-        import json as _json
+def _obligation_input_digest(result: Result, pins: dict[str, str]) -> str:
+    key = f"{result.obligation.target} {result.obligation.operator}"
+    relevant_pins = _obligation_transcription_pins(result, pins)
+    payload = {
+        "canonical_model": "int64-partial-arithmetic-v1",
+        "target": result.obligation.target,
+        "operator": result.obligation.operator,
+        "kind": result.obligation.kind,
+        "detail": result.obligation.detail,
+        "transcription_digest": pins.get(key),
+        "transcription_digests": relevant_pins,
+        "widths": [64] if result.obligation.target == "typescript" else list(LADDER_WIDTHS),
+        "timeout_ms": _timeout_ms(),
+        "solver": {"name": "z3", "version": z3.get_version_string()},
+        "solver_inputs": [item["sha256"] for item in result.solver_inputs],
+        "assumptions": list(result.assumptions),
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
-        print(_json.dumps(transcription_digests(), indent=4, sort_keys=True))
+
+def _obligation_transcription_pins(
+    result: Result,
+    pins: dict[str, str],
+) -> dict[str, str]:
+    if result.obligation.target == "typescript":
+        names = ["typescript safe-integer-guard"]
+        if result.obligation.operator in {"/", "%"}:
+            names.append("typescript non-zero-guard")
+        return {name: pins[name] for name in names}
+    key = f"{result.obligation.target} {result.obligation.operator}"
+    return {key: pins[key]} if key in pins else {}
+
+
+def _solver_binary_identity() -> dict[str, object]:
+    library_directory = Path(z3.__file__).resolve().parent / "lib"
+    names = {
+        "Darwin": ("libz3.dylib", "libz3.4.16.dylib"),
+        "Linux": ("libz3.so",),
+        "Windows": ("libz3.dll",),
+    }.get(platform.system(), ())
+    library = next((library_directory / name for name in names if (library_directory / name).is_file()), None)
+    if library is None:
+        raise RuntimeError("Z3_NATIVE_LIBRARY_NOT_FOUND")
+    content = library.read_bytes()
+    lock = Path(__file__).resolve().parents[1] / "uv.lock"
+    lock_bytes = lock.read_bytes()
+    return {
+        "filename": library.name,
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+        "lockfile_sha256": "sha256:" + hashlib.sha256(lock_bytes).hexdigest(),
+    }
+
+
+def campaign_payload(results: list[Result]) -> dict[str, object]:
+    """Build deterministic evidence; callers must parse status, not exit code alone."""
+    pins = transcription_digests()
+    obligations: list[dict[str, object]] = []
+    for result in results:
+        target = result.obligation.target
+        operator = result.obligation.operator
+        obligations.append(
+            {
+                "obligation_id": f"int64-{target}-{OPERATORS.index(operator):02d}",
+                "target": target,
+                "operator": operator,
+                "kind": result.obligation.kind,
+                "status": result.status,
+                "detail": result.obligation.detail,
+                "diagnostic": result.counterexample,
+                "input_digest": _obligation_input_digest(result, pins),
+                "transcription_digest": pins.get(f"{target} {operator}"),
+                "transcription_digests": _obligation_transcription_pins(result, pins),
+                "solver_inputs": list(result.solver_inputs),
+                "assumptions": list(result.assumptions),
+                "unconditional_proof": result.status == "PROVED",
+                "replay": {
+                    "command": (
+                        "uv --directory engines/polyglot-route-engine run --locked python "
+                        f"tools/prove_arithmetic_compensation.py --obligation {target} {operator}"
+                    )
+                },
+            }
+        )
+    counts = {status: sum(1 for result in results if result.status == status) for status in PROOF_STATUSES}
+    return {
+        "schema_version": "1.0.0",
+        "campaign_key": "typed-pure-function-v1-int64-arithmetic-compensation",
+        "scope": {
+            "semantic_profile": "typed-pure-function-v1",
+            "constructs": ["binary-arithmetic"],
+            "operators": list(OPERATORS),
+            "integer_width": 64,
+            "explicitly_excluded": [
+                "source-analyzer-soundness",
+                "control-flow-composition",
+                "floating-point-equivalence",
+                "Number.isSafeInteger-runtime-semantics",
+                "real-TypeScript-helper-transcription",
+                "framework-database-io-concurrency",
+            ],
+        },
+        "solver": {
+            "name": "z3-solver",
+            "version": z3.get_version_string(),
+            "python": platform.python_version(),
+            "options": {
+                "timeout_ms": _timeout_ms(),
+                "random_seed": 0,
+                "smt_random_seed": 0,
+            },
+            "width_ladder": list(LADDER_WIDTHS),
+            "binary": _solver_binary_identity(),
+        },
+        "transcription_pins": pins,
+        "counts": counts,
+        "all_required_proved": all(result.status == "PROVED" for result in results),
+        "obligations": obligations,
+    }
+
+
+def _parse_fail_on(value: str) -> set[str]:
+    aliases = {
+        "proved": "PROVED",
+        "proved_under_assumptions": "PROVED_UNDER_ASSUMPTIONS",
+        "bounded": "BOUNDED",
+        "axiom": "AXIOM",
+        "unknown": "UNKNOWN",
+        "timeout": "TIMEOUT",
+        "counterexample": "COUNTEREXAMPLE",
+        "not_run": "NOT_RUN",
+    }
+    requested: set[str] = set()
+    for raw in value.split(","):
+        key = raw.strip().lower().replace("-", "_")
+        if not key:
+            continue
+        if key not in aliases:
+            raise argparse.ArgumentTypeError(f"unknown proof status in --fail-on: {raw}")
+        requested.add(aliases[key])
+    return requested
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--obligation", nargs=2, metavar=("TARGET", "OPERATOR"))
+    parser.add_argument("--refresh-pins", action="store_true")
+    parser.add_argument("--output", type=argparse.FileType("w", encoding="utf-8"))
+    parser.add_argument("--require-64-bit", action="store_true")
+    parser.add_argument(
+        "--fail-on",
+        default="unknown,timeout,counterexample",
+        help="comma-separated statuses that produce a non-zero exit",
+    )
+    args = parser.parse_args(argv)
+    try:
+        failing_statuses = _parse_fail_on(args.fail_on)
+    except argparse.ArgumentTypeError as exc:
+        parser.error(str(exc))
+    if args.require_64_bit:
+        failing_statuses.update({"BOUNDED", "PROVED_UNDER_ASSUMPTIONS"})
+    if args.obligation:
+        status, _detail, valid = _run_one(args.obligation[0], args.obligation[1])
+        return 1 if not valid or status in failing_statuses else 0
+    if args.refresh_pins:
+        print(json.dumps(transcription_digests(), indent=4, sort_keys=True))
         return 0
     stale = check_transcriptions()
     if stale:
@@ -638,13 +937,20 @@ def main() -> int:
             print(f"  - {name}")
         return 1
     results = discharge()
+    payload = campaign_payload(results)
+    if args.output:
+        json.dump(payload, args.output, ensure_ascii=False, indent=2, sort_keys=True)
+        args.output.write("\n")
+        args.output.close()
     width = max(len(r.obligation.target) for r in results)
     for result in results:
         marker = {
             "PROVED": "proved  ",
+            "PROVED_UNDER_ASSUMPTIONS": "assumed ",
             "AXIOM": "axiom   ",
             "BOUNDED": "bounded ",
             "UNKNOWN": "UNKNOWN ",
+            "TIMEOUT": "TIMEOUT ",
             "COUNTEREXAMPLE": "REFUTED ",
         }[result.status]
         line = f"  {marker} {result.obligation.target:<{width}}  {result.obligation.operator}"
@@ -652,14 +958,16 @@ def main() -> int:
             line += f"   <- {result.counterexample}"
         print(line)
     proved = sum(1 for r in results if r.status == "PROVED")
+    conditional = sum(1 for r in results if r.status == "PROVED_UNDER_ASSUMPTIONS")
     axioms = sum(1 for r in results if r.status == "AXIOM")
     bounded = sum(1 for r in results if r.status == "BOUNDED")
-    bad = [r for r in results if r.status in {"UNKNOWN", "COUNTEREXAMPLE"}]
+    unresolved = [r for r in results if r.status in {"UNKNOWN", "TIMEOUT", "COUNTEREXAMPLE"}]
     print(
-        f"\n{proved} proved at 64 bits, {bounded} bounded to narrower widths, "
-        f"{axioms} axiomatised, {len(bad)} unresolved"
+        f"\n{proved} proved unconditionally at 64 bits, "
+        f"{conditional} proved under assumptions, {bounded} bounded to narrower widths, "
+        f"{axioms} axiomatised, {len(unresolved)} unresolved"
     )
-    return 1 if any(r.status == "COUNTEREXAMPLE" for r in results) else 0
+    return 1 if any(result.status in failing_statuses for result in results) else 0
 
 
 if __name__ == "__main__":

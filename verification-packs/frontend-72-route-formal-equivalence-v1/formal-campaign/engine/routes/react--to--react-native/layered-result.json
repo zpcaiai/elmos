@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-bounded-navigation-layered-result",
+  "route_id": "react--to--react-native",
+  "proof_profile": "bounded-navigation-v1",
+  "links": {
+    "formal_input_path": "routes/react--to--react-native/formal-input.json",
+    "formal_input_digest": "sha256:45f5c9e585070f78f0223b6550dd620e582b8f3c8fcc56eaa564ca7721645e18",
+    "smt2_path": "routes/react--to--react-native/proof.smt2",
+    "smt2_digest": "sha256:139f30f9012084cf8d5a383c7a200270d470c6f476d3480e89cdb8794853f23e",
+    "solver_result_path": "routes/react--to--react-native/solver-result.json",
+    "solver_result_digest": "sha256:59210edac230a53f557fc28f3861a6631be47d0b4e1689f3e3931bbaac954c58",
+    "source_model_path": "routes/react--to--react-native/source-model.json",
+    "source_model_digest": "sha256:fb4495376eefea509dcfe3a52fd0d91c034d3515bec4e6ba5f90e5754fc28b2c",
+    "target_model_path": "routes/react--to--react-native/target-model.json",
+    "target_model_digest": "sha256:e90ccb56cff562e5731c0172b8637d31409bbda99be39695f79e5473107a0a0c",
+    "behavior_path": "routes/react--to--react-native/behavior.json",
+    "behavior_digest": "sha256:18874c140e01cc56cbc0ff0113cb04943938a273310344b45e99b3fbb01d7be9",
+    "chunks_path": "routes/react--to--react-native/chunks.json",
+    "chunks_digest": "sha256:f0977d2f2081b033b4860a5b064d06fdf736deb3e89273b00edcf0c4bc333621",
+    "composition_path": "routes/react--to--react-native/composition.json",
+    "composition_digest": "sha256:683f2b39d0b3b23cd3a046f6b4766af4ade41f14a36bdec1033f577c78cf1e1a"
+  },
+  "layers": {
+    "emitted_source_relift": "PASSED",
+    "emitted_target_relift": "PASSED",
+    "semantic": "PASSED",
+    "chunk": "PASSED",
+    "behavior": "PASSED",
+    "smt_solver": "UNSAT",
+    "framework_native_build": "NOT_RUN",
+    "framework_native_runtime": "NOT_RUN",
+    "independent_external_verification": "NOT_RUN"
+  },
+  "status": "PROVED_UNDER_ASSUMPTIONS",
+  "unconditional_proof": false,
+  "certification": "NOT_CERTIFIED",
+  "assumptions": [
+    "The proof covers only the canonical bounded-navigation-v1 IR and ELMOS-emitted profile projects, not arbitrary customer source.",
+    "TypeScript AST plus strict bounded Vue/Svelte template, ArkUI shell, and Dart/base64 parsers faithfully re-lift the generated grammar; native compiler AST evidence remains NOT_RUN where unavailable.",
+    "Route requiresAuth and deepLink values are observable metadata; identity enforcement and native deep-link dispatch are outside this bounded proof.",
+    "Framework, compiler, router, browser, device, and runtime soundness are assumptions until independent real toolchain and journey evidence passes.",
+    "SHA-256 is used for artifact identity and drift detection, not as the semantic equivalence proof rule."
+  ]
+}

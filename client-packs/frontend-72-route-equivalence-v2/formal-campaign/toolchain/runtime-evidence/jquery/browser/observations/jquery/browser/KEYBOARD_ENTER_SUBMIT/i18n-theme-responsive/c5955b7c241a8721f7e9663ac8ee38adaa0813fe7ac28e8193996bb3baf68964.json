@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:b5ae7b527f672f08d6646a0f524ac84a829d610d49f72c12dd3b707137c57807",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1977,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/KEYBOARD_ENTER_SUBMIT/browser-computed-layout-i18n-theme-observer-trace/005c40829d05ab83779bed69c3e44897aa15afb9cbecc784e4846857e7e0a7b6.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+      "sha256": "sha256:005c40829d05ab83779bed69c3e44897aa15afb9cbecc784e4846857e7e0a7b6"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:ba78e09f923233b4f719ea23373c908bd12cd19d579469ae4b28b3942c2912ee",
+        "byte_count": 39940,
+        "channel": "browser",
+        "path": "traces/jquery/browser/KEYBOARD_ENTER_SUBMIT/browser-dom-snapshot/df3aa370610c7b082c185a6068bfa8df6fddcf4160f23bf531de07b6fb92a016.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+        "sha256": "sha256:df3aa370610c7b082c185a6068bfa8df6fddcf4160f23bf531de07b6fb92a016"
+      }
+    ]
+  },
+  "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+  "schema_version": "1.0"
+}

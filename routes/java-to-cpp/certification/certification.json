@@ -1,0 +1,43 @@
+{
+  "certification_decision": "NOT_CERTIFIED",
+  "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
+  "evidence_format": 2,
+  "evidence_refs": [
+    "certification/local-development-evidence.json",
+    "certification/local-holdout-evidence.json",
+    "certification/local-representative-evidence.json",
+    "certification/formal-equivalence.json",
+    "certification/module-equivalence.json",
+    "certification/artifacts/module/artifact-manifest.json"
+  ],
+  "formal_equivalence": {
+    "bytes": 58209,
+    "path": "certification/formal-equivalence.json",
+    "sha256": "sha256:1ed0980d1a36dda56dfcd4a5a87b8f3b56321c2a8beee52d1196279bba46efbc"
+  },
+  "gate_results": {
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "local_execution": "PASSED",
+    "module_execution": "PASSED"
+  },
+  "issued_at": "2026-08-09T09:26:44.035175+00:00",
+  "metrics": {
+    "build_green_rate": 1.0,
+    "cost_per_verified_workload": 0,
+    "first_build_pass_rate": 1.0,
+    "manual_hours": 0,
+    "p0_behavior_pass_rate": 1.0,
+    "source_map_coverage": 1.0
+  },
+  "module_equivalence": {
+    "bytes": 164477,
+    "path": "certification/module-equivalence.json",
+    "sha256": "sha256:daafe0f23a69403d6452cf798e3c7ddd161982546a479020127137c1b1061661"
+  },
+  "next_review_at": "2026-10-26T00:00:00+00:00",
+  "route_key": "java-to-cpp",
+  "route_version": "1.0.0",
+  "schema_version": 1,
+  "status": "limited"
+}

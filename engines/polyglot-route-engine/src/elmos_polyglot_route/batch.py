@@ -12,6 +12,7 @@ every attempted unit passed is still reported as ``PARTIAL`` while any unit
 remains unattempted, because repository-wide success cannot be inferred from a
 subset.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -27,7 +28,7 @@ from .models import SUPPORTED_LANGUAGES, RouteError
 SCHEMA_VERSION = "1.0.0"
 CHECKPOINT_NAME = "batch-checkpoint.jsonl"
 REPORT_NAME = "batch-report.json"
-_UNIT_ID_PATTERN = re.compile(r"^WU-[0-9]{5}$")
+_UNIT_ID_PATTERN = re.compile(r"^WU-[0-9]{5}(?:-F[0-9]{3})?$")
 
 
 class UnitStatus:
@@ -39,8 +40,12 @@ class UnitStatus:
 
 def _load_checkpoint(path: Path) -> dict[str, dict[str, Any]]:
     """Read prior per-unit outcomes so an interrupted batch can resume."""
-    if not path.is_file():
+    if path.is_symlink():
+        raise RouteError("BATCH_CHECKPOINT_UNSAFE")
+    if not path.exists():
         return {}
+    if not path.is_file():
+        raise RouteError("BATCH_CHECKPOINT_UNSAFE")
     recorded: dict[str, dict[str, Any]] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
         stripped = line.strip()
@@ -58,9 +63,24 @@ def _load_checkpoint(path: Path) -> dict[str, dict[str, Any]]:
 
 def _append_checkpoint(path: Path, entry: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise RouteError("BATCH_CHECKPOINT_UNSAFE")
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
         handle.flush()
+
+
+def _rewrite_checkpoint(path: Path, entries: list[dict[str, Any]]) -> None:
+    """Compact interruption state to the exact units in the current discovery."""
+
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise RouteError("BATCH_CHECKPOINT_UNSAFE")
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    if temporary.is_symlink() or (temporary.exists() and not temporary.is_file()):
+        raise RouteError("BATCH_CHECKPOINT_UNSAFE")
+    payload = "".join(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n" for entry in entries)
+    temporary.write_text(payload, encoding="utf-8")
+    temporary.replace(path)
 
 
 def _case_file(cases_directory: Path, unit_id: str) -> Path | None:
@@ -76,11 +96,7 @@ def _stable_sha256(path: Path, error_code: str) -> str:
     before = path.stat(follow_symlinks=False)
     content = path.read_bytes()
     after = path.stat(follow_symlinks=False)
-    if (
-        before.st_size != after.st_size
-        or before.st_mtime_ns != after.st_mtime_ns
-        or len(content) != before.st_size
-    ):
+    if before.st_size != after.st_size or before.st_mtime_ns != after.st_mtime_ns or len(content) != before.st_size:
         raise RouteError(f"{error_code}_CHANGED_DURING_READ")
     return hashlib.sha256(content).hexdigest()
 
@@ -92,23 +108,28 @@ def _checkpoint_identity(
 ) -> dict[str, Any]:
     return {
         "snapshot_sha256": discovery.get("snapshot_sha256"),
+        "repository_scale": discovery.get("repository_scale"),
+        "repository_limits": discovery.get("repository_limits"),
         "route_id": discovery.get("route_id"),
         "profile": discovery.get("profile"),
         "source_path": result.get("source_path"),
         "source_sha256": result.get("observed_sha256") or result.get("declared_sha256"),
         "function_name": result.get("function_name"),
         "verdict": result.get("verdict"),
-        "cases_sha256": (
-            _stable_sha256(case_path, "BEHAVIOR_CASES")
-            if case_path is not None
-            else None
-        ),
+        "cases_sha256": (_stable_sha256(case_path, "BEHAVIOR_CASES") if case_path is not None else None),
     }
 
 
 def _recorded_artifact_intact(output: Path, recorded: dict[str, Any]) -> bool:
-    if recorded.get("status") != UnitStatus.PASSED:
+    status = recorded.get("status")
+    if status in {UnitStatus.SKIPPED_NOT_READY, UnitStatus.SKIPPED_NO_CASES}:
         return True
+    # A local JSONL checkpoint is interruption state, not an authentication
+    # boundary.  A caller that can edit it can also forge matching target and
+    # evidence digests, so PASSED (and transient FAILED) outcomes must execute
+    # again.  Only non-success skips are safe to resume without runtime replay.
+    if status != UnitStatus.PASSED:
+        return False
     unit_id = str(recorded.get("id", ""))
     target_path = str(recorded.get("target_path", ""))
     expected = str(recorded.get("target_sha256", ""))
@@ -120,29 +141,83 @@ def _recorded_artifact_intact(output: Path, recorded: dict[str, Any]) -> bool:
         or not expected.startswith("sha256:")
     ):
         return False
-    unit_directory = (output / "units" / unit_id).resolve()
-    target = (unit_directory / target_path).resolve()
+    batch_root = output.resolve(strict=True)
+    units_root = batch_root / "units"
+    raw_unit_directory = units_root / unit_id
+    raw_target = raw_unit_directory / target_path
     if (
-        unit_directory.is_symlink()
-        or target.is_symlink()
-        or target.parent != unit_directory
-        or not target.is_file()
+        units_root.is_symlink()
+        or not units_root.is_dir()
+        or raw_unit_directory.is_symlink()
+        or not raw_unit_directory.is_dir()
+        or raw_target.is_symlink()
+        or not raw_target.is_file()
     ):
         return False
-    return f"sha256:{_stable_sha256(target, 'CHECKPOINT_TARGET')}" == expected
+    unit_directory = raw_unit_directory.resolve(strict=True)
+    target = raw_target.resolve(strict=True)
+    if unit_directory.parent != units_root.resolve(strict=True) or target.parent != unit_directory:
+        return False
+    # Even an intact target is not enough to establish that its behavior was
+    # ever executed.  Keep the structural checks above as a tamper diagnostic,
+    # then force the normal migration/behavior path below.
+    return False
+
+
+def _owned_units_directory(output: Path) -> Path:
+    """Return a real units directory owned directly by the batch output."""
+
+    batch_root = output.resolve(strict=True)
+    units = output / "units"
+    if units.is_symlink() or (units.exists() and not units.is_dir()):
+        raise RouteError("BATCH_UNITS_DIRECTORY_UNSAFE")
+    units.mkdir(parents=False, exist_ok=True)
+    if units.is_symlink() or units.resolve(strict=True).parent != batch_root:
+        raise RouteError("BATCH_UNITS_DIRECTORY_UNSAFE")
+    return units
 
 
 def _reset_unit_output(output: Path, unit_id: str) -> None:
     if not _UNIT_ID_PATTERN.fullmatch(unit_id):
         raise RouteError(f"WORK_UNIT_ID_UNSAFE:{unit_id}")
-    units = (output / "units").resolve()
-    candidate = (units / unit_id).resolve()
-    if candidate.parent != units:
-        raise RouteError(f"WORK_UNIT_OUTPUT_ESCAPES_BATCH:{unit_id}")
-    if candidate.exists():
-        if candidate.is_symlink() or not candidate.is_dir():
+    batch_root = output.resolve(strict=True)
+    units = batch_root / "units"
+    if units.is_symlink() or (units.exists() and not units.is_dir()):
+        raise RouteError("BATCH_UNITS_DIRECTORY_UNSAFE")
+    raw_candidate = units / unit_id
+    if raw_candidate.is_symlink():
+        raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{unit_id}")
+    if raw_candidate.exists():
+        if not raw_candidate.is_dir():
             raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{unit_id}")
-        shutil.rmtree(candidate)
+        candidate = raw_candidate.resolve(strict=True)
+        if candidate.parent != units.resolve(strict=True):
+            raise RouteError(f"WORK_UNIT_OUTPUT_ESCAPES_BATCH:{unit_id}")
+        shutil.rmtree(raw_candidate)
+
+
+def _prune_stale_unit_outputs(output: Path, current_unit_ids: set[str]) -> None:
+    """Remove only owned unit directories absent from the current discovery.
+
+    Unit outputs are derived, resumable state.  Keeping a directory after its
+    source subject disappeared would let an unrelated prior artifact leak into
+    a later repository handoff, so the current discovery is the exact owner
+    set.  Anything that is not a regular, directly-owned unit directory fails
+    closed instead of being deleted.
+    """
+
+    units = _owned_units_directory(output)
+    resolved_units = units.resolve(strict=True)
+    for candidate in sorted(units.iterdir(), key=lambda path: path.name):
+        if candidate.is_symlink() or not candidate.is_dir():
+            raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{candidate.name}")
+        if _UNIT_ID_PATTERN.fullmatch(candidate.name) is None:
+            raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{candidate.name}")
+        resolved = candidate.resolve(strict=True)
+        if resolved.parent != resolved_units:
+            raise RouteError(f"WORK_UNIT_OUTPUT_ESCAPES_BATCH:{candidate.name}")
+        if candidate.name not in current_unit_ids:
+            shutil.rmtree(candidate)
 
 
 def run_batch(
@@ -170,9 +245,19 @@ def run_batch(
         raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
 
     root = repository_root.resolve(strict=True)
+    if output.exists() and (output.is_symlink() or not output.is_dir()):
+        raise RouteError("BATCH_OUTPUT_DIRECTORY_UNSAFE")
     output.mkdir(parents=True, exist_ok=True)
+    _owned_units_directory(output)
     checkpoint = output / CHECKPOINT_NAME
     recorded = _load_checkpoint(checkpoint)
+
+    unit_ids = [str(result.get("id", "")) for result in results if isinstance(result, dict)]
+    if len(unit_ids) != len(results) or any(_UNIT_ID_PATTERN.fullmatch(unit_id) is None for unit_id in unit_ids):
+        raise RouteError("DISCOVERY_RESULT_ID_INVALID")
+    if len(set(unit_ids)) != len(unit_ids):
+        raise RouteError("DISCOVERY_RESULT_ID_DUPLICATED")
+    _prune_stale_unit_outputs(output, set(unit_ids))
 
     selected = results if limit is None else results[:limit]
     outcomes: list[dict[str, Any]] = []
@@ -180,13 +265,9 @@ def run_batch(
 
     for result in selected:
         unit_id = str(result.get("id", ""))
-        if not unit_id:
-            raise RouteError("DISCOVERY_RESULT_ID_REQUIRED")
-        case_path = (
-            _case_file(cases_directory, unit_id)
-            if result.get("verdict") == "READY"
-            else None
-        )
+        if _UNIT_ID_PATTERN.fullmatch(unit_id) is None:
+            raise RouteError("DISCOVERY_RESULT_ID_INVALID")
+        case_path = _case_file(cases_directory, unit_id) if result.get("verdict") == "READY" else None
         identity = _checkpoint_identity(discovery, result, case_path)
         prior = recorded.get(unit_id)
         if (
@@ -194,11 +275,15 @@ def run_batch(
             and prior.get("checkpoint_identity") == identity
             and _recorded_artifact_intact(output, prior)
         ):
+            # Resumable skip records have no legitimate generated unit tree.
+            _reset_unit_output(output, unit_id)
             outcomes.append({**prior, "resumed_from_checkpoint": True})
             resumed += 1
             continue
-        if prior is not None:
-            _reset_unit_output(output, unit_id)
+        # PASSED outcomes are deliberately replayed and a missing checkpoint is
+        # not authority for reusing bytes.  Reset any current non-resumed unit
+        # before migration so orphaned content cannot survive into this run.
+        _reset_unit_output(output, unit_id)
 
         entry: dict[str, Any]
         if result.get("verdict") != "READY":
@@ -225,7 +310,10 @@ def run_batch(
                     "checkpoint_identity": identity,
                 }
             else:
-                unit_output = output / "units" / unit_id
+                units_directory = _owned_units_directory(output)
+                unit_output = units_directory / unit_id
+                if unit_output.is_symlink() or (unit_output.exists() and not unit_output.is_dir()):
+                    raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{unit_id}")
                 try:
                     report = migrate(
                         source,
@@ -234,20 +322,25 @@ def run_batch(
                         str(result["function_name"]),
                         case_path,
                         unit_output,
+                        repository_execution_mode=True,
                     )
                     if _stable_sha256(source, "WORK_UNIT_SOURCE") != identity["source_sha256"]:
                         raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{result['source_path']}")
                     if _stable_sha256(case_path, "BEHAVIOR_CASES") != identity["cases_sha256"]:
                         raise RouteError(f"BEHAVIOR_CASES_CHANGED:{unit_id}")
+                    evidence_path = unit_output / "route-evidence.json"
                     entry = {
                         "id": unit_id,
                         "source_path": result.get("source_path"),
                         "status": UnitStatus.PASSED,
                         "function_name": result.get("function_name"),
                         "behavior_case_count": report.get("behavior_case_count"),
+                        "execution_status": report.get("status"),
+                        "route_pack_status": report.get("route_pack_status"),
                         "target_path": report.get("target", {}).get("path"),
                         "target_sha256": report.get("target", {}).get("sha256"),
                         "evidence_path": f"units/{unit_id}/route-evidence.json",
+                        "evidence_sha256": ("sha256:" + _stable_sha256(evidence_path, "ROUTE_EVIDENCE")),
                         "checkpoint_identity": identity,
                     }
                 except (RouteError, OSError, ValueError) as error:
@@ -270,11 +363,7 @@ def run_batch(
 
     attempted = counts.get(UnitStatus.PASSED, 0) + counts.get(UnitStatus.FAILED, 0)
     unattempted = len(results) - attempted
-    complete = (
-        counts.get(UnitStatus.FAILED, 0) == 0
-        and unattempted == 0
-        and len(selected) == len(results)
-    )
+    complete = counts.get(UnitStatus.FAILED, 0) == 0 and unattempted == 0 and len(selected) == len(results)
 
     report = {
         "schema_version": SCHEMA_VERSION,
@@ -284,6 +373,8 @@ def run_batch(
         "status": "COMPLETE" if complete else "PARTIAL",
         "repository_ref": discovery.get("repository_ref"),
         "snapshot_sha256": discovery.get("snapshot_sha256"),
+        "repository_scale": discovery.get("repository_scale"),
+        "repository_limits": discovery.get("repository_limits"),
         "route_id": discovery.get("route_id"),
         "source_language": source_language,
         "target_language": target_language,
@@ -303,8 +394,12 @@ def run_batch(
             "Independent verification and external certification remain NOT_RUN.",
         ],
     }
-    (output / REPORT_NAME).write_text(
+    report_path = output / REPORT_NAME
+    if report_path.is_symlink() or (report_path.exists() and not report_path.is_file()):
+        raise RouteError("BATCH_REPORT_OUTPUT_UNSAFE")
+    report_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    _rewrite_checkpoint(checkpoint, outcomes)
     return report

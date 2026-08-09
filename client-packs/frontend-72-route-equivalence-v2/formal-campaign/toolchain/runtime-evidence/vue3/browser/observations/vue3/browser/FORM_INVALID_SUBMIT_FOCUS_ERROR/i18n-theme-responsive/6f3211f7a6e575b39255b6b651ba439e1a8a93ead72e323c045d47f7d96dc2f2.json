@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:bc87b6c39166ea07ac00031db2f730641b721c5affe5f02acd426dd25a938e6a",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2002,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue3/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-computed-layout-i18n-theme-observer-trace/334c56c7b707c799acc9ce9daf7f4bc35f4f784948e971f86465cc95862d298a.json",
+      "profile_id": "vue3",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:334c56c7b707c799acc9ce9daf7f4bc35f4f784948e971f86465cc95862d298a"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:35900b6cf104439de95769b278cf299c32cc50ba105548c17829e100a19b46cf",
+        "byte_count": 40980,
+        "channel": "browser",
+        "path": "traces/vue3/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/0eaf0793195144051e1e67382e7503ec04e1a449c78bf48998cb440b5744f0cb.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:0eaf0793195144051e1e67382e7503ec04e1a449c78bf48998cb440b5744f0cb"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,129 @@
+{
+  "actual_source": "ALLOWLISTED_BLOCK_OBSERVER_CAPTURE",
+  "block_id": "action-event",
+  "capture": {
+    "browser_matrix": [
+      {
+        "browser_id": "google-chrome",
+        "measurement": {
+          "captured_events": [
+            {
+              "defaultPrevented": false,
+              "key": "Enter",
+              "target": {
+                "attributes": {
+                  "data-elmos-event": "BOOT",
+                  "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+                  "type": "submit"
+                },
+                "tag": "button",
+                "value": ""
+              },
+              "timestamp": 1786313841046,
+              "type": "keydown"
+            },
+            {
+              "defaultPrevented": false,
+              "key": null,
+              "target": {
+                "attributes": {
+                  "data-elmos-event": "BOOT",
+                  "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+                  "type": "submit"
+                },
+                "tag": "button",
+                "value": ""
+              },
+              "timestamp": 1786313841046,
+              "type": "click"
+            },
+            {
+              "defaultPrevented": false,
+              "key": null,
+              "target": {
+                "attributes": {
+                  "data-elmos-control": "form"
+                },
+                "tag": "form",
+                "value": null
+              },
+              "timestamp": 1786313841046,
+              "type": "submit"
+            }
+          ],
+          "outcome_attributes": {
+            "data-elmos-action": "SUBMIT_ACCEPTED",
+            "data-elmos-event-outcome": "BOOT",
+            "data-elmos-handled": "true",
+            "data-elmos-keyboard-key": "Enter"
+          }
+        }
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "measurement": {
+          "captured_events": [
+            {
+              "defaultPrevented": false,
+              "key": "Enter",
+              "target": {
+                "attributes": {
+                  "data-elmos-event": "BOOT",
+                  "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+                  "type": "submit"
+                },
+                "tag": "button",
+                "value": ""
+              },
+              "timestamp": 1786313863249,
+              "type": "keydown"
+            },
+            {
+              "defaultPrevented": false,
+              "key": null,
+              "target": {
+                "attributes": {
+                  "data-elmos-event": "BOOT",
+                  "data-run-scenario": "KEYBOARD_ENTER_SUBMIT",
+                  "type": "submit"
+                },
+                "tag": "button",
+                "value": ""
+              },
+              "timestamp": 1786313863249,
+              "type": "click"
+            },
+            {
+              "defaultPrevented": false,
+              "key": null,
+              "target": {
+                "attributes": {
+                  "data-elmos-control": "form"
+                },
+                "tag": "form",
+                "value": null
+              },
+              "timestamp": 1786313863249,
+              "type": "submit"
+            }
+          ],
+          "outcome_attributes": {
+            "data-elmos-action": "SUBMIT_ACCEPTED",
+            "data-elmos-event-outcome": "BOOT",
+            "data-elmos-handled": "true",
+            "data-elmos-keyboard-key": "Enter"
+          }
+        }
+      }
+    ],
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "observer_contract": "block-specific-runtime-observation-v1"
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-block-observer-trace-artifact",
+  "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+  "profile_id": "vue3",
+  "role": "browser-native-event-outcome-observer-trace",
+  "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+  "schema_version": "1.0"
+}

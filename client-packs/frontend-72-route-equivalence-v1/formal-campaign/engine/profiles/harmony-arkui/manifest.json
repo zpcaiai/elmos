@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.0",
+  "kind": "frontend-formal-profile-project",
+  "profile_id": "harmony-arkui",
+  "framework_version": "6.0.0(20)",
+  "platforms": [
+    "HARMONYOS"
+  ],
+  "project_path": "project",
+  "project_digest": "sha256:7702d8bae218047e121b2f4197d25346f1b4e617dd5cfdb0727f403254655610",
+  "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
+  "file_count": 28,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "sha256": "sha256:0a3932f26ca804c06de0f0c0d8966c1a052000deedec1a31aa07f9f82b495ec3",
+      "byte_count": 146
+    },
+    {
+      "path": ".elmos-harmony-runner.json",
+      "sha256": "sha256:30f903ed53081f38ccc6274b9399ece7dd24fa89c36810d3ed3457d91d5dc1eb",
+      "byte_count": 168
+    },
+    {
+      "path": ".env.example",
+      "sha256": "sha256:3f5063dff82d601533cacad12493e9afbe1b1184b176a7a57835a88fa7d6be95",
+      "byte_count": 42
+    },
+    {
+      "path": ".github/workflows/generated-ui-quality.yml",
+      "sha256": "sha256:ae6d0f286b924f46b0e71d2863a4b01e5250f793bff40ea0ee47be96a214cc0c",
+      "byte_count": 393
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "sha256:d51df1c1d6cc4402a4a96894a48975908eb0c47e53b77e2c9005d15cc823cdd0",
+      "byte_count": 141
+    },
+    {
+      "path": "AppScope/app.json5",
+      "sha256": "sha256:0789a4326135caae5b456e2c3544d05ac7de3088265b6aeb1a7e641485ac7eb9",
+      "byte_count": 210
+    },
+    {
+      "path": "AppScope/resources/base/element/string.json",
+      "sha256": "sha256:fe8048a981a66f7c62f0b3723f500e6340f19a36dbc3bf43aef14639ddb33c4c",
+      "byte_count": 102
+    },
+    {
+      "path": "AppScope/resources/base/media/app_icon.svg",
+      "sha256": "sha256:40ef78078f168f8b38978832f6e08778e03b7dc7bb9c1e6e01d7fefa163528c2",
+      "byte_count": 198
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:f30a12afc5fe5c6b78d973229b886e753059421bb6ef61d8c6f35a4f0703728b",
+      "byte_count": 2028
+    },
+    {
+      "path": "build-profile.json5",
+      "sha256": "sha256:b20a4c9f2442f08e5d44af5b633f48458cbffc447bd83250126173f7fecd6f4e",
+      "byte_count": 721
+    },
+    {
+      "path": "conversion/obligations.json",
+      "sha256": "sha256:2ee95c2fed468f9fdb8a6293970bd93f2d99c2a8f601dd58d54c0bb03a0eb1b5",
+      "byte_count": 1225
+    },
+    {
+      "path": "conversion/route.json",
+      "sha256": "sha256:0bb156300fb0aae93e152f2e6e4a8e083fbee08b72c180bcaae3861cfc347a46",
+      "byte_count": 322
+    },
+    {
+      "path": "elmos.ui-migration.json",
+      "sha256": "sha256:cf37ae2969a059a3b9ad67ac500702ced373ffec10d1a37343b5ef2ab981e9a5",
+      "byte_count": 2932
+    },
+    {
+      "path": "entry/build-profile.json5",
+      "sha256": "sha256:46d1b87a9913197745942b7aad13d81bf029e71fd07436ed5cf5bfbbb15d01eb",
+      "byte_count": 106
+    },
+    {
+      "path": "entry/hvigorfile.ts",
+      "sha256": "sha256:f547983dcab9c8fff87cc3ddedb22bb98063663c5b8afe18bb32e131311ec289",
+      "byte_count": 103
+    },
+    {
+      "path": "entry/oh-package.json5",
+      "sha256": "sha256:fc64a49ce785a9458e67d8619af76f448b69b15e277ab83787163a8c3a847b16",
+      "byte_count": 158
+    },
+    {
+      "path": "entry/src/main/ets/elmos-bounded-navigation.ets",
+      "sha256": "sha256:da681243607b2d7696960b62cb535c134a1270e72c3298028a2078bbe08e40f0",
+      "byte_count": 1934
+    },
+    {
+      "path": "entry/src/main/ets/entryability/EntryAbility.ets",
+      "sha256": "sha256:ad7862f2ffa057033d04e6ae08d5ac5eb68ca3ff22e734e1a948c23434d6c97c",
+      "byte_count": 342
+    },
+    {
+      "path": "entry/src/main/ets/pages/Index.ets",
+      "sha256": "sha256:d8a87ed8229d871c34e1dac2084860cc8206a8318846efa6bc104d662311a46c",
+      "byte_count": 1400
+    },
+    {
+      "path": "entry/src/main/module.json5",
+      "sha256": "sha256:fe2ec957ec43659d01304b010f4c90697baea9f35e3ee5f824ee973cf39f7131",
+      "byte_count": 759
+    },
+    {
+      "path": "entry/src/main/resources/base/element/string.json",
+      "sha256": "sha256:b29e3e564985d78813d358f27564bedafc79d3a7dda67e6d9350a0752ff6f4b5",
+      "byte_count": 280
+    },
+    {
+      "path": "entry/src/main/resources/base/profile/main_pages.json",
+      "sha256": "sha256:f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+      "byte_count": 37
+    },
+    {
+      "path": "entry/src/main/resources/rawfile/ui_ir.json",
+      "sha256": "sha256:dbcd2f394aacc332090eee603af2c6916260e5f1972ccae03a9dbd898b0c24f9",
+      "byte_count": 4626
+    },
+    {
+      "path": "hvigorfile.ts",
+      "sha256": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
+      "byte_count": 103
+    },
+    {
+      "path": "oh-package.json5",
+      "sha256": "sha256:80b9c5cb2e65612a9b002000049ca48560583c9ee407531b6b1c185a9ae4ec54",
+      "byte_count": 173
+    },
+    {
+      "path": "scripts/verify.sh",
+      "sha256": "sha256:6476e79a4e581181e43b54b892288dec7780c0801deda4e868ff7c1d7d2d2076",
+      "byte_count": 309
+    },
+    {
+      "path": "target-profile/profile.json",
+      "sha256": "sha256:e0800865800432d619c365cfe0b6643cd21d846e04d767ccdf29318321101693",
+      "byte_count": 830
+    },
+    {
+      "path": "ui-ir/model.json",
+      "sha256": "sha256:6b1b93e12cce4b81371a6ef3b33d39e0e503f020f1b67b0bdae5ec01a9901f62",
+      "byte_count": 7155
+    }
+  ],
+  "manifest_digest": "sha256:e4b883688ada203f4e86aa8640703b03d43be14b3ff0ec2856f10f9b861f7cce"
+}

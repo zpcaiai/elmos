@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "kind": "bounded-interaction-seeded-mutation-formal-input",
+  "proof_profile": "bounded-frontend-interaction-v1",
+  "block_id": "accessibility-focus",
+  "obligation_symbol": "diff_accessibility_focus",
+  "variant": "SOURCE_ONLY",
+  "pointer": "/accessibilityFocus/errorRole",
+  "canonical_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
+  "mutant_model_digest": "sha256:6edaa57fb62cfca6f2967723ed71c961988e8f70f516fe895fe3d41deb288877",
+  "canonical_block_digest": "sha256:0217890f6a52016ba08bdc257b05b2d21ceaed24fef4ae993cba1f9852e6c6df",
+  "mutant_block_digest": "sha256:39454a21dcaf5b79e40ee43d9f38664b5ee9af9310e2da008d6cf507f886adc3",
+  "counterexample_replay": {
+    "block_id": "accessibility-focus",
+    "pointer": "/accessibilityFocus/errorRole",
+    "influence_class": "OBSERVABLE_EFFECT",
+    "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+    "semantic_mutant_detected": true,
+    "behavior_mutant_detected": true,
+    "canonical_observation": {
+      "mainRole": "main",
+      "headingLevel": 1,
+      "formLabel": "搜索",
+      "errorRole": "alert",
+      "liveRegion": "polite",
+      "keyboardSubmit": true,
+      "focusTarget": "query"
+    },
+    "mutant_observation": {
+      "mainRole": "main",
+      "headingLevel": 1,
+      "formLabel": "搜索",
+      "errorRole": "alert__MUTANT",
+      "liveRegion": "polite",
+      "keyboardSubmit": true,
+      "focusTarget": "query"
+    }
+  },
+  "expected_solver_outcome": "SAT",
+  "oracle_provenance": "NOT_INDEPENDENT_SINGLE_ENGINE"
+}

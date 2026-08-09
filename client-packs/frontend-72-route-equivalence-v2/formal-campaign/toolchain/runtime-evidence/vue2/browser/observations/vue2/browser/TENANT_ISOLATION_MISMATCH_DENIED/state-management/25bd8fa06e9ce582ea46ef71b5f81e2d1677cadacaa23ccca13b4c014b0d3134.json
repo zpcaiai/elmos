@@ -1,0 +1,56 @@
+{
+  "actual": {
+    "after": 0,
+    "before": 0,
+    "saturated": false,
+    "stateId": "bounded.counter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "state-management",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "[data-elmos-state-measurement] before/after/saturated",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a0972dffd9d70acaae15ca05b6bff4fa8204f5e3b917e6f011c51fa844d02ab8",
+      "block_id": "state-management",
+      "byte_count": 1226,
+      "channel": "browser",
+      "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+      "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-framework-state-transition-observer-trace/37aa458a8a95032944db6ea29a49bee59fee75a2cc5519c48630072db766d190.json",
+      "profile_id": "vue2",
+      "role": "browser-framework-state-transition-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:37aa458a8a95032944db6ea29a49bee59fee75a2cc5519c48630072db766d190"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FRAMEWORK_STATE_TRANSITION_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:b69be7a2cbf3b7d3c797b62b1e7a57051989e60cbbbdc62f230c92a1b3a4bf67",
+        "byte_count": 7478,
+        "channel": "browser",
+        "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-framework-event-trace/d067fa1db8a096f2292d8f269155f7aab2ba53110cbcb59e377e680724e7c2cc.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:d067fa1db8a096f2292d8f269155f7aab2ba53110cbcb59e377e680724e7c2cc"
+      },
+      {
+        "artifact_id": "sha256:7726f91d805e76fe5843d0eb9e2aeb7e3d6751fdf2c5a9340ea5fb549d8285a0",
+        "byte_count": 40425,
+        "channel": "browser",
+        "path": "traces/vue2/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/44034b07cb8fc908ed06dac94c87782f7d5fc573b486b8531484e97bb968a86d.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:44034b07cb8fc908ed06dac94c87782f7d5fc573b486b8531484e97bb968a86d"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

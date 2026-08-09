@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:325de1abe6b58a32cc9d2aef94bddc8e59f3846875c84795ea789490557a1065",
+      "block_id": "action-event",
+      "byte_count": 3303,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/vue2/browser/LOCALE_EN_US_WIDE_721/browser-native-event-outcome-observer-trace/32a069a03b0545e81cc6ee5498310ce9035bdd5f4ec5a2164319724938555c09.json",
+      "profile_id": "vue2",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "LOCALE_EN_US_WIDE_721",
+      "sha256": "sha256:32a069a03b0545e81cc6ee5498310ce9035bdd5f4ec5a2164319724938555c09"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:9429f98ac76107d077eaf674e49e07c23ec2528a9222e41c5b56ca002f5f477f",
+        "byte_count": 5251,
+        "channel": "browser",
+        "path": "traces/vue2/browser/LOCALE_EN_US_WIDE_721/browser-framework-event-trace/64b5b45af6a5cf3c727c92db764dd2bf5ffdeba2b0eabe4627c476b86034f454.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_EN_US_WIDE_721",
+        "sha256": "sha256:64b5b45af6a5cf3c727c92db764dd2bf5ffdeba2b0eabe4627c476b86034f454"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_EN_US_WIDE_721",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,93 @@
+{
+  "capabilities": [
+    {
+      "evidence_refs": [
+        "certification/local-development-evidence.json",
+        "certification/local-holdout-evidence.json",
+        "certification/local-representative-evidence.json"
+      ],
+      "id": "typed-pure-function-v1",
+      "reason": "Conditionally supported only for integer, finite-number, and boolean functions inside the canonical finite no-error input domain; string semantics and arithmetic-error outcomes are blocked. Native analysis, target compilation, separate typed corpora, and behavior replay must each pass before local execution may be raised; independent/external verification remain NOT_RUN.",
+      "status": "conditional",
+      "strategy": "compiler-backed-semantic-ir"
+    },
+    {
+      "evidence_refs": [
+        "mappings/types.json"
+      ],
+      "id": "primitive-types",
+      "reason": "Integer, finite IEEE-754 binary64 number, and boolean are mapped explicitly only inside the canonical finite no-error input domain. String is not in the specialized profile.",
+      "status": "conditional",
+      "strategy": "exact-type-mapping"
+    },
+    {
+      "evidence_refs": [
+        "lowering/profile.json",
+        "certification/local-development-evidence.json",
+        "certification/local-holdout-evidence.json",
+        "certification/local-representative-evidence.json"
+      ],
+      "id": "canonical-finite-no-error-input-domain",
+      "reason": "All three local type corpora and formal obligations are scoped to inputs for which source and target arithmetic error flags are both zero.",
+      "status": "supported",
+      "strategy": "explicit-domain-precondition"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-negative-evidence.json"
+      ],
+      "id": "string-semantics",
+      "reason": "Unicode normalization, code-unit encoding, and equality contracts differ; the specialized exact routes reject string before artifact production.",
+      "status": "blocked",
+      "strategy": "dedicated-string-contract-required"
+    },
+    {
+      "evidence_refs": [],
+      "id": "arithmetic-error-domain",
+      "reason": "Java wrap, C++ undefined behavior, and Swift traps are not claimed equivalent; out-of-domain arithmetic-error inputs remain BLOCKED/NOT_SUPPORTED.",
+      "status": "blocked",
+      "strategy": "separate-error-semantics-profile-required"
+    },
+    {
+      "evidence_refs": [
+        "certification/local-holdout-evidence.json"
+      ],
+      "id": "finite-number-transport-comparison",
+      "reason": "Finite binary64 parameters may be transported, returned, branched on, and compared; the holdout contract requires negative zero and finite boundary values.",
+      "status": "conditional",
+      "strategy": "fp64-bit-exact-native-replay"
+    },
+    {
+      "evidence_refs": [],
+      "id": "number-arithmetic",
+      "reason": "Number +, -, *, /, and % remain outside the exact-eight profile because finite inputs can produce infinities/NaNs and rounding/payload behavior is unproved.",
+      "status": "blocked",
+      "strategy": "dedicated-fp-arithmetic-contract-required"
+    },
+    {
+      "evidence_refs": [
+        "lowering/profile.json"
+      ],
+      "id": "if-return-control-flow",
+      "reason": "If and return statements are lowered from compiler-backed syntax trees.",
+      "status": "supported",
+      "strategy": "typed-structured-lowering"
+    },
+    {
+      "evidence_refs": [],
+      "id": "framework-database-async-concurrency",
+      "reason": "Requires exact Batch 30/31 packs and independent runtime evidence; it is not hidden in this route.",
+      "status": "blocked",
+      "strategy": "separate-exact-pack"
+    },
+    {
+      "evidence_refs": [],
+      "id": "typed-pure-module-v1",
+      "reason": "Requires at least three independently observed functions, exact symbol/signature closure, semantic chunks, behavior replay, and module composition evidence.",
+      "status": "conditional",
+      "strategy": "per-function-proof-plus-module-composition"
+    }
+  ],
+  "route_key": "swift-to-objc",
+  "schema_version": 1
+}

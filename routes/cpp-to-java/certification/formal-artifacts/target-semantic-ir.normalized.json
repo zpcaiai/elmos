@@ -1,0 +1,157 @@
+{
+  "corpora": [
+    {
+      "corpus": "development",
+      "functions": [
+        {
+          "body": [
+            {
+              "condition": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "subtotal"
+                },
+                "operator": "<",
+                "right": {
+                  "kind": "literal",
+                  "value": 0
+                }
+              },
+              "else": [],
+              "kind": "if",
+              "then": [
+                {
+                  "expression": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "expression": {
+                "kind": "binary",
+                "left": {
+                  "kind": "name",
+                  "value": "subtotal"
+                },
+                "operator": "+",
+                "right": {
+                  "kind": "name",
+                  "value": "tax"
+                }
+              },
+              "kind": "return"
+            }
+          ],
+          "name": "calculate",
+          "parameters": [
+            {
+              "name": "subtotal",
+              "type": "integer"
+            },
+            {
+              "name": "tax",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        }
+      ]
+    },
+    {
+      "corpus": "holdout",
+      "functions": [
+        {
+          "body": [
+            {
+              "expression": {
+                "kind": "name",
+                "value": "value"
+              },
+              "kind": "return"
+            }
+          ],
+          "name": "echoNumber",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number"
+            }
+          ],
+          "return_type": "number"
+        }
+      ]
+    },
+    {
+      "corpus": "real-repository",
+      "functions": [
+        {
+          "body": [
+            {
+              "condition": {
+                "kind": "binary",
+                "left": {
+                  "kind": "binary",
+                  "left": {
+                    "kind": "name",
+                    "value": "left"
+                  },
+                  "operator": "&&",
+                  "right": {
+                    "kind": "name",
+                    "value": "right"
+                  }
+                },
+                "operator": "||",
+                "right": {
+                  "kind": "name",
+                  "value": "fallback"
+                }
+              },
+              "else": [],
+              "kind": "if",
+              "then": [
+                {
+                  "expression": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "expression": {
+                "kind": "literal",
+                "value": false
+              },
+              "kind": "return"
+            }
+          ],
+          "name": "decision",
+          "parameters": [
+            {
+              "name": "left",
+              "type": "boolean"
+            },
+            {
+              "name": "right",
+              "type": "boolean"
+            },
+            {
+              "name": "fallback",
+              "type": "boolean"
+            }
+          ],
+          "return_type": "boolean"
+        }
+      ]
+    }
+  ],
+  "route_key": "cpp-to-java",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1"
+}

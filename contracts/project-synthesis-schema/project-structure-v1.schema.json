@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "elmos.project-synthesis.project-structure.v1",
+  "title": "ELMOS Project Structure Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_kind",
+    "project",
+    "nodes",
+    "edges",
+    "coverage"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "graph_kind": {
+      "const": "elmos.project-structure"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "repository_mode",
+        "approved_payload_sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "repository_mode": {
+          "const": "polyglot-monorepo"
+        },
+        "approved_payload_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "managed_file_count",
+        "classified_file_count",
+        "declared_application_count",
+        "represented_application_count",
+        "unclassified_paths",
+        "status"
+      ],
+      "properties": {
+        "scope": {
+          "const": "managed-generated-artifacts"
+        },
+        "managed_file_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "classified_file_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "declared_application_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "represented_application_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "unclassified_paths": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "status": {
+          "const": "PASSED"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9:._-]{0,199}$"
+    },
+    "safePath": {
+      "anyOf": [
+        {
+          "const": "."
+        },
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)(?!.*[/]$)(?!.*\\\\)[^\\u0000-\\u001f]+$"
+        }
+      ]
+    },
+    "language": {
+      "enum": [
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "go",
+        "kotlin",
+        "php",
+        "rust"
+      ]
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "path",
+        "label",
+        "ownership",
+        "file_count",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "kind": {
+          "enum": [
+            "repository",
+            "repository-metadata",
+            "requirements",
+            "documentation",
+            "deployment",
+            "continuous-integration",
+            "database",
+            "observability",
+            "operations",
+            "security",
+            "application",
+            "build-manifest",
+            "api-contract",
+            "container",
+            "test-root",
+            "source-root",
+            "configuration",
+            "application-support"
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/safePath"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "framework": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "ownership": {
+          "const": "managed"
+        },
+        "file_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "const": "REPRESENTED"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "application"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "language",
+              "framework",
+              "runtime"
+            ]
+          }
+        }
+      ]
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "type"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/stableId"
+        },
+        "to": {
+          "$ref": "#/$defs/stableId"
+        },
+        "type": {
+          "const": "contains"
+        }
+      }
+    }
+  }
+}

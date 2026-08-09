@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:6217e4d2dc14ead325f4393f806e1f9189cac6c6cce0075e6354899b536a7f3a",
+      "block_id": "action-event",
+      "byte_count": 3325,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/react/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-native-event-outcome-observer-trace/b6ee609cc208774fa7995b934be013d7d05bdc142c33e9044f2d93fa1ddd93eb.json",
+      "profile_id": "react",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:b6ee609cc208774fa7995b934be013d7d05bdc142c33e9044f2d93fa1ddd93eb"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:1715c844c27590bb5807036836c07133000f68837f882cebcc26f929c22ec24a",
+        "byte_count": 5287,
+        "channel": "browser",
+        "path": "traces/react/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-event-trace/abd7b98d97b3f2f284a9c2922a66a8df76b8e0f3a52e70f17aa0d25f4d4db8b5.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:abd7b98d97b3f2f284a9c2922a66a8df76b8e0f3a52e70f17aa0d25f4d4db8b5"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

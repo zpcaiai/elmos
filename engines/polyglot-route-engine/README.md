@@ -1,11 +1,17 @@
 # ELMOS Polyglot Route Engine
 
 This engine implements a compiler-backed, fail-closed vertical slice across Java,
-Python, C#, TypeScript, C++, Objective-C and Swift. Every directed pair is
-independent.
+Python, C#, TypeScript, Go, Rust, C++, Objective-C and Swift. Every attempted
+direction is evaluated independently; no reverse or Cartesian route is inferred.
 
-All seven are both source and target, so the profile carries 42 directed
-routes. Swift source analysis goes through a SwiftSyntax helper under
+All nine have source inventory, candidate discovery and target-project assembly
+plumbing. The repository capability inventory explicitly lists all 72 ordered
+language pairs; it never infers an unlisted direction and a route record is not
+a certification claim. Evidence provenance remains split between the original
+six-language complete 30, the C++/Objective-C/Swift/Java specialised exact
+eight, and the remaining 34 local capability routes. Only the exact eight carry
+the additional module, concrete-span, behaviour and SMT obligations described
+below. Swift source analysis goes through a SwiftSyntax helper under
 `native/swift`, built on demand by `swift build -c release` the first time a
 Swift route runs -- the same on-demand build the TypeScript CLI already uses.
 
@@ -43,10 +49,11 @@ compiled by its native toolchain and executed against the same behavior cases.
 
 Unsupported statements, expressions, types, async behavior, side effects,
 frameworks, databases, concurrency, reflection, and I/O fail closed. This exact
-profile is `LIMITED`: the directed routes pass native analysis, target compilation,
-separate holdout, and representative behavior replay. Independent and external
-certification remain `NOT_RUN`; repository orchestration never broadens this
-semantic boundary.
+profile is `LIMITED`: only a route whose persisted evidence says
+`PASSED_LOCAL` has passed native analysis, target compilation, separate
+holdout, and representative behavior replay. Other declared routes remain
+`NOT_RUN`. Independent and external certification remain `NOT_RUN`;
+repository orchestration never broadens this semantic boundary.
 
 ## Canonical types and operator semantics
 
@@ -54,19 +61,21 @@ The IR has four canonical types. `integer` is a **64-bit signed integer** and
 `number` is **IEEE-754 binary64**; those two definitions are what every route
 is checked against.
 
-| Canonical | java | python | csharp | typescript | cpp | objc | swift |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `integer` | `long` | `int` | `long` | `number` | `std::int64_t` | `long long` | `Int` |
-| `number` | `double` | `float` | `double` | `number` | `double` | `double` | `Double` |
-| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `BOOL` | `Bool` |
-| `string` | `String` | `str` | `string` | `string` | `std::string` | `NSString *` | `String` |
+| Canonical | java | python | csharp | typescript | go | rust | cpp | objc | swift |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `integer` | `long` | `int` | `long` | guarded `number` | `int64` | `i64` | `std::int64_t` | `long long` | `Int64` |
+| `number` | `double` | `float` | `double` | `number` | `float64` | `f64` | `double` | `double` | `Double` |
+| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `bool` | `bool` | `BOOL` | `Bool` |
+| `string` | `String` | `str` | `string` | `string` | `string` | `String` | `std::string` | `NSString *` | `String` |
 
 Lifting *into* those types is deliberately narrower than each language's own
 type system, because the difference is not observable in the emitted code:
 
-* `byte`/`short`/`int` (Java, C#) widen to the 64-bit `integer`. Exact for
-  every value; only 32-bit overflow wraparound differs, and that difference is
-  unobservable in the pure-function profile unless the source relies on it.
+* Java `byte`/`short`/`int` and platform-sized native spellings (`long`,
+  `NSInteger`, Swift `Int`) are **refused**. Widening them would erase their
+  source overflow or platform-width behavior. Java `long`, C++
+  `std::int64_t`, Objective-C `long long` on the pinned Apple tuple, and Swift
+  `Int64` are the accepted signed-integer spellings for the exact-eight pack.
 * `float`/`Single` is **refused** (`JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET`,
   `CSHARP_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET`): a 24-bit significand does
   not round-trip through binary64 -- `0.1f + 0.2f != 0.1 + 0.2`.
@@ -81,6 +90,16 @@ type system, because the difference is not observable in the emitted code:
   idiomatic way to pass a string.
 * `float` is refused in C++ and Objective-C for the same reason as in Java and
   C#; `unsigned` types are outside the canonical set entirely.
+
+The exact-eight C++/Objective-C/Swift/Java route policy is narrower than the
+shared analyzer type inventory: it rejects every `string` function, parameter,
+return, and literal. Swift uses Unicode canonical-equivalence equality, Java
+uses UTF-16 code-unit equality, and C++ uses byte equality, so no single value
+contract is sound without an enforced encoding/normalization boundary.
+Integer arithmetic in those eight routes is conditional on the SMT-bound
+`canonical-finite-no-error-input-domain`; wraparound, undefined overflow, traps,
+non-finite values, and invalid division outside that domain are blocked rather
+than called equivalent.
 
 Operators are typed, not textual. The canonical `/` and `%` on two `integer`s
 are the **truncating** pair (Java/C#/TypeScript semantics), so:
@@ -126,32 +145,58 @@ Runtime values are guarded too: an emitted TypeScript function that carries
 `Number.isSafeInteger` and throws `RangeError: ELMOS_INTEGER_NOT_SAFE:<value>`
 instead of continuing with a silently rounded value. The helper is emitted
 only when a function actually carries an `integer`; `number`-only functions
-are untouched, and the other three targets need no guard because `long`/`int`
-hold the whole canonical range exactly.
-
-The one boundary that stays documented rather than enforced: Java's and C#'s
-`byte`/`short`/`int` widen to the 64-bit canonical `integer`, so a source that
-*relies on* 32-bit overflow wraparound translates into code that does not wrap
-at the same point. Rejecting `int` outright would exclude most real Java and
-C# for a behaviour the pure-function profile has no way to observe, so this is
-a stated limit of `typed-pure-function-v1`, not a silent one.
+are untouched. Fixed-width native targets hold the canonical range in their
+declared type, while emitted arithmetic helpers make overflow and invalid
+division explicit under the canonical IR contract.
 
 Execution is exact-toolchain bound: Java 21.0.11, Python 3.12.12, .NET SDK
 10.0.301 / Roslyn 5.6.0, and TypeScript 5.9.2 on Node 26.0.0. A missing or
 different source or target toolchain blocks the route instead of accepting
 language-level compatibility flags as equivalent evidence.
 
-clang and Swift ship with Xcode (or a platform toolchain) rather than from a
-fixed URL, so their exact build differs per machine and the pin is read from
-the environment instead of being hard-coded. Declare it once per host:
+The exact-eight native evidence is pinned to Xcode 26.6 build 17F113, macOS SDK
+26.5, Apple clang 21.0.0, Swift 6.3.3, Darwin/arm64, and the recorded compiler
+binary digests. Environment variables may repeat those repository pins for CI
+clarity, but may not replace them with host-local values:
 
 ```bash
 export ELMOS_CLANG_VERSION="$(clang --version | head -1)"
 export ELMOS_SWIFT_VERSION="$(swiftc --version | head -1)"
 ```
 
-An unset pin is a hard block (`EXACT_TOOLCHAIN_PIN_MISSING`), exactly like a
-mismatch: "whatever is installed" is never accepted as evidence.
+A mismatched declared pin, SDK, platform, executable digest, or compiler
+version is a hard block. An unset environment variable uses the immutable
+repository pin; "whatever is installed" is never accepted as equivalent
+evidence.
+
+## Formal arithmetic evidence boundary
+
+`tools/prove_arithmetic_compensation.py` keeps solver inputs and exact replay
+commands for the integer compensation campaign. `PROVED` is reserved for an
+unconditional 64-bit theorem over the recorded helper transcription.
+`PROVED_UNDER_ASSUMPTIONS` is a separate, non-certifying state and is never
+included in `counts.PROVED` or `all_required_proved`.
+
+The TypeScript obligations are guard abstractions. Their bitvector model
+reuses the canonical error/value and therefore does **not** model IEEE-754
+binary64 rounding or special values, `Number.isSafeInteger`, `Math.trunc`, the
+JavaScript remainder primitive, or the real emitted expression/helper
+transcription. An UNSAT result for those five obligations is consequently
+`PROVED_UNDER_ASSUMPTIONS`, with every missing bridge listed in the campaign
+record. It is not an original-source, TypeScript-runtime, or helper theorem.
+
+`--require-64-bit` requires unconditional proof for theorem obligations and
+fails on both `BOUNDED` and `PROVED_UNDER_ASSUMPTIONS`. Callers may also select
+the conditional state explicitly with
+`--fail-on proved_under_assumptions,unknown,timeout,counterexample`.
+
+For routed migrations the persisted `formal-input.json` content-addresses the
+source and emitted-target bytes, both normalized IR objects, engine/emitter and
+analyzer identities, solver options, environment, and assumptions. The SMT2,
+result, and composition artifacts link back to its digest. The theorem scope
+is only canonical normalized source IR to independently re-lifted target IR;
+source/compiler/runtime soundness remains an assumption or `NOT_RUN`, and the
+result remains `NOT_CERTIFIED`.
 
 ```bash
 uv sync --locked
@@ -175,21 +220,27 @@ uv run elmos-polyglot-route inventory \
   --output repository-route-plan.json
 ```
 
-The command ignores known build/vendor directories, never follows symbolic
-links, verifies that every accepted file stays stable while read, and enforces
-file-count, per-file, and aggregate byte limits. Its content-addressed output
-contains one `DISCOVERY_REQUIRED` work unit per source file. Every work unit
-keeps execution at `NOT_RUN` until a function name and independent behavior-case
-corpus are supplied; framework, database, I/O, concurrency, exceptions, async
-and object-graph semantics remain explicit blockers.
+The command never follows symbolic links, verifies that every accepted file
+stays stable while read, and enforces small/medium repository limits (at most
+5,000 recognized source files, 64 MiB aggregate and 2 MiB per file). Known
+build/vendor-directory entries are content-addressed exclusions with a
+blocking `NOT_RUN` obligation; they cannot silently disappear from a complete
+repository claim. Its content-addressed output contains one
+`DISCOVERY_REQUIRED` work unit per source file. Discovery partitions multiple
+eligible functions into stable child work units; each child keeps execution at
+`NOT_RUN` until an independent behavior-case corpus is supplied. Framework,
+database, I/O, concurrency, exceptions, async, object-graph and unresolved
+cross-file semantics remain explicit blockers.
 
 `discover` classifies every work unit with a precise verdict (`READY`,
 `UNSUPPORTED`, `NO_CANDIDATE_DECLARATION`, `UNREADABLE`) using the same
 compiler-backed analyzer the migration itself uses -- a candidate name is
 proposed cheaply but never accepted without that analyzer's confirmation.
 `batch` then attempts only `READY` units that also have a matching
-`{unit_id}.json` behavior-case file under `--cases-directory`, resumably via a
-`batch-checkpoint.jsonl`, and never rounds a partial run up to `COMPLETE`.
+`{unit_id}.json` behavior-case file under `--cases-directory`. The
+`batch-checkpoint.jsonl` resumes explicit non-success skips only. A prior
+`PASSED` record is not a trust anchor and is re-executed against source and
+target behavior on every run. A partial run is never rounded up to `COMPLETE`.
 
 ## Whole-project assembly
 
@@ -197,42 +248,36 @@ A batch run proves each work unit in isolation. Every `PASSED` unit reuses the
 same fixed emitted file name (`Migrated.java` / `Migrated.cs` / `migrated.py` /
 `migrated.ts`, and for Java/C# the same class name too), so combining two units
 verbatim would collide on the first duplicate -- a batch report by itself is
-not a project anyone can build. `assemble` closes that gap for one already-run
-batch report:
+not a project anyone can build. Assembly is therefore consumed inside
+`repository-pipeline`, in the same execution that produced the batch. The
+standalone `assemble` CLI fails closed because an arbitrary JSON report on disk
+cannot prove that behavior execution occurred.
 
-```bash
-uv run elmos-polyglot-route assemble \
-  --batch-report batch/batch-report.json \
-  --batch-output batch \
-  --destination assembled-library \
-  --verify
-```
+For every `PASSED` unit it requires and re-verifies both target and route-evidence
+SHA-256 digests, closes source/target observation counts, and recomputes batch
+status counters before reading the output. It then places the unit's already-emitted source under a per-unit
+namespace/module so nothing collides. It writes a real target build manifest:
+Maven, .NET, Python, TypeScript, Go modules, Cargo, CMake (C++/Objective-C), or
+SwiftPM. `FAILED` and `SKIPPED_*` units are recorded, with their reason, in
+`assembly-manifest.json` under `excluded_units`; they are never silently
+dropped and never included in the assembled project.
 
-For every `PASSED` unit it re-verifies the unit's recorded sha256 against the
-batch output on disk (defense in depth against a tampered or stale batch
-directory), then places the unit's already-emitted source under a per-unit
-namespace -- a Java/C# package/namespace per unit, a Python/TypeScript module
-per unit -- so nothing collides, and writes a real per-language build manifest
-(`pom.xml` / a root `.csproj` / `pyproject.toml` / `package.json` +
-`tsconfig.json`). `FAILED` and `SKIPPED_*` units are recorded, with their
-reason, in `assembly-manifest.json` under `excluded_units`; they are never
-silently dropped and never included in the assembled project.
-
-`--verify` (or a separate `verify_assembled_project` call) runs a real
+The repository pipeline's assembly verifier runs a real
 whole-project compile/build check with the same exact-toolchain contract the
 per-unit harness already enforces (`javac` across all sources, `python -m
-compileall`, `dotnet build`, or `tsc`), and only on success writes local-run
+compileall`, `dotnet build`, `tsc`, `go test ./...`, `cargo check --offline`,
+CMake with the exact C++/Objective-C compiler, or `swift build`), and only on success writes local-run
 and cloud-publishing guidance (`docs/LOCAL_RUN.md`, `docs/CLOUD_PUBLISHING.md`,
 `deploy/deployment-options.json`) into the assembled project. The assembled
-artifact is a library of certified pure functions, not a running service, so
-that guidance documents a real build + package-publish workflow (recommending
-AWS CodeArtifact, since it is the one platform that natively covers all four
-target package formats) rather than a Cloud Run-style container deployment.
+artifact is a locally verified, non-certified library of bounded pure
+functions, not a running service. The guidance therefore documents a real
+build and an explicitly reviewed package-publishing workflow; it does not
+pretend one registry natively covers all nine target ecosystems.
 
-Units are never merged into one shared namespace even when the build passes:
-two different source files can define a same-named function with different
-behavior, and assembly does not attempt to resolve that at the semantic level.
-Callers must import each unit by its own id/module, not assume a combined API.
+Managed targets retain per-unit namespaces/modules. C++ and Objective-C units
+are deliberately linked into one target so duplicate global symbols fail the
+whole-project link instead of being hidden in separately compiled libraries.
+Assembly does not invent a combined semantic API.
 Independent verification and external certification remain `NOT_RUN` /
 `NOT_CERTIFIED` regardless of local build success.
 
@@ -254,12 +299,21 @@ uv run elmos-polyglot-route repository-pipeline \
 
 The output directory is a durable checkpoint boundary. Re-running the command
 recomputes inventory and discovery from the read-only source, detects source
-drift, resumes the per-unit batch checkpoint, rebuilds assembly from verified
+drift, resumes only explicit non-success skips, replays every prior successful
+unit, rebuilds assembly from verified
 bytes, and emits `repository-migration-artifact.zip` with an exact file/digest
-manifest. `COMPLETE` requires every work unit to pass; missing behavior cases,
-unsupported units or failures produce `PARTIAL` and remain visible in the
-pipeline report. Local execution never changes independent or external evidence
-from `NOT_RUN`.
+manifest. It also builds a content-addressed `project-graph.json`, binds every
+planned source path and digest to that graph, rebuilds it after target assembly
+to detect mid-run drift, and records every unresolved classification, import,
+dependency, resource, test, or semantic-index obligation.
+
+`COMPLETE / PASSED_LOCAL` requires both every work unit to pass and the project
+graph to have zero blocking obligations. Missing behavior cases, uncovered
+symbols, unsupported units, unclassified files, unavailable compiler indexes,
+unresolved dependencies, or execution failures produce `PARTIAL / LIMITED` and
+remain visible in the report and artifact. Local execution never changes
+independent or external evidence from `NOT_RUN`, and the 72-direction local
+experiment never changes any governed route to certified.
 
 ## Single-declaration bridging (`emit` / `check`)
 

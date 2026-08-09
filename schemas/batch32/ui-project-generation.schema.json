@@ -72,6 +72,17 @@
       "$ref": "#/$defs/uiIr"
     }
   },
+  "allOf": [
+    { "$ref": "#/$defs/angularSource" },
+    { "$ref": "#/$defs/flutterSource" },
+    { "$ref": "#/$defs/harmonySource" },
+    { "$ref": "#/$defs/jquerySource" },
+    { "$ref": "#/$defs/reactSource" },
+    { "$ref": "#/$defs/reactNativeSource" },
+    { "$ref": "#/$defs/svelteSource" },
+    { "$ref": "#/$defs/vue2Source" },
+    { "$ref": "#/$defs/vue3Source" }
+  ],
   "$defs": {
     "framework": {
       "enum": [
@@ -96,7 +107,6 @@
     },
     "node": {
       "type": "object",
-      "additionalProperties": false,
       "required": [
         "id",
         "name",
@@ -124,6 +134,27 @@
           "$ref": "#/$defs/stringSet"
         }
       }
+    },
+    "plainNode": {
+      "allOf": [
+        { "$ref": "#/$defs/node" }
+      ],
+      "unevaluatedProperties": false
+    },
+    "unknown": {
+      "allOf": [
+        { "$ref": "#/$defs/node" },
+        {
+          "type": "object",
+          "required": ["severity", "description", "owner"],
+          "properties": {
+            "severity": { "enum": ["critical", "high", "medium", "low"] },
+            "description": { "type": "string", "minLength": 1 },
+            "owner": { "type": "string", "minLength": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
     },
     "component": {
       "allOf": [
@@ -186,7 +217,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "#/$defs/node"
+        "$ref": "#/$defs/plainNode"
       }
     },
     "uiIr": {
@@ -265,16 +296,52 @@
         "nativeBoundaries": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/node"
+            "$ref": "#/$defs/plainNode"
           }
         },
         "unknowns": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/node"
+            "$ref": "#/$defs/unknown"
           }
         }
       }
+    },
+    "angularSource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "angular" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "22.0.8" }, "platform": { "const": "WEB" } } } } }
+    },
+    "flutterSource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "flutter" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "3.44.1" }, "platform": { "enum": ["ANDROID", "IOS", "WEB"] } } } } }
+    },
+    "harmonySource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "harmony-arkui" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "6.0.0(20)" }, "platform": { "const": "HARMONYOS" } } } } }
+    },
+    "jquerySource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "jquery" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "4.0.0" }, "platform": { "const": "WEB" } } } } }
+    },
+    "reactSource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "react" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "19.2.8" }, "platform": { "const": "WEB" } } } } }
+    },
+    "reactNativeSource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "react-native" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "0.86.0" }, "platform": { "enum": ["ANDROID", "IOS", "WEB"] } } } } }
+    },
+    "svelteSource": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "svelte" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "5.56.8" }, "platform": { "const": "WEB" } } } } }
+    },
+    "vue2Source": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "vue2" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "2.7.16" }, "platform": { "const": "WEB" } } } } }
+    },
+    "vue3Source": {
+      "if": { "properties": { "source": { "properties": { "framework": { "const": "vue3" } } } } },
+      "then": { "properties": { "source": { "properties": { "version": { "const": "3.5.40" }, "platform": { "const": "WEB" } } } } }
     }
   }
 }

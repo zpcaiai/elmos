@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue3",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:62e527f1a5ec9c0c470005dd3c04c3e9b656d7103eff8f71cc09c4a7a609974c",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 2011,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue3/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-computed-layout-i18n-theme-observer-trace/45d099d3af8101899362e6fcf52ae10a059120ff7b50288f692ccf9aff2617a2.json",
+      "profile_id": "vue3",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:45d099d3af8101899362e6fcf52ae10a059120ff7b50288f692ccf9aff2617a2"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:1b650c505b8c57d0873dddd5d5b1c7a92ab32ebe9fbf016482d5a25757c29c6b",
+        "byte_count": 40660,
+        "channel": "browser",
+        "path": "traces/vue3/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-dom-snapshot/f0d6b1679b06ca36c4aeef3d6f514850d4e3dcf665b648fe9c1732c7fe944362.json",
+        "profile_id": "vue3",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:f0d6b1679b06ca36c4aeef3d6f514850d4e3dcf665b648fe9c1732c7fe944362"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

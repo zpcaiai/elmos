@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "route_id": "harmony-arkui--to--vue2",
+  "source_lifting": {
+    "profile_id": "harmony-arkui",
+    "project_digest": "sha256:7702d8bae218047e121b2f4197d25346f1b4e617dd5cfdb0727f403254655610",
+    "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+  },
+  "target_lowering_relift": {
+    "profile_id": "vue2",
+    "project_digest": "sha256:743d0bd2952ebe93989e0224bab4448db3b3c9b6d82eeffdfe04a44c19bf257f",
+    "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
+  },
+  "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
+  "semantic_equal": true,
+  "chunk_equal": true,
+  "behavior_equal": true,
+  "solver_outcome": "UNSAT",
+  "status": "PROVED_UNDER_ASSUMPTIONS"
+}

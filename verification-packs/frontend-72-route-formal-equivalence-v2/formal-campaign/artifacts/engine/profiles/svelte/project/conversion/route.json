@@ -1,0 +1,11 @@
+{
+  "routeId": "angular--to--svelte",
+  "source": "angular",
+  "target": "svelte",
+  "sourceProfileVersion": "22.0.8",
+  "targetProfileVersion": "5.56.8",
+  "supportState": "PROJECT_GENERATION_READY",
+  "semanticConversionEvidence": "NOT_RUN",
+  "runtimeEvidence": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

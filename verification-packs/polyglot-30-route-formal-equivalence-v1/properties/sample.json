@@ -1,0 +1,34 @@
+{
+  "assertion": {
+    "kind": "source-canonical-target-observational-equivalence",
+    "required_layers": [
+      "semantic-ir",
+      "semantic-chunks",
+      "behavior",
+      "formal-composition"
+    ]
+  },
+  "claim_id": "claim.route-equivalence",
+  "generator": {
+    "constraints": [
+      "profile=typed-pure-function-v1",
+      "route-set=exact-30"
+    ],
+    "kind": "typed-l0-domain"
+  },
+  "oracle_refs": [
+    "oracle.canonical-ir",
+    "oracle.source-runtime",
+    "oracle.target-runtime"
+  ],
+  "owner": "elmos-polyglot-verification-engineering",
+  "property_id": "property.route-equivalence",
+  "replay": {
+    "command": "python3 scripts/batch29/run_polyglot_routes.py --route java-to-python",
+    "seed": "20260809"
+  },
+  "schema_version": 1,
+  "shrinker": {
+    "kind": "typed-expression-and-input-shrinker"
+  }
+}

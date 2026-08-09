@@ -1,0 +1,25 @@
+{
+  "route_key": "typescript-to-go",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 147,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.go",
+      "sha256": "sha256:6af38f77b60f222293f5f15ae64c887e1660f62429158dcda451987ef5ccd9f6"
+    },
+    {
+      "bytes": 180,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.go",
+      "sha256": "sha256:0212400d111d8333d1f3f1194a4252199c0669d67ca4a7edb2c1989b65bca00d"
+    },
+    {
+      "bytes": 144,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.go",
+      "sha256": "sha256:cd4f4337f162f1cdf387cbc664223f25c10077a92467d0d09c2c914ecd5a1490"
+    }
+  ]
+}

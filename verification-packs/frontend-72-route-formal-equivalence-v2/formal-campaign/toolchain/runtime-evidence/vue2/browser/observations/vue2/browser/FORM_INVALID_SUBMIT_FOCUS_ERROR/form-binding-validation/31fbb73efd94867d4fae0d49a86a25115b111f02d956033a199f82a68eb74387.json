@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": "QUERY_TOO_SHORT",
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": true,
+    "valid": false,
+    "value": "x"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7a9f3ac35fde74ecfa4227a98b76f335a3d7229b73d4b3e7574016d8c15a52b8",
+      "block_id": "form-binding-validation",
+      "byte_count": 1544,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/vue2/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-form-validity-observer-trace/579fe06894d6f581751aec93a3731ac2c0b0f25c1fbc94543f833c3735d8d386.json",
+      "profile_id": "vue2",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+      "sha256": "sha256:579fe06894d6f581751aec93a3731ac2c0b0f25c1fbc94543f833c3735d8d386"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:1495f93145a1c4d1ec9a36384efdf35cd14e3454182e81d5bf4667b942c0d56f",
+        "byte_count": 40800,
+        "channel": "browser",
+        "path": "traces/vue2/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-dom-snapshot/653565c3484446507cb450a90de21df21d198f52285ccccfa60a87eb203faf8e.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:653565c3484446507cb450a90de21df21d198f52285ccccfa60a87eb203faf8e"
+      },
+      {
+        "artifact_id": "sha256:dcbc467c4f1b1360bb1a29226c1d6538d4594a6cbd23e0f655c0ac9cf8ee8bbc",
+        "byte_count": 8789,
+        "channel": "browser",
+        "path": "traces/vue2/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-framework-event-trace/e72b42974128195f8b2f349e8deaeb70f919122f5c4438dd3488e252fa32f601.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:e72b42974128195f8b2f349e8deaeb70f919122f5c4438dd3488e252fa32f601"
+      },
+      {
+        "artifact_id": "sha256:fb783afadd67acb6497c66df684e7f40813bcd59a3df0ebbd8928322823cd6dd",
+        "byte_count": 565071,
+        "channel": "browser",
+        "path": "traces/vue2/browser/FORM_INVALID_SUBMIT_FOCUS_ERROR/browser-accessibility-axe-trace/34213aaee12bcc742796c657380d20250551157d3c113e866eddcc66d4232244.json",
+        "profile_id": "vue2",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+        "sha256": "sha256:34213aaee12bcc742796c657380d20250551157d3c113e866eddcc66d4232244"
+      }
+    ]
+  },
+  "scenario_id": "FORM_INVALID_SUBMIT_FOCUS_ERROR",
+  "schema_version": "1.0"
+}

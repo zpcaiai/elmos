@@ -1,0 +1,4506 @@
+{
+  "artifact_refs": [
+    {
+      "bytes": 7545,
+      "path": "certification/artifacts/module/source-module-semantic-ir.json",
+      "role": "source-module-semantic-ir",
+      "sha256": "sha256:0cb70c53d4459ebcce90471627413844100bf513c6f0ce2d5b9053394af12c06"
+    },
+    {
+      "bytes": 7367,
+      "path": "certification/artifacts/module/target-module-semantic-ir.json",
+      "role": "target-module-semantic-ir",
+      "sha256": "sha256:485ac369c2e805cc29e852c1e117bff1152d8d89f094f4120ed7845ddf3a592c"
+    },
+    {
+      "bytes": 1881,
+      "path": "certification/artifacts/module/source-module-observations.json",
+      "role": "source-module-observations",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 1881,
+      "path": "certification/artifacts/module/target-module-observations.json",
+      "role": "target-module-observations",
+      "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
+    },
+    {
+      "bytes": 731,
+      "path": "certification/artifacts/module/source-module-artifact/equivalence_module.m",
+      "role": "original-source-module-artifact",
+      "sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1"
+    },
+    {
+      "bytes": 748,
+      "path": "certification/artifacts/module/migrated.swift",
+      "role": "emitted-target-module-artifact",
+      "sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a"
+    },
+    {
+      "bytes": 2794,
+      "path": "certification/artifacts/module/module-case-manifest.json",
+      "role": "module-case-manifest",
+      "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
+    },
+    {
+      "bytes": 1263,
+      "path": "certification/artifacts/module/module-formal-input.json",
+      "role": "module-formal-input",
+      "sha256": "sha256:75f6271a0a20ac8f6675b022eea78b9f61d5eee9c11957a130acad94c75f1d4f"
+    },
+    {
+      "bytes": 2854,
+      "path": "certification/artifacts/module/source-module-inventory.json",
+      "role": "source-module-inventory",
+      "sha256": "sha256:c200591bc03d9bc57bef004160ece16a430773e3802f7844ea5dab2ee9a393a8"
+    },
+    {
+      "bytes": 5089,
+      "path": "certification/artifacts/module/target-module-inventory.json",
+      "role": "target-module-inventory",
+      "sha256": "sha256:da953f4b190cc3eddbdd2b09b1e352c327012db76011523b1e1cd5b0661dc5ae"
+    },
+    {
+      "bytes": 7687,
+      "path": "certification/artifacts/module/whole-file-module-closure.json",
+      "role": "whole-file-module-closure",
+      "sha256": "sha256:e55dc85b27f0e60e56111d77f48db1b5f1ddf789ca513f92c9208602d8965bc1"
+    },
+    {
+      "bytes": 1365,
+      "path": "certification/artifacts/module/formal-function-000-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:9e8e074843d568b236fe821f096dd0b52042e3259cf3ad5b66e9aa0215b3e9ee"
+    },
+    {
+      "bytes": 1291,
+      "path": "certification/artifacts/module/formal-function-000.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:1609f69094d575982bcb24e80945a582d6aa640a32eeb15bb39ed15d31681ba0"
+    },
+    {
+      "bytes": 2420,
+      "path": "certification/artifacts/module/formal-function-000-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:f49c2c72aececc0b390c173b1bd5d68a98567d03482e4ef510e33b46a9ef1284"
+    },
+    {
+      "bytes": 1822,
+      "path": "certification/artifacts/module/formal-function-001-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:232bfe606f62429a4adcadcb22d45033223a54cb3beab30c0fe66d3d7b9bc08f"
+    },
+    {
+      "bytes": 2037,
+      "path": "certification/artifacts/module/formal-function-001.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:ae2645b325ea16e75bfcbe82bc9ffcf8ba410a2e0434939fc059d5fe2d3711c2"
+    },
+    {
+      "bytes": 2429,
+      "path": "certification/artifacts/module/formal-function-001-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:5f7d3a7892f362f57d909a70feb74cf2436f9b1bb7a8729cb395719849fc49e9"
+    },
+    {
+      "bytes": 2221,
+      "path": "certification/artifacts/module/formal-function-002-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:174f3032815edc0456742f32ecaa89417945d6096902a972dd1b6a00a0af9cc2"
+    },
+    {
+      "bytes": 1921,
+      "path": "certification/artifacts/module/formal-function-002.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:03ebf4a3020b3a75254b9a34defa19783f430b073a919c1e271d7b6b773902ab"
+    },
+    {
+      "bytes": 2456,
+      "path": "certification/artifacts/module/formal-function-002-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:4c05e0e459e8f11a5b6308bc9d3349e12bf29d39b36857d602457215a8c1ba3d"
+    },
+    {
+      "bytes": 2227,
+      "path": "certification/artifacts/module/formal-function-003-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:228204dc8eeccd1f8bcd0b68f31aab6f9daf82942d743a53e0aa21e8ea0d5261"
+    },
+    {
+      "bytes": 2611,
+      "path": "certification/artifacts/module/formal-function-003.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:c04cf576ec4be8fe2f6ce8986e1b4abdfd5c0d44715b6ff881981b1bcc8f7998"
+    },
+    {
+      "bytes": 2740,
+      "path": "certification/artifacts/module/formal-function-003-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:c3befc012f50888bd90d4e7ebd99063694a21280a9dd4b4dc81f0cb4ba3f1f53"
+    },
+    {
+      "bytes": 1381,
+      "path": "certification/artifacts/module/formal-function-004-input.json",
+      "role": "formal-function-input",
+      "sha256": "sha256:01e5b484f0f570f44ef3b995d046d75cc49f7b268c40c814c91e1a884bd43ada"
+    },
+    {
+      "bytes": 1821,
+      "path": "certification/artifacts/module/formal-function-004.smt2",
+      "role": "formal-function-smt2",
+      "sha256": "sha256:493267391b2841f3ae525ec4e38c390ff0fcfc1e8754c346fc463a3e7573c53a"
+    },
+    {
+      "bytes": 2426,
+      "path": "certification/artifacts/module/formal-function-004-result.json",
+      "role": "formal-function-result",
+      "sha256": "sha256:4d74825ce36c0626aa91d51cc20cc3061442b4cd4a62a2e584f7f0e8cf250637"
+    },
+    {
+      "bytes": 8843,
+      "path": "certification/artifacts/module/source-module-validation.json",
+      "role": "source-module-validation",
+      "sha256": "sha256:32261f173b5523458d067050c60cd86a8fac86ca37b511d467be973dd0c30062"
+    },
+    {
+      "bytes": 8733,
+      "path": "certification/artifacts/module/target-module-validation.json",
+      "role": "target-module-validation",
+      "sha256": "sha256:d8861fcf84feb684f3bc86c66780a0885fbb34abacd22840887d93d92d5784f1"
+    },
+    {
+      "bytes": 3004,
+      "path": "certification/formal-artifacts/swift-analyzer-build-receipt.json",
+      "role": "swift-analyzer-build-receipt",
+      "sha256": "sha256:1ca536dc841a213777ca9f35091a1db02b81319b53f24fe8cc5c2ead7652a63d"
+    }
+  ],
+  "certification_status": "NOT_CERTIFIED",
+  "composition": {
+    "analyzer_and_emitter_soundness": "ASSUMPTION",
+    "function_count": 5,
+    "input_domain": "canonical-finite-no-error-input-domain",
+    "original_source_bytes_theorem": false,
+    "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
+    "passed_function_count": 5,
+    "proof_strength": "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS",
+    "rule": "per-function-denotation-plus-exact-emitter-helper-closure",
+    "source_compiler_runtime_soundness": "NOT_RUN",
+    "source_user_call_graph": "EMPTY_AND_CLOSED",
+    "status": "PASSED",
+    "target_call_graph": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+    "target_compiler_runtime_soundness": "NOT_RUN",
+    "target_profile_to_emitted_call_graph_scope": "profile-functions-to-emitted-callees",
+    "target_profile_to_emitted_call_graph_status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+  },
+  "external_verification_status": "NOT_RUN",
+  "functions": [
+    {
+      "case_manifest_sha256": "sha256:1ee1cd90296a1c3dffabae056d8f88391ea6df0a3a52ff97e2751f0110c1294e",
+      "layers": {
+        "behavior": {
+          "case_count": 4,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 4,
+          "results": [
+            {
+              "arguments_sha256": "sha256:f4ad278aced37942fd2e169e552317712a7674f2fa74f223d0ef01ed6d18cef9",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": true
+              },
+              "case_id": 0,
+              "independent_expected": true,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "bool",
+                "raw": "true",
+                "status": "RETURNED",
+                "value": true
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "bool",
+                "raw": "true",
+                "status": "RETURNED",
+                "value": true
+              }
+            },
+            {
+              "arguments_sha256": "sha256:846c10e65648eee2f1fc4a5d51cf2022603e56b6a30654981c047d51a71aebf6",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": false
+              },
+              "case_id": 1,
+              "independent_expected": false,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              }
+            },
+            {
+              "arguments_sha256": "sha256:a7c1bd00c0035f7014093a133cbda58d8365aa9fd46344373dd11e081692acd7",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": false
+              },
+              "case_id": 2,
+              "independent_expected": false,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              }
+            },
+            {
+              "arguments_sha256": "sha256:6920e175d6b62f0218fe626b44b8725cc3f6cc9b50b17f06acc16b23af8ab1df",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": false
+              },
+              "case_id": 3,
+              "independent_expected": false,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "bool",
+                "raw": "false",
+                "status": "RETURNED",
+                "value": false
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 4,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 4,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 7,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:2ab26bdfd6db64d1907adfd96e14f0070a39b8c266b1ab521bc413357a50eaa6",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0",
+              "source_chunk_id": "sha256:69a30e35317e22290d83b21a63cffe51ac2c54b3b82ecb03eb45203cfd4cafd9",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 730,
+                "file": "equivalence_module.m",
+                "start_byte": 668
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
+              "target_chunk_id": "sha256:95122211804ee49eab32ec2417c086f9cbacc2620902f9ba5b524a0a7d81cf84",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 77,
+                "file": "migrated.swift",
+                "start_byte": 0
+              }
+            },
+            {
+              "semantic_hash": "sha256:40010c4f843bc474b504ca90667b45caf8d69555824e6e9a2e994d81e65f0bfd",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:38c8a424150b8ddaf6efb1f761303cfb6455fa45d2c981e13416ba9e71def039",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 687,
+                "file": "equivalence_module.m",
+                "start_byte": 678
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:040afb60f45ec57f018da9b55977e5a9011dd14b998893258aa914156087e557",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 23,
+                "file": "migrated.swift",
+                "start_byte": 10
+              }
+            },
+            {
+              "semantic_hash": "sha256:d6b7aa9052edf1441eff4f00fb36b2ec17e72621181f22c62ee5e7e1721ab279",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:ec71779e6d6024f164e7ecb71ada5074747e4cd9ab7546b7ba057742d77e3d49",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 699,
+                "file": "equivalence_module.m",
+                "start_byte": 689
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:5404ef521a80efa3359125ac7d0b894bb4461a893f82059fe22c58e56fa5c93a",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 37,
+                "file": "migrated.swift",
+                "start_byte": 24
+              }
+            },
+            {
+              "semantic_hash": "sha256:710193622649105189aecfb1c6d4ca5473a26792456195cdd2d18f46fbe640ff",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0",
+              "source_chunk_id": "sha256:b648d4e64bddd88c31e3464a843173d98ecf371e112b6817764d690ad3837d53",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 727,
+                "file": "equivalence_module.m",
+                "start_byte": 707
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
+              "target_chunk_id": "sha256:b8e93060b2540a08a6f2c69688a929e0e044aad499e78373bf9a1c3e91623ab9",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 75,
+                "file": "migrated.swift",
+                "start_byte": 53
+              }
+            },
+            {
+              "semantic_hash": "sha256:a2ad8a74ee018071718d36a45f7c78eab25dcfe40c3db49ae133360656dce541",
+              "semantic_path": "/functions/0/body/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/expression",
+              "source_chunk_id": "sha256:de277700f852fb239285864e534fe198734144dbeb2b74d2a97b85268f6f9940",
+              "source_semantic_pointer": "/functions/0/body/0/expression",
+              "source_span": {
+                "end_byte": 727,
+                "file": "equivalence_module.m",
+                "start_byte": 714
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:107c87e2c7196a74ce9e9b04361a99a12f926145b39624be88c85fe83fac04d3",
+              "target_semantic_pointer": "/functions/0/body/0/expression",
+              "target_span": {
+                "end_byte": 75,
+                "file": "migrated.swift",
+                "start_byte": 60
+              }
+            },
+            {
+              "semantic_hash": "sha256:6a7a75b8577de0e17c331bc3bf9ecdb9a9be63fb3433a3278b7478b3a271da20",
+              "semantic_path": "/functions/0/body/0/expression/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/expression/left",
+              "source_chunk_id": "sha256:23a22646e0a7bf79b2bdc0686dea0b95610c9f3a72c8eaf2b5b855814a05fd33",
+              "source_semantic_pointer": "/functions/0/body/0/expression/left",
+              "source_span": {
+                "end_byte": 718,
+                "file": "equivalence_module.m",
+                "start_byte": 714
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:13660268405325c0cd22315e3b97b85c097e822190ccfa9b6cae43a7bcc757cd",
+              "target_semantic_pointer": "/functions/0/body/0/expression/left",
+              "target_span": {
+                "end_byte": 65,
+                "file": "migrated.swift",
+                "start_byte": 61
+              }
+            },
+            {
+              "semantic_hash": "sha256:36a0598f311fa31ea2246e83b4504fae8b3e4a541de7e3bd7f50f148326304a2",
+              "semantic_path": "/functions/0/body/0/expression/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/expression/right",
+              "source_chunk_id": "sha256:e5913b4913483c958bfa01b91f2ac10d3a50550f31c596fda8e71f25b3af5714",
+              "source_semantic_pointer": "/functions/0/body/0/expression/right",
+              "source_span": {
+                "end_byte": 727,
+                "file": "equivalence_module.m",
+                "start_byte": 722
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:9d648755691bcb493605ced3f74d2d77d7933121978d58669d97995fb4316c40",
+              "target_semantic_pointer": "/functions/0/body/0/expression/right",
+              "target_span": {
+                "end_byte": 74,
+                "file": "migrated.swift",
+                "start_byte": 69
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 7,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 731,
+              "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+              "logical_file": "equivalence_module.m",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 748,
+              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "logical_file": "migrated.swift",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:objc",
+            "target-analyzer-soundness:swift",
+            "source-compiler-runtime-soundness-not-discharged:objc",
+            "target-compiler-runtime-soundness-not-discharged:swift",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:swift",
+            "emitter-normalization-soundness:swift",
+            "same-input:left:left",
+            "same-input:right:right",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-000-input.json",
+            "sha256": "sha256:9e8e074843d568b236fe821f096dd0b52042e3259cf3ad5b66e9aa0215b3e9ee"
+          },
+          "formal_input_digest": "sha256:9e8e074843d568b236fe821f096dd0b52042e3259cf3ad5b66e9aa0215b3e9ee",
+          "formal_input_path": "certification/artifacts/module/formal-function-000-input.json",
+          "formal_input_sha256": "sha256:9e8e074843d568b236fe821f096dd0b52042e3259cf3ad5b66e9aa0215b3e9ee",
+          "formal_result_path": "certification/artifacts/module/formal-function-000-result.json",
+          "formal_result_sha256": "sha256:f49c2c72aececc0b390c173b1bd5d68a98567d03482e4ef510e33b46a9ef1284",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:6f2a21b2edd2a1d48fcbcc6bd4d271a2077f4d2a6f839a5db112f8a84fface11",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:fbc704eaa618ba2a9adae6bf6ac0d2ee3b92aa7b8ae431e5d1937b33c509f8dc",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-000.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-000.smt2",
+            "sha256": "sha256:1609f69094d575982bcb24e80945a582d6aa640a32eeb15bb39ed15d31681ba0"
+          },
+          "solver_input_digest": "sha256:1609f69094d575982bcb24e80945a582d6aa640a32eeb15bb39ed15d31681ba0",
+          "solver_input_path": "certification/artifacts/module/formal-function-000.smt2",
+          "solver_input_sha256": "sha256:1609f69094d575982bcb24e80945a582d6aa640a32eeb15bb39ed15d31681ba0",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "both",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:84c541c62d990f70d32c4dad7448cf7b2fe107ffa0b9190c866ebbe2a00bbfe6",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:84c541c62d990f70d32c4dad7448cf7b2fe107ffa0b9190c866ebbe2a00bbfe6"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "boolean"
+          },
+          {
+            "name": "right",
+            "type": "boolean"
+          }
+        ],
+        "return_type": "boolean"
+      },
+      "status": "PASSED",
+      "symbol": "both"
+    },
+    {
+      "case_manifest_sha256": "sha256:2beec4fefdc351ae201ea354ff77e716a9caebfe624294240cf12f539205f18a",
+      "layers": {
+        "behavior": {
+          "case_count": 4,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 4,
+          "results": [
+            {
+              "arguments_sha256": "sha256:325a83df017d547336b866bdb247dbac0af29bbf719277169beca46c42947dbb",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 120
+              },
+              "case_id": 0,
+              "independent_expected": 120,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "120",
+                "status": "RETURNED",
+                "value": 120
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "120",
+                "status": "RETURNED",
+                "value": 120
+              }
+            },
+            {
+              "arguments_sha256": "sha256:02aeab23c2fbe91c9f0c242bca8416c1900d858cb726e88739ab592f0e4b653d",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 1,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:d9aab842afdeae14ab2f34b50698137b5f091e5d3cce642c10e713a9a61a3e25",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 2,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:ab962cf3cb47bccde4c69a815e7addd6a904d4ba103bdb34e3c5ff017600625d",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 9223372036854775707
+              },
+              "case_id": 3,
+              "independent_expected": 9223372036854775707,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "9223372036854775707",
+                "status": "RETURNED",
+                "value": 9223372036854775707
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "9223372036854775707",
+                "status": "RETURNED",
+                "value": 9223372036854775707
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 4,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 4,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 13,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:d81a445a068ccdb1ced9c52c7721771b39cca948e954626ee2ca1a55a70f66b8",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0",
+              "source_chunk_id": "sha256:8c8f36a29443f02da4563a2fcd706dae838c4a179e04ca5853ce167dbe32bf28",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 172,
+                "file": "equivalence_module.m",
+                "start_byte": 35
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
+              "target_chunk_id": "sha256:b964e008d0be5e0717e97d83aa8056ceae7cc96f6017e46b0eab0d361af909f8",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 230,
+                "file": "migrated.swift",
+                "start_byte": 79
+              }
+            },
+            {
+              "semantic_hash": "sha256:d3886e8e06272286ead7a18eaa71c6c99e444d11e495208da78eac4089276516",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:2af754e2e2bc9bcd0c91a0d538deedfdab614e732e2d3fba3f0a07c6f3c142d0",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 73,
+                "file": "equivalence_module.m",
+                "start_byte": 55
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:58ce64d2540f9a76b3c9c50a9bd9ea96d55b3e3670cf7c06e337f794eed8dbf8",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 112,
+                "file": "migrated.swift",
+                "start_byte": 94
+              }
+            },
+            {
+              "semantic_hash": "sha256:f9f292032ffa50846d1bdfffc6ee2230b4ad6c110021479e3d3b0a33626ae504",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:208bcba8e5ff53d4fd9eadbfb58d319d1defa356f98c35a5180a039bd491a55d",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 88,
+                "file": "equivalence_module.m",
+                "start_byte": 75
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:d4295a04c70487a05fb4c340a33884c2c427909d4d096d138f148bbd0263571d",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 125,
+                "file": "migrated.swift",
+                "start_byte": 113
+              }
+            },
+            {
+              "semantic_hash": "sha256:7daf3225fb278fa05ca1bd6f07a7b327ca088fe121d0ca0d4c5ab8e9f64b34ae",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0",
+              "source_chunk_id": "sha256:629c894f7d66a681e5be945cfe165ac6a772da463507437cfcb4a08edda3b680",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 143,
+                "file": "equivalence_module.m",
+                "start_byte": 96
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
+              "target_chunk_id": "sha256:1016884656035195af011a94ab98ff473f51ca2400257c72041e2a9666bf4040",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 200,
+                "file": "migrated.swift",
+                "start_byte": 142
+              }
+            },
+            {
+              "semantic_hash": "sha256:770787d477c266baf77799eda6881dfa977692b2104ad741f29414925d66ed13",
+              "semantic_path": "/functions/0/body/0/condition",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition",
+              "source_chunk_id": "sha256:914c4e4cfbe7739a1eb80920bbd32c64b8ab4803ce7cc381aa80a0a512a94105",
+              "source_semantic_pointer": "/functions/0/body/0/condition",
+              "source_span": {
+                "end_byte": 114,
+                "file": "equivalence_module.m",
+                "start_byte": 100
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:abc209a1569b00d40f93533a61f0bbd354438e30cc41115d7949932e816440f7",
+              "target_semantic_pointer": "/functions/0/body/0/condition",
+              "target_span": {
+                "end_byte": 168,
+                "file": "migrated.swift",
+                "start_byte": 145
+              }
+            },
+            {
+              "semantic_hash": "sha256:a1b2f233d6f52fe3bf25c4efddbaedb7aa43d853c6d7e5a5e08fc65d4ebdaad1",
+              "semantic_path": "/functions/0/body/0/condition/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition/left",
+              "source_chunk_id": "sha256:b1b80d86b775920966f0a54e2d5fd08c89bf5a95fcbf2d28829e8ef52312f393",
+              "source_semantic_pointer": "/functions/0/body/0/condition/left",
+              "source_span": {
+                "end_byte": 108,
+                "file": "equivalence_module.m",
+                "start_byte": 100
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:84a355796ea8b74a0bd8f97c2079c71a56e2fcc684cbec3f3cb97408dc428b4e",
+              "target_semantic_pointer": "/functions/0/body/0/condition/left",
+              "target_span": {
+                "end_byte": 155,
+                "file": "migrated.swift",
+                "start_byte": 147
+              }
+            },
+            {
+              "semantic_hash": "sha256:1526b7aaf763a65b7048cabaf1fd23df885f6fd4eb6b9c5c377de16f11e074db",
+              "semantic_path": "/functions/0/body/0/condition/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition/right",
+              "source_chunk_id": "sha256:b41f4e297a1aedc0880a01bfa1c88c724655717b6398d6bc5d9082b4df495c71",
+              "source_semantic_pointer": "/functions/0/body/0/condition/right",
+              "source_span": {
+                "end_byte": 114,
+                "file": "equivalence_module.m",
+                "start_byte": 111
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:6ab1bbc9fef12e5126a673a696f98155744784124cc8be91360cc44180b063e8",
+              "target_semantic_pointer": "/functions/0/body/0/condition/right",
+              "target_span": {
+                "end_byte": 166,
+                "file": "migrated.swift",
+                "start_byte": 158
+              }
+            },
+            {
+              "semantic_hash": "sha256:dc9ecb03dcc8d19e75e45f8195f28956d87876e4bf895a2e535b787a3aa0bfc5",
+              "semantic_path": "/functions/0/body/0/then/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/then/0",
+              "source_chunk_id": "sha256:e8815a4725e10b97890979bf2dfe14a45f28b91c880bb4f437b3e635e118c759",
+              "source_semantic_pointer": "/functions/0/body/0/then/0",
+              "source_span": {
+                "end_byte": 136,
+                "file": "equivalence_module.m",
+                "start_byte": 126
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:2b38c534f7ad76056c9bc949c8951a882b9212b7fe377da240ba77c135a16fed",
+              "target_semantic_pointer": "/functions/0/body/0/then/0",
+              "target_span": {
+                "end_byte": 194,
+                "file": "migrated.swift",
+                "start_byte": 179
+              }
+            },
+            {
+              "semantic_hash": "sha256:1526b7aaf763a65b7048cabaf1fd23df885f6fd4eb6b9c5c377de16f11e074db",
+              "semantic_path": "/functions/0/body/0/then/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/then/0/expression",
+              "source_chunk_id": "sha256:32e3753e8c0116d16740365cecb1f0713b3f224d6c8eadeefee7ed8319fdf04d",
+              "source_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "source_span": {
+                "end_byte": 136,
+                "file": "equivalence_module.m",
+                "start_byte": 133
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:b8fff335578e329996c00df1bf735b2a6171ef13cb21c80b231a8eccf855e411",
+              "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "target_span": {
+                "end_byte": 194,
+                "file": "migrated.swift",
+                "start_byte": 186
+              }
+            },
+            {
+              "semantic_hash": "sha256:25eeb7e2cfbcfd67c33d8e81a0f82ce25960e302727e29e38efbaa60f146ca3a",
+              "semantic_path": "/functions/0/body/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1",
+              "source_chunk_id": "sha256:c3d3d61af4d447f19740df8e0cbc8053b4e15b661d69a00be22e14ffc3cdc1d1",
+              "source_semantic_pointer": "/functions/0/body/1",
+              "source_span": {
+                "end_byte": 169,
+                "file": "equivalence_module.m",
+                "start_byte": 148
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1",
+              "target_chunk_id": "sha256:6f66bfedda63a7b03be73ab9e414796032d52d99af7c28c03ade14f9f300115a",
+              "target_semantic_pointer": "/functions/0/body/1",
+              "target_span": {
+                "end_byte": 228,
+                "file": "migrated.swift",
+                "start_byte": 205
+              }
+            },
+            {
+              "semantic_hash": "sha256:7264546493057e9b128acddef2e5caff3c93d7564790fc94080dfc4c3bc221ec",
+              "semantic_path": "/functions/0/body/1/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/expression",
+              "source_chunk_id": "sha256:35690dba8de85fe84dedda19726f50895ec40f5d844271b58674d00c617ee40e",
+              "source_semantic_pointer": "/functions/0/body/1/expression",
+              "source_span": {
+                "end_byte": 169,
+                "file": "equivalence_module.m",
+                "start_byte": 155
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/expression",
+              "target_chunk_id": "sha256:ca6cc6c96178baebe06016889e9aaccfb2721eaf1aa8aeefc64fbd2adc70fe1e",
+              "target_semantic_pointer": "/functions/0/body/1/expression",
+              "target_span": {
+                "end_byte": 228,
+                "file": "migrated.swift",
+                "start_byte": 212
+              }
+            },
+            {
+              "semantic_hash": "sha256:a1b2f233d6f52fe3bf25c4efddbaedb7aa43d853c6d7e5a5e08fc65d4ebdaad1",
+              "semantic_path": "/functions/0/body/1/expression/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/expression/left",
+              "source_chunk_id": "sha256:c0a8ecff2d4a25867a03792b28577c384c200bb1a14b22609abf5d9e8930745b",
+              "source_semantic_pointer": "/functions/0/body/1/expression/left",
+              "source_span": {
+                "end_byte": 163,
+                "file": "equivalence_module.m",
+                "start_byte": 155
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/expression/left",
+              "target_chunk_id": "sha256:020f16c139162728b3a32d267c95ec5bcd6e583e67eb68d75eb816eed6d24a79",
+              "target_semantic_pointer": "/functions/0/body/1/expression/left",
+              "target_span": {
+                "end_byte": 221,
+                "file": "migrated.swift",
+                "start_byte": 213
+              }
+            },
+            {
+              "semantic_hash": "sha256:95555cd7b9f8754e00c3e500e587b3f9287405e94fb2a8c21e117a2b753b4974",
+              "semantic_path": "/functions/0/body/1/expression/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/expression/right",
+              "source_chunk_id": "sha256:a030d0f21b658f116290962904ec7f914e7aa0ad11f2be7702028145ed3de2b1",
+              "source_semantic_pointer": "/functions/0/body/1/expression/right",
+              "source_span": {
+                "end_byte": 169,
+                "file": "equivalence_module.m",
+                "start_byte": 166
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/expression/right",
+              "target_chunk_id": "sha256:010431936c39cb8a62493bb675fdaaf1ff2874694814d1724247e088eb539472",
+              "target_semantic_pointer": "/functions/0/body/1/expression/right",
+              "target_span": {
+                "end_byte": 227,
+                "file": "migrated.swift",
+                "start_byte": 224
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 13,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 731,
+              "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+              "logical_file": "equivalence_module.m",
+              "node_count": 13,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 748,
+              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "logical_file": "migrated.swift",
+              "node_count": 13,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:objc",
+            "target-analyzer-soundness:swift",
+            "source-compiler-runtime-soundness-not-discharged:objc",
+            "target-compiler-runtime-soundness-not-discharged:swift",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:swift",
+            "emitter-normalization-soundness:swift",
+            "same-input:subtotal:subtotal",
+            "same-input:tax:tax",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-001-input.json",
+            "sha256": "sha256:232bfe606f62429a4adcadcb22d45033223a54cb3beab30c0fe66d3d7b9bc08f"
+          },
+          "formal_input_digest": "sha256:232bfe606f62429a4adcadcb22d45033223a54cb3beab30c0fe66d3d7b9bc08f",
+          "formal_input_path": "certification/artifacts/module/formal-function-001-input.json",
+          "formal_input_sha256": "sha256:232bfe606f62429a4adcadcb22d45033223a54cb3beab30c0fe66d3d7b9bc08f",
+          "formal_result_path": "certification/artifacts/module/formal-function-001-result.json",
+          "formal_result_sha256": "sha256:5f7d3a7892f362f57d909a70feb74cf2436f9b1bb7a8729cb395719849fc49e9",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:0ea3506a291ba9e34d6410fcee148d1fe945c5f185c3064e0b6f71d36816be78",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:a879f5b08557c731377ea94c19343f94cedf7500936fd58e5aeb051fd691e995",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-001.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-001.smt2",
+            "sha256": "sha256:ae2645b325ea16e75bfcbe82bc9ffcf8ba410a2e0434939fc059d5fe2d3711c2"
+          },
+          "solver_input_digest": "sha256:ae2645b325ea16e75bfcbe82bc9ffcf8ba410a2e0434939fc059d5fe2d3711c2",
+          "solver_input_path": "certification/artifacts/module/formal-function-001.smt2",
+          "solver_input_sha256": "sha256:ae2645b325ea16e75bfcbe82bc9ffcf8ba410a2e0434939fc059d5fe2d3711c2",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "calculate",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:dda98cb909f819c3164ee3e06bf6f4215540d35c4f9a1a509a2a82bbef506ff2",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:dda98cb909f819c3164ee3e06bf6f4215540d35c4f9a1a509a2a82bbef506ff2"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "subtotal",
+            "type": "integer"
+          },
+          {
+            "name": "tax",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "status": "PASSED",
+      "symbol": "calculate"
+    },
+    {
+      "case_manifest_sha256": "sha256:49c378b15abe44a7eae2be430997060425459c6f9bd3960697781ae1e790cf2a",
+      "layers": {
+        "behavior": {
+          "case_count": 5,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 5,
+          "results": [
+            {
+              "arguments_sha256": "sha256:0399c87e21278339613d80f2c68eeee8f1f5db8c7bbc17aef5ea3505a34cf113",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 0,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:dd55e0b5b3f8b4641b7e21301dce0ed5a3348cfbbad38b703cec8c59890f857e",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 55
+              },
+              "case_id": 1,
+              "independent_expected": 55,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "55",
+                "status": "RETURNED",
+                "value": 55
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "55",
+                "status": "RETURNED",
+                "value": 55
+              }
+            },
+            {
+              "arguments_sha256": "sha256:65caac3e2551b9592e66ec492fba81c94edf43e77a4b03902587245cc3538e29",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 100
+              },
+              "case_id": 2,
+              "independent_expected": 100,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              }
+            },
+            {
+              "arguments_sha256": "sha256:6d0768ca694f07d7950ef60bfe3265329d6397e816f09712fece38c95433aa3b",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 3,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:dc559f06dce0aba331dba5c7aa8919ee2ccee69237fe196a5f8cbea3aad250b7",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 100
+              },
+              "case_id": 4,
+              "independent_expected": 100,
+              "source_native": {
+                "case_id": 4,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 4,
+                "encoding": "i64-dec",
+                "raw": "100",
+                "status": "RETURNED",
+                "value": 100
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 5,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 5,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 18,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:b99493e7f5017f178f540e799e089ba743ea282c1f1c3f40cc36dcfbdc5c636b",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0",
+              "source_chunk_id": "sha256:a05ef7701344bc94965911af2af9a1e846235ee8a8251d118769d1ea51b3cf34",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 380,
+                "file": "equivalence_module.m",
+                "start_byte": 174
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
+              "target_chunk_id": "sha256:d3edab8045e36410d12d78c5066a50e024fc150e29ece5e7a5a1480e370428de",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 440,
+                "file": "migrated.swift",
+                "start_byte": 232
+              }
+            },
+            {
+              "semantic_hash": "sha256:e3f3501b4b67ec369d3121a54c9f4272fd602ac8a3d8ed0eac05118f591882b5",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:60d29ea402766e240ca7b2164f9e65459259103f6314d915268041cf64b6efbe",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 205,
+                "file": "equivalence_module.m",
+                "start_byte": 190
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:029667d35ae5a47605de994c8b770006d79eebdf62205fde30e8cdfa1322841f",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 258,
+                "file": "migrated.swift",
+                "start_byte": 243
+              }
+            },
+            {
+              "semantic_hash": "sha256:b3f254193df987c62ea50d197fc571d0fb42fbef0c995439f066eddb084033b4",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:cd343af74976242e48856b348b8d39ba0ab1b554381b43b9926b11ccd8e38d5d",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 224,
+                "file": "equivalence_module.m",
+                "start_byte": 207
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:686b8921b680690a02cb70d8fa7380dc7d80c742e9a493b186af240e2babac15",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 276,
+                "file": "migrated.swift",
+                "start_byte": 259
+              }
+            },
+            {
+              "semantic_hash": "sha256:f46cad68ab3221e2bdbf719ff5915810fc4966bed231f607aa889554754ea3f0",
+              "semantic_path": "/functions/0/parameters/2",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/2",
+              "source_chunk_id": "sha256:4a6e46c5a80aa1f93e2381a9fd79076a55c80c5ae5fa2c3e791565eeea284aa6",
+              "source_semantic_pointer": "/functions/0/parameters/2",
+              "source_span": {
+                "end_byte": 243,
+                "file": "equivalence_module.m",
+                "start_byte": 226
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:c03d79bb6b4c60ce77a3361b398f202d9b9e7286e24964af60b0d2981e2c5ca0",
+              "target_semantic_pointer": "/functions/0/parameters/2",
+              "target_span": {
+                "end_byte": 293,
+                "file": "migrated.swift",
+                "start_byte": 277
+              }
+            },
+            {
+              "semantic_hash": "sha256:e3664b76ce4bd7790c6ade1b9a4f94615ed3f1731dd5e43d589c520661a95cf0",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0",
+              "source_chunk_id": "sha256:bf512fa50d727d1d4d1bdd00d1e4900f20b82e3357fd3f7834b38ae26e031a38",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 303,
+                "file": "equivalence_module.m",
+                "start_byte": 251
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
+              "target_chunk_id": "sha256:e88c7f4c5c171606f415bb8cfd2688ace7939cb292777a7846df9c66a2125dc8",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 363,
+                "file": "migrated.swift",
+                "start_byte": 310
+              }
+            },
+            {
+              "semantic_hash": "sha256:53d46a837947676f1f761d7d129d24da05c45bc6fb96dc3ce2907957016c7541",
+              "semantic_path": "/functions/0/body/0/condition",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition",
+              "source_chunk_id": "sha256:047ac268d7fcdaca0599f429600245e984f6fafbb1fd917b50874d5ebff1ac21",
+              "source_semantic_pointer": "/functions/0/body/0/condition",
+              "source_span": {
+                "end_byte": 270,
+                "file": "equivalence_module.m",
+                "start_byte": 255
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:272bad30453ce895fea0ee5b67b8a76875848e6d296c1de14bf288be604402c7",
+              "target_semantic_pointer": "/functions/0/body/0/condition",
+              "target_span": {
+                "end_byte": 332,
+                "file": "migrated.swift",
+                "start_byte": 313
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/0/condition/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition/left",
+              "source_chunk_id": "sha256:dd474cb2414e847611cd8380f4b9fae6f0932279af048f559ef36abf2ebf0e09",
+              "source_semantic_pointer": "/functions/0/body/0/condition/left",
+              "source_span": {
+                "end_byte": 260,
+                "file": "equivalence_module.m",
+                "start_byte": 255
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:f771d8b817ab6ee69f6b750586d4776652c7c667b8aeaa275eef629d837b4af8",
+              "target_semantic_pointer": "/functions/0/body/0/condition/left",
+              "target_span": {
+                "end_byte": 320,
+                "file": "migrated.swift",
+                "start_byte": 315
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/condition/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition/right",
+              "source_chunk_id": "sha256:5636e988133c374cdc2b663273c84c1fc455a35a4738f0877d9cad2907258027",
+              "source_semantic_pointer": "/functions/0/body/0/condition/right",
+              "source_span": {
+                "end_byte": 270,
+                "file": "equivalence_module.m",
+                "start_byte": 263
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:94c50a4bf19b0aeedf21825fd875596f50c799639f4d1b25e01464ef0a13aa13",
+              "target_semantic_pointer": "/functions/0/body/0/condition/right",
+              "target_span": {
+                "end_byte": 330,
+                "file": "migrated.swift",
+                "start_byte": 323
+              }
+            },
+            {
+              "semantic_hash": "sha256:77beca6c926a111a584364a9fd926386dcfcb25560e017e99cbe456c1ea386c2",
+              "semantic_path": "/functions/0/body/0/then/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/then/0",
+              "source_chunk_id": "sha256:ba5df45423728d8060c4eb62957ba2e005cc4ed61900a97ad9fe7b1f9d630077",
+              "source_semantic_pointer": "/functions/0/body/0/then/0",
+              "source_span": {
+                "end_byte": 296,
+                "file": "equivalence_module.m",
+                "start_byte": 282
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:518a74d9cb7798e9ca63f5b42b5423904e500875cf9ec350aab1b0635fecaa30",
+              "target_semantic_pointer": "/functions/0/body/0/then/0",
+              "target_span": {
+                "end_byte": 357,
+                "file": "migrated.swift",
+                "start_byte": 343
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/then/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/then/0/expression",
+              "source_chunk_id": "sha256:0b27f5b38726e6a81d34d04163069dce0a4e27fc2e7da0f2f8c9146b5a4a9aaf",
+              "source_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "source_span": {
+                "end_byte": 296,
+                "file": "equivalence_module.m",
+                "start_byte": 289
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:d75c5da0dc69e8da9677ae2169809484997887559a1c6458b7c39293b9a5ad3c",
+              "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "target_span": {
+                "end_byte": 357,
+                "file": "migrated.swift",
+                "start_byte": 350
+              }
+            },
+            {
+              "semantic_hash": "sha256:84080fec0bd65bbf4c493c9eb198b58eea1402071e245a2b2d6667e9f95f9a6f",
+              "semantic_path": "/functions/0/body/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1",
+              "source_chunk_id": "sha256:d2abd31c8f6e6d6f08b473286ee666a0ff2bb81910a9834fcd2d531989b00537",
+              "source_semantic_pointer": "/functions/0/body/1",
+              "source_span": {
+                "end_byte": 360,
+                "file": "equivalence_module.m",
+                "start_byte": 308
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1",
+              "target_chunk_id": "sha256:a3a90f76cc53b5d4af497ffba1a85ba3c1ebca9a9ffdecba42f3274c76df8a63",
+              "target_semantic_pointer": "/functions/0/body/1",
+              "target_span": {
+                "end_byte": 421,
+                "file": "migrated.swift",
+                "start_byte": 368
+              }
+            },
+            {
+              "semantic_hash": "sha256:6e317bdabfa4adcb324b2c69b70a8d078ff186fadd134b427e9befa09e6316a2",
+              "semantic_path": "/functions/0/body/1/condition",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/condition",
+              "source_chunk_id": "sha256:248cc08926df005e015319ff45d61f040c0ecb4cb4ae31da6e9d326fac471377",
+              "source_semantic_pointer": "/functions/0/body/1/condition",
+              "source_span": {
+                "end_byte": 327,
+                "file": "equivalence_module.m",
+                "start_byte": 312
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:ae2829cd3df6f7a7117646d774b00166dfb6e97fcca60eca09b1ede0c94bab71",
+              "target_semantic_pointer": "/functions/0/body/1/condition",
+              "target_span": {
+                "end_byte": 390,
+                "file": "migrated.swift",
+                "start_byte": 371
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/1/condition/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/condition/left",
+              "source_chunk_id": "sha256:9d217c762dd63e5c10b71af24399ed016d7bc6ad06a5d27b88d36b863315ed09",
+              "source_semantic_pointer": "/functions/0/body/1/condition/left",
+              "source_span": {
+                "end_byte": 317,
+                "file": "equivalence_module.m",
+                "start_byte": 312
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:ba69b418cf78dfc53c1b711a192afe2011b2925aa60802ede8d1d4c6894eabf2",
+              "target_semantic_pointer": "/functions/0/body/1/condition/left",
+              "target_span": {
+                "end_byte": 378,
+                "file": "migrated.swift",
+                "start_byte": 373
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/condition/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/condition/right",
+              "source_chunk_id": "sha256:68fb6fb7dd00be43020175ccb350eb82eda34d38345b0bbeea2956a4a14e11ea",
+              "source_semantic_pointer": "/functions/0/body/1/condition/right",
+              "source_span": {
+                "end_byte": 327,
+                "file": "equivalence_module.m",
+                "start_byte": 320
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:0089b3f0ac7768e08777d8bf7e799c7dead68515796fbf6e104643c50d723a6f",
+              "target_semantic_pointer": "/functions/0/body/1/condition/right",
+              "target_span": {
+                "end_byte": 388,
+                "file": "migrated.swift",
+                "start_byte": 381
+              }
+            },
+            {
+              "semantic_hash": "sha256:67b380747fcbe01bf49da0edcaeb31681aa010a2406cfbc5e57e2eb2bdeff892",
+              "semantic_path": "/functions/0/body/1/then/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/then/0",
+              "source_chunk_id": "sha256:630762d71258bd892ba332023293104e95b092d0073de136c3b7fac1486d9dc7",
+              "source_semantic_pointer": "/functions/0/body/1/then/0",
+              "source_span": {
+                "end_byte": 353,
+                "file": "equivalence_module.m",
+                "start_byte": 339
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:a41902cdb8e8b4e004e04f08b90d200d50db1539440a3dbacebbc0c051492c44",
+              "target_semantic_pointer": "/functions/0/body/1/then/0",
+              "target_span": {
+                "end_byte": 415,
+                "file": "migrated.swift",
+                "start_byte": 401
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/then/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/then/0/expression",
+              "source_chunk_id": "sha256:39b4233bd6d1b27ca889bdb76297abc5442958f2e03156e8f207f0f3141d8d16",
+              "source_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "source_span": {
+                "end_byte": 353,
+                "file": "equivalence_module.m",
+                "start_byte": 346
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:1fcf34ede608c4ea5c853d7d5bcc60b6e83f88bc945154e77cf1a98b7db16c6e",
+              "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "target_span": {
+                "end_byte": 415,
+                "file": "migrated.swift",
+                "start_byte": 408
+              }
+            },
+            {
+              "semantic_hash": "sha256:791ff6c68a23e38a5b1c986d31b9de40243f26ab65cc4e5297a69e1a1f440d42",
+              "semantic_path": "/functions/0/body/2",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/2",
+              "source_chunk_id": "sha256:b3fcca15fa7e0db7a9085d67240e5b829165b114eb0a0ed7b5c795dfe2da2763",
+              "source_semantic_pointer": "/functions/0/body/2",
+              "source_span": {
+                "end_byte": 377,
+                "file": "equivalence_module.m",
+                "start_byte": 365
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2",
+              "target_chunk_id": "sha256:840134487d704cc358d8a0a84acd9af073f02b27f3aa83750f1becfac3563d4b",
+              "target_semantic_pointer": "/functions/0/body/2",
+              "target_span": {
+                "end_byte": 438,
+                "file": "migrated.swift",
+                "start_byte": 426
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/2/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/2/expression",
+              "source_chunk_id": "sha256:32731d02d191be0dd42b0e78dd4b71a9ddf16cde09877680b67c37ac35be8214",
+              "source_semantic_pointer": "/functions/0/body/2/expression",
+              "source_span": {
+                "end_byte": 377,
+                "file": "equivalence_module.m",
+                "start_byte": 372
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:c899a45b910fde681316868ccc3a94b35d6c600995eb0d5f0373725b3bbe33d2",
+              "target_semantic_pointer": "/functions/0/body/2/expression",
+              "target_span": {
+                "end_byte": 438,
+                "file": "migrated.swift",
+                "start_byte": 433
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 18,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 731,
+              "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+              "logical_file": "equivalence_module.m",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 748,
+              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "logical_file": "migrated.swift",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:objc",
+            "target-analyzer-soundness:swift",
+            "source-compiler-runtime-soundness-not-discharged:objc",
+            "target-compiler-runtime-soundness-not-discharged:swift",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:swift",
+            "emitter-normalization-soundness:swift",
+            "same-input:value:value",
+            "same-input:minimum:minimum",
+            "same-input:maximum:maximum",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-002-input.json",
+            "sha256": "sha256:174f3032815edc0456742f32ecaa89417945d6096902a972dd1b6a00a0af9cc2"
+          },
+          "formal_input_digest": "sha256:174f3032815edc0456742f32ecaa89417945d6096902a972dd1b6a00a0af9cc2",
+          "formal_input_path": "certification/artifacts/module/formal-function-002-input.json",
+          "formal_input_sha256": "sha256:174f3032815edc0456742f32ecaa89417945d6096902a972dd1b6a00a0af9cc2",
+          "formal_result_path": "certification/artifacts/module/formal-function-002-result.json",
+          "formal_result_sha256": "sha256:4c05e0e459e8f11a5b6308bc9d3349e12bf29d39b36857d602457215a8c1ba3d",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:2a9f5f06e16464ef3df8aa26bdaa21bccd3d4930f9a645385368958438970911",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:9af6e661977c24f50a3c4aa7de8d79d4466d938100225181f18126987b0bba78",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-002.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-002.smt2",
+            "sha256": "sha256:03ebf4a3020b3a75254b9a34defa19783f430b073a919c1e271d7b6b773902ab"
+          },
+          "solver_input_digest": "sha256:03ebf4a3020b3a75254b9a34defa19783f430b073a919c1e271d7b6b773902ab",
+          "solver_input_path": "certification/artifacts/module/formal-function-002.smt2",
+          "solver_input_sha256": "sha256:03ebf4a3020b3a75254b9a34defa19783f430b073a919c1e271d7b6b773902ab",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "clamp",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:b579602f8be54c72cf2fb2d137d0d52827940cd689d67d98f709a1223f46468c",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:b579602f8be54c72cf2fb2d137d0d52827940cd689d67d98f709a1223f46468c"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "integer"
+          },
+          {
+            "name": "minimum",
+            "type": "integer"
+          },
+          {
+            "name": "maximum",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "status": "PASSED",
+      "symbol": "clamp"
+    },
+    {
+      "case_manifest_sha256": "sha256:21c6eed9d6dc54d937a2de0a5dac4ce4db80157c757359a43029d3bd89291872",
+      "layers": {
+        "behavior": {
+          "case_count": 5,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 5,
+          "results": [
+            {
+              "arguments_sha256": "sha256:a2fdbbbeaa4135d28c21a96ec9ab564891d460ff94c3239feadd2c08f335f759",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "case_id": 0,
+              "independent_expected": 0.0,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:fb99ab6ddb90164a1f9e95a5b3f1f39673599381059d8faacb3f6cbbe9087380",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 55.25
+              },
+              "case_id": 1,
+              "independent_expected": 55.25,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "fp64-hex",
+                "raw": "404ba00000000000",
+                "status": "RETURNED",
+                "value": 55.25
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "fp64-hex",
+                "raw": "404ba00000000000",
+                "status": "RETURNED",
+                "value": 55.25
+              }
+            },
+            {
+              "arguments_sha256": "sha256:9ba649278a8549468844bea6005a78e8e8f89bc7f71ab556f3139c2d5a006ef1",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 100.0
+              },
+              "case_id": 2,
+              "independent_expected": 100.0,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "fp64-hex",
+                "raw": "4059000000000000",
+                "status": "RETURNED",
+                "value": 100.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "fp64-hex",
+                "raw": "4059000000000000",
+                "status": "RETURNED",
+                "value": 100.0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:b7a59d70788992b47bd5bdde212ee70b4c4522f7d1d5aeeb1f51a52184ffd469",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": -0.0
+              },
+              "case_id": 3,
+              "independent_expected": -0.0,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "fp64-hex",
+                "raw": "8000000000000000",
+                "status": "RETURNED",
+                "value": -0.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "fp64-hex",
+                "raw": "8000000000000000",
+                "status": "RETURNED",
+                "value": -0.0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:aaaf40eff3e409415414b67b939e99877aa08cffd1f036053d00efe581ceee54",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "case_id": 4,
+              "independent_expected": 0.0,
+              "source_native": {
+                "case_id": 4,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 4,
+                "encoding": "fp64-hex",
+                "raw": "0000000000000000",
+                "status": "RETURNED",
+                "value": 0.0
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 5,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 5,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 18,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:0b493cc502b0ddacddd72c0172c3e192dc14d8503fd45d0ee604ff09eafab894",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0",
+              "source_chunk_id": "sha256:535ac59d5b168a9e89a0da11a3fd4af9daac17dc0a41044114c1f0796e7aed1f",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 666,
+                "file": "equivalence_module.m",
+                "start_byte": 466
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
+              "target_chunk_id": "sha256:bd0853fb7fbf84946e267d0f31f7ff8a6e2df6dba01c1a872b0a741130e45841",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 660,
+                "file": "migrated.swift",
+                "start_byte": 442
+              }
+            },
+            {
+              "semantic_hash": "sha256:4c6e93c24ca331620e870b929cbd51b4d004515bc76e600df3d50d65d084cf80",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:8821dd4f3dc681a16dd2b49a7619be18ffbbca2478df9fbcda01ccac3bc5de79",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 497,
+                "file": "equivalence_module.m",
+                "start_byte": 485
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:b9c50ec28ac433eb9bc04489036886ea096b68d219b0237b4e4154c5334212fb",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 475,
+                "file": "migrated.swift",
+                "start_byte": 459
+              }
+            },
+            {
+              "semantic_hash": "sha256:0fb48d68d197772333863ed05fb41b39810103fb49f8e54a84e8287ee65d6bba",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:0263950adc8e45f68292855a0f64c0c78827a78956f1c27cd08ba31e162961fe",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 513,
+                "file": "equivalence_module.m",
+                "start_byte": 499
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:f987838e0bd67c947399b4da4ec86e7be7b0393e461705069ce1b30e90f4fc4e",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 494,
+                "file": "migrated.swift",
+                "start_byte": 476
+              }
+            },
+            {
+              "semantic_hash": "sha256:5bb2b664a0580e21f493eb3bcb6a1f2cfb2803955f7027657dc14935764a7029",
+              "semantic_path": "/functions/0/parameters/2",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/2",
+              "source_chunk_id": "sha256:b856ebd85e7f1e657293dc93d99a222e97abbf6718b9069c38225669ce1e8a35",
+              "source_semantic_pointer": "/functions/0/parameters/2",
+              "source_span": {
+                "end_byte": 529,
+                "file": "equivalence_module.m",
+                "start_byte": 515
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/2",
+              "target_chunk_id": "sha256:835c63e87b8f8f6740ef439d3c4c017aa30112921d58516a754a2357611db560",
+              "target_semantic_pointer": "/functions/0/parameters/2",
+              "target_span": {
+                "end_byte": 512,
+                "file": "migrated.swift",
+                "start_byte": 495
+              }
+            },
+            {
+              "semantic_hash": "sha256:e3664b76ce4bd7790c6ade1b9a4f94615ed3f1731dd5e43d589c520661a95cf0",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0",
+              "source_chunk_id": "sha256:bf512fa50d727d1d4d1bdd00d1e4900f20b82e3357fd3f7834b38ae26e031a38",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 589,
+                "file": "equivalence_module.m",
+                "start_byte": 537
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
+              "target_chunk_id": "sha256:e88c7f4c5c171606f415bb8cfd2688ace7939cb292777a7846df9c66a2125dc8",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 583,
+                "file": "migrated.swift",
+                "start_byte": 530
+              }
+            },
+            {
+              "semantic_hash": "sha256:53d46a837947676f1f761d7d129d24da05c45bc6fb96dc3ce2907957016c7541",
+              "semantic_path": "/functions/0/body/0/condition",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition",
+              "source_chunk_id": "sha256:047ac268d7fcdaca0599f429600245e984f6fafbb1fd917b50874d5ebff1ac21",
+              "source_semantic_pointer": "/functions/0/body/0/condition",
+              "source_span": {
+                "end_byte": 556,
+                "file": "equivalence_module.m",
+                "start_byte": 541
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition",
+              "target_chunk_id": "sha256:272bad30453ce895fea0ee5b67b8a76875848e6d296c1de14bf288be604402c7",
+              "target_semantic_pointer": "/functions/0/body/0/condition",
+              "target_span": {
+                "end_byte": 552,
+                "file": "migrated.swift",
+                "start_byte": 533
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/0/condition/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition/left",
+              "source_chunk_id": "sha256:dd474cb2414e847611cd8380f4b9fae6f0932279af048f559ef36abf2ebf0e09",
+              "source_semantic_pointer": "/functions/0/body/0/condition/left",
+              "source_span": {
+                "end_byte": 546,
+                "file": "equivalence_module.m",
+                "start_byte": 541
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/left",
+              "target_chunk_id": "sha256:f771d8b817ab6ee69f6b750586d4776652c7c667b8aeaa275eef629d837b4af8",
+              "target_semantic_pointer": "/functions/0/body/0/condition/left",
+              "target_span": {
+                "end_byte": 540,
+                "file": "migrated.swift",
+                "start_byte": 535
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/condition/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/condition/right",
+              "source_chunk_id": "sha256:5636e988133c374cdc2b663273c84c1fc455a35a4738f0877d9cad2907258027",
+              "source_semantic_pointer": "/functions/0/body/0/condition/right",
+              "source_span": {
+                "end_byte": 556,
+                "file": "equivalence_module.m",
+                "start_byte": 549
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/condition/right",
+              "target_chunk_id": "sha256:94c50a4bf19b0aeedf21825fd875596f50c799639f4d1b25e01464ef0a13aa13",
+              "target_semantic_pointer": "/functions/0/body/0/condition/right",
+              "target_span": {
+                "end_byte": 550,
+                "file": "migrated.swift",
+                "start_byte": 543
+              }
+            },
+            {
+              "semantic_hash": "sha256:77beca6c926a111a584364a9fd926386dcfcb25560e017e99cbe456c1ea386c2",
+              "semantic_path": "/functions/0/body/0/then/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/then/0",
+              "source_chunk_id": "sha256:ba5df45423728d8060c4eb62957ba2e005cc4ed61900a97ad9fe7b1f9d630077",
+              "source_semantic_pointer": "/functions/0/body/0/then/0",
+              "source_span": {
+                "end_byte": 582,
+                "file": "equivalence_module.m",
+                "start_byte": 568
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0",
+              "target_chunk_id": "sha256:518a74d9cb7798e9ca63f5b42b5423904e500875cf9ec350aab1b0635fecaa30",
+              "target_semantic_pointer": "/functions/0/body/0/then/0",
+              "target_span": {
+                "end_byte": 577,
+                "file": "migrated.swift",
+                "start_byte": 563
+              }
+            },
+            {
+              "semantic_hash": "sha256:3ae621c7f9c84433a04837ab5541e7d495acf159aedb01db2f1e72650f8aa28b",
+              "semantic_path": "/functions/0/body/0/then/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/then/0/expression",
+              "source_chunk_id": "sha256:0b27f5b38726e6a81d34d04163069dce0a4e27fc2e7da0f2f8c9146b5a4a9aaf",
+              "source_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "source_span": {
+                "end_byte": 582,
+                "file": "equivalence_module.m",
+                "start_byte": 575
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/then/0/expression",
+              "target_chunk_id": "sha256:d75c5da0dc69e8da9677ae2169809484997887559a1c6458b7c39293b9a5ad3c",
+              "target_semantic_pointer": "/functions/0/body/0/then/0/expression",
+              "target_span": {
+                "end_byte": 577,
+                "file": "migrated.swift",
+                "start_byte": 570
+              }
+            },
+            {
+              "semantic_hash": "sha256:84080fec0bd65bbf4c493c9eb198b58eea1402071e245a2b2d6667e9f95f9a6f",
+              "semantic_path": "/functions/0/body/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1",
+              "source_chunk_id": "sha256:d2abd31c8f6e6d6f08b473286ee666a0ff2bb81910a9834fcd2d531989b00537",
+              "source_semantic_pointer": "/functions/0/body/1",
+              "source_span": {
+                "end_byte": 646,
+                "file": "equivalence_module.m",
+                "start_byte": 594
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1",
+              "target_chunk_id": "sha256:a3a90f76cc53b5d4af497ffba1a85ba3c1ebca9a9ffdecba42f3274c76df8a63",
+              "target_semantic_pointer": "/functions/0/body/1",
+              "target_span": {
+                "end_byte": 641,
+                "file": "migrated.swift",
+                "start_byte": 588
+              }
+            },
+            {
+              "semantic_hash": "sha256:6e317bdabfa4adcb324b2c69b70a8d078ff186fadd134b427e9befa09e6316a2",
+              "semantic_path": "/functions/0/body/1/condition",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/condition",
+              "source_chunk_id": "sha256:248cc08926df005e015319ff45d61f040c0ecb4cb4ae31da6e9d326fac471377",
+              "source_semantic_pointer": "/functions/0/body/1/condition",
+              "source_span": {
+                "end_byte": 613,
+                "file": "equivalence_module.m",
+                "start_byte": 598
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition",
+              "target_chunk_id": "sha256:ae2829cd3df6f7a7117646d774b00166dfb6e97fcca60eca09b1ede0c94bab71",
+              "target_semantic_pointer": "/functions/0/body/1/condition",
+              "target_span": {
+                "end_byte": 610,
+                "file": "migrated.swift",
+                "start_byte": 591
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/1/condition/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/condition/left",
+              "source_chunk_id": "sha256:9d217c762dd63e5c10b71af24399ed016d7bc6ad06a5d27b88d36b863315ed09",
+              "source_semantic_pointer": "/functions/0/body/1/condition/left",
+              "source_span": {
+                "end_byte": 603,
+                "file": "equivalence_module.m",
+                "start_byte": 598
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/left",
+              "target_chunk_id": "sha256:ba69b418cf78dfc53c1b711a192afe2011b2925aa60802ede8d1d4c6894eabf2",
+              "target_semantic_pointer": "/functions/0/body/1/condition/left",
+              "target_span": {
+                "end_byte": 598,
+                "file": "migrated.swift",
+                "start_byte": 593
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/condition/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/condition/right",
+              "source_chunk_id": "sha256:68fb6fb7dd00be43020175ccb350eb82eda34d38345b0bbeea2956a4a14e11ea",
+              "source_semantic_pointer": "/functions/0/body/1/condition/right",
+              "source_span": {
+                "end_byte": 613,
+                "file": "equivalence_module.m",
+                "start_byte": 606
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/condition/right",
+              "target_chunk_id": "sha256:0089b3f0ac7768e08777d8bf7e799c7dead68515796fbf6e104643c50d723a6f",
+              "target_semantic_pointer": "/functions/0/body/1/condition/right",
+              "target_span": {
+                "end_byte": 608,
+                "file": "migrated.swift",
+                "start_byte": 601
+              }
+            },
+            {
+              "semantic_hash": "sha256:67b380747fcbe01bf49da0edcaeb31681aa010a2406cfbc5e57e2eb2bdeff892",
+              "semantic_path": "/functions/0/body/1/then/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/then/0",
+              "source_chunk_id": "sha256:630762d71258bd892ba332023293104e95b092d0073de136c3b7fac1486d9dc7",
+              "source_semantic_pointer": "/functions/0/body/1/then/0",
+              "source_span": {
+                "end_byte": 639,
+                "file": "equivalence_module.m",
+                "start_byte": 625
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0",
+              "target_chunk_id": "sha256:a41902cdb8e8b4e004e04f08b90d200d50db1539440a3dbacebbc0c051492c44",
+              "target_semantic_pointer": "/functions/0/body/1/then/0",
+              "target_span": {
+                "end_byte": 635,
+                "file": "migrated.swift",
+                "start_byte": 621
+              }
+            },
+            {
+              "semantic_hash": "sha256:509922320cc4a5c8cd3fbd952de400486c03dd959bc2a08924f19c02d40697cd",
+              "semantic_path": "/functions/0/body/1/then/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/1/then/0/expression",
+              "source_chunk_id": "sha256:39b4233bd6d1b27ca889bdb76297abc5442958f2e03156e8f207f0f3141d8d16",
+              "source_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "source_span": {
+                "end_byte": 639,
+                "file": "equivalence_module.m",
+                "start_byte": 632
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/1/then/0/expression",
+              "target_chunk_id": "sha256:1fcf34ede608c4ea5c853d7d5bcc60b6e83f88bc945154e77cf1a98b7db16c6e",
+              "target_semantic_pointer": "/functions/0/body/1/then/0/expression",
+              "target_span": {
+                "end_byte": 635,
+                "file": "migrated.swift",
+                "start_byte": 628
+              }
+            },
+            {
+              "semantic_hash": "sha256:791ff6c68a23e38a5b1c986d31b9de40243f26ab65cc4e5297a69e1a1f440d42",
+              "semantic_path": "/functions/0/body/2",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/2",
+              "source_chunk_id": "sha256:b3fcca15fa7e0db7a9085d67240e5b829165b114eb0a0ed7b5c795dfe2da2763",
+              "source_semantic_pointer": "/functions/0/body/2",
+              "source_span": {
+                "end_byte": 663,
+                "file": "equivalence_module.m",
+                "start_byte": 651
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2",
+              "target_chunk_id": "sha256:840134487d704cc358d8a0a84acd9af073f02b27f3aa83750f1becfac3563d4b",
+              "target_semantic_pointer": "/functions/0/body/2",
+              "target_span": {
+                "end_byte": 658,
+                "file": "migrated.swift",
+                "start_byte": 646
+              }
+            },
+            {
+              "semantic_hash": "sha256:ea207206dfd73dace59863b376b491c19357c3fb4b725f25f07b0164b5934a8e",
+              "semantic_path": "/functions/0/body/2/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/2/expression",
+              "source_chunk_id": "sha256:32731d02d191be0dd42b0e78dd4b71a9ddf16cde09877680b67c37ac35be8214",
+              "source_semantic_pointer": "/functions/0/body/2/expression",
+              "source_span": {
+                "end_byte": 663,
+                "file": "equivalence_module.m",
+                "start_byte": 658
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/2/expression",
+              "target_chunk_id": "sha256:c899a45b910fde681316868ccc3a94b35d6c600995eb0d5f0373725b3bbe33d2",
+              "target_semantic_pointer": "/functions/0/body/2/expression",
+              "target_span": {
+                "end_byte": 658,
+                "file": "migrated.swift",
+                "start_byte": 653
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 18,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 731,
+              "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+              "logical_file": "equivalence_module.m",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 748,
+              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "logical_file": "migrated.swift",
+              "node_count": 18,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:objc",
+            "target-analyzer-soundness:swift",
+            "source-compiler-runtime-soundness-not-discharged:objc",
+            "target-compiler-runtime-soundness-not-discharged:swift",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:swift",
+            "emitter-normalization-soundness:swift",
+            "canonical-finite-input-domain:source:value",
+            "canonical-finite-input-domain:target:value",
+            "same-input:value:value",
+            "canonical-finite-input-domain:source:minimum",
+            "canonical-finite-input-domain:target:minimum",
+            "same-input:minimum:minimum",
+            "canonical-finite-input-domain:source:maximum",
+            "canonical-finite-input-domain:target:maximum",
+            "same-input:maximum:maximum",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-003-input.json",
+            "sha256": "sha256:228204dc8eeccd1f8bcd0b68f31aab6f9daf82942d743a53e0aa21e8ea0d5261"
+          },
+          "formal_input_digest": "sha256:228204dc8eeccd1f8bcd0b68f31aab6f9daf82942d743a53e0aa21e8ea0d5261",
+          "formal_input_path": "certification/artifacts/module/formal-function-003-input.json",
+          "formal_input_sha256": "sha256:228204dc8eeccd1f8bcd0b68f31aab6f9daf82942d743a53e0aa21e8ea0d5261",
+          "formal_result_path": "certification/artifacts/module/formal-function-003-result.json",
+          "formal_result_sha256": "sha256:c3befc012f50888bd90d4e7ebd99063694a21280a9dd4b4dc81f0cb4ba3f1f53",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:5f73b860c5bbc8d7cfeb756c04959d5059687d24f2e26d5a9912876dfa916a25",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-003.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-003.smt2",
+            "sha256": "sha256:c04cf576ec4be8fe2f6ce8986e1b4abdfd5c0d44715b6ff881981b1bcc8f7998"
+          },
+          "solver_input_digest": "sha256:c04cf576ec4be8fe2f6ce8986e1b4abdfd5c0d44715b6ff881981b1bcc8f7998",
+          "solver_input_path": "certification/artifacts/module/formal-function-003.smt2",
+          "solver_input_sha256": "sha256:c04cf576ec4be8fe2f6ce8986e1b4abdfd5c0d44715b6ff881981b1bcc8f7998",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "clampNumber",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:d5ccc44f00f16bdba4597b39255686517a7bf240e5877c5e7e07af4490e53d31",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:d5ccc44f00f16bdba4597b39255686517a7bf240e5877c5e7e07af4490e53d31"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "number"
+          },
+          {
+            "name": "minimum",
+            "type": "number"
+          },
+          {
+            "name": "maximum",
+            "type": "number"
+          }
+        ],
+        "return_type": "number"
+      },
+      "status": "PASSED",
+      "symbol": "clampNumber"
+    },
+    {
+      "case_manifest_sha256": "sha256:30912587ae629e9ae809a5abb9c812dae2dc3427b916cad7a01ac397b1fe1e8d",
+      "layers": {
+        "behavior": {
+          "case_count": 4,
+          "counterexample_count": 0,
+          "counterexamples": [],
+          "kind": "elmos.behavior-equivalence",
+          "oracle_conflict_count": 0,
+          "pass_count": 4,
+          "results": [
+            {
+              "arguments_sha256": "sha256:c9d5599bff99b74574f4d281faac0adb73db1715829fa575d18c01929b471cda",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 5
+              },
+              "case_id": 0,
+              "independent_expected": 5,
+              "source_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "5",
+                "status": "RETURNED",
+                "value": 5
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 0,
+                "encoding": "i64-dec",
+                "raw": "5",
+                "status": "RETURNED",
+                "value": 5
+              }
+            },
+            {
+              "arguments_sha256": "sha256:71b453b3e1ad21cf5235c36375339c16b98cdd4930ba58556e00a6a9fc052d6c",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": -5
+              },
+              "case_id": 1,
+              "independent_expected": -5,
+              "source_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "-5",
+                "status": "RETURNED",
+                "value": -5
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 1,
+                "encoding": "i64-dec",
+                "raw": "-5",
+                "status": "RETURNED",
+                "value": -5
+              }
+            },
+            {
+              "arguments_sha256": "sha256:d9aab842afdeae14ab2f34b50698137b5f091e5d3cce642c10e713a9a61a3e25",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 0
+              },
+              "case_id": 2,
+              "independent_expected": 0,
+              "source_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 2,
+                "encoding": "i64-dec",
+                "raw": "0",
+                "status": "RETURNED",
+                "value": 0
+              }
+            },
+            {
+              "arguments_sha256": "sha256:058ad81bf8d13fd28539d480c77d3348bbdcca9f8c301dfb1cf56640f8cdf8da",
+              "canonical": {
+                "error": null,
+                "status": "RETURNED",
+                "value": 3
+              },
+              "case_id": 3,
+              "independent_expected": 3,
+              "source_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "3",
+                "status": "RETURNED",
+                "value": 3
+              },
+              "status": "PASSED",
+              "target_native": {
+                "case_id": 3,
+                "encoding": "i64-dec",
+                "raw": "3",
+                "status": "RETURNED",
+                "value": 3
+              }
+            }
+          ],
+          "schema_version": "1.0.0",
+          "source_runtime_pass_count": 4,
+          "source_runtime_passed": true,
+          "status": "PASSED",
+          "target_runtime_pass_count": 4,
+          "target_runtime_passed": true
+        },
+        "chunk": {
+          "concrete_spans_required": true,
+          "coverage": 1.0,
+          "hash_scheme": "sha256-canonical-semantic-subtree-v1",
+          "helper_digests": [],
+          "kind": "elmos.chunk-equivalence",
+          "mapped_source_chunk_count": 7,
+          "mappings": [
+            {
+              "semantic_hash": "sha256:d23d135f12ed3c7fdddd0832b0411f90494f0f5c1f10d8052607d8cad841a7e3",
+              "semantic_path": "/functions/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0",
+              "source_chunk_id": "sha256:e352e513927b332abdca8468880c7dd259026c0d03ae436fb049ad2e3d0f8189",
+              "source_semantic_pointer": "/functions/0",
+              "source_span": {
+                "end_byte": 464,
+                "file": "equivalence_module.m",
+                "start_byte": 382
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0",
+              "target_chunk_id": "sha256:294f75310524d9514833b1d1f14a311ad1cc809c762d2c25aece7874b24a9b9f",
+              "target_semantic_pointer": "/functions/0",
+              "target_span": {
+                "end_byte": 747,
+                "file": "migrated.swift",
+                "start_byte": 662
+              }
+            },
+            {
+              "semantic_hash": "sha256:3818cd68e3f7cbbde071720652490576086f836c238f87dd20344440b4254c93",
+              "semantic_path": "/functions/0/parameters/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/0",
+              "source_chunk_id": "sha256:15dcfb3eac9a6877864ebd1fbb54bd47ab2817dfac1a1748db64dae9dbec1f14",
+              "source_semantic_pointer": "/functions/0/parameters/0",
+              "source_span": {
+                "end_byte": 417,
+                "file": "equivalence_module.m",
+                "start_byte": 403
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/0",
+              "target_chunk_id": "sha256:7fa96a372ab95712a12e1f7ffd2320d02a2c9ddb76769169512f326409530730",
+              "target_semantic_pointer": "/functions/0/parameters/0",
+              "target_span": {
+                "end_byte": 692,
+                "file": "migrated.swift",
+                "start_byte": 678
+              }
+            },
+            {
+              "semantic_hash": "sha256:33de440b5cdb1b55a7223b726dbfbd63c52abbc6b359633aaa100d3b4d1ac29f",
+              "semantic_path": "/functions/0/parameters/1",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/parameters/1",
+              "source_chunk_id": "sha256:9e37dcb7f8cda1270b242cb3b498f5c727176ece37e2f474790c2ea5659e08c7",
+              "source_semantic_pointer": "/functions/0/parameters/1",
+              "source_span": {
+                "end_byte": 434,
+                "file": "equivalence_module.m",
+                "start_byte": 419
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/parameters/1",
+              "target_chunk_id": "sha256:2d609edef7396c519a095f6744f690098755bc45cc472eebd9c842d9d4de6fa3",
+              "target_semantic_pointer": "/functions/0/parameters/1",
+              "target_span": {
+                "end_byte": 707,
+                "file": "migrated.swift",
+                "start_byte": 693
+              }
+            },
+            {
+              "semantic_hash": "sha256:6d17cc09e18cd4307291ffa32cf37b5c7cf8915ace55c90f5f91c6c22e2a8474",
+              "semantic_path": "/functions/0/body/0",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0",
+              "source_chunk_id": "sha256:79f3c8a6bcca4a774f16aa15cc8556a25b41d45881f1964745e9a740eafdcef2",
+              "source_semantic_pointer": "/functions/0/body/0",
+              "source_span": {
+                "end_byte": 461,
+                "file": "equivalence_module.m",
+                "start_byte": 442
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0",
+              "target_chunk_id": "sha256:b5ccfd4c15576f14512a522d55de8ae476833d67525a1d0e657437f901d2a3ab",
+              "target_semantic_pointer": "/functions/0/body/0",
+              "target_span": {
+                "end_byte": 745,
+                "file": "migrated.swift",
+                "start_byte": 724
+              }
+            },
+            {
+              "semantic_hash": "sha256:50d41cae73183888cfb9aa70dee8858308446a1aa6a112b1ef79843fbe0c9dfe",
+              "semantic_path": "/functions/0/body/0/expression",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/expression",
+              "source_chunk_id": "sha256:1eb5f12c8362c4e2d1a8a115e6e434c055b9848d6dc8ccfc760525d5c12c4943",
+              "source_semantic_pointer": "/functions/0/body/0/expression",
+              "source_span": {
+                "end_byte": 461,
+                "file": "equivalence_module.m",
+                "start_byte": 449
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression",
+              "target_chunk_id": "sha256:222bbe6348437007e98eee7ea10bbadb5b30524413e1ed143aaeb9b05082fffd",
+              "target_semantic_pointer": "/functions/0/body/0/expression",
+              "target_span": {
+                "end_byte": 745,
+                "file": "migrated.swift",
+                "start_byte": 731
+              }
+            },
+            {
+              "semantic_hash": "sha256:6a7a75b8577de0e17c331bc3bf9ecdb9a9be63fb3433a3278b7478b3a271da20",
+              "semantic_path": "/functions/0/body/0/expression/left",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/expression/left",
+              "source_chunk_id": "sha256:23a22646e0a7bf79b2bdc0686dea0b95610c9f3a72c8eaf2b5b855814a05fd33",
+              "source_semantic_pointer": "/functions/0/body/0/expression/left",
+              "source_span": {
+                "end_byte": 453,
+                "file": "equivalence_module.m",
+                "start_byte": 449
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/left",
+              "target_chunk_id": "sha256:13660268405325c0cd22315e3b97b85c097e822190ccfa9b6cae43a7bcc757cd",
+              "target_semantic_pointer": "/functions/0/body/0/expression/left",
+              "target_span": {
+                "end_byte": 736,
+                "file": "migrated.swift",
+                "start_byte": 732
+              }
+            },
+            {
+              "semantic_hash": "sha256:36a0598f311fa31ea2246e83b4504fae8b3e4a541de7e3bd7f50f148326304a2",
+              "semantic_path": "/functions/0/body/0/expression/right",
+              "source_artifact_pointer": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1#/functions/0/body/0/expression/right",
+              "source_chunk_id": "sha256:e5913b4913483c958bfa01b91f2ac10d3a50550f31c596fda8e71f25b3af5714",
+              "source_semantic_pointer": "/functions/0/body/0/expression/right",
+              "source_span": {
+                "end_byte": 461,
+                "file": "equivalence_module.m",
+                "start_byte": 456
+              },
+              "status": "EXACT",
+              "target_artifact_pointer": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a#/functions/0/body/0/expression/right",
+              "target_chunk_id": "sha256:9d648755691bcb493605ced3f74d2d77d7933121978d58669d97995fb4316c40",
+              "target_semantic_pointer": "/functions/0/body/0/expression/right",
+              "target_span": {
+                "end_byte": 744,
+                "file": "migrated.swift",
+                "start_byte": 739
+              }
+            }
+          ],
+          "mismatch_count": 0,
+          "missing_source_span_count": 0,
+          "missing_target_span_count": 0,
+          "normalization_rules": [],
+          "path_scheme": "rfc6901-json-pointer-v1",
+          "required_source_chunk_count": 7,
+          "schema_version": "1.0.0",
+          "span_scheme": "relative-file-utf8-byte-range-end-exclusive-v1",
+          "span_validation": {
+            "source": {
+              "artifact_byte_count": 731,
+              "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+              "logical_file": "equivalence_module.m",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            },
+            "status": "PASSED",
+            "target": {
+              "artifact_byte_count": 748,
+              "artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+              "logical_file": "migrated.swift",
+              "node_count": 7,
+              "rules": [
+                "utf8-byte-offset-end-exclusive",
+                "exact-logical-file",
+                "within-artifact-bounds",
+                "parent-covers-child",
+                "siblings-do-not-overlap"
+              ],
+              "status": "PASSED"
+            }
+          },
+          "status": "PASSED",
+          "unexpected_target_chunk_count": 0,
+          "unexpected_target_paths": []
+        },
+        "formal": {
+          "assumptions": [
+            "source-analyzer-soundness:objc",
+            "target-analyzer-soundness:swift",
+            "source-compiler-runtime-soundness-not-discharged:objc",
+            "target-compiler-runtime-soundness-not-discharged:swift",
+            "canonical-semantics-encoding-soundness:z3-l0-v1",
+            "target-language-primitive-compensation-soundness:swift",
+            "emitter-normalization-soundness:swift",
+            "same-input:left:left",
+            "same-input:right:right",
+            "canonical-no-error-domain:source",
+            "canonical-no-error-domain:target"
+          ],
+          "certification_status": "NOT_CERTIFIED",
+          "claim_scope": {
+            "input_domain": "canonical-finite-no-error-input-domain",
+            "original_source_bytes_theorem": false,
+            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
+            "source_term": "source normalized Function from canonical IR",
+            "target_term": "independently re-lifted target normalized Function"
+          },
+          "countermodel": null,
+          "external_soundness_boundary": {
+            "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_compiler_runtime_soundness": "NOT_RUN",
+            "target_compiler_runtime_soundness": "NOT_RUN"
+          },
+          "formal_input": {
+            "path": "formal-function-004-input.json",
+            "sha256": "sha256:01e5b484f0f570f44ef3b995d046d75cc49f7b268c40c814c91e1a884bd43ada"
+          },
+          "formal_input_digest": "sha256:01e5b484f0f570f44ef3b995d046d75cc49f7b268c40c814c91e1a884bd43ada",
+          "formal_input_path": "certification/artifacts/module/formal-function-004-input.json",
+          "formal_input_sha256": "sha256:01e5b484f0f570f44ef3b995d046d75cc49f7b268c40c814c91e1a884bd43ada",
+          "formal_result_path": "certification/artifacts/module/formal-function-004-result.json",
+          "formal_result_sha256": "sha256:4d74825ce36c0626aa91d51cc20cc3061442b4cd4a62a2e584f7f0e8cf250637",
+          "independent_encodings": {
+            "input_alignment": "positional-substitution-after-independent-encoding",
+            "source_denotation_sha256": "sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5",
+            "source_symbol_prefix": "source_",
+            "target_denotation_sha256": "sha256:a41f0bb44704138bbd2e99c8bcd2a4ea6de1e4b1cf22572b6a1ee4b4340b7a1e",
+            "target_symbol_prefix": "target_"
+          },
+          "kind": "typed-pure-module-function-formal-result",
+          "options": {
+            "random_seed": 0,
+            "theories": [
+              "QF_BV",
+              "FP",
+              "Seq",
+              "Bool",
+              "Int"
+            ],
+            "timeout_ms": 30000
+          },
+          "profile": "typed-pure-module-v1",
+          "proof_strength": "THEOREM_UNDER_ASSUMPTIONS",
+          "property_status": "PROVED",
+          "reason": "divergence formula is UNSAT under the recorded assumptions",
+          "replay_contract": {
+            "argv": [
+              "z3",
+              "-smt2",
+              "formal-function-004.smt2"
+            ],
+            "expected_exit_code": 0,
+            "expected_stdout": "unsat",
+            "kind": "z3-cli-check-sat",
+            "working_directory": "."
+          },
+          "schema_version": "1.0.0",
+          "solver": "z3",
+          "solver_input": {
+            "path": "formal-function-004.smt2",
+            "sha256": "sha256:493267391b2841f3ae525ec4e38c390ff0fcfc1e8754c346fc463a3e7573c53a"
+          },
+          "solver_input_digest": "sha256:493267391b2841f3ae525ec4e38c390ff0fcfc1e8754c346fc463a3e7573c53a",
+          "solver_input_path": "certification/artifacts/module/formal-function-004.smt2",
+          "solver_input_sha256": "sha256:493267391b2841f3ae525ec4e38c390ff0fcfc1e8754c346fc463a3e7573c53a",
+          "status": "PROVED_UNDER_ASSUMPTIONS",
+          "symbol": "difference",
+          "version": "4.16.0"
+        },
+        "semantic": {
+          "difference_count": 0,
+          "differences": [],
+          "kind": "elmos.semantic-equivalence",
+          "schema_version": "1.0.0",
+          "source_view_sha256": "sha256:f4964ad2c740589304d990dfb12193ec390d346dde7a3f9eebc013bb69e68521",
+          "status": "PASSED",
+          "target_view_sha256": "sha256:f4964ad2c740589304d990dfb12193ec390d346dde7a3f9eebc013bb69e68521"
+        }
+      },
+      "signature": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "integer"
+          },
+          {
+            "name": "right",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "status": "PASSED",
+      "symbol": "difference"
+    }
+  ],
+  "kind": "typed-pure-module-equivalence",
+  "local_verification_status": "PASSED",
+  "module_contract": {
+    "exact_generated_helper_symbol_set": true,
+    "exact_profile_signature_set": true,
+    "exact_profile_symbol_set": true,
+    "independence": {
+      "function_calls": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+      "mutable_state": "UNSUPPORTED",
+      "shared_state": "ABSENT_BY_IR_CONSTRUCTION",
+      "source_user_call_graph_closure": "EMPTY_AND_CLOSED",
+      "source_user_call_graph_edges": [],
+      "target_builtin_normalizations": [],
+      "target_call_graph": {
+        "edges": [],
+        "helper_internal_calls": {
+          "binding": "verified_generated_helpers-exact-bytes-and-digests",
+          "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED"
+        },
+        "scope": "profile-functions-to-emitted-callees",
+        "status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+      },
+      "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+      "target_generated_helper_symbols": []
+    },
+    "manifest_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "source_profile_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "target_helper_symbols": [],
+    "target_profile_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "verified_language_prelude": {
+      "source": {
+        "directives": [
+          {
+            "kind": "import",
+            "order": 0,
+            "sha256": "sha256:668ba2abf95d81fd23aee7a52a3e1e28d360ee57243dee6be0c47aaaffa032d0",
+            "source_span": {
+              "end_byte": 33,
+              "file": "equivalence_module.m",
+              "start_byte": 0
+            },
+            "value": "<Foundation/Foundation.h>"
+          }
+        ],
+        "language": "objc",
+        "role": "source",
+        "status": "EXACT_AND_CLOSED"
+      },
+      "target": {
+        "directives": [],
+        "language": "swift",
+        "role": "target",
+        "status": "EXACT_AND_CLOSED"
+      }
+    },
+    "verified_language_wrapper": {
+      "source": {
+        "file": "equivalence_module.m",
+        "language": "objc",
+        "role": "source",
+        "status": "NOT_APPLICABLE"
+      },
+      "target": {
+        "file": "migrated.swift",
+        "language": "swift",
+        "role": "target",
+        "status": "NOT_APPLICABLE"
+      }
+    },
+    "whole_file_closure_sha256": "sha256:e55dc85b27f0e60e56111d77f48db1b5f1ddf789ca513f92c9208602d8965bc1"
+  },
+  "module_input": {
+    "case_manifest_sha256": "sha256:765081f57632fdff2499118ddeb6c12023e942c433675ac3d5e9b9864720a7ed",
+    "corpus_sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112",
+    "input_domain": "canonical-finite-no-error-input-domain",
+    "profile": "typed-pure-module-v1",
+    "route": {
+      "source_language": "objc",
+      "target_language": "swift"
+    },
+    "source_artifact_byte_count": 731,
+    "source_artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+    "source_inventory_byte_count": 2854,
+    "source_inventory_sha256": "sha256:c200591bc03d9bc57bef004160ece16a430773e3802f7844ea5dab2ee9a393a8",
+    "source_logical_file": "equivalence_module.m",
+    "source_semantic_ir_sha256": "sha256:0cb70c53d4459ebcce90471627413844100bf513c6f0ce2d5b9053394af12c06",
+    "target_artifact_byte_count": 748,
+    "target_artifact_sha256": "sha256:b6e6d4c1d17f8e81c1496f49d4ce6c3372bf39abe18ab07b71f7d8bbec7c304a",
+    "target_inventory_byte_count": 5089,
+    "target_inventory_sha256": "sha256:da953f4b190cc3eddbdd2b09b1e352c327012db76011523b1e1cd5b0661dc5ae",
+    "target_logical_file": "migrated.swift",
+    "target_semantic_ir_sha256": "sha256:485ac369c2e805cc29e852c1e117bff1152d8d89f094f4120ed7845ddf3a592c",
+    "whole_file_closure_sha256": "sha256:e55dc85b27f0e60e56111d77f48db1b5f1ddf789ca513f92c9208602d8965bc1"
+  },
+  "module_input_sha256": "sha256:75f6271a0a20ac8f6675b022eea78b9f61d5eee9c11957a130acad94c75f1d4f",
+  "profile": "typed-pure-module-v1",
+  "route": {
+    "route_key": "objc-to-swift",
+    "source_language": "objc",
+    "target_language": "swift"
+  },
+  "schema_version": "1.0.0",
+  "source_validation": {
+    "both": {
+      "artifact_path": "equivalence_module.m",
+      "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+            "-x",
+            "objective-c",
+            "-std=c17",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-fobjc-arc",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-framework",
+            "Foundation",
+            "-o",
+            "source_harness",
+            "source_harness.m"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tbool\ttrue\nELMOS_OBSERVATION\t1\tbool\tfalse\nELMOS_OBSERVATION\t2\tbool\tfalse\nELMOS_OBSERVATION\t3\tbool\tfalse\n"
+        }
+      ],
+      "language": "objc",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "bool",
+          "raw": "true",
+          "status": "RETURNED",
+          "value": true
+        },
+        {
+          "case_id": 1,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 2,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 3,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "objc",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c17/objc-arc/Foundation/Apple-runtime"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "calculate": {
+      "artifact_path": "equivalence_module.m",
+      "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+            "-x",
+            "objective-c",
+            "-std=c17",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-fobjc-arc",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-framework",
+            "Foundation",
+            "-o",
+            "source_harness",
+            "source_harness.m"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t9223372036854775707\n"
+        }
+      ],
+      "language": "objc",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "120",
+          "status": "RETURNED",
+          "value": 120
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "9223372036854775707",
+          "status": "RETURNED",
+          "value": 9223372036854775707
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "objc",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c17/objc-arc/Foundation/Apple-runtime"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "clamp": {
+      "artifact_path": "equivalence_module.m",
+      "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+            "-x",
+            "objective-c",
+            "-std=c17",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-fobjc-arc",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-framework",
+            "Foundation",
+            "-o",
+            "source_harness",
+            "source_harness.m"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t0\nELMOS_OBSERVATION\t1\ti64-dec\t55\nELMOS_OBSERVATION\t2\ti64-dec\t100\nELMOS_OBSERVATION\t3\ti64-dec\t0\nELMOS_OBSERVATION\t4\ti64-dec\t100\n"
+        }
+      ],
+      "language": "objc",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "55",
+          "status": "RETURNED",
+          "value": 55
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 4,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "objc",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c17/objc-arc/Foundation/Apple-runtime"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "clampNumber": {
+      "artifact_path": "equivalence_module.m",
+      "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+            "-x",
+            "objective-c",
+            "-std=c17",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-fobjc-arc",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-framework",
+            "Foundation",
+            "-o",
+            "source_harness",
+            "source_harness.m"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t404ba00000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t4059000000000000\nELMOS_OBSERVATION\t3\tfp64-hex\t8000000000000000\nELMOS_OBSERVATION\t4\tfp64-hex\t0000000000000000\n"
+        }
+      ],
+      "language": "objc",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        },
+        {
+          "case_id": 1,
+          "encoding": "fp64-hex",
+          "raw": "404ba00000000000",
+          "status": "RETURNED",
+          "value": 55.25
+        },
+        {
+          "case_id": 2,
+          "encoding": "fp64-hex",
+          "raw": "4059000000000000",
+          "status": "RETURNED",
+          "value": 100.0
+        },
+        {
+          "case_id": 3,
+          "encoding": "fp64-hex",
+          "raw": "8000000000000000",
+          "status": "RETURNED",
+          "value": -0.0
+        },
+        {
+          "case_id": 4,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "objc",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c17/objc-arc/Foundation/Apple-runtime"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    },
+    "difference": {
+      "artifact_path": "equivalence_module.m",
+      "artifact_sha256": "sha256:bc614da0f55e5fdad8e385829df6706ae7977de9b3d771b392a32c7c190ae3a1",
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+            "-x",
+            "objective-c",
+            "-std=c17",
+            "-isysroot",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-fobjc-arc",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-framework",
+            "Foundation",
+            "-o",
+            "source_harness",
+            "source_harness.m"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./source_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t5\nELMOS_OBSERVATION\t1\ti64-dec\t-5\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t3\n"
+        }
+      ],
+      "language": "objc",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "5",
+          "status": "RETURNED",
+          "value": 5
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "-5",
+          "status": "RETURNED",
+          "value": -5
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "3",
+          "status": "RETURNED",
+          "value": 3
+        }
+      ],
+      "role": "source",
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+        "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        "language": "objc",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "c17/objc-arc/Foundation/Apple-runtime"
+        ],
+        "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+      }
+    }
+  },
+  "status": "PASSED",
+  "target_validation": {
+    "both": {
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+            "-swift-version",
+            "6",
+            "-sdk",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-warnings-as-errors",
+            "-o",
+            "route_harness",
+            "migrated.swift",
+            "main.swift"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./route_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tbool\ttrue\nELMOS_OBSERVATION\t1\tbool\tfalse\nELMOS_OBSERVATION\t2\tbool\tfalse\nELMOS_OBSERVATION\t3\tbool\tfalse\n"
+        }
+      ],
+      "language": "swift",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "bool",
+          "raw": "true",
+          "status": "RETURNED",
+          "value": true
+        },
+        {
+          "case_id": 1,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 2,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        },
+        {
+          "case_id": 3,
+          "encoding": "bool",
+          "raw": "false",
+          "status": "RETURNED",
+          "value": false
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+        "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "language": "swift",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "swift-language-mode=6",
+          "integer=Int64"
+        ],
+        "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+      }
+    },
+    "calculate": {
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+            "-swift-version",
+            "6",
+            "-sdk",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-warnings-as-errors",
+            "-o",
+            "route_harness",
+            "migrated.swift",
+            "main.swift"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./route_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t120\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t9223372036854775707\n"
+        }
+      ],
+      "language": "swift",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "120",
+          "status": "RETURNED",
+          "value": 120
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "9223372036854775707",
+          "status": "RETURNED",
+          "value": 9223372036854775707
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+        "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "language": "swift",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "swift-language-mode=6",
+          "integer=Int64"
+        ],
+        "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+      }
+    },
+    "clamp": {
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+            "-swift-version",
+            "6",
+            "-sdk",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-warnings-as-errors",
+            "-o",
+            "route_harness",
+            "migrated.swift",
+            "main.swift"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./route_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t0\nELMOS_OBSERVATION\t1\ti64-dec\t55\nELMOS_OBSERVATION\t2\ti64-dec\t100\nELMOS_OBSERVATION\t3\ti64-dec\t0\nELMOS_OBSERVATION\t4\ti64-dec\t100\n"
+        }
+      ],
+      "language": "swift",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "55",
+          "status": "RETURNED",
+          "value": 55
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 4,
+          "encoding": "i64-dec",
+          "raw": "100",
+          "status": "RETURNED",
+          "value": 100
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+        "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "language": "swift",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "swift-language-mode=6",
+          "integer=Int64"
+        ],
+        "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+      }
+    },
+    "clampNumber": {
+      "case_count": 5,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+            "-swift-version",
+            "6",
+            "-sdk",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-warnings-as-errors",
+            "-o",
+            "route_harness",
+            "migrated.swift",
+            "main.swift"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./route_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t404ba00000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t4059000000000000\nELMOS_OBSERVATION\t3\tfp64-hex\t8000000000000000\nELMOS_OBSERVATION\t4\tfp64-hex\t0000000000000000\n"
+        }
+      ],
+      "language": "swift",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        },
+        {
+          "case_id": 1,
+          "encoding": "fp64-hex",
+          "raw": "404ba00000000000",
+          "status": "RETURNED",
+          "value": 55.25
+        },
+        {
+          "case_id": 2,
+          "encoding": "fp64-hex",
+          "raw": "4059000000000000",
+          "status": "RETURNED",
+          "value": 100.0
+        },
+        {
+          "case_id": 3,
+          "encoding": "fp64-hex",
+          "raw": "8000000000000000",
+          "status": "RETURNED",
+          "value": -0.0
+        },
+        {
+          "case_id": 4,
+          "encoding": "fp64-hex",
+          "raw": "0000000000000000",
+          "status": "RETURNED",
+          "value": 0.0
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+        "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "language": "swift",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "swift-language-mode=6",
+          "integer=Int64"
+        ],
+        "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+      }
+    },
+    "difference": {
+      "case_count": 4,
+      "commands": [
+        {
+          "command": [
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+            "-swift-version",
+            "6",
+            "-sdk",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "-warnings-as-errors",
+            "-o",
+            "route_harness",
+            "migrated.swift",
+            "main.swift"
+          ],
+          "stderr": "",
+          "stdout": ""
+        },
+        {
+          "command": [
+            "./route_harness"
+          ],
+          "stderr": "",
+          "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t5\nELMOS_OBSERVATION\t1\ti64-dec\t-5\nELMOS_OBSERVATION\t2\ti64-dec\t0\nELMOS_OBSERVATION\t3\ti64-dec\t3\n"
+        }
+      ],
+      "language": "swift",
+      "observations": [
+        {
+          "case_id": 0,
+          "encoding": "i64-dec",
+          "raw": "5",
+          "status": "RETURNED",
+          "value": 5
+        },
+        {
+          "case_id": 1,
+          "encoding": "i64-dec",
+          "raw": "-5",
+          "status": "RETURNED",
+          "value": -5
+        },
+        {
+          "case_id": 2,
+          "encoding": "i64-dec",
+          "raw": "0",
+          "status": "RETURNED",
+          "value": 0
+        },
+        {
+          "case_id": 3,
+          "encoding": "i64-dec",
+          "raw": "3",
+          "status": "RETURNED",
+          "value": 3
+        }
+      ],
+      "status": "PASSED",
+      "toolchain": {
+        "auxiliary": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+        "auxiliary_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+        "executable_sha256": "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "language": "swift",
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "swift-language-mode=6",
+          "integer=Int64"
+        ],
+        "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+      }
+    }
+  },
+  "unsupported_semantics": [
+    "heap-and-object-identity",
+    "mutable-state-and-aliasing",
+    "exceptions-as-user-visible-control-flow",
+    "async-and-concurrency",
+    "io-network-database-and-framework-effects",
+    "reflection-dynamic-loading-and-native-interop"
+  ],
+  "whole_file_closure": {
+    "blocked_declarations": {
+      "source": [],
+      "target": []
+    },
+    "kind": "elmos.typed-pure-module-whole-file-closure",
+    "manifest_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "profile": "typed-pure-module-v1",
+    "route": {
+      "source_language": "objc",
+      "target_language": "swift"
+    },
+    "schema_version": "1.0.0",
+    "source_inventory_bytes": 2854,
+    "source_inventory_sha256": "sha256:c200591bc03d9bc57bef004160ece16a430773e3802f7844ea5dab2ee9a393a8",
+    "source_profile_symbols": [
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "boolean"
+            },
+            {
+              "name": "right",
+              "type": "boolean"
+            }
+          ],
+          "return_type": "boolean"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "both",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "BOOL"
+            },
+            {
+              "name": "right",
+              "source_type": "BOOL"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "BOOL (BOOL, BOOL)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 730,
+          "file": "equivalence_module.m",
+          "start_byte": 668
+        },
+        "symbol": "both"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "type": "integer"
+            },
+            {
+              "name": "tax",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "calculate",
+        "raw_parameter_names": [
+          "subtotal",
+          "tax"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "source_type": "long long"
+            },
+            {
+              "name": "tax",
+              "source_type": "long long"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "long long (long long, long long)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 172,
+          "file": "equivalence_module.m",
+          "start_byte": 35
+        },
+        "symbol": "calculate"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer"
+            },
+            {
+              "name": "minimum",
+              "type": "integer"
+            },
+            {
+              "name": "maximum",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "clamp",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "long long"
+            },
+            {
+              "name": "minimum",
+              "source_type": "long long"
+            },
+            {
+              "name": "maximum",
+              "source_type": "long long"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "long long (long long, long long, long long)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 380,
+          "file": "equivalence_module.m",
+          "start_byte": 174
+        },
+        "symbol": "clamp"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number"
+            },
+            {
+              "name": "minimum",
+              "type": "number"
+            },
+            {
+              "name": "maximum",
+              "type": "number"
+            }
+          ],
+          "return_type": "number"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "clampNumber",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "double"
+            },
+            {
+              "name": "minimum",
+              "source_type": "double"
+            },
+            {
+              "name": "maximum",
+              "source_type": "double"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "double (double, double, double)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 666,
+          "file": "equivalence_module.m",
+          "start_byte": 466
+        },
+        "symbol": "clampNumber"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "difference",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "long long"
+            },
+            {
+              "name": "right",
+              "source_type": "long long"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "long long (long long, long long)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 464,
+          "file": "equivalence_module.m",
+          "start_byte": 382
+        },
+        "symbol": "difference"
+      }
+    ],
+    "source_user_call_graph": {
+      "edges": [],
+      "status": "EMPTY_AND_CLOSED"
+    },
+    "status": "PASSED",
+    "target_builtin_normalizations": [],
+    "target_call_graph": {
+      "edges": [],
+      "helper_internal_calls": {
+        "binding": "verified_generated_helpers-exact-bytes-and-digests",
+        "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED"
+      },
+      "scope": "profile-functions-to-emitted-callees",
+      "status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+    },
+    "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+    "target_helper_symbols": [],
+    "target_inventory_bytes": 5089,
+    "target_inventory_sha256": "sha256:da953f4b190cc3eddbdd2b09b1e352c327012db76011523b1e1cd5b0661dc5ae",
+    "target_profile_symbols": [
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "boolean"
+            },
+            {
+              "name": "right",
+              "type": "boolean"
+            }
+          ],
+          "return_type": "boolean"
+        },
+        "declaration_kind": "FunctionDeclSyntax",
+        "occurrence": 1,
+        "qualified_name": "both",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "Bool"
+            },
+            {
+              "name": "right",
+              "source_type": "Bool"
+            }
+          ],
+          "source_return_type": "Bool",
+          "storage": "file-scope",
+          "visibility": "internal"
+        },
+        "source_span": {
+          "end_byte": 77,
+          "file": "migrated.swift",
+          "start_byte": 0
+        },
+        "symbol": "both"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "type": "integer"
+            },
+            {
+              "name": "tax",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDeclSyntax",
+        "occurrence": 1,
+        "qualified_name": "calculate",
+        "raw_parameter_names": [
+          "subtotal",
+          "tax"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "source_type": "Int64"
+            },
+            {
+              "name": "tax",
+              "source_type": "Int64"
+            }
+          ],
+          "source_return_type": "Int64",
+          "storage": "file-scope",
+          "visibility": "internal"
+        },
+        "source_span": {
+          "end_byte": 230,
+          "file": "migrated.swift",
+          "start_byte": 79
+        },
+        "symbol": "calculate"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer"
+            },
+            {
+              "name": "minimum",
+              "type": "integer"
+            },
+            {
+              "name": "maximum",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDeclSyntax",
+        "occurrence": 1,
+        "qualified_name": "clamp",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "Int64"
+            },
+            {
+              "name": "minimum",
+              "source_type": "Int64"
+            },
+            {
+              "name": "maximum",
+              "source_type": "Int64"
+            }
+          ],
+          "source_return_type": "Int64",
+          "storage": "file-scope",
+          "visibility": "internal"
+        },
+        "source_span": {
+          "end_byte": 440,
+          "file": "migrated.swift",
+          "start_byte": 232
+        },
+        "symbol": "clamp"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number"
+            },
+            {
+              "name": "minimum",
+              "type": "number"
+            },
+            {
+              "name": "maximum",
+              "type": "number"
+            }
+          ],
+          "return_type": "number"
+        },
+        "declaration_kind": "FunctionDeclSyntax",
+        "occurrence": 1,
+        "qualified_name": "clampNumber",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "Double"
+            },
+            {
+              "name": "minimum",
+              "source_type": "Double"
+            },
+            {
+              "name": "maximum",
+              "source_type": "Double"
+            }
+          ],
+          "source_return_type": "Double",
+          "storage": "file-scope",
+          "visibility": "internal"
+        },
+        "source_span": {
+          "end_byte": 660,
+          "file": "migrated.swift",
+          "start_byte": 442
+        },
+        "symbol": "clampNumber"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDeclSyntax",
+        "occurrence": 1,
+        "qualified_name": "difference",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "Int64"
+            },
+            {
+              "name": "right",
+              "source_type": "Int64"
+            }
+          ],
+          "source_return_type": "Int64",
+          "storage": "file-scope",
+          "visibility": "internal"
+        },
+        "source_span": {
+          "end_byte": 747,
+          "file": "migrated.swift",
+          "start_byte": 662
+        },
+        "symbol": "difference"
+      }
+    ],
+    "verified_generated_helpers": [],
+    "verified_language_prelude": {
+      "source": {
+        "directives": [
+          {
+            "kind": "import",
+            "order": 0,
+            "sha256": "sha256:668ba2abf95d81fd23aee7a52a3e1e28d360ee57243dee6be0c47aaaffa032d0",
+            "source_span": {
+              "end_byte": 33,
+              "file": "equivalence_module.m",
+              "start_byte": 0
+            },
+            "value": "<Foundation/Foundation.h>"
+          }
+        ],
+        "language": "objc",
+        "role": "source",
+        "status": "EXACT_AND_CLOSED"
+      },
+      "target": {
+        "directives": [],
+        "language": "swift",
+        "role": "target",
+        "status": "EXACT_AND_CLOSED"
+      }
+    },
+    "verified_language_wrapper": {
+      "source": {
+        "file": "equivalence_module.m",
+        "language": "objc",
+        "role": "source",
+        "status": "NOT_APPLICABLE"
+      },
+      "target": {
+        "file": "migrated.swift",
+        "language": "swift",
+        "role": "target",
+        "status": "NOT_APPLICABLE"
+      }
+    }
+  }
+}

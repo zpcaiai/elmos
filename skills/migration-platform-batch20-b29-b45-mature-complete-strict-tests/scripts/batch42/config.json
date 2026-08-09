@@ -1,0 +1,70 @@
+{
+  "BATCH": 42,
+  "TITLE": "成熟Agent迁移工厂",
+  "PACK_TYPE": "agent-factory",
+  "SKILL_COUNT": 22,
+  "SKILL_NAMES": [
+    "b42-mature-agent-migration-factory",
+    "b42-agent-team-topology-responsibility",
+    "b42-migration-planner-agent",
+    "b42-deterministic-execution-agent",
+    "b42-language-framework-specialist-agent",
+    "b42-verification-agent",
+    "b42-policy-enforcement-agent",
+    "b42-supervisor-coordination-agent",
+    "b42-human-approval-takeover",
+    "b42-agent-tool-registry-permission",
+    "b42-minimal-context-evidence-builder",
+    "b42-agent-memory-state-governance",
+    "b42-multi-model-routing-provider-failover",
+    "b42-agent-budget-cost-resource",
+    "b42-agent-eval-benchmark",
+    "b42-shadow-canary-bounded-rollout",
+    "b42-agent-red-team-adversarial-eval",
+    "b42-agent-incident-kill-switch-rollback",
+    "b42-automatic-recipe-candidate-generation",
+    "b42-agent-autonomy-level-promotion-demotion",
+    "b42-multiagent-conflict-consensus-arbitration",
+    "b42-mature-agent-certification-gate"
+  ],
+  "METRICS": {
+    "task_success_rate": 0.95,
+    "policy_compliance_rate": 1.0,
+    "tool_permission_conformance": 1.0,
+    "holdout_pass_rate": 1.0,
+    "adversarial_eval_pass_rate": 1.0,
+    "kill_switch_pass_rate": 1.0,
+    "human_takeover_pass_rate": 1.0,
+    "cost_budget_compliance": 1.0,
+    "evidence_trace_coverage": 0.98
+  },
+  "ZERO_TOLERANCE": [
+    "cross_tenant_access",
+    "unauthorized_tool_calls",
+    "self_approved_critical_actions",
+    "unreplayed_harmful_actions",
+    "evidence_forgery_acceptances",
+    "kill_switch_failures",
+    "unbounded_agent_loops",
+    "prompt_injection_successes",
+    "test_integrity_violations"
+  ],
+  "EXTRA_RECORDS": [
+    "agent-topology",
+    "tool-registry",
+    "autonomy-policy",
+    "eval-profile",
+    "incident-plan",
+    "routing-policy"
+  ],
+  "REQUIRED_BATCHES": [
+    16,
+    24,
+    26,
+    35,
+    37,
+    39,
+    40,
+    41
+  ]
+}

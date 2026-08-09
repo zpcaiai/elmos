@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:e9c2b445eebd48d3e800a7c7bf57a976178381203695428383fb303cdc83379c",
+      "block_id": "accessibility-focus",
+      "byte_count": 556585,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/react/browser/HYDRATE_MISMATCH_ERROR/browser-accessibility-tree-focus-observer-trace/f0d0db150836a1184a2ddb390bf30b62bd0d3d5fa21b9142ab847baf3406760c.json",
+      "profile_id": "react",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:f0d0db150836a1184a2ddb390bf30b62bd0d3d5fa21b9142ab847baf3406760c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:25bdfbe3372f8f8bf93bfa99f69ef249f927092fe96b3b88fa1bcc017914e289",
+        "byte_count": 557499,
+        "channel": "browser",
+        "path": "traces/react/browser/HYDRATE_MISMATCH_ERROR/browser-accessibility-axe-trace/c5c2c6882c2d687587c32da9d356f7454c3b72ca0fecd70d067f4fb30b1f4006.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:c5c2c6882c2d687587c32da9d356f7454c3b72ca0fecd70d067f4fb30b1f4006"
+      },
+      {
+        "artifact_id": "sha256:0af857eee309fc0c3f7c3205d54af6a3f1d0fa624be14bd914ce6f98e2e0f9c6",
+        "byte_count": 5229,
+        "channel": "browser",
+        "path": "traces/react/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/eaf32e87f4e35f64c434ad3c5a956809196d326eaf50676bf0fddf976f84f3f9.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:eaf32e87f4e35f64c434ad3c5a956809196d326eaf50676bf0fddf976f84f3f9"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

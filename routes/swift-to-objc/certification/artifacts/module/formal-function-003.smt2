@@ -1,0 +1,68 @@
+; formal_input_digest: sha256:3438ab85984418d529d84b1871623c01d5dc7669790840cd06fe0c570dccfa0d
+; formal-input-sha256: sha256:3438ab85984418d529d84b1871623c01d5dc7669790840cd06fe0c570dccfa0d
+; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
+; input-domain: canonical-finite-no-error-input-domain
+; original-source-bytes-theorem: false
+; formal-input-path: formal-function-003-input.json
+; independent-source-denotation-sha256: sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8
+; independent-target-denotation-sha256: sha256:5f73b860c5bbc8d7cfeb756c04959d5059687d24f2e26d5a9912876dfa916a25
+; input-alignment: positional-substitution-after-independent-encoding
+; benchmark generated from python API
+(set-info :status unknown)
+(declare-fun target_value () (_ FloatingPoint 11 53))
+(declare-fun source_value () (_ FloatingPoint 11 53))
+(declare-fun target_minimum () (_ FloatingPoint 11 53))
+(declare-fun source_minimum () (_ FloatingPoint 11 53))
+(declare-fun target_maximum () (_ FloatingPoint 11 53))
+(declare-fun source_maximum () (_ FloatingPoint 11 53))
+(assert
+ (= (fp.to_ieee_bv source_value) (fp.to_ieee_bv target_value)))
+(assert
+ (not (fp.isNaN source_value)))
+(assert
+ (not (fp.isInfinite source_value)))
+(assert
+ (not (fp.isNaN target_value)))
+(assert
+ (not (fp.isInfinite target_value)))
+(assert
+ (= (fp.to_ieee_bv source_minimum) (fp.to_ieee_bv target_minimum)))
+(assert
+ (not (fp.isNaN source_minimum)))
+(assert
+ (not (fp.isInfinite source_minimum)))
+(assert
+ (not (fp.isNaN target_minimum)))
+(assert
+ (not (fp.isInfinite target_minimum)))
+(assert
+ (= (fp.to_ieee_bv source_maximum) (fp.to_ieee_bv target_maximum)))
+(assert
+ (not (fp.isNaN source_maximum)))
+(assert
+ (not (fp.isInfinite source_maximum)))
+(assert
+ (not (fp.isNaN target_maximum)))
+(assert
+ (not (fp.isInfinite target_maximum)))
+(assert
+ (let (($x2990 (fp.gt source_value source_maximum)))
+ (let ((?x964 (ite $x2990 0 0)))
+ (let ((?x41 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x680 (and (distinct ?x41 0) true)))
+ (let (($x4712 (fp.lt source_value source_minimum)))
+ (let ((?x1492 (ite $x4712 0 (ite $x680 ?x41 ?x964))))
+ (let ((?x2274 (ite $x680 ?x41 ?x1492)))
+ (= ?x2274 0)))))))))
+(assert
+ (let (($x2990 (fp.gt source_value source_maximum)))
+ (let ((?x964 (ite $x2990 0 0)))
+ (let ((?x41 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x680 (and (distinct ?x41 0) true)))
+ (let (($x4712 (fp.lt source_value source_minimum)))
+ (let ((?x1492 (ite $x4712 0 (ite $x680 ?x41 ?x964))))
+ (let ((?x2274 (ite $x680 ?x41 ?x1492)))
+ (= ?x2274 0)))))))))
+(assert
+ false)
+(check-sat)

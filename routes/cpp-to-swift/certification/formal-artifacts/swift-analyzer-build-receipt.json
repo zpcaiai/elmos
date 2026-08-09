@@ -1,0 +1,1318 @@
+{
+  "binary": {
+    "bytes": 14595072,
+    "device": 16777233,
+    "gid": 20,
+    "inode": 487129903,
+    "mode": "0500",
+    "name": "ElmosSwiftAnalyzer",
+    "nlink": 1,
+    "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-pkwjhckt/ElmosSwiftAnalyzer",
+    "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e",
+    "uid": 501
+  },
+  "build": {
+    "argv": [
+      "<sandbox-exec>",
+      "-p",
+      "<deny-network-policy>",
+      "<swift-driver>",
+      "build",
+      "--package-path",
+      "<source-snapshot>",
+      "--cache-path",
+      "<isolated-cache>",
+      "--config-path",
+      "<isolated-config>",
+      "--security-path",
+      "<isolated-security>",
+      "--scratch-path",
+      "<isolated-build>",
+      "--manifest-cache",
+      "none",
+      "--disable-sandbox",
+      "--disable-automatic-resolution",
+      "-c",
+      "release",
+      "-Xswiftc",
+      "-debug-prefix-map",
+      "-Xswiftc",
+      "<build-root>=/elmos/swift-analyzer",
+      "-Xswiftc",
+      "-file-prefix-map",
+      "-Xswiftc",
+      "<build-root>=/elmos/swift-analyzer",
+      "-Xswiftc",
+      "-file-compilation-dir",
+      "-Xswiftc",
+      "<canonical-compilation-dir>",
+      "-Xswiftc",
+      "-gnone",
+      "-Xswiftc",
+      "-no-serialize-debugging-options",
+      "-Xcc",
+      "-fdebug-prefix-map=<build-root>=/elmos/swift-analyzer",
+      "-Xcc",
+      "-ffile-prefix-map=<build-root>=/elmos/swift-analyzer",
+      "-Xcc",
+      "-fmacro-prefix-map=<build-root>=/elmos/swift-analyzer",
+      "-Xcc",
+      "-frandom-seed=elmos-swift-analyzer",
+      "-Xlinker",
+      "-no_uuid"
+    ],
+    "automatic_resolution": false,
+    "configuration": "release",
+    "deterministic_environment": {
+      "SOURCE_DATE_EPOCH": "0",
+      "SWIFT_DETERMINISTIC_HASHING": "1",
+      "ZERO_AR_DATE": "1"
+    },
+    "environment_policy": "minimal-empty-home-deterministic-v1",
+    "manifest_cache": "none",
+    "mtime_normalization": {
+      "epoch_nanoseconds": 0,
+      "scope": [
+        "source-snapshot",
+        "dependency-mirror"
+      ]
+    },
+    "reproducible_path_policy": "debug-file-macro-prefix-map-no-uuid-v1"
+  },
+  "canonical_identity": {
+    "receipt": {
+      "binary": {
+        "bytes": 14595072,
+        "mode": "0500",
+        "name": "ElmosSwiftAnalyzer",
+        "nlink": 1,
+        "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e"
+      },
+      "build": {
+        "argv": [
+          "<sandbox-exec>",
+          "-p",
+          "<deny-network-policy>",
+          "<swift-driver>",
+          "build",
+          "--package-path",
+          "<source-snapshot>",
+          "--cache-path",
+          "<isolated-cache>",
+          "--config-path",
+          "<isolated-config>",
+          "--security-path",
+          "<isolated-security>",
+          "--scratch-path",
+          "<isolated-build>",
+          "--manifest-cache",
+          "none",
+          "--disable-sandbox",
+          "--disable-automatic-resolution",
+          "-c",
+          "release",
+          "-Xswiftc",
+          "-debug-prefix-map",
+          "-Xswiftc",
+          "<build-root>=/elmos/swift-analyzer",
+          "-Xswiftc",
+          "-file-prefix-map",
+          "-Xswiftc",
+          "<build-root>=/elmos/swift-analyzer",
+          "-Xswiftc",
+          "-file-compilation-dir",
+          "-Xswiftc",
+          "<canonical-compilation-dir>",
+          "-Xswiftc",
+          "-gnone",
+          "-Xswiftc",
+          "-no-serialize-debugging-options",
+          "-Xcc",
+          "-fdebug-prefix-map=<build-root>=/elmos/swift-analyzer",
+          "-Xcc",
+          "-ffile-prefix-map=<build-root>=/elmos/swift-analyzer",
+          "-Xcc",
+          "-fmacro-prefix-map=<build-root>=/elmos/swift-analyzer",
+          "-Xcc",
+          "-frandom-seed=elmos-swift-analyzer",
+          "-Xlinker",
+          "-no_uuid"
+        ],
+        "automatic_resolution": false,
+        "configuration": "release",
+        "deterministic_environment": {
+          "SOURCE_DATE_EPOCH": "0",
+          "SWIFT_DETERMINISTIC_HASHING": "1",
+          "ZERO_AR_DATE": "1"
+        },
+        "environment_policy": "minimal-empty-home-deterministic-v1",
+        "manifest_cache": "none",
+        "mtime_normalization": {
+          "epoch_nanoseconds": 0,
+          "scope": [
+            "source-snapshot",
+            "dependency-mirror"
+          ]
+        },
+        "reproducible_path_policy": "debug-file-macro-prefix-map-no-uuid-v1"
+      },
+      "dependency": {
+        "bytes": 8866479,
+        "file_count": 753,
+        "identity": "swift-syntax",
+        "mirror": {
+          "bytes": 8866479,
+          "cache": {
+            "bytes": 8866479,
+            "cache_key": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+            "cache_schema": "swift-dependencies-v1",
+            "file_count": 753,
+            "identity": "swift-syntax",
+            "revision": "0687f71944021d616d34d922343dcef086855920",
+            "seed": "verified-content-addressed-cache",
+            "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+            "version": "600.0.1"
+          },
+          "file_count": 753,
+          "git": {
+            "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+            "version": "git version 2.50.1 (Apple Git-155)"
+          },
+          "identity": "swift-syntax",
+          "revision": "0687f71944021d616d34d922343dcef086855920",
+          "seed": "verified-content-addressed-cache",
+          "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+          "version": "600.0.1"
+        },
+        "revision": "0687f71944021d616d34d922343dcef086855920",
+        "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+        "version": "600.0.1"
+      },
+      "execution_seal": {
+        "binary": {
+          "bytes": 14595072,
+          "mode": "0500",
+          "name": "ElmosSwiftAnalyzer",
+          "nlink": 1,
+          "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e"
+        },
+        "mode": "0500",
+        "policy": "private-nonwritable-execution-root-v1"
+      },
+      "kind": "elmos.swift-analyzer-build-receipt",
+      "network_isolation": {
+        "policy": {
+          "bytes": 44,
+          "sha256": "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+          "text": "(version 1)\n(allow default)\n(deny network*)\n"
+        },
+        "probe": {
+          "binary": {
+            "bytes": 33784,
+            "mode": "0500",
+            "name": "ElmosNetworkDenyProbe",
+            "nlink": 1,
+            "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7"
+          },
+          "build": {
+            "argv": [
+              "<sandbox-exec>",
+              "-p",
+              "<deny-network-policy>",
+              "<clang>",
+              "-x",
+              "c",
+              "-std=c17",
+              "-target",
+              "arm64-apple-macosx26.0",
+              "-Os",
+              "-fno-ident",
+              "-isysroot",
+              "<swift-sdk>",
+              "-Wl,-dead_strip",
+              "-o",
+              "<probe-output>",
+              "-"
+            ],
+            "compiler": {
+              "bytes": 141373024,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "clang",
+              "sha256": "sha256:7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a"
+            },
+            "environment": {
+              "CLICOLOR": "0",
+              "GIT_CONFIG_GLOBAL": "<null-device>",
+              "GIT_CONFIG_NOSYSTEM": "1",
+              "GIT_TERMINAL_PROMPT": "0",
+              "HOME": "<isolated-home>",
+              "LANG": "C",
+              "LC_ALL": "C",
+              "NO_COLOR": "1",
+              "PATH": "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "PYTHONHASHSEED": "0",
+              "PYTHONNOUSERSITE": "1",
+              "SOURCE_DATE_EPOCH": "0",
+              "SWIFT_DETERMINISTIC_HASHING": "1",
+              "TMPDIR": "<isolated-tmp>",
+              "TZ": "UTC",
+              "XDG_CACHE_HOME": "<isolated-home>/.cache",
+              "ZERO_AR_DATE": "1"
+            },
+            "environment_policy": "sanitized-swift-build-deterministic-v1"
+          },
+          "execution_seal": {
+            "binary": {
+              "bytes": 33784,
+              "mode": "0500",
+              "name": "ElmosNetworkDenyProbe",
+              "nlink": 1,
+              "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7"
+            },
+            "mode": "0500",
+            "policy": "private-nonwritable-execution-root-v1"
+          },
+          "mach_o": {
+            "architecture": "arm64",
+            "cdhash_full": "5e87ec802f0589e8d88db8eed94de7f41f5c855110c202ec3959cb8cfb9d7dc4",
+            "file_type": "MH_EXECUTE",
+            "linked_libraries": [
+              "system-libSystem"
+            ],
+            "uuid": "3C8F074C-FA7E-3977-B467-A98D3FC2BE00"
+          },
+          "result": "NETWORK_DENIED:1",
+          "source": {
+            "bytes": 923,
+            "sha256": "sha256:8a82a5f438ec38c0e733881eb868d91a4fb82c3ce95c3d8f27507a720dee7c19",
+            "text": "#include <arpa/inet.h>\n#include <errno.h>\n#include <stdint.h>\n#include <sys/socket.h>\n#include <unistd.h>\n\nint main(void) {\n    const int descriptor = socket(AF_INET, SOCK_STREAM, 0);\n    if (descriptor < 0) {\n        return 2;\n    }\n    struct sockaddr_in address = {0};\n    address.sin_family = AF_INET;\n    address.sin_port = htons(9);\n    address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);\n    errno = 0;\n    const int status = connect(\n        descriptor,\n        (const struct sockaddr *)&address,\n        (socklen_t)sizeof(address)\n    );\n    const int error = errno;\n    if (close(descriptor) != 0) {\n        return 3;\n    }\n    if (status != -1 || error != EPERM) {\n        return 4;\n    }\n    static const char result[] = \"NETWORK_DENIED:1\\n\";\n    const ssize_t written = write(STDOUT_FILENO, result, sizeof(result) - 1);\n    if (written != (ssize_t)(sizeof(result) - 1)) {\n        return 5;\n    }\n    return 0;\n}\n"
+          }
+        },
+        "sandbox": {
+          "bytes": 102368,
+          "cdhash_full": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5",
+          "mode": "0755",
+          "nlink": 1,
+          "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+        },
+        "scope": "swift-build-process-tree",
+        "status": "PASSED",
+        "verifier": {
+          "bytes": 458576,
+          "mode": "0755",
+          "nlink": 1,
+          "sha256": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+        }
+      },
+      "schema_version": "1.0.0",
+      "source_inputs": {
+        "files": [
+          {
+            "bytes": 1459,
+            "path": "Package.swift",
+            "sha256": "sha256:d04fa34bedae2ae5ff4f5961030f23f95d73037b83a260891308f842aeae1f62"
+          },
+          {
+            "bytes": 312,
+            "path": "Package.resolved",
+            "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
+          },
+          {
+            "bytes": 27300,
+            "path": "Sources/ElmosSwiftAnalyzer/main.swift",
+            "sha256": "sha256:6ba3b995a43c70151e654b33bc6767c944ff0d92757bbcd4663e509048350b33"
+          }
+        ],
+        "sha256": "sha256:6082fc6160afa6498590a8ad8da909645274928bf6bf98fd34b9a8535a453c53"
+      },
+      "toolchain": {
+        "build_closure": {
+          "certification": "NOT_CERTIFIED",
+          "compiler_runtime_soundness": "NOT_RUN",
+          "components": [
+            {
+              "bytes": 171036592,
+              "link_target": "swift-frontend",
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-dispatcher",
+              "sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+            },
+            {
+              "bytes": 171036592,
+              "link_target": "swift-frontend",
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swiftc-dispatcher",
+              "sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+            },
+            {
+              "bytes": 23293616,
+              "link_target": "swift-package",
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-build-dispatcher",
+              "sha256": "sha256:dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753"
+            },
+            {
+              "bytes": 23293616,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-package",
+              "sha256": "sha256:dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753"
+            },
+            {
+              "bytes": 3011968,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-driver",
+              "sha256": "sha256:fead52ebe00ec6ec700ecbb4be30f0b6204dd0506cb271dda72ac257261bd64b"
+            },
+            {
+              "bytes": 171036592,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-frontend",
+              "sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+            },
+            {
+              "bytes": 141373024,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "clang",
+              "sha256": "sha256:7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a"
+            },
+            {
+              "bytes": 141373024,
+              "link_target": "clang",
+              "mode": "0755",
+              "nlink": 1,
+              "role": "clangxx-dispatcher",
+              "sha256": "sha256:7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a"
+            },
+            {
+              "bytes": 2331792,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "linker",
+              "sha256": "sha256:5897b275efd93b201b6df5832dd541262b3f20f290859ba78f2200a6a66ef38b"
+            },
+            {
+              "bytes": 73520,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "archiver",
+              "sha256": "sha256:e49ffad64ad1cee722540fc5ecb00a230fd8071680682c60d9c851029d20e814"
+            },
+            {
+              "bytes": 210800,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "libtool",
+              "sha256": "sha256:229eb9d8027953d2aee0590f983eed587d52bdd1ebc21114a62ce693f77b03f1"
+            },
+            {
+              "bytes": 71520,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "platform-swift-plugin-server",
+              "sha256": "sha256:438b8b9027176baed23c149a51250a94dc6a6360116aa818523168d1c4df68c8"
+            },
+            {
+              "bytes": 91424,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "in-process-plugin-server",
+              "sha256": "sha256:55385f1fbf98dd8e9a73cd0e87c0d93fbc778c6abe04c6fb744bff9278ef5811"
+            },
+            {
+              "bytes": 3031376,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-driver-library",
+              "sha256": "sha256:38ea28895a054a7d72da72042a786722884b62cdefdf0362d18f84a174ef87fb"
+            },
+            {
+              "bytes": 1190496,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-tools-support-library",
+              "sha256": "sha256:066f824adc6dffbfb4b88aeec2bce96bc2634b4cda4922ee2e999b4c9df431c1"
+            },
+            {
+              "bytes": 488112,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "build-server-protocol",
+              "sha256": "sha256:05be7dcb9f19802d036a5caa5cc5530c63ed0f2b3133185910200a5ee48dcec3"
+            },
+            {
+              "bytes": 2689424,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "language-server-protocol",
+              "sha256": "sha256:7c4f0641f2d7533c2432bd0234e285bbd464274b8928b335bf2861cda19f5e00"
+            },
+            {
+              "bytes": 254480,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "language-server-protocol-transport",
+              "sha256": "sha256:3ef1a0607d060769cdae18edbae5f622d974d2f2b157385d6cb03c6d6e6f8069"
+            },
+            {
+              "bytes": 1395264,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swb-build-service",
+              "sha256": "sha256:9e8908fcb0d74d0348b31641c0d3ec0fc97bd6467f82a574b1756432a73433de"
+            },
+            {
+              "bytes": 540144,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swb-project-model",
+              "sha256": "sha256:46c09eeff03bf97d179e6b6385fe6a58fea28245d6125ac61943a7615cc2acf9"
+            },
+            {
+              "bytes": 3196784,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swb-util",
+              "sha256": "sha256:165998df0e1326f5b254f40e0efe57e501f03c93bbe8ce306c82e8a77f14646c"
+            },
+            {
+              "bytes": 3413216,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "swift-build-framework",
+              "sha256": "sha256:3ae14a15416d3641949cb4eedecd972eec863eb058e753f1f564e5f35fe01973"
+            },
+            {
+              "bytes": 199824,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "tools-protocols-swift-extensions",
+              "sha256": "sha256:cf57590d1be3819fbbb7ebc51435423804e9b34723b068a1b5f83e11abe603bd"
+            },
+            {
+              "bytes": 1432608,
+              "link_target": null,
+              "mode": "0755",
+              "nlink": 1,
+              "role": "llbuild-framework",
+              "sha256": "sha256:25bfb2c3d42c28cc5b01bd303268f63e26ee017c54c626d98bddbe135ed28f36"
+            },
+            {
+              "bytes": 7774,
+              "link_target": null,
+              "mode": "0644",
+              "nlink": 1,
+              "role": "sdk-settings-json",
+              "sha256": "sha256:f8d005f09381389167f9e0aeaa169bc9e7dff162ef22ca2fd8e98df7ff1acafe"
+            },
+            {
+              "bytes": 5388,
+              "link_target": null,
+              "mode": "0644",
+              "nlink": 1,
+              "role": "sdk-settings-plist",
+              "sha256": "sha256:e5c7c40b8c5dc1a9f99f8b9fa51870f8fe180421225b8201d0c4c826aad11bdc"
+            },
+            {
+              "bytes": 5602567,
+              "link_target": null,
+              "mode": "0644",
+              "nlink": 1,
+              "role": "sdk-foundation-tbd",
+              "sha256": "sha256:f425b7c55986e46ab62fd8d8a457ee3fb1ddbe4af46b41abe1e63110ef7fba44"
+            },
+            {
+              "bytes": 420,
+              "link_target": null,
+              "mode": "0644",
+              "nlink": 1,
+              "role": "sdk-libswift-foundation-tbd",
+              "sha256": "sha256:c9a08100fa08663ed70835c177b05ce9ff4a0f81bfb6b7d32114cdc0e0371539"
+            }
+          ],
+          "schema": "swiftpm-build-execution-closure-v1",
+          "scope": "pinned-local-xcode-swiftpm-direct-components-and-critical-sdk-projection-v1",
+          "trees": [
+            {
+              "bytes": 3659442,
+              "file_count": 9,
+              "role": "manifest-api",
+              "sha256": "sha256:aaf47697e4ada643c682431426648cc1a915416afd2caf5beec096f8fa36417a"
+            },
+            {
+              "bytes": 3386557,
+              "file_count": 5,
+              "role": "plugin-api",
+              "sha256": "sha256:1a3dd060b6803d6873648832cea0b52635f9ae1a261e34bfeb133f7178ca645a"
+            },
+            {
+              "bytes": 1617344,
+              "file_count": 4,
+              "role": "toolchain-host-plugins",
+              "sha256": "sha256:912a7dbdbe6735e08ce84b0c7f313d18e4bb0ebf850c36f199cc1b46e35357ed"
+            },
+            {
+              "bytes": 5125484,
+              "file_count": 15,
+              "role": "platform-host-plugins",
+              "sha256": "sha256:6408d05c19f22daf7918307aa95077d8f2849fce8c85b722c90d5d9b1fa6d417"
+            },
+            {
+              "bytes": 7727385,
+              "file_count": 9,
+              "role": "sdk-foundation-module",
+              "sha256": "sha256:7165c4716fa827f8803998ea3e436e4458539900c0511cd61d3327293890d1f9"
+            },
+            {
+              "bytes": 104510,
+              "file_count": 8,
+              "role": "sdk-corefoundation-module",
+              "sha256": "sha256:a0405db90f83fb73a3fa7c63d4aa5f23c801d9fe07c24e690fb309837569710d"
+            },
+            {
+              "bytes": 52177,
+              "file_count": 8,
+              "role": "sdk-objectivec-module",
+              "sha256": "sha256:09c0b3b5ccc32bf959edf60385077623eda7e9f3b8a03f229fd655a08376845c"
+            },
+            {
+              "bytes": 162910,
+              "file_count": 8,
+              "role": "sdk-darwin-foundation1-module",
+              "sha256": "sha256:afd2771e20e7908556e4093be833fc27a989610d1a67adcf3d2192fc0bed20a1"
+            },
+            {
+              "bytes": 12270,
+              "file_count": 8,
+              "role": "sdk-darwin-foundation2-module",
+              "sha256": "sha256:7cb0327244e386b14d8464ed2bcabcbd307ac72e303786d590a0dc90b9535b72"
+            },
+            {
+              "bytes": 7854,
+              "file_count": 8,
+              "role": "sdk-darwin-foundation3-module",
+              "sha256": "sha256:8662a95e3ab622e93e92ce13177a31d6831760e49906357c457e7aa811ece40a"
+            },
+            {
+              "bytes": 15112272,
+              "file_count": 4,
+              "role": "toolchain-foundation-prebuilt-module",
+              "sha256": "sha256:cc03cfb24425d6842fe72ed89c2f2b2e26ae641cb35cd3211e3f2d93d5bd9b93"
+            },
+            {
+              "bytes": 1707906,
+              "file_count": 174,
+              "role": "sdk-foundation-headers",
+              "sha256": "sha256:7c6b6a8f06f51aeaa26411b9fb79cb28800461f939eac310c2be9a4f5edcec91"
+            },
+            {
+              "bytes": 136132,
+              "file_count": 17,
+              "role": "sdk-objc-headers",
+              "sha256": "sha256:798fa35ace9193dc45fceb26954f025f04b67116e329596673319d851485517a"
+            }
+          ]
+        },
+        "profile": [
+          "platform=Darwin/arm64",
+          "xcode=26.6/17F113",
+          "macosx-sdk=26.5",
+          "swift-language-mode=6",
+          "integer=Int64"
+        ],
+        "swift_driver_sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "swiftc_sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+      }
+    },
+    "sha256": "sha256:0a3bd73ef83f94fed80ca6049ead2f2f8396792e1a8d557f77ab05b39b127303"
+  },
+  "dependency": {
+    "bytes": 8866479,
+    "file_count": 753,
+    "identity": "swift-syntax",
+    "mirror": {
+      "bytes": 8866479,
+      "cache": {
+        "bytes": 8866479,
+        "cache_key": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+        "cache_schema": "swift-dependencies-v1",
+        "file_count": 753,
+        "identity": "swift-syntax",
+        "revision": "0687f71944021d616d34d922343dcef086855920",
+        "seed": "verified-content-addressed-cache",
+        "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+        "version": "600.0.1"
+      },
+      "file_count": 753,
+      "git": {
+        "path": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
+        "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+        "version": "git version 2.50.1 (Apple Git-155)"
+      },
+      "identity": "swift-syntax",
+      "revision": "0687f71944021d616d34d922343dcef086855920",
+      "seed": "verified-content-addressed-cache",
+      "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+      "version": "600.0.1"
+    },
+    "revision": "0687f71944021d616d34d922343dcef086855920",
+    "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+    "version": "600.0.1"
+  },
+  "execution_seal": {
+    "binary": {
+      "bytes": 14595072,
+      "device": 16777233,
+      "gid": 20,
+      "inode": 487129903,
+      "mode": "0500",
+      "name": "ElmosSwiftAnalyzer",
+      "nlink": 1,
+      "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-pkwjhckt/ElmosSwiftAnalyzer",
+      "sha256": "sha256:731454dff7efc96346c31f89a94e38c7f41073bf7f1ed6e6f3e140f6cf36053e",
+      "uid": 501
+    },
+    "device": 16777233,
+    "gid": 20,
+    "inode": 487099506,
+    "mode": "0500",
+    "policy": "private-nonwritable-execution-root-v1",
+    "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-pkwjhckt",
+    "uid": 501
+  },
+  "kind": "elmos.swift-analyzer-build-receipt",
+  "network_isolation": {
+    "policy": {
+      "bytes": 44,
+      "sha256": "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+      "text": "(version 1)\n(allow default)\n(deny network*)\n"
+    },
+    "probe": {
+      "binary": {
+        "bytes": 33784,
+        "device": 16777233,
+        "gid": 20,
+        "inode": 487100491,
+        "mode": "0500",
+        "name": "ElmosNetworkDenyProbe",
+        "nlink": 1,
+        "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-pkwjhckt/network-probe-execution/ElmosNetworkDenyProbe",
+        "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7",
+        "uid": 501
+      },
+      "build": {
+        "argv": [
+          "<sandbox-exec>",
+          "-p",
+          "<deny-network-policy>",
+          "<clang>",
+          "-x",
+          "c",
+          "-std=c17",
+          "-target",
+          "arm64-apple-macosx26.0",
+          "-Os",
+          "-fno-ident",
+          "-isysroot",
+          "<swift-sdk>",
+          "-Wl,-dead_strip",
+          "-o",
+          "<probe-output>",
+          "-"
+        ],
+        "compiler": {
+          "bytes": 141373024,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "role": "clang",
+          "sha256": "sha256:7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+          "uid": 0
+        },
+        "environment": {
+          "CLICOLOR": "0",
+          "GIT_CONFIG_GLOBAL": "<null-device>",
+          "GIT_CONFIG_NOSYSTEM": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "HOME": "<isolated-home>",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "NO_COLOR": "1",
+          "PATH": "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONHASHSEED": "0",
+          "PYTHONNOUSERSITE": "1",
+          "SOURCE_DATE_EPOCH": "0",
+          "SWIFT_DETERMINISTIC_HASHING": "1",
+          "TMPDIR": "<isolated-tmp>",
+          "TZ": "UTC",
+          "XDG_CACHE_HOME": "<isolated-home>/.cache",
+          "ZERO_AR_DATE": "1"
+        },
+        "environment_policy": "sanitized-swift-build-deterministic-v1"
+      },
+      "execution_seal": {
+        "binary": {
+          "bytes": 33784,
+          "device": 16777233,
+          "gid": 20,
+          "inode": 487100491,
+          "mode": "0500",
+          "name": "ElmosNetworkDenyProbe",
+          "nlink": 1,
+          "path": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-pkwjhckt/network-probe-execution/ElmosNetworkDenyProbe",
+          "sha256": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7",
+          "uid": 501
+        },
+        "device": 16777233,
+        "gid": 20,
+        "inode": 487100490,
+        "mode": "0500",
+        "policy": "private-nonwritable-execution-root-v1",
+        "root": "/private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-swift-analyzer-pkwjhckt/network-probe-execution",
+        "uid": 501
+      },
+      "mach_o": {
+        "architecture": "arm64",
+        "cdhash_full": "5e87ec802f0589e8d88db8eed94de7f41f5c855110c202ec3959cb8cfb9d7dc4",
+        "file_type": "MH_EXECUTE",
+        "linked_libraries": [
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "uuid": "3C8F074C-FA7E-3977-B467-A98D3FC2BE00"
+      },
+      "result": "NETWORK_DENIED:1",
+      "source": {
+        "bytes": 923,
+        "sha256": "sha256:8a82a5f438ec38c0e733881eb868d91a4fb82c3ce95c3d8f27507a720dee7c19",
+        "text": "#include <arpa/inet.h>\n#include <errno.h>\n#include <stdint.h>\n#include <sys/socket.h>\n#include <unistd.h>\n\nint main(void) {\n    const int descriptor = socket(AF_INET, SOCK_STREAM, 0);\n    if (descriptor < 0) {\n        return 2;\n    }\n    struct sockaddr_in address = {0};\n    address.sin_family = AF_INET;\n    address.sin_port = htons(9);\n    address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);\n    errno = 0;\n    const int status = connect(\n        descriptor,\n        (const struct sockaddr *)&address,\n        (socklen_t)sizeof(address)\n    );\n    const int error = errno;\n    if (close(descriptor) != 0) {\n        return 3;\n    }\n    if (status != -1 || error != EPERM) {\n        return 4;\n    }\n    static const char result[] = \"NETWORK_DENIED:1\\n\";\n    const ssize_t written = write(STDOUT_FILENO, result, sizeof(result) - 1);\n    if (written != (ssize_t)(sizeof(result) - 1)) {\n        return 5;\n    }\n    return 0;\n}\n"
+      }
+    },
+    "sandbox": {
+      "bytes": 102368,
+      "cdhash_full": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5",
+      "gid": 0,
+      "mode": "0755",
+      "nlink": 1,
+      "path": "/usr/bin/sandbox-exec",
+      "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f",
+      "uid": 0
+    },
+    "scope": "swift-build-process-tree",
+    "status": "PASSED",
+    "verifier": {
+      "bytes": 458576,
+      "gid": 0,
+      "mode": "0755",
+      "nlink": 1,
+      "path": "/usr/bin/codesign",
+      "sha256": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40",
+      "uid": 0
+    }
+  },
+  "schema_version": "1.0.0",
+  "source_inputs": {
+    "files": [
+      {
+        "bytes": 1459,
+        "path": "Package.swift",
+        "sha256": "sha256:d04fa34bedae2ae5ff4f5961030f23f95d73037b83a260891308f842aeae1f62"
+      },
+      {
+        "bytes": 312,
+        "path": "Package.resolved",
+        "sha256": "sha256:ed6939127062fd850b4205b338e64b77ba055c25f76fda83ab0f4406fe49d83a"
+      },
+      {
+        "bytes": 27300,
+        "path": "Sources/ElmosSwiftAnalyzer/main.swift",
+        "sha256": "sha256:6ba3b995a43c70151e654b33bc6767c944ff0d92757bbcd4663e509048350b33"
+      }
+    ],
+    "sha256": "sha256:6082fc6160afa6498590a8ad8da909645274928bf6bf98fd34b9a8535a453c53"
+  },
+  "toolchain": {
+    "build_closure": {
+      "certification": "NOT_CERTIFIED",
+      "compiler_runtime_soundness": "NOT_RUN",
+      "components": [
+        {
+          "bytes": 171036592,
+          "gid": 0,
+          "link_target": "swift-frontend",
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend",
+          "role": "swift-dispatcher",
+          "sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+          "uid": 0
+        },
+        {
+          "bytes": 171036592,
+          "gid": 0,
+          "link_target": "swift-frontend",
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend",
+          "role": "swiftc-dispatcher",
+          "sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+          "uid": 0
+        },
+        {
+          "bytes": 23293616,
+          "gid": 0,
+          "link_target": "swift-package",
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-build",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-package",
+          "role": "swift-build-dispatcher",
+          "sha256": "sha256:dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753",
+          "uid": 0
+        },
+        {
+          "bytes": 23293616,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-package",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-package",
+          "role": "swift-package",
+          "sha256": "sha256:dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753",
+          "uid": 0
+        },
+        {
+          "bytes": 3011968,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-driver",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-driver",
+          "role": "swift-driver",
+          "sha256": "sha256:fead52ebe00ec6ec700ecbb4be30f0b6204dd0506cb271dda72ac257261bd64b",
+          "uid": 0
+        },
+        {
+          "bytes": 171036592,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend",
+          "role": "swift-frontend",
+          "sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+          "uid": 0
+        },
+        {
+          "bytes": 141373024,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "role": "clang",
+          "sha256": "sha256:7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+          "uid": 0
+        },
+        {
+          "bytes": 141373024,
+          "gid": 0,
+          "link_target": "clang",
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "role": "clangxx-dispatcher",
+          "sha256": "sha256:7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+          "uid": 0
+        },
+        {
+          "bytes": 2331792,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld",
+          "role": "linker",
+          "sha256": "sha256:5897b275efd93b201b6df5832dd541262b3f20f290859ba78f2200a6a66ef38b",
+          "uid": 0
+        },
+        {
+          "bytes": 73520,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar",
+          "role": "archiver",
+          "sha256": "sha256:e49ffad64ad1cee722540fc5ecb00a230fd8071680682c60d9c851029d20e814",
+          "uid": 0
+        },
+        {
+          "bytes": 210800,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool",
+          "role": "libtool",
+          "sha256": "sha256:229eb9d8027953d2aee0590f983eed587d52bdd1ebc21114a62ce693f77b03f1",
+          "uid": 0
+        },
+        {
+          "bytes": 71520,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server",
+          "role": "platform-swift-plugin-server",
+          "sha256": "sha256:438b8b9027176baed23c149a51250a94dc6a6360116aa818523168d1c4df68c8",
+          "uid": 0
+        },
+        {
+          "bytes": 91424,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib",
+          "role": "in-process-plugin-server",
+          "sha256": "sha256:55385f1fbf98dd8e9a73cd0e87c0d93fbc778c6abe04c6fb744bff9278ef5811",
+          "uid": 0
+        },
+        {
+          "bytes": 3031376,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libSwiftDriver.dylib",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libSwiftDriver.dylib",
+          "role": "swift-driver-library",
+          "sha256": "sha256:38ea28895a054a7d72da72042a786722884b62cdefdf0362d18f84a174ef87fb",
+          "uid": 0
+        },
+        {
+          "bytes": 1190496,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libSwiftToolsSupport.dylib",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libSwiftToolsSupport.dylib",
+          "role": "swift-tools-support-library",
+          "sha256": "sha256:066f824adc6dffbfb4b88aeec2bce96bc2634b4cda4922ee2e999b4c9df431c1",
+          "uid": 0
+        },
+        {
+          "bytes": 488112,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/BuildServerProtocol.framework/Versions/A/BuildServerProtocol",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/BuildServerProtocol.framework/Versions/A/BuildServerProtocol",
+          "role": "build-server-protocol",
+          "sha256": "sha256:05be7dcb9f19802d036a5caa5cc5530c63ed0f2b3133185910200a5ee48dcec3",
+          "uid": 0
+        },
+        {
+          "bytes": 2689424,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/LanguageServerProtocol.framework/Versions/A/LanguageServerProtocol",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/LanguageServerProtocol.framework/Versions/A/LanguageServerProtocol",
+          "role": "language-server-protocol",
+          "sha256": "sha256:7c4f0641f2d7533c2432bd0234e285bbd464274b8928b335bf2861cda19f5e00",
+          "uid": 0
+        },
+        {
+          "bytes": 254480,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/LanguageServerProtocolTransport.framework/Versions/A/LanguageServerProtocolTransport",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/LanguageServerProtocolTransport.framework/Versions/A/LanguageServerProtocolTransport",
+          "role": "language-server-protocol-transport",
+          "sha256": "sha256:3ef1a0607d060769cdae18edbae5f622d974d2f2b157385d6cb03c6d6e6f8069",
+          "uid": 0
+        },
+        {
+          "bytes": 1395264,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBBuildService.framework/Versions/A/SWBBuildService",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBBuildService.framework/Versions/A/SWBBuildService",
+          "role": "swb-build-service",
+          "sha256": "sha256:9e8908fcb0d74d0348b31641c0d3ec0fc97bd6467f82a574b1756432a73433de",
+          "uid": 0
+        },
+        {
+          "bytes": 540144,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBProjectModel.framework/Versions/A/SWBProjectModel",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBProjectModel.framework/Versions/A/SWBProjectModel",
+          "role": "swb-project-model",
+          "sha256": "sha256:46c09eeff03bf97d179e6b6385fe6a58fea28245d6125ac61943a7615cc2acf9",
+          "uid": 0
+        },
+        {
+          "bytes": 3196784,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBUtil.framework/Versions/A/SWBUtil",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBUtil.framework/Versions/A/SWBUtil",
+          "role": "swb-util",
+          "sha256": "sha256:165998df0e1326f5b254f40e0efe57e501f03c93bbe8ce306c82e8a77f14646c",
+          "uid": 0
+        },
+        {
+          "bytes": 3413216,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/SwiftBuild",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/SwiftBuild.framework/Versions/A/SwiftBuild",
+          "role": "swift-build-framework",
+          "sha256": "sha256:3ae14a15416d3641949cb4eedecd972eec863eb058e753f1f564e5f35fe01973",
+          "uid": 0
+        },
+        {
+          "bytes": 199824,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/ToolsProtocolsSwiftExtensions.framework/Versions/A/ToolsProtocolsSwiftExtensions",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/ToolsProtocolsSwiftExtensions.framework/Versions/A/ToolsProtocolsSwiftExtensions",
+          "role": "tools-protocols-swift-extensions",
+          "sha256": "sha256:cf57590d1be3819fbbb7ebc51435423804e9b34723b068a1b5f83e11abe603bd",
+          "uid": 0
+        },
+        {
+          "bytes": 1432608,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0755",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/SharedFrameworks/llbuild.framework/Versions/A/llbuild",
+          "resolved_path": "/Applications/Xcode.app/Contents/SharedFrameworks/llbuild.framework/Versions/A/llbuild",
+          "role": "llbuild-framework",
+          "sha256": "sha256:25bfb2c3d42c28cc5b01bd303268f63e26ee017c54c626d98bddbe135ed28f36",
+          "uid": 0
+        },
+        {
+          "bytes": 7774,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0644",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/SDKSettings.json",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/SDKSettings.json",
+          "role": "sdk-settings-json",
+          "sha256": "sha256:f8d005f09381389167f9e0aeaa169bc9e7dff162ef22ca2fd8e98df7ff1acafe",
+          "uid": 0
+        },
+        {
+          "bytes": 5388,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0644",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/SDKSettings.plist",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/SDKSettings.plist",
+          "role": "sdk-settings-plist",
+          "sha256": "sha256:e5c7c40b8c5dc1a9f99f8b9fa51870f8fe180421225b8201d0c4c826aad11bdc",
+          "uid": 0
+        },
+        {
+          "bytes": 5602567,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0644",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation.tbd",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation.tbd",
+          "role": "sdk-foundation-tbd",
+          "sha256": "sha256:f425b7c55986e46ab62fd8d8a457ee3fb1ddbe4af46b41abe1e63110ef7fba44",
+          "uid": 0
+        },
+        {
+          "bytes": 420,
+          "gid": 0,
+          "link_target": null,
+          "mode": "0644",
+          "nlink": 1,
+          "path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/lib/swift/libswiftFoundation.tbd",
+          "resolved_path": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/swift/libswiftFoundation.tbd",
+          "role": "sdk-libswift-foundation-tbd",
+          "sha256": "sha256:c9a08100fa08663ed70835c177b05ce9ff4a0f81bfb6b7d32114cdc0e0371539",
+          "uid": 0
+        }
+      ],
+      "schema": "swiftpm-build-execution-closure-v1",
+      "scope": "pinned-local-xcode-swiftpm-direct-components-and-critical-sdk-projection-v1",
+      "trees": [
+        {
+          "bytes": 3659442,
+          "file_count": 9,
+          "role": "manifest-api",
+          "root": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/pm/ManifestAPI",
+          "sha256": "sha256:aaf47697e4ada643c682431426648cc1a915416afd2caf5beec096f8fa36417a"
+        },
+        {
+          "bytes": 3386557,
+          "file_count": 5,
+          "role": "plugin-api",
+          "root": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/pm/PluginAPI",
+          "sha256": "sha256:1a3dd060b6803d6873648832cea0b52635f9ae1a261e34bfeb133f7178ca645a"
+        },
+        {
+          "bytes": 1617344,
+          "file_count": 4,
+          "role": "toolchain-host-plugins",
+          "root": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins",
+          "sha256": "sha256:912a7dbdbe6735e08ce84b0c7f313d18e4bb0ebf850c36f199cc1b46e35357ed"
+        },
+        {
+          "bytes": 5125484,
+          "file_count": 15,
+          "role": "platform-host-plugins",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins",
+          "sha256": "sha256:6408d05c19f22daf7918307aa95077d8f2849fce8c85b722c90d5d9b1fa6d417"
+        },
+        {
+          "bytes": 7727385,
+          "file_count": 9,
+          "role": "sdk-foundation-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Versions/C/Modules",
+          "sha256": "sha256:7165c4716fa827f8803998ea3e436e4458539900c0511cd61d3327293890d1f9"
+        },
+        {
+          "bytes": 104510,
+          "file_count": 8,
+          "role": "sdk-corefoundation-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/lib/swift/CoreFoundation.swiftmodule",
+          "sha256": "sha256:a0405db90f83fb73a3fa7c63d4aa5f23c801d9fe07c24e690fb309837569710d"
+        },
+        {
+          "bytes": 52177,
+          "file_count": 8,
+          "role": "sdk-objectivec-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/lib/swift/ObjectiveC.swiftmodule",
+          "sha256": "sha256:09c0b3b5ccc32bf959edf60385077623eda7e9f3b8a03f229fd655a08376845c"
+        },
+        {
+          "bytes": 162910,
+          "file_count": 8,
+          "role": "sdk-darwin-foundation1-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/lib/swift/_DarwinFoundation1.swiftmodule",
+          "sha256": "sha256:afd2771e20e7908556e4093be833fc27a989610d1a67adcf3d2192fc0bed20a1"
+        },
+        {
+          "bytes": 12270,
+          "file_count": 8,
+          "role": "sdk-darwin-foundation2-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/lib/swift/_DarwinFoundation2.swiftmodule",
+          "sha256": "sha256:7cb0327244e386b14d8464ed2bcabcbd307ac72e303786d590a0dc90b9535b72"
+        },
+        {
+          "bytes": 7854,
+          "file_count": 8,
+          "role": "sdk-darwin-foundation3-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/lib/swift/_DarwinFoundation3.swiftmodule",
+          "sha256": "sha256:8662a95e3ab622e93e92ce13177a31d6831760e49906357c457e7aa811ece40a"
+        },
+        {
+          "bytes": 15112272,
+          "file_count": 4,
+          "role": "toolchain-foundation-prebuilt-module",
+          "root": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx/prebuilt-modules/26.5/Foundation.swiftmodule",
+          "sha256": "sha256:cc03cfb24425d6842fe72ed89c2f2b2e26ae641cb35cd3211e3f2d93d5bd9b93"
+        },
+        {
+          "bytes": 1707906,
+          "file_count": 174,
+          "role": "sdk-foundation-headers",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Foundation.framework/Versions/C/Headers",
+          "sha256": "sha256:7c6b6a8f06f51aeaa26411b9fb79cb28800461f939eac310c2be9a4f5edcec91"
+        },
+        {
+          "bytes": 136132,
+          "file_count": 17,
+          "role": "sdk-objc-headers",
+          "root": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk/usr/include/objc",
+          "sha256": "sha256:798fa35ace9193dc45fceb26954f025f04b67116e329596673319d851485517a"
+        }
+      ]
+    },
+    "profile": [
+      "platform=Darwin/arm64",
+      "xcode=26.6/17F113",
+      "macosx-sdk=26.5",
+      "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "swift-language-mode=6",
+      "integer=Int64"
+    ],
+    "swift_driver": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift",
+    "swift_driver_sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+    "swiftc": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+    "swiftc_sha256": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+    "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+  }
+}

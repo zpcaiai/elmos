@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:ba1d59ce152cd41c31744da289f50c22a04d16a81be8f743de130f8ee333b175",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1987,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/jquery/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-computed-layout-i18n-theme-observer-trace/aafc3c74f43e028393f9df78c01cfe63d15779142482f7d087e8d02fd9ecee80.json",
+      "profile_id": "jquery",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+      "sha256": "sha256:aafc3c74f43e028393f9df78c01cfe63d15779142482f7d087e8d02fd9ecee80"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:d2727a3c36a6756bbacaa64143f6d53dbb043993e9d17a946b5474077b5857c1",
+        "byte_count": 39912,
+        "channel": "browser",
+        "path": "traces/jquery/browser/API_ERROR_CANCEL_STALE_RESPONSE/browser-dom-snapshot/446b1e25172a1ec946f08b22fa44c2c5db3701d93d75db6184d4bd5cb534b3ff.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+        "sha256": "sha256:446b1e25172a1ec946f08b22fa44c2c5db3701d93d75db6184d4bd5cb534b3ff"
+      }
+    ]
+  },
+  "scenario_id": "API_ERROR_CANCEL_STALE_RESPONSE",
+  "schema_version": "1.0"
+}

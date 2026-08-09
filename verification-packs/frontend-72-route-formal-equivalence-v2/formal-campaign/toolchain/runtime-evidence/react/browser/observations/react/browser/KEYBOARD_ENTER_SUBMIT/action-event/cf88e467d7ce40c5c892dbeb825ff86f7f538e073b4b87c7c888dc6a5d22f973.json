@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "SUBMIT_ACCEPTED",
+    "event": "BOOT",
+    "handled": true,
+    "keyboardKey": "Enter"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7bbe1aa0b8c134ed0bed24b963591e2dcac51a1cc6630ef8fe8bc545e55b6a12",
+      "block_id": "action-event",
+      "byte_count": 3956,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/react/browser/KEYBOARD_ENTER_SUBMIT/browser-native-event-outcome-observer-trace/eabf25a9376aef6af91b22c2c281067691aaa76320583432486dec9cc615908c.json",
+      "profile_id": "react",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+      "sha256": "sha256:eabf25a9376aef6af91b22c2c281067691aaa76320583432486dec9cc615908c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:c401050665d3a7f42459fa2c51e681650ed0d34ac653c5bdaf4d87d3301fca37",
+        "byte_count": 8264,
+        "channel": "browser",
+        "path": "traces/react/browser/KEYBOARD_ENTER_SUBMIT/browser-framework-event-trace/97175b402842b1cb0068781813751a3216bdd86d62c6459037dc9a0116db2bd4.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+        "sha256": "sha256:97175b402842b1cb0068781813751a3216bdd86d62c6459037dc9a0116db2bd4"
+      }
+    ]
+  },
+  "scenario_id": "KEYBOARD_ENTER_SUBMIT",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "owner",
+    "release_digest",
+    "risk_tier",
+    "triggers",
+    "interval_days",
+    "last_run",
+    "next_due",
+    "current",
+    "overdue",
+    "open_critical_findings"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "release_digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "risk_tier": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ]
+    },
+    "triggers": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "interval_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "last_run": {
+      "type": "string",
+      "minLength": 1
+    },
+    "next_due": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "overdue": {
+      "type": "boolean"
+    },
+    "open_critical_findings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$id": "https://example.invalid/batch37/recertification-policy.schema.json"
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "cb21f9da4f2f48e8a5abcab1",
+  "direction": {
+    "routeId": "angular--to--harmony-arkui",
+    "source": "angular",
+    "target": "harmony-arkui",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "6.0.0(20)",
+    "supportState": "ADAPTER_REQUIRED",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "harmony-arkui",
+    "label": "HarmonyOS ArkUI",
+    "frameworkVersion": "6.0.0(20)",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "HARMONYOS"
+    ],
+    "language": "ArkTS",
+    "languageVersion": "HarmonyOS 6.0.0 API 20",
+    "runtime": "HarmonyOS",
+    "runtimeVersion": "6.0.0(20)",
+    "buildTool": "Hvigor",
+    "buildToolVersion": "DevEco Studio 6.0.0 Release bundled",
+    "packageManager": "ohpm",
+    "packageManagerVersion": "DevEco Studio 6.0.0 Release bundled",
+    "router": "ArkUI Navigation",
+    "state": "ArkUI observed state",
+    "rendering": "ArkUI declarative rendering",
+    "testTool": "Hypium profile",
+    "runnerProfile": "HARMONYOS",
+    "requiredProjectFiles": [
+      "build-profile.json5",
+      "AppScope/app.json5",
+      "entry/src/main/module.json5",
+      "entry/src/main/ets/pages/Index.ets"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:0c8c62d121cd004e4e458dcd80733a6f8a415b956e06d5bb0816d547c7bdf723",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".elmos-harmony-runner.json",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      "AppScope/app.json5",
+      "AppScope/resources/base/element/string.json",
+      "AppScope/resources/base/media/app_icon.svg",
+      "README.md",
+      "build-profile.json5",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "entry/build-profile.json5",
+      "entry/hvigorfile.ts",
+      "entry/oh-package.json5",
+      "entry/src/main/ets/elmos-bounded-navigation.ets",
+      "entry/src/main/ets/entryability/EntryAbility.ets",
+      "entry/src/main/ets/pages/Index.ets",
+      "entry/src/main/module.json5",
+      "entry/src/main/resources/base/element/string.json",
+      "entry/src/main/resources/base/profile/main_pages.json",
+      "entry/src/main/resources/rawfile/ui_ir.json",
+      "hvigorfile.ts",
+      "oh-package.json5",
+      "scripts/verify.sh",
+      "target-profile/profile.json",
+      "ui-ir/model.json"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

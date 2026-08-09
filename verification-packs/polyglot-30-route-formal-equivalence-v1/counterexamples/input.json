@@ -1,0 +1,6 @@
+{
+  "expected": "counterexample-and-gate-failure",
+  "mutation": "replace canonical integer addition with subtraction",
+  "negative_control": "mutated-target-semantic-ir",
+  "scope": "typed-pure-function-v1"
+}

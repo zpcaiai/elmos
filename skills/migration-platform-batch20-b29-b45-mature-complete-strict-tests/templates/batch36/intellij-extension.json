@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "extension_key": "migration-intellij",
+  "host": "intellij",
+  "version": "0.1.0",
+  "host_version_range": "TODO-exact-range",
+  "protocol_version": "1.0.0",
+  "capabilities": [
+    "preview",
+    "navigation",
+    "explain",
+    "quick-fix",
+    "local-eval"
+  ],
+  "permissions": {
+    "repository_write": "approved-patches-only",
+    "arbitrary_shell": false,
+    "secret_read": false,
+    "network_domains": [
+      "control-plane.example.invalid"
+    ]
+  },
+  "distribution": {
+    "signed": false,
+    "package_ref": "certification/migration-intellij.package",
+    "signature_ref": "certification/migration-intellij.sig"
+  }
+}

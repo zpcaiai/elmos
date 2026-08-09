@@ -1,0 +1,149 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/go-to-python/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "__pycache__/migrated.cpython-312.pyc",
+    "__pycache__/route_harness.cpython-312.pyc"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1556,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:ad0362dd04d584fa2f30830b6dbf423f2cc8be26924af3db237a547ebd952ae2"
+    },
+    {
+      "bytes": 8462,
+      "path": "chunk-map.json",
+      "sha256": "sha256:b2e52b3083f2278a07a7eec6030a9739976b7aea8adee21128e8a2b6a57b73de"
+    },
+    {
+      "bytes": 2956,
+      "path": "formal-composition.json",
+      "sha256": "sha256:7aacef36b93d9655e578958ce08741e8d372af110cc55dd18e449804cf1ed7bb"
+    },
+    {
+      "bytes": 981,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:4a51bbc31e59eed7bc8fbdd5b2aa62cedcca0c567d3cf17409dd66b2102ff474"
+    },
+    {
+      "bytes": 7503,
+      "path": "formal-input.json",
+      "sha256": "sha256:4b5f7ec53833c9d49a093d1f54be4a3d88ddbb0cd15dd2406f41fccfbdaa5e5f"
+    },
+    {
+      "bytes": 2334,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:f913b38720d3ff7c487c63e746e769a8efbc0cf83b850ded4ebafded9b97fa71"
+    },
+    {
+      "bytes": 151,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:7852b92b25b5f749f169111c082576a1c9d48ae7ddabb263d844702f63e10722"
+    },
+    {
+      "bytes": 125,
+      "path": "inputs/pricing.go",
+      "sha256": "sha256:3cfb29fc1c83f2ace19a135fad0b124fcb525bf6cec5c0252cd7ad5664c8accf"
+    },
+    {
+      "bytes": 3432,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:54821110b7bd2a2767572f66e62aca504a3228dd51264947a097f1a7d36f87d1"
+    },
+    {
+      "bytes": 773,
+      "path": "migrated.py",
+      "sha256": "sha256:4f03efd77189cd4f860237b81acec501d99d4a3ffc0843a1e669317cb07c44ff"
+    },
+    {
+      "bytes": 6996,
+      "path": "route-evidence.json",
+      "sha256": "sha256:86b43155097c4a1c701dfcd2952448b77986cc8813bdd9841695d6737e9cc46a"
+    },
+    {
+      "bytes": 572,
+      "path": "route_harness.py",
+      "sha256": "sha256:85ba58956008d760e63315a826f1a906162e15a3759003d723686a25eff2d36a"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 664,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798"
+    },
+    {
+      "bytes": 125,
+      "path": "source-runtime/pricing.go",
+      "sha256": "sha256:3cfb29fc1c83f2ace19a135fad0b124fcb525bf6cec5c0252cd7ad5664c8accf"
+    },
+    {
+      "bytes": 693,
+      "path": "source-runtime/source_behavior_test.go",
+      "sha256": "sha256:f186411ab094152f64de766349f95eac08c8673d27f21dc144b1352f5956bd03"
+    },
+    {
+      "bytes": 664,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:baebcfd0ede261ce405549c78c6b3099d12d49b481682b9dbbe1814b1879f798"
+    },
+    {
+      "bytes": 666,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:90b1603d1c575a23218d5116ee8e795c59698bdc0965b805275be7558bfd75f5"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "go-to-python",
+  "schema_version": 1,
+  "total_bytes": 38962
+}

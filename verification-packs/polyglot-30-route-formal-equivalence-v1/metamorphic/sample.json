@@ -1,0 +1,24 @@
+{
+  "claim_id": "claim.route-equivalence",
+  "expected_relation": {
+    "kind": "same-value-or-same-error-class"
+  },
+  "non_applicable": [
+    "semantics-outside-typed-pure-function-v1"
+  ],
+  "oracle_refs": [
+    "oracle.canonical-ir",
+    "oracle.source-runtime",
+    "oracle.target-runtime"
+  ],
+  "owner": "elmos-polyglot-verification-engineering",
+  "preconditions": [
+    "both-directed-routes-in-exact-profile",
+    "canonical-input-is-valid"
+  ],
+  "relation_id": "relation.route-direction-composition",
+  "schema_version": 1,
+  "transformation": {
+    "kind": "source-to-target-to-canonical-replay"
+  }
+}

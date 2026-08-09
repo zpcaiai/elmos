@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:736a59020fbdf2cf96de8a2ea4ee67d30fd05585cbb1118ba3a6764addefd54a",
+      "block_id": "component-template-view",
+      "byte_count": 1508,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-rendered-component-observer-trace/06d1899314df8533b7629917daa51fa87db07cccb5a1a19783a0f1c76da320b0.json",
+      "profile_id": "jquery",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+      "sha256": "sha256:06d1899314df8533b7629917daa51fa87db07cccb5a1a19783a0f1c76da320b0"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:f6d4ad73c8e0a00724d2bd8fbd101419d287d5ab33826a74ce6fe50987b512f9",
+        "byte_count": 39901,
+        "channel": "browser",
+        "path": "traces/jquery/browser/TENANT_ISOLATION_MISMATCH_DENIED/browser-dom-snapshot/7cc01922e1788870a60dd77aec5488064a40d7e1d2059761f1fad6900f3daf4f.json",
+        "profile_id": "jquery",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+        "sha256": "sha256:7cc01922e1788870a60dd77aec5488064a40d7e1d2059761f1fad6900f3daf4f"
+      }
+    ]
+  },
+  "scenario_id": "TENANT_ISOLATION_MISMATCH_DENIED",
+  "schema_version": "1.0"
+}

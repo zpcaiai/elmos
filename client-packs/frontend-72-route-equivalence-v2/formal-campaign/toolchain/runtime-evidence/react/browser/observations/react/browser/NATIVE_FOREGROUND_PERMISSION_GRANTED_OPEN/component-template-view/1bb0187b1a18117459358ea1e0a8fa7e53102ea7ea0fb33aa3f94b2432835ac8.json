@@ -1,0 +1,47 @@
+{
+  "actual": {
+    "componentId": "interaction.shell",
+    "key": "route.home",
+    "text": "首页内容",
+    "title": "首页",
+    "visible": true
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "component-template-view",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "active route heading/text/visibility attrs",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:702d10cbd32b038dc35205d959f2619d93e557a82df25ec84ab55ae1a10f1d3b",
+      "block_id": "component-template-view",
+      "byte_count": 1516,
+      "channel": "browser",
+      "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+      "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-rendered-component-observer-trace/be5ce3c98a70e64fc09c67a1c9e83aa335cb91727970bc433a678062c92261a5.json",
+      "profile_id": "react",
+      "role": "browser-rendered-component-observer-trace",
+      "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+      "sha256": "sha256:be5ce3c98a70e64fc09c67a1c9e83aa335cb91727970bc433a678062c92261a5"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "RENDERED_COMPONENT_DOM_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:eb4acc0a4fbd53f7ff31453a79e5154f81bfb07c444c2f9b54496234261b6419",
+        "byte_count": 40421,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN/browser-dom-snapshot/04102e1f8152b0283101c186d0ed1def78fcde7db5d4272de2c57a42aa4673a9.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+        "sha256": "sha256:04102e1f8152b0283101c186d0ed1def78fcde7db5d4272de2c57a42aa4673a9"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_FOREGROUND_PERMISSION_GRANTED_OPEN",
+  "schema_version": "1.0"
+}

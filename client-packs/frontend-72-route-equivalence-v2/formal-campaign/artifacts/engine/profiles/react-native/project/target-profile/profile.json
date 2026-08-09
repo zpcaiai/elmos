@@ -1,0 +1,32 @@
+{
+  "id": "react-native",
+  "label": "React Native with Expo",
+  "frameworkVersion": "0.86.0",
+  "profileVersion": "1.0.0",
+  "status": "ACTIVE",
+  "platforms": [
+    "ANDROID",
+    "IOS",
+    "WEB"
+  ],
+  "language": "TypeScript",
+  "languageVersion": "6.0.3",
+  "runtime": "Expo",
+  "runtimeVersion": "57.0.8",
+  "nodeVersion": "26.0.0",
+  "buildTool": "Expo CLI",
+  "buildToolVersion": "57.0.10",
+  "packageManager": "npm",
+  "packageManagerVersion": "11.12.1",
+  "router": "React Navigation 7.3.14",
+  "state": "React reducer/context",
+  "rendering": "Native renderer with Hermes",
+  "testTool": "TypeScript and device E2E profile",
+  "runnerProfile": "MOBILE_CROSS_PLATFORM",
+  "requiredProjectFiles": [
+    "package.json",
+    "app.json",
+    "App.tsx",
+    "src/navigation.tsx"
+  ]
+}

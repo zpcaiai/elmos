@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "phases"
+  ],
+  "properties": {
+    "phases": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "entry",
+          "deliverables",
+          "exit",
+          "owner",
+          "budget",
+          "risks",
+          "evidence"
+        ],
+        "properties": {
+          "id": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "entry": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "deliverables": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "exit": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "owner": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "budget": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "risks": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          },
+          "evidence": {
+            "type": [
+              "string",
+              "array",
+              "object",
+              "number"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

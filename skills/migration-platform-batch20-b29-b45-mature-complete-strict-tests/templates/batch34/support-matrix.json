@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "pack_key": "enterprise-portfolio-scale",
+  "capabilities": [
+    {
+      "key": "portfolio-discovery",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "monorepo-partitioning",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "cross-repo-graph",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "distributed-semantic-index",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "incremental-graph",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "shared-platform-dependencies",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "mixed-build-graph",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "distributed-workflows",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "runner-fleet",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "content-addressed-cache",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "large-artifact-transfer",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "recipe-campaigns",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "multi-repo-prs",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "failure-recovery",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "fair-scheduling",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "budget-guardrails",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "control-tower",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "scale-benchmarks",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "capacity-forecast",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    },
+    {
+      "key": "disaster-replay",
+      "status": "experimental",
+      "owner": "UNASSIGNED",
+      "evidence_refs": [],
+      "limitations": [
+        "No certification evidence yet."
+      ]
+    }
+  ]
+}

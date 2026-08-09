@@ -1,0 +1,9 @@
+{
+  "suite_id": "batch38-45-strict",
+  "scope": "Batch 38-45",
+  "version": "1.0.0",
+  "skill_count": 30,
+  "case_count": 400,
+  "product_skill_count": 172,
+  "status": "not-run"
+}

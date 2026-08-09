@@ -112,3 +112,138 @@ export function analyzeTypedFunction(source: string, sourceFile: string, functio
     diagnostics,
   };
 }
+
+function byteOffset(source: string, characterOffset: number): number {
+  return Buffer.byteLength(source.slice(0, characterOffset), "utf8");
+}
+
+export function inventoryTypedModule(source: string, sourceFile: string): JsonObject {
+  const tree = ts.createSourceFile(
+    sourceFile,
+    source,
+    ts.ScriptTarget.ES2022,
+    true,
+    ts.ScriptKind.TS,
+  ) as ParsedSourceFile;
+  const diagnostics = tree.parseDiagnostics.map(
+    item => `TS${item.code}:${tree.getLineAndCharacterOfPosition(item.start ?? 0).line + 1}`,
+  );
+  const subjects: JsonObject[] = [];
+
+  const span = (node: ts.Node): JsonObject => ({
+    file: sourceFile,
+    start_byte: byteOffset(source, node.getStart(tree)),
+    end_byte: byteOffset(source, node.end),
+  });
+  const add = (
+    node: ts.Node,
+    name: string,
+    qualifiedName: string,
+    declarationKind: string,
+    analyzable: boolean,
+    signature: JsonObject,
+  ): void => {
+    subjects.push({
+      name,
+      qualified_name: qualifiedName,
+      declaration_kind: declarationKind,
+      analyzable,
+      source_span: span(node),
+      signature,
+    });
+  };
+
+  for (const statement of tree.statements) {
+    if (ts.isFunctionDeclaration(statement)) {
+      const name = statement.name?.text ?? `<anonymous-function@${statement.pos}>`;
+      const permittedModifiers = statement.modifiers?.every(
+        modifier => modifier.kind === ts.SyntaxKind.ExportKeyword,
+      ) ?? true;
+      const supportedParameters = statement.parameters.every(
+        parameter => ts.isIdentifier(parameter.name)
+          && parameter.dotDotDotToken === undefined
+          && parameter.questionToken === undefined
+          && parameter.initializer === undefined,
+      );
+      add(
+        statement,
+        name,
+        name,
+        "FunctionDeclaration",
+        Boolean(
+          statement.name
+          && statement.body
+          && statement.asteriskToken === undefined
+          && statement.typeParameters === undefined
+          && permittedModifiers
+          && supportedParameters,
+        ),
+        {
+          parameters: statement.parameters.map(parameter => ({
+            name: ts.isIdentifier(parameter.name) ? parameter.name.text : parameter.name.getText(tree),
+            source_type: parameter.type?.getText(tree) ?? "",
+          })),
+          source_return_type: statement.type?.getText(tree) ?? "",
+        },
+      );
+      continue;
+    }
+    if (ts.isClassDeclaration(statement)) {
+      const className = statement.name?.text ?? `<anonymous-class@${statement.pos}>`;
+      add(statement, className, className, "ClassDeclaration", false, {});
+      for (const member of statement.members) {
+        const memberName = "name" in member && member.name
+          ? member.name.getText(tree)
+          : `<${ts.SyntaxKind[member.kind]}@${member.pos}>`;
+        add(
+          member,
+          memberName,
+          `${className}.${memberName}`,
+          ts.SyntaxKind[member.kind],
+          false,
+          {},
+        );
+      }
+      continue;
+    }
+    if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        const name = declaration.name.getText(tree);
+        const callable = declaration.initializer !== undefined
+          && (ts.isArrowFunction(declaration.initializer) || ts.isFunctionExpression(declaration.initializer));
+        add(
+          declaration,
+          name,
+          name,
+          callable ? "FunctionValueDeclaration" : "VariableDeclaration",
+          false,
+          { source_type: declaration.type?.getText(tree) ?? "" },
+        );
+      }
+      continue;
+    }
+    if (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) {
+      const moduleName = statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)
+        ? statement.moduleSpecifier.text
+        : `<${ts.SyntaxKind[statement.kind]}@${statement.pos}>`;
+      add(statement, moduleName, moduleName, ts.SyntaxKind[statement.kind], false, {});
+      continue;
+    }
+    if (ts.isEmptyStatement(statement)) continue;
+    const name = `<${ts.SyntaxKind[statement.kind]}@${statement.pos}>`;
+    add(statement, name, name, ts.SyntaxKind[statement.kind], false, {});
+  }
+
+  return {
+    schema_version: "1.0.0",
+    kind: "elmos.typed-pure-module-inventory",
+    profile: "typed-pure-module-v1",
+    source_language: "typescript",
+    source_file: sourceFile,
+    analyzer: "TypeScript Compiler API",
+    analyzer_version: ts.version,
+    enumeration_status: diagnostics.length === 0 ? "PASSED" : "FAILED",
+    subjects,
+    diagnostics,
+  };
+}

@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:7525e526c1ecc5912596a50be3b5644542d6f02e10f3caad8d94dd6ce6ed95cd",
+      "block_id": "accessibility-focus",
+      "byte_count": 555898,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/react/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-accessibility-tree-focus-observer-trace/1c84dbf6ff39c471f886b5d748c62cf95dce69e1c15e4ffd3065b1bd9431521c.json",
+      "profile_id": "react",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+      "sha256": "sha256:1c84dbf6ff39c471f886b5d748c62cf95dce69e1c15e4ffd3065b1bd9431521c"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:e3b6d3369ac416682a40ebe7a08cde52bbac69e89b64dca938128a081613b44c",
+        "byte_count": 556890,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-accessibility-axe-trace/733ee98e41338836a13362b142caa089cb1d48a240fd5278bc1bfd7b6055ae18.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "sha256": "sha256:733ee98e41338836a13362b142caa089cb1d48a240fd5278bc1bfd7b6055ae18"
+      },
+      {
+        "artifact_id": "sha256:9b420a057c8fd54b2ed486595fa6538901988658bb481bca991a733d5a436efa",
+        "byte_count": 5416,
+        "channel": "browser",
+        "path": "traces/react/browser/NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY/browser-framework-event-trace/40aec7760f33a79e1c96332f6e0897d8aae5cf2732e7886a284dcbe3a1b318c8.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+        "sha256": "sha256:40aec7760f33a79e1c96332f6e0897d8aae5cf2732e7886a284dcbe3a1b318c8"
+      }
+    ]
+  },
+  "scenario_id": "NATIVE_DEEPLINK_BACKGROUND_PERMISSION_DENIED_RECOVERY",
+  "schema_version": "1.0"
+}

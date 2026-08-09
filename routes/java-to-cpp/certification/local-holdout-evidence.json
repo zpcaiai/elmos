@@ -1,0 +1,266 @@
+{
+  "artifact_manifest": {
+    "bytes": 4079,
+    "path": "certification/artifacts/holdout/artifact-manifest.json",
+    "sha256": "sha256:addc700ffa87bf0903f0b7e4b940a708833976d95546a62a908754f76263cf95"
+  },
+  "artifact_root": "certification/artifacts/holdout",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 5,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:8e4696a44dc2d217bfa281e86b9db348748d51a606d4416f11f50452c6a22fd6",
+    "case_count": 5,
+    "oracle_conflict_count": 0,
+    "pass_count": 5,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:93f82d12f02b80bd4852bafb7fdb1b06c9638c4296527b85ecd55a50cafaad93",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 4,
+    "required_source_chunk_count": 4,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
+  "corpus": "holdout",
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:7aa84650cae39f78a1b81a1f7ec25d06a1e02e0cee42d6dfc0a96e7d05f5ed47",
+    "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
+    "formal_input_digest": "sha256:200ca8f84ef856e70e462cb72cd882476b02815b9b7641b0285d92033011a8d7",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:200ca8f84ef856e70e462cb72cd882476b02815b9b7641b0285d92033011a8d7",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:200ca8f84ef856e70e462cb72cd882476b02815b9b7641b0285d92033011a8d7",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:32ca873871417251645234f00214e1d1eefa540af98df346c5edafb4806d8fda",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:200ca8f84ef856e70e462cb72cd882476b02815b9b7641b0285d92033011a8d7",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:c9d96447bd5a3b54d60de1adcabe11b89fc358887f77757f7aded8f58e18c8d8",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:32ca873871417251645234f00214e1d1eefa540af98df346c5edafb4806d8fda",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:a842df625c8896852205d2bedda42766f979b3a8bf54714c359e2e980ac751ea",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "route": "java-to-cpp",
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:1ecc40402a160340c4d61282f5a09f72ebb06c83af9d56095992df8d9a6948fe",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:f1d056071e5a3372786254815a862a369441619c9b2f7fd7218e76491e550d3c",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:336b71d8a8c25203aea532cb7c5244290c93ac73c81b7ecdedfdca0cc9f6d7cf"
+  },
+  "semantic_ir_sha256": "sha256:f1d056071e5a3372786254815a862a369441619c9b2f7fd7218e76491e550d3c",
+  "source": {
+    "analyzer": "JDK JavacTask Tree API",
+    "analyzer_version": "21.0.11",
+    "language": "java",
+    "path": "EchoNumber.java",
+    "sha256": "sha256:0f576ef9c11bfbc7dc6f0cb61a1ee2ae5f2e31eab2645b48194318174e3e14ee"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "EchoNumber.java",
+    "artifact_sha256": "sha256:0f576ef9c11bfbc7dc6f0cb61a1ee2ae5f2e31eab2645b48194318174e3e14ee",
+    "case_count": 5,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "EchoNumber.java",
+          "RouteHarness.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+          "-cp",
+          ".",
+          "RouteHarness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t8000000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t7fefffffffffffff\nELMOS_OBSERVATION\t3\tfp64-hex\tffefffffffffffff\nELMOS_OBSERVATION\t4\tfp64-hex\t0010000000000000\n"
+      }
+    ],
+    "language": "java",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "fp64-hex",
+        "raw": "8000000000000000",
+        "status": "RETURNED",
+        "value": -0.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "fp64-hex",
+        "raw": "0000000000000000",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "fp64-hex",
+        "raw": "7fefffffffffffff",
+        "status": "RETURNED",
+        "value": 1.7976931348623157e+308
+      },
+      {
+        "case_id": 3,
+        "encoding": "fp64-hex",
+        "raw": "ffefffffffffffff",
+        "status": "RETURNED",
+        "value": -1.7976931348623157e+308
+      },
+      {
+        "case_id": 4,
+        "encoding": "fp64-hex",
+        "raw": "0010000000000000",
+        "status": "RETURNED",
+        "value": 2.2250738585072014e-308
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+      "executable_sha256": null,
+      "language": "java",
+      "profile": [],
+      "version": "21.0.11"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "language": "cpp",
+    "path": "migrated.cpp",
+    "sha256": "sha256:4265f2dea09998905a394840e7c2edfd1c621a8d8a3c9db24556e5bc2ebfb694"
+  },
+  "validation": {
+    "case_count": 5,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+          "-std=c++20",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "route_harness",
+          "route_harness.cpp"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./route_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\tfp64-hex\t8000000000000000\nELMOS_OBSERVATION\t1\tfp64-hex\t0000000000000000\nELMOS_OBSERVATION\t2\tfp64-hex\t7fefffffffffffff\nELMOS_OBSERVATION\t3\tfp64-hex\tffefffffffffffff\nELMOS_OBSERVATION\t4\tfp64-hex\t0010000000000000\n"
+      }
+    ],
+    "language": "cpp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "fp64-hex",
+        "raw": "8000000000000000",
+        "status": "RETURNED",
+        "value": -0.0
+      },
+      {
+        "case_id": 1,
+        "encoding": "fp64-hex",
+        "raw": "0000000000000000",
+        "status": "RETURNED",
+        "value": 0.0
+      },
+      {
+        "case_id": 2,
+        "encoding": "fp64-hex",
+        "raw": "7fefffffffffffff",
+        "status": "RETURNED",
+        "value": 1.7976931348623157e+308
+      },
+      {
+        "case_id": 3,
+        "encoding": "fp64-hex",
+        "raw": "ffefffffffffffff",
+        "status": "RETURNED",
+        "value": -1.7976931348623157e+308
+      },
+      {
+        "case_id": 4,
+        "encoding": "fp64-hex",
+        "raw": "0010000000000000",
+        "status": "RETURNED",
+        "value": 2.2250738585072014e-308
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "cpp",
+      "profile": [
+        "platform=Darwin/arm64",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c++20"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "b54c7c9e1c72c40a1c4fd35f",
+  "direction": {
+    "routeId": "angular--to--react-native",
+    "source": "angular",
+    "target": "react-native",
+    "sourceProfileVersion": "22.0.8",
+    "targetProfileVersion": "0.86.0",
+    "supportState": "ADAPTER_REQUIRED",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "react-native",
+    "label": "React Native with Expo",
+    "frameworkVersion": "0.86.0",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "ANDROID",
+      "IOS",
+      "WEB"
+    ],
+    "language": "TypeScript",
+    "languageVersion": "6.0.3",
+    "runtime": "Expo",
+    "runtimeVersion": "57.0.8",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Expo CLI",
+    "buildToolVersion": "57.0.10",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "React Navigation 7.3.14",
+    "state": "React reducer/context",
+    "rendering": "Native renderer with Hermes",
+    "testTool": "TypeScript and device E2E profile",
+    "runnerProfile": "MOBILE_CROSS_PLATFORM",
+    "requiredProjectFiles": [
+      "package.json",
+      "app.json",
+      "App.tsx",
+      "src/navigation.tsx"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:97e70b9a284bfdef2ad0c25a095780d77582fee0980a469d516055c52857699f",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "App.tsx",
+      "README.md",
+      "app.json",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "index.ts",
+      "package.json",
+      "scripts/verify.sh",
+      "src/elmos-bounded-navigation.ts",
+      "src/navigation.tsx",
+      "target-profile/profile.json",
+      "tsconfig.json",
+      "ui-ir/model.json"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

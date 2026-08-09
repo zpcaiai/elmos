@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:2843164debc9894a6560c20cfb92a0e642de1b5b3e9e4825a4814a5a34a5047a",
+      "block_id": "action-event",
+      "byte_count": 3308,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-native-event-outcome-observer-trace/b67cc337cfcdf9fc433c5e36592d87b01c15eab02338f18666948ac97d7f2286.json",
+      "profile_id": "jquery",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:b67cc337cfcdf9fc433c5e36592d87b01c15eab02338f18666948ac97d7f2286"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:356813a3753ec33e5ae396bd913f56378b6b8ab5615aca5863991782840a103a",
+        "byte_count": 5258,
+        "channel": "browser",
+        "path": "traces/jquery/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/7e06d63eb0a8540ef27d058243b2716b031d80c3c7ac61310d7982315b8acdda.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:7e06d63eb0a8540ef27d058243b2716b031d80c3c7ac61310d7982315b8acdda"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

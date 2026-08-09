@@ -1,0 +1,153 @@
+{
+  "allowed_suffixes": [
+    ".cpp",
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".m",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".swift",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/cpp-to-java/certification/artifacts/development",
+  "corpus": "development",
+  "excluded_files": [
+    "Migrated.class",
+    "RouteHarness.class",
+    "source-runtime/source_harness"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 205,
+      "path": "Migrated.java",
+      "sha256": "sha256:a26ca26a135d5e82f24824fe4e35d8bfc8f05545f6ef2b4418e7c11afa582f1e"
+    },
+    {
+      "bytes": 793,
+      "path": "RouteHarness.java",
+      "sha256": "sha256:e2db4a05b58371a899e51cae618bc9febafeb3a30dd83b83716692cddacd0257"
+    },
+    {
+      "bytes": 1492,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:82ba3a3ae51e7ec872fe04c894f5261b8a9d1f2a68a2f00fa9b11ff2d4fb7be3"
+    },
+    {
+      "bytes": 12329,
+      "path": "chunk-map.json",
+      "sha256": "sha256:a1249d9438c0c4eb6c1e9a2902db944ea834e440a3a1002b0d2a3e11708e7c4a"
+    },
+    {
+      "bytes": 3166,
+      "path": "formal-composition.json",
+      "sha256": "sha256:fc2d8e92b219bb91b110cb46c81814f98c20fe035663a86958aba1b21d81e652"
+    },
+    {
+      "bytes": 2030,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:6bf387a79d2778431ec118899d053178553aa5cff5bf47cfd448164fca6bdd48"
+    },
+    {
+      "bytes": 8476,
+      "path": "formal-input.json",
+      "sha256": "sha256:6c27a2254c8f273983e3bbc4321bc9a43d478d17ce302d29067a3d77e7e29554"
+    },
+    {
+      "bytes": 2508,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:6c0a132743e8ff3e54b0e5c80c93540f784c77a062d43cf1b859101f9b2c0fa1"
+    },
+    {
+      "bytes": 205,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/pricing.cpp",
+      "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
+    },
+    {
+      "bytes": 3619,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:fb051021d4d7d54092d705293228790fa1765fbcb140e01347d23783b2a49f10"
+    },
+    {
+      "bytes": 8914,
+      "path": "route-evidence.json",
+      "sha256": "sha256:a0719909726106c2af4d9175b6dbeb6dd821485182e03b2cd87ababf1a397cec"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:e006b78e8ad5a7d3b52ee4b0e50954c869cd92e78e70f0f2e5cc4586f1aac98d"
+    },
+    {
+      "bytes": 1597,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:566a1d2bbe548243e37dc7cd6600a1de27f28c0965d93fca0dbb87d04d8e1ea1"
+    },
+    {
+      "bytes": 150,
+      "path": "source-runtime/pricing.cpp",
+      "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
+    },
+    {
+      "bytes": 1871,
+      "path": "source-runtime/source_harness.cpp",
+      "sha256": "sha256:b1887201d960898eb9a923e514cf6e2603156590f60b23c424886dca2b89cfb6"
+    },
+    {
+      "bytes": 1597,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:566a1d2bbe548243e37dc7cd6600a1de27f28c0965d93fca0dbb87d04d8e1ea1"
+    },
+    {
+      "bytes": 1594,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:0cf9be59aa8b634be52f6d9dee18a45f7d47eb4de3b7ada661b5b81c828a5b00"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "cpp-to-java",
+  "schema_version": 1,
+  "total_bytes": 51005
+}

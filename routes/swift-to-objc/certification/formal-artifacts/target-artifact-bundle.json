@@ -1,0 +1,25 @@
+{
+  "route_key": "swift-to-objc",
+  "schema_version": 1,
+  "semantic_profile": "typed-pure-function-v1",
+  "target_artifacts": [
+    {
+      "bytes": 451,
+      "corpus": "development",
+      "path": "certification/artifacts/development/migrated.m",
+      "sha256": "sha256:5bef86bcea7377ecfa7b7cacdd17493d47770cd98d830a949a4334fa2baf0d2b"
+    },
+    {
+      "bytes": 89,
+      "corpus": "holdout",
+      "path": "certification/artifacts/holdout/migrated.m",
+      "sha256": "sha256:c5ac56848f4ec5c21e72156108bc24b0cfe45e968fd8e6983cb1dfcfc06922e3"
+    },
+    {
+      "bytes": 173,
+      "corpus": "real-repository",
+      "path": "certification/artifacts/real-repository/migrated.m",
+      "sha256": "sha256:c9eeca1ec322408bd49bd43537db1a2004c8af69ec0c5bb8760728e1a1711f83"
+    }
+  ]
+}

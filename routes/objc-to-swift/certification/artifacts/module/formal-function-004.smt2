@@ -1,0 +1,38 @@
+; formal_input_digest: sha256:01e5b484f0f570f44ef3b995d046d75cc49f7b268c40c814c91e1a884bd43ada
+; formal-input-sha256: sha256:01e5b484f0f570f44ef3b995d046d75cc49f7b268c40c814c91e1a884bd43ada
+; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
+; input-domain: canonical-finite-no-error-input-domain
+; original-source-bytes-theorem: false
+; formal-input-path: formal-function-004-input.json
+; independent-source-denotation-sha256: sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5
+; independent-target-denotation-sha256: sha256:a41f0bb44704138bbd2e99c8bcd2a4ea6de1e4b1cf22572b6a1ee4b4340b7a1e
+; input-alignment: positional-substitution-after-independent-encoding
+; benchmark generated from python API
+(set-info :status unknown)
+(declare-fun target_left () (_ BitVec 64))
+(declare-fun source_left () (_ BitVec 64))
+(declare-fun target_right () (_ BitVec 64))
+(declare-fun source_right () (_ BitVec 64))
+(assert
+ (= source_left target_left))
+(assert
+ (= source_right target_right))
+(assert
+ (let ((?x1826 (bvsub ((_ sign_extend 64) source_left) ((_ sign_extend 64) source_right))))
+ (let ((?x1837 ((_ extract 63 0) ?x1826)))
+ (let ((?x4254 (ite (and (distinct ?x1826 ((_ sign_extend 64) ?x1837)) true) 1 0)))
+ (let ((?x209 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x4588 (and (distinct ?x209 0) true)))
+ (let ((?x2883 (ite $x4588 ?x209 ?x4254)))
+ (= ?x2883 0))))))))
+(assert
+ (let ((?x1826 (bvsub ((_ sign_extend 64) source_left) ((_ sign_extend 64) source_right))))
+ (let ((?x1837 ((_ extract 63 0) ?x1826)))
+ (let ((?x4254 (ite (and (distinct ?x1826 ((_ sign_extend 64) ?x1837)) true) 1 0)))
+ (let ((?x209 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x4588 (and (distinct ?x209 0) true)))
+ (let ((?x2883 (ite $x4588 ?x209 ?x4254)))
+ (= ?x2883 0))))))))
+(assert
+ false)
+(check-sat)

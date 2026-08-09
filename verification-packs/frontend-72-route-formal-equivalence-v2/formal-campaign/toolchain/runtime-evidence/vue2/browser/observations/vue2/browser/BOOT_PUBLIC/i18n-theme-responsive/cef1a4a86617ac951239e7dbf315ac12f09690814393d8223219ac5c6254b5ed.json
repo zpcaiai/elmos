@@ -1,0 +1,48 @@
+{
+  "actual": {
+    "columns": 2,
+    "locale": "zh-CN",
+    "requestedLocale": "zh-CN",
+    "requestedTheme": "LIGHT",
+    "theme": "LIGHT",
+    "viewportWidth": 1024
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "i18n-theme-responsive",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "html lang+rendered translated text+computed theme tokens+measured layout",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:28b8562ffcaa74c4e1d7e71ad531582f1eded48cc70252c63bdc51cb3244a627",
+      "block_id": "i18n-theme-responsive",
+      "byte_count": 1982,
+      "channel": "browser",
+      "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+      "path": "traces/vue2/browser/BOOT_PUBLIC/browser-computed-layout-i18n-theme-observer-trace/2db4ab127dc67375739bde9fa79178b4653c6c40a20db6f7430a4c9dc82e964a.json",
+      "profile_id": "vue2",
+      "role": "browser-computed-layout-i18n-theme-observer-trace",
+      "scenario_id": "BOOT_PUBLIC",
+      "sha256": "sha256:2db4ab127dc67375739bde9fa79178b4653c6c40a20db6f7430a4c9dc82e964a"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "COMPUTED_LAYOUT_I18N_THEME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:55cd6c149dd35aa40a916c20ba4a42550deafb7348af642c69a5250446c16eb2",
+        "byte_count": 40362,
+        "channel": "browser",
+        "path": "traces/vue2/browser/BOOT_PUBLIC/browser-dom-snapshot/b08a3c7a20564067b1a21f24a2fd73078eb4255560d7318c8e1c8b63ecf5f0fb.json",
+        "profile_id": "vue2",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "BOOT_PUBLIC",
+        "sha256": "sha256:b08a3c7a20564067b1a21f24a2fd73078eb4255560d7318c8e1c8b63ecf5f0fb"
+      }
+    ]
+  },
+  "scenario_id": "BOOT_PUBLIC",
+  "schema_version": "1.0"
+}

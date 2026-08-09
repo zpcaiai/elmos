@@ -1,0 +1,150 @@
+{
+  "allowed_suffixes": [
+    ".cs",
+    ".csproj",
+    ".go",
+    ".java",
+    ".js",
+    ".json",
+    ".lock",
+    ".log",
+    ".md",
+    ".py",
+    ".rs",
+    ".smt2",
+    ".toml",
+    ".ts",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "artifact_root": "routes/python-to-rust/certification/artifacts/holdout",
+  "corpus": "holdout",
+  "excluded_files": [
+    "route_harness",
+    "source-runtime/__pycache__/clamp.cpython-312.pyc",
+    "source-runtime/__pycache__/source_harness.cpython-312.pyc"
+  ],
+  "excluded_rebuildable_patterns": [
+    "bin/**",
+    "obj/**",
+    "target/**",
+    "dist/**",
+    "__pycache__/**",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    "*.class",
+    "*.pyc",
+    "*.pyo",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "*.exe",
+    "*.pdb",
+    "*.rlib",
+    "*.rmeta",
+    "route_harness",
+    "other extensionless/native binaries"
+  ],
+  "file_count": 18,
+  "files": [
+    {
+      "bytes": 1564,
+      "path": "behavior-equivalence.json",
+      "sha256": "sha256:f6b49ee7e0cea36579208cfb88af5265dcb275cd58c98305a49489c13813c204"
+    },
+    {
+      "bytes": 10541,
+      "path": "chunk-map.json",
+      "sha256": "sha256:f5d190044c15029e0947f961b875227f1d51a4c351d48a90d7a9f5d0baa5ed10"
+    },
+    {
+      "bytes": 2954,
+      "path": "formal-composition.json",
+      "sha256": "sha256:7219b5d5b93328655026c63fd378105e0a08cd21a9a5f5befae8fdd76df44cf9"
+    },
+    {
+      "bytes": 977,
+      "path": "formal-equivalence.smt2",
+      "sha256": "sha256:4927cefafb5dfa50d5ecc433c190b98535077c9cad9bb0232fafe66a67cb08ce"
+    },
+    {
+      "bytes": 6929,
+      "path": "formal-input.json",
+      "sha256": "sha256:8ac7638e7c40f72b1a5ee394096df3c97b15257992ac36850c3fc3e9bb669413"
+    },
+    {
+      "bytes": 2332,
+      "path": "formal-proof-result.json",
+      "sha256": "sha256:06b9fbaaad5459f96c523daacdfb4086b4b1e6c26e483d4b8b33d59598a82fed"
+    },
+    {
+      "bytes": 150,
+      "path": "inputs/cases.json",
+      "sha256": "sha256:91054d96f588f95daa31124279f0a9e37d5043d4fe647e46ea3a1332f408fd5c"
+    },
+    {
+      "bytes": 137,
+      "path": "inputs/clamp.py",
+      "sha256": "sha256:726e78f9e0b5ea8210bf7edba29cd048da338c326f4b602001b2060fad11d60e"
+    },
+    {
+      "bytes": 3442,
+      "path": "layered-equivalence.json",
+      "sha256": "sha256:fc09f5532a09de95eab77f5beafaef6b14403ae7b3ccce601d5f92bbfb208cec"
+    },
+    {
+      "bytes": 156,
+      "path": "migrated.rs",
+      "sha256": "sha256:f8e1efbe5802f1e854c7388e7330b0caed2e9fa8ae74f331a0f256227624a93d"
+    },
+    {
+      "bytes": 6978,
+      "path": "route-evidence.json",
+      "sha256": "sha256:4dca23a6b642c26bb64229d63de2eea36691478527abfefaaea6aa85d885be0c"
+    },
+    {
+      "bytes": 454,
+      "path": "route_harness.rs",
+      "sha256": "sha256:6c9e0e1b551b918cebc672fc8599c0b9bfe5dae6e4b34d0d002053c1e5e90ff5"
+    },
+    {
+      "bytes": 309,
+      "path": "semantic-equivalence.json",
+      "sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799"
+    },
+    {
+      "bytes": 794,
+      "path": "semantic-ir.json",
+      "sha256": "sha256:ca6f81777d907a5d04c3d740bb292048724dbdd8eaa9c696adc0fbadb260c93a"
+    },
+    {
+      "bytes": 137,
+      "path": "source-runtime/clamp.py",
+      "sha256": "sha256:726e78f9e0b5ea8210bf7edba29cd048da338c326f4b602001b2060fad11d60e"
+    },
+    {
+      "bytes": 547,
+      "path": "source-runtime/source_harness.py",
+      "sha256": "sha256:aaccd47114bbd60d64a69174e6267201812e068f7d03e68bfd9bbbd52741a96d"
+    },
+    {
+      "bytes": 794,
+      "path": "source-semantic-ir.json",
+      "sha256": "sha256:ca6f81777d907a5d04c3d740bb292048724dbdd8eaa9c696adc0fbadb260c93a"
+    },
+    {
+      "bytes": 806,
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:e4af0b12359ab5a62e97262b2b7f7d563ebce0b170fd281e9509966e614b1814"
+    }
+  ],
+  "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
+  "route_key": "python-to-rust",
+  "schema_version": 1,
+  "total_bytes": 40001
+}

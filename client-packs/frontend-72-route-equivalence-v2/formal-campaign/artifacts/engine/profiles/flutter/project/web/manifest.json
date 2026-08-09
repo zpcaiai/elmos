@@ -1,0 +1,10 @@
+{
+  "name": "interaction_flutter",
+  "short_name": "interaction_flutter",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#15223d",
+  "description": "ELMOS bounded frontend interaction runtime",
+  "icons": []
+}

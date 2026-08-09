@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "primary_navigation",
+    "customer_journeys"
+  ],
+  "properties": {
+    "primary_navigation": {
+      "type": "array",
+      "minItems": 5
+    },
+    "customer_journeys": {
+      "type": "array",
+      "minItems": 7
+    }
+  },
+  "additionalProperties": false
+}

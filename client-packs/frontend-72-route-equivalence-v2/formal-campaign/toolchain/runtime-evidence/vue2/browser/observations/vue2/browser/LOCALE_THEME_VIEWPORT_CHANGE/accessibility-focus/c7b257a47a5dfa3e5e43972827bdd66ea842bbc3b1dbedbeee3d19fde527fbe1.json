@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "vue2",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:4e000423e77b44813be32cd3418db5cfc6806a49b8d5fe0f570670c82bf00b48",
+      "block_id": "accessibility-focus",
+      "byte_count": 553426,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/vue2/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-accessibility-tree-focus-observer-trace/d65e3227d36793ea9a8b5853cf4877eef560677f8eec910c502c89bd19fd04b2.json",
+      "profile_id": "vue2",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+      "sha256": "sha256:d65e3227d36793ea9a8b5853cf4877eef560677f8eec910c502c89bd19fd04b2"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:c97588d9c7e736b6176044c1ab7a123db6418cbe1a331cd29fb9145332c4f2a2",
+        "byte_count": 554366,
+        "channel": "browser",
+        "path": "traces/vue2/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-accessibility-axe-trace/420869ca121cbc59b2e7a6ec1f39d768b5d6ccb511fcf336e252afddec8c1f5f.json",
+        "profile_id": "vue2",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:420869ca121cbc59b2e7a6ec1f39d768b5d6ccb511fcf336e252afddec8c1f5f"
+      },
+      {
+        "artifact_id": "sha256:6b1569d06af2b8d56ab6d394e55d801cc827e9133e3b360581983929b5055394",
+        "byte_count": 5286,
+        "channel": "browser",
+        "path": "traces/vue2/browser/LOCALE_THEME_VIEWPORT_CHANGE/browser-framework-event-trace/ba38e531eff8de27ee34375d48342f021e882ab0d348c1d913a0cc4ee6edc480.json",
+        "profile_id": "vue2",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+        "sha256": "sha256:ba38e531eff8de27ee34375d48342f021e882ab0d348c1d913a0cc4ee6edc480"
+      }
+    ]
+  },
+  "scenario_id": "LOCALE_THEME_VIEWPORT_CHANGE",
+  "schema_version": "1.0"
+}

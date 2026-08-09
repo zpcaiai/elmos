@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": null,
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a04daeabbd603225b98e7d07442e4d040c96bd34493de4f8a813e8decd860c7b",
+      "block_id": "accessibility-focus",
+      "byte_count": 543902,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-accessibility-tree-focus-observer-trace/6c3907e08984a1a959a32e12966f7527898de5ef50a6efc4764c6614cef1c211.json",
+      "profile_id": "jquery",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "HYDRATE_MISMATCH_ERROR",
+      "sha256": "sha256:6c3907e08984a1a959a32e12966f7527898de5ef50a6efc4764c6614cef1c211"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:2f0e3b7159f95bf0f81adc5a3790f94eab85c0196f63874f3d1b0a7b5f53f5df",
+        "byte_count": 544816,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-accessibility-axe-trace/c804e313daa6ed709b99c873d907601d34d3aa1b27e1314c512e1228853d394e.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:c804e313daa6ed709b99c873d907601d34d3aa1b27e1314c512e1228853d394e"
+      },
+      {
+        "artifact_id": "sha256:5db5df26a884a5221443093bbb481e9d1c57e59d1174772f76d3d9270e0cac41",
+        "byte_count": 5230,
+        "channel": "browser",
+        "path": "traces/jquery/browser/HYDRATE_MISMATCH_ERROR/browser-framework-event-trace/49591884f13dc4845b831266a1882892a17d4129905fcf8cc22b796c80dadf49.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "HYDRATE_MISMATCH_ERROR",
+        "sha256": "sha256:49591884f13dc4845b831266a1882892a17d4129905fcf8cc22b796c80dadf49"
+      }
+    ]
+  },
+  "scenario_id": "HYDRATE_MISMATCH_ERROR",
+  "schema_version": "1.0"
+}

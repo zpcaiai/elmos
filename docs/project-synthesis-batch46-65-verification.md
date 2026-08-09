@@ -8,7 +8,9 @@
 
 ## Runnable engineering evidence
 
-`make project-synthesis` validates the complete specification set, runs the Project Synthesis engine tests and static analysis, then generates, builds, tests and starts the Java, Python and C# starter profiles in disposable directories.
+`make project-synthesis` validates the complete specification set, runs the Project Synthesis engine tests and static analysis, and exercises every locally available member of the eight-target starter matrix: Java, Python, C#, TypeScript, Go, Kotlin, PHP, and Rust. `scripts/run_acceptance.py --require-all-toolchains` is the strict command when all eight exact toolchains must be present; unavailable native checks remain explicit instead of being counted as passed.
+
+Every generated workspace now contains a hash-bound project-structure graph, declared-dependency graph, requirements-to-target semantic mapping, native target status, and a complete selected-target pair matrix. `docs/PROJECT_INSIGHTS.md` renders those dimensions as Mermaid graphs and exact status tables. Greenfield requirement mapping is not source/target equivalence, so direct semantic and behavioral pair checks remain `NOT_RUN` until separately executed.
 
 The runnable generator remains the bounded one-aggregate CRUD/in-memory Starter documented in the Batch 46–60 verification record. The Batch 61–65 import extends governed Skill behavior and validation contracts; it does not by itself implement persistent multi-agent scheduling, Marketplace publication, Requirement Studio UI, tenant billing, external deployment or independent product certification.
 
@@ -20,6 +22,7 @@ Commands:
 
 ```sh
 make project-synthesis
+uv --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains
 make test-suite-1-65-check
 make test-suite-1-65-gate
 ```

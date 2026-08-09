@@ -1,0 +1,59 @@
+{
+  "actual": {
+    "errorRole": null,
+    "focusTarget": "result",
+    "formLabel": "搜索",
+    "headingLevel": 1,
+    "keyboardSubmit": false,
+    "liveRegion": "polite",
+    "mainRole": "main"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "accessibility-focus",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "jquery",
+  "provenance": {
+    "measurement_surface": "aria snapshot+axe+active element+keyboard",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:a9e4d282cf0fef879245b86beba96e67cff7dceb681161f69f0f2e6cfea18750",
+      "block_id": "accessibility-focus",
+      "byte_count": 542587,
+      "channel": "browser",
+      "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+      "path": "traces/jquery/browser/API_NETWORK_ERROR/browser-accessibility-tree-focus-observer-trace/4b86303365bdff1d310a79657d64bffec020f0a3d92df67730d1b19058eab028.json",
+      "profile_id": "jquery",
+      "role": "browser-accessibility-tree-focus-observer-trace",
+      "scenario_id": "API_NETWORK_ERROR",
+      "sha256": "sha256:4b86303365bdff1d310a79657d64bffec020f0a3d92df67730d1b19058eab028"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "ACCESSIBILITY_TREE_FOCUS_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:cbf4346b3ad6a6f7e1dcbf78c3d5fb073a819c7d8e1b01a1745acdd4b84d359a",
+        "byte_count": 544263,
+        "channel": "browser",
+        "path": "traces/jquery/browser/API_NETWORK_ERROR/browser-accessibility-axe-trace/7348350f617f5f4412580a41aa10db4fb5fd3da58521bcc4630b6f1d5a986832.json",
+        "profile_id": "jquery",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:7348350f617f5f4412580a41aa10db4fb5fd3da58521bcc4630b6f1d5a986832"
+      },
+      {
+        "artifact_id": "sha256:480ee06eb3ee1f66e6203d6b995b1d2e689cddf2369f32519ecf93d4faadd8e4",
+        "byte_count": 7405,
+        "channel": "browser",
+        "path": "traces/jquery/browser/API_NETWORK_ERROR/browser-framework-event-trace/e42a0f0b8cbbb44ef218973e61fe72d8fd2a383439f00b8dd44517f0180783e2.json",
+        "profile_id": "jquery",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:e42a0f0b8cbbb44ef218973e61fe72d8fd2a383439f00b8dd44517f0180783e2"
+      }
+    ]
+  },
+  "scenario_id": "API_NETWORK_ERROR",
+  "schema_version": "1.0"
+}

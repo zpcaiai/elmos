@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/batch36/navigation-map.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "map_key",
+    "source_artifact_digest",
+    "target_artifact_digest",
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "map_key": {
+      "type": "string"
+    },
+    "source_artifact_digest": {
+      "type": "string"
+    },
+    "target_artifact_digest": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_id",
+          "side",
+          "path",
+          "range",
+          "symbol_id"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "side": {
+            "enum": [
+              "source",
+              "psp",
+              "uir",
+              "fcm",
+              "target",
+              "test"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "range": {
+            "type": "object"
+          },
+          "symbol_id": {
+            "type": "string"
+          },
+          "document_digest": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "relation",
+          "confidence"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "relation": {
+            "enum": [
+              "exact",
+              "derived",
+              "split",
+              "merge",
+              "rename",
+              "approximate",
+              "test-of"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "provenance_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

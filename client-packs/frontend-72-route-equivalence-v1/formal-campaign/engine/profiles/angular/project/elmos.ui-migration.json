@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "924d6a2a8e4fbd1654b0c748",
+  "direction": {
+    "routeId": "flutter--to--angular",
+    "source": "flutter",
+    "target": "angular",
+    "sourceProfileVersion": "3.44.1",
+    "targetProfileVersion": "22.0.8",
+    "supportState": "ADAPTER_REQUIRED",
+    "semanticConversionEvidence": "NOT_RUN",
+    "runtimeEvidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "targetProfile": {
+    "id": "angular",
+    "label": "Angular",
+    "frameworkVersion": "22.0.8",
+    "profileVersion": "1.0.0",
+    "status": "ACTIVE",
+    "platforms": [
+      "WEB"
+    ],
+    "language": "TypeScript",
+    "languageVersion": "6.0.3",
+    "runtime": "Node.js",
+    "runtimeVersion": "26.0.0",
+    "nodeVersion": "26.0.0",
+    "buildTool": "Angular CLI",
+    "buildToolVersion": "22.0.8",
+    "packageManager": "npm",
+    "packageManagerVersion": "11.12.1",
+    "router": "Angular Router 22.0.8",
+    "state": "Angular signals",
+    "rendering": "CSR",
+    "testTool": "Angular build and browser E2E profile",
+    "runnerProfile": "MODERN_WEB",
+    "requiredProjectFiles": [
+      "package.json",
+      "angular.json",
+      "src/main.ts",
+      "src/app/app.component.ts"
+    ]
+  },
+  "digestScope": "all generated files except elmos.ui-migration.json",
+  "contentDigest": "sha256:ca6c0d456927c181768297536c0f91606d8f7593be64f2b10355143679c1e5dd",
+  "ownership": {
+    "generated": [
+      ".editorconfig",
+      ".env.example",
+      ".github/workflows/generated-ui-quality.yml",
+      ".gitignore",
+      ".npmrc",
+      ".nvmrc",
+      "README.md",
+      "angular.json",
+      "conversion/obligations.json",
+      "conversion/route.json",
+      "package.json",
+      "scripts/verify.sh",
+      "src/app/app.component.ts",
+      "src/app/generated-page.component.ts",
+      "src/elmos-bounded-navigation.ts",
+      "src/index.html",
+      "src/main.ts",
+      "src/routes.ts",
+      "src/styles.css",
+      "target-profile/profile.json",
+      "tsconfig.app.json",
+      "tsconfig.json",
+      "ui-ir/model.json"
+    ],
+    "generatedOnce": [
+      ".env.example"
+    ],
+    "protected": [],
+    "manual": []
+  },
+  "verification": {
+    "dependencyLock": "NOT_RUN",
+    "targetBuild": "NOT_RUN",
+    "targetStartup": "NOT_RUN",
+    "browserOrDeviceJourney": "NOT_RUN",
+    "accessibility": "NOT_RUN",
+    "visualParity": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

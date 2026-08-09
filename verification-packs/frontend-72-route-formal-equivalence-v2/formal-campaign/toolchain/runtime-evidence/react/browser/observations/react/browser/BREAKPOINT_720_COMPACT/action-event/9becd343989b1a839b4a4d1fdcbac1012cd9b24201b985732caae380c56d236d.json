@@ -1,0 +1,46 @@
+{
+  "actual": {
+    "action": "DISPLAY_CHANGE",
+    "event": "DISPLAY_CHANGE",
+    "handled": true,
+    "keyboardKey": "NONE"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "action-event",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "captured click/keydown/submit + [data-elmos-action-outcome]",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:81a6f86e054958aed6136067345725867662c166a30cbb1559ab45873de94e70",
+      "block_id": "action-event",
+      "byte_count": 3307,
+      "channel": "browser",
+      "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+      "path": "traces/react/browser/BREAKPOINT_720_COMPACT/browser-native-event-outcome-observer-trace/fa43ffd73299d42aac8b4e29820cc81c1d4e80224d25f6a74d0855c0569cdc48.json",
+      "profile_id": "react",
+      "role": "browser-native-event-outcome-observer-trace",
+      "scenario_id": "BREAKPOINT_720_COMPACT",
+      "sha256": "sha256:fa43ffd73299d42aac8b4e29820cc81c1d4e80224d25f6a74d0855c0569cdc48"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "NATIVE_EVENT_OUTCOME_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:b5890f6ef5dfe6f4cb7d9b65c2ee02b4b651bb050becd70c51c329a1dc6bbe81",
+        "byte_count": 5257,
+        "channel": "browser",
+        "path": "traces/react/browser/BREAKPOINT_720_COMPACT/browser-framework-event-trace/9a71f0a38e9e17cd11ad8508862db2f422996b922a036dabb0a385eb5029530c.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "BREAKPOINT_720_COMPACT",
+        "sha256": "sha256:9a71f0a38e9e17cd11ad8508862db2f422996b922a036dabb0a385eb5029530c"
+      }
+    ]
+  },
+  "scenario_id": "BREAKPOINT_720_COMPACT",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,14 @@
+node_modules/
+.elmos-npm-cache/
+dist/
+build/
+.dart_tool/
+.flutter-plugins*
+.idea/
+.deveco/
+oh_modules/
+*.hap
+*.app
+.env
+.env.*
+!.env.example

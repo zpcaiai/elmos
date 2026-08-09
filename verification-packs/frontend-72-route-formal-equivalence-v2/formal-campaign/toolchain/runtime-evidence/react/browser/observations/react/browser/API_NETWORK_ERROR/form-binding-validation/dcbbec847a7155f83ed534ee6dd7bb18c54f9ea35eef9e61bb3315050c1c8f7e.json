@@ -1,0 +1,68 @@
+{
+  "actual": {
+    "errorCode": null,
+    "fieldId": "query",
+    "formId": "search",
+    "submitted": true,
+    "valid": true,
+    "value": "ok"
+  },
+  "actual_source": "BLOCK_SPECIFIC_RUNTIME_OBSERVED",
+  "block_id": "form-binding-validation",
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-block-observation",
+  "profile_id": "react",
+  "provenance": {
+    "measurement_surface": "control value+ValidityState+error DOM+focus",
+    "model_values_used_as_actual": false,
+    "observation_trace_ref": {
+      "artifact_id": "sha256:fe620d8dff5053c98a0f03bcb1bd958992feb33f13abe2c4e4133b197d67b271",
+      "block_id": "form-binding-validation",
+      "byte_count": 1507,
+      "channel": "browser",
+      "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+      "path": "traces/react/browser/API_NETWORK_ERROR/browser-form-validity-observer-trace/66b821262106ade70ae60a5b0a2f8d065b7e28b0c414b5240ea15d12793a7491.json",
+      "profile_id": "react",
+      "role": "browser-form-validity-observer-trace",
+      "scenario_id": "API_NETWORK_ERROR",
+      "sha256": "sha256:66b821262106ade70ae60a5b0a2f8d065b7e28b0c414b5240ea15d12793a7491"
+    },
+    "observer_contract": "block-specific-runtime-observation-v1",
+    "observer_kind": "FORM_CONTROL_VALIDITY_OBSERVER",
+    "runner_kind": "PLAYWRIGHT_BROWSER_INTERACTION",
+    "supporting_trace_refs": [
+      {
+        "artifact_id": "sha256:73edee9520b53f4700753e37b7cfbc702c39ab0db665a439b3c398a82598e564",
+        "byte_count": 40449,
+        "channel": "browser",
+        "path": "traces/react/browser/API_NETWORK_ERROR/browser-dom-snapshot/ab03bf23897fbdb5f00f06703938a5cf6f0b826089ccf271f522ba466d74b6f3.json",
+        "profile_id": "react",
+        "role": "browser-dom-snapshot",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:ab03bf23897fbdb5f00f06703938a5cf6f0b826089ccf271f522ba466d74b6f3"
+      },
+      {
+        "artifact_id": "sha256:876f8a3aee5590ddc9fa3296bc0c7107031aa4595b1490677a3349fb33ef9dec",
+        "byte_count": 7404,
+        "channel": "browser",
+        "path": "traces/react/browser/API_NETWORK_ERROR/browser-framework-event-trace/77d3814a4e91170627a4386952a674a15cec6d281224cb7d0853962837180957.json",
+        "profile_id": "react",
+        "role": "browser-framework-event-trace",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:77d3814a4e91170627a4386952a674a15cec6d281224cb7d0853962837180957"
+      },
+      {
+        "artifact_id": "sha256:0d21ab489b4ae4b784a0a37d95ee214f58ee2a8651abc34a8aede728cd6dbc53",
+        "byte_count": 557018,
+        "channel": "browser",
+        "path": "traces/react/browser/API_NETWORK_ERROR/browser-accessibility-axe-trace/a508dea83cd70836a172f03ff43e1700e090bdbabe9b866a0647d732bd2ad52d.json",
+        "profile_id": "react",
+        "role": "browser-accessibility-axe-trace",
+        "scenario_id": "API_NETWORK_ERROR",
+        "sha256": "sha256:a508dea83cd70836a172f03ff43e1700e090bdbabe9b866a0647d732bd2ad52d"
+      }
+    ]
+  },
+  "scenario_id": "API_NETWORK_ERROR",
+  "schema_version": "1.0"
+}

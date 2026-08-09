@@ -1,0 +1,373 @@
+{
+  "actual_source": "ALLOWLISTED_RUNTIME_CAPTURE",
+  "capture": {
+    "events": [
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "document",
+        "url": "http://127.0.0.1:55462/"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/@vite/client"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/main.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/main.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/node_modules/.vite/deps/jquery.js?v=12e7f2e7"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/routes.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-consumer.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/styles.css"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/@vite/client"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/routes.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/styles.css"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-consumer.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/node_modules/.vite/deps/jquery.js?v=12e7f2e7"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "request",
+        "method": "POST",
+        "post_data": "{\"query\":\"ok\"}",
+        "resource_type": "fetch",
+        "url": "http://127.0.0.1:55462/api/search"
+      },
+      {
+        "browser_id": "google-chrome",
+        "kind": "response",
+        "method": "POST",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/api/search"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "document",
+        "url": "http://127.0.0.1:55462/"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/@vite/client"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/main.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/@vite/client"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/main.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/node_modules/.vite/deps/jquery.js?v=12e7f2e7"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/routes.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-consumer.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/styles.css"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/node_modules/.vite/deps/jquery.js?v=12e7f2e7"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/routes.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-consumer.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/styles.css"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/node_modules/vite/dist/client/env.mjs"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "GET",
+        "post_data": null,
+        "resource_type": "script",
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-navigation.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-bounded-interaction.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/src/elmos-interaction-runtime.ts"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "request",
+        "method": "POST",
+        "post_data": "{\"query\":\"ok\"}",
+        "resource_type": "fetch",
+        "url": "http://127.0.0.1:55462/api/search"
+      },
+      {
+        "browser_id": "mozilla-firefox",
+        "kind": "response",
+        "method": "POST",
+        "status": 200,
+        "url": "http://127.0.0.1:55462/api/search"
+      }
+    ]
+  },
+  "channel": "browser",
+  "kind": "frontend-interaction-runtime-trace-artifact",
+  "profile_id": "jquery",
+  "role": "browser-network-trace",
+  "scenario_id": "FORM_VALID_SUBMIT_API_SUCCESS",
+  "schema_version": "1.0"
+}
