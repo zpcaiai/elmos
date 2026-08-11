@@ -8702,48 +8702,30 @@ def flutter_browser_observation_ref(
     semantics_trace_ref: Mapping[str, Any],
     network_trace_ref: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Persist one Flutter Web observation derived only from drive reportData."""
+    """Fail closed until Flutter has the block-specific observer protocol.
 
-    value = {
-        "schema_version": SCHEMA_VERSION,
-        "kind": "frontend-interaction-runtime-block-observation",
-        "actual_source": "RUNTIME_OBSERVED",
-        "profile_id": "flutter",
-        "channel": "browser",
-        "scenario_id": scenario_id,
-        "block_id": block_id,
-        "provenance": {
-            "runner_kind": "FLUTTER_DRIVE_SEMANTICS",
-            "dom_snapshot_ref": None,
-            "framework_event_trace_ref": dict(framework_trace_ref),
-            "accessibility_axe_trace_ref": None,
-            "semantics_trace_ref": dict(semantics_trace_ref),
-            "network_trace_ref": (
-                dict(network_trace_ref) if network_trace_ref is not None else None
-            ),
-            "adapter_trace_ref": None,
-            "device_trace_ref": None,
-        },
-        "actual": dict(actual),
-    }
-    relative, sha, byte_count = write_content_addressed_runtime_json(
+    Flutter drive ``reportData`` is a useful raw diagnostic, but the current
+    adapter does not independently derive each block actual from the same
+    allowlisted measurement protocol used by the strict browser observer.  In
+    particular, relabelling the driver-provided ``blocks`` object as a runtime
+    observation would recreate the forbidden self-reporting path.  Keep this
+    callable as an explicit guard for stale callers, but never write an
+    observation artifact or reference from it.
+    """
+
+    del (
         evidence_root,
-        f"observations/flutter/browser/{scenario_id}/{block_id}",
-        value,
+        scenario_id,
+        block_id,
+        actual,
+        framework_trace_ref,
+        semantics_trace_ref,
+        network_trace_ref,
     )
-    ref = {
-        "role": "runtime-block-observation",
-        "profile_id": "flutter",
-        "channel": "browser",
-        "scenario_id": scenario_id,
-        "block_id": block_id,
-        "path": relative,
-        "sha256": sha,
-        "byte_count": byte_count,
-        "actual_digest": digest_json(dict(actual)),
-    }
-    ref["artifact_id"] = digest_json(ref)
-    return ref
+    raise ValidationError(
+        "Flutter block-specific runtime observer is not implemented; "
+        "the browser channel must remain NOT_RUN"
+    )
 
 
 def validate_playwright_browser_run_identity(
@@ -10564,209 +10546,27 @@ def execute_flutter_browser_runtime(
             raw_path,
             profile_manifest_digest=profile_manifest_digest,
         )
-        source_artifacts: list[dict[str, Any]] = []
-        raw_artifacts: list[dict[str, Any]] = []
-        scenarios_output: list[dict[str, Any]] = []
-        per_block_ids = {block_id: [] for block_id in INTERACTION_BLOCK_IDS}
-        for scenario in validated["scenarios"]:
-            scenario_id = scenario["scenario_id"]
-            framework_ref = browser_trace_ref(
-                evidence_root,
-                profile_id="flutter",
-                scenario_id=scenario_id,
-                role="flutter-framework-event-trace",
-                capture={"events": scenario["framework_events"]},
-            )
-            semantics_ref = browser_trace_ref(
-                evidence_root,
-                profile_id="flutter",
-                scenario_id=scenario_id,
-                role="flutter-semantics-trace",
-                capture={
-                    "semantics_label": scenario["semantics_label"],
-                    "focus": scenario["focus"],
-                },
-            )
-            network_ref = None
-            if scenario["network_adapter_events"]:
-                network_ref = browser_trace_ref(
-                    evidence_root,
-                    profile_id="flutter",
-                    scenario_id=scenario_id,
-                    role="flutter-network-adapter-trace",
-                    capture={"events": scenario["network_adapter_events"]},
-                )
-            source_artifacts.extend(
-                [
-                    framework_ref,
-                    semantics_ref,
-                    *([network_ref] if network_ref is not None else []),
-                ]
-            )
-            block_refs: dict[str, dict[str, Any]] = {}
-            for block_id in INTERACTION_BLOCK_IDS:
-                ref = flutter_browser_observation_ref(
-                    evidence_root,
-                    scenario_id=scenario_id,
-                    block_id=block_id,
-                    actual=scenario["blocks"][block_id],
-                    framework_trace_ref=framework_ref,
-                    semantics_trace_ref=semantics_ref,
-                    network_trace_ref=network_ref,
-                )
-                block_refs[block_id] = ref
-                raw_artifacts.append(ref)
-                per_block_ids[block_id].append(ref["artifact_id"])
-            scenarios_output.append(
-                {
-                    "scenario_id": scenario_id,
-                    "status": "PASSED",
-                    "block_observation_refs": block_refs,
-                }
-            )
-
-        build_execution = runtime_execution_from_command(
-            build_command, phase="BUILD", tool=flutter_identity
-        )
-        startup_execution = runtime_execution_from_command(
-            startup_check, phase="STARTUP", tool=python_identity
-        )
-        runtime_tools = [
+        discovery.append(
             {
-                "role": "flutter-drive-runner",
-                **flutter_identity,
-                "package_closure_digest": closure_digest,
-            },
-            {
-                "role": "flutter-cft-chrome",
-                **chrome_identity,
-                "package_closure_digest": acquisition["app_bundle_digest"],
-            },
-            {
-                "role": "flutter-cft-chromedriver",
-                **driver_identity,
-                "package_closure_digest": acquisition["evidence_digest"],
-            },
-            {
-                "role": "flutter-readiness-python",
-                **python_identity,
-                "package_closure_digest": closure_digest,
-            },
-        ]
-        result_manifest_value = {
-            "schema_version": SCHEMA_VERSION,
-            "kind": "frontend-interaction-runtime-result-manifest",
-            "profile_id": "flutter",
-            "channel": "browser",
-            "scenario_ids": [item["scenario_id"] for item in profile.scenario_manifest],
-            "semantic_block_ids": list(INTERACTION_BLOCK_IDS),
-            "runtime_source_artifact_ids": [
-                item["artifact_id"] for item in source_artifacts
-            ],
-            "runtime_source_artifact_count": len(source_artifacts),
-            "observation_artifact_ids": [
-                item["artifact_id"] for item in raw_artifacts
-            ],
-            "observation_artifact_count": len(raw_artifacts),
-            "passed_block_ids": list(INTERACTION_BLOCK_IDS),
-            "not_run_block_ids": [],
-            "runtime_tool_digests": [item["sha256"] for item in runtime_tools],
-            "prerequisite_execution_ids": [
-                build_execution["execution_id"],
-                startup_execution["execution_id"],
-            ],
-        }
-        manifest_relative, manifest_sha, manifest_bytes = (
-            write_content_addressed_runtime_json(
-                evidence_root,
-                "manifests/flutter/browser",
-                result_manifest_value,
-            )
+                "kind": "FLUTTER_BLOCK_SPECIFIC_RUNTIME_OBSERVER_STATUS",
+                "status": "NOT_RUN",
+                "reason": "FLUTTER_BLOCK_SPECIFIC_RUNTIME_OBSERVER_NOT_IMPLEMENTED",
+                "validated_raw_trace_sha256": raw_discovery["sha256"],
+                "validated_scenario_count": len(validated["scenarios"]),
+                "runtime_actuals_emitted": False,
+                "runtime_observation_refs_emitted": False,
+            }
         )
-        result_manifest_ref = {
-            "role": "runtime-result-manifest",
-            "profile_id": "flutter",
-            "channel": "browser",
-            "path": manifest_relative,
-            "sha256": manifest_sha,
-            "byte_count": manifest_bytes,
-            "manifest_digest": digest_json(result_manifest_value),
-        }
-        result_manifest_ref["artifact_id"] = digest_json(result_manifest_ref)
-        journey_refs = [
-            *[item["artifact_id"] for item in source_artifacts],
-            *[item["artifact_id"] for item in raw_artifacts],
-            result_manifest_ref["artifact_id"],
-        ]
-        journey_execution = runtime_execution_from_command(
-            journey_command,
-            phase="JOURNEY",
-            tool=flutter_identity,
-            artifact_refs=journey_refs,
+        record = unavailable_runtime_channel(
+            "flutter",
+            "browser",
+            "FLUTTER_BLOCK_SPECIFIC_RUNTIME_OBSERVER_NOT_IMPLEMENTED",
+            tool_discovery=discovery,
         )
-        execution_policy = {
-            "schema_version": SCHEMA_VERSION,
-            "kind": "frontend-interaction-runtime-execution-policy",
-            "profile_id": "flutter",
-            "channel": "browser",
-            "runner_kind": "FLUTTER_DRIVE_SEMANTICS",
-            "phases": {
-                "BUILD": runtime_phase_policy(build_execution),
-                "STARTUP": runtime_phase_policy(startup_execution),
-                "JOURNEY": runtime_phase_policy(journey_execution),
-            },
-            "runtime_tools": runtime_tools,
-        }
-        policy_relative, policy_sha, policy_bytes = (
-            write_content_addressed_runtime_json(
-                evidence_root,
-                "policies/flutter/browser",
-                execution_policy,
-            )
-        )
-        discovery.extend(
-            [
-                {"kind": "RUNTIME_EVIDENCE_ROOT", "path": str(evidence_root)},
-                {
-                    "kind": "RUNTIME_EXECUTION_POLICY_ARTIFACT",
-                    "path": policy_relative,
-                    "sha256": policy_sha,
-                    "byte_count": policy_bytes,
-                    "policy_digest": digest_json(execution_policy),
-                },
-            ]
-        )
-        record = {
-            "channel": "browser",
-            "required": True,
-            "status": "PASSED",
-            "reason": None,
-            "runner_kind": "FLUTTER_DRIVE_SEMANTICS",
-            "tool_discovery": discovery,
-            "execution_policy_digest": digest_json(execution_policy),
-            "runtime_tools": runtime_tools,
-            "build_execution": build_execution,
-            "startup_execution": startup_execution,
-            "journey_execution": journey_execution,
-            "scenario_manifest_digest": digest_json(
-                [item["scenario_id"] for item in profile.scenario_manifest]
-            ),
-            "scenario_count": len(profile.scenario_manifest),
-            "scenarios": scenarios_output,
-            "semantic_blocks": {
-                block_id: {
-                    "status": "PASSED",
-                    "observation_refs": refs,
-                    "observation_digest": digest_json(refs),
-                }
-                for block_id, refs in per_block_ids.items()
-            },
-            "raw_artifacts": raw_artifacts,
-            "runtime_source_artifacts": source_artifacts,
-            "result_manifest": result_manifest_ref,
-            "model_values_used_as_actual": False,
-        }
-        return record, execution_policy
+        record["build_execution"] = dict(build_command)
+        record["startup_execution"] = startup_check
+        record["journey_execution"] = journey_command
+        return record, None
     except (KeyError, OSError, TypeError, ValidationError) as error:
         discovery.append(
             {"kind": "FLUTTER_DRIVE_RESULT_VALIDATION_ERROR", "error": str(error)}

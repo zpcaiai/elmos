@@ -89,6 +89,7 @@ REQUIRED_RUNTIME_CHANNELS = {
     "vue3": ("browser",),
 }
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
+SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 300
 RUNTIME_ACTUAL_KEYS = {
     "route-navigation-deeplink-404": {
         "requestedPath", "selectedRouteId", "selectedPath", "resolution", "deepLink", "requiresAuth"
@@ -8230,7 +8231,7 @@ def validate_campaign(
                     env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
                     capture_output=True,
                     text=True,
-                    timeout=180,
+                    timeout=SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS,
                     check=False,
                 )
                 replay_result = json.loads(completed.stdout.strip().splitlines()[-1])

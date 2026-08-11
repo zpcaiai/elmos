@@ -219,11 +219,11 @@
     "holdout": "required"
   },
   "frontend_formal_route_campaign_v2": "formal-campaign/frontend-formal-route-campaign-v2.json",
-  "frontend_formal_campaign_v2_digest": "sha256:7ffea4cb0649f244a79749c70d6456a13363b495c11be955975932f56734ea71",
-  "frontend_formal_scope_v2_digest": "sha256:a2f1536abaca4236795e898b90737a22dfa59ffd2dce66ecc0df35f4c8e89b74",
+  "frontend_formal_campaign_v2_digest": "sha256:da5eea0dac6c402932be49f856cdf60a31531354b7b5b15a057dc497a8a3da14",
+  "frontend_formal_scope_v2_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499",
   "frontend_formal_peer_v2": {
     "pack_key": "frontend-72-route-formal-equivalence-v2",
-    "campaign_sha256": "sha256:7ffea4cb0649f244a79749c70d6456a13363b495c11be955975932f56734ea71",
-    "scope_digest": "sha256:a2f1536abaca4236795e898b90737a22dfa59ffd2dce66ecc0df35f4c8e89b74"
+    "campaign_sha256": "sha256:da5eea0dac6c402932be49f856cdf60a31531354b7b5b15a057dc497a8a3da14",
+    "scope_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499"
   }
 }

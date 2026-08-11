@@ -2652,6 +2652,81 @@ if (formSubmissionAttemptObserved([fakeSubmitElement], scenarioId, true)) {{
                 name="handwritten",
             )
 
+    def test_flutter_observation_guard_emits_no_legacy_actual_ref(self) -> None:
+        evidence_root = self.root / "flutter-observation-guard"
+        with self.assertRaisesRegex(
+            runner.ValidationError,
+            "Flutter block-specific runtime observer is not implemented",
+        ):
+            runner.flutter_browser_observation_ref(
+                evidence_root,
+                scenario_id="BOOT_PUBLIC",
+                block_id="state-management",
+                actual=runtime_block_actual("state-management"),
+                framework_trace_ref={"artifact_id": "framework"},
+                semantics_trace_ref={"artifact_id": "semantics"},
+                network_trace_ref=None,
+            )
+        self.assertFalse(evidence_root.exists())
+        self.assertNotIn(
+            '"actual_source": "RUNTIME_OBSERVED"',
+            RUNNER_PATH.read_text(encoding="utf-8"),
+        )
+
+    def test_fully_rehashed_legacy_flutter_actual_label_is_rejected(self) -> None:
+        evidence_root = self.root / "legacy-flutter-actual"
+        path = evidence_root / "observation.json"
+        block_id = "state-management"
+        actual = runtime_block_actual(block_id)
+        spec = runner.BLOCK_OBSERVER_SPECS[block_id]
+        value = {
+            "schema_version": "1.0",
+            "kind": "frontend-interaction-runtime-block-observation",
+            "actual_source": "RUNTIME_OBSERVED",
+            "profile_id": "flutter",
+            "channel": "browser",
+            "scenario_id": "BOOT_PUBLIC",
+            "block_id": block_id,
+            "provenance": {
+                "runner_kind": "FLUTTER_DRIVE_SEMANTICS",
+                "observer_contract": runner.BLOCK_OBSERVER_CONTRACT,
+                "observer_kind": spec["observer_kind"],
+                "measurement_surface": spec["measurement_surface"],
+                "observation_trace_ref": {},
+                "supporting_trace_refs": [],
+                "model_values_used_as_actual": False,
+            },
+            "actual": actual,
+        }
+        sha = write_json(path, value)
+        ref = {
+            "role": "runtime-block-observation",
+            "profile_id": "flutter",
+            "channel": "browser",
+            "scenario_id": "BOOT_PUBLIC",
+            "block_id": block_id,
+            "path": "observation.json",
+            "sha256": sha,
+            "byte_count": path.stat().st_size,
+            "actual_digest": runner.digest_json(actual),
+        }
+        ref["artifact_id"] = runner.digest_json(ref)
+        with self.assertRaisesRegex(
+            runner.ValidationError,
+            "forbidden.*RUNTIME_OBSERVED",
+        ):
+            runner.validate_runtime_artifact_ref(
+                ref,
+                evidence_root=evidence_root,
+                profile_id="flutter",
+                channel="browser",
+                scenario_id="BOOT_PUBLIC",
+                block_id=block_id,
+                runner_kind="FLUTTER_DRIVE_SEMANTICS",
+                source_artifacts={},
+                name="fully-rehashed-legacy-flutter-actual",
+            )
+
     def test_fully_rehashed_runtime_observed_trace_is_not_allowlisted_capture(
         self,
     ) -> None:

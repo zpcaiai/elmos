@@ -90,6 +90,7 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
     def test_exact_contract_constants_and_applicability(self) -> None:
         self.assertEqual(12, len(validator.BLOCK_IDS))
         self.assertEqual(72, len(validator.exact_routes()))
+        self.assertEqual(300, validator.SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS)
         self.assertEqual(
             runtime_runner.BLOCK_OBSERVER_SPECS,
             generator.BLOCK_OBSERVER_SPECS_V2,

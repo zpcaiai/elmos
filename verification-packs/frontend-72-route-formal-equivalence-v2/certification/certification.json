@@ -5,11 +5,11 @@
   "owner": "frontend-formal-verification-team",
   "exact_scope": {
     "migration_route": "all-directed-pairs-nine-exact-frontend-profiles-12-blocks",
-    "source_artifact_digest": "sha256:a2f1536abaca4236795e898b90737a22dfa59ffd2dce66ecc0df35f4c8e89b74",
-    "target_artifact_digest": "sha256:a2f1536abaca4236795e898b90737a22dfa59ffd2dce66ecc0df35f4c8e89b74",
+    "source_artifact_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499",
+    "target_artifact_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499",
     "workload_key": "bounded-frontend-interaction-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:90e40ea32b429eefa98718ad2145bd26e6b2198385695a15ea74978ddbe36603"
+    "environment_digest": "sha256:bbff130df448aa5208ecc4c10b279b434f76f4c4248cbd175467d82d98373f68"
   },
   "metrics": {},
   "evidence_refs": [
