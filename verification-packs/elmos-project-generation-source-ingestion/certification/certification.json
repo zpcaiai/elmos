@@ -9,10 +9,11 @@
     "target_artifact_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
     "workload_key": "multi-format-source-ingestion-security",
     "risk_tier": "P0",
-    "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+    "environment_digest": "sha256:2082dfc5b15033ef6bc5d90eecf7340f7042d1bbd7ac1484ec43a00fc25c90b1",
     "validation_kind": "local-deterministic-parser-security-qualification",
     "source_target_migration_equivalence": "NOT_APPLICABLE",
     "external_solver_or_symbolic_execution": "NOT_RUN",
+    "controlled_public_dns_rebinding_campaign": "NOT_RUN",
     "independent_holdout": "LOCAL_EXECUTED_NOT_INDEPENDENTLY_VERIFIED",
     "representative_production_workload": "NOT_RUN"
   },
@@ -23,7 +24,13 @@
     "fuzz_campaign_pass_rate": 1.0,
     "security_property_pass_rate": 1.0,
     "counterexample_replay_pass_rate": 1.0,
-    "local_test_pass_rate": 1.0
+    "local_test_pass_rate": 1.0,
+    "model_transition_coverage": 1.0,
+    "p0_contract_pass_rate": 1.0,
+    "representative_workload_pass_rate": 0.0,
+    "source_map_coverage": 1.0,
+    "evidence_trace_coverage": 1.0,
+    "assurance_claim_support_rate": 0.0
   },
   "evidence_refs": [
     "certification/local-test-result.json",

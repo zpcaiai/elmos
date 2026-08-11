@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-source-ingestion",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "limited",
   "owner": "elmos-project-synthesis-engineering",
   "maintenance_owner": "elmos-project-synthesis-engineering",
@@ -11,10 +11,11 @@
     "target_artifact_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
     "workload_key": "multi-format-source-ingestion-security",
     "risk_tier": "P0",
-    "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+    "environment_digest": "sha256:2082dfc5b15033ef6bc5d90eecf7340f7042d1bbd7ac1484ec43a00fc25c90b1",
     "validation_kind": "local-deterministic-parser-security-qualification",
     "source_target_migration_equivalence": "NOT_APPLICABLE",
     "external_solver_or_symbolic_execution": "NOT_RUN",
+    "controlled_public_dns_rebinding_campaign": "NOT_RUN",
     "independent_holdout": "LOCAL_EXECUTED_NOT_INDEPENDENTLY_VERIFIED",
     "representative_production_workload": "NOT_RUN"
   },

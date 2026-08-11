@@ -13,7 +13,13 @@
     "security_property_pass_rate": 1.0,
     "counterexample_replay_pass_rate": 1.0,
     "local_test_pass_rate": 1.0,
-    "local_tests": 9,
+    "model_transition_coverage": 1.0,
+    "p0_contract_pass_rate": 1.0,
+    "representative_workload_pass_rate": 0.0,
+    "source_map_coverage": 1.0,
+    "evidence_trace_coverage": 1.0,
+    "assurance_claim_support_rate": 0.0,
+    "local_tests": 10,
     "fuzz_cases": 256,
     "seeded_mutants_killed": 2
   },
@@ -21,7 +27,13 @@
     "surviving_critical_mutants": 0,
     "critical_fuzz_crashes": 0,
     "security_property_violations": 0,
-    "unreplayed_counterexamples": 0
+    "unreplayed_counterexamples": 0,
+    "critical_unknown_obligations": 3,
+    "unresolved_oracle_conflicts": 0,
+    "unsupported_p0_claims": 1,
+    "test_integrity_violations": 0,
+    "unapproved_oracle_changes": 0,
+    "unapproved_tolerance_changes": 0
   },
   "evidence_refs": [
     "certification/local-test-result.json",
@@ -31,6 +43,8 @@
     "counterexamples/sample.json"
   ],
   "notes": [
-    "Local engineering evidence only; independent certification was not requested or performed."
+    "Local engineering evidence only; independent certification was not requested or performed.",
+    "Model and contract metrics cover both declared lifecycle transitions and the exact local boundary contract; they do not replace independent P0 evidence.",
+    "Representative production workload and assurance support rates remain zero until authorized external evidence is supplied."
   ]
 }

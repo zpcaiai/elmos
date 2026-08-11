@@ -3,9 +3,34 @@
   "algorithm": "sha256",
   "entries": [
     {
+      "path": "assurance/assurance-case.json",
+      "byte_size": 1889,
+      "sha256": "1efac104c919ad7174c765e16ad23013062d967c4b130310d49d4e0c130672ee"
+    },
+    {
+      "path": "certification/certification.json",
+      "byte_size": 2020,
+      "sha256": "21b71ec2c2c855fcc5bf31badf77ac54d25d2deca7cdf2ccf337ee535a9025f9"
+    },
+    {
+      "path": "certification/evidence.json",
+      "byte_size": 1817,
+      "sha256": "324573669668b1f4eea373e05933f98f4fdf78940a6eea1581e5b9af4eaccc60"
+    },
+    {
       "path": "certification/local-test-result.json",
-      "byte_size": 1867,
-      "sha256": "1ae23f606fa43652fddf1e8d335d5dfa6e38e6bffeee54d129ef5fd28700417b"
+      "byte_size": 2269,
+      "sha256": "76389be7f4b7358743b765a02965b76875d9fdb7f9278fab154a3bdc913d35ff"
+    },
+    {
+      "path": "corpus/development/manifest.json",
+      "byte_size": 364,
+      "sha256": "d261ff32320f29baebbc45d747b457c654ae1e99be878402e4ee4e51e7c026a1"
+    },
+    {
+      "path": "corpus/development/seed.json",
+      "byte_size": 150,
+      "sha256": "41e7faab2252b99945fcf0e2265b876f160c7d102c4f0ed6aea3b492ffb83f34"
     },
     {
       "path": "corpus/holdout/cases.json",
@@ -14,8 +39,8 @@
     },
     {
       "path": "corpus/holdout/manifest.json",
-      "byte_size": 402,
-      "sha256": "646813c858a57d03b7f9c858c706c8cd82d9f6a59f66173e57061f95c2d7cb74"
+      "byte_size": 555,
+      "sha256": "7b75a5a8e165303fb1093602d3f41eadc6a88fe67e8724b5ca34c0094e6e1bd6"
     },
     {
       "path": "corpus/negative/cases.json",
@@ -24,8 +49,8 @@
     },
     {
       "path": "corpus/negative/manifest.json",
-      "byte_size": 431,
-      "sha256": "c4379844e9d94367ffd36343eddf11156eb52bcc48c5e2393fa79cd0fd60ca4e"
+      "byte_size": 465,
+      "sha256": "e17dfe2a49324a8d521ec531084f1004488a803454462ed39f364a0b27694801"
     },
     {
       "path": "corpus/representative-workloads/cases.json",
@@ -34,8 +59,8 @@
     },
     {
       "path": "corpus/representative-workloads/manifest.json",
-      "byte_size": 419,
-      "sha256": "7eae731682769581819239a04969d4b68a8f1652e79eb9ea112a0639d4df8e69"
+      "byte_size": 545,
+      "sha256": "0df6c2515d639361039d196585bce706b3c8d750702cd9062e6de8b82fdda479"
     },
     {
       "path": "counterexamples/input.json",
@@ -45,7 +70,57 @@
     {
       "path": "counterexamples/sample.json",
       "byte_size": 1015,
-      "sha256": "94d6aaca29b4c05ff35aa0050d308607b5511356b53e1fd9674dd40deb3027ac"
+      "sha256": "d9debbff25ecf4bece7c36a80fde8ac110d06de642653a36d895dc4ba60faefa"
+    },
+    {
+      "path": "fuzz/campaign.json",
+      "byte_size": 507,
+      "sha256": "6c7bb25e645288fc55ef2f0eb2d5d60e28e444f7d31470438a93017b4965500b"
+    },
+    {
+      "path": "metamorphic/sample.json",
+      "byte_size": 523,
+      "sha256": "60e737d7a32a2c39ee4cf9326dcbc825ab32f86d322affaed0af91f59879b621"
+    },
+    {
+      "path": "models/model.json",
+      "byte_size": 1058,
+      "sha256": "b162820b670465e051bffdc3e725c755f9949d4029430d35f483abb90a8c9523"
+    },
+    {
+      "path": "mutation/campaign.json",
+      "byte_size": 697,
+      "sha256": "cf9b397257185bc86a83b014784a4cc6f534f3d1cd8afe4c2920b0b2a40ea90d"
+    },
+    {
+      "path": "oracle-registry.json",
+      "byte_size": 1054,
+      "sha256": "5bbc983f294e33d290c1d31d14b3f5e5c0284db5591211067b3e462d844e6358"
+    },
+    {
+      "path": "pack.json",
+      "byte_size": 1715,
+      "sha256": "df0fed7f1a3693e1800d48e67939a18f5e03f5569af170f0185084fe9477e90c"
+    },
+    {
+      "path": "properties/sample.json",
+      "byte_size": 808,
+      "sha256": "26a093c1e2d3e1c4c397c0611452b52a7dcb9208a17e2bb00613a5ef5111f378"
+    },
+    {
+      "path": "solver/proof.json",
+      "byte_size": 570,
+      "sha256": "4d5fa3abbbf8b770c624b4e908d451099bd87368d1d8094a0ba621c3257b82cb"
+    },
+    {
+      "path": "support-matrix.json",
+      "byte_size": 2235,
+      "sha256": "0bb2d80d39de2485f5bd024edab578d77c1dcca1edef360d9eb57d776ae77a32"
+    },
+    {
+      "path": "validation-profile.json",
+      "byte_size": 1152,
+      "sha256": "00ff1da5f92bee8ac95a0f20f4a8880b565d28616095429a9ee329dd04e4d3fd"
     }
   ]
 }

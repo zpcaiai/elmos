@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-08-09T19:16:32Z",
+  "executed_at": "2026-08-11T03:26:55Z",
   "executor": "local-codex-session",
   "environment": {
     "node": "v26.0.0",
@@ -9,24 +9,32 @@
     "playwright": "1.61.1",
     "browser_project": "chromium"
   },
-  "command": "ELMOS_E2E_PORT=3400 ELMOS_E2E_GITHUB_PORT=3499 ELMOS_E2E_OUTPUT_DIR=./test-results/source-final ELMOS_E2E_REPORT_DIR=./test-results/source-final-report pnpm --dir apps/web-console exec playwright test --project=chromium e2e/generation-source-ingestion.spec.ts",
+  "command": "ELMOS_E2E_PORT=3481 ELMOS_E2E_GITHUB_PORT=3580 ELMOS_E2E_OUTPUT_DIR=./test-results/source-b35-closure ELMOS_E2E_REPORT_DIR=./test-results/source-b35-closure-report pnpm --dir apps/web-console exec playwright test --project=chromium e2e/generation-source-ingestion.spec.ts",
   "tests": 10,
   "passed": 10,
   "failed": 0,
-  "duration_seconds": 12.8,
+  "duration_seconds": 16.5,
   "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
   "test_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
-  "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+  "environment_digest": "sha256:2082dfc5b15033ef6bc5d90eecf7340f7042d1bbd7ac1484ec43a00fc25c90b1",
   "repository_bindings": [
     {
+      "role": "source",
       "path": "apps/web-console/app/lib/server/generationSourceIngestion.ts",
       "byte_size": 18360,
       "sha256": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1"
     },
     {
+      "role": "test",
       "path": "apps/web-console/e2e/generation-source-ingestion.spec.ts",
       "byte_size": 11852,
       "sha256": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563"
+    },
+    {
+      "role": "environment",
+      "path": "apps/web-console/package.json",
+      "byte_size": 1041,
+      "sha256": "sha256:2082dfc5b15033ef6bc5d90eecf7340f7042d1bbd7ac1484ec43a00fc25c90b1"
     }
   ],
   "coverage": {
@@ -39,7 +47,10 @@
     "expired_bundle_quota_reclamation": true,
     "seeded_fuzz_cases": 256,
     "seeded_mutants_killed": 2,
-    "holdout_and_representative_corpora": true
+    "holdout_and_representative_corpora": true,
+    "declared_model_transitions_exercised": "2/2",
+    "p0_boundary_contract_cases_passed": true,
+    "repository_binding_coverage": "3/3"
   },
   "limitations": [
     "Local execution only",
