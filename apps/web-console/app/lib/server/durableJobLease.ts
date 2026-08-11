@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { hostname } from "node:os";
 import {
   mkdir,
   open,
@@ -6,6 +7,7 @@ import {
   readdir,
   rename,
   rm,
+  stat,
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
@@ -26,18 +28,49 @@ type LeaseDocument = {
   expiresAt: string;
 };
 
+type ControlLockDocument = {
+  schemaVersion: "1.0";
+  line: string;
+  ownerToken: string;
+  hostname: string;
+  pid: number;
+  createdAt: string;
+  heartbeatAt: string;
+  legacy?: true;
+};
+
+type ControlLockObservation = {
+  raw: string;
+  document?: ControlLockDocument;
+  modifiedAtMs: number;
+};
+
+const controlLockStaleMs = 15_000;
+const controlLockHeartbeatMs = 5_000;
+
 export class DurableLeaseError extends Error {
+  readonly code:
+    | "QUEUE_ITEM_EXPIRED"
+    | "QUEUE_GLOBAL_CAPACITY_REACHED"
+    | "QUEUE_TENANT_CAPACITY_REACHED"
+    | "QUEUE_JOB_ALREADY_LEASED"
+    | "QUEUE_CONTROL_LOCK_UNAVAILABLE"
+    | "QUEUE_LEASE_LOST";
+  readonly retryable: boolean;
+
   constructor(
-    readonly code:
+    code:
       | "QUEUE_ITEM_EXPIRED"
       | "QUEUE_GLOBAL_CAPACITY_REACHED"
       | "QUEUE_TENANT_CAPACITY_REACHED"
       | "QUEUE_JOB_ALREADY_LEASED"
       | "QUEUE_CONTROL_LOCK_UNAVAILABLE"
       | "QUEUE_LEASE_LOST",
-    readonly retryable: boolean,
+    retryable: boolean,
   ) {
     super(code);
+    this.code = code;
+    this.retryable = retryable;
   }
 }
 
@@ -86,23 +119,262 @@ async function atomicJson(destination: string, value: unknown): Promise<void> {
   await rename(temporary, destination);
 }
 
-async function withControlLock<T>(
+function parseControlLock(raw: string, expectedLine: string): ControlLockDocument | undefined {
+  try {
+    const value = JSON.parse(raw) as Partial<ControlLockDocument>;
+    if (
+      value.schemaVersion !== "1.0"
+      || value.line !== expectedLine
+      || !value.ownerToken?.match(jobIdPattern)
+      || typeof value.hostname !== "string"
+      || value.hostname.length < 1
+      || value.hostname.length > 253
+      || /[\0\r\n]/.test(value.hostname)
+      || !Number.isSafeInteger(value.pid)
+      || Number(value.pid) <= 0
+      || Number(value.pid) > 2_147_483_647
+      || !Number.isFinite(Date.parse(value.createdAt ?? ""))
+      || !Number.isFinite(Date.parse(value.heartbeatAt ?? ""))
+    ) return undefined;
+    return value as ControlLockDocument;
+  } catch {
+    const legacy = /^(\d{1,10}):(\d{10,16})$/.exec(raw.trim());
+    if (!legacy) return undefined;
+    const pid = Number.parseInt(legacy[1], 10);
+    const timestamp = Number.parseInt(legacy[2], 10);
+    if (
+      !Number.isSafeInteger(pid)
+      || pid <= 0
+      || pid > 2_147_483_647
+      || !Number.isSafeInteger(timestamp)
+      || timestamp < 0
+      || timestamp > 8_640_000_000_000_000
+    ) return undefined;
+    const at = new Date(timestamp).toISOString();
+    return {
+      schemaVersion: "1.0",
+      line: expectedLine,
+      ownerToken: `00000000-0000-4000-8000-${digest(raw).slice(0, 12)}`,
+      hostname: hostname(),
+      pid,
+      createdAt: at,
+      heartbeatAt: at,
+      legacy: true,
+    };
+  }
+}
+
+function processIsAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code !== "ESRCH";
+  }
+}
+
+async function observeControlLock(
+  lockPath: string,
+  expectedLine: string,
+): Promise<ControlLockObservation> {
+  const handle = await open(lockPath, "r");
+  try {
+    const raw = await handle.readFile("utf8");
+    const descriptorState = await handle.stat();
+    const canonicalState = await stat(lockPath);
+    if (
+      descriptorState.dev !== canonicalState.dev
+      || descriptorState.ino !== canonicalState.ino
+    ) throw new DurableLeaseError("QUEUE_CONTROL_LOCK_UNAVAILABLE", true);
+    return {
+      raw,
+      document: parseControlLock(raw, expectedLine),
+      modifiedAtMs: descriptorState.mtimeMs,
+    };
+  } finally {
+    await handle.close();
+  }
+}
+
+function controlLockIsReclaimable(observation: ControlLockObservation): boolean {
+  // The predecessor format has no host or owner token. Reclaiming it could let
+  // its still-live owner unlink a successor lock, so upgrades fail closed until
+  // that short critical section exits or an operator verifies the old process.
+  if (observation.document?.legacy) return false;
+  const lastActivity = observation.document
+    ? Date.parse(observation.document.heartbeatAt)
+    : observation.modifiedAtMs;
+  if (!Number.isFinite(lastActivity) || Date.now() - lastActivity <= controlLockStaleMs) {
+    return false;
+  }
+  if (
+    observation.document?.hostname === hostname()
+    && processIsAlive(observation.document.pid)
+  ) return false;
+  return true;
+}
+
+async function restoreMovedControlLock(
+  movedPath: string,
+  lockPath: string,
+  raw: string,
+): Promise<boolean> {
+  try {
+    const handle = await open(lockPath, "wx", 0o600);
+    try {
+      await handle.writeFile(raw);
+      await handle.sync();
+    } finally {
+      await handle.close();
+    }
+    await rm(movedPath, { force: true });
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    try {
+      if (await readFile(lockPath, "utf8") === raw) {
+        await rm(movedPath, { force: true });
+        return true;
+      }
+    } catch {
+      // The canonical owner changed again; retain the moved file for diagnosis.
+    }
+    return false;
+  }
+}
+
+async function reclaimControlLock(
+  lockPath: string,
+  observation: ControlLockObservation,
+): Promise<boolean> {
+  const movedPath = `${lockPath}.stale.${randomUUID()}`;
+  try {
+    await rename(lockPath, movedPath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+  const movedRaw = await readFile(movedPath, "utf8");
+  if (movedRaw !== observation.raw) {
+    await restoreMovedControlLock(movedPath, lockPath, movedRaw);
+    throw new DurableLeaseError("QUEUE_CONTROL_LOCK_UNAVAILABLE", true);
+  }
+  await rm(movedPath, { force: true });
+  return true;
+}
+
+async function refreshControlLock(
+  lockPath: string,
+  expectedLine: string,
+  ownerToken: string,
+): Promise<void> {
+  const handle = await open(lockPath, "r+");
+  try {
+    const raw = await handle.readFile("utf8");
+    const current = parseControlLock(raw, expectedLine);
+    if (current?.ownerToken !== ownerToken) {
+      throw new DurableLeaseError("QUEUE_CONTROL_LOCK_UNAVAILABLE", true);
+    }
+    const descriptorState = await handle.stat();
+    const payload = Buffer.from(`${JSON.stringify({
+      ...current,
+      heartbeatAt: new Date().toISOString(),
+    } satisfies ControlLockDocument, null, 2)}\n`);
+    await handle.truncate(0);
+    await handle.write(payload, 0, payload.length, 0);
+    await handle.sync();
+    const canonicalState = await stat(lockPath);
+    if (
+      descriptorState.dev !== canonicalState.dev
+      || descriptorState.ino !== canonicalState.ino
+    ) throw new DurableLeaseError("QUEUE_CONTROL_LOCK_UNAVAILABLE", true);
+  } finally {
+    await handle.close();
+  }
+}
+
+async function releaseControlLock(
+  lockPath: string,
+  expectedLine: string,
+  ownerToken: string,
+): Promise<boolean> {
+  let observation: ControlLockObservation;
+  try {
+    observation = await observeControlLock(lockPath, expectedLine);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+  if (observation.document?.ownerToken !== ownerToken) return false;
+  const movedPath = `${lockPath}.release.${ownerToken}.${randomUUID()}`;
+  try {
+    await rename(lockPath, movedPath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+  const movedRaw = await readFile(movedPath, "utf8");
+  const moved = parseControlLock(movedRaw, expectedLine);
+  if (moved?.ownerToken !== ownerToken) {
+    await restoreMovedControlLock(movedPath, lockPath, movedRaw);
+    return false;
+  }
+  await rm(movedPath, { force: true });
+  return true;
+}
+
+export async function withDurableQueueControlLock<T>(
   configuration: DurableLeaseConfiguration,
   operation: () => Promise<T>,
 ): Promise<T> {
+  assertConfiguration(configuration);
   const controlRoot = confined(configuration.root, ".durable-queue", "control");
   await mkdir(controlRoot, { recursive: true, mode: 0o700 });
   const lockPath = confined(controlRoot, `${configuration.line}.lock`);
   const deadline = Date.now() + 5_000;
   while (Date.now() < deadline) {
     try {
+      const now = new Date();
+      const ownerToken = randomUUID();
+      const document: ControlLockDocument = {
+        schemaVersion: "1.0",
+        line: configuration.line,
+        ownerToken,
+        hostname: hostname(),
+        pid: process.pid,
+        createdAt: now.toISOString(),
+        heartbeatAt: now.toISOString(),
+      };
       const handle = await open(lockPath, "wx", 0o600);
       try {
-        await handle.writeFile(`${process.pid}:${Date.now()}\n`);
-        return await operation();
+        await handle.writeFile(`${JSON.stringify(document, null, 2)}\n`);
+        await handle.sync();
       } finally {
         await handle.close();
-        await rm(lockPath, { force: true });
+      }
+      let heartbeatFailure: unknown;
+      let heartbeatTail = Promise.resolve();
+      const heartbeat = setInterval(() => {
+        heartbeatTail = heartbeatTail
+          .then(() => refreshControlLock(lockPath, configuration.line, ownerToken))
+          .catch((error: unknown) => {
+            heartbeatFailure ??= error;
+          });
+      }, controlLockHeartbeatMs);
+      heartbeat.unref();
+      try {
+        const result = await operation();
+        await heartbeatTail;
+        if (heartbeatFailure) {
+          throw new DurableLeaseError("QUEUE_CONTROL_LOCK_UNAVAILABLE", true);
+        }
+        return result;
+      } finally {
+        clearInterval(heartbeat);
+        await heartbeatTail;
+        if (!await releaseControlLock(lockPath, configuration.line, ownerToken)) {
+          throw new DurableLeaseError("QUEUE_CONTROL_LOCK_UNAVAILABLE", true);
+        }
       }
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error
@@ -110,14 +382,14 @@ async function withControlLock<T>(
         : "";
       if (code !== "EEXIST") throw error;
       try {
-        const raw = await readFile(lockPath, "utf8");
-        const timestamp = Number(raw.trim().split(":").at(-1));
-        if (Number.isFinite(timestamp) && Date.now() - timestamp > 15_000) {
-          await rename(lockPath, `${lockPath}.stale.${randomUUID()}`);
+        const observation = await observeControlLock(lockPath, configuration.line);
+        if (controlLockIsReclaimable(observation)) {
+          await reclaimControlLock(lockPath, observation);
           continue;
         }
-      } catch {
-        // Another process may have just released the lock.
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+        // Another process released the canonical path between observation steps.
       }
       await new Promise((resolve) => setTimeout(resolve, 25 + Math.floor(Math.random() * 50)));
     }
@@ -219,7 +491,7 @@ export class DurableJobLease implements AsyncDisposable {
     }
     const tenantDigest = digest(input.tenantId);
     const ownerId = `${process.pid}-${randomUUID()}`;
-    await withControlLock(configuration, async () => {
+    await withDurableQueueControlLock(configuration, async () => {
       const active = await activeLeases(configuration);
       if (active.some((lease) => lease.jobId === input.jobId)) {
         throw new DurableLeaseError("QUEUE_JOB_ALREADY_LEASED", true);
@@ -266,7 +538,7 @@ export class DurableJobLease implements AsyncDisposable {
 
   async heartbeat(): Promise<void> {
     if (this.#released) throw new DurableLeaseError("QUEUE_LEASE_LOST", false);
-    await withControlLock(this.#configuration, async () => {
+    await withDurableQueueControlLock(this.#configuration, async () => {
       const leasePath = this.#leasePath();
       const lease = parseLease(await readFile(leasePath, "utf8"), this.#configuration.line);
       if (
@@ -288,7 +560,7 @@ export class DurableJobLease implements AsyncDisposable {
 
   async release(outcome: "SUCCEEDED" | "FAILED" | "BLOCKED" | "CANCELLED"): Promise<void> {
     if (this.#released) return;
-    await withControlLock(this.#configuration, async () => {
+    await withDurableQueueControlLock(this.#configuration, async () => {
       const leasePath = this.#leasePath();
       const lease = parseLease(await readFile(leasePath, "utf8"), this.#configuration.line);
       if (lease.ownerId !== this.ownerId || lease.inputDigest !== this.#inputDigest) {

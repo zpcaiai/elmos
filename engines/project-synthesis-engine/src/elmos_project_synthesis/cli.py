@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import stat as stat_module
 import sys
 import tempfile
 import zipfile
@@ -239,6 +240,113 @@ def _archive_workspace(workspace: Path, destination: Path, *, evidence: Path | N
     }
 
 
+def _open_archive_digest(source: Any) -> str:
+    source.seek(0)
+    digest = hashlib.sha256()
+    while chunk := source.read(1024 * 1024):
+        digest.update(chunk)
+    source.seek(0)
+    return digest.hexdigest()
+
+
+def _extract_publish_archive(
+    archive_path: Path,
+    destination: Path,
+    expected_sha256: str | None = None,
+) -> dict[str, Any]:
+    expanded_archive = archive_path.expanduser()
+    if (
+        expanded_archive.is_symlink()
+        or (expected_sha256 is not None and re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None)
+    ):
+        raise ValueError("PUBLISH_ARCHIVE_UNSAFE")
+    source = expanded_archive.absolute()
+    expanded_destination = destination.expanduser()
+    if expanded_destination.is_symlink():
+        raise ValueError("PUBLISH_EXTRACTION_ROOT_UNSAFE")
+    root = expanded_destination.resolve(strict=True)
+    if not root.is_dir() or any(root.iterdir()):
+        raise ValueError("PUBLISH_EXTRACTION_ROOT_NOT_EMPTY")
+    os.chmod(root, 0o700)
+    archive_root: str | None = None
+    paths: set[str] = set()
+    total_bytes = 0
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(source, flags)
+    with os.fdopen(descriptor, "rb", closefd=True) as source_stream:
+        before = os.fstat(source_stream.fileno())
+        if (
+            not stat_module.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or before.st_size <= 0
+            or before.st_size > 64 * 1024 * 1024
+        ):
+            raise ValueError("PUBLISH_ARCHIVE_INVALID")
+        archive_sha256 = _open_archive_digest(source_stream)
+        if expected_sha256 is not None and archive_sha256 != expected_sha256:
+            raise ValueError("PUBLISH_ARCHIVE_DIGEST_MISMATCH")
+        with zipfile.ZipFile(source_stream) as archive:
+            entries = archive.infolist()
+            if not entries or len(entries) > 1_000:
+                raise ValueError("PUBLISH_ARCHIVE_FILE_COUNT_EXCEEDED")
+            for info in entries:
+                if info.is_dir() or info.flag_bits & 0x1 or "\\" in info.filename:
+                    raise ValueError("PUBLISH_ARCHIVE_ENTRY_UNSAFE")
+                member = PurePosixPath(info.filename)
+                if member.is_absolute() or len(member.parts) < 2 or ".." in member.parts:
+                    raise ValueError("PUBLISH_ARCHIVE_PATH_UNSAFE")
+                if archive_root is None:
+                    archive_root = member.parts[0]
+                    if re.fullmatch(r"[a-z][a-z0-9-]{1,62}[a-z0-9]", archive_root) is None:
+                        raise ValueError("PUBLISH_ARCHIVE_PROJECT_IDENTITY_INVALID")
+                if member.parts[0] != archive_root:
+                    raise ValueError("PUBLISH_ARCHIVE_MULTIPLE_ROOTS")
+                relative = PurePosixPath(*member.parts[1:])
+                relative_text = relative.as_posix()
+                if not relative.parts or relative_text in paths:
+                    raise ValueError("PUBLISH_ARCHIVE_PATH_DUPLICATE")
+                unix_mode = (info.external_attr >> 16) & 0xFFFF
+                file_type = stat_module.S_IFMT(unix_mode)
+                if file_type not in {0, stat_module.S_IFREG} or stat_module.S_ISLNK(unix_mode):
+                    raise ValueError("PUBLISH_ARCHIVE_ENTRY_TYPE_UNSAFE")
+                if info.file_size < 0 or info.file_size > 32 * 1024 * 1024:
+                    raise ValueError("PUBLISH_ARCHIVE_FILE_TOO_LARGE")
+                total_bytes += info.file_size
+                if total_bytes > 64 * 1024 * 1024:
+                    raise ValueError("PUBLISH_ARCHIVE_BYTES_EXCEEDED")
+                target = root.joinpath(archive_root, *relative.parts)
+                target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+                if target.exists() or target.is_symlink():
+                    raise ValueError("PUBLISH_ARCHIVE_TARGET_EXISTS")
+                written = 0
+                with archive.open(info, "r") as input_stream, target.open("xb") as output_stream:
+                    while chunk := input_stream.read(1024 * 1024):
+                        written += len(chunk)
+                        if written > info.file_size:
+                            raise ValueError("PUBLISH_ARCHIVE_SIZE_MISMATCH")
+                        output_stream.write(chunk)
+                if written != info.file_size:
+                    raise ValueError("PUBLISH_ARCHIVE_SIZE_MISMATCH")
+                target.chmod(0o755 if unix_mode & 0o111 else 0o644)
+                paths.add(relative_text)
+        after = os.fstat(source_stream.fileno())
+        if (
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns, after.st_nlink)
+            != (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns, before.st_nlink)
+            or _open_archive_digest(source_stream) != archive_sha256
+        ):
+            raise ValueError("PUBLISH_ARCHIVE_CHANGED_DURING_EXTRACTION")
+    if archive_root is None:
+        raise ValueError("PUBLISH_ARCHIVE_EMPTY")
+    return {
+        "status": "EXTRACTED",
+        "project_name": archive_root,
+        "file_count": len(paths),
+        "uncompressed_bytes": total_bytes,
+        "archive_sha256": archive_sha256,
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-project-synthesis")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -283,6 +391,13 @@ def _parser() -> argparse.ArgumentParser:
 
     runtime_plan = subparsers.add_parser("runtime-plan", help="Emit allowlisted runtime commands")
     runtime_plan.add_argument("--workspace", type=Path, required=True)
+    extract_archive = subparsers.add_parser(
+        "extract-publish-archive",
+        help="Safely materialize an immutable generated archive for SCM publication",
+    )
+    extract_archive.add_argument("--archive", type=Path, required=True)
+    extract_archive.add_argument("--expected-sha256", required=True)
+    extract_archive.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -335,12 +450,18 @@ def main(argv: list[str] | None = None) -> int:
                 "production_delivery_status": "NOT_RUN",
                 "external_certification_status": "NOT_RUN",
             }
-        else:
+        elif args.command == "runtime-plan":
             result = {
                 "status": "READY",
                 "workspace": str(args.workspace.resolve(strict=True)),
                 "runtime_plan": runtime_commands(args.workspace),
             }
+        else:
+            result = _extract_publish_archive(
+                args.archive,
+                args.output,
+                args.expected_sha256,
+            )
         print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
         return 0 if result.get("status") != "FAILED" else 1
     except (

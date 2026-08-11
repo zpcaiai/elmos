@@ -43,6 +43,97 @@ export type HostedArtifactTicket = {
   expiresInSeconds: number;
 };
 
+const CONTROL_PLANE_RESPONSE_LIMIT_BYTES = 2 * 1024 * 1024;
+const HOSTED_ARTIFACT_LIMIT_BYTES = 256 * 1024 * 1024;
+
+async function boundedResponseText(response: Response): Promise<string> {
+  const declared = response.headers.get("content-length");
+  if (declared !== null) {
+    const declaredBytes = Number(declared);
+    if (!Number.isSafeInteger(declaredBytes) || declaredBytes < 0) {
+      throw new GenerationRunnerError(502, "CONTROL_PLANE_RESPONSE_INVALID");
+    }
+    if (declaredBytes > CONTROL_PLANE_RESPONSE_LIMIT_BYTES) {
+      await response.body?.cancel().catch(() => undefined);
+      throw new GenerationRunnerError(502, "CONTROL_PLANE_RESPONSE_TOO_LARGE");
+    }
+  }
+  if (!response.body) return "";
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let total = 0;
+  let text = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > CONTROL_PLANE_RESPONSE_LIMIT_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        throw new GenerationRunnerError(502, "CONTROL_PLANE_RESPONSE_TOO_LARGE");
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    return text + decoder.decode();
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+function validateHostedArtifactTicket(value: unknown): HostedArtifactTicket {
+  if (!value || typeof value !== "object") {
+    throw new GenerationRunnerError(502, "HOSTED_ARTIFACT_TICKET_INVALID");
+  }
+  const ticket = value as Partial<HostedArtifactTicket>;
+  if (
+    typeof ticket.downloadUrl !== "string"
+    || ticket.downloadUrl.length === 0
+    || ticket.downloadUrl.length > 4096
+    || typeof ticket.filename !== "string"
+    || ticket.filename.length === 0
+    || ticket.filename.length > 180
+    || ticket.filename.includes("/")
+    || ticket.filename.includes("\\")
+    || /[\u0000-\u001f\u007f]/.test(ticket.filename)
+    || typeof ticket.contentSha256 !== "string"
+    || !/^[0-9a-f]{64}$/.test(ticket.contentSha256)
+    || !Number.isSafeInteger(ticket.byteSize)
+    || (ticket.byteSize ?? 0) <= 0
+    || (ticket.byteSize ?? 0) > HOSTED_ARTIFACT_LIMIT_BYTES
+    || !Number.isSafeInteger(ticket.expiresInSeconds)
+    || (ticket.expiresInSeconds ?? 0) <= 0
+    || (ticket.expiresInSeconds ?? 0) > 600
+  ) {
+    throw new GenerationRunnerError(502, "HOSTED_ARTIFACT_TICKET_INVALID");
+  }
+
+  let downloadUrl: URL;
+  try {
+    downloadUrl = new URL(ticket.downloadUrl);
+  } catch {
+    throw new GenerationRunnerError(502, "HOSTED_ARTIFACT_TICKET_INVALID");
+  }
+  const localDevelopment = process.env.NODE_ENV !== "production"
+    && downloadUrl.protocol === "http:"
+    && ["127.0.0.1", "localhost"].includes(downloadUrl.hostname);
+  const allowedHosts = new Set(
+    (process.env.ELMOS_GENERATION_ARTIFACT_DOWNLOAD_ALLOWED_HOSTS ?? "")
+      .split(",")
+      .map((host) => host.trim().toLowerCase())
+      .filter(Boolean),
+  );
+  if (
+    (downloadUrl.protocol !== "https:" && !localDevelopment)
+    || downloadUrl.username
+    || downloadUrl.password
+    || downloadUrl.hash
+    || (!localDevelopment && !allowedHosts.has(downloadUrl.host.toLowerCase()))
+  ) {
+    throw new GenerationRunnerError(502, "HOSTED_ARTIFACT_TICKET_URL_NOT_ALLOWED");
+  }
+  return ticket as HostedArtifactTicket;
+}
+
 export function hostedExecutionEnabled(): boolean {
   return process.env.ELMOS_HOSTED_EXECUTION_ENABLED === "true";
 }
@@ -101,7 +192,16 @@ async function call<T>(
     }
     throw new GenerationRunnerError(502, "CONTROL_PLANE_UNREACHABLE");
   });
-  const text = await response.text();
+  let text: string;
+  try {
+    text = await boundedResponseText(response);
+  } catch (error) {
+    if (error instanceof GenerationRunnerError) throw error;
+    if (error instanceof Error && ["AbortError", "TimeoutError"].includes(error.name)) {
+      throw new GenerationRunnerError(504, "CONTROL_PLANE_TIMEOUT");
+    }
+    throw new GenerationRunnerError(502, "CONTROL_PLANE_RESPONSE_INVALID");
+  }
   let payload: Record<string, unknown> = {};
   try {
     payload = text ? JSON.parse(text) as Record<string, unknown> : {};
@@ -225,9 +325,20 @@ export async function hostedArtifactTicket(
   context: AuthorizedContext,
   jobId: string,
 ): Promise<HostedArtifactTicket> {
-  return call<HostedArtifactTicket>(
+  const job = await getHostedGenerationJob(context, jobId);
+  if (!job.artifactReady || !job.artifactSha256 || !job.artifactSize) {
+    throw new GenerationRunnerError(409, "ARTIFACT_NOT_READY");
+  }
+  const ticket = validateHostedArtifactTicket(await call<unknown>(
     context,
     `/api/v1/execution/jobs/${encodeURIComponent(jobId)}/artifacts/PROJECT_ARCHIVE/download-ticket`,
     "POST",
-  );
+  ));
+  if (
+    ticket.contentSha256 !== job.artifactSha256
+    || ticket.byteSize !== job.artifactSize
+  ) {
+    throw new GenerationRunnerError(502, "HOSTED_ARTIFACT_TICKET_IDENTITY_MISMATCH");
+  }
+  return ticket;
 }

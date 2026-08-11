@@ -7,8 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit && next build",
+    "check": "pnpm test:durable-lease && tsc --noEmit && next build",
     "check:telemetry": "node ../../telemetry/validate.mjs",
+    "test:durable-lease": "node --experimental-strip-types --test test/durableJobLease.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },

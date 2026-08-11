@@ -6,6 +6,7 @@ import json
 import os
 import re
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -21,7 +22,7 @@ import elmos_project_synthesis.cleanup as cleanup
 import elmos_project_synthesis.intake as intake_module
 import elmos_project_synthesis.models as models
 import elmos_project_synthesis.verification as verification
-from elmos_project_synthesis.cli import _archive_workspace, main
+from elmos_project_synthesis.cli import _archive_workspace, _extract_publish_archive, main
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.models import (
     SUPPORTED_LANGUAGES,
@@ -904,6 +905,37 @@ def test_native_verification_timeout_fails_closed(
     assert "partial output" in result["output"]
 
 
+def test_native_verification_does_not_retry_after_hard_dependency_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    def time_out(*args: object, **kwargs: object) -> None:
+        nonlocal attempts
+        attempts += 1
+        raise subprocess.TimeoutExpired(
+            ["uv", "sync", "--locked"],
+            30,
+            stderr="request failed after retries: operation timed out",
+        )
+
+    monkeypatch.setattr(verification.subprocess, "run", time_out)
+    result = verification._run(
+        ["uv", "sync", "--locked"],
+        tmp_path,
+        language="python",
+        timeout_seconds=30,
+    )
+
+    assert attempts == 1
+    assert result["status"] == "FAILED"
+    assert result["exit_code"] is None
+    assert "COMMAND_TIMEOUT:30s" in result["output"]
+    assert "operation timed out" in result["output"]
+    assert "TRANSIENT_DEPENDENCY_FETCH_RETRY" not in result["output"]
+
+
 def test_native_verification_uses_bounded_configured_default_timeout(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1401,6 +1433,55 @@ def test_archive_refuses_a_manifest_owned_symlink_parent(tmp_path: Path) -> None
 
     with pytest.raises(ValueError, match="GENERATION_ARTIFACT_UNSAFE:docs/"):
         _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_publish_extraction_is_bound_to_the_verified_archive(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(approved_request(), workspace)
+    archive_path = tmp_path / "generated.zip"
+    _archive_workspace(workspace, archive_path)
+    destination = tmp_path / "publish"
+    destination.mkdir()
+
+    archive_sha256 = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+    result = _extract_publish_archive(archive_path, destination, archive_sha256)
+
+    assert result["status"] == "EXTRACTED"
+    assert result["project_name"] == "work-order-service"
+    assert result["archive_sha256"] == archive_sha256
+    extracted = destination / "work-order-service"
+    assert (extracted / "requirements" / "project-blueprint.json").is_file()
+    assert result["file_count"] == sum(path.is_file() for path in extracted.rglob("*"))
+
+    rejected_destination = tmp_path / "publish-digest-mismatch"
+    rejected_destination.mkdir()
+    with pytest.raises(ValueError, match="PUBLISH_ARCHIVE_DIGEST_MISMATCH"):
+        _extract_publish_archive(archive_path, rejected_destination, "0" * 64)
+
+
+def test_publish_extraction_rejects_zip_slip_and_symlinks(tmp_path: Path) -> None:
+    for name, configure in (
+        ("zip-slip.zip", lambda info: None),
+        (
+            "symlink.zip",
+            lambda info: setattr(
+                info,
+                "external_attr",
+                (stat.S_IFLNK | 0o777) << 16,
+            ),
+        ),
+    ):
+        archive_path = tmp_path / name
+        info = zipfile.ZipInfo(
+            "safe-project/../../escape" if name == "zip-slip.zip" else "safe-project/link"
+        )
+        configure(info)
+        with zipfile.ZipFile(archive_path, "w") as archive:
+            archive.writestr(info, b"payload")
+        destination = tmp_path / f"extract-{name}"
+        destination.mkdir()
+        with pytest.raises(ValueError, match="PUBLISH_ARCHIVE"):
+            _extract_publish_archive(archive_path, destination)
 
 
 def test_generated_local_controller_verifies_integrity_before_execution(tmp_path: Path) -> None:

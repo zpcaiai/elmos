@@ -1,10 +1,10 @@
 # ELMOS project-generation source-ingestion verification
 
 Exact Batch 35 limited pack for the Web Console source-ingestion boundary.
-It binds production code and tests by SHA-256 and records nine locally executed
+It binds production code and tests by SHA-256 and records ten locally executed
 tests covering parser formats, limits, Skill isolation, SSRF address policy,
-provenance, seeded fuzzing, two mutation negative controls, holdout cases, and
-repository-owned representative workloads.
+provenance, expired-bundle quota reclamation, seeded fuzzing, two mutation
+negative controls, holdout cases, and repository-owned representative workloads.
 All declared local evidence is now byte-counted and SHA-256-bound; tampering is
 covered by a negative toolkit test. `limited` applies only to this exact local,
 deterministic scope and does not change the certification decision.

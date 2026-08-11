@@ -300,13 +300,11 @@ def _run(
                 else error.stderr or ""
             )
             output = f"COMMAND_TIMEOUT:{timeout_seconds}s\n{stdout}{stderr}"
-            if attempt == 0 and _retryable_dependency_fetch(effective_command, output):
-                retry_evidence = (
-                    "TRANSIENT_DEPENDENCY_FETCH_RETRY:1/1\n"
-                    f"FIRST_ATTEMPT:{output[-4_000:]}\n"
-                )
-                time.sleep(1)
-                continue
+            # A hard command timeout has consumed the entire step budget. It
+            # must not be retried for another full budget merely because uv's
+            # partial output also contains a transient network marker; doing
+            # so can exceed the enclosing pipeline deadline and erase the
+            # command-level timeout evidence.
             return _result(
                 language=language,
                 kind=kind,

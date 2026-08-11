@@ -4,8 +4,8 @@
   "entries": [
     {
       "path": "certification/local-test-result.json",
-      "byte_size": 1698,
-      "sha256": "c8bbfb0df46330601c7ae7f0448fa00f2fcdfa4fe8f1c78e09a89e96b9c89b59"
+      "byte_size": 1867,
+      "sha256": "1ae23f606fa43652fddf1e8d335d5dfa6e38e6bffeee54d129ef5fd28700417b"
     },
     {
       "path": "corpus/holdout/cases.json",
@@ -45,7 +45,7 @@
     {
       "path": "counterexamples/sample.json",
       "byte_size": 1015,
-      "sha256": "342fd4d0a18178e9ab9b9ac9a95b07c94f8f4ab5db4d0723bed92cef96d000ff"
+      "sha256": "94d6aaca29b4c05ff35aa0050d308607b5511356b53e1fd9674dd40deb3027ac"
     }
   ]
 }

@@ -91,10 +91,20 @@ The browser flow is:
    the generation plan.
 5. Analyze the PSIR, resolve every open question, explicitly approve it, and
    select **一键生成、验证并归档**.
-6. Download the digest-checked archive. Read `docs/LOCAL_RUN.md` for exact
+6. Select **一键运行 10 分钟** to start an isolated preview. The server enforces
+   the expiry even if the browser tab closes; the page shows the remaining
+   lease and can read the real service-identity health response without a
+   terminal.
+7. Select **一键下载完整代码库** to download the digest-checked archive. Read `docs/LOCAL_RUN.md` for exact
    local software/hardware and startup steps, and `docs/CLOUD_DEPLOYMENT.md`
    plus `deploy/deployment-options.json` for cloud sizing, Cloud Run commands,
    rollback, cleanup, and still-`NOT_RUN` external gates.
+8. Optionally enter a short-lived GitHub credential and select **一键上传
+   GitHub**. This creates a new private repository only, writes one `main`
+   commit from the same artifact-bound file set, and verifies the remote Tree
+   and Branch before recording success. It never overwrites, force-pushes,
+   merges, deploys, or stores the credential in browser storage, job state,
+   logs, or the generated repository.
 
 ```bash
 uv run elmos-project-synthesis draft \
@@ -222,10 +232,31 @@ whose real build, tests, and service-identity health probe passed. Production
 mode uses a rootless container engine, per-job internal-only networking,
 loopback publication, a read-only filesystem, dropped capabilities,
 `no-new-privileges`, and CPU/memory/PID limits. Host execution is an explicit
-development-only profile and is rejected when `NODE_ENV=production`.
+development-only profile and is rejected when `NODE_ENV=production`. Every
+browser preview has a server-enforced 600-second maximum lease; manual stop,
+lease expiry, and rootless cleanup are distinct persisted outcomes.
 After a browser refresh, an operator can recover an atomically persisted task by
 its complete UUID, tenant, actor, and a re-entered short-lived token. The token
 is not written to browser storage, and a tenant/actor mismatch fails closed.
+
+Set `ELMOS_PROJECT_SYNTHESIS_UV_CACHE` to an absolute, service-owned,
+non-symlink directory on persistent storage. If it is omitted, the Runner uses
+`$ELMOS_LOCAL_RUNNER_ROOT/dependency-cache/uv`. Prewarm the exact locked Python
+dependencies before opening the service to users: the verified cold-cache
+PostgreSQL/JWT representative took 8.7 minutes on the qualification host,
+while the immediately following cache-reusing OIDC representative took 1.8
+minutes. A hard 600-second command timeout is not retried; it fails closed with
+its command-level evidence so the enclosing 20-minute pipeline budget remains
+effective.
+
+GitHub publication requires the same tenant-bound job, a `PASSED` generation,
+the exact archive SHA-256, `repository:push`, explicit private-repository
+confirmation, and a short-lived credential with GitHub Administration and
+Contents write permission. The API creates blobs, Tree, root Commit and
+`refs/heads/main`, then reads the branch and recursive Tree back. A retry is
+idempotency-keyed. If a newly created repository cannot be completed, ELMOS
+attempts to remove only that repository; an unverifiable cleanup remains
+`BLOCKED` and requires manual reconciliation.
 
 ## Evidence boundary
 

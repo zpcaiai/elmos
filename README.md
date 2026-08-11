@@ -20,6 +20,8 @@ Java/Spring 专用现代化链路已覆盖 Batch 1–10；Batch 11/12 在同一�
 
 ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill 将自然语言请求整理为带来源、假设、问题、验收标准和审批哈希的规格，再由 `engines/project-synthesis-engine` 生成可运行项目。内置 Emitter 覆盖八个精确目标：Java 21 / Spring Boot、Python 3.12 / FastAPI、C# / .NET 10 / ASP.NET Core、TypeScript / NestJS-Fastify、Go / net-http、Kotlin / Ktor、PHP 原生 HTTP 与 Rust / Axum。权威成熟度矩阵是 [`docs/project-synthesis/bundled-emitter-support.json`](docs/project-synthesis/bundled-emitter-support.json)，由 `scripts/operations/validate_generation_support_matrix.py` 对引擎、请求 Schema、Rootless Runner、Web Console 与 Skill 做失败关闭的一致性校验。生成器只接受已批准且未被篡改的规格，保护用户修改，并输出配置、测试、OpenAPI、CI、非 root 容器、Kubernetes、追踪关系和内容寻址清单。
 
+Web Console `/generation` 已把生成、摘要校验下载、服务端强制 600 秒的浏览器运行预览，以及新建 GitHub 私有仓库交付收敛为同一页面闭环。GitHub Token 仅在一次请求内存中使用；远端必须按归档摘要、完整文件 Tree 和 `main` Commit 回读验证，且不会覆盖、强推、合并或部署。
+
 `/repositories` 可从 GitHub、Gitee 或允许列表内的通用 HTTPS Git 服务建立精确提交工作区，读取/修改代码、说明、配置与部署文件，并交接到项目生成、跨语言转换和 Spring 现代化三条业务线。Commit、非强制 Push 与 GitHub/Gitee PR 分别校验权限、路径、HEAD、短期凭据、远端 SHA、审计和幂等回执；合并与部署不会自动执行。完整软硬件要求、配置及逐步操作见 [`docs/GIT_REPOSITORY_WORKSPACES.md`](docs/GIT_REPOSITORY_WORKSPACES.md)。
 
 Web Console `/help` 汇总三条业务线、受控交付、管理端和外部证据边界；导航与帮助支持中文/英文切换，浅色/深色主题按浏览器持久化，并纳入桌面/移动 Chromium、键盘、200% 缩放和自动可访问性检查。完整英文业务表单、独立读屏/跨浏览器/真实设备、视觉基线审批和代表性客户旅程仍保持 `NOT_RUN`，详见 [`docs/CLIENT_EXPERIENCE_READINESS.md`](docs/CLIENT_EXPERIENCE_READINESS.md)。

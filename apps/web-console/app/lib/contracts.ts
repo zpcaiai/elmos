@@ -288,9 +288,29 @@ export type GenerationRuntime = {
   language?: GenerationTargetId;
   executor?: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
   containerName?: string;
+  previewPort?: number;
   pid?: number;
   reason?: string;
+  leaseStartedAt?: string;
+  leaseExpiresAt?: string;
+  leaseDurationSeconds?: number;
+  leaseId?: string;
+  remainingSeconds?: number;
   plans: GenerationRuntimePlan[];
+  updatedAt: string;
+};
+
+export type GenerationGitHubPublication = {
+  status: "CREATING" | "PUBLISHED" | "BLOCKED";
+  repositoryFullName?: string;
+  repositoryId?: number;
+  repositoryUrl?: string;
+  branch?: "main";
+  commitSha?: string;
+  artifactSha256: string;
+  fileCount?: number;
+  idempotencyKey: string;
+  reason?: string;
   updatedAt: string;
 };
 
@@ -300,6 +320,11 @@ export type GenerationJob = {
   actor: string;
   createdAt: string;
   updatedAt: string;
+  terminalAt?: string;
+  retentionExpiresAt?: string;
+  retentionPolicySeconds?: number;
+  retentionPolicyVersion?: "generation-storage-v1";
+  legalHold?: boolean;
   status:
     | "QUEUED"
     | "ANALYZING"
@@ -331,6 +356,7 @@ export type GenerationJob = {
   reason?: string;
   logs: GenerationJobLog[];
   runtime: GenerationRuntime;
+  githubPublication?: GenerationGitHubPublication;
 };
 
 export type SpringModernizationStage = {

@@ -1,5 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import path from "node:path";
 
 process.env.NO_PROXY = "127.0.0.1,localhost";
@@ -12,9 +12,14 @@ const translationCasesRoot = path.resolve(__dirname, "e2e/fixtures/translation-c
 const runnerToken = "elmos-e2e-local-token-32-characters";
 const uvPath = process.env.ELMOS_UV_PATH ?? "/opt/homebrew/bin/uv";
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
+const githubPort = Number.parseInt(
+  process.env.ELMOS_E2E_GITHUB_PORT ?? String(webPort + 99),
+  10,
+);
 const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
 const webServerBundler = process.env.ELMOS_E2E_WEB_BUNDLER ?? "turbopack";
 const chromiumChannel = process.env.ELMOS_E2E_CHROMIUM_CHANNEL?.trim();
+const fullRuntimeLease = process.env.ELMOS_E2E_FULL_RUNTIME_TTL === "true";
 if (!["development", "production"].includes(webServerMode)) {
   throw new Error("ELMOS_E2E_WEB_SERVER_MODE_INVALID");
 }
@@ -54,31 +59,50 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "off",
   },
-  webServer: {
-    command: webServerMode === "production"
-      ? `pnpm build && pnpm start --hostname 127.0.0.1 --port ${webPort}`
-      : `pnpm dev --hostname 127.0.0.1 --port ${webPort}${webServerBundler === "webpack" ? " --webpack" : ""}`,
-    url: `${baseURL}/api/capabilities/generation`,
-    reuseExistingServer: false,
-    timeout: 120_000,
-    env: {
-      ...webServerEnvironment,
-      ELMOS_LOCAL_RUNNER_ENABLED: "true",
-      ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
-      ELMOS_REPOSITORY_ROOT: repositoryRoot,
-      ELMOS_TRANSLATION_SOURCE_ROOT: translationSourceRoot,
-      ELMOS_TRANSLATION_CASES_ROOT: translationCasesRoot,
-      ELMOS_UV_PATH: uvPath,
-      ELMOS_LOCAL_RUNNER_EXECUTOR: "HOST_DEVELOPMENT",
-      ELMOS_LOCAL_RUNNER_AUTH_TOKEN: runnerToken,
-      ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT: new Date(
-        Date.now() + 60 * 60_000,
-      ).toISOString(),
-      ELMOS_LOCAL_RUNNER_TENANT_ID: "local-e2e",
-      ELMOS_LOCAL_RUNNER_ACTOR_ID: "user:e2e",
-      ELMOS_NEXT_DIST_DIR: nextDistDir,
+  webServer: [
+    {
+      command: "node e2e/github-api-mock.mjs",
+      url: `http://127.0.0.1:${githubPort}/health`,
+      reuseExistingServer: false,
+      timeout: 30_000,
+      env: {
+        ...webServerEnvironment,
+        ELMOS_E2E_GITHUB_PORT: String(githubPort),
+      },
     },
-  },
+    {
+      command: webServerMode === "production"
+        ? `pnpm build && pnpm start --hostname 127.0.0.1 --port ${webPort}`
+        : `pnpm dev --hostname 127.0.0.1 --port ${webPort}${webServerBundler === "webpack" ? " --webpack" : ""}`,
+      url: `${baseURL}/api/capabilities/generation`,
+      reuseExistingServer: false,
+      timeout: 120_000,
+      env: {
+        ...webServerEnvironment,
+        ELMOS_LOCAL_RUNNER_ENABLED: "true",
+        ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
+        ELMOS_REPOSITORY_ROOT: repositoryRoot,
+        ELMOS_TRANSLATION_SOURCE_ROOT: translationSourceRoot,
+        ELMOS_TRANSLATION_CASES_ROOT: translationCasesRoot,
+        ELMOS_UV_PATH: uvPath,
+        ELMOS_PROJECT_SYNTHESIS_UV_CACHE: process.env.ELMOS_PROJECT_SYNTHESIS_UV_CACHE
+          ?? path.join(homedir(), ".cache", "uv"),
+        ELMOS_LOCAL_RUNNER_EXECUTOR: "HOST_DEVELOPMENT",
+        ELMOS_LOCAL_RUNNER_AUTH_TOKEN: runnerToken,
+        ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT: new Date(
+          Date.now() + 60 * 60_000,
+        ).toISOString(),
+        ELMOS_LOCAL_RUNNER_TENANT_ID: "local-e2e",
+        ELMOS_LOCAL_RUNNER_ACTOR_ID: "user:e2e",
+        ELMOS_LOCAL_GITHUB_PUBLISH_ENABLED: "true",
+        ELMOS_GENERATION_GITHUB_API_BASE: `http://127.0.0.1:${githubPort}`,
+        ELMOS_GENERATION_GITHUB_ALLOW_HTTP_LOCALHOST: "true",
+        ELMOS_ALLOW_TEST_RUNTIME_TTL: fullRuntimeLease ? "false" : "true",
+        ELMOS_TEST_RUNTIME_TTL_MS: fullRuntimeLease ? "600000" : "12000",
+        ELMOS_NEXT_DIST_DIR: nextDistDir,
+      },
+    },
+  ],
   projects: [
     {
       name: "chromium",
