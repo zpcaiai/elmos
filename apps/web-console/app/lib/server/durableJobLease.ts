@@ -388,8 +388,17 @@ export async function withDurableQueueControlLock<T>(
           continue;
         }
       } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-        // Another process released the canonical path between observation steps.
+        const canonicalOwnerChanged = (
+          error instanceof DurableLeaseError
+          && error.code === "QUEUE_CONTROL_LOCK_UNAVAILABLE"
+          && error.retryable
+        );
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT" && !canonicalOwnerChanged) {
+          throw error;
+        }
+        // Another owner released or replaced the canonical path between
+        // observation steps. Keep this transient lock churn inside the bounded
+        // retry loop instead of leaking it to a same-job contender.
       }
       await new Promise((resolve) => setTimeout(resolve, 25 + Math.floor(Math.random() * 50)));
     }
