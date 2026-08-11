@@ -13,20 +13,44 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 BATCHES = {
-    29: {"skills": 20, "first_id": 1141, "last_id": 1160, "schemas": 3},
+    # Eight since the repository-level and module-level formal-equivalence
+    # campaigns landed. Keep this inventory exact so dropping any of their
+    # request/evidence/gate contracts fails the aggregate check.
+    29: {"skills": 20, "first_id": 1141, "last_id": 1160, "schemas": 8},
     30: {"skills": 20, "first_id": 1161, "last_id": 1180, "schemas": 6},
     # 9 since 2026-07-28: sql-transpilation-request/-result and
     # sql-runtime-gate-result landed with the SQL dialect transpilation work
     # (docs/batch31/SQL_TRANSPILATION.md) but this count was never updated.
     31: {"skills": 22, "first_id": 1181, "last_id": 1202, "schemas": 9},
-    # 8 since 2026-07-28: ui-project-generation landed with the UI project
-    # conversion work (docs/batch32/UI_PROJECT_CONVERSION.md).
-    32: {"skills": 20, "first_id": 1203, "last_id": 1222, "schemas": 8},
+    # 18 with the UI project contract plus the v1/v2 frontend formal campaign,
+    # evidence and independently replayed external-evidence contracts.
+    32: {"skills": 20, "first_id": 1203, "last_id": 1222, "schemas": 18},
     33: {"skills": 20, "first_id": 1223, "last_id": 1242, "schemas": 8},
     34: {"skills": 22, "first_id": 1243, "last_id": 1264, "schemas": 10},
-    35: {"skills": 22, "first_id": 1265, "last_id": 1286, "schemas": 13, "templates": 15},
-    36: {"skills": 18, "first_id": 1287, "last_id": 1304, "schemas": 12, "templates": 16},
-    37: {"skills": 36, "first_id": 1305, "last_id": 1324, "schemas": 25, "templates": 27, "supplemental": 16},
+    # 24 with the governed frontend formal verification campaign/evidence and
+    # external trust/replay contracts mirrored into the verification domain.
+    35: {
+        "skills": 22,
+        "first_id": 1265,
+        "last_id": 1286,
+        "schemas": 24,
+        "templates": 15,
+    },
+    36: {
+        "skills": 18,
+        "first_id": 1287,
+        "last_id": 1304,
+        "schemas": 12,
+        "templates": 16,
+    },
+    37: {
+        "skills": 36,
+        "first_id": 1305,
+        "last_id": 1324,
+        "schemas": 25,
+        "templates": 27,
+        "supplemental": 16,
+    },
     # B38-M45 grew domain-specific schemas after the original four-file
     # scaffold (program, evidence, certification and gate-result).  Keep the
     # counts explicit so a missing or unexpected schema still fails closed.
@@ -47,9 +71,7 @@ REQUIRED_SECTIONS = (
 )
 SKILL_ID_PATTERN = re.compile(r"^#{1,2} Skill (\d+)(?::|\b)", re.MULTILINE)
 SUPPLEMENTAL_ID_PATTERN = re.compile(r"^#{1,2} Skill B37-X(\d+)(?::|\b)", re.MULTILINE)
-LOCAL_REFERENCE_PATTERN = re.compile(
-    r"`(\.\./\.\./\.\./(?:docs|scripts)/[^`]+)`"
-)
+LOCAL_REFERENCE_PATTERN = re.compile(r"`(\.\./\.\./\.\./(?:docs|scripts)/[^`]+)`")
 COMMON_MATURE_PRODUCT_SCHEMAS = {
     "evidence-manifest.schema.json",
     "certification-request.schema.json",
@@ -64,7 +86,11 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 
 def parse_frontmatter(path: Path, text: str, errors: list[str]) -> dict[str, object]:
     parts = text.split("---", 2)
-    require(len(parts) == 3 and not parts[0].strip(), f"{path}: invalid front matter", errors)
+    require(
+        len(parts) == 3 and not parts[0].strip(),
+        f"{path}: invalid front matter",
+        errors,
+    )
     if len(parts) != 3:
         return {}
     try:
@@ -72,18 +98,30 @@ def parse_frontmatter(path: Path, text: str, errors: list[str]) -> dict[str, obj
     except yaml.YAMLError as exc:
         errors.append(f"{path}: invalid YAML: {exc}")
         return {}
-    require(isinstance(payload, dict), f"{path}: front matter must be a mapping", errors)
+    require(
+        isinstance(payload, dict), f"{path}: front matter must be a mapping", errors
+    )
     return payload if isinstance(payload, dict) else {}
 
 
-def validate_skill(path: Path, seen_names: set[str], errors: list[str]) -> tuple[int | None, int | None]:
+def validate_skill(
+    path: Path, seen_names: set[str], errors: list[str]
+) -> tuple[int | None, int | None]:
     text = path.read_text(encoding="utf-8")
     metadata = parse_frontmatter(path, text, errors)
     name = metadata.get("name")
     description = metadata.get("description")
-    require(set(metadata) == {"name", "description"}, f"{path}: unexpected front-matter keys", errors)
+    require(
+        set(metadata) == {"name", "description"},
+        f"{path}: unexpected front-matter keys",
+        errors,
+    )
     require(name == path.parent.name, f"{path}: name does not match directory", errors)
-    require(isinstance(name, str) and name not in seen_names, f"{path}: duplicate or invalid name", errors)
+    require(
+        isinstance(name, str) and name not in seen_names,
+        f"{path}: duplicate or invalid name",
+        errors,
+    )
     if isinstance(name, str):
         seen_names.add(name)
     require(
@@ -102,7 +140,9 @@ def validate_skill(path: Path, seen_names: set[str], errors: list[str]) -> tuple
     )
     for relative in LOCAL_REFERENCE_PATTERN.findall(text):
         resolved = (path.parent / relative).resolve()
-        require(resolved.is_file(), f"{path}: missing local reference {relative}", errors)
+        require(
+            resolved.is_file(), f"{path}: missing local reference {relative}", errors
+        )
     return (
         ids[0] if len(ids) == 1 else None,
         supplemental_ids[0] if len(supplemental_ids) == 1 else None,
@@ -131,19 +171,40 @@ def main() -> int:
             f"Batch {batch}: expected {expected['skills']} Skills, found {len(skill_dirs)}",
             errors,
         )
-        parsed_ids = [validate_skill(directory / "SKILL.md", seen_names, errors) for directory in skill_dirs]
+        parsed_ids = [
+            validate_skill(directory / "SKILL.md", seen_names, errors)
+            for directory in skill_dirs
+        ]
         ids = [numeric for numeric, _ in parsed_ids if numeric is not None]
-        supplemental_ids = [supplemental for _, supplemental in parsed_ids if supplemental is not None]
+        supplemental_ids = [
+            supplemental for _, supplemental in parsed_ids if supplemental is not None
+        ]
         if batch >= 35:
             for directory in skill_dirs:
                 agent_path = directory / "agents" / "openai.yaml"
-                require(agent_path.is_file(), f"{directory}: agents/openai.yaml missing", errors)
+                require(
+                    agent_path.is_file(),
+                    f"{directory}: agents/openai.yaml missing",
+                    errors,
+                )
                 if agent_path.is_file():
                     agent = yaml.safe_load(agent_path.read_text(encoding="utf-8"))
-                    prompt = agent.get("interface", {}).get("default_prompt", "") if isinstance(agent, dict) else ""
-                    require(f"${directory.name}" in prompt, f"{agent_path}: default_prompt missing Skill name", errors)
+                    prompt = (
+                        agent.get("interface", {}).get("default_prompt", "")
+                        if isinstance(agent, dict)
+                        else ""
+                    )
+                    require(
+                        f"${directory.name}" in prompt,
+                        f"{agent_path}: default_prompt missing Skill name",
+                        errors,
+                    )
         expected_ids = list(range(expected["first_id"], expected["last_id"] + 1))
-        require(sorted(ids) == expected_ids, f"Batch {batch}: Skill IDs are not contiguous", errors)
+        require(
+            sorted(ids) == expected_ids,
+            f"Batch {batch}: Skill IDs are not contiguous",
+            errors,
+        )
         expected_supplemental = list(range(1, expected.get("supplemental", 0) + 1))
         require(
             sorted(supplemental_ids) == expected_supplemental,
@@ -176,21 +237,45 @@ def main() -> int:
         for path in template_files:
             validate_json(path, errors)
 
-        require((ROOT / "docs" / f"batch{batch}").is_dir(), f"Batch {batch}: docs missing", errors)
+        require(
+            (ROOT / "docs" / f"batch{batch}").is_dir(),
+            f"Batch {batch}: docs missing",
+            errors,
+        )
         if batch <= 37:
-            require((ROOT / "scripts" / f"batch{batch}").is_dir(), f"Batch {batch}: scripts missing", errors)
+            require(
+                (ROOT / "scripts" / f"batch{batch}").is_dir(),
+                f"Batch {batch}: scripts missing",
+                errors,
+            )
         else:
-            require((ROOT / "scripts" / "mature_product_toolkit.py").is_file(), f"Batch {batch}: shared toolkit missing", errors)
-        require((ROOT / "tests" / f"batch{batch}" / "test_toolkit.py").is_file(), f"Batch {batch}: tests missing", errors)
+            require(
+                (ROOT / "scripts" / "mature_product_toolkit.py").is_file(),
+                f"Batch {batch}: shared toolkit missing",
+                errors,
+            )
+        require(
+            (ROOT / "tests" / f"batch{batch}" / "test_toolkit.py").is_file(),
+            f"Batch {batch}: tests missing",
+            errors,
+        )
         if batch == 37:
             require(
                 (ROOT / "tests" / "batch37" / "test_closure_toolkit.py").is_file(),
                 "Batch 37: closure tests missing",
                 errors,
             )
-        require((ROOT / f"Makefile.batch{batch}").is_file(), f"Batch {batch}: Makefile missing", errors)
+        require(
+            (ROOT / f"Makefile.batch{batch}").is_file(),
+            f"Batch {batch}: Makefile missing",
+            errors,
+        )
         agent_marker = f"Batch {batch}" if batch < 35 else f"$b{batch}-"
-        require(agent_marker in agents, f"Batch {batch}: AGENTS.md instructions missing", errors)
+        require(
+            agent_marker in agents,
+            f"Batch {batch}: AGENTS.md instructions missing",
+            errors,
+        )
 
         total_skills += len(skill_dirs)
         total_schemas += len(schema_files)
@@ -200,7 +285,9 @@ def main() -> int:
         )
 
     require(total_skills == 372, f"Expected 372 Skills, found {total_skills}", errors)
-    require(total_schemas == 229, f"Expected 229 Schemas, found {total_schemas}", errors)
+    require(
+        total_schemas == 255, f"Expected 255 Schemas, found {total_schemas}", errors
+    )
     common_schema_root = ROOT / "schemas" / "mature-product"
     common_schema_files = sorted(common_schema_root.glob("*.json"))
     require(

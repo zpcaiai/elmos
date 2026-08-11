@@ -431,8 +431,8 @@ def render_insights_markdown(request: SynthesisRequest, insights: dict[str, Any]
         f"""
         # Project structure and equivalence insights
 
-        Project: `{_markdown_cell(request.project_name)}`  
-        Approved baseline: `sha256:{request.raw["approval"]["approved_payload_sha256"]}`  
+        Project: `{_markdown_cell(request.project_name)}`<br>
+        Approved baseline: `sha256:{request.raw["approval"]["approved_payload_sha256"]}`<br>
         Report stage: `GENERATED` · claim ceiling: `LOCAL_ENGINEERING_EVIDENCE`
 
         ## Overall generation structure

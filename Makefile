@@ -21,7 +21,7 @@ PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 PROFILE ?= synthesis
 RUNTIME_STATUS_OUTPUT ?= .elmos/toolchains/runtime-status.json
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env vercel-source-check dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
@@ -177,7 +177,7 @@ batch97-104-skills:
 		cd elmos-codex-skills-batch97-104-complete && ./validate.sh; \
 		cd .. && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py')
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_batch97_104_installed.py
-	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_batch97_104_installed
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_installed.py'
 product-batch56-skills:
 	$(call guarded,elmos-codex-skills-batch56-product-closure,manifest.json,\
 		cd elmos-codex-skills-batch56-product-closure && ./validate.sh; \
@@ -192,7 +192,7 @@ product-closure-convergence-skills:
 		cd .. && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_closure_convergence.py; \
 	else \
 		PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_product_closure_convergence_installed.py && \
-		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_product_closure_convergence_installed; \
+		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_product_closure_convergence_installed.py'; \
 	fi
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
 	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
@@ -214,11 +214,11 @@ product-batch35-38: product-batch33-38-skills
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/source-control-workspace-governance,modules/secure-execution-plane,modules/evidence-assurance-fabric,modules/continuous-authorization,modules/persistence,apps/control-plane -am test
 mature-product-toolchain-test:
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml \
-		python -m unittest tests.mature_product_toolkit_extensions_test
+		python -m unittest discover -s tests -p 'mature_product_toolkit_extensions_test.py'
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml \
-		python -m unittest tests.batch43_schema_compatibility_test
+		python -m unittest discover -s tests -p 'batch43_schema_compatibility_test.py'
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml \
-		python -m unittest tests.batch40_supply_chain_test
+		python -m unittest discover -s tests -p 'batch40_supply_chain_test.py'
 mature-product-skills: mature-product-toolchain-test b29-skills-test b30-skills-test b31-skills-test batch32-check batch33-check batch34-check batch35-check batch36-check batch37-check batch38-check batch39-check batch40-check batch41-check batch42-check batch43-check batch44-check batch45-check
 	$(UV) run --quiet --with jsonschema --with pyyaml python scripts/validate_mature_product_series.py
 	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml python -m unittest discover -s tests -p 'mature_product_gate_test.py'
@@ -315,6 +315,10 @@ toolchains-install: toolchains-validate
 	python3 scripts/toolchains/runtime_environment.py install --profile "$(PROFILE)"
 toolchains-env: toolchains-validate
 	python3 scripts/toolchains/runtime_environment.py env --profile "$(PROFILE)"
+vercel-source-check:
+	python3 -m unittest discover -s tests/ci -p 'test_vercel_source_budget.py'
+	python3 -m unittest discover -s tests/ci -p 'test_next_translation_traces.py'
+	python3 tooling/validate_vercel_source_budget.py
 project-synthesis-toolchains:
 	python3 scripts/toolchains/runtime_environment.py install --profile synthesis
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py --require-all-toolchains

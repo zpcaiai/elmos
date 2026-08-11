@@ -1,1 +1,8 @@
 skills/precision-migration-skills-batch-01-44/catalog.csv -text whitespace=cr-at-eol
+elmos-codex-skills-batch66-80-complete/SKILL_CATALOG.csv -text whitespace=cr-at-eol
+elmos-language-packs-batch81-95-complete/BATCH_MATRIX.csv -text whitespace=cr-at-eol
+elmos-language-packs-batch81-95-complete/SKILL_CATALOG.csv -text whitespace=cr-at-eol
+elmos-project-synthesis-batch61-65/SKILL_CATALOG.csv -text whitespace=cr-at-eol
+test-suites/batch1-37-strict/evidence/**/raw-log.txt whitespace=-blank-at-eof
+"skills/ChatGPT-分支 · 中度与强专用化.md" whitespace=-blank-at-eol
+"skills/ChatGPT-分支 · 前端差分等价验证平台.md" whitespace=-blank-at-eol
