@@ -666,6 +666,23 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .generation-runtime-controls label span { color: var(--muted); font-size: 8px; font-weight: 700; }
 .generation-runtime-controls select { min-height: 36px; padding: 0 9px; border: 1px solid var(--line-strong); border-radius: 8px; background: white; font-size: 9px; }
 .generation-runtime-controls .button { min-height: 36px; padding-inline: 11px; font-size: 9px; }
+.generation-runtime-preview { max-height: 220px; overflow: auto; margin: 0; padding: 11px; border: 1px solid #b8d8d3; border-radius: 9px; background: #eef8f6; color: #173f3b; font: 9px/1.55 ui-monospace,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.generation-github-publish { display: flex; flex-direction: column; gap: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: white; }
+.generation-github-publish h4 { margin: 2px 0 0; font-size: 12px; }
+.generation-github-publish > p { margin: 0; color: var(--ink-soft); font-size: 9px; line-height: 1.6; }
+.generation-github-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.generation-github-fields label { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.generation-github-fields label > span { color: var(--muted); font-size: 8px; font-weight: 700; }
+.generation-github-fields input { width: 100%; min-height: 38px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: white; color: var(--ink); font-size: 9px; }
+.generation-github-fields small { color: var(--muted); font-size: 8px; line-height: 1.5; }
+.generation-github-token { grid-column: 1 / -1; }
+.generation-github-confirmation { margin-top: 0; }
+.generation-github-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.generation-github-actions small { color: var(--red); font-size: 8px; }
+.generation-github-receipt { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; padding: 10px; border-radius: 8px; background: var(--green-soft); color: var(--green); }
+.generation-github-receipt strong { overflow-wrap: anywhere; font-size: 9px; }
+.generation-github-receipt span { grid-column: 1; color: var(--ink-soft); font: 8px ui-monospace,monospace; }
+.generation-github-receipt a { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 9px; font-weight: 750; }
 .generation-analysis { margin-top: 22px; padding-top: 21px; border-top: 1px solid var(--line); }
 .generation-analysis-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 13px; }
 .generation-analysis-card { min-width: 0; display: flex; flex-direction: column; gap: 7px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); }
@@ -1085,6 +1102,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .generation-fields, .generation-source-grid, .asset-grid { grid-template-columns: 1fr; }
   .generation-analysis-grid { grid-template-columns: 1fr; }
   .generation-job-summary { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .generation-github-fields { grid-template-columns: 1fr; }
+  .generation-github-token { grid-column: 1; }
+  .generation-github-receipt { grid-template-columns: 1fr; }
+  .generation-github-receipt a { grid-column: 1; grid-row: auto; }
   .generation-field-wide { grid-column: auto; }
   .generation-draft-row { grid-template-columns: auto minmax(0,1fr) auto; }
   .generation-draft-row .status-chip { display: none; }

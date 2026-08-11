@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-cloud-run-handoff",
-  "source_snapshot_digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba",
+  "source_snapshot_digest": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf",
   "resources": [
     {
       "id": "iac.registry",
@@ -83,7 +83,7 @@
       "source_refs": [
         {
           "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/deployment_guidance.py",
-          "digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba"
+          "digest": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf"
         }
       ]
     },

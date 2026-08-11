@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-cloud-run-handoff",
-  "source_snapshot_digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba",
+  "source_snapshot_digest": "sha256:54bd043d2e9b79afc1439af0ec1bba686b842ae5a9582b76163d62498a443ddf",
   "components": [
     {
       "id": "component.generated-service",
@@ -10,6 +10,22 @@
       "source_refs": [{"path": "python/Dockerfile"}],
       "references": ["identity.runtime"],
       "properties": {"container_port": 8082, "health_path": "/health"},
+      "criticality": "P0"
+    },
+    {
+      "id": "component.cloud-run-controller",
+      "kind": "deployment-controller",
+      "name": "Generated fail-closed Cloud Run controller",
+      "source_refs": [{"path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py"}],
+      "references": ["identity.deployment-operator"],
+      "properties": {
+        "default_mutation": "deny",
+        "candidate_traffic_percent": 0,
+        "health_before_promotion": true,
+        "separate_action_authorizations": true,
+        "local_policy_tests": "passed",
+        "provider_execution": "NOT_RUN"
+      },
       "criticality": "P0"
     }
   ],
@@ -22,6 +38,15 @@
       "references": ["component.generated-service"],
       "properties": {"unauthenticated": false},
       "criticality": "P0"
+    },
+    {
+      "id": "connection.cloud-run-admin",
+      "kind": "provider-control-plane",
+      "name": "Authorized gcloud to Cloud Run Admin API",
+      "source_refs": [{"path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py"}],
+      "references": ["component.cloud-run-controller", "component.generated-service"],
+      "properties": {"shell": false, "explicit_project_and_region": true, "status": "NOT_RUN"},
+      "criticality": "P0"
     }
   ],
   "identities": [
@@ -32,6 +57,19 @@
       "source_refs": [{"path": "docs/CLOUD_DEPLOYMENT.md"}],
       "references": ["component.generated-service"],
       "properties": {"owner_or_editor_roles": false},
+      "criticality": "P0"
+    },
+    {
+      "id": "identity.deployment-operator",
+      "kind": "externally-authenticated-workflow-identity",
+      "name": "Approved Cloud Run deployment operator",
+      "source_refs": [{"path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py"}],
+      "references": ["component.cloud-run-controller"],
+      "properties": {
+        "short_lived": true,
+        "approver_separation_required": true,
+        "external_authentication": "NOT_RUN"
+      },
       "criticality": "P0"
     }
   ],
@@ -44,6 +82,23 @@
       "references": ["connection.https-ingress", "component.generated-service"],
       "properties": {"path": "/health"},
       "criticality": "P1"
+    },
+    {
+      "id": "flow.controlled-deployment",
+      "kind": "plan-deploy-probe-promote",
+      "name": "Authorized candidate deployment and health-gated promotion",
+      "source_refs": [{"path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py"}],
+      "references": [
+        "component.cloud-run-controller",
+        "connection.cloud-run-admin",
+        "component.generated-service"
+      ],
+      "properties": {
+        "ordered_steps": ["validate", "authorize", "deploy-no-traffic", "private-health", "promote"],
+        "rollback_receipt_required": true,
+        "status": "NOT_RUN"
+      },
+      "criticality": "P0"
     }
   ],
   "policies": [
@@ -57,6 +112,21 @@
         "user": "10001:10001",
         "image_digest_required": true,
         "public_unauthenticated": false
+      },
+      "criticality": "P0"
+    },
+    {
+      "id": "policy.controlled-cloud-mutation",
+      "kind": "security-guardrail",
+      "name": "Exact expiring authorization and immutable deployment inputs",
+      "source_refs": [{"path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py"}],
+      "references": ["component.cloud-run-controller", "identity.deployment-operator"],
+      "properties": {
+        "image_digest_required": true,
+        "secret_latest_forbidden": true,
+        "public_ingress_forbidden": true,
+        "execute_flag_required": true,
+        "external_identity_assertion": "NOT_RUN"
       },
       "criticality": "P0"
     }
@@ -86,11 +156,47 @@
     {
       "node_id": "policy.container-runtime",
       "source_refs": [{"path": "python/Dockerfile"}]
+    },
+    {
+      "node_id": "component.cloud-run-controller",
+      "source_refs": [{
+        "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+        "digest": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      }]
+    },
+    {
+      "node_id": "connection.cloud-run-admin",
+      "source_refs": [{
+        "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+        "digest": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      }]
+    },
+    {
+      "node_id": "identity.deployment-operator",
+      "source_refs": [{
+        "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+        "digest": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      }]
+    },
+    {
+      "node_id": "flow.controlled-deployment",
+      "source_refs": [{
+        "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+        "digest": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      }]
+    },
+    {
+      "node_id": "policy.controlled-cloud-mutation",
+      "source_refs": [{
+        "path": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+        "digest": "sha256:54b71b642987c22aa5c4efb81478fcd5e3b63c2c7bab15be5557a48e4733797b"
+      }]
     }
   ],
   "obligations": [
     {"id": "obligation.approved-project", "status": "NOT_RUN"},
     {"id": "obligation.immutable-secret-versions", "status": "NOT_RUN"},
-    {"id": "obligation.rollback-and-cleanup", "status": "NOT_RUN"}
+    {"id": "obligation.rollback-and-cleanup", "status": "NOT_RUN"},
+    {"id": "obligation.external-workflow-identity-authentication", "status": "NOT_RUN"}
   ]
 }

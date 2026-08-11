@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "passed-local",
+  "ownership": "repository-negative-corpus",
+  "evidence_refs": [
+    "certification/local-control-evidence.json"
+  ],
+  "certification_effect": "NONE"
+}

@@ -9,7 +9,11 @@
     "target_artifact_digest": "sha256:d248f416ce03eaafdedbf8e04b23d077e15aff45b48cfb822c95b07e58029a71",
     "workload_key": "durable-queue-and-controlled-delivery-v1",
     "risk_tier": "P1",
-    "environment_digest": "sha256:49adf62a2fda40e9606ca7cc7898c08c007fb9514ca603f330b93c0db657d755"
+    "environment_digest": "sha256:49adf62a2fda40e9606ca7cc7898c08c007fb9514ca603f330b93c0db657d755",
+    "live_github_gitee_provider_execution": "NOT_RUN",
+    "multi_replica_shared_volume_recovery": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_production_workload": "NOT_RUN"
   },
   "metrics": {},
   "evidence_refs": [],

@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
@@ -163,6 +163,44 @@ test.describe("generation source ingestion security and parser qualification", (
     expect(first.sources[0].sha256).toBe(second.sources[0].sha256);
     expect(first.bundleSha256).toBe(second.bundleSha256);
     expect(first.combinedText.length).toBeLessThanOrEqual(hooks.limits.maxCombinedCharacters);
+  });
+
+  test("expired tenant source bundles are reclaimed before the 100-bundle quota is enforced", async ({
+    request,
+  }) => {
+    const runnerRoot = process.env.ELMOS_E2E_EFFECTIVE_RUNNER_ROOT;
+    if (!runnerRoot) throw new Error("ELMOS_E2E_EFFECTIVE_RUNNER_ROOT_REQUIRED");
+    const sourceRoot = path.join(runnerRoot, "tenants", "local-e2e", "source-bundles");
+    await mkdir(sourceRoot, { recursive: true, mode: 0o700 });
+    const expiredNames: string[] = [];
+    for (let index = 0; index < 100; index += 1) {
+      const bundle = await buildGenerationSourceBundle({
+        description: `expired source bundle ${index}`,
+        repositoryRoot: process.cwd(),
+      });
+      const filename = `${bundle.bundleSha256}.json`;
+      expiredNames.push(filename);
+      await writeFile(path.join(sourceRoot, filename), `${JSON.stringify({
+        tenantId: "local-e2e",
+        actor: "user:e2e",
+        authorizedActors: ["user:e2e"],
+        createdAt: "2026-01-01T00:00:00.000Z",
+        expiresAt: "2026-01-01T01:00:00.000Z",
+        bundle,
+      })}\n`, { mode: 0o600 });
+    }
+
+    const response = await request.post("/api/generation/sources", {
+      headers: {
+        Authorization: "Bearer elmos-e2e-local-token-32-characters",
+        "X-ELMOS-Tenant": "local-e2e",
+        "X-ELMOS-Actor": "user:e2e",
+      },
+      multipart: { description: "new source after automatic retention cleanup" },
+    });
+    expect(response.ok(), await response.text()).toBe(true);
+    const remaining = new Set(await readdir(sourceRoot));
+    expect(expiredNames.some((name) => remaining.has(name))).toBe(false);
   });
 
   test("imports Skill text as untrusted requirements and blocks traversal and symlinks", async () => {

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-cloud-run-handoff",
-  "snapshot_digest": "sha256:86222b17a63eea6b810c7a2a8d3b82cb90ab3599c43a355da675f0d9963eb6ba",
+  "snapshot_digest": "sha256:12bc88a6417798e411913cbfc214304c485a0fd753a2c9c9f40c88f0f1675e3b",
   "coverage": 1.0,
   "source_tuple": {
     "platform": "generated-local-container",
@@ -39,6 +39,12 @@
       "type": "container-image",
       "source_ref": "engines/project-synthesis-engine/src/elmos_project_synthesis/python_target.py",
       "digest": "sha256:136439b1161e0f1b3f0f5c524c12cc4550c2867c2528a2b11079cd89f1497b32"
+    },
+    {
+      "key": "generated-cloud-run-controller",
+      "type": "deployment-controller",
+      "source_ref": "engines/project-synthesis-engine/src/elmos_project_synthesis/cloud_run_control.py",
+      "digest": "sha256:749be1e7942c46b3abc02096521115331cdc4b1dda109c8a205307d2565ba3dd"
     }
   ],
   "identities": [{"key": "container-user", "value": "10001:10001"}],
@@ -49,10 +55,16 @@
       "kind": "local-container-build-start-health-cleanup",
       "status": "passed",
       "ref": "certification/local-container-evidence.json"
+    },
+    {
+      "kind": "local-deployment-controller-policy-and-generation-tests",
+      "status": "passed",
+      "ref": "certification/local-control-evidence.json"
     }
   ],
   "evidence_refs": [
     "certification/local-container-evidence.json",
+    "certification/local-control-evidence.json",
     "certification/external-tooling-status.json"
   ]
 }

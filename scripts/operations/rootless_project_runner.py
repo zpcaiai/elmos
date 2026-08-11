@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import base64
+from contextlib import contextmanager
+import fcntl
 import json
 import os
 from pathlib import Path
@@ -11,7 +13,7 @@ import secrets
 import subprocess
 import sys
 import time
-from typing import Any
+from typing import Any, Iterator
 import urllib.error
 import urllib.request
 
@@ -39,6 +41,7 @@ HEALTH_PATHS = {language: "/health" for language in LANGUAGE_DIRECTORIES}
 IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9-]{2,80}$")
 NETWORK_IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9_.-]{2,62}$")
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+LEASE_ID = re.compile(r"^[0-9a-f]{32}$")
 IMMUTABLE_IMAGE = re.compile(r"^[^@\s]+@sha256:[0-9a-f]{64}$")
 FROM_IMAGE = re.compile(r"^\s*FROM\s+(?:--platform=\S+\s+)?(?P<image>\S+)", re.IGNORECASE)
 POSTGRES_IMAGE = (
@@ -120,7 +123,7 @@ def _validated_workspace(raw: str, language: str) -> tuple[Path, Path]:
 def _container_name(job_id: str, language: str) -> str:
     if UUID.fullmatch(job_id) is None:
         raise RunnerError("JOB_ID_INVALID")
-    return f"elmos-{job_id[:12]}-{language}"
+    return f"elmos-{job_id}-{language}"
 
 
 def _runtime_names(job_id: str, language: str) -> dict[str, str]:
@@ -131,6 +134,52 @@ def _runtime_names(job_id: str, language: str) -> dict[str, str]:
         "network": f"{application}-internal",
         "volume": f"{application}-postgres-data",
     }
+
+
+def _ensure_runtime_absent(engine: Path, container: str) -> None:
+    result = _run(
+        [str(engine), "inspect", "--format", "{{json .State}}", container],
+        timeout=20,
+    )
+    if result.returncode == 0:
+        raise RunnerError("RUNTIME_CONTAINER_ALREADY_EXISTS")
+    output = (result.stderr + result.stdout).lower()
+    if not any(marker in output for marker in ("no such", "not found", "does not exist")):
+        raise RunnerError("RUNTIME_CONTAINER_EXISTENCE_UNVERIFIED")
+
+
+def _resource_labels(engine: Path, kind: str, name: str) -> dict[str, str] | None:
+    if kind in {"container", "image"}:
+        command = [str(engine), "inspect", "--format", "{{json .Config.Labels}}", name]
+    elif kind in {"network", "volume"}:
+        command = [str(engine), kind, "inspect", "--format", "{{json .Labels}}", name]
+    else:
+        raise RunnerError("RUNTIME_RESOURCE_KIND_INVALID")
+    result = _run(command, timeout=20)
+    if result.returncode != 0:
+        output = (result.stderr + result.stdout).lower()
+        if any(marker in output for marker in ("no such", "not found", "does not exist")):
+            return None
+        raise RunnerError("RUNTIME_RESOURCE_IDENTITY_UNAVAILABLE")
+    loaded = json.loads(result.stdout)
+    if not isinstance(loaded, dict) or not all(
+        isinstance(key, str) and isinstance(value, str) for key, value in loaded.items()
+    ):
+        raise RunnerError("RUNTIME_RESOURCE_IDENTITY_INVALID")
+    return loaded
+
+
+def _resource_identity_matches(
+    labels: dict[str, str],
+    job_id: str,
+    language: str,
+    lease_id: str,
+) -> bool:
+    return (
+        labels.get("io.elmos.job") == job_id
+        and labels.get("io.elmos.language") == language
+        and labels.get("io.elmos.lease-id") == lease_id
+    )
 
 
 def _state_directory(raw: str, workspace: Path) -> Path:
@@ -145,6 +194,32 @@ def _state_directory(raw: str, workspace: Path) -> Path:
         raise RunnerError("RUNTIME_STATE_MUST_NOT_BE_SOURCE")
     os.chmod(resolved, 0o700)
     return resolved
+
+
+@contextmanager
+def _runtime_operation_lock(arguments: argparse.Namespace) -> Iterator[None]:
+    raw_state = getattr(arguments, "state", None)
+    if not isinstance(raw_state, str):
+        raise RunnerError("RUNTIME_STATE_REQUIRED")
+    state = Path(raw_state)
+    if not state.is_absolute() or state.is_symlink():
+        raise RunnerError("RUNTIME_STATE_INVALID")
+    parent = state.parent
+    if not parent.is_dir() or parent.is_symlink():
+        raise RunnerError("RUNTIME_STATE_PARENT_INVALID")
+    resolved_parent = parent.resolve(strict=True)
+    lock_path = resolved_parent / ".runtime-operation.lock"
+    flags = os.O_RDWR | os.O_CREAT
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(lock_path, flags, 0o600)
+    try:
+        os.fchmod(descriptor, 0o600)
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
 
 
 def _secret(state: Path, name: str, *, value: str | None = None) -> Path:
@@ -162,7 +237,126 @@ def _secret(state: Path, name: str, *, value: str | None = None) -> Path:
     return path
 
 
-def _create_internal_network(engine: Path, network: str, job_id: str) -> None:
+def _write_lease_marker(
+    state: Path,
+    job_id: str,
+    language: str,
+    lease_id: str,
+    *,
+    lease_started_epoch: int | None = None,
+    lease_expires_epoch: int | None = None,
+) -> None:
+    if UUID.fullmatch(job_id) is None or language not in LANGUAGE_DIRECTORIES:
+        raise RunnerError("RUNTIME_LEASE_IDENTITY_INVALID")
+    if LEASE_ID.fullmatch(lease_id) is None:
+        raise RunnerError("RUNTIME_LEASE_ID_INVALID")
+    if (lease_started_epoch is None) != (lease_expires_epoch is None):
+        raise RunnerError("RUNTIME_LEASE_WINDOW_INVALID")
+    if lease_started_epoch is not None and lease_expires_epoch is not None:
+        if (
+            lease_started_epoch < 0
+            or lease_expires_epoch <= lease_started_epoch
+            or lease_expires_epoch - lease_started_epoch > 600
+        ):
+            raise RunnerError("RUNTIME_LEASE_WINDOW_INVALID")
+    marker = state / "lease.json"
+    if marker.exists() and (marker.is_symlink() or not marker.is_file()):
+        raise RunnerError("RUNTIME_LEASE_MARKER_UNSAFE")
+    temporary = state / f".lease-{secrets.token_hex(8)}.tmp"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(temporary, flags, 0o600)
+    try:
+        os.fchmod(descriptor, 0o600)
+        record: dict[str, Any] = {
+            "job_id": job_id,
+            "language": language,
+            "lease_id": lease_id,
+            "phase": "RUNNING" if lease_started_epoch is not None else "PROVISIONING",
+        }
+        if lease_started_epoch is not None and lease_expires_epoch is not None:
+            record["lease_started_epoch"] = lease_started_epoch
+            record["lease_expires_epoch"] = lease_expires_epoch
+        payload = json.dumps(record, sort_keys=True).encode("utf-8")
+        offset = 0
+        while offset < len(payload):
+            offset += os.write(descriptor, payload[offset:])
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    try:
+        os.replace(temporary, marker)
+        directory_flags = os.O_RDONLY
+        if hasattr(os, "O_DIRECTORY"):
+            directory_flags |= os.O_DIRECTORY
+        directory = os.open(state, directory_flags)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _read_lease_marker(raw_state: str | None) -> dict[str, Any] | None:
+    if not raw_state:
+        return None
+    state = Path(raw_state)
+    if not state.is_absolute() or state.is_symlink():
+        raise RunnerError("RUNTIME_STATE_INVALID")
+    if not state.exists():
+        return None
+    if not state.is_dir():
+        raise RunnerError("RUNTIME_STATE_INVALID")
+    resolved = state.resolve(strict=True)
+    if resolved.stat().st_mode & 0o077:
+        raise RunnerError("RUNTIME_STATE_INVALID")
+    marker = resolved / "lease.json"
+    if not marker.exists():
+        return None
+    if marker.is_symlink() or not marker.is_file() or marker.stat().st_mode & 0o077:
+        raise RunnerError("RUNTIME_LEASE_MARKER_UNSAFE")
+    loaded = json.loads(marker.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise RunnerError("RUNTIME_LEASE_MARKER_INVALID")
+    job_id = loaded.get("job_id")
+    language = loaded.get("language")
+    lease_id = loaded.get("lease_id")
+    phase = loaded.get("phase")
+    if (
+        not isinstance(job_id, str)
+        or UUID.fullmatch(job_id) is None
+        or not isinstance(language, str)
+        or language not in LANGUAGE_DIRECTORIES
+        or not isinstance(lease_id, str)
+        or LEASE_ID.fullmatch(lease_id) is None
+        or phase not in {"PROVISIONING", "RUNNING"}
+    ):
+        raise RunnerError("RUNTIME_LEASE_MARKER_INVALID")
+    started = loaded.get("lease_started_epoch")
+    expires = loaded.get("lease_expires_epoch")
+    if phase == "RUNNING" and (
+        not isinstance(started, int)
+        or isinstance(started, bool)
+        or not isinstance(expires, int)
+        or isinstance(expires, bool)
+        or expires <= started
+        or expires - started > 600
+    ):
+        raise RunnerError("RUNTIME_LEASE_MARKER_INVALID")
+    if phase == "PROVISIONING" and (started is not None or expires is not None):
+        raise RunnerError("RUNTIME_LEASE_MARKER_INVALID")
+    return loaded
+
+
+def _create_internal_network(
+    engine: Path,
+    network: str,
+    job_id: str,
+    language: str,
+    lease_id: str,
+) -> None:
     result = _run(
         [
             str(engine),
@@ -171,11 +365,17 @@ def _create_internal_network(engine: Path, network: str, job_id: str) -> None:
             "--internal",
             "--label",
             f"io.elmos.job={job_id}",
+            "--label",
+            f"io.elmos.language={language}",
+            "--label",
+            f"io.elmos.lease-id={lease_id}",
             network,
         ],
         timeout=30,
     )
-    if result.returncode != 0 and "already exists" not in (result.stderr + result.stdout).lower():
+    if result.returncode != 0:
+        if "already exists" in (result.stderr + result.stdout).lower():
+            raise RunnerError("INTERNAL_NETWORK_ALREADY_EXISTS")
         raise RunnerError("INTERNAL_NETWORK_CREATE_FAILED")
 
 
@@ -287,7 +487,7 @@ def _probe_loopback(
     path: str,
     timeout: float = 60.0,
 ) -> None:
-    if port not in PORTS.values() or IDENTIFIER.fullmatch(service) is None:
+    if not isinstance(port, int) or not 1024 <= port <= 65535 or IDENTIFIER.fullmatch(service) is None:
         raise RunnerError("HEALTH_IDENTITY_INVALID")
     if path not in {"/health", "/health/ready"}:
         raise RunnerError("HEALTH_PATH_INVALID")
@@ -300,7 +500,10 @@ def _probe_loopback(
                 method="GET",
             )
             with opener.open(request, timeout=1) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+                raw = response.read(64 * 1024 + 1)
+                if len(raw) > 64 * 1024:
+                    raise ValueError("RUNTIME_HEALTH_RESPONSE_TOO_LARGE")
+                payload = json.loads(raw.decode("utf-8"))
                 if (
                     response.status == 200
                     and isinstance(payload, dict)
@@ -314,6 +517,25 @@ def _probe_loopback(
     raise RunnerError("RUNTIME_HEALTH_IDENTITY_TIMEOUT")
 
 
+def _published_loopback_port(engine: Path, container: str, internal_port: int) -> int:
+    result = _run(
+        [str(engine), "port", container, f"{internal_port}/tcp"],
+        timeout=20,
+    )
+    if result.returncode != 0:
+        raise RunnerError("RUNTIME_LOOPBACK_PORT_UNAVAILABLE")
+    lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    if len(lines) != 1:
+        raise RunnerError("RUNTIME_LOOPBACK_PORT_INVALID")
+    matched = re.fullmatch(r"127\.0\.0\.1:(\d{1,5})", lines[0])
+    if matched is None:
+        raise RunnerError("RUNTIME_LOOPBACK_PORT_INVALID")
+    port = int(matched.group(1))
+    if port < 1024 or port > 65535:
+        raise RunnerError("RUNTIME_LOOPBACK_PORT_INVALID")
+    return port
+
+
 def _setup_postgresql(
     engine: Path,
     *,
@@ -321,6 +543,8 @@ def _setup_postgresql(
     state: Path,
     names: dict[str, str],
     job_id: str,
+    language: str,
+    lease_id: str,
 ) -> list[str]:
     image = _run([str(engine), "image", "inspect", POSTGRES_IMAGE], timeout=30)
     if image.returncode != 0:
@@ -338,7 +562,10 @@ def _setup_postgresql(
             f"{runtime_password.read_text(encoding='utf-8')}@{names['database']}:5432/generated"
         ),
     )
-    _run([str(engine), "rm", "--force", names["database"]], timeout=30)
+    if _resource_labels(engine, "container", names["database"]) is not None:
+        raise RunnerError("DATABASE_CONTAINER_ALREADY_EXISTS")
+    if _resource_labels(engine, "volume", names["volume"]) is not None:
+        raise RunnerError("DATABASE_VOLUME_ALREADY_EXISTS")
     volume = _run(
         [
             str(engine),
@@ -346,6 +573,10 @@ def _setup_postgresql(
             "create",
             "--label",
             f"io.elmos.job={job_id}",
+            "--label",
+            f"io.elmos.language={language}",
+            "--label",
+            f"io.elmos.lease-id={lease_id}",
             names["volume"],
         ],
         timeout=30,
@@ -361,6 +592,10 @@ def _setup_postgresql(
             names["database"],
             "--label",
             f"io.elmos.job={job_id}",
+            "--label",
+            f"io.elmos.language={language}",
+            "--label",
+            f"io.elmos.lease-id={lease_id}",
             "--network",
             names["network"],
             "--read-only",
@@ -564,7 +799,7 @@ def _authentication_arguments(
     return []
 
 
-def _start(arguments: argparse.Namespace) -> dict[str, Any]:
+def _start_locked(arguments: argparse.Namespace) -> dict[str, Any]:
     engine = Path(arguments.engine)
     _diagnose(arguments)
     language = arguments.language
@@ -588,38 +823,100 @@ def _start(arguments: argparse.Namespace) -> dict[str, Any]:
     }:
         raise RunnerError("RUNTIME_PROFILE_INVALID")
     build_network = arguments.build_network
-    build = _run(
-        [
-            str(engine),
-            "build",
-            "--pull=false",
-            "--network",
-            build_network,
-            "--label",
-            f"io.elmos.job={arguments.job_id}",
-            "--label",
-            f"io.elmos.language={language}",
-            "--tag",
-            image,
-            str(target),
-        ]
+    lease_seconds = arguments.lease_seconds
+    if lease_seconds < 1 or lease_seconds > 600:
+        raise RunnerError("RUNTIME_LEASE_INVALID")
+    _ensure_runtime_absent(engine, name)
+    if _resource_labels(engine, "image", image) is not None:
+        raise RunnerError("RUNTIME_IMAGE_ALREADY_EXISTS")
+    lease_id = secrets.token_hex(16)
+    cleanup_arguments = argparse.Namespace(
+        engine=str(engine),
+        language=language,
+        job_id=arguments.job_id,
+        state=str(state),
+        lease_id=lease_id,
     )
-    if build.returncode != 0:
-        raise RunnerError(f"CONTAINER_BUILD_FAILED:{(build.stderr or build.stdout)[-2000:]}")
-    _create_internal_network(engine, names["network"], arguments.job_id)
-    _run([str(engine), "rm", "--force", name], timeout=30)
-    provider_arguments = (
-        _setup_postgresql(
-            engine,
-            workspace=workspace,
-            state=state,
-            names=names,
-            job_id=arguments.job_id,
+    startup_started_epoch = int(time.time())
+    startup_expires_epoch = startup_started_epoch + 300
+    try:
+        _write_lease_marker(
+            state,
+            arguments.job_id,
+            language,
+            lease_id,
+            lease_started_epoch=startup_started_epoch,
+            lease_expires_epoch=startup_expires_epoch,
         )
-        if persistence == "postgresql"
-        else []
-    )
-    authentication_arguments = _authentication_arguments(state, auth_mode)
+        _start_expiry_watchdog(
+            engine,
+            language,
+            arguments.job_id,
+            startup_expires_epoch,
+            lease_id,
+            state,
+        )
+    except RunnerError:
+        try:
+            _stop_locked(cleanup_arguments)
+        except RunnerError:
+            pass
+        raise
+    try:
+        build = _run(
+            [
+                str(engine),
+                "build",
+                "--pull=false",
+                "--network",
+                build_network,
+                "--label",
+                f"io.elmos.job={arguments.job_id}",
+                "--label",
+                f"io.elmos.language={language}",
+                "--label",
+                f"io.elmos.lease-id={lease_id}",
+                "--tag",
+                image,
+                str(target),
+            ]
+        )
+        if build.returncode != 0:
+            raise RunnerError(f"CONTAINER_BUILD_FAILED:{(build.stderr or build.stdout)[-2000:]}")
+        _create_internal_network(
+            engine,
+            names["network"],
+            arguments.job_id,
+            language,
+            lease_id,
+        )
+    except RunnerError:
+        try:
+            _stop_locked(cleanup_arguments)
+        except RunnerError:
+            pass
+        raise
+    try:
+        provider_arguments = (
+            _setup_postgresql(
+                engine,
+                workspace=workspace,
+                state=state,
+                names=names,
+                job_id=arguments.job_id,
+                language=language,
+                lease_id=lease_id,
+            )
+            if persistence == "postgresql"
+            else []
+        )
+        authentication_arguments = _authentication_arguments(state, auth_mode)
+    except RunnerError:
+        try:
+            _stop_locked(cleanup_arguments)
+        except RunnerError:
+            pass
+        raise
     runtime_user = f"{os.geteuid()}:{os.getegid()}"
     start = _run(
         [
@@ -638,10 +935,14 @@ def _start(arguments: argparse.Namespace) -> dict[str, Any]:
             f"io.elmos.port={port}",
             "--label",
             f"io.elmos.persistence={persistence}",
+            "--label",
+            f"io.elmos.lease-seconds={lease_seconds}",
+            "--label",
+            f"io.elmos.lease-id={lease_id}",
             "--network",
             names["network"],
             "--publish",
-            f"127.0.0.1:{port}:{port}",
+            f"127.0.0.1::{port}",
             "--read-only",
             "--tmpfs",
             "/tmp:rw,noexec,nosuid,nodev,size=64m",
@@ -674,14 +975,41 @@ def _start(arguments: argparse.Namespace) -> dict[str, Any]:
         timeout=60,
     )
     if start.returncode != 0:
+        try:
+            _stop_locked(cleanup_arguments)
+        except RunnerError:
+            pass
         raise RunnerError(f"CONTAINER_START_FAILED:{(start.stderr or start.stdout)[-2000:]}")
     health_path = "/health/ready" if persistence == "postgresql" else "/health"
     try:
-        _probe_loopback(port, service, path=health_path)
+        host_port = _published_loopback_port(engine, name, port)
+        _probe_loopback(host_port, service, path=health_path)
+        # The user-visible lease starts only after the exact loopback identity
+        # probe succeeds. The startup watchdog is superseded by this final
+        # epoch-bound marker and therefore cannot shorten the usable 600s.
+        lease_started_epoch = int(time.time()) + 1
+        lease_expires_epoch = lease_started_epoch + lease_seconds
+        watchdog_pid = _start_expiry_watchdog(
+            engine,
+            language,
+            arguments.job_id,
+            lease_expires_epoch,
+            lease_id,
+            state,
+        )
+        _write_lease_marker(
+            state,
+            arguments.job_id,
+            language,
+            lease_id,
+            lease_started_epoch=lease_started_epoch,
+            lease_expires_epoch=lease_expires_epoch,
+        )
     except RunnerError:
-        _run([str(engine), "rm", "--force", name], timeout=30)
-        _run([str(engine), "rm", "--force", names["database"]], timeout=30)
-        _run([str(engine), "network", "rm", names["network"]], timeout=30)
+        try:
+            _stop_locked(cleanup_arguments)
+        except RunnerError:
+            pass
         raise
     return {
         "status": "RUNNING",
@@ -692,17 +1020,28 @@ def _start(arguments: argparse.Namespace) -> dict[str, Any]:
         "workspace": str(workspace),
         "runtime_network": names["network"],
         "network_policy": "internal-only-no-external-egress",
-        "loopback_url": f"http://127.0.0.1:{port}",
+        "loopback_url": f"http://127.0.0.1:{host_port}",
+        "host_port": host_port,
         "persistence": persistence,
         "auth_mode": auth_mode,
         "health": "loopback-identity-verified",
         "read_only": True,
         "user": runtime_user,
         "limits": {"cpus": 0.5, "memory": "512m", "pids": 256},
+        "lease_seconds": lease_seconds,
+        "lease_started_epoch": lease_started_epoch,
+        "lease_expires_epoch": lease_expires_epoch,
+        "lease_id": lease_id,
+        "watchdog_pid": watchdog_pid,
     }
 
 
-def _status(arguments: argparse.Namespace) -> dict[str, Any]:
+def _start(arguments: argparse.Namespace) -> dict[str, Any]:
+    with _runtime_operation_lock(arguments):
+        return _start_locked(arguments)
+
+
+def _status_locked(arguments: argparse.Namespace) -> dict[str, Any]:
     engine = Path(arguments.engine)
     _preflight(engine)
     name = _container_name(arguments.job_id, arguments.language)
@@ -739,17 +1078,58 @@ def _status(arguments: argparse.Namespace) -> dict[str, Any]:
         service = labels.get("io.elmos.service") if isinstance(labels, dict) else None
         port_value = labels.get("io.elmos.port") if isinstance(labels, dict) else None
         persistence = labels.get("io.elmos.persistence") if isinstance(labels, dict) else None
+        lease_value = labels.get("io.elmos.lease-seconds") if isinstance(labels, dict) else None
+        lease_id = labels.get("io.elmos.lease-id") if isinstance(labels, dict) else None
+        job_value = labels.get("io.elmos.job") if isinstance(labels, dict) else None
+        language_value = labels.get("io.elmos.language") if isinstance(labels, dict) else None
         expected_port = PORTS[arguments.language]
         if (
             not isinstance(service, str)
             or IDENTIFIER.fullmatch(service) is None
             or port_value != str(expected_port)
             or persistence not in {"in-memory", "postgresql"}
+            or not isinstance(lease_value, str)
+            or not lease_value.isdigit()
+            or not 1 <= int(lease_value) <= 600
+            or not isinstance(lease_id, str)
+            or LEASE_ID.fullmatch(lease_id) is None
+            or job_value != arguments.job_id
+            or language_value != arguments.language
         ):
             raise RunnerError("CONTAINER_IDENTITY_LABELS_INVALID")
+        expected_lease_id = getattr(arguments, "lease_id", None)
+        if expected_lease_id and expected_lease_id != lease_id:
+            return {
+                "status": "SUPERSEDED",
+                "container_name": name,
+                "health": "newer-runtime-lease-active",
+                "lease_id": lease_id,
+                "exit_code": state.get("ExitCode"),
+            }
+        marker = _read_lease_marker(getattr(arguments, "state", None))
+        if (
+            marker is None
+            or marker["job_id"] != arguments.job_id
+            or marker["language"] != arguments.language
+            or marker["lease_id"] != lease_id
+            or marker.get("phase") != "RUNNING"
+        ):
+            raise RunnerError("RUNTIME_LEASE_MARKER_INVALID")
+        expires_value = marker["lease_expires_epoch"]
+        if expires_value <= int(time.time()):
+            stopped = _stop_locked(arguments)
+            if stopped.get("status") != "STOPPED":
+                return stopped
+            return {
+                "status": "EXPIRED",
+                "container_name": name,
+                "health": "lease-expired-cleaned",
+                "exit_code": state.get("ExitCode"),
+            }
         try:
             health_path = "/health/ready" if persistence == "postgresql" else "/health"
-            _probe_loopback(expected_port, service, path=health_path, timeout=2.0)
+            host_port = _published_loopback_port(engine, name, expected_port)
+            _probe_loopback(host_port, service, path=health_path, timeout=2.0)
             status = "RUNNING"
             health = "loopback-identity-verified"
         except RunnerError:
@@ -760,22 +1140,215 @@ def _status(arguments: argparse.Namespace) -> dict[str, Any]:
         "container_name": name,
         "health": health,
         "exit_code": state.get("ExitCode"),
+        **({"host_port": host_port} if running and status == "RUNNING" else {}),
     }
 
 
-def _stop(arguments: argparse.Namespace) -> dict[str, Any]:
+def _status(arguments: argparse.Namespace) -> dict[str, Any]:
+    with _runtime_operation_lock(arguments):
+        return _status_locked(arguments)
+
+
+def _stop_receipt(
+    arguments: argparse.Namespace,
+    status: str,
+    container_name: str,
+) -> dict[str, Any]:
+    receipt: dict[str, Any] = {
+        "status": status,
+        "container_name": container_name,
+        "job_id": arguments.job_id,
+        "language": arguments.language,
+    }
+    requested_lease_id = getattr(arguments, "lease_id", None)
+    if requested_lease_id:
+        receipt["requested_lease_id"] = requested_lease_id
+    return receipt
+
+
+def _stop_locked(arguments: argparse.Namespace) -> dict[str, Any]:
     engine = Path(arguments.engine)
     _preflight(engine)
     names = _runtime_names(arguments.job_id, arguments.language)
     name = names["application"]
+    image = f"localhost/elmos/{name}:local"
+    expected_lease_id = getattr(arguments, "lease_id", None)
+    if expected_lease_id and LEASE_ID.fullmatch(expected_lease_id) is None:
+        raise RunnerError("RUNTIME_LEASE_ID_INVALID")
+    marker = _read_lease_marker(getattr(arguments, "state", None))
+    expected_expires_epoch = getattr(arguments, "expires_epoch", None)
+    if marker is not None and (
+        marker["job_id"] != arguments.job_id
+        or marker["language"] != arguments.language
+        or (expected_lease_id and marker["lease_id"] != expected_lease_id)
+        or (
+            expected_expires_epoch is not None
+            and marker.get("lease_expires_epoch") != expected_expires_epoch
+        )
+    ):
+        return _stop_receipt(arguments, "SUPERSEDED", name)
+    resources = (
+        ("container", name),
+        ("container", names["database"]),
+        ("network", names["network"]),
+        ("volume", names["volume"]),
+        ("image", image),
+    )
+    observed = {
+        (kind, resource): _resource_labels(engine, kind, resource)
+        for kind, resource in resources
+    }
+    existing = [labels for labels in observed.values() if labels is not None]
+    if not existing and marker is None:
+        return _stop_receipt(arguments, "MISSING", name)
+    authoritative_lease_id = expected_lease_id or (marker["lease_id"] if marker else None)
+    if authoritative_lease_id is None and existing:
+        candidate_ids = {labels.get("io.elmos.lease-id") for labels in existing}
+        if len(candidate_ids) != 1:
+            raise RunnerError("RUNTIME_RESOURCE_LEASE_IDENTITY_INVALID")
+        authoritative_lease_id = next(iter(candidate_ids))
+    if not isinstance(authoritative_lease_id, str) or LEASE_ID.fullmatch(authoritative_lease_id) is None:
+        raise RunnerError("RUNTIME_RESOURCE_LEASE_IDENTITY_INVALID")
+    if any(
+        not _resource_identity_matches(
+            labels,
+            arguments.job_id,
+            arguments.language,
+            authoritative_lease_id,
+        )
+        for labels in existing
+    ):
+        if expected_lease_id and any(
+            labels.get("io.elmos.lease-id") != expected_lease_id for labels in existing
+        ):
+            return _stop_receipt(arguments, "SUPERSEDED", name)
+        raise RunnerError("RUNTIME_RESOURCE_IDENTITY_INVALID")
     result = _run([str(engine), "rm", "--force", name], timeout=30)
     if result.returncode != 0 and "no such" not in (result.stderr + result.stdout).lower():
         raise RunnerError("CONTAINER_STOP_FAILED")
-    _run([str(engine), "rm", "--force", names["database"]], timeout=30)
+    database = _run([str(engine), "rm", "--force", names["database"]], timeout=30)
+    if database.returncode != 0 and "no such" not in (database.stderr + database.stdout).lower():
+        raise RunnerError("DATABASE_CONTAINER_STOP_FAILED")
     network = _run([str(engine), "network", "rm", names["network"]], timeout=30)
     if network.returncode != 0 and "no such" not in (network.stderr + network.stdout).lower():
         raise RunnerError("INTERNAL_NETWORK_REMOVE_FAILED")
-    return {"status": "STOPPED", "container_name": name}
+    volume = _run([str(engine), "volume", "rm", "--force", names["volume"]], timeout=30)
+    if volume.returncode != 0 and "no such" not in (volume.stderr + volume.stdout).lower():
+        raise RunnerError("DATABASE_VOLUME_REMOVE_FAILED")
+    image_result = _run([str(engine), "image", "rm", "--force", image], timeout=60)
+    if image_result.returncode != 0 and "no such" not in (image_result.stderr + image_result.stdout).lower():
+        raise RunnerError("RUNTIME_IMAGE_REMOVE_FAILED")
+    raw_state = getattr(arguments, "state", None)
+    if raw_state:
+        state = Path(raw_state)
+        if not state.exists():
+            return _stop_receipt(arguments, "STOPPED", name)
+        if not state.is_absolute() or state.is_symlink() or not state.is_dir():
+            raise RunnerError("RUNTIME_STATE_INVALID")
+        resolved_state = state.resolve(strict=True)
+        if resolved_state.stat().st_mode & 0o077:
+            raise RunnerError("RUNTIME_STATE_INVALID")
+        allowed = {
+            "database-url",
+            "jwt-hmac-secret",
+            "oidc-jwks",
+            "oidc-private-key.pem",
+            "postgres-admin-password",
+            "postgres-runtime-password",
+            "lease.json",
+        }
+        entries = list(resolved_state.iterdir())
+        if any(
+            (
+                entry.name not in allowed
+                and re.fullmatch(r"\.lease-[0-9a-f]{16}\.tmp", entry.name) is None
+            )
+            or entry.is_symlink()
+            or not entry.is_file()
+            for entry in entries
+        ):
+            raise RunnerError("RUNTIME_STATE_CLEANUP_UNSAFE")
+        for entry in entries:
+            entry.unlink()
+        resolved_state.rmdir()
+    if any(_resource_labels(engine, kind, resource) is not None for kind, resource in resources):
+        raise RunnerError("RUNTIME_RESOURCE_CLEANUP_UNVERIFIED")
+    return _stop_receipt(arguments, "STOPPED", name)
+
+
+def _stop(arguments: argparse.Namespace) -> dict[str, Any]:
+    with _runtime_operation_lock(arguments):
+        return _stop_locked(arguments)
+
+
+def _start_expiry_watchdog(
+    engine: Path,
+    language: str,
+    job_id: str,
+    expires_epoch: int,
+    lease_id: str,
+    state: Path,
+) -> int:
+    if LEASE_ID.fullmatch(lease_id) is None:
+        raise RunnerError("RUNTIME_LEASE_ID_INVALID")
+    script = Path(__file__).resolve(strict=True)
+    try:
+        watchdog = subprocess.Popen(  # noqa: S603
+            [
+                sys.executable,
+                str(script),
+                "expire",
+                "--engine",
+                str(engine),
+                "--language",
+                language,
+                "--job-id",
+                job_id,
+                "--expires-epoch",
+                str(expires_epoch),
+                "--lease-id",
+                lease_id,
+                "--state",
+                str(state),
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+            close_fds=True,
+        )
+    except OSError as error:
+        raise RunnerError("RUNTIME_LEASE_WATCHDOG_START_FAILED") from error
+    if watchdog.pid <= 0:
+        raise RunnerError("RUNTIME_LEASE_WATCHDOG_START_FAILED")
+    return watchdog.pid
+
+
+def _expire(arguments: argparse.Namespace) -> dict[str, Any]:
+    remaining = arguments.expires_epoch - time.time()
+    if remaining > 605:
+        raise RunnerError("RUNTIME_LEASE_EXPIRY_INVALID")
+    if remaining > 0:
+        time.sleep(remaining)
+    failure: BaseException | None = None
+    for attempt in range(3):
+        try:
+            with _runtime_operation_lock(arguments):
+                result = _stop_locked(arguments)
+            if result.get("status") != "STOPPED":
+                return result
+            return {**result, "status": "EXPIRED"}
+        except (
+            RunnerError,
+            OSError,
+            ValueError,
+            json.JSONDecodeError,
+            subprocess.SubprocessError,
+        ) as error:
+            failure = error
+            if attempt < 2:
+                time.sleep(2**attempt)
+    raise RunnerError("RUNTIME_LEASE_CLEANUP_FAILED") from failure
 
 
 def parser() -> argparse.ArgumentParser:
@@ -799,14 +1372,26 @@ def parser() -> argparse.ArgumentParser:
     start.add_argument("--persistence", choices=["in-memory", "postgresql"], required=True)
     start.add_argument("--auth-mode", choices=["none", "jwt", "oidc"], required=True)
     start.add_argument("--build-network", default="none")
+    start.add_argument("--lease-seconds", type=int, default=600)
     status = subcommands.add_parser("status")
     status.add_argument("--engine", required=True)
     status.add_argument("--language", choices=sorted(LANGUAGE_DIRECTORIES), required=True)
     status.add_argument("--job-id", required=True)
+    status.add_argument("--state", required=True)
+    status.add_argument("--lease-id")
     stop = subcommands.add_parser("stop")
     stop.add_argument("--engine", required=True)
     stop.add_argument("--language", choices=sorted(LANGUAGE_DIRECTORIES), required=True)
     stop.add_argument("--job-id", required=True)
+    stop.add_argument("--state", required=True)
+    stop.add_argument("--lease-id")
+    expire = subcommands.add_parser("expire")
+    expire.add_argument("--engine", required=True)
+    expire.add_argument("--language", choices=sorted(LANGUAGE_DIRECTORIES), required=True)
+    expire.add_argument("--job-id", required=True)
+    expire.add_argument("--expires-epoch", type=int, required=True)
+    expire.add_argument("--state", required=True)
+    expire.add_argument("--lease-id", required=True)
     return root
 
 
@@ -819,6 +1404,7 @@ def main() -> int:
             "start": lambda: _start(arguments),
             "status": lambda: _status(arguments),
             "stop": lambda: _stop(arguments),
+            "expire": lambda: _expire(arguments),
         }[arguments.command]()
         print(json.dumps(result, sort_keys=True))
         return 0

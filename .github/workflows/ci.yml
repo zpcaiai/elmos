@@ -480,7 +480,8 @@ jobs:
               --project=mobile-webkit \
               e2e/account-session-ui.spec.ts \
               e2e/generation-source-ingestion.spec.ts \
-              e2e/generation-ui.spec.ts
+              e2e/generation-ui.spec.ts \
+              e2e/runtime-deployment-guide.spec.ts
 
   web-console-runner-e2e:
     name: Isolated browser Runner journeys
@@ -520,6 +521,7 @@ jobs:
         run: |
           ELMOS_UV_PATH="$(command -v uv)" \
             pnpm --dir apps/web-console exec playwright test \
+              --workers=1 \
               --project=chromium \
               e2e/generation-runner.spec.ts \
               e2e/precision-migration-jobs.spec.ts \

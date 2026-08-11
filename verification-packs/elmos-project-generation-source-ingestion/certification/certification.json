@@ -1,18 +1,19 @@
 {
   "schema_version": 1,
   "pack_key": "elmos-project-generation-source-ingestion",
-  "status": "experimental",
+  "status": "limited",
   "owner": "elmos-project-synthesis-engineering",
   "exact_scope": {
     "migration_route": "project-intent-to-approved-source-bundle",
     "source_artifact_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
-    "target_artifact_digest": "sha256:7887bdd510865dc97487078945640c2c4cdbf7f4eaea8f614e65de0b0daf36e3",
+    "target_artifact_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
     "workload_key": "multi-format-source-ingestion-security",
     "risk_tier": "P0",
-    "environment_digest": "sha256:e148832efecfee927b24f4176624699a9b9845416169dfc74e417fa1ae51086a",
+    "environment_digest": "sha256:d89bec62fe50fb75322f7ddad1325c1f49a3308fa506271182a5f8835634f074",
     "validation_kind": "local-deterministic-parser-security-qualification",
     "source_target_migration_equivalence": "NOT_APPLICABLE",
     "external_solver_or_symbolic_execution": "NOT_RUN",
+    "controlled_public_dns_rebinding_campaign": "NOT_RUN",
     "independent_holdout": "LOCAL_EXECUTED_NOT_INDEPENDENTLY_VERIFIED",
     "representative_production_workload": "NOT_RUN"
   },
@@ -23,7 +24,13 @@
     "fuzz_campaign_pass_rate": 1.0,
     "security_property_pass_rate": 1.0,
     "counterexample_replay_pass_rate": 1.0,
-    "local_test_pass_rate": 1.0
+    "local_test_pass_rate": 1.0,
+    "model_transition_coverage": 1.0,
+    "p0_contract_pass_rate": 1.0,
+    "representative_workload_pass_rate": 0.0,
+    "source_map_coverage": 1.0,
+    "evidence_trace_coverage": 1.0,
+    "assurance_claim_support_rate": 0.0
   },
   "evidence_refs": [
     "certification/local-test-result.json",

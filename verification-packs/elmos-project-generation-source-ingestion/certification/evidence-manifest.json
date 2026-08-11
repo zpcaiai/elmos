@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "algorithm": "sha256",
+  "entries": [
+    {
+      "path": "assurance/assurance-case.json",
+      "byte_size": 1889,
+      "sha256": "1efac104c919ad7174c765e16ad23013062d967c4b130310d49d4e0c130672ee"
+    },
+    {
+      "path": "certification/certification.json",
+      "byte_size": 2020,
+      "sha256": "0a785d81517ebd58190dfa48202682a34ec53ec8ebbb0e65a3ea09fc2550f83b"
+    },
+    {
+      "path": "certification/evidence.json",
+      "byte_size": 1817,
+      "sha256": "324573669668b1f4eea373e05933f98f4fdf78940a6eea1581e5b9af4eaccc60"
+    },
+    {
+      "path": "certification/local-test-result.json",
+      "byte_size": 2287,
+      "sha256": "ff7232bde1fee064a1b16b8e4be59023f7061c25a8cb034577157d71e1532707"
+    },
+    {
+      "path": "corpus/development/manifest.json",
+      "byte_size": 364,
+      "sha256": "d261ff32320f29baebbc45d747b457c654ae1e99be878402e4ee4e51e7c026a1"
+    },
+    {
+      "path": "corpus/development/seed.json",
+      "byte_size": 150,
+      "sha256": "41e7faab2252b99945fcf0e2265b876f160c7d102c4f0ed6aea3b492ffb83f34"
+    },
+    {
+      "path": "corpus/holdout/cases.json",
+      "byte_size": 657,
+      "sha256": "46fe179cba5e995067ffbe35007399a21aaa38464be6b94d7c69f6312e989264"
+    },
+    {
+      "path": "corpus/holdout/manifest.json",
+      "byte_size": 555,
+      "sha256": "7b75a5a8e165303fb1093602d3f41eadc6a88fe67e8724b5ca34c0094e6e1bd6"
+    },
+    {
+      "path": "corpus/negative/cases.json",
+      "byte_size": 522,
+      "sha256": "81009c17143fdf3fcdc173940cef24dc3adbf89e201fb063f9748802c80da966"
+    },
+    {
+      "path": "corpus/negative/manifest.json",
+      "byte_size": 465,
+      "sha256": "e17dfe2a49324a8d521ec531084f1004488a803454462ed39f364a0b27694801"
+    },
+    {
+      "path": "corpus/representative-workloads/cases.json",
+      "byte_size": 571,
+      "sha256": "af9094d8e8f686023104d1b1c5b648d9894ce057cc01f6b2c7b61f4e55c0af64"
+    },
+    {
+      "path": "corpus/representative-workloads/manifest.json",
+      "byte_size": 545,
+      "sha256": "0df6c2515d639361039d196585bce706b3c8d750702cd9062e6de8b82fdda479"
+    },
+    {
+      "path": "counterexamples/input.json",
+      "byte_size": 269,
+      "sha256": "40cd7066164fd55a5c7cb40475f850254c92cf0c29010e9b58e3fd085f94a8bb"
+    },
+    {
+      "path": "counterexamples/sample.json",
+      "byte_size": 1015,
+      "sha256": "3786f4f1340f05953dad67f9af438c88a0cc03f3e71034201c7cb79d8a35e0f2"
+    },
+    {
+      "path": "fuzz/campaign.json",
+      "byte_size": 507,
+      "sha256": "6c7bb25e645288fc55ef2f0eb2d5d60e28e444f7d31470438a93017b4965500b"
+    },
+    {
+      "path": "metamorphic/sample.json",
+      "byte_size": 523,
+      "sha256": "60e737d7a32a2c39ee4cf9326dcbc825ab32f86d322affaed0af91f59879b621"
+    },
+    {
+      "path": "models/model.json",
+      "byte_size": 1058,
+      "sha256": "b162820b670465e051bffdc3e725c755f9949d4029430d35f483abb90a8c9523"
+    },
+    {
+      "path": "mutation/campaign.json",
+      "byte_size": 697,
+      "sha256": "cf9b397257185bc86a83b014784a4cc6f534f3d1cd8afe4c2920b0b2a40ea90d"
+    },
+    {
+      "path": "oracle-registry.json",
+      "byte_size": 1054,
+      "sha256": "5bbc983f294e33d290c1d31d14b3f5e5c0284db5591211067b3e462d844e6358"
+    },
+    {
+      "path": "pack.json",
+      "byte_size": 1715,
+      "sha256": "a31d136e0968eb7938f04c1912fa97a736d57d83578b6edee9719e15b2e69270"
+    },
+    {
+      "path": "properties/sample.json",
+      "byte_size": 808,
+      "sha256": "26a093c1e2d3e1c4c397c0611452b52a7dcb9208a17e2bb00613a5ef5111f378"
+    },
+    {
+      "path": "solver/proof.json",
+      "byte_size": 570,
+      "sha256": "4d5fa3abbbf8b770c624b4e908d451099bd87368d1d8094a0ba621c3257b82cb"
+    },
+    {
+      "path": "support-matrix.json",
+      "byte_size": 2235,
+      "sha256": "0bb2d80d39de2485f5bd024edab578d77c1dcca1edef360d9eb57d776ae77a32"
+    },
+    {
+      "path": "validation-profile.json",
+      "byte_size": 1152,
+      "sha256": "00ff1da5f92bee8ac95a0f20f4a8880b565d28616095429a9ee329dd04e4d3fd"
+    }
+  ]
+}
