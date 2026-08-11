@@ -416,33 +416,34 @@ class RootlessProjectRunnerTests(unittest.TestCase):
         self.assertTrue(popen.call_args.kwargs["close_fds"])
 
     def test_old_watchdog_cannot_stop_a_new_runtime_lease(self) -> None:
-        arguments = type(
-            "Arguments",
-            (),
-            {
-                "engine": "/usr/bin/docker",
-                "language": "python",
-                "job_id": "123e4567-e89b-42d3-a456-426614174000",
-                "state": "/private/tmp/elmos-runtime-state",
-                "lease_id": "a" * 32,
-            },
-        )()
-        with (
-            patch.object(runner, "_preflight"),
-            patch.object(
-                runner,
-                "_read_lease_marker",
-                return_value={
-                    "job_id": arguments.job_id,
-                    "language": arguments.language,
-                    "lease_id": "b" * 32,
+        with tempfile.TemporaryDirectory(prefix="elmos-rootless-old-watchdog-") as temporary:
+            arguments = type(
+                "Arguments",
+                (),
+                {
+                    "engine": "/usr/bin/docker",
+                    "language": "python",
+                    "job_id": "123e4567-e89b-42d3-a456-426614174000",
+                    "state": str(Path(temporary) / "runtime-state"),
+                    "lease_id": "a" * 32,
                 },
-            ),
-            patch.object(runner, "_run") as run,
-        ):
-            result = runner._stop(arguments)
-        self.assertEqual(result["status"], "SUPERSEDED")
-        run.assert_not_called()
+            )()
+            with (
+                patch.object(runner, "_preflight"),
+                patch.object(
+                    runner,
+                    "_read_lease_marker",
+                    return_value={
+                        "job_id": arguments.job_id,
+                        "language": arguments.language,
+                        "lease_id": "b" * 32,
+                    },
+                ),
+                patch.object(runner, "_run") as run,
+            ):
+                result = runner._stop(arguments)
+            self.assertEqual(result["status"], "SUPERSEDED")
+            run.assert_not_called()
 
     def test_expiry_reports_superseded_without_relabeling_it_expired(self) -> None:
         arguments = type(
