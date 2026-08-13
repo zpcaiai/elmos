@@ -87,14 +87,14 @@
       "const": "NOT_RUN"
     },
     "expected_route_count": {
-      "const": 72
+      "const": 90
     },
     "observed_route_count": {
       "type": "integer",
       "minimum": 0
     },
     "expected_workload_count": {
-      "const": 144
+      "const": 180
     },
     "observed_workload_count": {
       "type": "integer",

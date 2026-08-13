@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import struct
 import zipfile
 from decimal import Decimal
 from itertools import product
@@ -30,9 +31,7 @@ from elmos_polyglot_route.pipeline import (
 )
 
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
-    (source, target)
-    for source, target in product(SUPPORTED_LANGUAGES, repeat=2)
-    if source != target
+    (source, target) for source, target in product(SUPPORTED_LANGUAGES, repeat=2) if source != target
 )
 MEDIUM_LANGUAGE_RING: tuple[tuple[Language, Language], ...] = tuple(
     (source, SUPPORTED_LANGUAGES[(index + 1) % len(SUPPORTED_LANGUAGES)])
@@ -75,13 +74,64 @@ _MEDIUM_BEHAVIOR_CASES: dict[str, list[dict[str, object]]] = {
     "subtract": _BEHAVIOR_CASES[2],
 }
 
+_BINARY64_NEGATIVE_ZERO = -0.0
+_BINARY64_MAXIMUM_FINITE = 1.7976931348623157e308
+_BINARY64_MINIMUM_POSITIVE_SUBNORMAL = 5e-324
+_JAVASCRIPT_TYPESCRIPT_REQUIRED_FP64 = {
+    "8000000000000000",
+    "7fefffffffffffff",
+    "0000000000000001",
+}
+_JAVASCRIPT_TYPESCRIPT_BEHAVIOR_CASES: dict[str, list[dict[str, object]]] = {
+    "choose": [
+        {
+            "args": [_BINARY64_NEGATIVE_ZERO, _BINARY64_MINIMUM_POSITIVE_SUBNORMAL, True],
+            "expected": _BINARY64_NEGATIVE_ZERO,
+        },
+        {
+            "args": [_BINARY64_MAXIMUM_FINITE, _BINARY64_MINIMUM_POSITIVE_SUBNORMAL, False],
+            "expected": _BINARY64_MINIMUM_POSITIVE_SUBNORMAL,
+        },
+    ],
+    "greater": [
+        {
+            "args": [_BINARY64_MAXIMUM_FINITE, _BINARY64_MINIMUM_POSITIVE_SUBNORMAL],
+            "expected": True,
+        },
+        {
+            "args": [_BINARY64_NEGATIVE_ZERO, _BINARY64_MINIMUM_POSITIVE_SUBNORMAL],
+            "expected": False,
+        },
+    ],
+    "identity": [
+        {"args": [_BINARY64_NEGATIVE_ZERO], "expected": _BINARY64_NEGATIVE_ZERO},
+        {"args": [_BINARY64_MAXIMUM_FINITE], "expected": _BINARY64_MAXIMUM_FINITE},
+        {
+            "args": [_BINARY64_MINIMUM_POSITIVE_SUBNORMAL],
+            "expected": _BINARY64_MINIMUM_POSITIVE_SUBNORMAL,
+        },
+    ],
+    "minimum": [
+        {
+            "args": [_BINARY64_MINIMUM_POSITIVE_SUBNORMAL, _BINARY64_MAXIMUM_FINITE],
+            "expected": _BINARY64_MINIMUM_POSITIVE_SUBNORMAL,
+        },
+        {
+            "args": [_BINARY64_NEGATIVE_ZERO, _BINARY64_MAXIMUM_FINITE],
+            "expected": _BINARY64_NEGATIVE_ZERO,
+        },
+    ],
+    "nonnegative": [
+        {"args": [_BINARY64_NEGATIVE_ZERO], "expected": True},
+        {"args": [_BINARY64_MINIMUM_POSITIVE_SUBNORMAL], "expected": True},
+    ],
+}
+
 _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "java": (
         (
             "Add.java",
-            "public final class Add {\n"
-            "    public static long add(long left, long right) { return left + right; }\n"
-            "}\n",
+            "public final class Add {\n    public static long add(long left, long right) { return left + right; }\n}\n",
         ),
         (
             "Multiply.java",
@@ -133,19 +183,48 @@ _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "typescript": (
         (
             "add.ts",
-            "export function add(left: number, right: number): number {\n"
+            "export function add(left: number, right: number): number {\n  return left + right;\n}\n",
+        ),
+        (
+            "multiply.ts",
+            "export function multiply(left: number, right: number): number {\n  return left * right;\n}\n",
+        ),
+        (
+            "subtract.ts",
+            "export function subtract(left: number, right: number): number {\n  return left - right;\n}\n",
+        ),
+    ),
+    "javascript": (
+        (
+            "add.mjs",
+            "/**\n"
+            " * @param {integer} left\n"
+            " * @param {integer} right\n"
+            " * @returns {integer}\n"
+            " */\n"
+            "export function add(left, right) {\n"
             "  return left + right;\n"
             "}\n",
         ),
         (
-            "multiply.ts",
-            "export function multiply(left: number, right: number): number {\n"
+            "multiply.mjs",
+            "/**\n"
+            " * @param {integer} left\n"
+            " * @param {integer} right\n"
+            " * @returns {integer}\n"
+            " */\n"
+            "export function multiply(left, right) {\n"
             "  return left * right;\n"
             "}\n",
         ),
         (
-            "subtract.ts",
-            "export function subtract(left: number, right: number): number {\n"
+            "subtract.mjs",
+            "/**\n"
+            " * @param {integer} left\n"
+            " * @param {integer} right\n"
+            " * @returns {integer}\n"
+            " */\n"
+            "export function subtract(left, right) {\n"
             "  return left - right;\n"
             "}\n",
         ),
@@ -153,21 +232,15 @@ _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "go": (
         (
             "add.go",
-            "package sample\n\nfunc add(left int64, right int64) int64 {\n"
-            "\treturn left + right\n"
-            "}\n",
+            "package sample\n\nfunc add(left int64, right int64) int64 {\n\treturn left + right\n}\n",
         ),
         (
             "multiply.go",
-            "package sample\n\nfunc multiply(left int64, right int64) int64 {\n"
-            "\treturn left * right\n"
-            "}\n",
+            "package sample\n\nfunc multiply(left int64, right int64) int64 {\n\treturn left * right\n}\n",
         ),
         (
             "subtract.go",
-            "package sample\n\nfunc subtract(left int64, right int64) int64 {\n"
-            "\treturn left - right\n"
-            "}\n",
+            "package sample\n\nfunc subtract(left int64, right int64) int64 {\n\treturn left - right\n}\n",
         ),
     ),
     "rust": (
@@ -184,8 +257,7 @@ _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "cpp": (
         (
             "add.cpp",
-            "#include <cstdint>\n\n"
-            "std::int64_t add(std::int64_t left, std::int64_t right) { return left + right; }\n",
+            "#include <cstdint>\n\nstd::int64_t add(std::int64_t left, std::int64_t right) { return left + right; }\n",
         ),
         (
             "multiply.cpp",
@@ -212,21 +284,15 @@ _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "swift": (
         (
             "add.swift",
-            "func add(_ left: Int64, _ right: Int64) -> Int64 {\n"
-            "    return left + right\n"
-            "}\n",
+            "func add(_ left: Int64, _ right: Int64) -> Int64 {\n    return left + right\n}\n",
         ),
         (
             "multiply.swift",
-            "func multiply(_ left: Int64, _ right: Int64) -> Int64 {\n"
-            "    return left * right\n"
-            "}\n",
+            "func multiply(_ left: Int64, _ right: Int64) -> Int64 {\n    return left * right\n}\n",
         ),
         (
             "subtract.swift",
-            "func subtract(_ left: Int64, _ right: Int64) -> Int64 {\n"
-            "    return left - right\n"
-            "}\n",
+            "func subtract(_ left: Int64, _ right: Int64) -> Int64 {\n    return left - right\n}\n",
         ),
     ),
 }
@@ -255,17 +321,11 @@ _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "python": (
         (
             "maximum.py",
-            "def maximum(left: int, right: int) -> int:\n"
-            "    if left > right:\n"
-            "        return left\n"
-            "    return right\n",
+            "def maximum(left: int, right: int) -> int:\n    if left > right:\n        return left\n    return right\n",
         ),
         (
             "minimum.py",
-            "def minimum(left: int, right: int) -> int:\n"
-            "    if left < right:\n"
-            "        return left\n"
-            "    return right\n",
+            "def minimum(left: int, right: int) -> int:\n    if left < right:\n        return left\n    return right\n",
         ),
     ),
     "csharp": (
@@ -308,6 +368,32 @@ _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
             "}\n",
         ),
     ),
+    "javascript": (
+        (
+            "maximum.mjs",
+            "/**\n"
+            " * @param {integer} left\n"
+            " * @param {integer} right\n"
+            " * @returns {integer}\n"
+            " */\n"
+            "export function maximum(left, right) {\n"
+            "  if (left > right) { return left; }\n"
+            "  return right;\n"
+            "}\n",
+        ),
+        (
+            "minimum.mjs",
+            "/**\n"
+            " * @param {integer} left\n"
+            " * @param {integer} right\n"
+            " * @returns {integer}\n"
+            " */\n"
+            "export function minimum(left, right) {\n"
+            "  if (left < right) { return left; }\n"
+            "  return right;\n"
+            "}\n",
+        ),
+    ),
     "go": (
         (
             "maximum.go",
@@ -327,17 +413,11 @@ _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     "rust": (
         (
             "maximum.rs",
-            "fn maximum(left: i64, right: i64) -> i64 {\n"
-            "    if left > right { return left; }\n"
-            "    return right;\n"
-            "}\n",
+            "fn maximum(left: i64, right: i64) -> i64 {\n    if left > right { return left; }\n    return right;\n}\n",
         ),
         (
             "minimum.rs",
-            "fn minimum(left: i64, right: i64) -> i64 {\n"
-            "    if left < right { return left; }\n"
-            "    return right;\n"
-            "}\n",
+            "fn minimum(left: i64, right: i64) -> i64 {\n    if left < right { return left; }\n    return right;\n}\n",
         ),
     ),
     "cpp": (
@@ -392,20 +472,210 @@ _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
     ),
 }
 
+_JAVASCRIPT_TYPESCRIPT_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
+    "typescript": (
+        (
+            "choose.ts",
+            "export function choose(left: number, right: number, takeLeft: boolean): number {\n"
+            "  if (takeLeft) { return left; }\n"
+            "  return right;\n"
+            "}\n",
+        ),
+        (
+            "greater.ts",
+            "export function greater(left: number, right: number): boolean {\n  return left > right;\n}\n",
+        ),
+        (
+            "identity.ts",
+            "export function identity(value: number): number { return value; }\n",
+        ),
+    ),
+    "javascript": (
+        (
+            "choose.mjs",
+            "/**\n"
+            " * @param {number} left\n"
+            " * @param {number} right\n"
+            " * @param {boolean} takeLeft\n"
+            " * @returns {number}\n"
+            " */\n"
+            "export function choose(left, right, takeLeft) {\n"
+            "  if (takeLeft) { return left; }\n"
+            "  return right;\n"
+            "}\n",
+        ),
+        (
+            "greater.mjs",
+            "/**\n"
+            " * @param {number} left\n"
+            " * @param {number} right\n"
+            " * @returns {boolean}\n"
+            " */\n"
+            "export function greater(left, right) {\n"
+            "  return left > right;\n"
+            "}\n",
+        ),
+        (
+            "identity.mjs",
+            "/**\n"
+            " * @param {number} value\n"
+            " * @returns {number}\n"
+            " */\n"
+            "export function identity(value) { return value; }\n",
+        ),
+    ),
+}
 
-def _write_repository_and_cases(root: Path, source_language: Language) -> tuple[Path, Path]:
+_JAVASCRIPT_TYPESCRIPT_MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
+    "typescript": (
+        (
+            "minimum.ts",
+            "export function minimum(left: number, right: number): number {\n"
+            "  if (left < right) { return left; }\n"
+            "  return right;\n"
+            "}\n",
+        ),
+        (
+            "nonnegative.ts",
+            "export function nonnegative(value: number): boolean { return value >= 0; }\n",
+        ),
+    ),
+    "javascript": (
+        (
+            "minimum.mjs",
+            "/**\n"
+            " * @param {number} left\n"
+            " * @param {number} right\n"
+            " * @returns {number}\n"
+            " */\n"
+            "export function minimum(left, right) {\n"
+            "  if (left < right) { return left; }\n"
+            "  return right;\n"
+            "}\n",
+        ),
+        (
+            "nonnegative.mjs",
+            "/**\n"
+            " * @param {number} value\n"
+            " * @returns {boolean}\n"
+            " */\n"
+            "export function nonnegative(value) { return value >= 0; }\n",
+        ),
+    ),
+}
+
+
+def _is_javascript_typescript_pair(
+    source_language: Language,
+    target_language: Language,
+) -> bool:
+    return {source_language, target_language} == {"javascript", "typescript"}
+
+
+def _route_source_files(
+    source_language: Language,
+    target_language: Language,
+) -> tuple[tuple[str, str], ...]:
+    if _is_javascript_typescript_pair(source_language, target_language):
+        return _JAVASCRIPT_TYPESCRIPT_SOURCE_FILES[source_language]
+    return _SOURCE_FILES[source_language]
+
+
+def _route_medium_source_files(
+    source_language: Language,
+    target_language: Language,
+) -> tuple[tuple[str, str], ...]:
+    if _is_javascript_typescript_pair(source_language, target_language):
+        return (
+            *_JAVASCRIPT_TYPESCRIPT_SOURCE_FILES[source_language],
+            *_JAVASCRIPT_TYPESCRIPT_MEDIUM_EXTRA_SOURCE_FILES[source_language],
+        )
+    return (*_SOURCE_FILES[source_language], *_MEDIUM_EXTRA_SOURCE_FILES[source_language])
+
+
+def _route_behavior_cases(
+    source_language: Language,
+    target_language: Language,
+    name: str,
+    default: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    if _is_javascript_typescript_pair(source_language, target_language):
+        return _JAVASCRIPT_TYPESCRIPT_BEHAVIOR_CASES[Path(name).stem.lower()]
+    return default
+
+
+def _assert_javascript_typescript_fixture_contract() -> None:
+    pair_directions = {
+        ("javascript", "typescript"),
+        ("typescript", "javascript"),
+    }
+    for source_language, target_language in DIRECTED_LANGUAGE_PAIRS:
+        selected = _route_source_files(source_language, target_language)
+        if (source_language, target_language) in pair_directions:
+            assert selected == _JAVASCRIPT_TYPESCRIPT_SOURCE_FILES[source_language]
+        else:
+            assert selected == _SOURCE_FILES[source_language]
+
+    observed_fp64 = {
+        _fp64_hex(expected)
+        for behavior_cases in _JAVASCRIPT_TYPESCRIPT_BEHAVIOR_CASES.values()
+        for behavior_case in behavior_cases
+        if isinstance((expected := behavior_case["expected"]), float)
+    }
+    assert observed_fp64 == _JAVASCRIPT_TYPESCRIPT_REQUIRED_FP64
+    for source_language in ("javascript", "typescript"):
+        small = _JAVASCRIPT_TYPESCRIPT_SOURCE_FILES[source_language]
+        medium = sorted(
+            _route_medium_source_files(
+                source_language, "typescript" if source_language == "javascript" else "javascript"
+            )
+        )
+        assert len(small) == 3
+        assert len(medium) == 5
+        assert [name for name, _ in small] == sorted(name for name, _ in small)
+        assert all(len(_JAVASCRIPT_TYPESCRIPT_BEHAVIOR_CASES[Path(name).stem.lower()]) >= 2 for name, _ in medium)
+        assert all(
+            token not in content
+            for _, content in medium
+            for token in (
+                "return left + right",
+                "return left - right",
+                "return left * right",
+                "return left / right",
+                "return left % right",
+            )
+        )
+        assert all(
+            len(_medium_comment_filler(source_language).encode("utf-8")) + len(content.encode("utf-8"))
+            < _FILE_MAXIMUM_BYTES
+            for _, content in medium
+        )
+    assert 5 * _MEDIUM_COMMENT_BYTES_PER_FILE > _SMALL_MAXIMUM_BYTES
+
+
+def _write_repository_and_cases(
+    root: Path,
+    source_language: Language,
+    target_language: Language,
+) -> tuple[Path, Path]:
     repository = root / "repository"
     cases = root / "cases"
     repository.mkdir()
     cases.mkdir()
 
-    source_files = _SOURCE_FILES[source_language]
+    source_files = _route_source_files(source_language, target_language)
     assert len(source_files) == 3
     assert [name for name, _ in source_files] == sorted(name for name, _ in source_files)
     for index, ((name, content), behavior_cases) in enumerate(
         zip(source_files, _BEHAVIOR_CASES, strict=True),
         start=1,
     ):
+        behavior_cases = _route_behavior_cases(
+            source_language,
+            target_language,
+            name,
+            behavior_cases,
+        )
         (repository / name).write_text(content, encoding="utf-8")
         (cases / f"WU-{index:05d}.json").write_text(
             json.dumps(behavior_cases, sort_keys=True) + "\n",
@@ -426,13 +696,14 @@ def _medium_comment_filler(language: Language) -> str:
 def _write_medium_repository_and_cases(
     root: Path,
     source_language: Language,
+    target_language: Language,
 ) -> tuple[Path, Path]:
     repository = root / "repository"
     cases = root / "cases"
     repository.mkdir()
     cases.mkdir()
 
-    source_files = sorted((*_SOURCE_FILES[source_language], *_MEDIUM_EXTRA_SOURCE_FILES[source_language]))
+    source_files = sorted(_route_medium_source_files(source_language, target_language))
     assert len(source_files) == 5
     filler = _medium_comment_filler(source_language)
     for index, (name, content) in enumerate(source_files, start=1):
@@ -440,7 +711,13 @@ def _write_medium_repository_and_cases(
         source_bytes = source.encode("utf-8")
         assert len(source_bytes) < _FILE_MAXIMUM_BYTES
         function_name = Path(name).stem.lower()
-        behavior_cases = _MEDIUM_BEHAVIOR_CASES[function_name]
+        behavior_cases = _route_behavior_cases(
+            source_language,
+            target_language,
+            name,
+            _MEDIUM_BEHAVIOR_CASES.get(function_name, []),
+        )
+        assert len(behavior_cases) >= 2
         (repository / name).write_bytes(source_bytes)
         (cases / f"WU-{index:05d}.json").write_text(
             json.dumps(behavior_cases, sort_keys=True) + "\n",
@@ -455,6 +732,36 @@ def _sha256(content: bytes) -> str:
 
 def _prefixed_sha256(content: bytes) -> str:
     return "sha256:" + _sha256(content)
+
+
+def _fp64_hex(value: float) -> str:
+    assert math.isfinite(value)
+    return struct.pack(">d", value).hex()
+
+
+def _assert_fp64_observation_evidence(
+    observations: object,
+    behavior_cases: list[object],
+) -> set[str]:
+    assert isinstance(observations, list)
+    assert len(observations) == len(behavior_cases)
+    observed: set[str] = set()
+    for index, (observation, behavior_case) in enumerate(zip(observations, behavior_cases, strict=True)):
+        assert isinstance(observation, dict)
+        assert isinstance(behavior_case, dict)
+        expected = behavior_case.get("expected")
+        if not isinstance(expected, float):
+            continue
+        expected_raw = _fp64_hex(expected)
+        assert observation.get("case_id") == index
+        assert observation.get("status") == "RETURNED"
+        assert observation.get("encoding") == "fp64-hex"
+        assert observation.get("raw") == expected_raw
+        value = observation.get("value")
+        assert isinstance(value, float)
+        assert _fp64_hex(value) == expected_raw
+        observed.add(expected_raw)
+    return observed
 
 
 def _relative_regular_file(root: Path, relative: str) -> Path:
@@ -538,6 +845,8 @@ def _assert_batch_evidence_closure(
     assert isinstance(units, list)
     expected_ids = {f"WU-{index:05d}" for index in range(1, expected_unit_count + 1)}
     assert {unit["id"] for unit in units} == expected_ids
+    source_fp64: set[str] = set()
+    target_fp64: set[str] = set()
 
     for unit in units:
         unit_id = unit["id"]
@@ -572,6 +881,29 @@ def _assert_batch_evidence_closure(
         assert source_validation["case_count"] == case_count
         assert target_validation["case_count"] == case_count
 
+        behavior = evidence["behavior_equivalence"]
+        assert behavior["status"] == "PASSED"
+        assert behavior["case_count"] == case_count
+        assert behavior["pass_count"] == case_count
+        assert behavior["source_runtime_passed"] is True
+        assert behavior["target_runtime_passed"] is True
+        assert behavior["oracle_conflict_count"] == 0
+        behavior_path = _relative_regular_file(
+            batch_root / "units" / unit_id,
+            behavior["artifact_path"],
+        )
+        behavior_bytes = behavior_path.read_bytes()
+        assert behavior["artifact_sha256"] == _prefixed_sha256(behavior_bytes)
+        behavior_artifact = json.loads(behavior_bytes)
+        assert behavior_artifact["status"] == "PASSED"
+        assert behavior_artifact["case_count"] == case_count
+        assert behavior_artifact["pass_count"] == case_count
+        assert behavior_artifact["source_runtime_passed"] is True
+        assert behavior_artifact["target_runtime_passed"] is True
+        assert behavior_artifact["oracle_conflict_count"] == 0
+        assert behavior_artifact["counterexample_count"] == 0
+        assert behavior_artifact["counterexamples"] == []
+
         source_observations = _semantic_observation_set(source_validation["observations"])
         target_observations = _semantic_observation_set(target_validation["observations"])
         expected_observations = {
@@ -583,8 +915,23 @@ def _assert_batch_evidence_closure(
             for index, case in enumerate(case_payload)
         }
         assert source_observations == target_observations == expected_observations
+        if _is_javascript_typescript_pair(source_language, target_language):
+            source_fp64.update(
+                _assert_fp64_observation_evidence(
+                    source_validation["observations"],
+                    case_payload,
+                )
+            )
+            target_fp64.update(
+                _assert_fp64_observation_evidence(
+                    target_validation["observations"],
+                    case_payload,
+                )
+            )
         assert evidence["external_certification_status"] == "NOT_RUN"
         assert evidence["certification_status"] == "EXPERIMENTAL"
+    if _is_javascript_typescript_pair(source_language, target_language):
+        assert source_fp64 == target_fp64 == _JAVASCRIPT_TYPESCRIPT_REQUIRED_FP64
     return batch
 
 
@@ -690,9 +1037,7 @@ def _assert_artifact_closure(
     observed_paths = {
         path.relative_to(output).as_posix()
         for path in output.rglob("*")
-        if path.is_file()
-        and not path.is_symlink()
-        and path.relative_to(output).as_posix() not in controls
+        if path.is_file() and not path.is_symlink() and path.relative_to(output).as_posix() not in controls
     }
     assert set(declared) == observed_paths
 
@@ -735,20 +1080,18 @@ def _assert_artifact_closure(
 
 
 def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> None:
-    assert len(SUPPORTED_LANGUAGES) == 9
-    assert len(DIRECTED_LANGUAGE_PAIRS) == 72
-    assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 72
+    assert len(SUPPORTED_LANGUAGES) == 10
+    assert len(DIRECTED_LANGUAGE_PAIRS) == 90
+    assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 90
     assert set(DIRECTED_LANGUAGE_PAIRS) == {
-        (source, target)
-        for source in SUPPORTED_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
-        if source != target
+        (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
     }
+    _assert_javascript_typescript_fixture_contract()
 
 
 def test_medium_language_ring_covers_every_source_and_target_once() -> None:
-    assert len(MEDIUM_LANGUAGE_RING) == 9
-    assert len(set(MEDIUM_LANGUAGE_RING)) == 9
+    assert len(MEDIUM_LANGUAGE_RING) == 10
+    assert len(set(MEDIUM_LANGUAGE_RING)) == 10
     assert all(source != target for source, target in MEDIUM_LANGUAGE_RING)
     assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
     assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
@@ -764,7 +1107,7 @@ def test_repository_pipeline_converts_three_file_repository_for_every_directed_p
     source_language: Language,
     target_language: Language,
 ) -> None:
-    repository, cases = _write_repository_and_cases(tmp_path, source_language)
+    repository, cases = _write_repository_and_cases(tmp_path, source_language, target_language)
     output = tmp_path / "output"
 
     report = run_repository_pipeline(
@@ -826,7 +1169,11 @@ def test_repository_pipeline_converts_medium_repository_for_every_directed_pair(
     source_language: Language,
     target_language: Language,
 ) -> None:
-    repository, cases = _write_medium_repository_and_cases(tmp_path, source_language)
+    repository, cases = _write_medium_repository_and_cases(
+        tmp_path,
+        source_language,
+        target_language,
+    )
     output = tmp_path / "output"
 
     report = run_repository_pipeline(

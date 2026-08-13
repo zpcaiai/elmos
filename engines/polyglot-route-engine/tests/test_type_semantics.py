@@ -18,8 +18,10 @@ These tests need no toolchain: they assert on the emitted text, and execute
 the emitted Python (the one target this process can run directly) against the
 Java/C#/TypeScript reference results.
 """
+
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -78,12 +80,8 @@ _INTEGER_DIVIDE = _function(
 _INTEGER_REMAINDER = _function(
     "rem", [("a", "integer"), ("b", "integer")], "integer", _binary("%", _name("a"), _name("b"))
 )
-_FLOAT_REMAINDER = _function(
-    "rem", [("a", "number"), ("b", "number")], "number", _binary("%", _name("a"), _name("b"))
-)
-_STRING_EQUALS = _function(
-    "same", [("a", "string"), ("b", "string")], "boolean", _binary("==", _name("a"), _name("b"))
-)
+_FLOAT_REMAINDER = _function("rem", [("a", "number"), ("b", "number")], "number", _binary("%", _name("a"), _name("b")))
+_STRING_EQUALS = _function("same", [("a", "string"), ("b", "string")], "boolean", _binary("==", _name("a"), _name("b")))
 
 
 # --------------------------------------------------------------------------
@@ -96,9 +94,7 @@ def test_integer_division_is_checked_in_java_and_csharp() -> None:
     # and Long.MIN_VALUE / -1 errors. C# throws on both without help; Java's
     # `%` and `/` do not, so the emitted class carries its own guard.
     assert "return Migrated.elmosCheckedDiv(a, b);" in emit(_ir(_INTEGER_DIVIDE), "java").content
-    assert "private static long elmosCheckedDiv(long left, long right)" in emit(
-        _ir(_INTEGER_DIVIDE), "java"
-    ).content
+    assert "private static long elmosCheckedDiv(long left, long right)" in emit(_ir(_INTEGER_DIVIDE), "java").content
     assert "return checked(a / b);" in emit(_ir(_INTEGER_DIVIDE), "csharp").content
 
 
@@ -146,9 +142,7 @@ def test_emitted_python_float_remainder_matches_java() -> None:
         ("typescript", "a % _elmosRequireNonZero(b)"),
     ],
 )
-def test_remainder_keeps_the_dividend_sign_and_rejects_a_zero_divisor(
-    language: str, expected: str
-) -> None:
+def test_remainder_keeps_the_dividend_sign_and_rejects_a_zero_divisor(language: str, expected: str) -> None:
     assert expected in emit(_ir(_INTEGER_REMAINDER), language).content
 
 
@@ -175,18 +169,14 @@ def test_typescript_uses_strict_equality() -> None:
 
 
 def test_numeric_equality_is_untouched_in_java() -> None:
-    function = _function(
-        "same", [("a", "integer"), ("b", "integer")], "boolean", _binary("==", _name("a"), _name("b"))
-    )
+    function = _function("same", [("a", "integer"), ("b", "integer")], "boolean", _binary("==", _name("a"), _name("b")))
     assert "(a == b)" in emit(_ir(function), "java").content
 
 
 def test_string_ordering_fails_closed() -> None:
     # Java orders by UTF-16 code unit and Python by code point: the two
     # disagree above the BMP, so no emitted comparison is faithful in both.
-    function = _function(
-        "before", [("a", "string"), ("b", "string")], "boolean", _binary("<", _name("a"), _name("b"))
-    )
+    function = _function("before", [("a", "string"), ("b", "string")], "boolean", _binary("<", _name("a"), _name("b")))
     for language in ("java", "python", "csharp", "typescript"):
         with pytest.raises(RouteError, match="STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET"):
             emit(_ir(function), language)
@@ -227,32 +217,35 @@ def test_non_finite_float_literal_fails_closed(language: str) -> None:
         emit(_constant(float("inf"), "number"), language)
 
 
+@pytest.mark.parametrize("language", ["typescript", "javascript"])
+def test_node_negative_zero_semantic_literal_fails_closed(language: str) -> None:
+    with pytest.raises(RouteError, match=rf"{language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED"):
+        emit(_constant(-0.0, "number"), language)
+
+
 # --------------------------------------------------------------------------
 # The type checker itself.
 # --------------------------------------------------------------------------
 
 
 def test_mixed_string_and_numeric_arithmetic_fails_closed() -> None:
-    function = _function(
-        "mix", [("a", "string"), ("b", "integer")], "string", _binary("+", _name("a"), _name("b"))
-    )
+    function = _function("mix", [("a", "string"), ("b", "integer")], "string", _binary("+", _name("a"), _name("b")))
     with pytest.raises(RouteError, match="OPERAND_TYPE_MISMATCH"):
         emit(_ir(function), "java")
 
 
 def test_returning_a_float_expression_from_an_integer_function_fails_closed() -> None:
-    function = _function(
-        "narrow", [("a", "integer"), ("b", "number")], "integer", _binary("*", _name("a"), _name("b"))
-    )
+    function = _function("narrow", [("a", "integer"), ("b", "number")], "integer", _binary("*", _name("a"), _name("b")))
     with pytest.raises(RouteError, match="RETURN_TYPE_MISMATCH"):
         emit(_ir(function), "java")
 
 
 def test_integer_widens_to_number_on_return() -> None:
-    function = _function(
-        "widen", [("a", "integer"), ("b", "integer")], "number", _binary("+", _name("a"), _name("b"))
+    function = _function("widen", [("a", "integer"), ("b", "integer")], "number", _binary("+", _name("a"), _name("b")))
+    assert re.search(
+        r"public static double elmos_fn_[0-9a-f]{16}\(long a, long b\)",
+        emit(_ir(function), "java").content,
     )
-    assert "double widen(long a, long b)" in emit(_ir(function), "java").content
 
 
 def test_unknown_name_fails_closed() -> None:
@@ -272,21 +265,50 @@ def test_unknown_name_fails_closed() -> None:
 def test_typescript_guards_integer_parameters_and_returns() -> None:
     content = emit(_ir(_INTEGER_DIVIDE), "typescript").content
     assert "function _elmosRequireSafeInteger(value: number): number {" in content
-    assert "    _elmosRequireSafeInteger(a);" in content
-    assert "    _elmosRequireSafeInteger(b);" in content
+    assert "  return Object.is(value, -0) ? 0 : value;" in content
+    assert "    a = _elmosRequireSafeInteger(a);" in content
+    assert "    b = _elmosRequireSafeInteger(b);" in content
     assert "return _elmosRequireSafeInteger(" in content
 
 
-def test_typescript_number_only_functions_carry_no_guard() -> None:
-    function = _function(
-        "ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b"))
-    )
-    content = emit(_ir(function), "typescript").content
+def test_typescript_number_only_functions_use_finite_not_safe_integer_guards() -> None:
+    function = _function("ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b")))
+    emitted = emit(_ir(function), "typescript")
+    content = emitted.content
     assert "_elmosRequireSafeInteger" not in content
-    # A float divisor still gets the R2 guard, so the helper precedes the
-    # function; the safe-integer guard is what stays out of a number-only unit.
+    assert "function _elmosRequireFiniteNumber(value: number): number {" in content
+    # A float divisor gets the R2 guard and every arithmetic result is checked
+    # for finiteness; only the integer-specific precision guard stays out.
     assert "export function ratio" in content
     assert "_elmosRequireNonZero(b)" in content
+    assert "_elmosRequireFiniteNumber((a / _elmosRequireNonZero(b)))" in content
+    assert "typescript.number./.finite-result" in emitted.normalization_rules
+    assert {helper for helper, _digest in emitted.helper_digests} == {
+        "finite_number",
+        "non_zero",
+    }
+
+
+@pytest.mark.parametrize(
+    ("expression", "expected_fragment"),
+    [
+        (_name("value"), "return _elmosRequireFiniteNumber(value);"),
+        (
+            _binary("+", _name("value"), {"kind": "literal", "value": 1}),
+            "return _elmosRequireFiniteNumber(_elmosRequireSafeInteger(value + 1));",
+        ),
+    ],
+)
+def test_typescript_integer_to_number_widening_has_outer_finite_contract(
+    expression: dict[str, Any],
+    expected_fragment: str,
+) -> None:
+    function = _function("widen", [("value", "integer")], "number", expression)
+    emitted = emit(_ir(function), "typescript")
+
+    assert expected_fragment in emitted.content
+    assert "typescript.return.number.finite" in emitted.normalization_rules
+    assert "finite_number" in {helper for helper, _digest in emitted.helper_digests}
 
 
 @pytest.mark.parametrize("language", ["java", "python", "csharp"])
@@ -345,7 +367,10 @@ def test_python_addition_still_lifts_and_emits(tmp_path: Path) -> None:
         "    return subtotal + tax\n",
     )
     semantic = analyze_python(source, "calculate")
-    assert "public static long calculate(long subtotal, long tax)" in emit(semantic, "java").content
+    assert re.search(
+        r"public static long elmos_fn_[0-9a-f]{16}\(long subtotal, long tax\)",
+        emit(semantic, "java").content,
+    )
 
 
 # --------------------------------------------------------------------------
@@ -368,7 +393,7 @@ def test_typescript_harness_does_not_rewrite_string_arguments() -> None:
     # string-replaced it, so any occurrence of "calculate" inside a case's own
     # data was rewritten too.
     harness = _typescript_harness(function, [{"args": ["calculate"], "expected": "calculate"}])
-    assert 'echo("calculate")' in harness
+    assert '_elmosHarnessSubject("calculate")' in harness
     assert '"echo"' not in harness
 
 

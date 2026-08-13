@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -21,7 +22,9 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_PACK_KEY = "polyglot-30-route-formal-equivalence-v1"
 PACK_KEY = "polyglot-30-route-formal-equivalence-v1"
+PACK_VERSION = "1.0.0"
 LANGUAGES = ("csharp", "go", "java", "python", "rust", "typescript")
 SEMANTIC_PROFILE = "typed-pure-function-v1"
 BLOCKS = (
@@ -58,21 +61,49 @@ PACKED_REPLAY_COMMAND = [
     "--route",
     ".",
 ]
+LEGACY_REPLAY_SOURCE_ROOT = (
+    "verification-packs/polyglot-30-route-formal-equivalence-v1/evidence/routes/"
+    "csharp-to-go/certification/replay"
+)
 PACKED_REPLAY_FILES = {
     "certification/replay/validate_packed_route.py": (
-        "scripts/batch35/validate_packed_route.py",
+        f"{LEGACY_REPLAY_SOURCE_ROOT}/validate_packed_route.py",
         "replay-tool",
         "launcher",
     ),
     "certification/replay/scripts/batch29/validate_route.py": (
-        "scripts/batch29/validate_route.py",
+        f"{LEGACY_REPLAY_SOURCE_ROOT}/scripts/batch29/validate_route.py",
         "replay-tool",
         "validator",
     ),
     "certification/replay/schemas/batch29/formal-equivalence-evidence.schema.json": (
-        "schemas/batch29/formal-equivalence-evidence.schema.json",
+        (
+            f"{LEGACY_REPLAY_SOURCE_ROOT}/schemas/batch29/"
+            "formal-equivalence-evidence.schema.json"
+        ),
         "replay-schema",
         "schema",
+    ),
+}
+LEGACY_CAMPAIGN_SHA256 = (
+    "sha256:4a31a2c67e0f2aaa03ba24b343abb4f60dd8b600121fb9cf7cd77aa1cba95c9c"
+)
+LEGACY_CAMPAIGN_BYTES = 578_643
+LEGACY_REPLAY_METHOD_SHA256 = (
+    "sha256:52a1e58a6c044eb5744bd70e1de43d6880bb7bd2e34838ae237503ec87a78ec"
+)
+LEGACY_REPLAY_IDENTITIES = {
+    "certification/replay/validate_packed_route.py": (
+        "sha256:d7cf4017a6d0296c01f880e568950ef6b1dd341b61b48a09b90d61e0cff686da",
+        6_753,
+    ),
+    "certification/replay/scripts/batch29/validate_route.py": (
+        "sha256:650470cc8078fe8158eea881885ccd5390ea68d2eb81b4809ed6b672c553c6f9",
+        95_431,
+    ),
+    ("certification/replay/schemas/batch29/formal-equivalence-evidence.schema.json"): (
+        "sha256:c4821219c01e037ca86bb749f7790a892b612e2c6d0cfd382eb40c503a0280c7",
+        11_670,
     ),
 }
 EXTERNAL_NATIVE_REEXECUTION = {
@@ -116,6 +147,151 @@ def digest_bytes(content: bytes) -> str:
 
 def digest_file(path: Path) -> str:
     return digest_bytes(path.read_bytes())
+
+
+def immutable_tree_digest(root: Path) -> str:
+    """Digest every regular file path, byte count, and content in one pack."""
+
+    if root.is_symlink() or not root.is_dir():
+        raise RuntimeError(f"PACK_TREE_INVALID:{root}")
+    records: list[dict[str, str | int]] = []
+    for path in sorted(root.rglob("*")):
+        if path.is_symlink():
+            raise RuntimeError(f"PACK_TREE_SYMLINK_FORBIDDEN:{path}")
+        if path.is_dir():
+            continue
+        if not path.is_file():
+            raise RuntimeError(f"PACK_TREE_MEMBER_INVALID:{path}")
+        records.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "sha256": digest_file(path),
+                "bytes": path.stat().st_size,
+            }
+        )
+    if not records:
+        raise RuntimeError(f"PACK_TREE_EMPTY:{root}")
+    payload = json.dumps(
+        records,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return digest_bytes(payload)
+
+
+def verify_existing_canonical_pack(
+    repo_root: Path,
+    *,
+    execute_frozen_replay: bool = True,
+) -> dict[str, str | int]:
+    """Verify immutable v1 in place without importing current route code.
+
+    The canonical v1 pack is historical evidence.  Verification uses the
+    exact launcher, validator, and Schema captured inside each route.  It never
+    validates the live route tree and never publishes over the frozen pack.
+    """
+
+    pack = repo_root / "verification-packs" / CANONICAL_PACK_KEY
+    before = immutable_tree_digest(pack)
+    campaign_path = pack / "formal-route-campaign.json"
+    if campaign_path.is_symlink() or not campaign_path.is_file():
+        raise RuntimeError("CANONICAL_V1_CAMPAIGN_MISSING")
+    if (
+        campaign_path.stat().st_size != LEGACY_CAMPAIGN_BYTES
+        or digest_file(campaign_path) != LEGACY_CAMPAIGN_SHA256
+    ):
+        raise RuntimeError("CANONICAL_V1_CAMPAIGN_IDENTITY_DRIFT")
+    campaign = load_json(campaign_path)
+    if (
+        campaign.get("schema_version") != 1
+        or campaign.get("campaign_key") != CANONICAL_PACK_KEY
+        or campaign.get("version") != "1.0.0"
+    ):
+        raise RuntimeError("CANONICAL_V1_CAMPAIGN_CONTRACT_DRIFT")
+    route_set = campaign.get("route_set")
+    routes = route_set.get("routes") if isinstance(route_set, dict) else None
+    expected_route_keys = {route_key for route_key, _, _ in exact_routes()}
+    if not isinstance(routes, list) or len(routes) != len(expected_route_keys):
+        raise RuntimeError("CANONICAL_V1_ROUTE_COUNT_DRIFT")
+    route_keys = [
+        record.get("route_key") if isinstance(record, dict) else None
+        for record in routes
+    ]
+    if (
+        len(set(route_keys)) != len(route_keys)
+        or set(route_keys) != expected_route_keys
+    ):
+        raise RuntimeError("CANONICAL_V1_ROUTE_SET_DRIFT")
+
+    route_root = pack / "evidence" / "routes"
+    observed_route_keys = {
+        path.name
+        for path in route_root.iterdir()
+        if path.is_dir() and not path.is_symlink()
+    }
+    if observed_route_keys != expected_route_keys:
+        raise RuntimeError("CANONICAL_V1_ROUTE_TREE_DRIFT")
+    replay_python = Path(sys.executable).resolve()
+    if execute_frozen_replay and (
+        sys.version_info < (3, 10) or not replay_python.is_file()
+    ):
+        raise RuntimeError("CANONICAL_V1_FROZEN_REPLAY_PYTHON_UNAVAILABLE")
+    for route_key in sorted(expected_route_keys):
+        route = route_root / route_key
+        for relative, (
+            expected_sha256,
+            expected_bytes,
+        ) in LEGACY_REPLAY_IDENTITIES.items():
+            path = route / relative
+            try:
+                resolved = path.resolve(strict=True)
+                resolved.relative_to(route.resolve(strict=True))
+            except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
+                raise RuntimeError(
+                    f"CANONICAL_V1_REPLAY_ASSET_MISSING:{route_key}:{relative}"
+                ) from exc
+            if path.is_symlink() or not resolved.is_file():
+                raise RuntimeError(
+                    f"CANONICAL_V1_REPLAY_ASSET_INVALID:{route_key}:{relative}"
+                )
+            if (
+                resolved.stat().st_size != expected_bytes
+                or digest_file(resolved) != expected_sha256
+            ):
+                raise RuntimeError(
+                    f"CANONICAL_V1_REPLAY_ASSET_IDENTITY_DRIFT:{route_key}:{relative}"
+                )
+        if execute_frozen_replay:
+            launcher = route / "certification/replay/validate_packed_route.py"
+            completed = subprocess.run(
+                [
+                    str(replay_python),
+                    "-I",
+                    "-B",
+                    str(launcher),
+                    "--route",
+                    str(route),
+                ],
+                cwd=route,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if completed.returncode != 0:
+                detail = (completed.stderr or completed.stdout).strip()
+                raise RuntimeError(
+                    f"CANONICAL_V1_FROZEN_REPLAY_FAILED:{route_key}:{detail}"
+                )
+    after = immutable_tree_digest(pack)
+    if after != before:
+        raise RuntimeError("CANONICAL_V1_VERIFY_MODIFIED_FROZEN_TREE")
+    return {
+        "route_count": len(expected_route_keys),
+        "campaign_sha256": LEGACY_CAMPAIGN_SHA256,
+        "method_sha256": LEGACY_REPLAY_METHOD_SHA256,
+        "tree_sha256": after,
+    }
 
 
 def formal_artifact_id(relative: str) -> str:
@@ -529,7 +705,7 @@ def base_pack_files(
         {
             "schema_version": 1,
             "pack_key": PACK_KEY,
-            "version": "1.0.0",
+            "version": PACK_VERSION,
             "status": "experimental",
             "owner": owner,
             "maintenance_owner": owner,
@@ -1151,7 +1327,7 @@ def build_campaign(
     campaign: dict[str, Any] = {
         "schema_version": 1,
         "campaign_key": PACK_KEY,
-        "version": "1.0.0",
+        "version": PACK_VERSION,
         "semantic_profile": SEMANTIC_PROFILE,
         "campaign_status": "LOCAL_EXECUTED",
         "certification_status": "NOT_CERTIFIED",
@@ -1495,22 +1671,65 @@ def publish_staged_pack(staging: Path, destination: Path) -> None:
 
 
 def main() -> int:
-    global ROOT
+    global PACK_KEY, PACK_VERSION, ROOT
     parser = argparse.ArgumentParser()
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--verify-existing",
+        action="store_true",
+        help="verify immutable canonical v1 in place (the default)",
+    )
+    mode.add_argument(
+        "--build-new-pack-key",
+        help="build a new content key; canonical v1 can never be selected",
+    )
     parser.add_argument(
         "--arithmetic-campaign",
         type=Path,
-        required=True,
-        help="machine-readable output from prove_arithmetic_compensation.py",
+        help="required only when building a new versioned pack",
+    )
+    parser.add_argument(
+        "--pack-version",
+        help="new semantic version; required with --build-new-pack-key",
     )
     parser.add_argument("--repo-root", type=Path, default=ROOT)
     args = parser.parse_args()
     ROOT = args.repo_root.resolve()
+    if args.build_new_pack_key is None:
+        if args.arithmetic_campaign is not None or args.pack_version is not None:
+            parser.error(
+                "--arithmetic-campaign/--pack-version require --build-new-pack-key"
+            )
+        authority = verify_existing_canonical_pack(ROOT)
+        print(
+            "PASS: immutable canonical v1 verified read-only with "
+            f"{authority['route_count']} frozen routes; native reexecution NOT_RUN"
+        )
+        return 0
+
+    new_pack_key = args.build_new_pack_key
+    if (
+        new_pack_key == CANONICAL_PACK_KEY
+        or re.fullmatch(r"[a-z0-9][a-z0-9-]{2,127}", new_pack_key) is None
+    ):
+        parser.error("new pack key must be safe and differ from canonical v1")
+    if (
+        args.pack_version is None
+        or args.pack_version == "1.0.0"
+        or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", args.pack_version) is None
+    ):
+        parser.error("new pack version must be an exact non-v1 semantic version")
+    if args.arithmetic_campaign is None:
+        parser.error("--arithmetic-campaign is required for a new pack version")
+    PACK_KEY = new_pack_key
+    PACK_VERSION = args.pack_version
     arithmetic_campaign = args.arithmetic_campaign.resolve(strict=True)
-    validate_source_routes(ROOT)
     pack_parent = ROOT / "verification-packs"
-    pack_parent.mkdir(parents=True, exist_ok=True)
     destination = pack_parent / PACK_KEY
+    if destination.exists() or destination.is_symlink():
+        raise RuntimeError(f"VERSIONED_PACK_DESTINATION_ALREADY_EXISTS:{destination}")
+    validate_source_routes(ROOT)
+    pack_parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=f".{PACK_KEY}-staging-", dir=pack_parent))
     try:
         route_count, matrix_count = build_staged_pack(staging, arithmetic_campaign)

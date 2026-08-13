@@ -1,0 +1,155 @@
+{
+  "cases": [
+    {
+      "case_id": "missing-symbol-fails-closed",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-ambiguous-jsdoc-type-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-async-function-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-coercive-equality-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-commonjs-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-division-by-zero-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-dynamic-eval-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-generator-function-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-import-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-integer-overflow-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-missing-jsdoc-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-modulo-by-zero-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-non-finite-case-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-number-arithmetic-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-promise-timer-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-string-semantics-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-this-prototype-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-top-level-side-effect-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-unsafe-integer-case-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-unsafe-integer-intermediate-boolean-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-unsafe-integer-intermediate-integer-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-unsafe-integer-intermediate-number-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "nodejs-unsafe-integer-result-unsupported",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    },
+    {
+      "case_id": "undeclared-directed-route-fails-closed",
+      "expected_result": "BLOCKED",
+      "observed_reason": null,
+      "status": "NOT_RUN"
+    }
+  ],
+  "expected_result": "BLOCKED",
+  "external_certification": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "route": "csharp-to-javascript",
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "test_integrity": "PRESERVED"
+}

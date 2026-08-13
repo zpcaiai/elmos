@@ -1,0 +1,16 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "holdout",
+  "customer_repository": false,
+  "evidence_class": "independent-holdout",
+  "function_name": "clamp",
+  "independent": true,
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "clamp.go",
+  "source_language": "go",
+  "type_coverage": [
+    "nodejs-safe-integer-function"
+  ]
+}

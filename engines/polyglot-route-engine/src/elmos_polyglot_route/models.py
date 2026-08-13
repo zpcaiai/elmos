@@ -4,12 +4,24 @@ from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any, Literal
 
-Language = Literal["java", "python", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"]
+Language = Literal[
+    "java",
+    "python",
+    "csharp",
+    "typescript",
+    "javascript",
+    "go",
+    "rust",
+    "cpp",
+    "objc",
+    "swift",
+]
 SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "java",
     "python",
     "csharp",
     "typescript",
+    "javascript",
     "go",
     "rust",
     "cpp",
@@ -33,6 +45,7 @@ COMPLETE_MATRIX_LANGUAGES: tuple[Language, ...] = (
     "python",
     "csharp",
     "typescript",
+    "javascript",
     "go",
     "rust",
     "cpp",
@@ -54,6 +67,18 @@ SPECIALIZED_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = (
     ("swift", "objc"),
     ("cpp", "java"),
     ("java", "cpp"),
+)
+
+#: Exact Node.js route expansion.  JavaScript is a separate language identity
+#: from TypeScript: these 18 directions use Node.js ESM plus strict JSDoc
+#: contracts and retain their own evidence/gate state.  They deliberately do
+#: not extend ``SPECIALIZED_DIRECTED_PAIRS`` because that name and its eight
+#: entries are an immutable Batch 29 proof scope.
+NODEJS_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
+    (source, target)
+    for source in COMPLETE_MATRIX_LANGUAGES
+    for target in COMPLETE_MATRIX_LANGUAGES
+    if source != target and "javascript" in {source, target}
 )
 
 COMPLETE_MATRIX_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
@@ -92,7 +117,7 @@ def requires_concrete_source_spans(source: str, target: str, profile: str) -> bo
     if profile == TYPED_PURE_MODULE_PROFILE:
         return True
     if profile == TYPED_PURE_FUNCTION_PROFILE:
-        return is_specialized_pair(source, target)
+        return is_specialized_pair(source, target) or (source, target) in NODEJS_DIRECTED_PAIRS
     return True
 
 
@@ -109,6 +134,38 @@ class RouteError(ValueError):
     """Raised when a route cannot preserve the declared semantic subset."""
 
 
+def _require_exact_keys(
+    value: dict[str, Any],
+    required: frozenset[str],
+    optional: frozenset[str],
+    path: str,
+) -> None:
+    """Require one closed SemanticIR object shape.
+
+    SemanticIR is persisted as proof input, so silently dropping an unknown
+    member is not forward compatibility: it lets the persisted bytes and
+    digests claim a term different from the term the verifier reconstructs.
+    Optional members are therefore explicit and every accepted mapping must
+    survive ``from_mapping``/``to_mapping`` without losing a key.
+    """
+
+    observed = set(value)
+    if not required.issubset(observed) or not observed.issubset(required | optional):
+        raise RouteError(f"SEMANTIC_IR_KEYS_INVALID:{path}")
+
+
+def _require_string(value: Any, path: str, *, nonempty: bool = False) -> str:
+    if type(value) is not str or nonempty and (not value or value != value.strip()):
+        raise RouteError(f"SEMANTIC_IR_STRING_INVALID:{path}")
+    return value
+
+
+def _require_mapping_list(value: Any, path: str, *, nonempty: bool = False) -> list[dict[str, Any]]:
+    if type(value) is not list or nonempty and not value or any(type(item) is not dict for item in value):
+        raise RouteError(f"SEMANTIC_IR_MAPPING_LIST_INVALID:{path}")
+    return value
+
+
 @dataclass(frozen=True)
 class SourceSpan:
     """Concrete UTF-8 byte range for one syntax node.
@@ -123,10 +180,16 @@ class SourceSpan:
     end_byte: int
 
     @classmethod
-    def from_mapping(cls, value: dict[str, Any]) -> SourceSpan:
-        file = str(value.get("file", "")).strip()
-        start_byte = value.get("start_byte")
-        end_byte = value.get("end_byte")
+    def from_mapping(cls, value: dict[str, Any], *, _path: str = "source_span") -> SourceSpan:
+        _require_exact_keys(
+            value,
+            frozenset({"file", "start_byte", "end_byte"}),
+            frozenset(),
+            _path,
+        )
+        file = _require_string(value["file"], f"{_path}.file", nonempty=True)
+        start_byte = value["start_byte"]
+        end_byte = value["end_byte"]
         logical_path = PurePosixPath(file) if file else PurePosixPath(".")
         if (
             not file
@@ -149,13 +212,13 @@ class SourceSpan:
         }
 
 
-def _optional_source_span(value: dict[str, Any]) -> SourceSpan | None:
-    span = value.get("source_span")
-    if span is None:
+def _optional_source_span(value: dict[str, Any], path: str) -> SourceSpan | None:
+    if "source_span" not in value:
         return None
-    if not isinstance(span, dict):
+    span = value["source_span"]
+    if type(span) is not dict:
         raise RouteError("INVALID_SOURCE_SPAN")
-    return SourceSpan.from_mapping(span)
+    return SourceSpan.from_mapping(span, _path=f"{path}.source_span")
 
 
 @dataclass(frozen=True)
@@ -165,12 +228,18 @@ class Parameter:
     source_span: SourceSpan | None = None
 
     @classmethod
-    def from_mapping(cls, value: dict[str, Any]) -> Parameter:
-        name = str(value.get("name", "")).strip()
-        parameter_type = str(value.get("type", "")).strip()
+    def from_mapping(cls, value: dict[str, Any], *, _path: str = "parameter") -> Parameter:
+        _require_exact_keys(
+            value,
+            frozenset({"name", "type"}),
+            frozenset({"source_span"}),
+            _path,
+        )
+        name = _require_string(value["name"], f"{_path}.name", nonempty=True)
+        parameter_type = _require_string(value["type"], f"{_path}.type")
         if not name or parameter_type not in {"integer", "number", "boolean", "string"}:
             raise RouteError("INVALID_PARAMETER")
-        return cls(name=name, type=parameter_type, source_span=_optional_source_span(value))
+        return cls(name=name, type=parameter_type, source_span=_optional_source_span(value, _path))
 
     def semantic_mapping(self) -> dict[str, str]:
         return {"name": self.name, "type": self.type}
@@ -192,28 +261,58 @@ class Expression:
     source_span: SourceSpan | None = None
 
     @classmethod
-    def from_mapping(cls, value: dict[str, Any]) -> Expression:
-        kind = str(value.get("kind", ""))
-        if kind in {"name", "literal"}:
+    def from_mapping(cls, value: dict[str, Any], *, _path: str = "expression") -> Expression:
+        if "kind" not in value:
+            raise RouteError(f"SEMANTIC_IR_KEYS_INVALID:{_path}")
+        kind = _require_string(value["kind"], f"{_path}.kind")
+        if kind == "name":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "value"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            name = _require_string(value["value"], f"{_path}.value", nonempty=True)
             return cls(
                 kind=kind,
-                value=value.get("value"),
-                source_span=_optional_source_span(value),
+                value=name,
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "literal":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "value"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            literal = value["value"]
+            if type(literal) not in {str, int, float, bool, type(None)}:
+                raise RouteError(f"SEMANTIC_IR_LITERAL_INVALID:{_path}.value")
+            return cls(
+                kind=kind,
+                value=literal,
+                source_span=_optional_source_span(value, _path),
             )
         if kind == "binary":
-            operator = str(value.get("operator", ""))
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "operator", "left", "right"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            operator = _require_string(value["operator"], f"{_path}.operator")
             if operator not in {"+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||"}:
                 raise RouteError(f"UNSUPPORTED_OPERATOR:{operator}")
-            left = value.get("left")
-            right = value.get("right")
-            if not isinstance(left, dict) or not isinstance(right, dict):
+            left = value["left"]
+            right = value["right"]
+            if type(left) is not dict or type(right) is not dict:
                 raise RouteError("BINARY_OPERANDS_REQUIRED")
             return cls(
                 kind=kind,
                 operator=operator,
-                left=cls.from_mapping(left),
-                right=cls.from_mapping(right),
-                source_span=_optional_source_span(value),
+                left=cls.from_mapping(left, _path=f"{_path}.left"),
+                right=cls.from_mapping(right, _path=f"{_path}.right"),
+                source_span=_optional_source_span(value, _path),
             )
         raise RouteError(f"UNSUPPORTED_EXPRESSION:{kind}")
 
@@ -256,29 +355,49 @@ class Statement:
     source_span: SourceSpan | None = None
 
     @classmethod
-    def from_mapping(cls, value: dict[str, Any]) -> Statement:
-        kind = str(value.get("kind", ""))
+    def from_mapping(cls, value: dict[str, Any], *, _path: str = "statement") -> Statement:
+        if "kind" not in value:
+            raise RouteError(f"SEMANTIC_IR_KEYS_INVALID:{_path}")
+        kind = _require_string(value["kind"], f"{_path}.kind")
         if kind == "return":
-            expression = value.get("expression")
-            if not isinstance(expression, dict):
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "expression"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            expression = value["expression"]
+            if type(expression) is not dict:
                 raise RouteError("RETURN_EXPRESSION_REQUIRED")
             return cls(
                 kind=kind,
-                expression=Expression.from_mapping(expression),
-                source_span=_optional_source_span(value),
+                expression=Expression.from_mapping(expression, _path=f"{_path}.expression"),
+                source_span=_optional_source_span(value, _path),
             )
         if kind == "if":
-            condition = value.get("condition")
-            then_body = value.get("then", [])
-            else_body = value.get("else", [])
-            if not isinstance(condition, dict) or not isinstance(then_body, list) or not isinstance(else_body, list):
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "condition", "then", "else"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            condition = value["condition"]
+            then_body = value["then"]
+            else_body = value["else"]
+            if type(condition) is not dict:
                 raise RouteError("INVALID_IF_STATEMENT")
+            parsed_then = _require_mapping_list(then_body, f"{_path}.then")
+            parsed_else = _require_mapping_list(else_body, f"{_path}.else")
             return cls(
                 kind=kind,
-                condition=Expression.from_mapping(condition),
-                then_body=tuple(cls.from_mapping(item) for item in then_body if isinstance(item, dict)),
-                else_body=tuple(cls.from_mapping(item) for item in else_body if isinstance(item, dict)),
-                source_span=_optional_source_span(value),
+                condition=Expression.from_mapping(condition, _path=f"{_path}.condition"),
+                then_body=tuple(
+                    cls.from_mapping(item, _path=f"{_path}.then[{index}]") for index, item in enumerate(parsed_then)
+                ),
+                else_body=tuple(
+                    cls.from_mapping(item, _path=f"{_path}.else[{index}]") for index, item in enumerate(parsed_else)
+                ),
+                source_span=_optional_source_span(value, _path),
             )
         raise RouteError(f"UNSUPPORTED_STATEMENT:{kind}")
 
@@ -321,21 +440,28 @@ class Function:
     source_span: SourceSpan | None = None
 
     @classmethod
-    def from_mapping(cls, value: dict[str, Any]) -> Function:
-        name = str(value.get("name", "")).strip()
-        return_type = str(value.get("return_type", "")).strip()
-        parameters = value.get("parameters")
-        body = value.get("body")
+    def from_mapping(cls, value: dict[str, Any], *, _path: str = "function") -> Function:
+        _require_exact_keys(
+            value,
+            frozenset({"name", "parameters", "return_type", "body"}),
+            frozenset({"source_span"}),
+            _path,
+        )
+        name = _require_string(value["name"], f"{_path}.name", nonempty=True)
+        return_type = _require_string(value["return_type"], f"{_path}.return_type")
+        parameters = _require_mapping_list(value["parameters"], f"{_path}.parameters")
+        body = _require_mapping_list(value["body"], f"{_path}.body", nonempty=True)
         if not name or return_type not in {"integer", "number", "boolean", "string"}:
             raise RouteError("INVALID_FUNCTION_SIGNATURE")
-        if not isinstance(parameters, list) or not isinstance(body, list) or not body:
-            raise RouteError("FUNCTION_BODY_REQUIRED")
         return cls(
             name=name,
-            parameters=tuple(Parameter.from_mapping(item) for item in parameters if isinstance(item, dict)),
+            parameters=tuple(
+                Parameter.from_mapping(item, _path=f"{_path}.parameters[{index}]")
+                for index, item in enumerate(parameters)
+            ),
             return_type=return_type,
-            body=tuple(Statement.from_mapping(item) for item in body if isinstance(item, dict)),
-            source_span=_optional_source_span(value),
+            body=tuple(Statement.from_mapping(item, _path=f"{_path}.body[{index}]") for index, item in enumerate(body)),
+            source_span=_optional_source_span(value, _path),
         )
 
     def signature_mapping(self) -> dict[str, Any]:
@@ -375,24 +501,45 @@ class SemanticIR:
 
     @classmethod
     def from_mapping(cls, value: dict[str, Any]) -> SemanticIR:
-        if value.get("schema_version") != "1.0.0":
+        _require_exact_keys(
+            value,
+            frozenset(
+                {
+                    "schema_version",
+                    "source_language",
+                    "source_file",
+                    "analyzer",
+                    "analyzer_version",
+                    "functions",
+                    "diagnostics",
+                }
+            ),
+            frozenset(),
+            "semantic_ir",
+        )
+        schema_version = _require_string(value["schema_version"], "semantic_ir.schema_version")
+        if schema_version != "1.0.0":
             raise RouteError("UNSUPPORTED_SEMANTIC_IR")
-        source_language = str(value.get("source_language", ""))
+        source_language = _require_string(value["source_language"], "semantic_ir.source_language")
         if source_language not in SUPPORTED_LANGUAGES:
             raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{source_language}")
-        functions = value.get("functions")
-        diagnostics = value.get("diagnostics", [])
-        if not isinstance(functions, list) or not functions:
-            raise RouteError("NO_SUPPORTED_FUNCTIONS")
-        if not isinstance(diagnostics, list):
+        source_file = _require_string(value["source_file"], "semantic_ir.source_file")
+        analyzer = _require_string(value["analyzer"], "semantic_ir.analyzer")
+        analyzer_version = _require_string(value["analyzer_version"], "semantic_ir.analyzer_version")
+        functions = _require_mapping_list(value["functions"], "semantic_ir.functions", nonempty=True)
+        diagnostics = value["diagnostics"]
+        if type(diagnostics) is not list or any(type(item) is not str for item in diagnostics):
             raise RouteError("INVALID_DIAGNOSTICS")
         return cls(
             source_language=source_language,  # type: ignore[arg-type]
-            source_file=str(value.get("source_file", "")),
-            analyzer=str(value.get("analyzer", "")),
-            analyzer_version=str(value.get("analyzer_version", "")),
-            functions=tuple(Function.from_mapping(item) for item in functions if isinstance(item, dict)),
-            diagnostics=tuple(str(item) for item in diagnostics),
+            source_file=source_file,
+            analyzer=analyzer,
+            analyzer_version=analyzer_version,
+            functions=tuple(
+                Function.from_mapping(item, _path=f"semantic_ir.functions[{index}]")
+                for index, item in enumerate(functions)
+            ),
+            diagnostics=tuple(diagnostics),
         )
 
     def to_mapping(self) -> dict[str, Any]:

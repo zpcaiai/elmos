@@ -24,8 +24,10 @@ The interpreter deliberately mirrors the *rules*, not any target: integer
 arithmetic is exact and then range-checked, division truncates toward zero,
 remainder takes the sign of the dividend, and a zero divisor is an error.
 """
+
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -57,15 +59,25 @@ class Evaluation:
     #: Widest magnitude any integer intermediate took, the final value
     #: included. `None` when the unit touched no integers at all.
     widest_integer: int | None
+    #: False once any binary64 operand or intermediate becomes NaN or
+    #: infinity.  The final result may still be finite (for example a boolean
+    #: comparison after overflowing multiplication), so this is tracked
+    #: independently from ``value``.
+    all_numbers_finite: bool
 
     @property
     def within_safe_integers(self) -> bool:
         return self.widest_integer is None or self.widest_integer <= SAFE_INTEGER_MAX
 
+    @property
+    def within_finite_numbers(self) -> bool:
+        return self.all_numbers_finite
+
 
 class _Tracker:
     def __init__(self) -> None:
         self.widest: int | None = None
+        self.all_numbers_finite = True
 
     def integer(self, value: int) -> int:
         if not INTEGER_MIN <= value <= INTEGER_MAX:
@@ -73,6 +85,11 @@ class _Tracker:
         magnitude = abs(value)
         if self.widest is None or magnitude > self.widest:
             self.widest = magnitude
+        return value
+
+    def number(self, value: float) -> float:
+        if not math.isfinite(value):
+            self.all_numbers_finite = False
         return value
 
 
@@ -108,19 +125,24 @@ def _arithmetic(operator: str, left: Any, right: Any, tracker: _Tracker) -> Any:
     if operator == "+" and isinstance(left, str) and isinstance(right, str):
         return left + right
     if operator == "+":
-        return left + right
+        return tracker.number(left + right)
     if operator == "-":
-        return left - right
+        return tracker.number(left - right)
     if operator == "*":
-        return left * right
+        return tracker.number(left * right)
     if operator == "/":
-        return left / right
+        return tracker.number(left / right)
     if operator == "%":
         # Float remainder takes the sign of the dividend, like the truncating
         # integer form and unlike Python's own %.
-        import math
-
-        return math.fmod(left, right)
+        left_number = tracker.number(float(left))
+        right_number = tracker.number(float(right))
+        if not math.isfinite(left_number) or not math.isfinite(right_number):
+            # Non-finite arithmetic is outside the finite-number execution
+            # profile.  Preserve that tracker verdict without leaking
+            # ``math.fmod``'s host-specific ValueError.
+            return tracker.number(float("nan"))
+        return tracker.number(math.fmod(left_number, right_number))
     raise RouteError(f"UNSUPPORTED_OPERATOR:{operator}")
 
 
@@ -132,11 +154,15 @@ def _expression(expression: Expression, environment: dict[str, Any], tracker: _T
         value = environment[name]
         if isinstance(value, int) and not isinstance(value, bool):
             tracker.integer(value)
+        elif isinstance(value, float):
+            tracker.number(value)
         return value
     if expression.kind == "literal":
         value = expression.value
         if isinstance(value, int) and not isinstance(value, bool):
             tracker.integer(value)
+        elif isinstance(value, float):
+            tracker.number(value)
         return value
     if expression.kind != "binary" or expression.left is None or expression.right is None:
         raise RouteError(f"UNSUPPORTED_EXPRESSION:{expression.kind}")
@@ -167,9 +193,7 @@ class _Returned(Exception):
         self.value = value
 
 
-def _statements(
-    statements: tuple[Statement, ...], environment: dict[str, Any], tracker: _Tracker
-) -> None:
+def _statements(statements: tuple[Statement, ...], environment: dict[str, Any], tracker: _Tracker) -> None:
     for statement in statements:
         if statement.kind == "return" and statement.expression is not None:
             raise _Returned(_expression(statement.expression, environment, tracker))
@@ -195,11 +219,13 @@ def evaluate(function: Function, arguments: list[Any]) -> Evaluation:
     for parameter, argument in zip(function.parameters, arguments, strict=True):
         if parameter.type == "integer":
             tracker.integer(argument)
+        elif parameter.type == "number":
+            argument = tracker.number(float(argument))
         environment[parameter.name] = argument
     try:
         _statements(function.body, environment, tracker)
     except _Returned as returned:
-        return Evaluation(returned.value, tracker.widest)
+        return Evaluation(returned.value, tracker.widest, tracker.all_numbers_finite)
     raise RouteError("FUNCTION_FELL_THROUGH_WITHOUT_RETURNING")
 
 

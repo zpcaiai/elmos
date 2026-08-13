@@ -16,6 +16,7 @@ local hardware/toolchain table, cloud platform options with one recommended
 platform, and a machine-readable `deployment-options.json`), adapted for a
 single target language and a publish-not-run workload.
 """
+
 from __future__ import annotations
 
 import json
@@ -28,6 +29,7 @@ _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "python": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "csharp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
     "typescript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "javascript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "go": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "rust": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
     "cpp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
@@ -40,6 +42,7 @@ _TOOLCHAIN_TEXT: dict[Language, str] = {
     "python": "Python 3.12.12 + setuptools",
     "csharp": ".NET SDK 10.0.301",
     "typescript": "Node.js 26.0.0 + TypeScript 5.9.2",
+    "javascript": "Node.js 26.0.0 / ES2022 / ESM",
     "go": "Go 1.25.0",
     "rust": "Rust 1.89.0 + Cargo 1.89.0",
     "cpp": "pinned Apple clang++ + CMake",
@@ -52,6 +55,7 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     "python": ["python -m build"],
     "csharp": ["dotnet pack polyglot-migrated-library.csproj -c Release"],
     "typescript": ["npm install", "npx tsc -p tsconfig.json"],
+    "javascript": ["find src/generated -name '*.mjs' -type f -exec node --check {} \\;"],
     "go": ["go test ./..."],
     "rust": ["cargo check --offline"],
     "cpp": ["cmake -S . -B build", "cmake --build build --config Release"],
@@ -64,6 +68,7 @@ _PACKAGE_FORMAT: dict[Language, str] = {
     "python": "PyPI (pip)",
     "csharp": "NuGet",
     "typescript": "npm",
+    "javascript": "npm",
     "go": "Go module",
     "rust": "Cargo crate",
     "cpp": "CMake static libraries",
@@ -72,7 +77,7 @@ _PACKAGE_FORMAT: dict[Language, str] = {
 }
 
 _CODEARTIFACT_NATIVE_LANGUAGES: frozenset[Language] = frozenset(
-    {"java", "python", "csharp", "typescript"}
+    {"java", "python", "csharp", "typescript", "javascript"}
 )
 
 _PUBLISH_PLATFORMS = [

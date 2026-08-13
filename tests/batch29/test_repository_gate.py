@@ -349,8 +349,8 @@ class RepositoryGateTests(unittest.TestCase):
     def test_schemas_are_valid_json_and_bind_the_exact_matrix(self) -> None:
         campaign_schema = json.loads(CAMPAIGN_SCHEMA.read_text(encoding="utf-8"))
         result_schema = json.loads(RESULT_SCHEMA.read_text(encoding="utf-8"))
-        self.assertEqual(72, campaign_schema["properties"]["routes"]["minItems"])
-        self.assertEqual(72, campaign_schema["properties"]["routes"]["maxItems"])
+        self.assertEqual(90, campaign_schema["properties"]["routes"]["minItems"])
+        self.assertEqual(90, campaign_schema["properties"]["routes"]["maxItems"])
         self.assertEqual(
             list(GATE.LANGUAGES), campaign_schema["properties"]["languages"]["const"]
         )
@@ -390,7 +390,7 @@ class RepositoryGateTests(unittest.TestCase):
             )
         )
 
-    def test_complete_72_route_small_and_medium_campaign_is_ready_only_externally(
+    def test_complete_90_route_small_and_medium_campaign_is_ready_only_externally(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -401,12 +401,12 @@ class RepositoryGateTests(unittest.TestCase):
         self.assertEqual([], result["failures"])
         self.assertEqual("PASSED_LOCAL_ENGINEERING", result["gate_status"])
         self.assertEqual("READY_FOR_EXTERNAL_GATE", result["decision"])
-        self.assertEqual(72, result["observed_route_count"])
-        self.assertEqual(144, result["observed_workload_count"])
-        self.assertEqual(72, result["route_status_counts"]["PASSED"])
-        self.assertEqual({"SMALL": 72, "MEDIUM": 72}, result["repository_class_counts"])
-        self.assertEqual(1_152, result["verified_artifact_reference_count"])
-        self.assertEqual(1_152, result["unique_verified_artifact_count"])
+        self.assertEqual(90, result["observed_route_count"])
+        self.assertEqual(180, result["observed_workload_count"])
+        self.assertEqual(90, result["route_status_counts"]["PASSED"])
+        self.assertEqual({"SMALL": 90, "MEDIUM": 90}, result["repository_class_counts"])
+        self.assertEqual(1_440, result["verified_artifact_reference_count"])
+        self.assertEqual(1_440, result["unique_verified_artifact_count"])
         self.assertTrue(result["actor_separation_passed"])
         self.assert_not_certified(result)
         self.assertEqual(canonical_digest(campaign), result["campaign_digest"])
@@ -599,7 +599,7 @@ class RepositoryGateTests(unittest.TestCase):
             any("status is NOT_RUN" in item for item in not_run_result["failures"])
         )
         self.assertEqual("FAILED", missing_result["gate_status"])
-        self.assertEqual(71, missing_result["observed_route_count"])
+        self.assertEqual(89, missing_result["observed_route_count"])
         self.assertTrue(
             any("missing directed pairs" in item for item in missing_result["failures"])
         )

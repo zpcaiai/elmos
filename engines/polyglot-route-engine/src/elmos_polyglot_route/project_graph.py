@@ -31,6 +31,9 @@ from enum import StrEnum
 from pathlib import Path, PurePosixPath
 from typing import Final, cast
 
+from .models import RouteError
+from .repository import javascript_esm_descriptor
+
 SCHEMA_VERSION: Final = "1.0.0"
 DISCOVERY_PROFILE: Final = "static-project-graph-v1"
 MAX_FILES: Final = 10_000
@@ -71,6 +74,7 @@ SUPPORTED_LANGUAGES: Final[tuple[str, ...]] = (
     "csharp",
     "go",
     "java",
+    "javascript",
     "objc",
     "python",
     "rust",
@@ -88,6 +92,9 @@ _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".cs": "csharp",
     ".go": "go",
     ".java": "java",
+    ".cjs": "javascript",
+    ".js": "javascript",
+    ".mjs": "javascript",
     ".m": "objc",
     ".mm": "objc",
     ".py": "python",
@@ -1706,6 +1713,26 @@ def build_project_graph(
         raise ProjectGraphError("REPOSITORY_DIRECTORY_INVALID")
     root = repository.resolve(strict=True)
     scanned, inventory_issues = _walk_repository(root)
+    javascript_descriptors: dict[str, dict[str, object]] = {}
+    scanned_by_path = {file.path: file for file in scanned}
+    for file in scanned:
+        if file.language != "javascript" or file.read_status != EvidenceStatus.PASSED:
+            continue
+        try:
+            javascript_descriptor = javascript_esm_descriptor(root / file.path, root)
+        except RouteError as error:
+            raise ProjectGraphError(str(error)) from error
+        if javascript_descriptor is None:
+            continue
+        descriptor_file = scanned_by_path.get(str(javascript_descriptor["path"]))
+        if (
+            descriptor_file is None
+            or descriptor_file.read_status != EvidenceStatus.PASSED
+            or descriptor_file.sha256 != javascript_descriptor["sha256"]
+            or descriptor_file.byte_count != javascript_descriptor["bytes"]
+        ):
+            raise ProjectGraphError("JAVASCRIPT_ESM_DESCRIPTOR_GRAPH_BINDING_INVALID")
+        javascript_descriptors[file.path] = javascript_descriptor
     semantic_inventories = _semantic_inventory_by_path(semantic_discovery, safe_ref, scanned)
     repository_id = _stable_id("repository", safe_ref, safe_ref)
     nodes: list[dict[str, object]] = [
@@ -1740,6 +1767,8 @@ def build_project_graph(
             "byte_count": file.byte_count,
             "read_status": file.read_status,
         }
+        if file.path in javascript_descriptors:
+            file_attributes["javascript_esm_descriptor"] = javascript_descriptors[file.path]
         migration_obligation = {
             FileRole.BUILD_DESCRIPTOR: (
                 "BUILD_DESCRIPTOR_MIGRATION_NOT_RUN",
@@ -1924,21 +1953,21 @@ def build_project_graph(
         file_id = file_ids[file.path]
         location = SourceLocation(file.path)
         if file.role == FileRole.BUILD_DESCRIPTOR:
-            descriptor = _parse_descriptor(file)
+            parsed_descriptor = _parse_descriptor(file)
             for node in nodes:
                 if node["id"] == file_id:
                     attributes = cast(dict[str, object], node["attributes"])
-                    attributes["descriptor_parser"] = descriptor.parser
+                    attributes["descriptor_parser"] = parsed_descriptor.parser
                     attributes["descriptor_parse_status"] = (
                         EvidenceStatus.PASSED
-                        if descriptor.parser.startswith("python-")
-                        else descriptor.issues[0].status
+                        if parsed_descriptor.parser.startswith("python-")
+                        else parsed_descriptor.issues[0].status
                     )
                     attributes["descriptor_semantic_status"] = (
-                        EvidenceStatus.PASSED if not descriptor.issues else descriptor.issues[0].status
+                        EvidenceStatus.PASSED if not parsed_descriptor.issues else parsed_descriptor.issues[0].status
                     )
                     break
-            for issue in descriptor.issues:
+            for issue in parsed_descriptor.issues:
                 diagnostics.append(
                     _diagnostic(
                         safe_ref,
@@ -1950,7 +1979,7 @@ def build_project_graph(
                         node_id=file_id,
                     )
                 )
-            for dependency in descriptor.dependencies:
+            for dependency in parsed_descriptor.dependencies:
                 dependency_key = (dependency.ecosystem, dependency.name)
                 dependency_id = dependency_nodes.get(dependency_key)
                 if dependency_id is None:
@@ -2135,6 +2164,10 @@ def build_project_graph(
         "repository_id": repository_id,
         "snapshot_sha256": snapshot_sha256,
         "snapshot_consistency": "PER_FILE_STABLE_READ_NON_ATOMIC",
+        "javascript_esm_descriptors": [
+            {"source_path": path, **descriptor}
+            for path, descriptor in sorted(javascript_descriptors.items())
+        ],
         "supported_languages": list(SUPPORTED_LANGUAGES),
         "indexers": {
             "python": {

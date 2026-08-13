@@ -3,10 +3,13 @@ from __future__ import annotations
 import base64
 import hashlib
 import importlib.util
+import io
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -23,16 +26,20 @@ PACKED_REPLAY_COMMAND = [
     "--route",
     ".",
 ]
+LEGACY_REPLAY_SOURCE_ROOT = (
+    "verification-packs/polyglot-30-route-formal-equivalence-v1/evidence/routes/"
+    "csharp-to-go/certification/replay"
+)
 PACKED_REPLAY_FILES = {
     "launcher": (
         "replay-tool",
         "certification/replay/validate_packed_route.py",
-        "scripts/batch35/validate_packed_route.py",
+        f"{LEGACY_REPLAY_SOURCE_ROOT}/validate_packed_route.py",
     ),
     "validator": (
         "replay-tool",
         "certification/replay/scripts/batch29/validate_route.py",
-        "scripts/batch29/validate_route.py",
+        f"{LEGACY_REPLAY_SOURCE_ROOT}/scripts/batch29/validate_route.py",
     ),
     "schema": (
         "replay-schema",
@@ -40,7 +47,10 @@ PACKED_REPLAY_FILES = {
             "certification/replay/schemas/batch29/"
             "formal-equivalence-evidence.schema.json"
         ),
-        "schemas/batch29/formal-equivalence-evidence.schema.json",
+        (
+            f"{LEGACY_REPLAY_SOURCE_ROOT}/schemas/batch29/"
+            "formal-equivalence-evidence.schema.json"
+        ),
     ),
 }
 
@@ -154,9 +164,7 @@ def load_pack_generator() -> Any:
 
 def load_specialized_pack_generator() -> Any:
     path = (
-        ROOT
-        / "tooling"
-        / "generate_specialized_polyglot_formal_verification_pack.py"
+        ROOT / "tooling" / "generate_specialized_polyglot_formal_verification_pack.py"
     )
     tooling = str(path.parent)
     inserted = tooling not in sys.path
@@ -183,6 +191,16 @@ def load_formal_campaign_validator() -> Any:
     )
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load formal campaign validator: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_packed_route_launcher() -> Any:
+    path = SCRIPTS / "validate_packed_route.py"
+    spec = importlib.util.spec_from_file_location("packed_route_launcher_test", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load packed route launcher: {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -1059,6 +1077,43 @@ class FormalRouteCampaignTests(unittest.TestCase):
         build_campaign(pack)
         return pack
 
+    @staticmethod
+    def specialized_arithmetic_binding_campaign(generator: Any) -> dict[str, Any]:
+        obligations: list[dict[str, Any]] = []
+        for language in generator.LANGUAGES:
+            for block in (
+                *sorted(generator.ARITHMETIC_EVIDENCE_BLOCKS),
+                "finite-number-arithmetic",
+            ):
+                obligations.append(
+                    {
+                        "obligation_id": f"lowering-{language}-{block}",
+                        "kind": "target-lowering",
+                        "semantic_block": block,
+                        "evidence_ids": ["target-bundle"],
+                    }
+                )
+            for kind, prefix in (
+                ("source-lifting", "lifting"),
+                ("route-behavior", "behavior"),
+            ):
+                obligations.append(
+                    {
+                        "obligation_id": (
+                            f"{prefix}-{language}-integer-arithmetic-safe-domain"
+                        ),
+                        "kind": kind,
+                        "semantic_block": "integer-arithmetic-safe-domain",
+                        "evidence_ids": ["route-evidence"],
+                    }
+                )
+        return {
+            "evidence": [
+                {"evidence_id": generator.ARITHMETIC_EVIDENCE_ID},
+            ],
+            "obligations": obligations,
+        }
+
     def run_validator(
         self, pack: Path
     ) -> tuple[subprocess.CompletedProcess[str], dict[str, Any]]:
@@ -1076,9 +1131,7 @@ class FormalRouteCampaignTests(unittest.TestCase):
         payload = completed.stdout.strip()
         if not payload:
             signal = (
-                f" signal={-completed.returncode}"
-                if completed.returncode < 0
-                else ""
+                f" signal={-completed.returncode}" if completed.returncode < 0 else ""
             )
             self.fail(
                 "formal route campaign validator emitted no JSON: "
@@ -1126,6 +1179,56 @@ class FormalRouteCampaignTests(unittest.TestCase):
             self.assertEqual(result["route_count"], 30)
             self.assertEqual(result["required_obligation_count"], 42)
 
+    def test_legacy_v1_never_loads_hostile_live_batch29_validator(self) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            pack = self.make_pack(directory)
+            with (
+                mock.patch.object(
+                    validator,
+                    "load_batch29_formal_validator",
+                    side_effect=AssertionError("hostile live formal validator loaded"),
+                ),
+                mock.patch.object(
+                    validator,
+                    "load_batch29_packed_module_validator",
+                    side_effect=AssertionError("hostile live module validator loaded"),
+                ),
+            ):
+                result = validator.validate(pack)
+        self.assertEqual(result["status"], "valid", result)
+        self.assertTrue(result["formal_ready"])
+
+    def test_legacy_replay_assets_are_byte_identical_across_exact_30(self) -> None:
+        expected = {
+            "certification/replay/validate_packed_route.py": (
+                "sha256:d7cf4017a6d0296c01f880e568950ef6b1dd341b61b48a09b90d61e0cff686da",
+                6753,
+            ),
+            "certification/replay/scripts/batch29/validate_route.py": (
+                "sha256:650470cc8078fe8158eea881885ccd5390ea68d2eb81b4809ed6b672c553c6f9",
+                95431,
+            ),
+            (
+                "certification/replay/schemas/batch29/"
+                "formal-equivalence-evidence.schema.json"
+            ): (
+                "sha256:c4821219c01e037ca86bb749f7790a892b612e2c6d0cfd382eb40c503a0280c7",
+                11670,
+            ),
+        }
+        routes = (
+            ROOT / "verification-packs/polyglot-30-route-formal-equivalence-v1/"
+            "evidence/routes"
+        )
+        route_roots = sorted(path for path in routes.iterdir() if path.is_dir())
+        self.assertEqual(len(route_roots), 30)
+        for route_root in route_roots:
+            for relative, (expected_digest, expected_bytes) in expected.items():
+                path = route_root / relative
+                self.assertEqual(digest(path.read_bytes()), expected_digest)
+                self.assertEqual(path.stat().st_size, expected_bytes)
+
     def test_missing_route_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             pack = self.make_pack(directory)
@@ -1143,6 +1246,26 @@ class FormalRouteCampaignTests(unittest.TestCase):
             pack = self.make_pack(directory)
             (pack / "formal-evidence" / "behavior.json").write_bytes(b"tampered\n")
             self.assert_invalid(pack, "sha256 mismatch")
+
+    def test_unreferenced_evidence_entry_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            pack = self.make_pack(directory)
+            orphan_path = pack / "formal-evidence" / "orphan.json"
+            orphan_content = b'{"status":"NOT_RUN"}\n'
+            orphan_path.write_bytes(orphan_content)
+            campaign_path = pack / "formal-route-campaign.json"
+            campaign = load(campaign_path)
+            campaign["evidence"].append(
+                {
+                    "evidence_id": "orphan-evidence",
+                    "path": orphan_path.relative_to(pack).as_posix(),
+                    "sha256": digest(orphan_content),
+                    "bytes": len(orphan_content),
+                    "role": "other",
+                }
+            )
+            write(campaign_path, campaign)
+            self.assert_invalid(pack, "unreferenced evidence entry: orphan-evidence")
 
     def test_route_wrapper_internal_ref_missing_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1549,7 +1672,7 @@ class FormalRouteCampaignTests(unittest.TestCase):
             self.assertEqual(counterexample["replay"]["execution_status"], "NOT_RUN")
             self.assertIsNone(counterexample["replay"]["observed_fingerprint"])
 
-    def test_specialized_generator_uses_explicit_eight_and_project_replay(self) -> None:
+    def test_specialized_generator_uses_explicit_eight_and_private_replay(self) -> None:
         generator = load_specialized_pack_generator()
         self.assertEqual(
             tuple(item[0] for item in generator.exact_routes()),
@@ -1569,12 +1692,58 @@ class FormalRouteCampaignTests(unittest.TestCase):
                 "java-to-cpp",
             },
         )
-        self.assertEqual(generator.PACKED_REPLAY_COMMAND[:2], ["uv", "--project"])
+        self.assertEqual(generator.PACKED_REPLAY_COMMAND[:3], ["python", "-I", "-B"])
         self.assertEqual(generator.PACKED_REPLAY_COMMAND[-2:], ["--route", "."])
         self.assertNotEqual(
             generator.PACK_KEY,
             "polyglot-30-route-formal-equivalence-v1",
         )
+
+    def test_specialized_generator_binds_arithmetic_evidence_exactly_once(self) -> None:
+        generator = load_specialized_pack_generator()
+        campaign = self.specialized_arithmetic_binding_campaign(generator)
+
+        generator._bind_specialized_arithmetic_evidence(campaign)
+        generator._bind_specialized_arithmetic_evidence(campaign)
+
+        expected = {
+            f"lowering-{language}-{block}"
+            for language in generator.LANGUAGES
+            for block in generator.ARITHMETIC_EVIDENCE_BLOCKS
+        }
+        bound = {
+            obligation["obligation_id"]
+            for obligation in campaign["obligations"]
+            if generator.ARITHMETIC_EVIDENCE_ID in obligation["evidence_ids"]
+        }
+        self.assertEqual(bound, expected)
+        self.assertEqual(len(bound), 8)
+        for obligation in campaign["obligations"]:
+            self.assertLessEqual(
+                obligation["evidence_ids"].count(generator.ARITHMETIC_EVIDENCE_ID),
+                1,
+            )
+            if obligation["semantic_block"] == "finite-number-arithmetic":
+                self.assertNotIn(
+                    generator.ARITHMETIC_EVIDENCE_ID,
+                    obligation["evidence_ids"],
+                )
+
+    def test_specialized_generator_fails_on_incomplete_arithmetic_binding_set(
+        self,
+    ) -> None:
+        generator = load_specialized_pack_generator()
+        campaign = self.specialized_arithmetic_binding_campaign(generator)
+        campaign["obligations"] = [
+            obligation
+            for obligation in campaign["obligations"]
+            if obligation["obligation_id"]
+            != "lowering-java-out-of-domain-arithmetic-errors"
+        ]
+        with self.assertRaisesRegex(
+            RuntimeError, "^ARITHMETIC_EVIDENCE_BINDING_INVALID$"
+        ):
+            generator._bind_specialized_arithmetic_evidence(campaign)
 
     def test_specialized_packed_replay_rejects_path_shadow_uv(self) -> None:
         validator = load_formal_campaign_validator()
@@ -1599,11 +1768,11 @@ class FormalRouteCampaignTests(unittest.TestCase):
             )
             self.assertTrue(any(str(shadow) in error for error in errors), errors)
 
-    def test_specialized_packed_replay_scrubs_uv_environment_overrides(self) -> None:
+    def test_specialized_packed_replay_uses_private_sanitized_environment(self) -> None:
         validator = load_formal_campaign_validator()
         with tempfile.TemporaryDirectory() as directory:
-            replay_root = Path(directory) / "cpp-to-java"
-            replay_root.mkdir()
+            private_root = Path(directory).resolve()
+            private_venv = private_root / validator.PACKED_REPLAY_VENV_NAME
             hostile_environment = {
                 "UV": "hostile",
                 "UV_PROJECT_ENVIRONMENT": str(Path(directory) / "hostile-venv"),
@@ -1613,28 +1782,442 @@ class FormalRouteCampaignTests(unittest.TestCase):
                 "DYLD_INSERT_LIBRARIES": str(Path(directory) / "hostile.dylib"),
                 "PYTHONPATH": str(Path(directory) / "shadow-package"),
                 "VIRTUAL_ENV": str(Path(directory) / "hostile-venv"),
+                "HTTPS_PROXY": "http://hostile.invalid",
+                "NO_PROXY": "*",
             }
             with mock.patch.dict(os.environ, hostile_environment, clear=False):
                 environment = validator.packed_replay_environment(
-                    validator.PINNED_UV_PATH, replay_root
+                    private_root, private_venv
                 )
             project_environment = Path(environment["UV_PROJECT_ENVIRONMENT"])
-            self.assertEqual(
-                project_environment,
-                replay_root.resolve() / validator.PACKED_REPLAY_VENV_NAME,
-            )
+            self.assertEqual(project_environment, private_venv)
             self.assertFalse(project_environment.exists())
             self.assertEqual(environment["UV_NO_CONFIG"], "1")
             self.assertEqual(
                 {key for key in environment if key == "UV" or key.startswith("UV_")},
-                {"UV_NO_CONFIG", "UV_PROJECT_ENVIRONMENT"},
+                {"UV_CACHE_DIR", "UV_NO_CONFIG", "UV_PROJECT_ENVIRONMENT"},
             )
             for variable in (
                 "DYLD_INSERT_LIBRARIES",
+                "HTTPS_PROXY",
+                "NO_PROXY",
                 "PYTHONPATH",
                 "VIRTUAL_ENV",
             ):
                 self.assertNotIn(variable, environment)
+            for variable in ("HOME", "TMPDIR", "XDG_CACHE_HOME", "UV_CACHE_DIR"):
+                Path(environment[variable]).resolve(strict=False).relative_to(
+                    private_root
+                )
+
+    def test_specialized_runtime_closure_is_exact_seven_from_live_lock(self) -> None:
+        generator = load_specialized_pack_generator()
+        validator = load_formal_campaign_validator()
+        lock = ROOT / "engines" / "polyglot-route-engine" / "uv.lock"
+        generated = generator.production_wheels_from_lock(lock)
+        independently_validated = validator.production_wheels_from_lock(lock)
+        self.assertEqual(generated, independently_validated)
+        self.assertEqual(
+            {item["name"] for item in generated},
+            generator.PRODUCTION_PACKAGE_NAMES,
+        )
+        self.assertEqual(len(generated), 7)
+
+    def test_specialized_runtime_archive_rejects_hardlink_and_symlink_escape(
+        self,
+    ) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            for name, member in (
+                (
+                    "hardlink.tar.gz",
+                    tarfile.TarInfo("python/bin/forged"),
+                ),
+                (
+                    "symlink.tar.gz",
+                    tarfile.TarInfo("python/bin/forged"),
+                ),
+            ):
+                archive = Path(directory) / name
+                with tarfile.open(archive, "w:gz") as bundle:
+                    if name.startswith("hardlink"):
+                        member.type = tarfile.LNKTYPE
+                        member.linkname = "python/bin/python3.12"
+                    else:
+                        member.type = tarfile.SYMTYPE
+                        member.linkname = "../../outside"
+                    bundle.addfile(member)
+                with self.assertRaises(ValueError):
+                    validator.python_archive_inventory(archive)
+
+    def test_specialized_runtime_archive_rejects_path_escape(self) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "escape.tar.gz"
+            content = b"forged"
+            with tarfile.open(archive, "w:gz") as bundle:
+                member = tarfile.TarInfo("python/../outside")
+                member.size = len(content)
+                bundle.addfile(member, io.BytesIO(content))
+            with self.assertRaises(ValueError):
+                validator.python_archive_inventory(archive)
+
+    def test_specialized_runtime_diagnostic_is_bounded_and_sanitized(self) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            private = Path(directory)
+            diagnostic = validator.bounded_replay_diagnostic(
+                (str(private) + " secret\n") * 1_000,
+                "",
+                sensitive_roots=(private,),
+            )
+            self.assertNotIn(str(private), diagnostic)
+            self.assertLessEqual(
+                len(diagnostic.encode()), validator.MAX_REPLAY_DIAGNOSTIC_BYTES
+            )
+
+    def test_specialized_runtime_manifest_rejects_extra_missing_and_tamper(
+        self,
+    ) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            pack = Path(directory)
+            runtime_root = pack / "runtime"
+            wheelhouse_root = runtime_root / "wheelhouse"
+            wheelhouse_root.mkdir(parents=True)
+            archive = runtime_root / validator.PYTHON_ARCHIVE_NAME
+            archive_content = b"python"
+            with tarfile.open(archive, "w:gz") as bundle:
+                member = tarfile.TarInfo("python/bin/python3.12")
+                member.mode = 0o755
+                member.size = len(archive_content)
+                bundle.addfile(member, io.BytesIO(archive_content))
+            inventory = validator.python_archive_inventory(archive)
+            lock = runtime_root / "uv.lock"
+            lock.write_bytes(b"version = 1\n")
+            packages: list[dict[str, Any]] = []
+            for index in range(7):
+                content = f"wheel-{index}".encode()
+                filename = f"package_{index}-1.0-py3-none-any.whl"
+                path = wheelhouse_root / filename
+                path.write_bytes(content)
+                packages.append(
+                    {
+                        "name": f"package-{index}",
+                        "version": "1.0",
+                        "dependencies": [],
+                        "filename": filename,
+                        "path": f"runtime/wheelhouse/{filename}",
+                        "url": f"https://example.invalid/{filename}",
+                        "sha256": digest(content),
+                        "bytes": len(content),
+                    }
+                )
+            archive_digest = digest(archive.read_bytes())
+            lock_digest = digest(lock.read_bytes())
+            manifest = {
+                "schema_version": 1,
+                "runtime_key": "macos-aarch64-cpython-3.12.12-z3-4.16.0",
+                "scope": "offline-evidence-integrity-and-semantic-closure-only",
+                "replay_command": list(validator.PACKED_REPLAY_COMMAND_V2),
+                "python_archive": {
+                    "path": validator.PYTHON_ARCHIVE_PATH,
+                    "url": validator.PYTHON_ARCHIVE_URL,
+                    "sha256": archive_digest,
+                    "bytes": archive.stat().st_size,
+                    "implementation": "cpython",
+                    "version": "3.12.12",
+                    "build": "20260211",
+                    "platform": "macos-aarch64-none",
+                    "tree": inventory,
+                },
+                "production_lock": {
+                    "path": validator.PACKED_RUNTIME_LOCK,
+                    "sha256": lock_digest,
+                    "bytes": lock.stat().st_size,
+                    "resolution": "independent-transitive-production-closure",
+                },
+                "wheelhouse": {
+                    "package_count": 7,
+                    "install_policy": {
+                        "offline": True,
+                        "no_index": True,
+                        "require_hashes": True,
+                        "no_dependencies": True,
+                        "link_mode": "copy",
+                    },
+                    "packages": packages,
+                },
+                "uv": {
+                    "path": str(validator.PINNED_UV_PATH),
+                    "sha256": validator.PINNED_UV_SHA256,
+                    "bytes": validator.PINNED_UV_BYTES,
+                    "version": validator.PINNED_UV_VERSION,
+                },
+                "sandbox": {
+                    "path": str(validator.PINNED_SANDBOX_PATH),
+                    "sha256": validator.PINNED_SANDBOX_SHA256,
+                    "bytes": validator.PINNED_SANDBOX_BYTES,
+                    "mode": "100755",
+                    "uid": 0,
+                    "gid": 0,
+                    "profile": validator.PINNED_SANDBOX_PROFILE,
+                    "profile_sha256": validator.PINNED_SANDBOX_PROFILE_SHA256,
+                    "socket_denial_probe": "SOCKET_DENIED:1",
+                },
+                "environment": {
+                    "policy": "explicit-private-allowlist",
+                    "private_home": True,
+                    "private_tmp": True,
+                    "private_cache": True,
+                    "proxy_variables": [],
+                },
+                "native_route_reexecution": "NOT_RUN",
+                "independent_verification": "NOT_RUN",
+                "external_certification": "NOT_CERTIFIED",
+            }
+            manifest_path = runtime_root / "packed-replay-runtime.json"
+            write(manifest_path, manifest)
+            patches = {
+                "PYTHON_ARCHIVE_SHA256": archive_digest,
+                "PYTHON_ARCHIVE_BYTES": archive.stat().st_size,
+                "PYTHON_TREE_SHA256": inventory["inventory_sha256"],
+                "PYTHON_TREE_FILE_COUNT": inventory["regular_file_count"],
+                "PYTHON_TREE_BYTES": inventory["regular_file_bytes"],
+                "PYTHON_TREE_SYMLINKS": inventory["symlinks"],
+                "PRODUCTION_LOCK_SHA256": lock_digest,
+                "PRODUCTION_LOCK_BYTES": lock.stat().st_size,
+            }
+            with (
+                mock.patch.multiple(validator, **patches),
+                mock.patch.object(
+                    validator,
+                    "production_wheels_from_lock",
+                    return_value=packages,
+                ),
+            ):
+                errors: list[str] = []
+                self.assertIsNotNone(
+                    validator.validate_packed_runtime_manifest(
+                        pack.resolve(), manifest_path.resolve(), errors
+                    )
+                )
+                self.assertEqual(errors, [])
+
+                extra = runtime_root / "extra.bin"
+                extra.write_bytes(b"extra")
+                errors = []
+                validator.validate_packed_runtime_manifest(
+                    pack.resolve(), manifest_path.resolve(), errors
+                )
+                self.assertTrue(any("missing or extra" in item for item in errors))
+                extra.unlink()
+
+                first_wheel = pack / packages[0]["path"]
+                original = first_wheel.read_bytes()
+                first_wheel.write_bytes(b"tampered")
+                errors = []
+                validator.validate_packed_runtime_manifest(
+                    pack.resolve(), manifest_path.resolve(), errors
+                )
+                self.assertTrue(any("bytes differ" in item for item in errors))
+                first_wheel.write_bytes(original)
+
+                first_wheel.unlink()
+                errors = []
+                validator.validate_packed_runtime_manifest(
+                    pack.resolve(), manifest_path.resolve(), errors
+                )
+                self.assertTrue(any("does not exist" in item for item in errors))
+
+    def test_specialized_private_runtime_seal_rejects_hardlinks(self) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "runtime"
+            root.mkdir()
+            original = root / "original"
+            original.write_bytes(b"content")
+            os.link(original, root / "linked")
+            with self.assertRaisesRegex(ValueError, "hardlinked"):
+                validator._runtime_tree_seal((root,))
+
+    def test_specialized_schema_v2_runtime_and_legacy_v1_are_disjoint(self) -> None:
+        schema = load(
+            ROOT / "schemas" / "batch35" / "formal-route-campaign.schema.json"
+        )
+        legacy = schema["allOf"][0]["then"]
+        specialized = schema["allOf"][1]["then"]
+        self.assertEqual(
+            legacy["not"]["required"], ["packed_replay_runtime_evidence_id"]
+        )
+        self.assertIn("packed_replay_runtime_evidence_id", specialized["required"])
+        specialized_command = specialized["properties"]["packed_route_replay"][
+            "properties"
+        ]["packed_validation"]["properties"]["command"]["const"]
+        legacy_command = legacy["properties"]["packed_route_replay"]["properties"][
+            "packed_validation"
+        ]["properties"]["command"]["const"]
+        self.assertEqual(specialized_command[:3], ["python", "-I", "-B"])
+        self.assertEqual(legacy_command, PACKED_REPLAY_COMMAND)
+
+    def test_packed_launcher_validates_engine_manifest_before_unique_insertion(
+        self,
+    ) -> None:
+        launcher = load_packed_route_launcher()
+        with tempfile.TemporaryDirectory() as directory:
+            route = Path(directory).resolve()
+            relative = (
+                launcher.ENGINE_SOURCE_ROOT_RELATIVE
+                + "/elmos_polyglot_route/__init__.py"
+            )
+            source = route / relative
+            source.parent.mkdir(parents=True)
+            source.write_bytes(b"VALUE = 1\n")
+            entries = [
+                {
+                    "repository_path": relative.removeprefix(
+                        launcher.ENGINE_SOURCE_PREFIX
+                    ),
+                    "captured_path": relative,
+                    "sha256": launcher.sha256_file(source),
+                    "bytes": source.stat().st_size,
+                }
+            ]
+            python_source = Path(
+                "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/"
+                "archives/sha256-" + launcher.PYTHON_ARCHIVE_SHA256 + ".tar.gz"
+            )
+            from elmos_polyglot_route.toolchains import (
+                typescript_compiler_capture_receipt,
+            )
+
+            typescript_receipt = typescript_compiler_capture_receipt()
+            runtime_sources = {
+                launcher.PYTHON_ARCHIVE_RELATIVE: python_source,
+                **{
+                    f"{launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{record['path']}": Path(
+                        str(record["source_path"])
+                    )
+                    for record in typescript_receipt["files"]
+                },
+            }
+            for repository_path, runtime_source in runtime_sources.items():
+                captured_relative = launcher.ENGINE_SOURCE_PREFIX + repository_path
+                captured = route / captured_relative
+                captured.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(runtime_source, captured)
+                entries.append(
+                    {
+                        "repository_path": repository_path,
+                        "captured_path": captured_relative,
+                        "sha256": launcher.sha256_file(captured),
+                        "bytes": captured.stat().st_size,
+                    }
+                )
+            manifest = {
+                "schema_version": 1,
+                "kind": "polyglot-route-engine-source-bundle",
+                "file_count": len(entries),
+                "files": entries,
+                "runtime_source_receipts": {
+                    "python_source_archive": {
+                        "schema_version": 1,
+                        "capture_relative_path": launcher.PYTHON_ARCHIVE_RELATIVE,
+                        "sha256": launcher.PYTHON_ARCHIVE_SHA256,
+                        "bytes": launcher.PYTHON_ARCHIVE_BYTES,
+                        "mode": "0444",
+                        "uid": 501,
+                        "gid": 20,
+                        "nlink": 1,
+                        "source_tree_sha256": launcher.PYTHON_SOURCE_TREE_SHA256,
+                        "source_tree_record_count": 1_899,
+                        "source_tree_file_count": 1_890,
+                        "source_tree_bytes": 47_880_708,
+                    },
+                    "typescript_compiler_closure": {
+                        "schema_version": 1,
+                        "capture_relative_path": (
+                            launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE
+                        ),
+                        "source_manifest_sha256": (
+                            launcher.TYPESCRIPT_SOURCE_MANIFEST_SHA256
+                        ),
+                        "runtime_manifest_sha256": (
+                            launcher.TYPESCRIPT_RUNTIME_MANIFEST_SHA256
+                        ),
+                        "compiler_closure_sha256": (
+                            launcher.TYPESCRIPT_CLOSURE_SHA256
+                        ),
+                        "file_count": launcher.TYPESCRIPT_FILE_COUNT,
+                        "bytes": launcher.TYPESCRIPT_CLOSURE_BYTES,
+                        "files": [
+                            {
+                                key: record[key]
+                                for key in ("path", "sha256", "bytes", "mode")
+                            }
+                            for record in typescript_receipt["files"]
+                        ],
+                        "semantic_soundness": "NOT_RUN",
+                    },
+                },
+            }
+            manifest_path = route / launcher.ENGINE_MANIFEST_RELATIVE
+            write(manifest_path, manifest)
+            references = {
+                relative: {
+                    "role": "engine-source",
+                    "sha256": entries[0]["sha256"],
+                    "bytes": entries[0]["bytes"],
+                },
+                launcher.ENGINE_MANIFEST_RELATIVE: {
+                    "role": "engine-source-manifest",
+                    "sha256": launcher.sha256_file(manifest_path),
+                    "bytes": manifest_path.stat().st_size,
+                },
+            }
+            references.update(
+                {
+                    launcher.ENGINE_SOURCE_PREFIX + repository_path: {
+                        "role": "engine-source",
+                        "sha256": entry["sha256"],
+                        "bytes": entry["bytes"],
+                    }
+                    for repository_path, entry in zip(
+                        runtime_sources, entries[1:], strict=True
+                    )
+                }
+            )
+            isolated_path = [
+                existing
+                for existing in sys.path
+                if not (Path(existing or ".") / "elmos_polyglot_route").exists()
+            ]
+            preloaded_engine_modules = {
+                name: module
+                for name, module in tuple(sys.modules.items())
+                if name == "elmos_polyglot_route"
+                or name.startswith("elmos_polyglot_route.")
+            }
+            for name in preloaded_engine_modules:
+                sys.modules.pop(name, None)
+            try:
+                with mock.patch.object(sys, "path", isolated_path):
+                    inserted = launcher.validate_and_insert_engine_source(
+                        route, references
+                    )
+                    try:
+                        self.assertEqual(sys.path[0], str(inserted))
+                        self.assertEqual(sys.path.count(str(inserted)), 1)
+                    finally:
+                        sys.path.remove(str(inserted))
+
+                    source.write_bytes(b"tampered\n")
+                    before = list(sys.path)
+                    with self.assertRaisesRegex(ValueError, "digest mismatch"):
+                        launcher.validate_and_insert_engine_source(route, references)
+                    self.assertEqual(sys.path, before)
+            finally:
+                sys.modules.update(preloaded_engine_modules)
 
     def test_generator_installs_route_local_content_addressed_replay(self) -> None:
         generator = load_pack_generator()

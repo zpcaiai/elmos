@@ -50,7 +50,7 @@
       "optional": []
     },
     "routes-macos": {
-      "description": "Exact nine-language polyglot-route host profile, including Apple-native C++, Objective-C, and Swift.",
+      "description": "Exact ten-language polyglot-route host profile, including independent TypeScript and JavaScript/Node.js identities plus Apple-native C++, Objective-C, and Swift.",
       "platforms": [
         "darwin-arm64"
       ],

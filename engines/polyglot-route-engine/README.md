@@ -144,10 +144,13 @@ Runtime values are guarded too: an emitted TypeScript function that carries
 `integer` parameters or returns one checks each of them with
 `Number.isSafeInteger` and throws `RangeError: ELMOS_INTEGER_NOT_SAFE:<value>`
 instead of continuing with a silently rounded value. The helper is emitted
-only when a function actually carries an `integer`; `number`-only functions
-are untouched. Fixed-width native targets hold the canonical range in their
-declared type, while emitted arithmetic helpers make overflow and invalid
-division explicit under the canonical IR contract.
+only when a function actually carries an `integer`. TypeScript `number`
+arithmetic and number-return boundaries are independently wrapped with the
+exact `_elmosRequireFiniteNumber` helper, so NaN or infinity at any nested
+arithmetic node fails before it can be hidden by a later branch or comparison.
+Fixed-width native targets hold the canonical range in their declared type,
+while emitted arithmetic helpers make overflow and invalid division explicit
+under the canonical IR contract.
 
 Execution is exact-toolchain bound: Java 21.0.11, Python 3.12.12, .NET SDK
 10.0.301 / Roslyn 5.6.0, and TypeScript 5.9.2 on Node 26.0.0. A missing or

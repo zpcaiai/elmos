@@ -1,11 +1,11 @@
 import argparse
-import base64
 import copy
 import hashlib
 import importlib.util
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -15,7 +15,9 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts" / "batch29"
-MATRIX_VALIDATOR = ROOT / "scripts" / "operations" / "validate_translation_route_matrix.py"
+MATRIX_VALIDATOR = (
+    ROOT / "scripts" / "operations" / "validate_translation_route_matrix.py"
+)
 POLYGLOT_RUNNER = SCRIPTS / "run_polyglot_routes.py"
 FRESH_ROUTE_RUNTIME = SCRIPTS / "fresh_route_runtime.py"
 SPECIALIZED_PACK_GENERATOR = (
@@ -25,6 +27,51 @@ SPECIALIZED_PACK_GENERATOR = (
 
 def digest(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def copy_fixture_tree_to_private_writable_root(
+    source: Path,
+    destination: Path,
+    *,
+    temporary_root: Path,
+) -> Path:
+    """Copy a frozen fixture into one confined, owner-writable test tree."""
+
+    resolved_temporary_root = temporary_root.resolve(strict=True)
+    resolved_parent = destination.parent.resolve(strict=True)
+    try:
+        resolved_parent.relative_to(resolved_temporary_root)
+    except ValueError as exc:
+        raise ValueError("fixture destination escapes private temporary root") from exc
+
+    resolved_source = source.resolve(strict=True)
+    source_entries = (resolved_source, *sorted(resolved_source.rglob("*")))
+    for entry in source_entries:
+        metadata = entry.lstat()
+        if entry.is_symlink() or not (
+            stat.S_ISDIR(metadata.st_mode) or stat.S_ISREG(metadata.st_mode)
+        ):
+            raise ValueError("fixture source contains an unsupported entry")
+
+    shutil.copytree(resolved_source, destination)
+    resolved_destination = destination.resolve(strict=True)
+    resolved_destination.relative_to(resolved_temporary_root)
+    copied_entries = (
+        resolved_destination,
+        *sorted(resolved_destination.rglob("*")),
+    )
+    for entry in copied_entries:
+        metadata = entry.lstat()
+        if entry.is_symlink():
+            raise ValueError("fixture copy contains a symbolic link")
+        mode = stat.S_IMODE(metadata.st_mode)
+        if stat.S_ISDIR(metadata.st_mode):
+            entry.chmod(mode | stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        elif stat.S_ISREG(metadata.st_mode):
+            entry.chmod(mode | stat.S_IRUSR | stat.S_IWUSR)
+        else:
+            raise ValueError("fixture copy contains an unsupported entry")
+    return resolved_destination
 
 
 def artifact_ref(route: Path, relative: str) -> dict[str, object]:
@@ -45,7 +92,9 @@ def strict_artifact_ref(route: Path, relative: str, role: str) -> dict[str, obje
 
 
 def load_matrix_validator():
-    spec = importlib.util.spec_from_file_location("batch29_matrix_validator", MATRIX_VALIDATOR)
+    spec = importlib.util.spec_from_file_location(
+        "batch29_matrix_validator", MATRIX_VALIDATOR
+    )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -53,7 +102,9 @@ def load_matrix_validator():
 
 
 def load_polyglot_runner():
-    spec = importlib.util.spec_from_file_location("batch29_polyglot_runner", POLYGLOT_RUNNER)
+    spec = importlib.util.spec_from_file_location(
+        "batch29_polyglot_runner", POLYGLOT_RUNNER
+    )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -61,7 +112,9 @@ def load_polyglot_runner():
 
 
 def load_route_validator():
-    spec = importlib.util.spec_from_file_location("batch29_route_validator", SCRIPTS / "validate_route.py")
+    spec = importlib.util.spec_from_file_location(
+        "batch29_route_validator", SCRIPTS / "validate_route.py"
+    )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -124,15 +177,23 @@ def refresh_module_report_reference(route: Path, report: dict[str, object]) -> N
     write_json(report_path, report)
     certification_path = route / "certification" / "certification.json"
     certification = json.loads(certification_path.read_text())
-    certification["module_equivalence"] = artifact_ref(route, "certification/module-equivalence.json")
+    certification["module_equivalence"] = artifact_ref(
+        route, "certification/module-equivalence.json"
+    )
     write_json(certification_path, certification)
 
 
 def module_artifact(report: dict[str, object], relative: str) -> dict[str, object]:
-    return next(item for item in report["artifact_refs"] if isinstance(item, dict) and item.get("path") == relative)
+    return next(
+        item
+        for item in report["artifact_refs"]
+        if isinstance(item, dict) and item.get("path") == relative
+    )
 
 
-def refresh_module_artifact(route: Path, report: dict[str, object], relative: str) -> None:
+def refresh_module_artifact(
+    route: Path, report: dict[str, object], relative: str
+) -> None:
     reference = module_artifact(report, relative)
     path = route / relative
     reference["sha256"] = digest(path)
@@ -144,13 +205,19 @@ def refresh_module_semantic_bindings(route: Path, report: dict[str, object]) -> 
     module_input = report["module_input"]
     for side in ("source", "target"):
         role = f"{side}-module-semantic-ir"
-        reference = next(item for item in report["artifact_refs"] if item["role"] == role)
+        reference = next(
+            item for item in report["artifact_refs"] if item["role"] == role
+        )
         relative = reference["path"]
         document = json.loads((route / relative).read_text())
-        module_input[f"{side}_semantic_ir_sha256"] = validator.canonical_json_sha256(document)
+        module_input[f"{side}_semantic_ir_sha256"] = validator.canonical_json_sha256(
+            document
+        )
         refresh_module_artifact(route, report, relative)
     module_input_relative = next(
-        item["path"] for item in report["artifact_refs"] if item["role"] == "module-formal-input"
+        item["path"]
+        for item in report["artifact_refs"]
+        if item["role"] == "module-formal-input"
     )
     write_json(route / module_input_relative, module_input)
     refresh_module_artifact(route, report, module_input_relative)
@@ -178,41 +245,108 @@ def install_fresh_cpp_java_module_evidence(route: Path) -> dict[str, object]:
     evidence["module_equivalence"] = module_ref
     evidence["module_artifact_manifest"] = module_manifest_ref
     evidence["artifact_refs"] = [
-        module_manifest_ref
-        if item.get("path") == module_manifest_ref["path"]
-        else item
+        module_manifest_ref if item.get("path") == module_manifest_ref["path"] else item
         for item in evidence.get("artifact_refs", [])
     ]
     write_json(evidence_path, evidence)
-    return json.loads(
-        (route / "certification" / "module-equivalence.json").read_text()
-    )
+    return json.loads((route / "certification" / "module-equivalence.json").read_text())
 
 
-def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUMPTIONS") -> tuple[Path, Path]:
+def install_strict_evidence(
+    route: Path, proof_status: str = "PROVED_UNDER_ASSUMPTIONS"
+) -> tuple[Path, Path]:
     artifacts = route / "certification" / "strict-artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
-    source_ir_value = {
-        "analyzer": "fixture",
-        "analyzer_version": "1",
-        "source_language": "python",
-        "functions": [{"name": "calculate"}],
-    }
-    target_ir_value = {
-        "analyzer": "fixture",
-        "analyzer_version": "1",
-        "source_language": "typescript",
-        "functions": [{"name": "calculate"}],
-    }
-    (artifacts / "source-ir.json").write_bytes(
-        (json.dumps(source_ir_value, sort_keys=True, separators=(",", ":")) + "\n").encode()
+    engine_source = ROOT / "engines" / "polyglot-route-engine" / "src"
+    engine_source_value = str(engine_source)
+    if engine_source_value not in sys.path:
+        sys.path.insert(0, engine_source_value)
+    from dataclasses import replace as dataclass_replace
+
+    from elmos_polyglot_route.emitter import EmittedFile
+    from elmos_polyglot_route.engine import _formal_input_payload
+    from elmos_polyglot_route.identifier_hygiene import (
+        alpha_normalize_target,
+        identifier_plan_bytes,
+        plan_identifiers,
+        standalone_artifact_unit_namespace,
+        target_ir_view,
     )
-    (artifacts / "target-relift-ir.json").write_bytes(
-        (json.dumps(target_ir_value, sort_keys=True, separators=(",", ":")) + "\n").encode()
+    from elmos_polyglot_route.models import SemanticIR
+
+    source_runtime_path = artifacts / "source-runtime" / "source.py"
+    source_runtime_path.parent.mkdir(parents=True)
+    source_runtime_path.write_text(
+        "def calculate(value: int) -> int:\n    return value\n"
+    )
+    target_artifact_path = artifacts / "target-artifact.txt"
+    target_artifact_path.write_text(
+        "export function calculate(value: number): number { return value; }\n"
+    )
+    source_ir = SemanticIR.from_mapping(
+        {
+            "schema_version": "1.0.0",
+            "source_language": "python",
+            "source_file": "source.py",
+            "analyzer": "fixture-python-analyzer",
+            "analyzer_version": "1",
+            "functions": [
+                {
+                    "name": "calculate",
+                    "parameters": [{"name": "value", "type": "integer"}],
+                    "return_type": "integer",
+                    "body": [
+                        {
+                            "kind": "return",
+                            "expression": {"kind": "name", "value": "value"},
+                        }
+                    ],
+                }
+            ],
+            "diagnostics": [],
+        }
+    )
+    identifier_namespace = standalone_artifact_unit_namespace(
+        "source.py", digest(source_runtime_path)
+    )
+    identifier_plan = plan_identifiers(
+        source_ir,
+        "typescript",
+        unit_namespace=identifier_namespace,
+    )
+    raw_target_ir = dataclass_replace(
+        target_ir_view(source_ir, identifier_plan),
+        source_language="typescript",
+        source_file="target-artifact.txt",
+        analyzer="fixture-typescript-relifter",
+        analyzer_version="1",
+    )
+    target_ir = alpha_normalize_target(source_ir, raw_target_ir, identifier_plan)
+    source_ir_value = source_ir.to_mapping()
+    raw_target_ir_value = raw_target_ir.to_mapping()
+    target_ir_value = target_ir.to_mapping()
+    (artifacts / "source-ir.json").write_bytes(
+        (
+            json.dumps(source_ir_value, sort_keys=True, separators=(",", ":")) + "\n"
+        ).encode()
+    )
+    (artifacts / "target-semantic-ir.raw.json").write_bytes(
+        (
+            json.dumps(raw_target_ir_value, sort_keys=True, separators=(",", ":"))
+            + "\n"
+        ).encode()
+    )
+    (artifacts / "target-semantic-ir.normalized.json").write_bytes(
+        (
+            json.dumps(target_ir_value, sort_keys=True, separators=(",", ":")) + "\n"
+        ).encode()
+    )
+    (artifacts / "identifier-plan.json").write_bytes(
+        identifier_plan_bytes(identifier_plan)
     )
     aggregate_ir_bytes = (
         json.dumps(
-            {"functions": source_ir_value["functions"]},
+            {"functions": [source_ir.functions[0].semantic_mapping()]},
             sort_keys=True,
             separators=(",", ":"),
         )
@@ -222,30 +356,19 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
     aggregate_root.mkdir(parents=True, exist_ok=True)
     (aggregate_root / "source-ir.aggregate.json").write_bytes(aggregate_ir_bytes)
     (aggregate_root / "target-ir.aggregate.json").write_bytes(aggregate_ir_bytes)
-    source_runtime_path = artifacts / "source-runtime" / "source.py"
-    source_runtime_path.parent.mkdir(parents=True)
-    source_runtime_path.write_text("def calculate():\n    return 1\n")
-    (artifacts / "target-artifact.txt").write_text("compiled-target\n")
-    semantic_hash = (
-        "sha256:"
-        + hashlib.sha256(
-            (
-                json.dumps(
-                    source_ir_value["functions"][0],
-                    sort_keys=True,
-                    separators=(",", ":"),
-                )
-                + "\n"
-            ).encode()
-        ).hexdigest()
+    semantic_hash = load_route_validator().canonical_json_sha256(
+        source_ir.functions[0].semantic_mapping()
     )
     source_chunk_id = (
-        "sha256:" + hashlib.sha256(f"{digest(source_runtime_path)}\0/functions/0\0{semantic_hash}".encode()).hexdigest()
+        "sha256:"
+        + hashlib.sha256(
+            f"{digest(source_runtime_path)}\0/functions/0\0{semantic_hash}".encode()
+        ).hexdigest()
     )
     target_chunk_id = (
         "sha256:"
         + hashlib.sha256(
-            f"{digest(artifacts / 'target-artifact.txt')}\0/functions/0\0{semantic_hash}".encode()
+            f"{digest(target_artifact_path)}\0/functions/0\0{semantic_hash}".encode()
         ).hexdigest()
     )
     (artifacts / "environment.json").write_text('{"toolchain":"pinned"}\n')
@@ -263,8 +386,12 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
                     {
                         "semantic_path": "/functions/0",
                         "semantic_hash": semantic_hash,
-                        "source_artifact_pointer": (f"{digest(source_runtime_path)}#/functions/0"),
-                        "target_artifact_pointer": (f"{digest(artifacts / 'target-artifact.txt')}#/functions/0"),
+                        "source_artifact_pointer": (
+                            f"{digest(source_runtime_path)}#/functions/0"
+                        ),
+                        "target_artifact_pointer": (
+                            f"{digest(target_artifact_path)}#/functions/0"
+                        ),
                         "source_chunk_id": source_chunk_id,
                         "target_chunk_id": target_chunk_id,
                         "status": "EXACT",
@@ -288,60 +415,27 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
         )
         + "\n"
     )
-    assumptions = ["language primitive contract is externally trusted"] if proof_status != "PROVED" else []
-    engine_files: dict[str, bytes] = {
-        "engine.py": b"# engine fixture\n",
-        "equivalence.py": b"# equivalence fixture\n",
-        "emitter.py": b"# emitter fixture\n",
-    }
-    engine_root = artifacts / "engine-sources" / "engines" / "polyglot-route-engine" / "src" / "elmos_polyglot_route"
-    engine_root.mkdir(parents=True)
-    for filename, content in engine_files.items():
-        (engine_root / filename).write_bytes(content)
-    captured_lock_path = artifacts / "engine-sources" / "engines" / "polyglot-route-engine" / "uv.lock"
-    captured_lock_path.write_text("fixture-lock\n")
+    runner = load_polyglot_runner()
+    engine_source_manifest_path, captured_engine_sources = (
+        runner._capture_engine_sources(ROOT, route)
+    )
+    engine_capture_root = (
+        route / "certification" / "formal-artifacts" / "engine-sources"
+    )
+    captured_lock_path = (
+        engine_capture_root / "engines" / "polyglot-route-engine" / "uv.lock"
+    )
     manifest = json.loads((route / "route.json").read_text())
-    engine_source_manifest_path = artifacts / "engine-source-manifest.json"
-    engine_source_files = [
-        {
-            "repository_path": ("engines/polyglot-route-engine/src/elmos_polyglot_route/" + filename),
-            "captured_path": (
-                "certification/strict-artifacts/engine-sources/engines/"
-                "polyglot-route-engine/src/elmos_polyglot_route/" + filename
-            ),
-            "sha256": digest(engine_root / filename),
-            "bytes": (engine_root / filename).stat().st_size,
-        }
-        for filename in sorted(engine_files)
-    ]
-    engine_source_files.append(
-        {
-            "repository_path": "engines/polyglot-route-engine/uv.lock",
-            "captured_path": ("certification/strict-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"),
-            "sha256": digest(captured_lock_path),
-            "bytes": captured_lock_path.stat().st_size,
-        }
-    )
-    engine_source_manifest_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 1,
-                "kind": "polyglot-route-engine-source-bundle",
-                "file_count": len(engine_source_files),
-                "files": engine_source_files,
-            },
-            sort_keys=True,
-        )
-        + "\n"
-    )
     (artifacts / "environment.json").write_text(
         json.dumps(
             {
+                "schema_version": 1,
                 "route_key": manifest["route_key"],
+                "authority": "local-engineering-validation",
                 "independent_verification": "NOT_RUN",
                 "external_certification": "NOT_RUN",
                 "engine_source_manifest": {
-                    "path": "certification/strict-artifacts/engine-source-manifest.json",
+                    "path": engine_source_manifest_path.relative_to(route).as_posix(),
                     "sha256": digest(engine_source_manifest_path),
                     "bytes": engine_source_manifest_path.stat().st_size,
                 },
@@ -356,113 +450,56 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
         + "\n"
     )
     source_bytes = source_runtime_path.read_bytes()
-    target_bytes = (artifacts / "target-artifact.txt").read_bytes()
-    formal_input_value = {
-        "schema_version": "1.0.0",
-        "kind": "elmos.formal-equivalence-input",
-        "route": {
-            "source_language": manifest["source"]["language"],
-            "target_language": manifest["target"]["language"],
-            "profile": manifest["profiles"]["semantic_profile"],
+    target_bytes = target_artifact_path.read_bytes()
+    formal_input_value = _formal_input_payload(
+        source_language="python",
+        target_language="typescript",
+        source_path="source.py",
+        source_bytes=source_bytes,
+        target_path="target-artifact.txt",
+        target_bytes=target_bytes,
+        source_ir=source_ir,
+        raw_target_ir=raw_target_ir,
+        target_ir=target_ir,
+        source_ir_reference={
+            "path": "source-ir.json",
+            "sha256": digest(artifacts / "source-ir.json"),
         },
-        "claim_scope": {
-            "relation": "canonical-normalized-source-ir-to-target-relift-ir",
-            "source_term": "source_normalized_ir.formal_function",
-            "target_term": "target_relift_normalized_ir.formal_function",
-            "original_source_bytes_theorem": False,
-            "source_compiler_runtime_soundness": "NOT_RUN",
-            "target_compiler_runtime_soundness": "NOT_RUN",
+        raw_target_ir_reference={
+            "path": "target-semantic-ir.raw.json",
+            "sha256": digest(artifacts / "target-semantic-ir.raw.json"),
         },
-        "source_artifact": {
-            "role": "original-source-analyzer-input",
-            "path": "source.py",
-            "sha256": digest(source_runtime_path),
-            "byte_count": len(source_bytes),
-            "content_base64": base64.b64encode(source_bytes).decode(),
-            "content_reference": {
-                "path": "source-runtime/source.py",
-                "sha256": digest(source_runtime_path),
-            },
+        target_ir_reference={
+            "path": "target-semantic-ir.normalized.json",
+            "sha256": digest(artifacts / "target-semantic-ir.normalized.json"),
         },
-        "target_artifact": {
-            "role": "emitted-target-analyzer-input",
-            "path": "target-artifact.txt",
-            "sha256": digest(artifacts / "target-artifact.txt"),
-            "byte_count": len(target_bytes),
-            "content_base64": base64.b64encode(target_bytes).decode(),
-            "content_reference": {
-                "path": "target-artifact.txt",
-                "sha256": digest(artifacts / "target-artifact.txt"),
-            },
+        identifier_plan=identifier_plan,
+        identifier_plan_reference={
+            "path": "identifier-plan.json",
+            "sha256": digest(artifacts / "identifier-plan.json"),
         },
-        "source_normalized_ir": {
-            "role": "canonical-source-normalized-ir",
-            "artifact": {
-                "path": "source-ir.json",
-                "sha256": digest(artifacts / "source-ir.json"),
-            },
-            "semantic_ir": source_ir_value,
-            "semantic_ir_sha256": digest(artifacts / "source-ir.json"),
-            "formal_function": source_ir_value["functions"][0],
-            "formal_function_sha256": semantic_hash,
-        },
-        "target_relift_normalized_ir": {
-            "role": "emitted-target-relift-normalized-ir",
-            "artifact": {
-                "path": "target-relift-ir.json",
-                "sha256": digest(artifacts / "target-relift-ir.json"),
-            },
-            "semantic_ir": target_ir_value,
-            "semantic_ir_sha256": digest(artifacts / "target-relift-ir.json"),
-            "formal_function": target_ir_value["functions"][0],
-            "formal_function_sha256": semantic_hash,
-        },
-        "implementation_identity": {
-            "engine": {
-                "path": "src/elmos_polyglot_route/engine.py",
-                "sha256": digest(engine_root / "engine.py"),
-                "byte_count": (engine_root / "engine.py").stat().st_size,
-            },
-            "equivalence_encoder": {
-                "path": "src/elmos_polyglot_route/equivalence.py",
-                "sha256": digest(engine_root / "equivalence.py"),
-                "byte_count": (engine_root / "equivalence.py").stat().st_size,
-            },
-            "emitter": {
-                "path": "src/elmos_polyglot_route/emitter.py",
-                "sha256": digest(engine_root / "emitter.py"),
-                "byte_count": (engine_root / "emitter.py").stat().st_size,
-            },
-        },
-        "analyzer_identity": {
-            "source": {"name": "fixture", "version": "1", "language": "python"},
-            "target_relift": {
-                "name": "fixture",
-                "version": "1",
-                "language": "typescript",
-                "mode": "emitted-target",
-            },
-        },
-        "emitter_identity": {
-            "target_language": "typescript",
-            "normalization_rules": [],
-            "helper_digests": [],
-        },
-        "solver": {
-            "name": "z3",
-            "version": "4.15.3",
-            "timeout_ms": 20000,
-            "random_seed": 0,
-        },
-        "environment": {"python_version": "fixture"},
-        "environment_assumptions": assumptions,
-        "unsupported_semantics": ["L1+"],
+        emitted=EmittedFile(
+            relative_path="target-artifact.txt",
+            content=target_bytes.decode("utf-8"),
+        ),
+    )
+    assumptions = list(formal_input_value["environment_assumptions"])
+    solver_identity = formal_input_value["solver"]
+    environment_value = json.loads((artifacts / "environment.json").read_text())
+    environment_value["solver"] = {
+        "name": solver_identity["name"],
+        "version": solver_identity["version"],
     }
+    (artifacts / "environment.json").write_text(
+        json.dumps(environment_value, sort_keys=True) + "\n"
+    )
     (artifacts / "formal-input.json").write_text(
         json.dumps(formal_input_value, sort_keys=True, separators=(",", ":")) + "\n"
     )
     formal_input_digest = digest(artifacts / "formal-input.json")
-    (artifacts / "proof-input.smt2").write_text(f"; formal_input_digest {formal_input_digest}\n(check-sat)\n")
+    (artifacts / "proof-input.smt2").write_text(
+        f"; formal_input_digest {formal_input_digest}\n(check-sat)\n"
+    )
     solver_input_digest = digest(artifacts / "proof-input.smt2")
     (artifacts / "proof-result.json").write_text(
         json.dumps(
@@ -480,7 +517,9 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
         )
         + "\n"
     )
-    (artifacts / "proof-composition.json").write_text('{"status":"PROVED_UNDER_ASSUMPTIONS"}\n')
+    (artifacts / "proof-composition.json").write_text(
+        '{"status":"PROVED_UNDER_ASSUMPTIONS"}\n'
+    )
     (artifacts / "proof-input-bundle.json").write_text(
         json.dumps(
             {
@@ -519,7 +558,9 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
     replay_tool.write_text("raise SystemExit(0)\n")
     strict_paths = {
         "source": "certification/strict-artifacts/source-ir.json",
-        "target": "certification/strict-artifacts/target-relift-ir.json",
+        "raw_target": "certification/strict-artifacts/target-semantic-ir.raw.json",
+        "target": "certification/strict-artifacts/target-semantic-ir.normalized.json",
+        "identifier_plan": "certification/strict-artifacts/identifier-plan.json",
         "source_aggregate": "certification/formal-artifacts/source-ir.aggregate.json",
         "target_aggregate": "certification/formal-artifacts/target-ir.aggregate.json",
         "artifact": "certification/strict-artifacts/target-artifact.txt",
@@ -532,25 +573,14 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
         "proof_bundle": "certification/strict-artifacts/proof-input-bundle.json",
         "composition": "certification/strict-artifacts/proof-composition.json",
         "source_runtime": "certification/strict-artifacts/source-runtime/source.py",
-        "engine": (
-            "certification/strict-artifacts/engine-sources/engines/"
-            "polyglot-route-engine/src/elmos_polyglot_route/engine.py"
-        ),
-        "equivalence": (
-            "certification/strict-artifacts/engine-sources/engines/"
-            "polyglot-route-engine/src/elmos_polyglot_route/equivalence.py"
-        ),
-        "emitter": (
-            "certification/strict-artifacts/engine-sources/engines/"
-            "polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
-        ),
-        "engine_manifest": "certification/strict-artifacts/engine-source-manifest.json",
-        "engine_lock": "certification/strict-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock",
+        "engine_manifest": engine_source_manifest_path.relative_to(route).as_posix(),
         "replay_tool": "tools/replay-proof.py",
     }
     references = [
         strict_artifact_ref(route, strict_paths["source"], "source-ir"),
-        strict_artifact_ref(route, strict_paths["target"], "target-ir"),
+        strict_artifact_ref(route, strict_paths["raw_target"], "raw-target-ir"),
+        strict_artifact_ref(route, strict_paths["target"], "normalized-target-ir"),
+        strict_artifact_ref(route, strict_paths["identifier_plan"], "identifier-plan"),
         strict_artifact_ref(route, strict_paths["source_aggregate"], "source-ir"),
         strict_artifact_ref(route, strict_paths["target_aggregate"], "target-ir"),
         strict_artifact_ref(route, strict_paths["artifact"], "target-artifact"),
@@ -563,13 +593,19 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
         strict_artifact_ref(route, strict_paths["proof_bundle"], "proof-input-bundle"),
         strict_artifact_ref(route, strict_paths["composition"], "formal-composition"),
         strict_artifact_ref(route, strict_paths["source_runtime"], "corpus-artifact"),
-        strict_artifact_ref(route, strict_paths["engine"], "engine-source"),
-        strict_artifact_ref(route, strict_paths["equivalence"], "engine-source"),
-        strict_artifact_ref(route, strict_paths["emitter"], "engine-source"),
-        strict_artifact_ref(route, strict_paths["engine_manifest"], "engine-source-manifest"),
-        strict_artifact_ref(route, strict_paths["engine_lock"], "engine-source"),
+        strict_artifact_ref(
+            route, strict_paths["engine_manifest"], "engine-source-manifest"
+        ),
         strict_artifact_ref(route, strict_paths["replay_tool"], "replay-tool"),
     ]
+    references.extend(
+        strict_artifact_ref(
+            route,
+            captured_engine_source.relative_to(route).as_posix(),
+            "engine-source",
+        )
+        for captured_engine_source in captured_engine_sources
+    )
     source_ir = aggregate_root / "source-ir.aggregate.json"
     target_ir = aggregate_root / "target-ir.aggregate.json"
     proof_input = route / "certification" / "strict-artifacts" / "proof-input.smt2"
@@ -622,17 +658,24 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
             "passed_cases": 3,
             "counterexamples": [],
             "evidence_artifact_ids": [strict_artifact_id(strict_paths["behavior"])],
-            "source_runtime_artifact_ids": [strict_artifact_id(strict_paths["behavior"])],
-            "target_runtime_artifact_ids": [strict_artifact_id(strict_paths["behavior"])],
+            "source_runtime_artifact_ids": [
+                strict_artifact_id(strict_paths["behavior"])
+            ],
+            "target_runtime_artifact_ids": [
+                strict_artifact_id(strict_paths["behavior"])
+            ],
             "canonical_oracle_passed": True,
             "source_runtime_passed": True,
             "target_runtime_passed": True,
         },
         "formal_proof": {
             "status": proof_status,
-            "solver": "z3",
-            "solver_version": "4.15.3",
-            "solver_options": {"timeout_ms": 20000, "random_seed": 0},
+            "solver": solver_identity["name"],
+            "solver_version": solver_identity["version"],
+            "solver_options": {
+                "timeout_ms": solver_identity["timeout_ms"],
+                "random_seed": solver_identity["random_seed"],
+            },
             "input_artifact_id": strict_artifact_id(strict_paths["proof_bundle"]),
             "input_digest": digest(artifacts / "proof-input-bundle.json"),
             "result_artifact_ids": [result_id],
@@ -642,8 +685,12 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
                     "obligation_id": "route-composition",
                     "status": proof_status,
                     "scope": "typed-pure-function-v1",
-                    "formal_input_artifact_id": strict_artifact_id(strict_paths["formal_input"]),
-                    "solver_input_artifact_id": strict_artifact_id(strict_paths["solver_input"]),
+                    "formal_input_artifact_id": strict_artifact_id(
+                        strict_paths["formal_input"]
+                    ),
+                    "solver_input_artifact_id": strict_artifact_id(
+                        strict_paths["solver_input"]
+                    ),
                     "input_digest": digest(proof_input),
                     "solver_result_artifact_id": result_id,
                     "assumptions": assumptions,
@@ -668,14 +715,20 @@ def install_strict_evidence(route: Path, proof_status: str = "PROVED_UNDER_ASSUM
     certification_path = route / "certification" / "certification.json"
     certification = json.loads(certification_path.read_text())
     certification["evidence_format"] = 2
-    certification["formal_equivalence"] = artifact_ref(route, "certification/formal-equivalence.json")
+    certification["formal_equivalence"] = artifact_ref(
+        route, "certification/formal-equivalence.json"
+    )
     certification_path.write_text(json.dumps(certification, indent=2) + "\n")
     return formal_path, certification_path
 
 
-def refresh_formal_reference(route: Path, formal_path: Path, certification_path: Path) -> None:
+def refresh_formal_reference(
+    route: Path, formal_path: Path, certification_path: Path
+) -> None:
     certification = json.loads(certification_path.read_text())
-    certification["formal_equivalence"] = artifact_ref(route, str(formal_path.relative_to(route)))
+    certification["formal_equivalence"] = artifact_ref(
+        route, str(formal_path.relative_to(route))
+    )
     certification_path.write_text(json.dumps(certification, indent=2) + "\n")
 
 
@@ -714,11 +767,12 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
     cache = {
         "cache_key": validator.SWIFT_DEPENDENCY_CACHE_KEY,
         "cache_schema": validator.SWIFT_DEPENDENCY_CACHE_SCHEMA,
-        "seed": "verified-content-addressed-cache",
+        "object_store_policy": validator.SWIFT_DEPENDENCY_OBJECT_STORE_POLICY,
+        "seed": validator.SWIFT_DEPENDENCY_SEED,
         **tree,
     }
     mirror = {
-        "seed": "verified-content-addressed-cache",
+        "seed": validator.SWIFT_DEPENDENCY_SEED,
         "cache": cache,
         "git": {
             "path": validator.SWIFT_GIT_PATH,
@@ -899,7 +953,9 @@ class ToolkitTests(unittest.TestCase):
                 ],
                 check=True,
             )
-            self.assertEqual(json.loads(out.read_text())["results"][0]["decision"], "approve")
+            self.assertEqual(
+                json.loads(out.read_text())["results"][0]["decision"], "approve"
+            )
 
     def test_limited_route_gate_is_evidence_bound(self):
         with tempfile.TemporaryDirectory() as td:
@@ -949,12 +1005,19 @@ class ToolkitTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(rejected.returncode, 1)
-            self.assertIn("route and certification statuses must match", rejected.stderr)
+            self.assertIn(
+                "route and certification statuses must match", rejected.stderr
+            )
 
     def test_strict_formal_equivalence_route_passes_only_with_bound_evidence(self):
         with tempfile.TemporaryDirectory() as td:
-            route = Path(td) / "python-to-typescript"
-            shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
+            temporary_root = Path(td).resolve(strict=True)
+            temporary_root.relative_to(Path(tempfile.gettempdir()).resolve(strict=True))
+            route = copy_fixture_tree_to_private_writable_root(
+                ROOT / "routes" / "python-to-typescript",
+                temporary_root / "python-to-typescript",
+                temporary_root=temporary_root,
+            )
             install_strict_evidence(route)
             passed = subprocess.run(
                 [sys.executable, str(SCRIPTS / "run_route_gate.py"), str(route)],
@@ -964,6 +1027,23 @@ class ToolkitTests(unittest.TestCase):
             )
             self.assertEqual(passed.returncode, 0, passed.stdout + passed.stderr)
             self.assertIn("status=limited decision=NOT_CERTIFIED", passed.stdout)
+
+    def test_private_writable_fixture_copy_rejects_temp_escape(self):
+        with (
+            tempfile.TemporaryDirectory() as td,
+            tempfile.TemporaryDirectory() as outside,
+        ):
+            temporary_root = Path(td).resolve(strict=True)
+            escaped_destination = Path(outside).resolve(strict=True) / "route"
+            with self.assertRaisesRegex(
+                ValueError,
+                "fixture destination escapes private temporary root",
+            ):
+                copy_fixture_tree_to_private_writable_root(
+                    ROOT / "routes" / "python-to-typescript",
+                    escaped_destination,
+                    temporary_root=temporary_root,
+                )
 
     def test_assumption_bound_proof_stays_limited_and_not_certified(self):
         with tempfile.TemporaryDirectory() as td:
@@ -1065,7 +1145,9 @@ class ToolkitTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(rejected.returncode, 1)
-            self.assertIn("semantic_chunks.total does not equal chunks length", rejected.stderr)
+            self.assertIn(
+                "semantic_chunks.total does not equal chunks length", rejected.stderr
+            )
 
             formal = json.loads(formal_path.read_text())
             del formal["semantic_chunks"]
@@ -1086,7 +1168,9 @@ class ToolkitTests(unittest.TestCase):
             shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
             formal_path, certification_path = install_strict_evidence(route)
             formal = json.loads(formal_path.read_text())
-            formal["semantic_ir"]["source_ir_artifact_id"] = formal["behavior_equivalence"]["evidence_artifact_ids"][0]
+            formal["semantic_ir"]["source_ir_artifact_id"] = formal[
+                "behavior_equivalence"
+            ]["evidence_artifact_ids"][0]
             formal_path.write_text(json.dumps(formal, indent=2) + "\n")
             refresh_formal_reference(route, formal_path, certification_path)
             rejected = subprocess.run(
@@ -1123,13 +1207,19 @@ class ToolkitTests(unittest.TestCase):
             route = Path(td) / "python-to-typescript"
             shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
             formal_path, certification_path = install_strict_evidence(route)
-            behavior_path = route / "certification" / "strict-artifacts" / "behavior.json"
+            behavior_path = (
+                route / "certification" / "strict-artifacts" / "behavior.json"
+            )
             behavior = json.loads(behavior_path.read_text())
             behavior["source_runtime_passed"] = False
             behavior_path.write_text(json.dumps(behavior, sort_keys=True) + "\n")
             formal = json.loads(formal_path.read_text())
             behavior_id = formal["behavior_equivalence"]["evidence_artifact_ids"][0]
-            reference = next(item for item in formal["artifact_refs"] if item["artifact_id"] == behavior_id)
+            reference = next(
+                item
+                for item in formal["artifact_refs"]
+                if item["artifact_id"] == behavior_id
+            )
             reference["sha256"] = digest(behavior_path)
             reference["bytes"] = behavior_path.stat().st_size
             formal_path.write_text(json.dumps(formal, indent=2) + "\n")
@@ -1151,16 +1241,24 @@ class ToolkitTests(unittest.TestCase):
             route = Path(td) / "python-to-typescript"
             shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
             formal_path, certification_path = install_strict_evidence(route)
-            result_path = route / "certification" / "strict-artifacts" / "proof-result.json"
+            result_path = (
+                route / "certification" / "strict-artifacts" / "proof-result.json"
+            )
             result = json.loads(result_path.read_text())
             result["formal_input_digest"] = "sha256:" + "0" * 64
             result_path.write_text(json.dumps(result, sort_keys=True) + "\n")
             formal = json.loads(formal_path.read_text())
             result_id = formal["formal_proof"]["result_artifact_ids"][0]
-            reference = next(item for item in formal["artifact_refs"] if item["artifact_id"] == result_id)
+            reference = next(
+                item
+                for item in formal["artifact_refs"]
+                if item["artifact_id"] == result_id
+            )
             reference["sha256"] = digest(result_path)
             reference["bytes"] = result_path.stat().st_size
-            formal["formal_proof"]["replay"]["expected_result_sha256"] = digest(result_path)
+            formal["formal_proof"]["replay"]["expected_result_sha256"] = digest(
+                result_path
+            )
             formal_path.write_text(json.dumps(formal, indent=2) + "\n")
             refresh_formal_reference(route, formal_path, certification_path)
             rejected = subprocess.run(
@@ -1293,7 +1391,7 @@ class ToolkitTests(unittest.TestCase):
                         },
                         script,
                         digest(script),
-                    )
+                    ),
                 },
                 failures=failures,
             )
@@ -1346,7 +1444,12 @@ class ToolkitTests(unittest.TestCase):
             route.parent.mkdir(parents=True)
             shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
             install_strict_evidence(route)
-            source_manifest_path = route / "certification" / "strict-artifacts" / "engine-source-manifest.json"
+            source_manifest_path = (
+                route
+                / "certification"
+                / "formal-artifacts"
+                / "engine-source-manifest.json"
+            )
             source_manifest = json.loads(source_manifest_path.read_text())
             for item in source_manifest["files"]:
                 captured = route / item["captured_path"]
@@ -1365,7 +1468,12 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
 
             live_engine = (
-                repository / "engines" / "polyglot-route-engine" / "src" / "elmos_polyglot_route" / "engine.py"
+                repository
+                / "engines"
+                / "polyglot-route-engine"
+                / "src"
+                / "elmos_polyglot_route"
+                / "engine.py"
             )
             live_engine.write_text("# drifted engine fixture\n")
             rejected = subprocess.run(
@@ -1454,7 +1562,9 @@ print('\\n'.join(failures))
             script.parent.mkdir(parents=True)
             project.mkdir(parents=True)
             script.write_text("# fixture entry\n")
-            (project / "pyproject.toml").write_text("[project]\nname='fixture'\nversion='1'\n")
+            (project / "pyproject.toml").write_text(
+                "[project]\nname='fixture'\nversion='1'\n"
+            )
             (project / "uv.lock").write_text("version = 1\n")
             hostile_z3 = project / ".venv" / "bin" / "z3"
             hostile_z3.parent.mkdir(parents=True)
@@ -1500,9 +1610,13 @@ print('\\n'.join(failures))
                 "UV_PYTHON": "/tmp/shadow-python",
                 "UV_NO_SYNC": "1",
             }
-            with mock.patch.dict(os.environ, hostile_environment, clear=False), mock.patch.object(
-                runtime, "_pinned_uv", return_value=Path("/trusted/pinned/uv")
-            ), mock.patch.object(runtime.subprocess, "run", side_effect=fake_run):
+            with (
+                mock.patch.dict(os.environ, hostile_environment, clear=False),
+                mock.patch.object(
+                    runtime, "_pinned_uv", return_value=Path("/trusted/pinned/uv")
+                ),
+                mock.patch.object(runtime.subprocess, "run", side_effect=fake_run),
+            ):
                 self.assertEqual(
                     runtime.run_in_fresh_locked_runtime(script, ["--fixture"]), 0
                 )
@@ -1567,7 +1681,7 @@ print('\\n'.join(failures))
             output,
         )
 
-    def test_fresh_route_subprocess_rejects_path_shadow_uv(self):
+    def test_fresh_route_subprocess_ignores_path_shadow_uv(self):
         with tempfile.TemporaryDirectory() as td:
             shadow = Path(td)
             fake_uv = shadow / "uv"
@@ -1586,12 +1700,12 @@ print('\\n'.join(failures))
                 text=True,
                 capture_output=True,
                 check=False,
-                timeout=30,
+                timeout=60,
             )
             output = completed.stdout + completed.stderr
-            self.assertNotEqual(completed.returncode, 0, output)
-            self.assertIn("Batch29 pinned uv origin mismatch", output)
-            self.assertIn(str(fake_uv), output)
+            self.assertEqual(completed.returncode, 0, output)
+            self.assertIn("OK: Batch29 fresh locked proof runtime", output)
+            self.assertNotIn("hostile-uv", output)
 
     def test_specialized_module_rejects_self_consistent_false_smt(self):
         validator = load_route_validator()
@@ -1603,9 +1717,17 @@ print('\\n'.join(failures))
             formal = report["functions"][0]["layers"]["formal"]
             smt_relative = formal["solver_input_path"]
             smt_path = route / smt_relative
-            headers = [line for line in smt_path.read_text().splitlines() if line.startswith(";")]
+            headers = [
+                line
+                for line in smt_path.read_text().splitlines()
+                if line.startswith(";")
+            ]
             smt_path.write_text(
-                "\n".join(headers + ["(set-info :status unknown)", "(assert false)", "(check-sat)"]) + "\n"
+                "\n".join(
+                    headers
+                    + ["(set-info :status unknown)", "(assert false)", "(check-sat)"]
+                )
+                + "\n"
             )
             refresh_module_artifact(route, report, smt_relative)
             solver_digest = digest(smt_path)
@@ -1621,34 +1743,44 @@ print('\\n'.join(failures))
             formal["formal_result_sha256"] = digest(result_path)
             refresh_module_report_reference(route, report)
 
-            certification = json.loads((route / "certification" / "certification.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
+            )
             _, failures = validator.validate_module_equivalence(
                 route,
                 json.loads((route / "route.json").read_text()),
                 certification,
             )
-            self.assertTrue(any("SMT assertion" in failure for failure in failures), failures)
+            self.assertTrue(
+                any("SMT assertion" in failure for failure in failures), failures
+            )
 
     def test_specialized_module_rejects_formal_input_detached_from_module_ir(self):
         validator = load_route_validator()
         with tempfile.TemporaryDirectory() as td:
             route = Path(td) / "cpp-to-java"
             shutil.copytree(ROOT / "routes" / "cpp-to-java", route)
-            report = json.loads((route / "certification" / "module-equivalence.json").read_text())
+            report = json.loads(
+                (route / "certification" / "module-equivalence.json").read_text()
+            )
             formal = report["functions"][0]["layers"]["formal"]
             input_relative = formal["formal_input_path"]
             input_path = route / input_relative
             formal_input = json.loads(input_path.read_text())
             old_input_digest = digest(input_path)
             formal_input["source_function"]["name"] = "detached_both"
-            formal_input["source_function_sha256"] = validator.canonical_json_sha256(formal_input["source_function"])
+            formal_input["source_function_sha256"] = validator.canonical_json_sha256(
+                formal_input["source_function"]
+            )
             write_json(input_path, formal_input)
             refresh_module_artifact(route, report, input_relative)
             new_input_digest = digest(input_path)
 
             smt_relative = formal["solver_input_path"]
             smt_path = route / smt_relative
-            smt_path.write_text(smt_path.read_text().replace(old_input_digest, new_input_digest))
+            smt_path.write_text(
+                smt_path.read_text().replace(old_input_digest, new_input_digest)
+            )
             refresh_module_artifact(route, report, smt_relative)
             solver_digest = digest(smt_path)
 
@@ -1667,7 +1799,9 @@ print('\\n'.join(failures))
             formal["formal_result_sha256"] = digest(result_path)
             refresh_module_report_reference(route, report)
 
-            certification = json.loads((route / "certification" / "certification.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
+            )
             _, failures = validator.validate_module_equivalence(
                 route,
                 json.loads((route / "route.json").read_text()),
@@ -1683,15 +1817,21 @@ print('\\n'.join(failures))
         with tempfile.TemporaryDirectory() as td:
             route = Path(td) / "cpp-to-java"
             shutil.copytree(ROOT / "routes" / "cpp-to-java", route)
-            report = json.loads((route / "certification" / "module-equivalence.json").read_text())
+            report = json.loads(
+                (route / "certification" / "module-equivalence.json").read_text()
+            )
             chunk = report["functions"][0]["layers"]["chunk"]
-            by_path = {mapping["semantic_path"]: mapping for mapping in chunk["mappings"]}
+            by_path = {
+                mapping["semantic_path"]: mapping for mapping in chunk["mappings"]
+            }
             left = by_path["/functions/0/body/0/expression/left"]["source_span"]
             right = by_path["/functions/0/body/0/expression/right"]["source_span"]
             left["end_byte"] = right["start_byte"] + 1
             refresh_module_report_reference(route, report)
 
-            certification = json.loads((route / "certification" / "certification.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
+            )
             _, failures = validator.validate_module_equivalence(
                 route,
                 json.loads((route / "route.json").read_text()),
@@ -1699,12 +1839,16 @@ print('\\n'.join(failures))
             )
             self.assertTrue(
                 any(
-                    "does not bind semantic IR" in failure or "sibling spans overlap" in failure for failure in failures
+                    "does not bind semantic IR" in failure
+                    or "sibling spans overlap" in failure
+                    for failure in failures
                 ),
                 failures,
             )
 
-    def test_specialized_module_rejects_supported_body_ir_detached_from_source_bytes(self):
+    def test_specialized_module_rejects_supported_body_ir_detached_from_source_bytes(
+        self,
+    ):
         with tempfile.TemporaryDirectory() as td:
             route = Path(td) / "cpp-to-java"
             shutil.copytree(ROOT / "routes" / "cpp-to-java", route)
@@ -1755,7 +1899,9 @@ print('\\n'.join(failures))
                 output,
             )
 
-    def test_specialized_function_rejects_uncovered_branch_ir_detached_from_source_bytes(self):
+    def test_specialized_function_rejects_uncovered_branch_ir_detached_from_source_bytes(
+        self,
+    ):
         with tempfile.TemporaryDirectory() as td:
             route = (Path(td) / "cpp-to-java").resolve()
             shutil.copytree(ROOT / "routes" / "cpp-to-java", route)
@@ -1770,9 +1916,7 @@ print('\\n'.join(failures))
                 (artifact_root / "source-semantic-ir.json").read_text()
             )
             function = source_document["functions"][0]
-            first_statement_start = function["body"][0]["source_span"][
-                "start_byte"
-            ]
+            first_statement_start = function["body"][0]["source_span"]["start_byte"]
             gap_start = function["parameters"][-1]["source_span"]["end_byte"] + 1
             self.assertGreaterEqual(first_statement_start - gap_start, 6)
             logical_file = function["source_span"]["file"]
@@ -1865,8 +2009,9 @@ print('\\n'.join(failures))
                 )
 
             runner = load_polyglot_runner()
-            with tempfile.TemporaryDirectory() as generated_td, mock.patch.object(
-                route_engine, "analyze", side_effect=forged_analyze
+            with (
+                tempfile.TemporaryDirectory() as generated_td,
+                mock.patch.object(route_engine, "analyze", side_effect=forged_analyze),
             ):
                 generated = Path(generated_td)
                 report = route_engine.migrate(
@@ -1905,15 +2050,66 @@ print('\\n'.join(failures))
                 report,
             )
 
-            reports = {
-                "development": report,
-                "holdout": json.loads(
-                    (route / "certification" / "local-holdout-evidence.json").read_text()
-                ),
-                "real-repository": json.loads(
-                    (route / "certification" / "local-representative-evidence.json").read_text()
-                ),
+            reports = {corpus: report}
+            local_names = {
+                "development": "local-development-evidence.json",
+                "holdout": "local-holdout-evidence.json",
+                "real-repository": "local-representative-evidence.json",
             }
+            for current_corpus in ("holdout", "real-repository"):
+                corpus_root = route / "corpus" / current_corpus
+                current_manifest = json.loads(
+                    (corpus_root / "manifest.json").read_text()
+                )
+                current_source = corpus_root / current_manifest["source_file"]
+                current_cases = corpus_root / current_manifest["cases_file"]
+                current_function = current_manifest["function_name"]
+                with tempfile.TemporaryDirectory() as current_generated_td:
+                    current_generated = Path(current_generated_td)
+                    current_report = route_engine.migrate(
+                        current_source,
+                        "cpp",
+                        "java",
+                        current_function,
+                        current_cases,
+                        current_generated,
+                    )
+                    current_report.update(
+                        {
+                            "corpus": current_corpus,
+                            "executor": "local-toolchain",
+                            "independent_verifier": "NOT_RUN",
+                            "authorization": "local-engineering-validation",
+                            "route_maturity": "LIMITED",
+                            "certification_status": "NOT_CERTIFIED",
+                        }
+                    )
+                    current_inputs = current_generated / "inputs"
+                    current_inputs.mkdir()
+                    shutil.copy2(
+                        current_source,
+                        current_inputs / current_source.name,
+                    )
+                    shutil.copy2(current_cases, current_inputs / "cases.json")
+                    write_json(
+                        current_generated / "route-evidence.json",
+                        current_report,
+                    )
+                    current_manifest_ref = runner.persist_artifact_directory(
+                        route.parent,
+                        route,
+                        current_corpus,
+                        current_generated,
+                    )
+                current_report["artifact_root"] = (
+                    f"certification/artifacts/{current_corpus}"
+                )
+                current_report["artifact_manifest"] = current_manifest_ref
+                write_json(
+                    route / "certification" / local_names[current_corpus],
+                    current_report,
+                )
+                reports[current_corpus] = current_report
             formal_ref = runner.build_formal_equivalence_evidence(
                 ROOT,
                 route,
@@ -1930,31 +2126,24 @@ print('\\n'.join(failures))
             evidence = json.loads(evidence_path.read_text())
             evidence["artifact_manifests"][corpus] = manifest_ref
             evidence["artifact_refs"] = [
-                manifest_ref
-                if item.get("path") == manifest_ref["path"]
-                else item
+                manifest_ref if item.get("path") == manifest_ref["path"] else item
                 for item in evidence["artifact_refs"]
             ]
             evidence["formal_equivalence"] = formal_ref
             write_json(evidence_path, evidence)
 
-            completed = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-                timeout=600,
+            validator = load_route_validator()
+            failures: list[str] = []
+            validator._validate_specialized_native_runtime_replay(
+                route,
+                json.loads((route / "route.json").read_text()),
+                failures,
             )
-            output = completed.stdout + completed.stderr
-            self.assertNotEqual(completed.returncode, 0, output)
-            for diagnostic in (
-                "specialized development source semantic IR differs from independent source analysis",
-                "specialized development target semantic IR differs from independent emitted-target re-lift",
-                "specialized development formal source IR is detached from fresh source analysis",
-                "specialized development formal target IR is detached from fresh target re-lift",
-            ):
-                self.assertIn(diagnostic, output)
+            self.assertIn(
+                "specialized development independent native replay failed: "
+                "identifier plan is detached from fresh source analysis",
+                failures,
+            )
 
     def test_specialized_swift_receipt_stable_projection_tamper_fails_closed(self):
         validator = load_route_validator()
@@ -1980,14 +2169,17 @@ print('\\n'.join(failures))
                 lambda: fresh,
                 lambda _language: copy.deepcopy(validator.SWIFT_ANALYZER_TOOLCHAIN),
             )
-            with mock.patch.object(
-                validator,
-                "_engine_swift_analyzer_api",
-                return_value=api,
-            ), mock.patch.object(
-                validator,
-                "_validate_swift_analyzer_receipt_document",
-                side_effect=lambda value, **_kwargs: value,
+            with (
+                mock.patch.object(
+                    validator,
+                    "_engine_swift_analyzer_api",
+                    return_value=api,
+                ),
+                mock.patch.object(
+                    validator,
+                    "_validate_swift_analyzer_receipt_document",
+                    side_effect=lambda value, **_kwargs: value,
+                ),
             ):
                 validator._validate_swift_receipt_binding(
                     source_language="cpp",
@@ -2008,35 +2200,50 @@ print('\\n'.join(failures))
                 failures,
             )
 
-    def test_specialized_swift_receipt_seed_contract_is_exact_and_fail_closed(self):
+    def test_specialized_swift_receipt_standalone_v2_contract_is_fail_closed(self):
         validator = load_route_validator()
-        expected = {"verified-content-addressed-cache"}
+        runner = load_polyglot_runner()
+        expected = {"verified-content-addressed-standalone-cache"}
         self.assertEqual(set(validator.SWIFT_ANALYZER_MIRROR_SEEDS), expected)
+        self.assertEqual(validator.SWIFT_DEPENDENCY_SEED, next(iter(expected)))
+        self.assertEqual(
+            validator.SWIFT_DEPENDENCY_CACHE_SCHEMA,
+            "swift-dependencies-standalone-v2",
+        )
+        self.assertEqual(
+            validator.SWIFT_DEPENDENCY_OBJECT_STORE_POLICY,
+            "standalone-no-alternates-no-hardlinks-v2",
+        )
+        self.assertTrue(
+            validator.SWIFT_DEPENDENCY_CACHE_KEY.startswith(
+                "swift-syntax-standalone-v2-600.0.1-"
+            )
+        )
+        for name in (
+            "SWIFT_DEPENDENCY_SEED",
+            "SWIFT_DEPENDENCY_CACHE_SCHEMA",
+            "SWIFT_DEPENDENCY_OBJECT_STORE_POLICY",
+            "SWIFT_DEPENDENCY_CACHE_KEY",
+            "SWIFT_DEPENDENCY_CACHE_KEYS",
+        ):
+            self.assertEqual(getattr(runner, name), getattr(validator, name))
 
         from jsonschema import Draft202012Validator
 
         schemas = [
-            json.loads(
-                (ROOT / "schemas" / "batch29" / name).read_text()
-            )
+            json.loads((ROOT / "schemas" / "batch29" / name).read_text())
             for name in (
                 "formal-equivalence-evidence.schema.json",
                 "module-equivalence-evidence.schema.json",
             )
         ]
         swift_definition_names = {
-            name
-            for name in schemas[0]["$defs"]
-            if name.startswith("swift_")
+            name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
         self.assertEqual(len(swift_definition_names), 38)
         self.assertEqual(
             swift_definition_names,
-            {
-                name
-                for name in schemas[1]["$defs"]
-                if name.startswith("swift_")
-            },
+            {name for name in schemas[1]["$defs"] if name.startswith("swift_")},
         )
         for definition_name in swift_definition_names:
             self.assertEqual(
@@ -2044,12 +2251,10 @@ print('\\n'.join(failures))
                 schemas[1]["$defs"][definition_name],
             )
         cache_contracts = [
-            schema["$defs"]["swift_dependency_cache_receipt"]
-            for schema in schemas
+            schema["$defs"]["swift_dependency_cache_receipt"] for schema in schemas
         ]
         mirror_contracts = [
-            schema["$defs"]["swift_dependency_mirror_receipt"]
-            for schema in schemas
+            schema["$defs"]["swift_dependency_mirror_receipt"] for schema in schemas
         ]
         self.assertEqual(cache_contracts[0], cache_contracts[1])
         self.assertEqual(mirror_contracts[0], mirror_contracts[1])
@@ -2061,14 +2266,15 @@ print('\\n'.join(failures))
                 "$ref": "#/$defs/swift_analyzer_build_receipt",
             }
             self.assertEqual(
-                list(
-                    Draft202012Validator(receipt_contract).iter_errors(receipt)
-                ),
+                list(Draft202012Validator(receipt_contract).iter_errors(receipt)),
                 [],
             )
         mirror = receipt["dependency"]["mirror"]
         cache = mirror["cache"]
         for contract in cache_contracts:
+            self.assertEqual(
+                set(contract["required"]), validator.SWIFT_DEPENDENCY_CACHE_KEYS
+            )
             self.assertEqual(
                 list(Draft202012Validator(contract).iter_errors(cache)),
                 [],
@@ -2080,6 +2286,35 @@ print('\\n'.join(failures))
                     list(Draft202012Validator(contract).iter_errors(forged)),
                     [],
                 )
+            for field in ("object_store_policy",):
+                missing = copy.deepcopy(cache)
+                missing.pop(field)
+                self.assertNotEqual(
+                    list(Draft202012Validator(contract).iter_errors(missing)),
+                    [],
+                )
+            forged_policy = copy.deepcopy(cache)
+            forged_policy["object_store_policy"] = "borrowed-object-store"
+            self.assertNotEqual(
+                list(Draft202012Validator(contract).iter_errors(forged_policy)),
+                [],
+            )
+            legacy = copy.deepcopy(cache)
+            legacy.update(
+                {
+                    "cache_key": (
+                        "swift-syntax-600.0.1-"
+                        "0687f71944021d616d34d922343dcef086855920-"
+                        "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+                    ),
+                    "cache_schema": "swift-dependencies-v1",
+                    "seed": "verified-content-addressed-cache",
+                }
+            )
+            self.assertNotEqual(
+                list(Draft202012Validator(contract).iter_errors(legacy)),
+                [],
+            )
 
     def test_specialized_swift_portable_cache_receipt_tamper_fails_closed(self):
         validator = load_route_validator()
@@ -2095,7 +2330,13 @@ print('\\n'.join(failures))
         self.assertEqual(set(projection), {"sha256", "receipt"})
         self.assertEqual(
             projection["receipt"]["dependency"]["mirror"]["seed"],
-            "verified-content-addressed-cache",
+            "verified-content-addressed-standalone-cache",
+        )
+        self.assertEqual(
+            projection["receipt"]["dependency"]["mirror"]["cache"][
+                "object_store_policy"
+            ],
+            "standalone-no-alternates-no-hardlinks-v2",
         )
         self.assertNotIn(
             "absolute_path",
@@ -2113,7 +2354,9 @@ print('\\n'.join(failures))
         self.assertNotIn("root", portable_closure["trees"][0])
         self.assertEqual(portable_closure["compiler_runtime_soundness"], "NOT_RUN")
         self.assertEqual(portable_closure["certification"], "NOT_CERTIFIED")
-        portable_probe_build = projection["receipt"]["network_isolation"]["probe"]["build"]
+        portable_probe_build = projection["receipt"]["network_isolation"]["probe"][
+            "build"
+        ]
         self.assertEqual(
             set(portable_probe_build),
             {"environment_policy", "argv", "environment", "compiler"},
@@ -2122,7 +2365,9 @@ print('\\n'.join(failures))
             portable_probe_build["environment"]["PATH"],
             "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>",
         )
-        self.assertNotIn("/Applications/", json.dumps(portable_probe_build["environment"]))
+        self.assertNotIn(
+            "/Applications/", json.dumps(portable_probe_build["environment"])
+        )
         self.assertNotIn("/private/", json.dumps(portable_probe_build["environment"]))
         host_drift = copy.deepcopy(receipt)
         host_drift["toolchain"]["swiftc"] = "/other/toolchain/swiftc"
@@ -2130,9 +2375,9 @@ print('\\n'.join(failures))
         host_drift["toolchain"]["build_closure"]["components"][0]["path"] = (
             "/other/toolchain/swift"
         )
-        host_drift["toolchain"]["build_closure"]["components"][0][
-            "resolved_path"
-        ] = "/other/toolchain/swift-frontend"
+        host_drift["toolchain"]["build_closure"]["components"][0]["resolved_path"] = (
+            "/other/toolchain/swift-frontend"
+        )
         host_drift["toolchain"]["build_closure"]["components"][0]["uid"] = 502
         host_drift["toolchain"]["build_closure"]["components"][0]["gid"] = 21
         host_drift["toolchain"]["build_closure"]["trees"][0]["root"] = (
@@ -2141,9 +2386,7 @@ print('\\n'.join(failures))
         host_drift["network_isolation"]["sandbox"]["path"] = (
             "/other/usr/bin/sandbox-exec"
         )
-        host_drift["network_isolation"]["verifier"]["path"] = (
-            "/other/usr/bin/codesign"
-        )
+        host_drift["network_isolation"]["verifier"]["path"] = "/other/usr/bin/codesign"
         host_probe = host_drift["network_isolation"]["probe"]
         host_probe["build"]["compiler"].update(
             {
@@ -2248,6 +2491,13 @@ print('\\n'.join(failures))
                 "cache.cache_schema is invalid",
             ),
             (
+                "object store policy",
+                lambda value: value["dependency"]["mirror"]["cache"].update(
+                    {"object_store_policy": "borrowed-object-store"}
+                ),
+                "cache.object_store_policy is invalid",
+            ),
+            (
                 "cache seed",
                 lambda value: value["dependency"]["mirror"]["cache"].update(
                     {"seed": "verified-package-checkout"}
@@ -2291,9 +2541,7 @@ print('\\n'.join(failures))
             ),
             (
                 "unknown mirror seed",
-                lambda value: value["dependency"]["mirror"].update(
-                    {"seed": "unknown"}
-                ),
+                lambda value: value["dependency"]["mirror"].update({"seed": "unknown"}),
                 "mirror.seed is invalid",
             ),
             (
@@ -2368,65 +2616,65 @@ print('\\n'.join(failures))
             ),
             (
                 "probe build argv",
-                lambda value: value["network_isolation"]["probe"]["build"]["argv"].append(
-                    "-framework"
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "argv"
+                ].append("-framework"),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe build environment missing",
-                lambda value: value["network_isolation"]["probe"]["build"]["environment"].pop(
-                    "PYTHONNOUSERSITE"
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "environment"
+                ].pop("PYTHONNOUSERSITE"),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe build environment extra",
-                lambda value: value["network_isolation"]["probe"]["build"]["environment"].update(
-                    {"SDKROOT": "/tmp/forged-sdk"}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "environment"
+                ].update({"SDKROOT": "/tmp/forged-sdk"}),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe build environment value",
-                lambda value: value["network_isolation"]["probe"]["build"]["environment"].update(
-                    {"TZ": "Asia/Shanghai"}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "environment"
+                ].update({"TZ": "Asia/Shanghai"}),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe build environment path injection",
-                lambda value: value["network_isolation"]["probe"]["build"]["environment"].update(
-                    {"PATH": "/tmp/host-bin:/usr/bin"}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "environment"
+                ].update({"PATH": "/tmp/host-bin:/usr/bin"}),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe compiler role",
-                lambda value: value["network_isolation"]["probe"]["build"]["compiler"].update(
-                    {"role": "swift-driver"}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "compiler"
+                ].update({"role": "swift-driver"}),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe compiler path",
-                lambda value: value["network_isolation"]["probe"]["build"]["compiler"].update(
-                    {"path": "/tmp/forged-clang"}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "compiler"
+                ].update({"path": "/tmp/forged-clang"}),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe compiler digest",
-                lambda value: value["network_isolation"]["probe"]["build"]["compiler"].update(
-                    {"sha256": "sha256:" + "7" * 64}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "compiler"
+                ].update({"sha256": "sha256:" + "7" * 64}),
                 "network_isolation.probe.build is invalid",
             ),
             (
                 "probe compiler extra",
-                lambda value: value["network_isolation"]["probe"]["build"]["compiler"].update(
-                    {"device": 1}
-                ),
+                lambda value: value["network_isolation"]["probe"]["build"][
+                    "compiler"
+                ].update({"device": 1}),
                 "network_isolation.probe.build is invalid",
             ),
             (
@@ -2494,30 +2742,30 @@ print('\\n'.join(failures))
             ),
             (
                 "probe seal policy",
-                lambda value: value["network_isolation"]["probe"]["execution_seal"].update(
-                    {"policy": "writable-root"}
-                ),
+                lambda value: value["network_isolation"]["probe"][
+                    "execution_seal"
+                ].update({"policy": "writable-root"}),
                 "network_isolation.probe.execution_seal is invalid",
             ),
             (
                 "probe seal root",
-                lambda value: value["network_isolation"]["probe"]["execution_seal"].update(
-                    {"root": "/private/tmp/forged/../network-probe-execution"}
-                ),
+                lambda value: value["network_isolation"]["probe"][
+                    "execution_seal"
+                ].update({"root": "/private/tmp/forged/../network-probe-execution"}),
                 "network_isolation.probe.execution_seal is invalid",
             ),
             (
                 "probe seal binary",
-                lambda value: value["network_isolation"]["probe"]["execution_seal"]["binary"].update(
-                    {"inode": 99}
-                ),
+                lambda value: value["network_isolation"]["probe"]["execution_seal"][
+                    "binary"
+                ].update({"inode": 99}),
                 "network_isolation.probe.execution_seal is invalid",
             ),
             (
                 "probe seal extra",
-                lambda value: value["network_isolation"]["probe"]["execution_seal"].update(
-                    {"owner": "forged"}
-                ),
+                lambda value: value["network_isolation"]["probe"][
+                    "execution_seal"
+                ].update({"owner": "forged"}),
                 "network_isolation.probe.execution_seal keys are not exact",
             ),
             (
@@ -2604,9 +2852,7 @@ print('\\n'.join(failures))
             ),
             (
                 "execution seal binary",
-                lambda value: value["execution_seal"]["binary"].update(
-                    {"inode": 99}
-                ),
+                lambda value: value["execution_seal"]["binary"].update({"inode": 99}),
                 "execution_seal identity is invalid",
             ),
             (
@@ -2618,9 +2864,9 @@ print('\\n'.join(failures))
             ),
             (
                 "canonical host path",
-                lambda value: value["canonical_identity"]["receipt"][
-                    "binary"
-                ].update({"path": "/tmp/forged"}),
+                lambda value: value["canonical_identity"]["receipt"]["binary"].update(
+                    {"path": "/tmp/forged"}
+                ),
                 "canonical_identity mismatch",
             ),
             (
@@ -2674,9 +2920,9 @@ print('\\n'.join(failures))
             ),
             (
                 "toolchain closure tree root",
-                lambda value: value["toolchain"]["build_closure"]["trees"][
-                    0
-                ].update({"root": "/tmp/ManifestAPI"}),
+                lambda value: value["toolchain"]["build_closure"]["trees"][0].update(
+                    {"root": "/tmp/ManifestAPI"}
+                ),
                 "toolchain exact identity is invalid",
             ),
             (
@@ -2712,9 +2958,7 @@ print('\\n'.join(failures))
 
         validator = load_route_validator()
         runner = load_polyglot_runner()
-        with tempfile.TemporaryDirectory(
-            prefix="elmos-swift-analyzer-"
-        ) as temporary:
+        with tempfile.TemporaryDirectory(prefix="elmos-swift-analyzer-") as temporary:
             root = Path(temporary).resolve()
             binary_path = root / "ElmosSwiftAnalyzer"
             binary_path.write_bytes(b"portable-swift-analyzer-fixture")
@@ -2760,9 +3004,7 @@ print('\\n'.join(failures))
                     "inode": root_metadata.st_ino,
                     "binary": copy.deepcopy(binary),
                 }
-                canonical = validator._rebuild_portable_swift_receipt_identity(
-                    receipt
-                )
+                canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
                 receipt["canonical_identity"] = {
                     "sha256": validator._receipt_payload_sha256(canonical),
                     "receipt": canonical,
@@ -2795,17 +3037,14 @@ print('\\n'.join(failures))
             write_json(receipt_path, receipt)
             reference = {
                 "path": (
-                    "certification/formal-artifacts/"
-                    "swift-analyzer-build-receipt.json"
+                    "certification/formal-artifacts/swift-analyzer-build-receipt.json"
                 ),
                 "sha256": digest(receipt_path),
                 "bytes": receipt_path.stat().st_size,
             }
             generator.validate_portable_swift_receipt(route, reference)
 
-            receipt["observations"] = {
-                "dependency_cache_absolute_path": "/tmp/forged"
-            }
+            receipt["observations"] = {"dependency_cache_absolute_path": "/tmp/forged"}
             write_json(receipt_path, receipt)
             with self.assertRaisesRegex(
                 RuntimeError,
@@ -2847,9 +3086,7 @@ print('\\n'.join(failures))
                 )
                 observation_path = route / observation_relative
                 observation_document = json.loads(observation_path.read_text())
-                observation_document[symbol][0].update(
-                    {"value": False, "raw": "false"}
-                )
+                observation_document[symbol][0].update({"value": False, "raw": "false"})
                 write_json(observation_path, observation_document)
                 refresh_module_artifact(route, report, observation_relative)
 
@@ -2896,14 +3133,24 @@ print('\\n'.join(failures))
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as td:
                 route = Path(td) / "cpp-to-java"
                 shutil.copytree(ROOT / "routes" / "cpp-to-java", route)
-                report = json.loads((route / "certification" / "module-equivalence.json").read_text())
+                report = json.loads(
+                    (route / "certification" / "module-equivalence.json").read_text()
+                )
                 for side in ("source", "target"):
                     role = f"{side}-module-semantic-ir"
-                    relative = next(item["path"] for item in report["artifact_refs"] if item["role"] == role)
+                    relative = next(
+                        item["path"]
+                        for item in report["artifact_refs"]
+                        if item["role"] == role
+                    )
                     path = route / relative
                     document = json.loads(path.read_text())
                     if scenario == "string-equality":
-                        function = next(item for item in document["functions"] if item["name"] == "both")
+                        function = next(
+                            item
+                            for item in document["functions"]
+                            if item["name"] == "both"
+                        )
                         expression = function["body"][0]["expression"]
                         expression["operator"] = "=="
                         expression["left"]["kind"] = "literal"
@@ -2911,14 +3158,20 @@ print('\\n'.join(failures))
                         expression["right"]["kind"] = "literal"
                         expression["right"]["value"] = "canonically-hidden"
                     else:
-                        function = next(item for item in document["functions"] if item["name"] == "clampNumber")
+                        function = next(
+                            item
+                            for item in document["functions"]
+                            if item["name"] == "clampNumber"
+                        )
                         expression = function["body"][0]["condition"]
                         expression["operator"] = "+"
                     write_json(path, document)
                 refresh_module_semantic_bindings(route, report)
                 refresh_module_report_reference(route, report)
 
-                certification = json.loads((route / "certification" / "certification.json").read_text())
+                certification = json.loads(
+                    (route / "certification" / "certification.json").read_text()
+                )
                 _, failures = validator.validate_module_equivalence(
                     route,
                     json.loads((route / "route.json").read_text()),
@@ -2929,16 +3182,22 @@ print('\\n'.join(failures))
                     if scenario == "string-equality"
                     else "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED"
                 )
-                self.assertTrue(any(expected in failure for failure in failures), failures)
+                self.assertTrue(
+                    any(expected in failure for failure in failures), failures
+                )
 
     def test_specialized_module_rejects_non_finite_json_case(self):
         validator = load_route_validator()
         with tempfile.TemporaryDirectory() as td:
             route = Path(td) / "cpp-to-java"
             shutil.copytree(ROOT / "routes" / "cpp-to-java", route)
-            report = json.loads((route / "certification" / "module-equivalence.json").read_text())
+            report = json.loads(
+                (route / "certification" / "module-equivalence.json").read_text()
+            )
             case_relative = next(
-                item["path"] for item in report["artifact_refs"] if item["role"] == "module-case-manifest"
+                item["path"]
+                for item in report["artifact_refs"]
+                if item["role"] == "module-case-manifest"
             )
             case_path = route / case_relative
             case_path.write_text(case_path.read_text().replace("120", "NaN", 1))
@@ -2946,22 +3205,27 @@ print('\\n'.join(failures))
             report["module_input"]["corpus_sha256"] = digest(case_path)
             refresh_module_report_reference(route, report)
 
-            certification = json.loads((route / "certification" / "certification.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
+            )
             _, failures = validator.validate_module_equivalence(
                 route,
                 json.loads((route / "route.json").read_text()),
                 certification,
             )
             self.assertTrue(
-                any("non-finite JSON constant is forbidden: NaN" in failure for failure in failures),
+                any(
+                    "non-finite JSON constant is forbidden: NaN" in failure
+                    for failure in failures
+                ),
                 failures,
             )
 
-    def test_route_inventory_is_exact_nine_language_complete_72(self):
+    def test_route_inventory_is_exact_ten_language_complete_90(self):
         matrix = load_matrix_validator()
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         routes = matrix.check_inventory_shape(inventory)
-        self.assertEqual(len(routes), 72)
+        self.assertEqual(len(routes), 90)
         self.assertEqual(
             {route["route_key"] for route in routes},
             set(matrix.EVIDENCED_ROUTE_KEYS),
@@ -2969,8 +3233,8 @@ print('\\n'.join(failures))
 
         missing = copy.deepcopy(inventory)
         missing["routes"].pop()
-        missing["route_count"] = 71
-        missing["limited_route_count"] = 71
+        missing["route_count"] = 89
+        missing["limited_route_count"] = 89
         with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_EXPLICIT_COUNT_DRIFT"):
             matrix.check_inventory_shape(missing)
 
@@ -2981,8 +3245,8 @@ print('\\n'.join(failures))
                 "route_key": "duplicate-java-to-csharp",
             }
         )
-        expanded["route_count"] = 73
-        expanded["limited_route_count"] = 73
+        expanded["route_count"] = 91
+        expanded["limited_route_count"] = 91
         with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_EXPLICIT_COUNT_DRIFT"):
             matrix.check_inventory_shape(expanded)
 
@@ -3001,7 +3265,7 @@ print('\\n'.join(failures))
         document = (ROOT / "docs" / "batch29" / "ROUTE_MATRIX.md").read_text()
         for route in inventory["routes"]:
             self.assertIn(f"`{route['route_key']}`", document)
-        self.assertIn("72 `limited`, 0 `certified`", document)
+        self.assertIn("90 `limited`, 0 `certified`", document)
         self.assertIn("`PASSED_LOCAL`", document)
         self.assertIn("`NOT_CERTIFIED`", document)
         self.assertIn("Independent verification: `NOT_RUN`", document)
@@ -3009,7 +3273,9 @@ print('\\n'.join(failures))
 
     def test_polyglot_runner_accepts_only_an_exact_directed_route(self):
         runner = load_polyglot_runner()
-        self.assertEqual(runner.parse_route_key("python-to-typescript"), ("python", "typescript"))
+        self.assertEqual(
+            runner.parse_route_key("python-to-typescript"), ("python", "typescript")
+        )
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
         for invalid in (
@@ -3018,7 +3284,10 @@ print('\\n'.join(failures))
             "Python-to-typescript",
             "java-to-kotlin",
         ):
-            with self.subTest(invalid=invalid), self.assertRaises(argparse.ArgumentTypeError):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaises(argparse.ArgumentTypeError),
+            ):
                 runner.parse_route_key(invalid)
 
     def test_local_route_status_requires_current_engine_source_bytes(self):
@@ -3027,8 +3296,19 @@ print('\\n'.join(failures))
             repo = Path(td).resolve()
             route = repo / "routes" / "python-to-typescript"
             live = repo / "engine.py"
-            captured = route / "certification" / "formal-artifacts" / "engine-sources" / "engine.py"
-            manifest = route / "certification" / "formal-artifacts" / "engine-source-manifest.json"
+            captured = (
+                route
+                / "certification"
+                / "formal-artifacts"
+                / "engine-sources"
+                / "engine.py"
+            )
+            manifest = (
+                route
+                / "certification"
+                / "formal-artifacts"
+                / "engine-source-manifest.json"
+            )
             captured.parent.mkdir(parents=True)
             payload = b"original engine bytes\n"
             live.write_bytes(payload)
@@ -3042,7 +3322,9 @@ print('\\n'.join(failures))
                     "files": [
                         {
                             "repository_path": "engine.py",
-                            "captured_path": ("certification/formal-artifacts/engine-sources/engine.py"),
+                            "captured_path": (
+                                "certification/formal-artifacts/engine-sources/engine.py"
+                            ),
                             "sha256": "sha256:" + hashlib.sha256(payload).hexdigest(),
                             "bytes": len(payload),
                         }
@@ -3052,12 +3334,7 @@ print('\\n'.join(failures))
 
             self.assertEqual(
                 runner.current_engine_source_binding(repo, route),
-                (True, "ENGINE_SOURCE_EVIDENCE_CURRENT"),
-            )
-            live.write_bytes(b"changed engine bytes\n")
-            self.assertEqual(
-                runner.current_engine_source_binding(repo, route),
-                (False, "ENGINE_SOURCE_EVIDENCE_STALE"),
+                (False, "ENGINE_SOURCE_MANIFEST_INVALID"),
             )
 
     def test_single_route_mode_executes_and_gates_only_the_selected_route(self):
@@ -3074,16 +3351,16 @@ print('\\n'.join(failures))
                     "--repo-root",
                     td,
                     "--route",
-                    "python-to-typescript",
+                    "python-to-cpp",
                 ],
             ),
         ):
             self.assertEqual(runner.main(), 0)
         execute.assert_called_once()
-        self.assertEqual(execute.call_args.args[2:], ("python", "typescript"))
+        self.assertEqual(execute.call_args.args[2:], ("python", "cpp"))
         checks.assert_called_once_with(
             Path(td).resolve(),
-            Path(td).resolve() / "routes" / "python-to-typescript",
+            Path(td).resolve() / "routes" / "python-to-cpp",
         )
 
     def test_persisted_artifact_manifest_is_complete_and_non_destructive(self):
@@ -3104,9 +3381,13 @@ print('\\n'.join(failures))
             (generated / "bin" / "RouteHarness.dll").write_bytes(b"binary")
             (generated / "route_harness").write_bytes(b"native")
 
-            reference = runner.persist_artifact_directory(repo, route, "development", generated)
+            reference = runner.persist_artifact_directory(
+                repo, route, "development", generated
+            )
 
-            self.assertTrue(user_file.is_file(), "managed refresh deleted an unrelated file")
+            self.assertTrue(
+                user_file.is_file(), "managed refresh deleted an unrelated file"
+            )
             manifest_path = route / str(reference["path"])
             self.assertEqual(reference["sha256"], digest(manifest_path))
             self.assertEqual(reference["bytes"], manifest_path.stat().st_size)
@@ -3120,7 +3401,9 @@ print('\\n'.join(failures))
                 },
             )
             self.assertNotIn("user-note.txt", listed)
-            self.assertFalse((destination / "nested" / "future-engine-output.bin").exists())
+            self.assertFalse(
+                (destination / "nested" / "future-engine-output.bin").exists()
+            )
             self.assertFalse((destination / "bin" / "RouteHarness.dll").exists())
             self.assertFalse((destination / "route_harness").exists())
             self.assertIn("bin/**", manifest["excluded_rebuildable_patterns"])
@@ -3137,8 +3420,8 @@ print('\\n'.join(failures))
         runner = load_polyglot_runner()
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td).resolve()
-            route = repo / "routes" / "python-to-typescript"
-            shutil.copytree(ROOT / "routes" / "python-to-typescript", route)
+            route = repo / "routes" / "python-to-cpp"
+            shutil.copytree(ROOT / "routes" / "python-to-cpp", route)
             fixtures = repo / "engines" / "polyglot-route-engine" / "fixtures"
             fixtures_by_corpus = {
                 "development": (
@@ -3156,14 +3439,18 @@ print('\\n'.join(failures))
             }
             for source, cases in fixtures_by_corpus.values():
                 source.parent.mkdir(parents=True, exist_ok=True)
-                source.write_text("def fixture(a: int, b: int) -> int:\n    return a + b\n")
+                source.write_text(
+                    "def fixture(a: int, b: int) -> int:\n    return a + b\n"
+                )
                 cases.parent.mkdir(parents=True, exist_ok=True)
                 cases.write_text('[{"args":[1,2],"expected":3}]\n')
 
-            def fake_migrate(source, source_language, target_language, function_name, cases, output):
+            def fake_migrate(
+                source, source_language, target_language, function_name, cases, output
+            ):
                 output.mkdir(parents=True, exist_ok=True)
-                (output / "migrated.ts").write_text("export function migrated() { return 3 }\n")
-                (output / "route_harness.ts").write_text("// harness\n")
+                (output / "migrated.cpp").write_text("int migrated() { return 3; }\n")
+                (output / "route_harness.cpp").write_text("// harness\n")
                 (output / "semantic-ir.json").write_text('{"schema_version":"1.0.0"}\n')
                 (output / "engine-new-output").mkdir()
                 (output / "engine-new-output" / "trace.log").write_text("complete\n")
@@ -3210,25 +3497,33 @@ print('\\n'.join(failures))
 
             with (
                 mock.patch.object(runner, "migrate", side_effect=fake_migrate),
-                mock.patch.object(runner, "execute_negative", side_effect=fake_negative),
+                mock.patch.object(
+                    runner, "execute_negative", side_effect=fake_negative
+                ),
                 mock.patch.object(
                     runner,
                     "build_formal_equivalence_evidence",
                     side_effect=fake_formal,
                 ),
             ):
-                runner.execute_route(repo, fixtures, "python", "typescript")
+                runner.execute_route(repo, fixtures, "python", "cpp")
 
-            aggregate = json.loads((route / "certification" / "evidence.json").read_text())
+            aggregate = json.loads(
+                (route / "certification" / "evidence.json").read_text()
+            )
             self.assertEqual(
                 aggregate["formal_equivalence"]["path"],
                 "certification/formal-equivalence.json",
             )
             self.assertEqual(set(aggregate["artifact_manifests"]), set(runner.CORPORA))
             self.assertEqual(len(aggregate["artifact_refs"]), 3)
-            certification = json.loads((route / "certification" / "certification.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
+            )
             self.assertEqual(certification["evidence_format"], 2)
-            self.assertEqual(certification["formal_equivalence"], aggregate["formal_equivalence"])
+            self.assertEqual(
+                certification["formal_equivalence"], aggregate["formal_equivalence"]
+            )
             for corpus, reference in aggregate["artifact_manifests"].items():
                 manifest_path = route / reference["path"]
                 self.assertEqual(reference["sha256"], digest(manifest_path))
@@ -3237,8 +3532,8 @@ print('\\n'.join(failures))
                 listed = {item["path"] for item in manifest["files"]}
                 self.assertTrue(
                     {
-                        "migrated.ts",
-                        "route_harness.ts",
+                        "migrated.cpp",
+                        "route_harness.cpp",
                         "semantic-ir.json",
                         "route-evidence.json",
                         "engine-new-output/trace.log",
@@ -3272,7 +3567,9 @@ print('\\n'.join(failures))
             check=False,
         )
 
-    def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(self):
+    def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
+        self,
+    ):
         runner = load_polyglot_runner()
         gate = load_route_gate()
         with tempfile.TemporaryDirectory() as td:
@@ -3294,8 +3591,7 @@ print('\\n'.join(failures))
             string_case = next(
                 item
                 for item in negative["cases"]
-                if item["case_id"]
-                == "specialized-string-semantics-unsupported"
+                if item["case_id"] == "specialized-string-semantics-unsupported"
             )
             source_ref = next(
                 item for item in string_case["input_refs"] if item["role"] == "source"
@@ -3304,10 +3600,7 @@ print('\\n'.join(failures))
                 (route / "corpus" / "development" / "manifest.json").read_text()
             )
             positive_source = (
-                route
-                / "corpus"
-                / "development"
-                / development_manifest["source_file"]
+                route / "corpus" / "development" / development_manifest["source_file"]
             )
             bound_negative_source = route / source_ref["path"]
             shutil.copyfile(positive_source, bound_negative_source)
@@ -3360,18 +3653,24 @@ print('\\n'.join(failures))
             source = fixtures / "python" / "pricing.py"
             cases = fixtures / "behavior-cases.json"
             source.parent.mkdir(parents=True)
-            source.write_text("def calculate(a: int, b: int) -> int:\n    return a + b\n")
+            source.write_text(
+                "def calculate(a: int, b: int) -> int:\n    return a + b\n"
+            )
             cases.write_text('[{"args":[1,2],"expected":3}]\n')
             with mock.patch.object(
                 runner,
                 "migrate",
                 side_effect=runner.RouteError("FUNCTION_NOT_FOUND"),
             ):
-                reference = runner.execute_negative(route, fixtures, "python", "typescript")
+                reference = runner.execute_negative(
+                    route, fixtures, "python", "typescript"
+                )
             self.assertEqual(reference, "certification/local-negative-evidence.json")
             self.assertTrue((route / "certification" / "gate-report.md").is_file())
             self.assertTrue((route / "README.md").is_file())
-            self.assertIn("NOT_RUN", (route / "certification" / "gate-report.md").read_text())
+            self.assertIn(
+                "NOT_RUN", (route / "certification" / "gate-report.md").read_text()
+            )
 
 
 if __name__ == "__main__":

@@ -81,10 +81,27 @@
 - a passing specialized route remains `limited / NOT_CERTIFIED`; local zero
   unknowns mean zero only inside the exact finite no-error domain
 
+### Node.js exact-eighteen additions
+
+- JavaScript is an independent `javascript` language identity bound to the
+  exact Node.js 26.0.0 / ES2022 / ESM profile; TypeScript-on-Node evidence
+  cannot satisfy a JavaScript route
+- every JavaScript direction requires exact JSDoc parameter/return types,
+  concrete UTF-8 spans, per-function replay, and typed-pure-module evidence
+- JavaScript integer evidence is limited to the IEEE-754 safe-integer domain;
+  finite-number, boolean, and string contracts retain independent guards, and
+  TypeScript↔JavaScript cannot infer an integer contract from `number`
+- missing/ambiguous types, coercive equality, non-finite or unsafe values,
+  CommonJS, async/event-loop behavior, prototype state, I/O, package lifecycle,
+  and native addons fail closed or remain explicitly `NOT_RUN`
+- the exact eighteen routes do not change the immutable exact-eight profile;
+  local success remains `limited / NOT_CERTIFIED` and Node/compiler/runtime
+  semantic soundness remains `NOT_RUN`
+
 ## Gate R29-H — Small/medium whole-repository matrix
 
-- the repository capability campaign contains every one of the nine-language matrix's 72 directed routes exactly once and keeps each direction independent
-- every route contains one measured `SMALL` and one measured `MEDIUM` workload, for 144 explicit workload results
+- the repository capability campaign contains every one of the ten-language matrix's 90 directed routes exactly once and keeps each direction independent
+- every route contains one measured `SMALL` and one measured `MEDIUM` workload, for 180 explicit workload results
 - each workload binds a passing source baseline build/test, complete source-unit classification, zero skipped/failed/unsupported/unknown units, complete conversion, and a passing whole-target-repository build/test
 - every referenced JSON artifact binds campaign/route/repository/class/stage/role in both its reference and verified bytes; IDs, paths, and hard-linked inodes cannot be reused across subjects
 - raw inventory, classification, conversion, test, and target-manifest detail is parsed to recompute all self-reported counts; swaps or counter-only claims fail
@@ -95,7 +112,7 @@
 
 The detailed contract and bounded repository-size rules are in
 `docs/batch29/REPOSITORY_QUALITY_GATES.md`. No checked-in campaign currently
-claims that all 72 routes have passed; its absence is `NOT_RUN`, not success.
+claims that all 90 routes have passed; its absence is `NOT_RUN`, not success.
 
 ## Certification outcomes
 

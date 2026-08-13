@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import re
 from pathlib import Path
@@ -13,6 +14,9 @@ _EXTENSIONS: dict[str, Language] = {
     ".py": "python",
     ".cs": "csharp",
     ".ts": "typescript",
+    ".cjs": "javascript",
+    ".js": "javascript",
+    ".mjs": "javascript",
     ".go": "go",
     ".rs": "rust",
     ".cc": "cpp",
@@ -49,6 +53,101 @@ _SAFE_WORKSPACE_REF = re.compile(
 _MAX_FILES = 5_000
 _MAX_SOURCE_BYTES = 64 * 1024 * 1024
 _MAX_FILE_BYTES = 2 * 1024 * 1024
+
+
+def _javascript_descriptor_json(content: bytes) -> dict[str, Any]:
+    """Parse a package descriptor without accepting duplicate ``type`` keys."""
+
+    def object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate key")
+            value[key] = item
+        return value
+
+    try:
+        value = json.loads(content.decode("utf-8"), object_pairs_hook=object_pairs)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_AMBIGUOUS") from error
+    if not isinstance(value, dict):
+        raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_AMBIGUOUS")
+    return value
+
+
+def javascript_esm_descriptor(source: Path, repository_root: Path | None = None) -> dict[str, Any] | None:
+    """Return the exact Node ESM descriptor required by a plain ``.js`` file.
+
+    ``.mjs`` is intrinsically ESM.  A ``.js`` input is only accepted when its
+    nearest regular, in-scope package descriptor explicitly establishes the
+    Node ESM interpretation.  The descriptor is content addressed here so all
+    later repository stages can bind the same semantic input.
+    """
+
+    suffix = source.suffix.lower()
+    if suffix == ".mjs":
+        return None
+    if suffix == ".cjs":
+        raise RouteError("JAVASCRIPT_CJS_SOURCE_BLOCKED")
+    if suffix != ".js":
+        raise RouteError("JAVASCRIPT_SOURCE_EXTENSION_UNSUPPORTED")
+    try:
+        resolved_source = source.resolve(strict=True)
+        if source.is_symlink() or not resolved_source.is_file():
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE")
+        root = repository_root.resolve(strict=True) if repository_root is not None else None
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE") from error
+    if root is not None and (
+        repository_root is None or repository_root.is_symlink() or not resolved_source.is_relative_to(root)
+    ):
+        raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE")
+
+    cursor = resolved_source.parent
+    while True:
+        if root is not None and not cursor.is_relative_to(root):
+            break
+        descriptor = cursor / "package.json"
+        try:
+            metadata = descriptor.lstat()
+        except FileNotFoundError:
+            metadata = None
+        except OSError as error:
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE") from error
+        if metadata is not None:
+            if descriptor.is_symlink() or not descriptor.is_file():
+                raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE")
+            before = (metadata.st_dev, metadata.st_ino, metadata.st_size, metadata.st_mtime_ns, metadata.st_ctime_ns)
+            if metadata.st_size > _MAX_FILE_BYTES:
+                raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_TOO_LARGE")
+            try:
+                content = descriptor.read_bytes()
+                after_metadata = descriptor.lstat()
+            except OSError as error:
+                raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE") from error
+            after = (
+                after_metadata.st_dev,
+                after_metadata.st_ino,
+                after_metadata.st_size,
+                after_metadata.st_mtime_ns,
+                after_metadata.st_ctime_ns,
+            )
+            if before != after or len(content) != metadata.st_size:
+                raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_READ")
+            package = _javascript_descriptor_json(content)
+            if package.get("type") != "module":
+                raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_TYPE_MODULE_REQUIRED")
+            path = descriptor.relative_to(root).as_posix() if root is not None else str(descriptor)
+            return {
+                "path": path,
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "bytes": len(content),
+                "type": "module",
+            }
+        if cursor == root or cursor.parent == cursor:
+            break
+        cursor = cursor.parent
+    raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_REQUIRED")
 
 
 def _repository_scale(file_count: int, byte_count: int) -> str:
@@ -104,6 +203,7 @@ def plan_repository(
     root = repository.resolve(strict=True)
     safe_ref = _repository_ref(repository_ref)
     inventory: list[dict[str, Any]] = []
+    javascript_esm_descriptors: list[dict[str, Any]] = []
     language_counts = {language: 0 for language in SUPPORTED_LANGUAGES}
     ignored_symlink_count = 0
     total_bytes = 0
@@ -136,21 +236,31 @@ def plan_repository(
             if total_bytes > _MAX_SOURCE_BYTES:
                 raise RouteError("REPOSITORY_SOURCE_BYTES_LIMIT_EXCEEDED")
             language_counts[language] += 1
-            inventory.append(
-                {
-                    "path": relative,
-                    "language": language,
-                    "sha256": hashlib.sha256(content).hexdigest(),
-                    "bytes": len(content),
-                    "lines": content.count(b"\n") + (1 if content and not content.endswith(b"\n") else 0),
-                }
-            )
+            entry = {
+                "path": relative,
+                "language": language,
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "bytes": len(content),
+                "lines": content.count(b"\n") + (1 if content and not content.endswith(b"\n") else 0),
+            }
+            if language == "javascript":
+                descriptor = javascript_esm_descriptor(path, root)
+                if descriptor is not None:
+                    entry["javascript_esm_descriptor"] = descriptor
+                    javascript_esm_descriptors.append({"source_path": relative, **descriptor})
+            inventory.append(entry)
 
     source_files = [entry for entry in inventory if entry["language"] == source_language]
     if not source_files:
         raise RouteError(f"NO_SOURCE_FILES:{source_language}")
     inventory.sort(key=lambda entry: str(entry["path"]))
-    snapshot_payload = "\n".join(f"{entry['path']}:{entry['sha256']}" for entry in inventory)
+    snapshot_payload = "\n".join(
+        [f"{entry['path']}:{entry['sha256']}" for entry in inventory]
+        + [
+            f"descriptor:{entry['source_path']}:{entry['path']}:{entry['sha256']}:{entry['bytes']}"
+            for entry in javascript_esm_descriptors
+        ]
+    )
     snapshot_sha256 = hashlib.sha256(snapshot_payload.encode("utf-8")).hexdigest()
     route_id = f"{source_language}-to-{target_language}"
     work_units = [
@@ -160,6 +270,11 @@ def plan_repository(
             "source_path": entry["path"],
             "source_sha256": entry["sha256"],
             "source_bytes": entry["bytes"],
+            **(
+                {"javascript_esm_descriptor": entry["javascript_esm_descriptor"]}
+                if "javascript_esm_descriptor" in entry
+                else {}
+            ),
             "status": "DISCOVERY_REQUIRED",
             "execution_status": "NOT_RUN",
             "required_inputs": ["behavior_cases_json_per_discovered_function"],
@@ -195,6 +310,7 @@ def plan_repository(
             "maximum_bytes_per_file": _MAX_FILE_BYTES,
         },
         "language_counts": language_counts,
+        "javascript_esm_descriptors": javascript_esm_descriptors,
         "ignored_symlink_count": ignored_symlink_count,
         "work_units": work_units,
         "execution_status": "NOT_RUN",

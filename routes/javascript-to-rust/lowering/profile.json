@@ -1,0 +1,82 @@
+{
+  "concrete_spans_required": true,
+  "effect_semantics": "BLOCKED_ASYNC_IO_IMPORT_EVAL",
+  "expressions": [
+    "name",
+    "literal",
+    "binary"
+  ],
+  "fail_closed": true,
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "integer_semantics": "SAFE_INTEGER_CONDITIONAL",
+  "operator_domains": {
+    "boolean_logic": {
+      "operators": [
+        "==",
+        "!=",
+        "&&",
+        "||"
+      ],
+      "status": "conditional"
+    },
+    "finite_number_transport_comparison": {
+      "operators": [
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "==",
+        "!="
+      ],
+      "status": "conditional"
+    },
+    "integer_arithmetic": {
+      "operators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "%"
+      ],
+      "status": "conditional-js-safe-integer-no-error-domain"
+    },
+    "number_arithmetic": {
+      "blocked_operators": [
+        "+",
+        "-",
+        "*",
+        "/",
+        "%"
+      ],
+      "operators": [],
+      "status": "BLOCKED"
+    },
+    "string_value": {
+      "operators": [],
+      "status": "BLOCKED"
+    }
+  },
+  "operators": [
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "==",
+    "!=",
+    "&&",
+    "||"
+  ],
+  "out_of_domain_arithmetic_behavior": "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1",
+  "profile": "typed-pure-function-v1",
+  "schema_version": 1,
+  "statements": [
+    "if",
+    "return"
+  ],
+  "string_semantics": "BLOCKED"
+}

@@ -1,27 +1,30 @@
 # Batch 29 directed route matrix
 
-`routes/inventory.json` is authoritative. Batch 29 preserves the legacy 30 and
-specialized 8 provenance sets, then adds one explicit 34-route completion set.
-Their union is the governed nine-language matrix; engine support alone never
-creates a passing route claim.
+`routes/inventory.json` is authoritative. Batch 29 preserves the legacy 30,
+specialized 8, nine-language completion 34, and preserved nine-language
+complete 72 provenance sets
+without rewriting them. The independent `javascript-node26-completion-18` set
+adds Node.js 26 as language identifier `javascript`; its union with the old 72
+is `ten-language-complete-90`. Engine support alone never creates a passing
+route claim.
 
 ## Evidence boundary
 
-- Engine languages: 9 (`java`, `csharp`, `go`, `rust`, `python`,
-  `typescript`, `cpp`, `objc`, `swift`).
-- Governed directed routes: 72 = legacy 30 + specialized 8 + completion 34.
-- Matrix expansion is exact and explicit: 9 × 8, with no self routes.
+- Engine languages: 10 (`java`, `csharp`, `go`, `rust`, `python`,
+  `typescript`, `cpp`, `objc`, `swift`, `javascript`).
+- Governed directed routes: 90 = old complete 72 + Node.js completion 18.
+- Matrix expansion is exact and explicit: 10 × 9, with no self routes.
 - Local maturity ceiling: `limited`.
-- Current local execution: all 72 routes are `NOT_RUN`. Thirty-eight routes
+- Current local execution: all 90 routes are `NOT_RUN`. Thirty-eight old routes
   retain historical local artifacts, but their captured engine-source bytes no
   longer match the live engine snapshot; inventory generation invalidates those
-  results instead of advertising stale `PASSED_LOCAL` evidence. The 34 completion
-  routes have not run.
-- Repository execution: all 72 governed routes are `NOT_RUN`.
+  results instead of advertising stale `PASSED_LOCAL` evidence. The 34 old
+  completion routes and all 18 Node.js routes have not run.
+- Repository execution: all 90 governed routes are `NOT_RUN`.
 - Independent verification and external/customer certification: `NOT_RUN`.
 - Certification decision: `NOT_CERTIFIED` for every route.
 
-Inventory summary: 72 `limited`, 0 `certified`; current execution contains 0
+Inventory summary: 90 `limited`, 0 `certified`; current execution contains 0
 `PASSED_LOCAL` routes.
 A fresh route replay may record `PASSED_LOCAL` only while its captured engine
 source bundle still matches the live bytes; it never raises certification.
@@ -96,9 +99,45 @@ claiming execution. They use the bounded function profile and start at
 | Objective-C | `objc-to-java`, `objc-to-csharp`, `objc-to-go`, `objc-to-rust`, `objc-to-python`, `objc-to-typescript` |
 | Swift | `swift-to-java`, `swift-to-csharp`, `swift-to-go`, `swift-to-rust`, `swift-to-python`, `swift-to-typescript` |
 
+## Node.js 26 exact completion 18
+
+Node.js is an independent `javascript` language, not a TypeScript alias. Each
+direction requires Node.js `26.0.0`, ES2022 ESM, exact JSDoc canonical types on
+JavaScript, concrete UTF-8 spans, native source analysis, target relift and
+build, negative cases, three separate behavior corpora, and a
+`typed-pure-module-v1` composition campaign. Every route begins and remains
+`limited / NOT_RUN / NOT_CERTIFIED` until its own evidence is executed.
+
+| Source | Node.js-directed target(s) |
+| --- | --- |
+| Java | `java-to-javascript` |
+| C# | `csharp-to-javascript` |
+| Go | `go-to-javascript` |
+| Rust | `rust-to-javascript` |
+| Python | `python-to-javascript` |
+| TypeScript | `typescript-to-javascript` |
+| C++ | `cpp-to-javascript` |
+| Objective-C | `objc-to-javascript` |
+| Swift | `swift-to-javascript` |
+| JavaScript | `javascript-to-java`, `javascript-to-csharp`, `javascript-to-go`, `javascript-to-rust`, `javascript-to-python`, `javascript-to-typescript`, `javascript-to-cpp`, `javascript-to-objc`, `javascript-to-swift` |
+
+The common Node profile is
+`nodejs-es2022-esm-safe-integer-finite-v1`: explicit canonical integers are
+restricted to the JavaScript safe-integer subset, canonical numbers must be
+finite binary64 values, booleans are exact, and domain violations fail closed
+before target execution. Async/event-loop behavior, I/O, imports, dynamic
+evaluation, reflection, shared state, and framework behavior are blocked.
+
+`typescript-to-javascript` and `javascript-to-typescript` have a narrower
+exception: TypeScript `number` is not relabelled as canonical `integer`.
+Those two routes may cover only finite-number transport/comparison, boolean,
+and the pinned ECMAScript strict string equality/concatenation subset. Their
+integer semantics stay explicitly blocked, including when a JavaScript source
+uses an `integer` JSDoc declaration.
+
 ## Repository experiment boundary
 
-The local engine can attempt all 72 governed directions under the bounded
+The local engine can attempt all 90 governed directions under the bounded
 `typed-pure-function-v1` repository execution mode and real target build tools.
 Route-pack completeness is still not a general repository-semantics claim.
 Project-graph completeness, every
@@ -109,7 +148,7 @@ raised any route's repository execution status above `NOT_RUN`.
 
 ## Exact replay
 
-Replay one declared route without touching the other 71:
+Replay one declared route without touching the other 89:
 
 ```bash
 python3 scripts/batch29/run_polyglot_routes.py --repo-root . \
@@ -138,8 +177,22 @@ python3 scripts/batch29/run_polyglot_routes.py --repo-root . \
 
 The repository wrapper `make -f Makefile.batch29 b29-nine-language-prepare`
 creates deterministic NOT_RUN scaffolds and validates the matrix. Target
-`b29-nine-language-replay` performs an explicit all-72 local replay. Neither
+`b29-nine-language-replay` performs an explicit replay of the preserved
+nine-language complete 72. Neither
 target changes independent or certification evidence.
+
+Prepare only the 18 Node.js routes, or explicitly replay that set:
+
+```bash
+make -f Makefile.batch29 b29-nodejs-prepare
+make -f Makefile.batch29 b29-nodejs-replay
+```
+
+The prepare target creates discoverable route packs with `NOT_RUN` evidence;
+it does not execute native analyzers or turn the gate green. The replay target
+is the separate, long-running local campaign. An explicit all-90 replay uses
+`--route-set ten-language-complete-90`; no set inherits execution or
+certification credit from another set.
 
 After all eight route validators and gates pass from one final source snapshot,
 build the separate exact-eight Batch 35 pack without regenerating the immutable

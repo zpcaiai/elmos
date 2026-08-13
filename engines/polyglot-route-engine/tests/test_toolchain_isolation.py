@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import stat
 from dataclasses import replace
 from pathlib import Path
 
@@ -42,6 +43,7 @@ def test_minimal_subprocess_environment_drops_all_supported_injection_hooks(
         "DOTNET_SHARED_STORE": str(hostile_root / "fake-dotnet-store"),
         "DOTNET_STARTUP_HOOKS": str(hostile_root / "fake-dotnet-hook.dll"),
         "MSBuildSDKsPath": str(hostile_root / "fake-msbuild-sdks"),
+        "TEST_TELEMETRY_DIR": str(hostile_root / "go-telemetry"),
     }
     for key, value in hostile.items():
         monkeypatch.setenv(key, value)
@@ -52,11 +54,140 @@ def test_minimal_subprocess_environment_drops_all_supported_injection_hooks(
 
     environment = toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
 
-    assert not set(hostile).intersection(environment)
+    assert not (set(hostile) - {"TEST_TELEMETRY_DIR"}).intersection(environment)
+    assert environment["TEST_TELEMETRY_DIR"] != hostile["TEST_TELEMETRY_DIR"]
     assert environment["HOME"] == str(home.resolve())
     assert environment["TMPDIR"] == str(scratch.resolve())
     assert environment["PATH"] == "/usr/bin:/bin:/usr/sbin:/sbin"
     assert environment["PYTHONNOUSERSITE"] == "1"
+    telemetry = home.resolve() / ".elmos-go-telemetry"
+    assert environment["TEST_TELEMETRY_DIR"] == str(telemetry)
+    assert (telemetry / "mode").read_bytes() == b"off\n"
+    assert stat.S_IMODE(telemetry.stat().st_mode) == 0o700
+    assert stat.S_IMODE((telemetry / "mode").stat().st_mode) == 0o600
+
+
+def test_minimal_subprocess_environment_rejects_tampered_go_telemetry_mode(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    scratch = tmp_path / "tmp"
+    telemetry = home / ".elmos-go-telemetry"
+    telemetry.mkdir(mode=0o700, parents=True)
+    (telemetry / "mode").write_text("local\n", encoding="ascii")
+    (telemetry / "mode").chmod(0o600)
+    scratch.mkdir()
+
+    with pytest.raises(RouteError, match="SUBPROCESS_GO_TELEMETRY_ISOLATION_FAILED"):
+        toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
+
+
+def test_minimal_subprocess_environment_rejects_symlinked_go_telemetry_directory(
+    tmp_path: Path,
+) -> None:
+    home = tmp_path / "home"
+    scratch = tmp_path / "tmp"
+    outside = tmp_path / "outside-telemetry"
+    home.mkdir()
+    scratch.mkdir()
+    outside.mkdir(mode=0o700)
+    (home / ".elmos-go-telemetry").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(RouteError, match="SUBPROCESS_GO_TELEMETRY_ISOLATION_FAILED"):
+        toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
+
+
+@pytest.mark.parametrize("entry_kind", ("symlink", "hardlink"))
+def test_minimal_subprocess_environment_rejects_linked_go_telemetry_mode(
+    tmp_path: Path,
+    entry_kind: str,
+) -> None:
+    home = tmp_path / "home"
+    scratch = tmp_path / "tmp"
+    telemetry = home / ".elmos-go-telemetry"
+    telemetry.mkdir(mode=0o700, parents=True)
+    scratch.mkdir()
+    outside = tmp_path / "outside-mode"
+    outside.write_bytes(b"off\n")
+    outside.chmod(0o600)
+    mode = telemetry / "mode"
+    if entry_kind == "symlink":
+        mode.symlink_to(outside)
+    else:
+        os.link(outside, mode)
+
+    with pytest.raises(RouteError, match="SUBPROCESS_GO_TELEMETRY_ISOLATION_FAILED"):
+        toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
+
+
+def test_minimal_subprocess_environment_rejects_go_telemetry_directory_replacement(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    home = tmp_path / "home"
+    scratch = tmp_path / "tmp"
+    telemetry = home / ".elmos-go-telemetry"
+    telemetry.mkdir(mode=0o700, parents=True)
+    mode = telemetry / "mode"
+    mode.write_bytes(b"off\n")
+    mode.chmod(0o600)
+    scratch.mkdir()
+    displaced = home / ".elmos-go-telemetry-displaced"
+    real_open = os.open
+    replaced = False
+
+    def replacing_open(
+        path: str | bytes | os.PathLike[str],
+        flags: int,
+        file_mode: int = 0o777,
+        *,
+        dir_fd: int | None = None,
+    ) -> int:
+        nonlocal replaced
+        if path == "mode" and dir_fd is not None and not replaced:
+            replaced = True
+            telemetry.rename(displaced)
+            telemetry.mkdir(mode=0o700)
+            replacement_mode = telemetry / "mode"
+            replacement_mode.write_bytes(b"off\n")
+            replacement_mode.chmod(0o600)
+        return real_open(path, flags, file_mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(toolchains.os, "open", replacing_open)
+
+    with pytest.raises(RouteError, match="SUBPROCESS_GO_TELEMETRY_ISOLATION_FAILED"):
+        toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
+
+    assert replaced
+
+
+def test_minimal_subprocess_environment_rejects_equal_size_go_telemetry_mode_race(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    home = tmp_path / "home"
+    scratch = tmp_path / "tmp"
+    telemetry = home / ".elmos-go-telemetry"
+    telemetry.mkdir(mode=0o700, parents=True)
+    mode = telemetry / "mode"
+    mode.write_bytes(b"off\n")
+    mode.chmod(0o600)
+    scratch.mkdir()
+    real_read = os.read
+    raced = False
+
+    def racing_read(descriptor: int, byte_count: int) -> bytes:
+        nonlocal raced
+        content = real_read(descriptor, byte_count)
+        if content == b"off\n" and not raced:
+            raced = True
+            mode.write_bytes(b"on \n")
+        return content
+
+    monkeypatch.setattr(toolchains.os, "read", racing_read)
+
+    with pytest.raises(RouteError, match="SUBPROCESS_GO_TELEMETRY_ISOLATION_FAILED"):
+        toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
+
+    assert raced
 
 
 def test_java_declared_home_cannot_replace_the_pinned_distribution(

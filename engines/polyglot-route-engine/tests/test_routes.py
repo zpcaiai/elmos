@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -15,6 +17,7 @@ EXTENSIONS = {
     "python": "py",
     "csharp": "cs",
     "typescript": "ts",
+    "javascript": "mjs",
     "go": "go",
     "rust": "rs",
     "cpp": "cpp",
@@ -26,6 +29,7 @@ FILES = {
     "python": "pricing",
     "csharp": "Pricing",
     "typescript": "pricing",
+    "javascript": "pricing",
     "go": "pricing",
     "rust": "pricing",
     "cpp": "pricing",
@@ -51,7 +55,7 @@ def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language)
         (source, target)
         for source in ANALYZABLE_LANGUAGES
         for target in SUPPORTED_LANGUAGES
-        if source != target
+        if source != target and {source, target} != {"javascript", "typescript"}
     ],
 )
 def test_every_repository_direction_compiles_and_matches_behavior(
@@ -60,18 +64,24 @@ def test_every_repository_direction_compiles_and_matches_behavior(
     target_language: Language,
 ) -> None:
     source = ROOT / "fixtures" / source_language / f"{FILES[source_language]}.{EXTENSIONS[source_language]}"
+    output = tmp_path / f"{source_language}-to-{target_language}"
     report = migrate(
         source,
         source_language,
         target_language,
         "calculate",
         ROOT / "fixtures" / "behavior-cases.json",
-        tmp_path / f"{source_language}-to-{target_language}",
+        output,
         repository_execution_mode=True,
     )
     assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["behavior_pass_rate"] == 1.0
     assert report["critical_unknown_semantics"] == 1
+    behavior = report["behavior_equivalence"]
+    assert behavior["status"] == "PASSED"
+    assert behavior["case_count"] == behavior["pass_count"] == 3
+    artifact = output / behavior["artifact_path"]
+    assert behavior["artifact_sha256"] == "sha256:" + hashlib.sha256(artifact.read_bytes()).hexdigest()
     assert report["certification_status"] == "EXPERIMENTAL"
     assert report["external_certification_status"] == "NOT_RUN"
 
@@ -86,7 +96,7 @@ def test_every_repository_direction_compiles_and_matches_behavior(
         (source, target)
         for source in ANALYZABLE_LANGUAGES
         for target in SUPPORTED_LANGUAGES
-        if source != target
+        if source != target and {source, target} != {"javascript", "typescript"}
     ],
 )
 def test_independent_corpora_compile_and_match_behavior(
@@ -110,6 +120,62 @@ def test_independent_corpora_compile_and_match_behavior(
     )
     assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["behavior_case_count"] == 3
+
+
+@pytest.mark.parametrize(
+    ("source_language", "target_language"),
+    [("javascript", "typescript"), ("typescript", "javascript")],
+)
+def test_javascript_typescript_repository_route_uses_finite_number_transport_contract(
+    tmp_path: Path,
+    source_language: Language,
+    target_language: Language,
+) -> None:
+    source = tmp_path / ("identity.mjs" if source_language == "javascript" else "identity.ts")
+    source.write_text(
+        (
+            "/**\n * @param {number} value\n * @returns {number}\n */\n"
+            "export function identity(value) { return value; }\n"
+            if source_language == "javascript"
+            else "export function identity(value: number): number { return value; }\n"
+        ),
+        encoding="utf-8",
+    )
+    cases = tmp_path / "cases.json"
+    cases.write_text(
+        json.dumps(
+            [
+                {"args": [-0.0], "expected": -0.0},
+                {
+                    "args": [1.7976931348623157e308],
+                    "expected": 1.7976931348623157e308,
+                },
+                {"args": [5e-324], "expected": 5e-324},
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    output = tmp_path / "output"
+
+    report = migrate(
+        source,
+        source_language,
+        target_language,
+        "identity",
+        cases,
+        output,
+        repository_execution_mode=True,
+    )
+
+    assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
+    assert report["behavior_pass_rate"] == 1.0
+    assert report["behavior_equivalence"]["status"] == "PASSED"
+    assert [observation["raw"] for observation in report["validation"]["observations"]] == [
+        "8000000000000000",
+        "7fefffffffffffff",
+        "0000000000000001",
+    ]
 
 
 def test_unsupported_python_side_effect_fails_closed(tmp_path: Path) -> None:

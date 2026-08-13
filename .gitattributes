@@ -1,1 +1,2 @@
 skills/precision-migration-skills-batch-01-44/catalog.csv -text whitespace=cr-at-eol
+engines/polyglot-route-engine/native/javascript/vendor/typescript-5.9.2/LICENSE.txt -text -whitespace

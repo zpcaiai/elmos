@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed Batch 29 gate for nine-language repository conversion evidence.
+"""Fail-closed Batch 29 gate for ten-language repository conversion evidence.
 
 This gate evaluates local engineering evidence only.  A complete result can
 prepare ``READY_FOR_EXTERNAL_GATE``; it can never certify a route, a language
@@ -20,7 +20,6 @@ from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[2]
 CAMPAIGN_SCHEMA = (
     ROOT / "schemas" / "batch29" / "repository-capability-campaign.schema.json"
@@ -38,6 +37,7 @@ LANGUAGES = (
     "cpp",
     "objc",
     "swift",
+    "javascript",
 )
 EXPECTED_PAIRS = tuple(
     (source, target) for source in LANGUAGES for target in LANGUAGES if source != target
@@ -617,7 +617,8 @@ def _validate_inventory(
         context.fail(f"{label}.source_file_count exceeds file_count")
     elif source_file_count != file_count:
         context.fail(
-            f"{label} contains code outside the declared source language; a directed whole-repository workload must be single-source-language"
+            f"{label} contains code outside the declared source language; "
+            "a directed whole-repository workload must be single-source-language"
         )
     if source_bytes > MEDIUM_MAX_BYTES:
         context.fail(f"{label}.source_bytes exceeds the medium repository limit")
@@ -1653,7 +1654,7 @@ def evaluate_repository_gate(campaign: Any, evidence_root: Path) -> dict[str, An
             campaign_id = raw_campaign_id
         if root.get("languages") != list(LANGUAGES):
             context.fail(
-                "campaign.languages must be the exact ordered nine-language set"
+                "campaign.languages must be the exact ordered ten-language set"
             )
         scope = _exact_object(
             root.get("scope"),

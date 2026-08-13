@@ -13,12 +13,17 @@ import argparse
 import hashlib
 import json
 import os
+import posixpath
 import runpy
 import shutil
+import stat
 import subprocess
 import sys
+import tarfile
 import tempfile
-from pathlib import Path
+import tomllib
+import urllib.parse
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 try:
@@ -56,6 +61,75 @@ PINNED_UV_SHA256 = (
 PINNED_UV_BYTES = 46_541_136
 PINNED_UV_VERSION = "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
 PACKED_REPLAY_VENV_NAME = ".elmos-packed-replay-venv"
+PACKED_RUNTIME_EVIDENCE_ID = "packed-replay-runtime"
+PACKED_RUNTIME_EVIDENCE_ROLE = "packed-replay-runtime"
+PACKED_RUNTIME_MANIFEST = "runtime/packed-replay-runtime.json"
+PACKED_RUNTIME_LOCK = "runtime/uv.lock"
+PRODUCTION_LOCK_SHA256 = (
+    "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+)
+PRODUCTION_LOCK_BYTES = 26_669
+PYTHON_ARCHIVE_NAME = (
+    "cpython-3.12.12+20260211-aarch64-apple-darwin-install_only_stripped.tar.gz"
+)
+PYTHON_ARCHIVE_PATH = f"runtime/{PYTHON_ARCHIVE_NAME}"
+PYTHON_ARCHIVE_URL = (
+    "https://releases.astral.sh/github/python-build-standalone/releases/download/"
+    "20260211/cpython-3.12.12%2B20260211-aarch64-apple-darwin-"
+    "install_only_stripped.tar.gz"
+)
+PYTHON_ARCHIVE_SHA256 = (
+    "sha256:22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84"
+)
+PYTHON_ARCHIVE_BYTES = 17_667_661
+PYTHON_TREE_SHA256 = (
+    "sha256:1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154"
+)
+PYTHON_TREE_FILE_COUNT = 1_890
+PYTHON_TREE_BYTES = 47_880_708
+PYTHON_TREE_SYMLINKS = {
+    "bin/2to3": "2to3-3.12",
+    "bin/idle3": "idle3.12",
+    "bin/pydoc3": "pydoc3.12",
+    "bin/python": "python3.12",
+    "bin/python3": "python3.12",
+    "bin/python3-config": "python3.12-config",
+    "lib/pkgconfig/python3-embed.pc": "python-3.12-embed.pc",
+    "lib/pkgconfig/python3.pc": "python-3.12.pc",
+    "share/man/man1/python3.1": "python3.12.1",
+}
+PRODUCTION_PACKAGE_NAMES = frozenset(
+    {
+        "attrs",
+        "jsonschema",
+        "jsonschema-specifications",
+        "referencing",
+        "rpds-py",
+        "typing-extensions",
+        "z3-solver",
+    }
+)
+PRODUCTION_WHEEL_FILENAMES = {
+    "attrs": "attrs-26.1.0-py3-none-any.whl",
+    "jsonschema": "jsonschema-4.25.1-py3-none-any.whl",
+    "jsonschema-specifications": (
+        "jsonschema_specifications-2025.9.1-py3-none-any.whl"
+    ),
+    "referencing": "referencing-0.37.0-py3-none-any.whl",
+    "rpds-py": "rpds_py-2026.6.3-cp312-cp312-macosx_11_0_arm64.whl",
+    "typing-extensions": "typing_extensions-4.16.0-py3-none-any.whl",
+    "z3-solver": "z3_solver-4.16.0.0-py3-none-macosx_15_0_arm64.whl",
+}
+PINNED_SANDBOX_PATH = Path("/usr/bin/sandbox-exec")
+PINNED_SANDBOX_SHA256 = (
+    "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+)
+PINNED_SANDBOX_BYTES = 102_368
+PINNED_SANDBOX_PROFILE = "(version 1)\n(allow default)\n(deny network*)\n"
+PINNED_SANDBOX_PROFILE_SHA256 = (
+    "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08"
+)
+MAX_REPLAY_DIAGNOSTIC_BYTES = 2_048
 PACKED_REPLAY_COMMAND = [
     "python3",
     "certification/replay/validate_packed_route.py",
@@ -63,12 +137,9 @@ PACKED_REPLAY_COMMAND = [
     ".",
 ]
 PACKED_REPLAY_COMMAND_V2 = [
-    "uv",
-    "--project",
-    "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine",
-    "run",
-    "--locked",
     "python",
+    "-I",
+    "-B",
     "certification/replay/validate_packed_route.py",
     "--route",
     ".",
@@ -94,6 +165,18 @@ PACKED_REPLAY_FILES = {
     },
 }
 PACKED_MODULE_REPLAY_FILES = {
+    "formal_input_schema": {
+        "relative": ("certification/replay/schemas/batch29/formal-input.schema.json"),
+        "source": "schemas/batch29/formal-input.schema.json",
+        "role": "replay-schema",
+    },
+    "identifier_plan_schema": {
+        "relative": (
+            "certification/replay/schemas/batch29/identifier-plan.schema.json"
+        ),
+        "source": "schemas/batch29/identifier-plan.schema.json",
+        "role": "replay-schema",
+    },
     "module_schema": {
         "relative": (
             "certification/replay/schemas/batch29/"
@@ -104,10 +187,17 @@ PACKED_MODULE_REPLAY_FILES = {
     },
     "module_case_schema": {
         "relative": (
-            "certification/replay/schemas/batch29/"
-            "module-case-manifest.schema.json"
+            "certification/replay/schemas/batch29/module-case-manifest.schema.json"
         ),
         "source": "schemas/batch29/module-case-manifest.schema.json",
+        "role": "replay-schema",
+    },
+    "module_formal_input_schema": {
+        "relative": (
+            "certification/replay/schemas/batch29/"
+            "formal-input-module-function.schema.json"
+        ),
+        "source": ("schemas/batch29/formal-input-module-function.schema.json"),
         "role": "replay-schema",
     },
 }
@@ -173,33 +263,879 @@ def pinned_uv_runtime(label: str, errors: list[str]) -> Path | None:
     return expected
 
 
-def packed_replay_environment(interpreter: Path, replay_root: Path) -> dict[str, str]:
-    """Build an isolated environment for the content-addressed packed replay."""
+def pinned_sandbox_runtime(label: str, errors: list[str]) -> Path | None:
+    """Bind the Apple sandbox launcher before relying on its network policy."""
 
-    resolved_interpreter = interpreter.resolve(strict=True)
-    resolved_root = replay_root.resolve(strict=True)
-    project_environment = resolved_root / PACKED_REPLAY_VENV_NAME
     try:
-        project_environment.resolve(strict=False).relative_to(resolved_root)
-    except ValueError as exc:  # pragma: no cover - constant-name defense in depth
-        raise ValueError("packed replay project environment escapes replay root") from exc
-    if project_environment.exists() or project_environment.is_symlink():
-        raise ValueError("packed replay project environment is not fresh")
+        metadata = PINNED_SANDBOX_PATH.lstat()
+        resolved = PINNED_SANDBOX_PATH.resolve(strict=True)
+    except (FileNotFoundError, OSError) as exc:
+        errors.append(f"{label} pinned sandbox is unavailable: {exc}")
+        return None
+    if (
+        resolved != PINNED_SANDBOX_PATH
+        or not stat.S_ISREG(metadata.st_mode)
+        or stat.S_ISLNK(metadata.st_mode)
+        or metadata.st_size != PINNED_SANDBOX_BYTES
+        or stat.S_IMODE(metadata.st_mode) != 0o755
+        or metadata.st_uid != 0
+        or metadata.st_gid != 0
+    ):
+        errors.append(f"{label} pinned sandbox metadata mismatch")
+        return None
+    digest = "sha256:" + hashlib.sha256(resolved.read_bytes()).hexdigest()
+    if digest != PINNED_SANDBOX_SHA256:
+        errors.append(f"{label} pinned sandbox digest mismatch")
+        return None
+    return resolved
 
-    environment = {
-        key: os.environ[key]
-        for key in ("HOME", "TMPDIR", "TZ")
-        if key in os.environ
+
+def packed_replay_environment(private_root: Path, venv: Path) -> dict[str, str]:
+    """Return an explicit private allowlist; no ambient or proxy value survives."""
+
+    root = private_root.resolve(strict=True)
+    venv_root = venv.resolve(strict=False)
+    venv_root.relative_to(root)
+    locations = {
+        "home": root / "home",
+        "tmp": root / "tmp",
+        "cache": root / "cache",
     }
-    environment["LANG"] = "C"
-    environment["LC_ALL"] = "C"
-    environment["PYTHONNOUSERSITE"] = "1"
-    environment["PATH"] = (
-        str(resolved_interpreter.parent) + os.pathsep + os.defpath
+    for path in locations.values():
+        path.mkdir(mode=0o700, parents=True, exist_ok=True)
+        path.resolve(strict=True).relative_to(root)
+    return {
+        "HOME": str(locations["home"]),
+        "TMPDIR": str(locations["tmp"]),
+        "XDG_CACHE_HOME": str(locations["cache"]),
+        "UV_CACHE_DIR": str(locations["cache"] / "uv"),
+        "UV_PROJECT_ENVIRONMENT": str(venv_root),
+        "UV_NO_CONFIG": "1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": os.pathsep.join(
+            (
+                str(venv_root / "bin"),
+                "/usr/bin",
+                "/bin",
+                "/usr/sbin",
+                "/sbin",
+            )
+        ),
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "TZ": "UTC",
+        "NO_COLOR": "1",
+        "CLICOLOR": "0",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_TERMINAL_PROMPT": "0",
+    }
+
+
+def bounded_replay_diagnostic(
+    stderr: str,
+    stdout: str,
+    *,
+    sensitive_roots: tuple[Path, ...] = (),
+) -> str:
+    """Bound and sanitize subprocess output before adding it to validation JSON."""
+
+    value = stderr.strip() or stdout.strip() or "unknown packed replay error"
+    for root in sensitive_roots:
+        variants = {str(root), str(root.resolve(strict=False))}
+        for variant in sorted(variants, key=len, reverse=True):
+            value = value.replace(variant, "<private>")
+    value = "".join(
+        character if character in "\n\t" or 32 <= ord(character) < 127 else "?"
+        for character in value
     )
-    environment["UV_NO_CONFIG"] = "1"
-    environment["UV_PROJECT_ENVIRONMENT"] = str(project_environment)
-    return environment
+    lines = [line[:512] for line in value.splitlines()[-8:]]
+    result = " | ".join(lines)
+    encoded = result.encode("utf-8")[:MAX_REPLAY_DIAGNOSTIC_BYTES]
+    return encoded.decode("utf-8", errors="ignore")
+
+
+def _canonical_digest(value: object) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def _safe_archive_member(name: str) -> str:
+    if not name or "\\" in name or name.startswith("/"):
+        raise ValueError("python archive member path is invalid")
+    normalized = name.rstrip("/")
+    parts = PurePosixPath(normalized).parts
+    if any(part in {"", ".", ".."} for part in parts):
+        raise ValueError("python archive member path is invalid")
+    if len(parts) < 2 or parts[0] != "python":
+        raise ValueError("python archive root is not exact")
+    return PurePosixPath(*parts[1:]).as_posix()
+
+
+def python_archive_inventory(archive: Path) -> dict[str, Any]:
+    """Independently inventory every archive member before extraction."""
+
+    records: list[dict[str, Any]] = []
+    names: set[str] = set()
+    with tarfile.open(archive, mode="r:gz") as bundle:
+        for member in bundle.getmembers():
+            relative = _safe_archive_member(member.name)
+            if relative in names:
+                raise ValueError("python archive contains duplicate members")
+            names.add(relative)
+            if member.isfile():
+                stream = bundle.extractfile(member)
+                if stream is None:
+                    raise ValueError("python archive regular file cannot be read")
+                content = stream.read()
+                records.append(
+                    {
+                        "bytes": len(content),
+                        "kind": "file",
+                        "mode": f"{member.mode:04o}",
+                        "path": relative,
+                        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+                    }
+                )
+            elif member.issym():
+                target = member.linkname
+                if not target or "\\" in target or target.startswith("/"):
+                    raise ValueError("python archive symlink is invalid")
+                resolved_target = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(relative), target)
+                )
+                if resolved_target == ".." or resolved_target.startswith("../"):
+                    raise ValueError("python archive symlink escapes")
+                records.append(
+                    {
+                        "kind": "symlink",
+                        "mode": f"{member.mode:04o}",
+                        "path": relative,
+                        "target": target,
+                    }
+                )
+            elif member.isdir():
+                records.append(
+                    {
+                        "kind": "directory",
+                        "mode": f"{member.mode:04o}",
+                        "path": relative,
+                    }
+                )
+            else:
+                raise ValueError("python archive contains a hardlink or special file")
+    records.sort(key=lambda item: item["path"])
+    return {
+        "inventory_sha256": _canonical_digest(records),
+        "record_count": len(records),
+        "regular_file_count": sum(item["kind"] == "file" for item in records),
+        "regular_file_bytes": sum(
+            int(item.get("bytes", 0)) for item in records if item["kind"] == "file"
+        ),
+        "symlinks": {
+            item["path"]: item["target"]
+            for item in records
+            if item["kind"] == "symlink"
+        },
+    }
+
+
+def _normalized_package_name(value: str) -> str:
+    return value.lower().replace("_", "-")
+
+
+def production_wheels_from_lock(lock_path: Path) -> list[dict[str, Any]]:
+    """Derive the exact seven-package production closure from uv.lock."""
+
+    lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
+    packages = lock.get("package")
+    if not isinstance(packages, list):
+        raise ValueError("runtime lock package inventory is invalid")
+    by_name: dict[str, dict[str, Any]] = {}
+    project: dict[str, Any] | None = None
+    for item in packages:
+        if not isinstance(item, dict) or not isinstance(item.get("name"), str):
+            raise ValueError("runtime lock package is invalid")
+        name = _normalized_package_name(item["name"])
+        if name in by_name:
+            raise ValueError("runtime lock package names are not unique")
+        by_name[name] = item
+        source = item.get("source")
+        if isinstance(source, dict) and source.get("editable") == ".":
+            if project is not None:
+                raise ValueError("runtime lock has multiple editable projects")
+            project = item
+    if project is None:
+        raise ValueError("runtime lock editable project is missing")
+    pending = [
+        _normalized_package_name(item["name"])
+        for item in project.get("dependencies", [])
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    ]
+    closure: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if name in closure:
+            continue
+        package = by_name.get(name)
+        if package is None:
+            raise ValueError("runtime lock dependency is missing")
+        closure.add(name)
+        pending.extend(
+            _normalized_package_name(item["name"])
+            for item in package.get("dependencies", [])
+            if isinstance(item, dict) and isinstance(item.get("name"), str)
+        )
+    if closure != PRODUCTION_PACKAGE_NAMES:
+        raise ValueError("runtime lock production closure is not exact seven")
+    selected: list[dict[str, Any]] = []
+    for name in sorted(closure):
+        package = by_name[name]
+        filename = PRODUCTION_WHEEL_FILENAMES[name]
+        candidates = []
+        for wheel in package.get("wheels", []):
+            if not isinstance(wheel, dict) or not isinstance(wheel.get("url"), str):
+                continue
+            observed = urllib.parse.unquote(
+                PurePosixPath(urllib.parse.urlparse(wheel["url"]).path).name
+            )
+            if observed == filename:
+                candidates.append(wheel)
+        if len(candidates) != 1:
+            raise ValueError("runtime lock target wheel selection is not unique")
+        wheel = candidates[0]
+        if (
+            not isinstance(package.get("version"), str)
+            or not isinstance(wheel.get("hash"), str)
+            or not wheel["hash"].startswith("sha256:")
+            or not isinstance(wheel.get("size"), int)
+            or wheel["size"] <= 0
+        ):
+            raise ValueError("runtime lock wheel metadata is invalid")
+        selected.append(
+            {
+                "name": name,
+                "version": package["version"],
+                "dependencies": sorted(
+                    _normalized_package_name(item["name"])
+                    for item in package.get("dependencies", [])
+                    if isinstance(item, dict) and isinstance(item.get("name"), str)
+                ),
+                "filename": filename,
+                "path": f"runtime/wheelhouse/{filename}",
+                "url": wheel["url"],
+                "sha256": wheel["hash"],
+                "bytes": wheel["size"],
+            }
+        )
+    return selected
+
+
+def _exact_keys(
+    value: object, expected: set[str], label: str, errors: list[str]
+) -> bool:
+    if not isinstance(value, dict):
+        errors.append(f"{label} must be an object")
+        return False
+    if set(value) != expected:
+        errors.append(f"{label} fields are not exact")
+        return False
+    return True
+
+
+def validate_packed_runtime_manifest(
+    pack: Path, manifest_path: Path, errors: list[str]
+) -> dict[str, Any] | None:
+    """Validate the single pack-level runtime closure and its exact inventory."""
+
+    starting_error_count = len(errors)
+    try:
+        runtime = load_json(manifest_path)
+    except Exception as exc:
+        errors.append(f"packed runtime manifest is invalid: {exc}")
+        return None
+    if not _exact_keys(
+        runtime,
+        {
+            "schema_version",
+            "runtime_key",
+            "scope",
+            "replay_command",
+            "python_archive",
+            "production_lock",
+            "wheelhouse",
+            "uv",
+            "sandbox",
+            "environment",
+            "native_route_reexecution",
+            "independent_verification",
+            "external_certification",
+        },
+        "packed runtime manifest",
+        errors,
+    ):
+        return None
+    fixed = {
+        "schema_version": 1,
+        "runtime_key": "macos-aarch64-cpython-3.12.12-z3-4.16.0",
+        "scope": "offline-evidence-integrity-and-semantic-closure-only",
+        "replay_command": PACKED_REPLAY_COMMAND_V2,
+        "native_route_reexecution": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "external_certification": "NOT_CERTIFIED",
+    }
+    if any(runtime.get(key) != value for key, value in fixed.items()):
+        errors.append("packed runtime fixed policy differs")
+
+    expected_tree = {
+        "inventory_sha256": PYTHON_TREE_SHA256,
+        "record_count": PYTHON_TREE_FILE_COUNT + len(PYTHON_TREE_SYMLINKS),
+        "regular_file_count": PYTHON_TREE_FILE_COUNT,
+        "regular_file_bytes": PYTHON_TREE_BYTES,
+        "symlinks": PYTHON_TREE_SYMLINKS,
+    }
+    expected_archive = {
+        "path": PYTHON_ARCHIVE_PATH,
+        "url": PYTHON_ARCHIVE_URL,
+        "sha256": PYTHON_ARCHIVE_SHA256,
+        "bytes": PYTHON_ARCHIVE_BYTES,
+        "implementation": "cpython",
+        "version": "3.12.12",
+        "build": "20260211",
+        "platform": "macos-aarch64-none",
+        "tree": expected_tree,
+    }
+    if runtime.get("python_archive") != expected_archive:
+        errors.append("packed runtime Python archive identity differs")
+
+    expected_uv = {
+        "path": str(PINNED_UV_PATH),
+        "sha256": PINNED_UV_SHA256,
+        "bytes": PINNED_UV_BYTES,
+        "version": PINNED_UV_VERSION,
+    }
+    if runtime.get("uv") != expected_uv:
+        errors.append("packed runtime uv identity differs")
+    expected_sandbox = {
+        "path": str(PINNED_SANDBOX_PATH),
+        "sha256": PINNED_SANDBOX_SHA256,
+        "bytes": PINNED_SANDBOX_BYTES,
+        "mode": "100755",
+        "uid": 0,
+        "gid": 0,
+        "profile": PINNED_SANDBOX_PROFILE,
+        "profile_sha256": PINNED_SANDBOX_PROFILE_SHA256,
+        "socket_denial_probe": "SOCKET_DENIED:1",
+    }
+    if runtime.get("sandbox") != expected_sandbox:
+        errors.append("packed runtime sandbox identity/policy differs")
+    if runtime.get("environment") != {
+        "policy": "explicit-private-allowlist",
+        "private_home": True,
+        "private_tmp": True,
+        "private_cache": True,
+        "proxy_variables": [],
+    }:
+        errors.append("packed runtime environment policy differs")
+
+    archive_path = safe_pack_file(
+        pack, PYTHON_ARCHIVE_PATH, "packed runtime Python archive", errors
+    )
+    lock_path = safe_pack_file(pack, PACKED_RUNTIME_LOCK, "packed runtime lock", errors)
+    if archive_path is not None:
+        content = archive_path.read_bytes()
+        if (
+            len(content) != PYTHON_ARCHIVE_BYTES
+            or "sha256:" + hashlib.sha256(content).hexdigest() != PYTHON_ARCHIVE_SHA256
+        ):
+            errors.append("packed runtime Python archive bytes differ")
+        else:
+            try:
+                inventory = python_archive_inventory(archive_path)
+            except Exception as exc:
+                errors.append(f"packed runtime Python archive inventory failed: {exc}")
+            else:
+                if inventory != expected_tree:
+                    errors.append("packed runtime Python tree inventory differs")
+
+    expected_packages: list[dict[str, Any]] = []
+    if lock_path is not None:
+        lock = runtime.get("production_lock")
+        if not isinstance(lock, dict):
+            errors.append("packed runtime production lock record is invalid")
+        else:
+            lock_content = lock_path.read_bytes()
+            if lock != {
+                "path": PACKED_RUNTIME_LOCK,
+                "sha256": PRODUCTION_LOCK_SHA256,
+                "bytes": PRODUCTION_LOCK_BYTES,
+                "resolution": "independent-transitive-production-closure",
+            }:
+                errors.append("packed runtime production lock binding differs")
+            if (
+                len(lock_content) != PRODUCTION_LOCK_BYTES
+                or "sha256:" + hashlib.sha256(lock_content).hexdigest()
+                != PRODUCTION_LOCK_SHA256
+            ):
+                errors.append("packed runtime production lock bytes differ")
+        try:
+            expected_packages = production_wheels_from_lock(lock_path)
+        except Exception as exc:
+            errors.append(f"packed runtime production closure failed: {exc}")
+
+    wheelhouse = runtime.get("wheelhouse")
+    if not isinstance(wheelhouse, dict) or set(wheelhouse) != {
+        "package_count",
+        "install_policy",
+        "packages",
+    }:
+        errors.append("packed runtime wheelhouse record is invalid")
+    else:
+        if wheelhouse.get("package_count") != 7:
+            errors.append("packed runtime wheelhouse count is not exact seven")
+        if wheelhouse.get("install_policy") != {
+            "offline": True,
+            "no_index": True,
+            "require_hashes": True,
+            "no_dependencies": True,
+            "link_mode": "copy",
+        }:
+            errors.append("packed runtime install policy differs")
+        if wheelhouse.get("packages") != expected_packages:
+            errors.append("packed runtime wheels do not match independent lock closure")
+
+    expected_runtime_files = {
+        PACKED_RUNTIME_MANIFEST,
+        PACKED_RUNTIME_LOCK,
+        PYTHON_ARCHIVE_PATH,
+        *(item["path"] for item in expected_packages),
+    }
+    runtime_root = pack / "runtime"
+    actual_runtime_files: set[str] = set()
+    if not runtime_root.is_dir() or runtime_root.is_symlink():
+        errors.append("packed runtime directory is missing or linked")
+    else:
+        for item in runtime_root.rglob("*"):
+            relative = item.relative_to(pack).as_posix()
+            metadata = item.lstat()
+            if stat.S_ISLNK(metadata.st_mode):
+                errors.append(f"packed runtime contains a symlink: {relative}")
+            elif stat.S_ISREG(metadata.st_mode):
+                actual_runtime_files.add(relative)
+            elif not stat.S_ISDIR(metadata.st_mode):
+                errors.append(f"packed runtime contains a special file: {relative}")
+    if actual_runtime_files != expected_runtime_files:
+        errors.append("packed runtime file inventory has missing or extra artifacts")
+
+    for package in expected_packages:
+        wheel_path = safe_pack_file(
+            pack,
+            package["path"],
+            f"packed runtime wheel {package['name']}",
+            errors,
+        )
+        if wheel_path is None:
+            continue
+        content = wheel_path.read_bytes()
+        if (
+            len(content) != package["bytes"]
+            or "sha256:" + hashlib.sha256(content).hexdigest() != package["sha256"]
+        ):
+            errors.append(f"packed runtime wheel {package['name']} bytes differ")
+    return runtime if len(errors) == starting_error_count else None
+
+
+def _extract_verified_python(archive: Path, destination: Path) -> None:
+    destination.mkdir(mode=0o700)
+    with tarfile.open(archive, mode="r:gz") as bundle:
+        members = bundle.getmembers()
+        for member in members:
+            relative = _safe_archive_member(member.name)
+            target = destination / relative
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+                target.chmod(member.mode)
+            elif member.isfile():
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if any(
+                    parent.is_symlink()
+                    for parent in target.parents
+                    if parent != destination.parent
+                ):
+                    raise ValueError("python extraction parent is linked")
+                stream = bundle.extractfile(member)
+                if stream is None:
+                    raise ValueError("python archive member cannot be extracted")
+                with target.open("xb") as output:
+                    shutil.copyfileobj(stream, output, length=1024 * 1024)
+                target.chmod(member.mode)
+        for member in members:
+            if not member.issym():
+                continue
+            relative = _safe_archive_member(member.name)
+            target = destination / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.symlink_to(member.linkname)
+
+
+def _runtime_tree_seal(roots: tuple[Path, ...]) -> str:
+    records: list[dict[str, Any]] = []
+    for root in roots:
+        if not root.is_dir() or root.is_symlink():
+            raise ValueError("private runtime seal root is invalid")
+        label = root.name
+        for item in sorted(root.rglob("*")):
+            relative = f"{label}/{item.relative_to(root).as_posix()}"
+            metadata = item.lstat()
+            if stat.S_ISREG(metadata.st_mode):
+                if metadata.st_nlink != 1:
+                    raise ValueError("private runtime contains a hardlinked file")
+                content = item.read_bytes()
+                records.append(
+                    {
+                        "path": relative,
+                        "kind": "file",
+                        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+                        "bytes": len(content),
+                        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+                    }
+                )
+            elif stat.S_ISLNK(metadata.st_mode):
+                resolved = item.resolve(strict=True)
+                if not any(
+                    resolved == allowed or allowed in resolved.parents
+                    for allowed in roots
+                ):
+                    raise ValueError("private runtime symlink escapes")
+                records.append(
+                    {
+                        "path": relative,
+                        "kind": "symlink",
+                        "target": os.readlink(item),
+                    }
+                )
+            elif stat.S_ISDIR(metadata.st_mode):
+                records.append(
+                    {
+                        "path": relative,
+                        "kind": "directory",
+                        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+                    }
+                )
+            else:
+                raise ValueError("private runtime contains a special file")
+    return _canonical_digest(records)
+
+
+def _run_sandboxed(
+    sandbox: Path,
+    command: list[str],
+    *,
+    cwd: Path,
+    environment: dict[str, str],
+    timeout: int,
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [str(sandbox), "-p", PINNED_SANDBOX_PROFILE, *command],
+        cwd=cwd,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=timeout,
+    )
+
+
+def prepare_packed_runtime(
+    pack: Path, manifest_path: Path, errors: list[str]
+) -> dict[str, Any] | None:
+    """Assemble, probe, and seal one private runtime for all schema-v2 routes."""
+
+    starting_error_count = len(errors)
+    runtime = validate_packed_runtime_manifest(pack, manifest_path, errors)
+    uv = pinned_uv_runtime("packed runtime", errors)
+    sandbox = pinned_sandbox_runtime("packed runtime", errors)
+    if (
+        runtime is None
+        or uv is None
+        or sandbox is None
+        or len(errors) != starting_error_count
+    ):
+        return None
+    temporary = tempfile.TemporaryDirectory(prefix="elmos-packed-runtime-")
+    private_root = Path(temporary.name).resolve(strict=True)
+    input_root = private_root / "input"
+    input_wheelhouse = input_root / "wheelhouse"
+    python_root = private_root / "python"
+    venv = private_root / PACKED_REPLAY_VENV_NAME
+    try:
+        input_wheelhouse.mkdir(mode=0o700, parents=True)
+        private_archive = input_root / PYTHON_ARCHIVE_NAME
+        private_lock = input_root / "uv.lock"
+        for source, target, expected_digest, expected_bytes in (
+            (
+                pack / PYTHON_ARCHIVE_PATH,
+                private_archive,
+                PYTHON_ARCHIVE_SHA256,
+                PYTHON_ARCHIVE_BYTES,
+            ),
+            (
+                pack / PACKED_RUNTIME_LOCK,
+                private_lock,
+                PRODUCTION_LOCK_SHA256,
+                PRODUCTION_LOCK_BYTES,
+            ),
+            *(
+                (
+                    pack / item["path"],
+                    input_wheelhouse / item["filename"],
+                    item["sha256"],
+                    item["bytes"],
+                )
+                for item in runtime["wheelhouse"]["packages"]
+            ),
+        ):
+            shutil.copyfile(source, target)
+            content = target.read_bytes()
+            if (
+                len(content) != expected_bytes
+                or "sha256:" + hashlib.sha256(content).hexdigest() != expected_digest
+                or target.stat().st_nlink != 1
+            ):
+                raise ValueError("private runtime input copy identity differs")
+        _extract_verified_python(private_archive, python_root)
+        environment = packed_replay_environment(private_root, venv)
+        venv_result = _run_sandboxed(
+            sandbox,
+            [
+                str(uv),
+                "venv",
+                str(venv),
+                "--python",
+                str(python_root / "bin" / "python3.12"),
+                "--no-project",
+                "--no-config",
+                "--offline",
+                "--no-cache",
+                "--no-python-downloads",
+            ],
+            cwd=private_root,
+            environment=environment,
+            timeout=60,
+        )
+        if venv_result.returncode != 0:
+            raise ValueError(
+                "private venv creation failed: "
+                + bounded_replay_diagnostic(
+                    venv_result.stderr,
+                    venv_result.stdout,
+                    sensitive_roots=(private_root, pack),
+                )
+            )
+
+        packages = runtime["wheelhouse"]["packages"]
+        requirements = input_root / "requirements.txt"
+        requirements.write_text(
+            "".join(
+                f"{item['name']}=={item['version']} --hash={item['sha256']}\n"
+                for item in packages
+            ),
+            encoding="utf-8",
+        )
+        install = _run_sandboxed(
+            sandbox,
+            [
+                str(uv),
+                "pip",
+                "install",
+                "--python",
+                str(venv / "bin" / "python"),
+                "--requirement",
+                str(requirements),
+                "--find-links",
+                str(input_wheelhouse),
+                "--require-hashes",
+                "--offline",
+                "--no-index",
+                "--no-deps",
+                "--only-binary",
+                ":all:",
+                "--link-mode",
+                "copy",
+                "--no-cache",
+                "--no-python-downloads",
+                "--no-config",
+            ],
+            cwd=private_root,
+            environment=environment,
+            timeout=120,
+        )
+        if install.returncode != 0:
+            raise ValueError(
+                "private wheel install failed: "
+                + bounded_replay_diagnostic(
+                    install.stderr,
+                    install.stdout,
+                    sensitive_roots=(private_root, pack),
+                )
+            )
+
+        python = venv / "bin" / "python"
+        resolved_python = python.resolve(strict=True)
+        resolved_python.relative_to(private_root)
+        runtime_probe = _run_sandboxed(
+            sandbox,
+            [
+                str(python),
+                "-I",
+                "-B",
+                "-c",
+                (
+                    "import json, jsonschema, pathlib, sys, z3; "
+                    "v=pathlib.Path(sys.prefix).resolve(); "
+                    "b=pathlib.Path(sys.base_prefix).resolve(); "
+                    "j=pathlib.Path(jsonschema.__file__).resolve(); "
+                    "z=pathlib.Path(z3.__file__).resolve(); "
+                    "j.relative_to(v); z.relative_to(v); "
+                    "print(json.dumps({'implementation':sys.implementation.name,"
+                    "'version':list(sys.version_info[:3]),'isolated':sys.flags.isolated,"
+                    "'prefix':str(v),'base_prefix':str(b),'jsonschema':str(j),"
+                    "'z3':str(z),'z3_version':z3.get_version_string()}))"
+                ),
+            ],
+            cwd=private_root,
+            environment=environment,
+            timeout=30,
+        )
+        if runtime_probe.returncode != 0:
+            raise ValueError(
+                "private Python/Z3 probe failed: "
+                + bounded_replay_diagnostic(
+                    runtime_probe.stderr,
+                    runtime_probe.stdout,
+                    sensitive_roots=(private_root, pack),
+                )
+            )
+        probe = json.loads(runtime_probe.stdout.strip().splitlines()[-1])
+        if (
+            probe.get("implementation") != "cpython"
+            or probe.get("version") != [3, 12, 12]
+            or probe.get("isolated") != 1
+            or Path(probe.get("prefix", "")) != venv.resolve(strict=True)
+            or Path(probe.get("base_prefix", "")) != python_root.resolve(strict=True)
+            or probe.get("z3_version") != "4.16.0"
+        ):
+            raise ValueError("private Python/Z3 probe identity differs")
+
+        z3_cli = venv / "bin" / "z3"
+        z3_cli.resolve(strict=True).relative_to(venv.resolve(strict=True))
+        cli_probe = _run_sandboxed(
+            sandbox,
+            [str(z3_cli), "-version"],
+            cwd=private_root,
+            environment=environment,
+            timeout=15,
+        )
+        if (
+            cli_probe.returncode != 0
+            or cli_probe.stdout.strip() != "Z3 version 4.16.0 - 64 bit"
+        ):
+            raise ValueError("private Z3 CLI identity differs")
+
+        socket_probe = _run_sandboxed(
+            sandbox,
+            [
+                str(python),
+                "-I",
+                "-B",
+                "-c",
+                (
+                    "import socket; s=socket.socket(); "
+                    "\ntry: s.connect(('127.0.0.1',9))"
+                    "\nexcept PermissionError as e: print(f'SOCKET_DENIED:{e.errno}')"
+                    "\nelse: raise SystemExit('SOCKET_NOT_DENIED')"
+                    "\nfinally: s.close()"
+                ),
+            ],
+            cwd=private_root,
+            environment=environment,
+            timeout=15,
+        )
+        if (
+            socket_probe.returncode != 0
+            or socket_probe.stdout.strip() != "SOCKET_DENIED:1"
+        ):
+            raise ValueError("sandbox actual socket denial probe failed")
+
+        seal = _runtime_tree_seal((input_root, python_root, venv))
+        return {
+            "temporary": temporary,
+            "pack": pack,
+            "manifest_path": manifest_path,
+            "root": private_root,
+            "input_root": input_root,
+            "python": python,
+            "python_root": python_root,
+            "venv": venv,
+            "sandbox": sandbox,
+            "environment": environment,
+            "seal": seal,
+        }
+    except Exception as exc:
+        errors.append(
+            "packed runtime preflight failed: "
+            + bounded_replay_diagnostic(
+                str(exc), "", sensitive_roots=(private_root, pack)
+            )
+        )
+        temporary.cleanup()
+        return None
+
+
+def close_packed_runtime(runtime: dict[str, Any], errors: list[str]) -> None:
+    """Verify the private interpreter/venv closure did not mutate, then remove it."""
+
+    try:
+        observed = _runtime_tree_seal(
+            (runtime["input_root"], runtime["python_root"], runtime["venv"])
+        )
+        if observed != runtime["seal"]:
+            errors.append(
+                "packed runtime post-replay seal differs from pre-replay seal"
+            )
+        validate_packed_runtime_manifest(
+            runtime["pack"], runtime["manifest_path"], errors
+        )
+    except Exception as exc:
+        errors.append(f"packed runtime post-replay seal failed: {exc}")
+    finally:
+        runtime["temporary"].cleanup()
+
+
+def validate_packed_runtime_preflight(pack_arg: Path) -> dict[str, Any]:
+    """Short generator gate: validate, assemble, probe, and seal only the runtime."""
+
+    pack = pack_arg.resolve()
+    errors: list[str] = []
+    manifest = safe_pack_file(
+        pack, PACKED_RUNTIME_MANIFEST, "packed runtime manifest", errors
+    )
+    runtime = (
+        prepare_packed_runtime(pack, manifest, errors)
+        if manifest is not None and not errors
+        else None
+    )
+    if runtime is not None:
+        close_packed_runtime(runtime, errors)
+    return {"status": "invalid" if errors else "valid", "errors": errors}
 
 
 def is_placeholder(value: object) -> bool:
@@ -233,9 +1169,7 @@ def load_batch29_packed_module_validator() -> Any:
     )
     validator = namespace.get("validate_packed_module_equivalence")
     if not callable(validator):
-        raise RuntimeError(
-            "Batch 29 validate_packed_module_equivalence is unavailable"
-        )
+        raise RuntimeError("Batch 29 validate_packed_module_equivalence is unavailable")
     return validator
 
 
@@ -287,6 +1221,7 @@ def validate_packed_route_replay(
     evidence_by_id: dict[str, dict[str, Any]],
     evidence_files: dict[str, Path],
     require_live_source_match: bool,
+    prepared_runtime: dict[str, Any] | None,
     errors: list[str],
 ) -> None:
     """Validate and execute the route-local evidence-only replay launcher."""
@@ -300,8 +1235,7 @@ def validate_packed_route_replay(
         replay_specifications.update(PACKED_MODULE_REPLAY_FILES)
         expected_command = PACKED_REPLAY_COMMAND_V2
     expected_ids = {
-        packed_replay_evidence_id(route_key, member)
-        for member in replay_specifications
+        packed_replay_evidence_id(route_key, member) for member in replay_specifications
     }
     if set(replay_evidence_ids) != expected_ids or len(replay_evidence_ids) != len(
         replay_specifications
@@ -388,9 +1322,10 @@ def validate_packed_route_replay(
         errors.append(f"route {route_key} packed replay expected exit is nonzero")
         replay_files_valid = False
 
-    if expected_command[0] == "uv":
-        pinned_uv = pinned_uv_runtime(f"route {route_key} packed replay", errors)
-        interpreter = str(pinned_uv) if pinned_uv is not None else None
+    if require_live_source_match:
+        interpreter = (
+            str(prepared_runtime["python"]) if prepared_runtime is not None else None
+        )
         if interpreter is None:
             replay_files_valid = False
     else:
@@ -400,10 +1335,13 @@ def validate_packed_route_replay(
                 f"route {route_key} packed replay {expected_command[0]} is unavailable"
             )
             replay_files_valid = False
-    launcher_token = (
-        expected_command[1]
-        if expected_command[0] == "python3"
-        else expected_command[expected_command.index("python") + 1]
+    launcher_token = next(
+        (
+            command_part
+            for command_part in expected_command
+            if command_part == "certification/replay/validate_packed_route.py"
+        ),
+        "",
     )
     launcher = route_root / launcher_token
     try:
@@ -424,41 +1362,46 @@ def validate_packed_route_replay(
     if not replay_files_valid or interpreter is None:
         return
     try:
-        if require_live_source_match:
-            with tempfile.TemporaryDirectory(
-                prefix=f"elmos-packed-route-{route_key}-"
-            ) as temporary:
-                replay_root = Path(temporary) / route_key
-                shutil.copytree(route_root, replay_root)
-                replay_environment = packed_replay_environment(
-                    Path(interpreter), replay_root
+        if require_live_source_match and prepared_runtime is not None:
+            temporary = Path(
+                tempfile.mkdtemp(
+                    prefix=f"route-{route_key}-", dir=prepared_runtime["root"]
                 )
+            )
+            try:
+                replay_root = temporary / route_key
+                shutil.copytree(route_root, replay_root)
                 execution_command = [
-                    str(Path(interpreter).resolve(strict=True)),
+                    str(Path(interpreter)),
                     *expected_command[1:],
                 ]
-                completed = subprocess.run(
+                completed = _run_sandboxed(
+                    prepared_runtime["sandbox"],
                     execution_command,
                     cwd=replay_root,
-                    capture_output=True,
-                    text=True,
-                    check=False,
                     timeout=600,
-                    env=replay_environment,
+                    environment=prepared_runtime["environment"],
                 )
                 if completed.returncode != 0:
-                    diagnostic = (
-                        completed.stderr.strip().splitlines()[-1:]
-                        or completed.stdout.strip().splitlines()[-1:]
-                        or ["unknown packed replay error"]
+                    raise ValueError(
+                        bounded_replay_diagnostic(
+                            completed.stderr,
+                            completed.stdout,
+                            sensitive_roots=(
+                                prepared_runtime["root"],
+                                pack,
+                                route_root,
+                            ),
+                        )
                     )
-                    raise ValueError(diagnostic[0])
                 output_lines = completed.stdout.strip().splitlines()
                 if not output_lines:
                     raise ValueError("packed replay emitted no JSON result")
                 result = json.loads(
                     output_lines[-1], parse_constant=reject_non_finite_json
                 )
+            finally:
+                shutil.rmtree(temporary, ignore_errors=True)
         else:
             launcher_namespace = runpy.run_path(
                 str(launcher_resolved),
@@ -469,7 +1412,12 @@ def validate_packed_route_replay(
                 raise ValueError("packed replay validate_packed_route is unavailable")
             result = launcher_validator(route_root)
     except Exception as exc:
-        errors.append(f"route {route_key} packed replay exited nonzero: {exc}")
+        errors.append(
+            f"route {route_key} packed replay exited nonzero: "
+            + bounded_replay_diagnostic(
+                str(exc), "", sensitive_roots=(pack, route_root)
+            )
+        )
         return
     if (
         not isinstance(result, dict)
@@ -501,9 +1449,10 @@ def expected_routes(campaign: dict[str, Any], errors: list[str]) -> set[str]:
     """Derive the exact route set without inferring a 9 x 8 permutation."""
 
     if campaign.get("schema_version") == 1:
-        if campaign.get("route_policy") is not None or campaign.get(
-            "required_route_keys"
-        ) is not None:
+        if (
+            campaign.get("route_policy") is not None
+            or campaign.get("required_route_keys") is not None
+        ):
             errors.append("legacy campaign cannot redefine its exact route policy")
         return {
             f"{source}-to-{target}"
@@ -669,6 +1618,30 @@ def validate(pack_arg: Path) -> dict[str, Any]:
         for reference in references:
             use_evidence(reference, label)
 
+    prepared_runtime: dict[str, Any] | None = None
+    if campaign.get("schema_version") == 2:
+        runtime_evidence_id = campaign.get("packed_replay_runtime_evidence_id")
+        use_evidence(runtime_evidence_id, "packed replay runtime")
+        runtime_evidence = evidence_by_id.get(runtime_evidence_id)
+        runtime_path = evidence_files.get(runtime_evidence_id)
+        runtime_binding_valid = True
+        if runtime_evidence_id != PACKED_RUNTIME_EVIDENCE_ID:
+            errors.append("schema v2 packed runtime evidence id is not canonical")
+            runtime_binding_valid = False
+        if (
+            runtime_evidence is None
+            or runtime_evidence.get("role") != PACKED_RUNTIME_EVIDENCE_ROLE
+            or runtime_evidence.get("path") != PACKED_RUNTIME_MANIFEST
+        ):
+            errors.append("schema v2 packed runtime evidence path/role mismatch")
+            runtime_binding_valid = False
+        if runtime_path is None:
+            runtime_binding_valid = False
+        if runtime_binding_valid and not errors:
+            prepared_runtime = prepare_packed_runtime(pack, runtime_path, errors)
+    elif campaign.get("packed_replay_runtime_evidence_id") is not None:
+        errors.append("legacy campaign cannot declare a packed runtime evidence id")
+
     route_set = campaign["route_set"]
     use_evidence(route_set["manifest_evidence_id"], "route_set manifest")
     route_manifest_evidence = evidence_by_id.get(route_set["manifest_evidence_id"])
@@ -693,16 +1666,17 @@ def validate(pack_arg: Path) -> dict[str, Any]:
         errors.append(f"missing directed route: {route_key}")
     for route_key in sorted(actual_route_keys - expected_route_keys):
         errors.append(f"unexpected directed route: {route_key}")
-    try:
-        validate_batch29_formal_equivalence = load_batch29_formal_validator()
-    except Exception as exc:
-        errors.append(f"cannot load Batch 29 formal validator: {exc}")
-        validate_batch29_formal_equivalence = None
-    try:
-        validate_batch29_module_equivalence = load_batch29_packed_module_validator()
-    except Exception as exc:
-        errors.append(f"cannot load Batch 29 module validator: {exc}")
-        validate_batch29_module_equivalence = None
+    validate_batch29_formal_equivalence = None
+    validate_batch29_module_equivalence = None
+    if campaign.get("schema_version") == 2:
+        try:
+            validate_batch29_formal_equivalence = load_batch29_formal_validator()
+        except Exception as exc:
+            errors.append(f"cannot load Batch 29 formal validator: {exc}")
+        try:
+            validate_batch29_module_equivalence = load_batch29_packed_module_validator()
+        except Exception as exc:
+            errors.append(f"cannot load Batch 29 module validator: {exc}")
     route_formal_bindings: dict[str, list[str]] = {}
     route_module_bindings: dict[str, list[str]] = {}
     for route_key, route in routes_by_key.items():
@@ -757,9 +1731,7 @@ def validate(pack_arg: Path) -> dict[str, Any]:
                 or module_evidence.get("role") != "route-module-evidence"
                 or module_evidence.get("path") != expected_module_relative
             ):
-                errors.append(
-                    f"route {route_key} module evidence path/role mismatch"
-                )
+                errors.append(f"route {route_key} module evidence path/role mismatch")
             elif isinstance(module_evidence_id, str):
                 route_module_bindings.setdefault(module_evidence_id, []).append(
                     route_key
@@ -858,9 +1830,13 @@ def validate(pack_arg: Path) -> dict[str, Any]:
             evidence_by_id=evidence_by_id,
             evidence_files=evidence_files,
             require_live_source_match=campaign.get("schema_version") == 2,
+            prepared_runtime=prepared_runtime,
             errors=errors,
         )
-        if validate_batch29_formal_equivalence is not None:
+        if (
+            campaign.get("schema_version") == 2
+            and validate_batch29_formal_equivalence is not None
+        ):
             try:
                 validated_wrapper, batch29_errors = validate_batch29_formal_equivalence(
                     route_root, copied_manifest, copied_certification
@@ -1402,7 +2378,8 @@ def validate(pack_arg: Path) -> dict[str, Any]:
         derived_status = status_for_composition(members)
         if composition.get("status") != derived_status:
             errors.append(
-                f"composition {composition['composition_id']} claims {composition.get('status')} but derives {derived_status}"
+                f"composition {composition['composition_id']} claims "
+                f"{composition.get('status')} but derives {derived_status}"
             )
 
     extra_matrix = set(matrix_by_key) - {
@@ -1484,6 +2461,9 @@ def validate(pack_arg: Path) -> dict[str, Any]:
             "pack cannot request certification while independent formal verification is NOT_RUN"
         )
 
+    if prepared_runtime is not None:
+        close_packed_runtime(prepared_runtime, errors)
+
     unreferenced = set(evidence_by_id) - referenced_evidence
     for evidence_id in sorted(unreferenced):
         errors.append(f"unreferenced evidence entry: {evidence_id}")
@@ -1520,8 +2500,17 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("pack", type=Path)
     parser.add_argument("--json", action="store_true", dest="as_json")
+    parser.add_argument(
+        "--runtime-preflight",
+        action="store_true",
+        help="validate and probe only the schema-v2 offline packed runtime",
+    )
     args = parser.parse_args()
-    result = validate(args.pack)
+    result = (
+        validate_packed_runtime_preflight(args.pack)
+        if args.runtime_preflight
+        else validate(args.pack)
+    )
     if args.as_json:
         print(json.dumps(result, sort_keys=True))
     elif result["status"] == "valid":

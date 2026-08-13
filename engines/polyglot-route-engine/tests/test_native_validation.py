@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import math
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -17,9 +19,14 @@ from elmos_polyglot_route.models import RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze, inventory_module
 from elmos_polyglot_route.toolchains import ExactToolchain, exact_toolchain
 from elmos_polyglot_route.validation import (
+    _PROCESS_DIAGNOSTIC_LIMIT,
+    _bounded_process_diagnostic,
     _cpp_harness,
     _java_harness,
     _objc_harness,
+    _python_harness,
+    _python_literal,
+    _run,
     _swift_harness,
     validate,
     validate_source,
@@ -115,11 +122,18 @@ def _trusted_java_test_input(tmp_path: Path) -> tuple[Path, list[str]]:
     return helper, [str(source.resolve()), "value"]
 
 
+@pytest.mark.parametrize(
+    "reason",
+    [
+        "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
+        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+    ],
+)
 def test_trusted_java_analyzer_promotes_only_exact_domain_error(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    reason: str,
 ) -> None:
-    reason = "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"
     toolchain = _synthetic_java_toolchain()
     helper, arguments = _trusted_java_test_input(tmp_path)
     monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
@@ -157,12 +171,27 @@ def test_trusted_java_analyzer_promotes_only_exact_domain_error(
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int",
         "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET:float",
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int\nextra-output",
+        "prefix:JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET:suffix",
+        "JAVA_STRING_VALUE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET\nextra-output",
         (
             'Exception in thread "main" java.lang.IllegalArgumentException: '
             "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int\n"
             "\tat Analyzer.type(Analyzer.java:454)"
         ),
+        (
+            'Exception in thread "main" java.lang.IllegalArgumentException: '
+            "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET\n"
+            "\tat Analyzer.expression(Analyzer.java:571)"
+        ),
+        (
+            'Exception in thread "main" java.lang.IllegalArgumentException: '
+            "JAVA_UNSUPPORTED_TYPE:Object\n"
+            "\tat Analyzer.type(Analyzer.java:474)"
+        ),
         ("NATIVE_ANALYZER_FAILED:/tmp/forged/java:JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"),
+        ("NATIVE_ANALYZER_FAILED:/tmp/forged/java:JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"),
     ],
 )
 def test_trusted_java_analyzer_does_not_promote_stack_multiline_forged_or_near_output(
@@ -187,6 +216,68 @@ def test_trusted_java_analyzer_does_not_promote_stack_multiline_forged_or_near_o
         )
 
     assert str(captured.value) == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{stderr}"
+
+
+@pytest.mark.parametrize(
+    "reason",
+    [
+        "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
+        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+    ],
+)
+def test_trusted_java_analyzer_does_not_promote_forged_outer_executable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    reason: str,
+) -> None:
+    toolchain = _synthetic_java_toolchain()
+    helper, arguments = _trusted_java_test_input(tmp_path)
+    forged = f"NATIVE_ANALYZER_FAILED:/forged/java:{reason}"
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, timeout=120: (_ for _ in ()).throw(RouteError(forged)),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_java_analyzer(
+            toolchain,
+            helper,
+            arguments,
+            allowed_domain_errors=native._JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS,
+        )
+
+    assert str(captured.value) == forged
+
+
+@pytest.mark.parametrize(
+    "policy",
+    [
+        frozenset({"JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"}),
+        native._JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS | frozenset({"JAVA_UNSUPPORTED_TYPE:Object"}),
+    ],
+)
+def test_trusted_java_analyzer_rejects_domain_error_policy_subset_or_superset(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    policy: frozenset[str],
+) -> None:
+    toolchain = _synthetic_java_toolchain()
+    helper, arguments = _trusted_java_test_input(tmp_path)
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, timeout=120: pytest.fail("invalid policy reached Java execution"),
+    )
+
+    with pytest.raises(RouteError, match="^JAVA_ANALYZER_DOMAIN_ERROR_POLICY_INVALID$"):
+        native._run_trusted_java_analyzer(
+            toolchain,
+            helper,
+            arguments,
+            allowed_domain_errors=policy,
+        )
 
 
 def test_trusted_java_analyzer_rejects_helper_symlink(
@@ -809,17 +900,20 @@ def test_platform_or_narrow_integer_spellings_fail_closed(
         assert str(captured.value) == "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"
 
 
-def test_java_raw_string_reference_equality_fails_closed(tmp_path: Path) -> None:
+@pytest.mark.parametrize("operator", ["==", "!="])
+def test_java_raw_string_reference_equality_fails_closed(tmp_path: Path, operator: str) -> None:
     _require_native_toolchain("java")
     source = tmp_path / "Strings.java"
     source.write_text(
         "public final class Strings {\n"
-        "  public static boolean same(String left, String right) { return left == right; }\n"
+        f"  public static boolean same(String left, String right) {{ return left {operator} right; }}\n"
         "}\n",
         encoding="utf-8",
     )
-    with pytest.raises(RouteError, match="JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"):
+    with pytest.raises(RouteError) as captured:
         analyze(source, "java", "same")
+    assert str(captured.value) == "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"
+    assert set(tmp_path.iterdir()) == {source}
 
 
 @pytest.mark.parametrize(
@@ -833,3 +927,227 @@ def test_expected_error_cases_remain_explicitly_not_run_until_case_isolation_exi
     cases = [{"args": [1.0, 0.0], "expected_error": "ELMOS_DIVIDE_BY_ZERO"}]
     with pytest.raises(RouteError, match="EXPECTED_ERROR_BEHAVIOR_NOT_RUN"):
         harness(function, cases)
+
+
+
+def _stream_writing_script(tmp_path: Path, *, stdout: str, stderr: str, exit_code: int) -> Path:
+    for text in (stdout, stderr):
+        if "'" in text:
+            raise AssertionError("test output must remain shell-literal safe")
+    script = tmp_path / "noisy-build"
+    body = ["#!/bin/sh"]
+    if stdout:
+        body.append(f"/usr/bin/printf '%s\\n' '{stdout}'")
+    if stderr:
+        body.append(f"/usr/bin/printf '%s\\n' '{stderr}' >&2")
+    body.append(f"exit {exit_code}")
+    script.write_text("\n".join(body) + "\n", encoding="utf-8")
+    script.chmod(0o500)
+    return script
+
+
+def test_failed_target_validation_reports_stdout_even_when_stderr_is_noisy(tmp_path: Path) -> None:
+    """A banner on stderr must not evict the real diagnostics on stdout.
+
+    This is the exact shape of the ``dotnet build`` failure that previously
+    surfaced only its first-run welcome text: the old wrapper selected
+    ``stderr or stdout``, so a non-empty banner discarded the compiler error
+    that explained the failure.
+    """
+
+    script = _stream_writing_script(
+        tmp_path,
+        stdout="error CS0101: the namespace already contains a definition for Migrated",
+        stderr="Welcome to .NET! Telemetry is collected.",
+        exit_code=1,
+    )
+
+    with pytest.raises(RouteError) as captured:
+        _run([str(script)], tmp_path)
+
+    message = str(captured.value)
+    assert message.startswith("TARGET_VALIDATION_FAILED:noisy-build:returncode=1:")
+    assert 'stdout="' in message
+    assert 'stderr="' in message
+    assert "CS0101" in message
+    assert "Welcome to .NET!" in message
+
+
+def test_failed_target_validation_redacts_secrets_and_host_paths(tmp_path: Path) -> None:
+    """Both streams are disclosed, so both must be sanitised first.
+
+    Surfacing stdout as well as stderr widens what a failure can leak into
+    persisted evidence.  The diagnostic therefore carries the same redaction
+    contract the assembly build wrapper applies.
+    """
+
+    completed = subprocess.CompletedProcess(
+        args=["build"],
+        returncode=23,
+        stdout=f"compiler error at {tmp_path}/source.cs TOKEN=stdout-secret\nCS0101",
+        stderr="Authorization: Bearer stderr-secret\nfirst-run warning",
+    )
+
+    stdout = _bounded_process_diagnostic(completed.stdout, cwd=tmp_path)
+    stderr = _bounded_process_diagnostic(completed.stderr, cwd=tmp_path)
+
+    # The actionable diagnostics survive.
+    assert "CS0101" in stdout
+    assert "first-run warning" in stderr
+    # The secrets and host paths do not.
+    assert "stdout-secret" not in stdout
+    assert "stderr-secret" not in stderr
+    assert str(tmp_path) not in stdout
+    assert "<redacted>" in stdout
+    assert "<redacted>" in stderr
+
+
+def test_failed_target_validation_with_no_output_is_reported_explicitly(tmp_path: Path) -> None:
+    """An empty diagnostic would read as "no reason recorded"; say so instead."""
+
+    script = _stream_writing_script(tmp_path, stdout="", stderr="", exit_code=3)
+
+    with pytest.raises(RouteError) as captured:
+        _run([str(script)], tmp_path)
+
+    assert str(captured.value) == (
+        'TARGET_VALIDATION_FAILED:noisy-build:returncode=3:stdout="<empty>":stderr="<empty>"'
+    )
+
+
+def test_failed_target_validation_bounds_each_stream_independently(tmp_path: Path) -> None:
+    """One chatty stream must not truncate the other out of the report.
+
+    Truncation keeps the tail, because a compiler prints its summary last.
+    """
+
+    stdout = "HEAD-MARKER" + ("s" * _PROCESS_DIAGNOSTIC_LIMIT) + "TAIL-STDOUT"
+    stderr = "HEAD-MARKER" + ("e" * _PROCESS_DIAGNOSTIC_LIMIT) + "TAIL-STDERR"
+
+    bounded_stdout = _bounded_process_diagnostic(stdout, cwd=tmp_path)
+    bounded_stderr = _bounded_process_diagnostic(stderr, cwd=tmp_path)
+
+    assert len(bounded_stdout) == _PROCESS_DIAGNOSTIC_LIMIT
+    assert len(bounded_stderr) == _PROCESS_DIAGNOSTIC_LIMIT
+    assert bounded_stdout.endswith("TAIL-STDOUT")
+    assert bounded_stderr.endswith("TAIL-STDERR")
+    assert "HEAD-MARKER" not in bounded_stdout
+    assert "HEAD-MARKER" not in bounded_stderr
+
+
+def _binary_function(parameter_type: str, return_type: str) -> Any:
+    return SemanticIR.from_mapping(
+        {
+            "schema_version": "1.0.0",
+            "source_language": "typescript",
+            "source_file": "add.ts",
+            "analyzer": "test",
+            "analyzer_version": "1",
+            "functions": [
+                {
+                    "name": "add",
+                    "parameters": [
+                        {"name": "left", "type": parameter_type},
+                        {"name": "right", "type": parameter_type},
+                    ],
+                    "return_type": return_type,
+                    "body": [
+                        {
+                            "kind": "return",
+                            "expression": {
+                                "kind": "binary",
+                                "operator": "+",
+                                "left": {"kind": "name", "value": "left"},
+                                "right": {"kind": "name", "value": "right"},
+                            },
+                        }
+                    ],
+                }
+            ],
+            "diagnostics": [],
+        }
+    ).functions[0]
+
+
+def test_python_harness_passes_float_literals_for_canonical_number_parameters() -> None:
+    """Python annotations do not coerce, so the harness must supply the type.
+
+    ``def add(left: float, right: float) -> float`` called as ``add(2, 3)``
+    returns the integer ``5``.  The observation is then an int while the
+    canonical value and every statically typed target carry float64 ``5.0``,
+    and byte-exact evidence comparison rejects a route that is in fact correct.
+    This is the defect that made every ``typescript→python`` workload fail.
+    """
+
+    harness = _python_harness(
+        _binary_function("number", "number"),
+        [{"args": [2, 3], "expected": 5}],
+    )
+
+    assert "migrated.add(2.0, 3.0)" in harness
+    assert "migrated.add(2, 3)" not in harness
+    assert "expected_0 = 5.0" in harness
+
+
+def test_python_harness_keeps_integer_parameters_as_integers() -> None:
+    """The float rendering must not leak into the integer canonical type."""
+
+    harness = _python_harness(
+        _binary_function("integer", "integer"),
+        [{"args": [2, 3], "expected": 5}],
+    )
+
+    assert "migrated.add(2, 3)" in harness
+    assert "2.0" not in harness
+
+
+def test_python_harness_observation_round_trips_as_float64() -> None:
+    """Execute the generated harness and confirm the recorded value is a float."""
+
+    module = tmp = None
+    import subprocess
+    import sys
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        (root / "migrated.py").write_text(
+            "def add(left: float, right: float) -> float:\n    return (left + right)\n",
+            encoding="utf-8",
+        )
+        (root / "route_harness.py").write_text(
+            _python_harness(_binary_function("number", "number"), [{"args": [2, 3], "expected": 5}]),
+            encoding="utf-8",
+        )
+        completed = subprocess.run(
+            [sys.executable, "route_harness.py"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    assert completed.returncode == 0, completed.stderr
+    payload = json.loads(completed.stdout.split("\t")[-1])
+    # 5.0, not 5 -- this is exactly what the evidence comparison checks.
+    assert payload["value"] == 5.0
+    assert isinstance(payload["value"], float)
+    del module, tmp
+
+
+def test_python_harness_rejects_a_case_with_the_wrong_argument_count() -> None:
+    """Parity with the Java and TypeScript harnesses, which already fail closed."""
+
+    with pytest.raises(RouteError, match="PYTHON_CASE_ARGUMENT_COUNT_INVALID"):
+        _python_harness(_binary_function("integer", "integer"), [{"args": [1], "expected": 1}])
+
+
+def test_python_literal_fails_closed_on_type_mismatch() -> None:
+    with pytest.raises(RouteError, match="PYTHON_CASE_NUMBER_REQUIRED"):
+        _python_literal(True, "number")
+    with pytest.raises(RouteError, match="PYTHON_CASE_INTEGER_OUTSIDE_INT64"):
+        _python_literal(2**63, "integer")
+    with pytest.raises(RouteError, match="PYTHON_CASE_BOOLEAN_REQUIRED"):
+        _python_literal(1, "boolean")
+    with pytest.raises(RouteError, match="PYTHON_CASE_TYPE_UNSUPPORTED:widget"):
+        _python_literal(1, "widget")

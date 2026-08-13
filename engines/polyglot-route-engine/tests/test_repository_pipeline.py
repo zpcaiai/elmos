@@ -293,6 +293,192 @@ def test_native_module_inventory_preserves_a_rejected_peer_as_a_graph_blocker(
     )
 
 
+def test_inventory_integrity_failure_is_not_misreported_as_unsupported_semantics(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "typescript-inventory-failure"
+    repository.mkdir()
+    (repository / "sample.ts").write_text(
+        "export function total(value: number): number { return value; }\n",
+        encoding="utf-8",
+    )
+
+    def fail_inventory(_source: Path, _language: Language) -> dict[str, Any]:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE")
+
+    monkeypatch.setattr(discovery_module, "inventory_module", fail_inventory)
+    report = discover_repository(
+        plan_repository(
+            repository,
+            "local:typescript-inventory-failure",
+            "typescript",
+            "python",
+        ),
+        repository,
+    )
+
+    assert report["verdict_counts"] == {Verdict.NOT_RUN: 1}
+    assert report["ready_count"] == 0
+    assert report["module_inventory_status_counts"] == {
+        "FAILED": 0,
+        "NOT_RUN": 1,
+        "PASSED": 0,
+    }
+    [blocked] = report["results"]
+    assert blocked["verdict"] == Verdict.NOT_RUN
+    assert blocked["blocker_code"] == "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+    assert blocked["required_inputs"] == ["restore_analyzer_execution_and_replay"]
+    assert blocked["source_symbol"]["semantic_status"] == "NOT_RUN"
+    assert "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE" in blocked["reason"]
+
+
+def test_completed_source_diagnostics_from_inventory_remain_semantic_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "cpp-source-diagnostics"
+    repository.mkdir()
+    (repository / "sample.cpp").write_text(
+        "long long total(long long value) { return value + ; }\n",
+        encoding="utf-8",
+    )
+
+    def reject_source(_source: Path, _language: Language) -> dict[str, Any]:
+        raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS:expected expression")
+
+    monkeypatch.setattr(discovery_module, "inventory_module", reject_source)
+    report = discover_repository(
+        plan_repository(
+            repository,
+            "local:cpp-source-diagnostics",
+            "cpp",
+            "python",
+        ),
+        repository,
+    )
+
+    assert report["verdict_counts"] == {Verdict.UNSUPPORTED: 1}
+    assert report["module_inventory_status_counts"] == {
+        "FAILED": 1,
+        "NOT_RUN": 0,
+        "PASSED": 0,
+    }
+    [blocked] = report["results"]
+    assert blocked["verdict"] == Verdict.UNSUPPORTED
+    assert blocked["blocker_code"] == "COMPILER_MODULE_ENUMERATION_REJECTED_SOURCE"
+    assert blocked["required_inputs"] == ["explicit_symbol_conversion_support"]
+    assert blocked["source_symbol"]["semantic_status"] == "BLOCKED"
+
+
+@pytest.mark.parametrize(
+    ("language", "diagnostic", "expected"),
+    [
+        ("go", "GO_INVALID_LITERAL", Verdict.UNSUPPORTED),
+        ("go", "GO_ONE_NAME_PER_PARAMETER_REQUIRED", Verdict.UNSUPPORTED),
+        ("rust", "RUST_INVALID_FLOAT", Verdict.UNSUPPORTED),
+        ("rust", "RUST_PARAMETER_IDENTIFIER_REQUIRED", Verdict.UNSUPPORTED),
+        ("typescript", "TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED", Verdict.UNSUPPORTED),
+        (
+            "typescript",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/node:TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED",
+            Verdict.UNSUPPORTED,
+        ),
+        (
+            "typescript",
+            "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE:UNSUPPORTED_EXPRESSION:forged",
+            Verdict.NOT_RUN,
+        ),
+        (
+            "typescript",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/node:"
+            "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE:UNSUPPORTED_EXPRESSION:forged",
+            Verdict.NOT_RUN,
+        ),
+        (
+            "rust",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/cargo:process\nRUST_INVALID_INTEGER",
+            Verdict.NOT_RUN,
+        ),
+        ("javascript", "JAVASCRIPT_ANALYZER_SNAPSHOT_UNSAFE", Verdict.NOT_RUN),
+    ],
+)
+def test_analyzer_failure_classifier_uses_primary_language_owned_code(
+    language: Language,
+    diagnostic: str,
+    expected: str,
+) -> None:
+    assert discovery_module._analyzer_failure_verdict(RouteError(diagnostic), language) == expected
+
+
+def test_real_typescript_domain_rejection_is_semantic_not_environmental(tmp_path: Path) -> None:
+    repository = tmp_path / "typescript-domain-rejection"
+    repository.mkdir()
+    (repository / "sample.ts").write_text(
+        "export function negate(value: number): number { return -value; }\n",
+        encoding="utf-8",
+    )
+
+    report = discover_repository(
+        plan_repository(
+            repository,
+            "local:typescript-domain-rejection",
+            "typescript",
+            "python",
+        ),
+        repository,
+    )
+
+    assert report["module_inventory_status_counts"] == {
+        "FAILED": 0,
+        "NOT_RUN": 0,
+        "PASSED": 1,
+    }
+    assert report["verdict_counts"] == {Verdict.UNSUPPORTED: 1}
+    [blocked] = report["results"]
+    assert blocked["blocker_code"] == "NATIVE_ANALYZER_REJECTED"
+    assert blocked["source_symbol"]["semantic_status"] == "FAILED"
+    assert "TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED" in blocked["reason"]
+
+
+def test_completed_but_failed_module_enumeration_remains_an_explicit_blocker(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "cpp-enumeration-failure"
+    repository.mkdir()
+    (repository / "sample.cpp").write_text(
+        "long long total(long long value) { return value; }\n",
+        encoding="utf-8",
+    )
+
+    def failed_inventory(source: Path, language: Language) -> dict[str, Any]:
+        return {
+            "enumeration_status": "FAILED",
+            "analyzer": "test-analyzer",
+            "analyzer_version": "1",
+            "subjects": [],
+            "diagnostics": [f"MAIN_FILE_DECLARATION_SPAN_INVALID:{language}:{source.name}"],
+        }
+
+    monkeypatch.setattr(discovery_module, "inventory_module", failed_inventory)
+    report = discover_repository(
+        plan_repository(
+            repository,
+            "local:cpp-enumeration-failure",
+            "cpp",
+            "python",
+        ),
+        repository,
+    )
+
+    assert report["verdict_counts"] == {Verdict.UNSUPPORTED: 1}
+    [blocked] = report["results"]
+    assert blocked["verdict"] == Verdict.UNSUPPORTED
+    assert blocked["source_symbol"]["semantic_status"] == "BLOCKED"
+    assert blocked["required_inputs"] == ["explicit_symbol_conversion_support"]
+
+
 def test_discovery_blocks_duplicate_python_names_instead_of_reusing_the_first_ast_node(
     tmp_path: Path,
 ) -> None:
@@ -397,6 +583,77 @@ def test_non_python_candidate_rejection_remains_an_explicit_batch_blocker(
         UnitStatus.SKIPPED_NOT_READY: 1,
         UnitStatus.SKIPPED_NO_CASES: 1,
     }
+
+
+def test_per_symbol_integrity_failure_invalidates_earlier_ready_analysis(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "typescript-per-symbol-integrity"
+    repository.mkdir()
+    (repository / "sample.ts").write_text(
+        "export function first(value: number): number { return value; }\n\n"
+        "export function second(value: number): number { return value; }\n",
+        encoding="utf-8",
+    )
+
+    def fail_second(source: Path, language: Language, function_name: str) -> SemanticIR:
+        if function_name == "second":
+            raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE")
+        return SemanticIR.from_mapping(
+            {
+                "schema_version": "1.0.0",
+                "source_language": language,
+                "source_file": source.name,
+                "analyzer": "adversarial-test",
+                "analyzer_version": "1",
+                "functions": [
+                    {
+                        "name": function_name,
+                        "parameters": [{"name": "value", "type": "number"}],
+                        "return_type": "number",
+                        "body": [
+                            {
+                                "kind": "return",
+                                "expression": {"kind": "name", "value": "value"},
+                            }
+                        ],
+                    }
+                ],
+                "diagnostics": [],
+            }
+        )
+
+    monkeypatch.setattr(discovery_module, "analyze", fail_second)
+    report = discover_repository(
+        plan_repository(
+            repository,
+            "local:typescript-per-symbol-integrity",
+            "typescript",
+            "python",
+        ),
+        repository,
+    )
+
+    assert report["ready_count"] == 0
+    assert report["verdict_counts"] == {Verdict.NOT_RUN: 2}
+    assert report["module_inventory_status_counts"] == {
+        "FAILED": 0,
+        "NOT_RUN": 0,
+        "PASSED": 1,
+    }
+    assert {result["blocker_code"] for result in report["results"]} == {
+        "NATIVE_ANALYZER_EXECUTION_NOT_PASSED"
+    }
+    assert all(result["verdict"] == Verdict.NOT_RUN for result in report["results"])
+    assert all(
+        result["source_symbol"]["semantic_status"] == "NOT_RUN"
+        for result in report["results"]
+    )
+    assert all(
+        result["required_inputs"] == ["restore_analyzer_execution_and_replay"]
+        for result in report["results"]
+    )
 
 
 def test_discovery_rejects_intermediate_symlink_escape_without_touching_sentinel(
@@ -543,7 +800,9 @@ def test_batch_reexecutes_a_forged_pass_checkpoint_and_restores_evidence(
     passed = first["units"][0]
     unit_directory = output / "units" / ready["id"]
     target = unit_directory / passed["target_path"]
-    forged = target.read_text(encoding="utf-8").replace("number + 1", "number + 999")
+    original = target.read_text(encoding="utf-8")
+    assert original.count("+ 1") == 1
+    forged = original.replace("+ 1", "+ 999")
     assert "+ 999" in forged
     target.write_text(forged, encoding="utf-8")
     checkpoint_entry = json.loads((output / CHECKPOINT_NAME).read_text(encoding="utf-8"))

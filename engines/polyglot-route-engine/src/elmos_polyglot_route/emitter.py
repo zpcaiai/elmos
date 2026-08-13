@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass, field
 
 from . import types
+from .identifier_hygiene import IdentifierPlan, plan_identifiers, target_ir_view
 from .models import Expression, Function, Language, RouteError, SemanticIR, Statement
 
 
@@ -25,10 +26,10 @@ class EmittedFile:
 #:   python       int    -- arbitrary precision, so exact for every value an
 #:                          `integer` can hold
 #:   typescript   number -- IEEE-754 binary64, exact only up to 2^53-1.
-#:                          Literals beyond that are rejected outright (see
-#:                          `_literal`); values beyond it are a documented
-#:                          boundary of the profile, recorded in README.md.
-#: The three added targets:
+#:   javascript   JSDoc canonical names plus exact runtime guards; Node's
+#:                underlying number has the same safe-integer boundary.
+#:                Literals beyond it are rejected outright (see `_literal`).
+#: The native exact targets:
 #:
 #:   cpp    std::int64_t / double / bool / std::string
 #:          `/` and `%` truncate toward zero (C++11 onward) and `==` on
@@ -46,6 +47,14 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     "python": {"integer": "int", "number": "float", "boolean": "bool", "string": "str"},
     "csharp": {"integer": "long", "number": "double", "boolean": "bool", "string": "string"},
     "typescript": {"integer": "number", "number": "number", "boolean": "boolean", "string": "string"},
+    # JavaScript's JSDoc contract uses canonical names rather than pretending
+    # its dynamic runtime has TypeScript declarations.
+    "javascript": {
+        "integer": "integer",
+        "number": "number",
+        "boolean": "boolean",
+        "string": "string",
+    },
     "go": {"integer": "int64", "number": "float64", "boolean": "bool", "string": "string"},
     "rust": {"integer": "i64", "number": "f64", "boolean": "bool", "string": "String"},
     "cpp": {
@@ -65,8 +74,8 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
 
 #: Languages whose emitted source is brace-delimited and statement-terminated
 #: with `;`. Swift is brace-delimited but takes no terminator.
-_BRACE_LANGUAGES = frozenset({"java", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"})
-_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "rust", "cpp", "objc"})
+_BRACE_LANGUAGES = frozenset({"java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift"})
+_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "javascript", "rust", "cpp", "objc"})
 
 #: Targets that place the function body inside a type declaration, so the
 #: body is indented one extra level.
@@ -89,7 +98,8 @@ _WRAPPED_IN_TYPE = frozenset({"java", "csharp"})
 #:    Go/Rust/Swift, was undefined behaviour in C++/Objective-C, and produced
 #:    `Infinity` in TypeScript -- a silent wrong value. On floats the odd one
 #:    out is the other way round: every target yields IEEE Infinity/NaN while
-#:    Python raises. The canonical rule makes all nine agree on "error".
+#:    Python raises. The canonical rule makes every supported target agree on
+#:    "error".
 #:    `INT64_MIN / -1` and `INT64_MIN % -1` overflow the result type and are
 #:    errors under the same rule.
 _OVERFLOW_MESSAGE = "ELMOS_INTEGER_OVERFLOW"
@@ -164,11 +174,68 @@ _TYPESCRIPT_HELPERS: dict[str, str] = {
         "  if (!Number.isSafeInteger(value)) {\n"
         "    throw new RangeError(`ELMOS_INTEGER_NOT_SAFE:${value}`);\n"
         "  }\n"
+        "  return Object.is(value, -0) ? 0 : value;\n"
+        "}"
+    ),
+    "finite_number": (
+        "function _elmosRequireFiniteNumber(value: number): number {\n"
+        '  if (typeof value !== "number" || !Number.isFinite(value)) {\n'
+        '    throw new TypeError("ELMOS_NUMBER_NOT_FINITE");\n'
+        "  }\n"
         "  return value;\n"
         "}"
     ),
     "non_zero": (
         "function _elmosRequireNonZero(value: number): number {\n"
+        "  if (value === 0) {\n"
+        f'    throw new RangeError("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
+        "  }\n"
+        "  return value;\n"
+        "}"
+    ),
+}
+
+
+#: Node.js executes JavaScript JSDoc as documentation, not as a runtime type
+#: system.  Every parameter and return therefore crosses one of these exact
+#: guards.  Arithmetic is guarded again at each operation so overflow to an
+#: imprecise integer or a non-finite binary64 result cannot be returned as if
+#: it belonged to the canonical domain.
+_JAVASCRIPT_HELPERS: dict[str, str] = {
+    "safe_integer": (
+        "function _elmosRequireSafeInteger(value) {\n"
+        "  if (!Number.isSafeInteger(value)) {\n"
+        f'    throw new RangeError("{_OVERFLOW_MESSAGE}");\n'
+        "  }\n"
+        "  return Object.is(value, -0) ? 0 : value;\n"
+        "}"
+    ),
+    "finite_number": (
+        "function _elmosRequireFiniteNumber(value) {\n"
+        '  if (typeof value !== "number" || !Number.isFinite(value)) {\n'
+        '    throw new TypeError("ELMOS_NUMBER_NOT_FINITE");\n'
+        "  }\n"
+        "  return value;\n"
+        "}"
+    ),
+    "exact_boolean": (
+        "function _elmosRequireBoolean(value) {\n"
+        '  if (typeof value !== "boolean") {\n'
+        '    throw new TypeError("ELMOS_BOOLEAN_REQUIRED");\n'
+        "  }\n"
+        "  return value;\n"
+        "}"
+    ),
+    "exact_string": (
+        "function _elmosRequireString(value) {\n"
+        '  if (typeof value !== "string") {\n'
+        '    throw new TypeError("ELMOS_STRING_REQUIRED");\n'
+        "  }\n"
+        "  return value;\n"
+        "}"
+    ),
+    "non_zero": (
+        "function _elmosRequireNonZero(value) {\n"
         "  if (value === 0) {\n"
         f'    throw new RangeError("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "  }\n"
@@ -465,6 +532,7 @@ _OBJC_HELPERS: dict[str, str] = {
 _HELPERS: dict[Language, dict[str, str]] = {
     "python": _PYTHON_HELPERS,
     "typescript": _TYPESCRIPT_HELPERS,
+    "javascript": _JAVASCRIPT_HELPERS,
     "go": _GO_HELPERS,
     "java": _JAVA_HELPERS,
     "csharp": _CSHARP_HELPERS,
@@ -482,6 +550,9 @@ _HELPER_ORDER: tuple[str, ...] = (
     "integer_min",
     "integer_range",
     "safe_integer",
+    "finite_number",
+    "exact_boolean",
+    "exact_string",
     "non_zero",
     "non_zero_float",
     "non_zero_f64",
@@ -556,10 +627,10 @@ def _type(language: Language, value: str) -> str:
 def _integer_literal(language: Language, value: int) -> str:
     if not types.INTEGER_MIN <= value <= types.INTEGER_MAX:
         raise RouteError(f"INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE:{value}")
-    if language == "typescript" and abs(value) > types.TYPESCRIPT_SAFE_INTEGER_MAX:
-        # A TypeScript `number` cannot hold this exactly: 9007199254740993
+    if language in {"typescript", "javascript"} and abs(value) > types.TYPESCRIPT_SAFE_INTEGER_MAX:
+        # A JavaScript/TypeScript `number` cannot hold this exactly: 9007199254740993
         # silently becomes 9007199254740992.
-        raise RouteError(f"INTEGER_LITERAL_UNSAFE_FOR_TYPESCRIPT:{value}")
+        raise RouteError(f"INTEGER_LITERAL_UNSAFE_FOR_{language.upper()}:{value}")
     if language in {"java", "csharp"} and not -(2**31) <= value <= 2**31 - 1:
         # Without the suffix this is an `int` literal in Java and C#, and
         # `long big() { return 9007199254740993; }` does not compile
@@ -620,6 +691,8 @@ def _literal(language: Language, value: str | int | float | bool | None) -> str:
             # TypeScript `Infinity`), and `str()` emits `inf`, which none of
             # them parse.
             raise RouteError(f"NON_FINITE_LITERAL_OUTSIDE_CERTIFIED_SUBSET:{value}")
+        if language in {"typescript", "javascript"} and value == 0.0 and math.copysign(1.0, value) < 0:
+            raise RouteError(f"{language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED")
         return repr(value)
     raise RouteError("NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET")
 
@@ -684,6 +757,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "java": ("Migrated.elmosNonZero", "non_zero_double"),
     "csharp": ("Migrated.ElmosNonZero", "non_zero_double"),
     "typescript": ("_elmosRequireNonZero", "non_zero"),
+    "javascript": ("_elmosRequireNonZero", "non_zero"),
     "go": ("elmosNonZeroFloat64", "non_zero_float"),
     "rust": ("elmos_non_zero_f64", "non_zero_f64"),
     "swift": ("elmosNonZero", "non_zero_double"),
@@ -754,20 +828,22 @@ def _binary(
             method, message = _RUST_CHECKED_METHOD[operator]
             context.normalization_rules.add(f"rust.integer.{operator}.checked-method:{method}:{message}")
             return f'({left}).{method}({right}).expect("{message}")'
-        if language == "typescript":
+        if language in {"typescript", "javascript"}:
             # A TypeScript `number` cannot hold the canonical range, so the
             # honest guard is the narrower one: fail at 2^53-1 rather than
             # return a rounded value. `/` additionally has to truncate, and a
             # zero divisor has to stop being Infinity.
             _require_helper(context, "safe_integer")
-            context.normalization_rules.add(f"typescript.integer.{operator}.safe-integer")
+            context.normalization_rules.add(f"{language}.integer.{operator}.safe-integer")
+            if language == "javascript":
+                context.normalization_rules.add("javascript.integer.negative-zero-normalized")
             if operator == "/":
                 _require_helper(context, "non_zero")
-                context.normalization_rules.add("typescript.integer./.truncating-non-zero")
+                context.normalization_rules.add(f"{language}.integer./.truncating-non-zero")
                 return f"_elmosRequireSafeInteger(Math.trunc({left} / _elmosRequireNonZero({right})))"
             if operator == "%":
                 _require_helper(context, "non_zero")
-                context.normalization_rules.add("typescript.integer.%.non-zero")
+                context.normalization_rules.add(f"{language}.integer.%.non-zero")
                 return f"_elmosRequireSafeInteger({left} % _elmosRequireNonZero({right}))"
             return f"_elmosRequireSafeInteger({left} {operator} {right})"
         if language == "csharp":
@@ -803,7 +879,12 @@ def _binary(
             # other targets do -- `%` *is* the truncating remainder, so it maps
             # directly, but it still needs grouping like any other infix form.
             return _group(language, f"{left} % {right}", top_level)
-        return _group(language, f"{left} % {right}", top_level)
+        value = _group(language, f"{left} % {right}", top_level)
+        if language in {"typescript", "javascript"} and "number" in {left_type, right_type}:
+            _require_helper(context, "finite_number")
+            context.normalization_rules.add(f"{language}.number.%.finite-result")
+            return f"_elmosRequireFiniteNumber({value})"
+        return value
 
     if operator in types.EQUALITY_OPERATORS and left_type == "string" and language == "java":
         # Java's == on String compares references, so two equal strings that
@@ -825,12 +906,25 @@ def _binary(
     rendered = operator
     if language == "python":
         rendered = {"&&": "and", "||": "or"}.get(operator, operator)
-    elif language == "typescript":
-        # Strict equality only: TypeScript's == applies type coercion.
+    elif language in {"typescript", "javascript"}:
+        # Strict equality only: JavaScript's == applies type coercion.
         if operator in types.EQUALITY_OPERATORS:
-            context.normalization_rules.add(f"typescript.equality.{operator}.strict")
+            context.normalization_rules.add(f"{language}.equality.{operator}.strict")
         rendered = {"==": "===", "!=": "!=="}.get(operator, operator)
-    return _group(language, f"{left} {rendered} {right}", top_level)
+    value = _group(language, f"{left} {rendered} {right}", top_level)
+    if (
+        language in {"typescript", "javascript"}
+        and operator in types.ARITHMETIC_OPERATORS
+        and "number"
+        in {
+            left_type,
+            right_type,
+        }
+    ):
+        _require_helper(context, "finite_number")
+        context.normalization_rules.add(f"{language}.number.{operator}.finite-result")
+        return f"_elmosRequireFiniteNumber({value})"
+    return value
 
 
 def _expression(
@@ -880,10 +974,24 @@ def _statements(
                 else:
                     context.normalization_rules.add("swift.return.integer-to-number")
                     value = f"Double({value})"
-            if language == "typescript" and return_type == "integer":
+            if language in {"typescript", "javascript"} and return_type == "integer":
                 _require_helper(context, "safe_integer")
-                context.normalization_rules.add("typescript.return.integer.safe-integer")
+                context.normalization_rules.add(f"{language}.return.integer.safe-integer")
+                if language == "javascript":
+                    context.normalization_rules.add("javascript.return.integer.negative-zero-normalized")
                 value = f"_elmosRequireSafeInteger({value})"
+            elif language in {"typescript", "javascript"} and return_type == "number":
+                _require_helper(context, "finite_number")
+                context.normalization_rules.add(f"{language}.return.number.finite")
+                value = f"_elmosRequireFiniteNumber({value})"
+            elif language == "javascript" and return_type == "boolean":
+                _require_helper(context, "exact_boolean")
+                context.normalization_rules.add("javascript.return.boolean.exact")
+                value = f"_elmosRequireBoolean({value})"
+            elif language == "javascript" and return_type == "string":
+                _require_helper(context, "exact_string")
+                context.normalization_rules.add("javascript.return.string.exact")
+                value = f"_elmosRequireString({value})"
             lines.append(f"{prefix}return {value}{suffix}")
             continue
         if statement.kind == "if" and statement.condition is not None:
@@ -924,6 +1032,12 @@ def _signature(language: Language, function: Function) -> str:
     if language == "typescript":
         parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
         return f"export function {function.name}({parameters}): {return_type} {{"
+    if language == "javascript":
+        documentation = ["/**"]
+        documentation.extend(f" * @param {{{item.type}}} {item.name}" for item in function.parameters)
+        documentation.extend((f" * @returns {{{function.return_type}}}", " */"))
+        parameters = ", ".join(item.name for item in function.parameters)
+        return "\n".join([*documentation, f"export function {function.name}({parameters}) {{"])
     if language == "go":
         parameters = ", ".join(f"{item.name} {_type(language, item.type)}" for item in function.parameters)
         return f"func {function.name}({parameters}) {return_type} {{"
@@ -954,7 +1068,24 @@ def _function(context: _Context, function: Function) -> str:
             if parameter.type == "integer":
                 _require_helper(context, "safe_integer")
                 context.normalization_rules.add("typescript.parameter.integer.safe-integer")
-                lines.append(f"    _elmosRequireSafeInteger({parameter.name});")
+                context.normalization_rules.add("typescript.parameter.integer.negative-zero-normalized")
+                lines.append(f"    {parameter.name} = _elmosRequireSafeInteger({parameter.name});")
+    if language == "javascript":
+        parameter_guards = {
+            "integer": ("_elmosRequireSafeInteger", "safe_integer"),
+            "number": ("_elmosRequireFiniteNumber", "finite_number"),
+            "boolean": ("_elmosRequireBoolean", "exact_boolean"),
+            "string": ("_elmosRequireString", "exact_string"),
+        }
+        for parameter in function.parameters:
+            guard, helper = parameter_guards[parameter.type]
+            _require_helper(context, helper)
+            context.normalization_rules.add(f"javascript.parameter.{parameter.type}.exact")
+            if parameter.type == "integer":
+                context.normalization_rules.add("javascript.parameter.integer.negative-zero-normalized")
+                lines.append(f"    {parameter.name} = {guard}({parameter.name});")
+            else:
+                lines.append(f"    {guard}({parameter.name});")
     if language == "python":
         # Python and TypeScript are the two targets whose parameter type can
         # physically hold a value outside the canonical `integer` range --
@@ -975,12 +1106,21 @@ def _function(context: _Context, function: Function) -> str:
     return "\n".join(lines)
 
 
-def emit(ir: SemanticIR, target: Language) -> EmittedFile:
+def emit(
+    ir: SemanticIR,
+    target: Language,
+    *,
+    identifier_plan: IdentifierPlan | None = None,
+) -> EmittedFile:
     if ir.diagnostics:
         raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_EMISSION:" + ",".join(ir.diagnostics))
     types.check(ir)
+    plan = identifier_plan if identifier_plan is not None else plan_identifiers(ir, target)
+    if plan.target_language != target:
+        raise RouteError("IDENTIFIER_PLAN_TARGET_LANGUAGE_MISMATCH")
+    emitter_ir = target_ir_view(ir, plan)
     context = _Context(language=target)
-    functions = "\n\n".join(_function(context, function) for function in ir.functions)
+    functions = "\n\n".join(_function(context, function) for function in emitter_ir.functions)
     helpers = _helper_sources(context)
     if target == "java":
         # Java and C# put helpers inside the type, after the functions, so the
@@ -997,6 +1137,9 @@ def emit(ir: SemanticIR, target: Language) -> EmittedFile:
         for helper in helpers:
             preamble += "\n\n" + helper
         return _emitted_file(context, "migrated.py", f"{preamble}\n\n{functions}\n")
+    if target == "javascript":
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(context, "migrated.mjs", body + "\n")
     if target == "go":
         body = "\n\n".join([*helpers, functions])
         return _emitted_file(context, "migrated.go", "package main\n\n" + body + "\n")

@@ -11,10 +11,15 @@ import pytest
 import elmos_polyglot_route.engine as route_engine
 from elmos_polyglot_route.emitter import EmittedFile, emit
 from elmos_polyglot_route.engine import (
+    _bind_function_spans_from_inventory,
+    _build_whole_file_closure,
+    _close_profile_inventory,
+    _combine_function_irs,
     _emitted_helper_regions,
     _profile_symbol_record,
     _target_call_graph,
     _verify_inventory_artifact,
+    migrate,
     migrate_module,
     verify_pure_module,
 )
@@ -25,7 +30,14 @@ from elmos_polyglot_route.equivalence import (
     semantic_equivalence,
     sha256_bytes,
 )
-from elmos_polyglot_route.models import Expression, RouteError, SemanticIR, SourceSpan, Statement
+from elmos_polyglot_route.identifier_hygiene import (
+    alpha_normalize_target,
+    identifier_plan_bytes,
+    plan_identifiers,
+    target_ir_view,
+)
+from elmos_polyglot_route.models import Expression, Language, RouteError, SemanticIR, SourceSpan, Statement
+from elmos_polyglot_route.native import analyze, inventory_module
 from elmos_polyglot_route.toolchains import exact_toolchain
 
 SOURCE_BYTES = b"s" * 4_000
@@ -223,7 +235,7 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
     digest = "sha256:" + "a" * 64
     dependency_digest = "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
     dependency_revision = "0687f71944021d616d34d922343dcef086855920"
-    dependency_cache_key = "swift-syntax-600.0.1-" + dependency_revision + "-" + dependency_digest[7:]
+    dependency_cache_key = "swift-syntax-standalone-v2-600.0.1-" + dependency_revision + "-" + dependency_digest[7:]
     binary_root = Path("/private/tmp/elmos-swift-analyzer-test")
     binary = {
         "name": "ElmosSwiftAnalyzer",
@@ -239,9 +251,7 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
     }
     toolchain = route_engine._swift_toolchain_receipt(exact_toolchain("swift"))
     probe_compiler = next(
-        component
-        for component in toolchain["build_closure"]["components"]
-        if component["role"] == "clang"
+        component for component in toolchain["build_closure"]["components"] if component["role"] == "clang"
     )
     probe_root = binary_root / "network-probe-execution"
     probe_binary = {
@@ -275,14 +285,15 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
             "file_count": 753,
             "bytes": 8_866_479,
             "mirror": {
-                "seed": "verified-content-addressed-cache",
+                "seed": "verified-content-addressed-standalone-cache",
                 "cache": {
                     "cache_key": dependency_cache_key,
-                    "cache_schema": "swift-dependencies-v1",
+                    "cache_schema": "swift-dependencies-standalone-v2",
+                    "object_store_policy": "standalone-no-alternates-no-hardlinks-v2",
                     "identity": "swift-syntax",
                     "version": "600.0.1",
                     "revision": dependency_revision,
-                    "seed": "verified-content-addressed-cache",
+                    "seed": "verified-content-addressed-standalone-cache",
                     "sha256": dependency_digest,
                     "file_count": 753,
                     "bytes": 8_866_479,
@@ -657,6 +668,25 @@ def test_swift_inventory_rejects_unknown_dependency_seed() -> None:
         )
 
 
+def test_swift_inventory_rejects_non_standalone_dependency_cache_policy() -> None:
+    artifact = b"func identity(_ value: Int64) -> Int64 { value }\n"
+    inventory = _synthetic_swift_inventory(artifact)
+    cache = inventory["analyzer_build_receipt"]["dependency"]["mirror"]["cache"]  # type: ignore[index]
+    cache["object_store_policy"] = "borrowed-object-store"  # type: ignore[index]
+
+    with pytest.raises(
+        RouteError,
+        match="PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:source:swift",
+    ):
+        _verify_inventory_artifact(
+            inventory,
+            role="source",
+            language="swift",
+            logical_file="module.swift",
+            artifact_bytes=artifact,
+        )
+
+
 def _synthetic_whole_file_inputs(
     source: SemanticIR,
     target: SemanticIR,
@@ -734,6 +764,49 @@ def _compose(
     emitted: EmittedFile,
 ) -> tuple[dict[str, object], dict[str, dict[str, object]]]:
     source_inventory, target_inventory, closure = _synthetic_whole_file_inputs(source, target)
+    plan = plan_identifiers(source, target.source_language)
+    target_view = target_ir_view(source, plan)
+    plan_bytes = identifier_plan_bytes(plan)
+    identifier_hygiene = {
+        "status": "PASSED",
+        "policy_id": plan.policy_id,
+        "policy_sha256": plan.policy_sha256,
+        "plan": {"path": "identifier-plan.json", "sha256": plan.digest, "bytes": len(plan_bytes)},
+        "raw_target_ir": {
+            "path": "target-semantic-ir.raw.json",
+            "sha256": sha256_bytes(canonical_json_bytes(target.to_mapping())),
+            "bytes": len(canonical_json_bytes(target.to_mapping())),
+        },
+        "normalized_target_ir": {
+            "path": "target-semantic-ir.normalized.json",
+            "sha256": sha256_bytes(canonical_json_bytes(target.to_mapping())),
+            "bytes": len(canonical_json_bytes(target.to_mapping())),
+        },
+        "functions": [
+            {
+                "raw_symbol": raw_function.name,
+                "canonical_symbol": canonical_function.name,
+                "parameters": [
+                    {
+                        "raw_name": raw_parameter.name,
+                        "canonical_name": canonical_parameter.name,
+                        "canonical_type": canonical_parameter.type,
+                    }
+                    for raw_parameter, canonical_parameter in zip(
+                        raw_function.parameters,
+                        canonical_function.parameters,
+                        strict=True,
+                    )
+                ],
+            }
+            for raw_function, canonical_function in zip(
+                target_view.functions,
+                source.functions,
+                strict=True,
+            )
+        ],
+        "renamed": any(binding.decision == "ALPHA_RENAMED" for binding in plan.bindings),
+    }
     return module_equivalence(
         source=source,
         target=target,
@@ -751,6 +824,7 @@ def _compose(
         target_inventory_sha256=sha256_bytes(canonical_json_bytes(target_inventory)),
         target_inventory_byte_count=len(canonical_json_bytes(target_inventory)),
         whole_file_closure=closure,
+        identifier_hygiene=identifier_hygiene,
     )
 
 
@@ -856,12 +930,15 @@ def test_exact_eight_requires_spans_while_legacy_thirty_keeps_semantic_pointer_c
 
 def test_verify_pure_module_persists_byte_bound_children(tmp_path: Path) -> None:
     source, target, manifest, observations, emitted = _equivalent_inputs()
+    plan = plan_identifiers(source, target.source_language)
     manifest_bytes = canonical_json_bytes(manifest)
     source_inventory, target_inventory, closure = _synthetic_whole_file_inputs(source, target)
 
     report = verify_pure_module(
         source_ir=source,
+        raw_target_ir=target,
         target_ir=target,
+        identifier_plan=plan,
         case_manifest=manifest,
         source_observations=observations,
         target_observations=observations,
@@ -907,6 +984,7 @@ def test_verify_pure_module_persists_byte_bound_children(tmp_path: Path) -> None
         "target_function",
         "target_function_sha256",
         "case_manifest_sha256",
+        "identifier_hygiene",
     }
     result_keys = {
         "schema_version",
@@ -1077,11 +1155,14 @@ def test_non_explicit_directed_route_is_rejected_before_artifact_work(tmp_path: 
     target = _module("python", "migrated.py")
     emitted = EmittedFile(relative_path="migrated.py", content=TARGET_BYTES.decode("ascii"))
     source_inventory, target_inventory, closure = _synthetic_whole_file_inputs(source, target)
+    plan = plan_identifiers(source, target.source_language)
 
     with pytest.raises(RouteError, match="UNSUPPORTED_DIRECTED_ROUTE:python-to-python"):
         verify_pure_module(
             source_ir=source,
+            raw_target_ir=target,
             target_ir=target,
+            identifier_plan=plan,
             case_manifest=manifest,
             source_observations=observations,
             target_observations=observations,
@@ -1129,7 +1210,263 @@ def test_profile_inventory_span_must_exactly_match_function_ir_span() -> None:
     }
 
     with pytest.raises(RouteError, match="PURE_MODULE_PROFILE_SPAN_MISMATCH:target:add"):
-        _profile_symbol_record(subject, function, role="target")
+        _profile_symbol_record(subject, function, function, role="target")
+
+
+def test_named_analysis_binds_unique_independent_inventory_span() -> None:
+    analyzed = _module("typescript", "module.ts")
+    function = replace(analyzed.functions[0], source_span=None)
+    analyzed = replace(analyzed, functions=(function,))
+    inventory = {
+        "source_language": "typescript",
+        "source_file": "module.ts",
+        "subjects": [
+            {
+                "name": function.name,
+                "analyzable": True,
+                "source_span": {
+                    "file": "module.ts",
+                    "start_byte": 10,
+                    "end_byte": 80,
+                },
+            }
+        ],
+    }
+
+    bound = _bind_function_spans_from_inventory(analyzed, inventory, role="target")
+
+    assert bound.functions[0].source_span == SourceSpan("module.ts", 10, 80)
+
+
+def test_named_analysis_rejects_inventory_span_conflict() -> None:
+    analyzed = _module("typescript", "module.ts")
+    function = analyzed.functions[0]
+    assert function.source_span is not None
+    inventory = {
+        "source_language": "typescript",
+        "source_file": "module.ts",
+        "subjects": [
+            {
+                "name": function.name,
+                "analyzable": True,
+                "source_span": {
+                    **function.source_span.to_mapping(),
+                    "end_byte": function.source_span.end_byte + 1,
+                },
+            }
+        ],
+    }
+
+    with pytest.raises(
+        RouteError,
+        match=f"PURE_MODULE_ANALYSIS_INVENTORY_SPAN_MISMATCH:target:{function.name}",
+    ):
+        _bind_function_spans_from_inventory(analyzed, inventory, role="target")
+
+
+def test_typescript_named_relift_binds_actual_inventory_span_and_closes_module(
+    tmp_path: Path,
+) -> None:
+    _require_native_toolchain("javascript")
+    _require_native_toolchain("typescript")
+    source = tmp_path / "identity.js"
+    source_bytes = (
+        b"/** @param {number} value @returns {number} */\n"
+        b"export function echoNumber(value) { return value; }\n\n"
+        b"/** @param {boolean} value @returns {boolean} */\n"
+        b"export function echoBoolean(value) { return value; }\n\n"
+        b"/** @param {string} value @returns {string} */\n"
+        b"export function echoString(value) { return value; }\n"
+    )
+    source.write_bytes(source_bytes)
+    (tmp_path / "package.json").write_text('{"type":"module"}\n', encoding="utf-8")
+    symbols = ["echoBoolean", "echoNumber", "echoString"]
+    source_inventory = inventory_module(source, "javascript")
+    source_ir = _bind_function_spans_from_inventory(
+        _combine_function_irs(
+            [analyze(source, "javascript", symbol) for symbol in symbols],
+            symbols,
+            "javascript",
+            "source",
+        ),
+        source_inventory,
+        role="source",
+    )
+    plan = plan_identifiers(source_ir, "typescript")
+    emitted = emit(source_ir, "typescript", identifier_plan=plan)
+    target = tmp_path / emitted.relative_path
+    target.write_text(emitted.content, encoding="utf-8")
+    target_inventory = inventory_module(target, "typescript")
+    target_names = [function.name for function in target_ir_view(source_ir, plan).functions]
+    analyzed_target = _combine_function_irs(
+        [analyze(target, "typescript", symbol, emitted_target=True) for symbol in target_names],
+        target_names,
+        "typescript",
+        "target",
+    )
+    assert all(function.source_span is None for function in analyzed_target.functions)
+    raw_target_ir = _bind_function_spans_from_inventory(
+        analyzed_target,
+        target_inventory,
+        role="target",
+    )
+    assert all(function.source_span is not None for function in raw_target_ir.functions)
+    target_ir = alpha_normalize_target(source_ir, raw_target_ir, plan)
+    manifest = {
+        "functions": [
+            {
+                "symbol": function.name,
+                "signature": function.signature_mapping(),
+            }
+            for function in source_ir.functions
+        ]
+    }
+
+    closure = _build_whole_file_closure(
+        source_inventory=source_inventory,
+        target_inventory=target_inventory,
+        source_ir=source_ir,
+        raw_target_ir=raw_target_ir,
+        target_ir=target_ir,
+        identifier_plan=plan,
+        manifest=manifest,
+        source_bytes=source_bytes,
+        emitted=emitted,
+    )
+
+    assert closure["status"] == "PASSED"
+    assert all(item["source_span"] for item in closure["target_profile_symbols"])
+
+
+@pytest.mark.parametrize("target_language", ["cpp", "objc"])
+def test_open_global_targets_close_raw_and_canonical_multifunction_inventory(
+    target_language: Language,
+) -> None:
+    source = _module("python", "module.py")
+    plan = plan_identifiers(source, target_language)
+    raw_target_ir = replace(
+        target_ir_view(source, plan),
+        source_language=target_language,
+        source_file=f"migrated.{target_language}",
+    )
+    canonical_target_ir = replace(
+        source,
+        source_language=target_language,
+        source_file=f"migrated.{target_language}",
+    )
+    canonical_by_raw = {
+        raw_function.name: canonical_function
+        for raw_function, canonical_function in zip(
+            raw_target_ir.functions,
+            canonical_target_ir.functions,
+            strict=True,
+        )
+    }
+    inventory = _synthetic_inventory(raw_target_ir, TARGET_BYTES)
+    inventory["subjects"] = [
+        {
+            "name": function.name,
+            "qualified_name": function.name,
+            "declaration_kind": "FunctionDecl",
+            "analyzable": True,
+            "occurrence": 1,
+            "source_span": function.source_span.to_mapping() if function.source_span else None,
+            "signature": {
+                "parameters": [
+                    {"name": parameter.name, "source_type": "std::int64_t"} for parameter in function.parameters
+                ],
+                "source_type": "std::int64_t (std::int64_t, std::int64_t)",
+                "visibility": "external",
+                "storage": "none",
+            },
+        }
+        for function in raw_target_ir.functions
+    ]
+    manifest_signatures = {function.name: function.signature_mapping() for function in canonical_target_ir.functions}
+
+    records, helpers = _close_profile_inventory(
+        inventory,
+        raw_target_ir,
+        manifest_signatures,
+        role="target",
+        canonical_functions_by_raw=canonical_by_raw,
+    )
+
+    assert not helpers
+    assert [record["canonical_symbol"] for record in records] == sorted(manifest_signatures)
+    assert all(record["raw_symbol"] != record["canonical_symbol"] for record in records)
+    assert all(
+        raw_name != canonical_name
+        for record in records
+        for raw_name, canonical_name in zip(
+            record["raw_parameter_names"],
+            [parameter["name"] for parameter in record["canonical_signature"]["parameters"]],
+            strict=True,
+        )
+    )
+
+    wrong_mapping = dict(canonical_by_raw)
+    first_raw, second_raw = list(wrong_mapping)[:2]
+    wrong_mapping[first_raw] = wrong_mapping[second_raw]
+    with pytest.raises(RouteError, match="PURE_MODULE_PROFILE_CANONICAL_SYMBOL_DUPLICATED:target"):
+        _close_profile_inventory(
+            inventory,
+            raw_target_ir,
+            manifest_signatures,
+            role="target",
+            canonical_functions_by_raw=wrong_mapping,
+        )
+
+
+@pytest.mark.parametrize("target_language", ["cpp", "objc"])
+def test_open_global_targets_bind_raw_and_canonical_multifunction_callers(
+    target_language: Language,
+) -> None:
+    source = _module("python", "module.py")
+    plan = plan_identifiers(source, target_language)
+    raw_target_ir = replace(
+        target_ir_view(source, plan),
+        source_language=target_language,
+        source_file=f"migrated.{target_language}",
+    )
+    canonical_by_raw = {
+        raw_function.name: canonical_function
+        for raw_function, canonical_function in zip(
+            raw_target_ir.functions,
+            source.functions,
+            strict=True,
+        )
+    }
+    emitted = emit(source, target_language, identifier_plan=plan)
+    helpers: dict[tuple[str, str], dict[str, object]] = {}
+    for _operator, (callee, helper_ids) in route_engine._CHECKED_INTEGER_CALL[target_language].items():
+        for helper_id in helper_ids:
+            helpers[(helper_id, callee)] = {
+                "helper_id": helper_id,
+                "name": callee,
+                "qualified_name": callee,
+            }
+
+    graph = _target_call_graph(
+        raw_target_ir,
+        canonical_by_raw,
+        emitted,
+        list(helpers.values()),
+    )
+
+    expected_raw_names = {
+        canonical_function.name: raw_function.name
+        for raw_function, canonical_function in zip(
+            raw_target_ir.functions,
+            source.functions,
+            strict=True,
+        )
+    }
+    assert {(edge["canonical_caller"], edge["caller"], edge["canonical_operator"]) for edge in graph["edges"]} == {
+        ("add", expected_raw_names["add"], "+"),
+        ("subtract", expected_raw_names["subtract"], "-"),
+    }
+    assert all(edge["caller"] != edge["canonical_caller"] for edge in graph["edges"])
 
 
 def test_emitted_helper_digest_tamper_fails_closed() -> None:
@@ -1164,6 +1501,7 @@ def test_target_call_graph_rejects_unregistered_normalization_and_matches_java_q
     emitted = emit(target, "java")
     graph = _target_call_graph(
         target,
+        {function.name: function for function in target.functions},
         emitted,
         [
             {
@@ -1177,6 +1515,7 @@ def test_target_call_graph_rejects_unregistered_normalization_and_matches_java_q
     assert graph["edges"] == [
         {
             "caller": "divide",
+            "canonical_caller": "divide",
             "callee": "Migrated.elmosCheckedDiv",
             "callee_kind": "exact-generated-helper",
             "canonical_domain": "integer",
@@ -1190,7 +1529,65 @@ def test_target_call_graph_rejects_unregistered_normalization_and_matches_java_q
         normalization_rules=(*emitted.normalization_rules, "java.integer./.call:System.exit"),
     )
     with pytest.raises(RouteError, match="PURE_MODULE_TARGET_CALL_NORMALIZATION_INVALID"):
-        _target_call_graph(target, tampered, [])
+        _target_call_graph(
+            target,
+            {function.name: function for function in target.functions},
+            tampered,
+            [],
+        )
+
+
+def test_javascript_target_call_graph_closes_signature_and_result_guards() -> None:
+    target = _module("javascript", "migrated.mjs")
+    emitted = emit(target, "javascript")
+    helper_symbols = [
+        {
+            "helper_id": "safe_integer",
+            "name": "_elmosRequireSafeInteger",
+            "qualified_name": "_elmosRequireSafeInteger",
+        }
+    ]
+    graph = _target_call_graph(
+        target,
+        {function.name: function for function in target.functions},
+        emitted,
+        helper_symbols,
+    )
+
+    assert len(graph["edges"]) == 11
+    assert {
+        (
+            edge["canonical_caller"],
+            edge["guard_scope"],
+            edge.get("canonical_guard_subject", edge["guard_subject"]),
+        )
+        for edge in graph["edges"]
+    } >= {
+        ("add", "signature-parameter", "left"),
+        ("add", "signature-parameter", "right"),
+        ("add", "signature-return", "return"),
+        ("add", "arithmetic-result", "+"),
+        ("subtract", "arithmetic-result", "-"),
+        ("minimum", "signature-return", "return"),
+    }
+    assert all(edge["callee"] == "_elmosRequireSafeInteger" for edge in graph["edges"])
+
+    missing = replace(
+        emitted,
+        normalization_rules=tuple(
+            rule for rule in emitted.normalization_rules if rule != "javascript.parameter.integer.exact"
+        ),
+    )
+    with pytest.raises(
+        RouteError,
+        match="PURE_MODULE_TARGET_JAVASCRIPT_GUARD_NORMALIZATION_INVALID",
+    ):
+        _target_call_graph(
+            target,
+            {function.name: function for function in target.functions},
+            missing,
+            helper_symbols,
+        )
 
 
 def test_java_to_cpp_whole_file_closure_is_content_bound_and_call_closed(
@@ -1241,31 +1638,25 @@ def test_java_to_cpp_whole_file_closure_is_content_bound_and_call_closed(
         ("include", "<stdexcept>"),
         ("include", "<string>"),
     ]
-    assert closure["target_call_graph"] == {
-        "status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS",
-        "scope": "profile-functions-to-emitted-callees",
-        "edges": [
-            {
-                "caller": "calculate",
-                "callee": "elmos_checked_add",
-                "callee_kind": "exact-generated-helper",
-                "canonical_domain": "integer",
-                "canonical_operator": "+",
-                "normalization_rule": "cpp.integer.+.call:elmos_checked_add",
-            },
-            {
-                "caller": "difference",
-                "callee": "elmos_checked_sub",
-                "callee_kind": "exact-generated-helper",
-                "canonical_domain": "integer",
-                "canonical_operator": "-",
-                "normalization_rule": "cpp.integer.-.call:elmos_checked_sub",
-            },
-        ],
-        "helper_internal_calls": {
-            "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
-            "binding": "verified_generated_helpers-exact-bytes-and-digests",
-        },
+    target_call_graph = closure["target_call_graph"]
+    assert target_call_graph["status"] == "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+    assert target_call_graph["scope"] == "profile-functions-to-emitted-callees"
+    assert {
+        (
+            edge["canonical_caller"],
+            edge["callee"],
+            edge["canonical_operator"],
+            edge["normalization_rule"],
+        )
+        for edge in target_call_graph["edges"]
+    } == {
+        ("calculate", "elmos_checked_add", "+", "cpp.integer.+.call:elmos_checked_add"),
+        ("difference", "elmos_checked_sub", "-", "cpp.integer.-.call:elmos_checked_sub"),
+    }
+    assert all(edge["caller"] != edge["canonical_caller"] for edge in target_call_graph["edges"])
+    assert target_call_graph["helper_internal_calls"] == {
+        "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+        "binding": "verified_generated_helpers-exact-bytes-and-digests",
     }
     references = {reference["role"]: reference for reference in report["artifact_refs"]}
     for role in (
@@ -1277,6 +1668,100 @@ def test_java_to_cpp_whole_file_closure_is_content_bound_and_call_closed(
     assert report["module_input"]["source_inventory_sha256"] == references["source-module-inventory"]["sha256"]
     assert report["module_input"]["target_inventory_sha256"] == references["target-module-inventory"]["sha256"]
     assert report["module_contract"]["independence"]["target_call_graph"] == closure["target_call_graph"]
+
+
+def test_java_to_javascript_single_function_migration_relifts_internal_helper(
+    tmp_path: Path,
+) -> None:
+    _require_native_toolchain("java")
+    _require_native_toolchain("javascript")
+    source = tmp_path / "NodeSingle.java"
+    source.write_text(
+        "public final class NodeSingle {\n    public static long identity(long value) { return value; }\n}\n",
+        encoding="utf-8",
+    )
+    cases = tmp_path / "single-cases.json"
+    cases.write_text(json.dumps([{"args": [7], "expected": 7}]), encoding="utf-8")
+
+    report = migrate(
+        source,
+        "java",
+        "javascript",
+        "identity",
+        cases,
+        tmp_path / "single-evidence",
+    )
+
+    assert report["status"] == "PASSED"
+    assert report["route"] == "java-to-javascript"
+
+
+def test_java_to_javascript_multifunction_module_closes_each_internal_helper(
+    tmp_path: Path,
+) -> None:
+    _require_native_toolchain("java")
+    _require_native_toolchain("javascript")
+    report = migrate_module(
+        ENGINE_ROOT / "fixtures/module/java/EquivalenceModule.java",
+        "java",
+        "javascript",
+        ENGINE_ROOT / "fixtures/module/nodejs-cases.json",
+        tmp_path / "multi-evidence",
+    )
+
+    helpers = report["whole_file_closure"]["target_helper_symbols"]
+    assert {(helper["helper_id"], helper["name"], helper["visibility"], helper["storage"]) for helper in helpers} == {
+        ("safe_integer", "_elmosRequireSafeInteger", "internal", "file-scope"),
+        ("exact_boolean", "_elmosRequireBoolean", "internal", "file-scope"),
+        ("finite_number", "_elmosRequireFiniteNumber", "internal", "file-scope"),
+    }
+    assert all(helper["analyzable"] is True and helper["arity"] == 1 for helper in helpers)
+
+    edges = report["whole_file_closure"]["target_call_graph"]["edges"]
+    assert len(edges) == 19
+    assert all(edge["callee_kind"] == "exact-generated-helper" for edge in edges)
+    assert {
+        (
+            edge["caller"],
+            edge["guard_subject"],
+            edge["canonical_domain"],
+            edge["callee"],
+        )
+        for edge in edges
+        if edge["guard_scope"] == "signature-parameter"
+    } == {
+        ("calculate", "subtotal", "integer", "_elmosRequireSafeInteger"),
+        ("calculate", "tax", "integer", "_elmosRequireSafeInteger"),
+        ("clamp", "value", "integer", "_elmosRequireSafeInteger"),
+        ("clamp", "minimum", "integer", "_elmosRequireSafeInteger"),
+        ("clamp", "maximum", "integer", "_elmosRequireSafeInteger"),
+        ("difference", "left", "integer", "_elmosRequireSafeInteger"),
+        ("difference", "right", "integer", "_elmosRequireSafeInteger"),
+        ("clampNumber", "value", "number", "_elmosRequireFiniteNumber"),
+        ("clampNumber", "minimum", "number", "_elmosRequireFiniteNumber"),
+        ("clampNumber", "maximum", "number", "_elmosRequireFiniteNumber"),
+        ("both", "left", "boolean", "_elmosRequireBoolean"),
+        ("both", "right", "boolean", "_elmosRequireBoolean"),
+    }
+    assert {
+        (edge["caller"], edge["canonical_domain"], edge["callee"])
+        for edge in edges
+        if edge["guard_scope"] == "signature-return"
+    } == {
+        ("calculate", "integer", "_elmosRequireSafeInteger"),
+        ("clamp", "integer", "_elmosRequireSafeInteger"),
+        ("difference", "integer", "_elmosRequireSafeInteger"),
+        ("clampNumber", "number", "_elmosRequireFiniteNumber"),
+        ("both", "boolean", "_elmosRequireBoolean"),
+    }
+    assert {
+        (edge["caller"], edge["canonical_operator"], edge["callee"])
+        for edge in edges
+        if edge["guard_scope"] == "arithmetic-result"
+    } == {
+        ("calculate", "+", "_elmosRequireSafeInteger"),
+        ("difference", "-", "_elmosRequireSafeInteger"),
+    }
 
 
 def test_module_pipeline_uses_private_input_snapshots_across_phase_tamper(

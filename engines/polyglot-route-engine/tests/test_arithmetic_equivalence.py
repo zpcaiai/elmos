@@ -223,7 +223,7 @@ def test_float_division_guards_the_divisor_everywhere_python_raises(
     language: str, expected: str
 ) -> None:
     # Python raises on 1.0 / 0.0; the other eight answer Infinity. The
-    # canonical rule makes all nine agree on "error".
+    # canonical rule makes every supported target agree on "error".
     assert expected in emit(_ir(_FLOAT_DIVIDE), language).content
 
 

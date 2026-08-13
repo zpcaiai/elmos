@@ -16,16 +16,18 @@ import subprocess
 import tempfile
 import threading
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _SWIFT_HELPERS
 from .models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
 from .python_analyzer import analyze_python
+from .repository import javascript_esm_descriptor
 from .toolchains import (
     ExactToolchain,
     exact_toolchain,
     sanitized_subprocess_env,
+    typescript_parser_receipt,
     verify_csharp_toolchain,
 )
 
@@ -38,6 +40,43 @@ REPOSITORY_ROOT = ENGINE_ROOT.parents[1]
 NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift"})
 MODULE_INVENTORY_KIND = "elmos.typed-pure-module-inventory"
 MODULE_INVENTORY_PROFILE = "typed-pure-module-v1"
+_JAVASCRIPT_ANALYZER = ENGINE_ROOT / "native" / "javascript" / "analyzer.mjs"
+_JAVASCRIPT_ANALYZER_SHA256 = "22325ea068f0ae28d3602f452c3b6f27be0d1f332a1692655d8bcce986b9e5b0"
+_JAVASCRIPT_ANALYZER_BYTES = 26_923
+_JAVASCRIPT_TYPESCRIPT_ROOT = ENGINE_ROOT / "native" / "javascript" / "vendor" / "typescript-5.9.2"
+_JAVASCRIPT_TYPESCRIPT_ROOT_MODE = 0o755
+_JAVASCRIPT_TYPESCRIPT_ROOT_NLINK = 6
+_JAVASCRIPT_TYPESCRIPT_ASSET_SPECS = (
+    (
+        "asset-manifest.json",
+        931,
+        "e42b0b7a74a8b6532fb3edc39135776b9ee81e93aea0157a5e0c1c80ac44b073",
+    ),
+    (
+        "LICENSE.txt",
+        9_197,
+        "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+    ),
+    (
+        "package.json",
+        3_620,
+        "5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+    ),
+    (
+        "typescript.js",
+        9_111_680,
+        "e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b",
+    ),
+)
+_JAVASCRIPT_TYPESCRIPT_ASSET_MODE = 0o644
+_JAVASCRIPT_TYPESCRIPT_MANIFEST_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[0][2]
+_JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
+_JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
+_JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
+_TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
+_TYPESCRIPT_ANALYZER_SHA256 = "482d2875c625f21fa13e02741ea4350e5ad43f0a168257a7425a3df87dc7d1d2"
+_TYPESCRIPT_ANALYZER_BYTES = 31_436
+_TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _SWIFT_ANALYZER_KIND = "elmos.swift-analyzer-build-receipt"
 _SWIFT_SYNTAX_VERSION = "600.0.1"
 _SWIFT_SYNTAX_REVISION = "0687f71944021d616d34d922343dcef086855920"
@@ -45,8 +84,14 @@ _SWIFT_SYNTAX_TREE_SHA256 = "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461b
 _SWIFT_SYNTAX_TREE_FILE_COUNT = 753
 _SWIFT_SYNTAX_TREE_BYTES = 8_866_479
 _SWIFT_DEPENDENCY_IDENTITY = "swift-syntax"
-_SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
-_SWIFT_DEPENDENCY_CACHE_SEED = "verified-content-addressed-cache"
+_SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-standalone-v2"
+_SWIFT_DEPENDENCY_CACHE_KEY_SCHEMA = "standalone-v2"
+_SWIFT_DEPENDENCY_CACHE_SEED = "verified-content-addressed-standalone-cache"
+_SWIFT_DEPENDENCY_OBJECT_STORE_POLICY = "standalone-no-alternates-no-hardlinks-v2"
+_SWIFT_DEPENDENCY_OBJECT_STORE_MANIFEST_SCHEMA = "swift-git-object-store-manifest-v1"
+_SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES = 100_000
+_SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES = 512 * 1024 * 1024
+_SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES = 64 * 1024 * 1024
 _SWIFT_ANALYZER_BINARY_MAX_BYTES = 100_000_000
 _APPLE_GIT = Path("/Applications/Xcode.app/Contents/Developer/usr/bin/git")
 _APPLE_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
@@ -124,10 +169,7 @@ _SANDBOX_NETWORK_PROBE_BUILD_ARGV = (
     "-",
 )
 _SANDBOX_NETWORK_PROBE_BUILD_ENVIRONMENT = {
-    "PATH": (
-        "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:"
-        "<system-usr-sbin>:<system-sbin>"
-    ),
+    "PATH": ("<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>"),
     "HOME": "<isolated-home>",
     "TMPDIR": "<isolated-tmp>",
     "LANG": "C",
@@ -635,6 +677,7 @@ _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
 _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
+        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
     }
 )
 _CSHARP_ANALYZER_KIND = "elmos.csharp-semantic-cli-build-receipt"
@@ -705,7 +748,17 @@ def _scan_preprocessor_directives(
 
 
 def _verify_emitted_helper_sources(source: Path, language: Language) -> None:
-    registries = {"cpp": _CPP_HELPERS, "objc": _OBJC_HELPERS, "swift": _SWIFT_HELPERS}
+    # JavaScript helper identity is established by the pinned TypeScript AST
+    # frontend.  Text search cannot distinguish a call from the same bytes in
+    # a string or comment, and therefore must not pre-empt that exact parser
+    # boundary.  Native targets below retain their existing source precheck.
+    if language == "javascript":
+        return
+    registries = {
+        "cpp": _CPP_HELPERS,
+        "objc": _OBJC_HELPERS,
+        "swift": _SWIFT_HELPERS,
+    }
     registry = registries.get(language)
     if registry is None:
         return
@@ -994,7 +1047,10 @@ def _stable_read_regular_file(
 
 
 def _swift_dependency_cache_key() -> str:
-    return f"swift-syntax-{_SWIFT_SYNTAX_VERSION}-{_SWIFT_SYNTAX_REVISION}-{_SWIFT_SYNTAX_TREE_SHA256}"
+    return (
+        f"swift-syntax-{_SWIFT_DEPENDENCY_CACHE_KEY_SCHEMA}-"
+        f"{_SWIFT_SYNTAX_VERSION}-{_SWIFT_SYNTAX_REVISION}-{_SWIFT_SYNTAX_TREE_SHA256}"
+    )
 
 
 def _swift_dependency_cache_base() -> Path:
@@ -1033,6 +1089,7 @@ def _swift_dependency_cache_receipt(
     return {
         "cache_key": cache_key,
         "cache_schema": _SWIFT_DEPENDENCY_CACHE_SCHEMA,
+        "object_store_policy": _SWIFT_DEPENDENCY_OBJECT_STORE_POLICY,
         "identity": _SWIFT_DEPENDENCY_IDENTITY,
         "version": _SWIFT_SYNTAX_VERSION,
         "revision": _SWIFT_SYNTAX_REVISION,
@@ -1296,10 +1353,7 @@ def _swift_network_probe_macho_receipt(data: bytes) -> dict[str, Any]:
         raise RouteError(failure)
     uuid_hex = uuids[0].hex().upper()
     uuid_value = f"{uuid_hex[:8]}-{uuid_hex[8:12]}-{uuid_hex[12:16]}-{uuid_hex[16:20]}-{uuid_hex[20:]}"
-    if (
-        uuid_value != _SANDBOX_NETWORK_PROBE_UUID
-        or tuple(linked_libraries) != _SANDBOX_NETWORK_PROBE_LINKED_LIBRARIES
-    ):
+    if uuid_value != _SANDBOX_NETWORK_PROBE_UUID or tuple(linked_libraries) != _SANDBOX_NETWORK_PROBE_LINKED_LIBRARIES:
         raise RouteError(failure)
     return {
         "architecture": "arm64",
@@ -1408,13 +1462,7 @@ def _seal_swift_network_probe_binary(
     try:
         execution_root.mkdir(mode=0o700)
         sealed = execution_root / _SANDBOX_NETWORK_PROBE_BINARY_NAME
-        flags = (
-            os.O_WRONLY
-            | os.O_CREAT
-            | os.O_EXCL
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-        )
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
         descriptor = os.open(sealed, flags, 0o500)
         try:
             offset = 0
@@ -1532,8 +1580,7 @@ def _require_swift_network_probe_build_environment(
     toolchain_bin = _SWIFT_TOOLCHAIN_ROOT / "usr/bin"
     expected = {
         "PATH": os.pathsep.join(
-            str(path)
-            for path in (toolchain_bin, Path("/usr/bin"), Path("/bin"), Path("/usr/sbin"), Path("/sbin"))
+            str(path) for path in (toolchain_bin, Path("/usr/bin"), Path("/bin"), Path("/usr/sbin"), Path("/sbin"))
         ),
         "HOME": str((root / "home").resolve()),
         "TMPDIR": str((root / "tmp").resolve()),
@@ -1547,6 +1594,7 @@ def _require_swift_network_probe_build_environment(
         "GIT_CONFIG_NOSYSTEM": "1",
         "GIT_CONFIG_GLOBAL": "/dev/null",
         "GIT_TERMINAL_PROMPT": "0",
+        "TEST_TELEMETRY_DIR": str((root / "home" / ".elmos-go-telemetry").resolve()),
         "XDG_CACHE_HOME": str((root / "home" / ".cache").resolve()),
         "PYTHONHASHSEED": "0",
         "PYTHONDONTWRITEBYTECODE": "1",
@@ -1680,7 +1728,7 @@ def _verified_swift_network_isolation(
         if isinstance(error, RouteError) and str(error).startswith("NETWORK_ISOLATION_NOT_RUN"):
             raise
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:unavailable") from error
-    receipt = {
+    receipt: dict[str, Any] = {
         "status": "PASSED",
         "scope": "swift-build-process-tree",
         "sandbox": {**sandbox_after, "cdhash_full": _SANDBOX_EXEC_CDHASH_FULL},
@@ -1826,14 +1874,359 @@ def _require_current_swift_network_execution_identity(
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:execution-identity-changed")
 
 
+def _stable_secure_directory_chain_identity(
+    chain: tuple[tuple[object, ...], ...],
+) -> tuple[tuple[object, ...], ...]:
+    """Retain path security identity while ignoring directory timestamp churn."""
+
+    return tuple(identity[:-2] for identity in chain)
+
+
+def _bounded_swift_object_store_paths(objects: Path) -> list[Path]:
+    """Discover at most the configured object-store entry count plus one."""
+
+    paths: list[Path] = []
+    pending = [objects]
+    while pending:
+        directory = pending.pop()
+        remaining = _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES - len(paths)
+        entries: list[Path] = []
+        try:
+            with os.scandir(directory) as iterator:
+                for entry in iterator:
+                    entries.append(Path(entry.path))
+                    if len(entries) > remaining:
+                        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_ENTRY_LIMIT_EXCEEDED")
+        except RouteError:
+            raise
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+        entries.sort(key=lambda item: item.name)
+        paths.extend(entries)
+        child_directories: list[Path] = []
+        try:
+            for path in entries:
+                if stat.S_ISDIR(path.lstat().st_mode):
+                    child_directories.append(path)
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+        pending.extend(reversed(child_directories))
+    return paths
+
+
+def _streaming_regular_file_sha256(
+    path: Path,
+    *,
+    maximum_bytes: int,
+    limit_failure: str,
+) -> tuple[int, str]:
+    """Hash one stable private regular file without materializing its content."""
+
+    failure = "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED"
+    try:
+        before = path.lstat()
+        if before.st_size > maximum_bytes:
+            raise RouteError(limit_failure)
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            opened_before = os.fstat(descriptor)
+            digest = hashlib.sha256()
+            total = 0
+            while chunk := os.read(descriptor, 1024 * 1024):
+                total += len(chunk)
+                if total > maximum_bytes:
+                    raise RouteError(limit_failure)
+                digest.update(chunk)
+            opened_after = os.fstat(descriptor)
+        finally:
+            os.close(descriptor)
+        after = path.lstat()
+    except RouteError:
+        raise
+    except OSError as error:
+        raise RouteError(failure) from error
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    if (
+        identity
+        != (
+            opened_before.st_dev,
+            opened_before.st_ino,
+            opened_before.st_mode,
+            opened_before.st_nlink,
+            opened_before.st_uid,
+            opened_before.st_gid,
+            opened_before.st_size,
+            opened_before.st_mtime_ns,
+            opened_before.st_ctime_ns,
+        )
+        or identity
+        != (
+            opened_after.st_dev,
+            opened_after.st_ino,
+            opened_after.st_mode,
+            opened_after.st_nlink,
+            opened_after.st_uid,
+            opened_after.st_gid,
+            opened_after.st_size,
+            opened_after.st_mtime_ns,
+            opened_after.st_ctime_ns,
+        )
+        or identity
+        != (
+            after.st_dev,
+            after.st_ino,
+            after.st_mode,
+            after.st_nlink,
+            after.st_uid,
+            after.st_gid,
+            after.st_size,
+            after.st_mtime_ns,
+            after.st_ctime_ns,
+        )
+        or not stat.S_ISREG(after.st_mode)
+        or after.st_uid != os.getuid()
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or after.st_nlink != 1
+        or total != after.st_size
+    ):
+        raise RouteError(failure)
+    return total, "sha256:" + digest.hexdigest()
+
+
+def _swift_object_store_manifest(objects: Path) -> tuple[tuple[object, ...], ...]:
+    """Return a stable path/content/inode manifest for one Git object store."""
+
+    paths = _bounded_swift_object_store_paths(objects)
+    metadata_before: dict[str, tuple[object, ...]] = {}
+    manifest: list[tuple[object, ...]] = []
+    aggregate_bytes = 0
+    for path in paths:
+        relative = path.relative_to(objects).as_posix()
+        try:
+            metadata = path.lstat()
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+        identity = (
+            metadata.st_dev,
+            metadata.st_ino,
+            metadata.st_mode,
+            metadata.st_uid,
+            metadata.st_gid,
+            metadata.st_nlink,
+            metadata.st_size,
+            metadata.st_mtime_ns,
+            metadata.st_ctime_ns,
+        )
+        metadata_before[relative] = identity
+        if stat.S_ISLNK(metadata.st_mode) or metadata.st_uid != os.getuid() or stat.S_IMODE(metadata.st_mode) & 0o022:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
+        if stat.S_ISDIR(metadata.st_mode):
+            manifest.append(
+                (
+                    relative,
+                    "directory",
+                    metadata.st_dev,
+                    metadata.st_ino,
+                    metadata.st_mode,
+                    metadata.st_uid,
+                    metadata.st_gid,
+                    metadata.st_nlink,
+                    None,
+                    None,
+                )
+            )
+            continue
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
+        if metadata.st_size > _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_FILE_LIMIT_EXCEEDED")
+        remaining_bytes = _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES - aggregate_bytes
+        if metadata.st_size > remaining_bytes:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_BYTE_LIMIT_EXCEEDED")
+        maximum_bytes = min(
+            _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES,
+            remaining_bytes,
+        )
+        limit_failure = (
+            "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_BYTE_LIMIT_EXCEEDED"
+            if remaining_bytes <= _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES
+            else "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_FILE_LIMIT_EXCEEDED"
+        )
+        byte_count, digest = _streaming_regular_file_sha256(
+            path,
+            maximum_bytes=maximum_bytes,
+            limit_failure=limit_failure,
+        )
+        aggregate_bytes += byte_count
+        manifest.append(
+            (
+                relative,
+                "file",
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_nlink,
+                byte_count,
+                digest,
+            )
+        )
+
+    observed_paths = _bounded_swift_object_store_paths(objects)
+    if [path.relative_to(objects).as_posix() for path in observed_paths] != list(metadata_before):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+    try:
+        for path in observed_paths:
+            relative = path.relative_to(objects).as_posix()
+            metadata = path.lstat()
+            observed = (
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_nlink,
+                metadata.st_size,
+                metadata.st_mtime_ns,
+                metadata.st_ctime_ns,
+            )
+            if observed != metadata_before[relative]:
+                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+    except OSError as error:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED") from error
+    return tuple(manifest)
+
+
+def _swift_object_store_content_digest(
+    manifest: tuple[tuple[object, ...], ...],
+) -> str:
+    portable_entries = [
+        {
+            "path": entry[0],
+            "kind": entry[1],
+            "mode": entry[4],
+            "bytes": entry[8],
+            "sha256": entry[9],
+        }
+        for entry in manifest
+    ]
+    return _canonical_digest(
+        {
+            "schema_version": _SWIFT_DEPENDENCY_OBJECT_STORE_MANIFEST_SCHEMA,
+            "entries": portable_entries,
+        }
+    )
+
+
+def _swift_object_store_manifest_receipt(
+    manifest: tuple[tuple[object, ...], ...],
+) -> dict[str, object]:
+    files = [entry for entry in manifest if entry[1] == "file"]
+    return {
+        "manifest_schema": _SWIFT_DEPENDENCY_OBJECT_STORE_MANIFEST_SCHEMA,
+        "entry_count": len(manifest),
+        "file_count": len(files),
+        "bytes": sum(cast(int, entry[8]) for entry in files),
+        "manifest_sha256": _swift_object_store_content_digest(manifest),
+    }
+
+
+def _swift_standalone_object_store_identity(
+    repository: Path,
+    *,
+    environment: dict[str, str],
+    require_worktree: bool,
+) -> tuple[tuple[tuple[object, ...], ...], frozenset[tuple[int, int]]]:
+    if any(
+        environment.get(name)
+        for name in (
+            "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+            "GIT_OBJECT_DIRECTORY",
+            "GIT_COMMON_DIR",
+        )
+    ):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_ALTERNATE_OBJECT_STORE_FORBIDDEN")
+    metadata_root = repository / ".git" if require_worktree else repository
+    objects = metadata_root / "objects"
+    metadata_before = _verify_secure_directory_chain(
+        metadata_root,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_UNSAFE",
+    )
+    objects_before = _verify_secure_directory_chain(
+        objects,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_UNSAFE",
+    )
+    alternate_paths = (
+        objects / "info" / "alternates",
+        objects / "info" / "http-alternates",
+    )
+
+    def require_no_alternates() -> None:
+        for path in alternate_paths:
+            try:
+                path.lstat()
+            except FileNotFoundError:
+                continue
+            except OSError as error:
+                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_UNSAFE") from error
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_ALTERNATE_OBJECT_STORE_FORBIDDEN")
+
+    require_no_alternates()
+    manifest_before = _swift_object_store_manifest(objects)
+    require_no_alternates()
+    metadata_after = _verify_secure_directory_chain(
+        metadata_root,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED",
+    )
+    objects_after = _verify_secure_directory_chain(
+        objects,
+        "SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED",
+    )
+    manifest_after = _swift_object_store_manifest(objects)
+    if (
+        _stable_secure_directory_chain_identity(metadata_after)
+        != _stable_secure_directory_chain_identity(metadata_before)
+        or _stable_secure_directory_chain_identity(objects_after)
+        != _stable_secure_directory_chain_identity(objects_before)
+        or manifest_after != manifest_before
+    ):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+    identities = frozenset((cast(int, entry[2]), cast(int, entry[3])) for entry in manifest_after if entry[1] == "file")
+    return manifest_after, identities
+
+
 def _verify_swift_git_repository(
     repository: Path,
     *,
     root: Path,
     environment: dict[str, str],
     require_worktree: bool,
+    require_standalone_object_store: bool = True,
 ) -> dict[str, Any]:
     _verify_secure_directory_chain(repository, "SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
+    object_store_before = (
+        _swift_standalone_object_store_identity(
+            repository,
+            environment=environment,
+            require_worktree=require_worktree,
+        )
+        if require_standalone_object_store
+        else None
+    )
     revision = _run_verified_apple_git(
         ["-C", str(repository), "rev-parse", f"{_SWIFT_SYNTAX_REVISION}^{{commit}}"],
         cwd=root,
@@ -1850,7 +2243,18 @@ def _verify_swift_git_repository(
         timeout=300,
         failure="SWIFT_ANALYZER_DEPENDENCY_FSCK_FAILED",
     )
+    if require_standalone_object_store:
+        remotes = _run_verified_apple_git(
+            ["-C", str(repository), "remote"],
+            cwd=root,
+            environment=environment,
+            timeout=30,
+            failure="SWIFT_ANALYZER_DEPENDENCY_REMOTE_INSPECTION_FAILED",
+        ).stdout.splitlines()
+        if remotes:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REMOTE_FORBIDDEN")
     metadata = _swift_git_metadata_manifest(repository, require_worktree=require_worktree)
+    result: dict[str, Any] = {"git_metadata": metadata}
     if require_worktree:
         observed_head = _run_verified_apple_git(
             ["-C", str(repository), "rev-parse", "HEAD"],
@@ -1861,8 +2265,22 @@ def _verify_swift_git_repository(
         ).stdout.strip()
         if observed_head != _SWIFT_SYNTAX_REVISION:
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REVISION_MISMATCH")
-        return {**_swift_dependency_tree(repository), "git_metadata": metadata}
-    return {"git_metadata": metadata}
+        result = {**_swift_dependency_tree(repository), **result}
+    if require_standalone_object_store:
+        object_store_after = _swift_standalone_object_store_identity(
+            repository,
+            environment=environment,
+            require_worktree=require_worktree,
+        )
+        if object_store_after != object_store_before:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
+        result["object_store"] = {
+            "policy": _SWIFT_DEPENDENCY_OBJECT_STORE_POLICY,
+            "alternates": False,
+            "hardlinks": False,
+            **_swift_object_store_manifest_receipt(object_store_after[0]),
+        }
+    return result
 
 
 def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) -> dict[str, Any]:
@@ -2030,18 +2448,20 @@ def _clone_verified_swift_dependency(
     root: Path,
     environment: dict[str, str],
     source_has_worktree: bool,
+    source_requires_standalone_object_store: bool = True,
 ) -> dict[str, Any]:
-    _verify_swift_git_repository(
+    source_before = _verify_swift_git_repository(
         source,
         root=root,
         environment=environment,
         require_worktree=source_has_worktree,
+        require_standalone_object_store=source_requires_standalone_object_store,
     )
-    source_identities = _regular_file_identities(source)
+    source_identities_before = _regular_file_identities(source)
     _run_verified_apple_git(
         [
             "clone",
-            "--local",
+            "--no-local",
             "--no-hardlinks",
             "--no-checkout",
             str(source),
@@ -2051,6 +2471,13 @@ def _clone_verified_swift_dependency(
         environment=environment,
         timeout=900,
         failure="SWIFT_ANALYZER_DEPENDENCY_CLONE_FAILED",
+    )
+    _run_verified_apple_git(
+        ["-C", str(destination), "remote", "remove", "origin"],
+        cwd=root,
+        environment=environment,
+        timeout=30,
+        failure="SWIFT_ANALYZER_DEPENDENCY_REMOTE_REMOVAL_FAILED",
     )
     _run_verified_apple_git(
         ["-C", str(destination), "checkout", "--detach", _SWIFT_SYNTAX_REVISION],
@@ -2065,7 +2492,17 @@ def _clone_verified_swift_dependency(
         environment=environment,
         require_worktree=True,
     )
-    if source_identities.intersection(_regular_file_identities(destination)):
+    source_after = _verify_swift_git_repository(
+        source,
+        root=root,
+        environment=environment,
+        require_worktree=source_has_worktree,
+        require_standalone_object_store=source_requires_standalone_object_store,
+    )
+    source_identities_after = _regular_file_identities(source)
+    if source_after != source_before or source_identities_after != source_identities_before:
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_SOURCE_CHANGED_DURING_CLONE")
+    if source_identities_after.intersection(_regular_file_identities(destination)):
         raise RouteError("SWIFT_ANALYZER_DEPENDENCY_HARDLINK_FORBIDDEN")
     return dependency
 
@@ -2170,6 +2607,7 @@ def _ensure_swift_dependency_cache(
             root=root,
             environment=environment,
             source_has_worktree=seed_has_worktree,
+            source_requires_standalone_object_store=False,
         )
         _verify_swift_git_repository(
             candidate,
@@ -2757,6 +3195,7 @@ def _canonical_swift_analyzer_receipt(receipt: dict[str, Any]) -> dict[str, Any]
                     for key in (
                         "cache_key",
                         "cache_schema",
+                        "object_store_policy",
                         "identity",
                         "version",
                         "revision",
@@ -2787,13 +3226,10 @@ def _canonical_swift_analyzer_receipt(receipt: dict[str, Any]) -> dict[str, Any]
                     "argv": network_probe["build"]["argv"],
                     "environment": network_probe["build"]["environment"],
                     "compiler": {
-                        key: probe_compiler[key]
-                        for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")
+                        key: probe_compiler[key] for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")
                     },
                 },
-                "binary": {
-                    key: network_probe["binary"][key] for key in ("name", "sha256", "bytes", "mode", "nlink")
-                },
+                "binary": {key: network_probe["binary"][key] for key in ("name", "sha256", "bytes", "mode", "nlink")},
                 "execution_seal": {
                     "policy": network_probe["execution_seal"]["policy"],
                     "mode": network_probe["execution_seal"]["mode"],
@@ -3853,7 +4289,13 @@ def _bind_csharp_analyzer_identity(value: dict[str, Any], receipt: dict[str, Any
     return bound
 
 
-def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]:
+def _run(
+    command: list[str],
+    *,
+    cwd: Path,
+    timeout: int = 120,
+    isolated_cargo: bool = False,
+) -> dict[str, Any]:
     executable = Path(command[0])
     executable = executable if executable.is_absolute() else (cwd / executable)
     try:
@@ -3863,6 +4305,23 @@ def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
+            environment = sanitized_subprocess_env(
+                home=home,
+                temp_dir=scratch,
+                executable_dirs=(executable.resolve().parent,),
+            )
+            if isolated_cargo:
+                cargo_home = root / "cargo-home"
+                cargo_target = root / "cargo-target"
+                cargo_home.mkdir(mode=0o700)
+                cargo_target.mkdir(mode=0o700)
+                environment.update(
+                    {
+                        "CARGO_HOME": str(cargo_home.resolve()),
+                        "CARGO_NET_OFFLINE": "true",
+                        "CARGO_TARGET_DIR": str(cargo_target.resolve()),
+                    }
+                )
             completed = subprocess.run(
                 command,
                 cwd=cwd,
@@ -3870,11 +4329,7 @@ def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]
                 capture_output=True,
                 text=True,
                 timeout=timeout,
-                env=sanitized_subprocess_env(
-                    home=home,
-                    temp_dir=scratch,
-                    executable_dirs=(executable.resolve().parent,),
-                ),
+                env=environment,
             )
     except (OSError, subprocess.TimeoutExpired) as error:
         raise RouteError(f"NATIVE_ANALYZER_FAILED:{command[0]}:process") from error
@@ -3928,6 +4383,1260 @@ def _run_trusted_swift_analyzer(
     if _verify_swift_execution_seal(binary, receipt) != before:
         raise RouteError("SWIFT_ANALYZER_CHANGED_DURING_EXECUTION")
     return value
+
+
+def _javascript_bound_content(
+    path: Path,
+    root: Path,
+    *,
+    expected_sha256: str,
+    expected_bytes: int,
+    failure: str,
+) -> bytes:
+    guarded = _read_csharp_bound_file(
+        path,
+        root,
+        failure=failure,
+        maximum_bytes=expected_bytes,
+    )
+    content = _stable_read_regular_file(
+        path,
+        failure=failure,
+        maximum_bytes=expected_bytes,
+        minimum_bytes=expected_bytes,
+        allowed_uids=frozenset({os.getuid()}),
+        require_nlink_one=True,
+    )
+    final = _read_csharp_bound_file(
+        path,
+        root,
+        failure=failure,
+        maximum_bytes=expected_bytes,
+    )
+    if (
+        guarded != content
+        or final != content
+        or len(content) != expected_bytes
+        or hashlib.sha256(content).hexdigest() != expected_sha256
+    ):
+        raise RouteError(failure)
+    return content
+
+
+def _javascript_metadata_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_nlink,
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
+def _normalize_private_analyzer_root_group(root: Path, *, failure: str) -> None:
+    """Normalize a new private analyzer root without permitting path replacement."""
+
+    try:
+        before = root.lstat()
+        resolved_before = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        root != resolved_before
+        or root.is_symlink()
+        or not stat.S_ISDIR(before.st_mode)
+        or before.st_uid != os.getuid()
+        or stat.S_IMODE(before.st_mode) != 0o700
+    ):
+        raise RouteError(failure)
+    identity_before = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_size,
+        before.st_mtime_ns,
+    )
+    exact_before = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    descriptor_flags = (
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    )
+    try:
+        descriptor = os.open(root, descriptor_flags)
+    except OSError as error:
+        raise RouteError(failure) from error
+    try:
+        opened_before = os.fstat(descriptor)
+        if (
+            opened_before.st_dev,
+            opened_before.st_ino,
+            opened_before.st_mode,
+            opened_before.st_nlink,
+            opened_before.st_uid,
+            opened_before.st_gid,
+            opened_before.st_size,
+            opened_before.st_mtime_ns,
+            opened_before.st_ctime_ns,
+        ) != exact_before:
+            raise RouteError(failure)
+        os.fchown(descriptor, -1, os.getgid())
+        opened_after = os.fstat(descriptor)
+        after = root.lstat()
+        resolved_after = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    finally:
+        os.close(descriptor)
+    identity_after = (
+        after.st_dev,
+        after.st_ino,
+        after.st_mode,
+        after.st_nlink,
+        after.st_uid,
+        after.st_size,
+        after.st_mtime_ns,
+    )
+    exact_after = (
+        after.st_dev,
+        after.st_ino,
+        after.st_mode,
+        after.st_nlink,
+        after.st_uid,
+        after.st_gid,
+        after.st_size,
+        after.st_mtime_ns,
+        after.st_ctime_ns,
+    )
+    if (
+        root != resolved_after
+        or root.is_symlink()
+        or not stat.S_ISDIR(after.st_mode)
+        or after.st_uid != os.getuid()
+        or after.st_gid != os.getgid()
+        or stat.S_IMODE(after.st_mode) != 0o700
+        or identity_after != identity_before
+        or exact_after
+        != (
+            opened_after.st_dev,
+            opened_after.st_ino,
+            opened_after.st_mode,
+            opened_after.st_nlink,
+            opened_after.st_uid,
+            opened_after.st_gid,
+            opened_after.st_size,
+            opened_after.st_mtime_ns,
+            opened_after.st_ctime_ns,
+        )
+    ):
+        raise RouteError(failure)
+
+
+def _javascript_file_receipt(path: Path, content: bytes) -> dict[str, object]:
+    try:
+        metadata = path.lstat()
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_INPUT_UNSAFE") from error
+    return {
+        "path": str(path),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+        "device": metadata.st_dev,
+        "inode": metadata.st_ino,
+        "mtime_ns": metadata.st_mtime_ns,
+        "ctime_ns": metadata.st_ctime_ns,
+    }
+
+
+def _javascript_directory_chain(directory: Path, failure: str) -> tuple[tuple[object, ...], ...]:
+    """Bind path components without treating unrelated child writes as drift."""
+
+    if not directory.is_absolute():
+        raise RouteError(failure)
+    cursor = Path("/")
+    identities: list[tuple[object, ...]] = []
+    try:
+        for part in directory.parts[1:]:
+            cursor = cursor / part
+            metadata = cursor.lstat()
+            if (
+                stat.S_ISLNK(metadata.st_mode)
+                or not stat.S_ISDIR(metadata.st_mode)
+                or metadata.st_uid not in {0, os.getuid()}
+                or stat.S_IMODE(metadata.st_mode) & 0o022
+            ):
+                raise RouteError(failure)
+            identities.append(
+                (
+                    str(cursor),
+                    metadata.st_dev,
+                    metadata.st_ino,
+                    metadata.st_mode,
+                    metadata.st_uid,
+                    metadata.st_gid,
+                )
+            )
+        if directory.resolve(strict=True) != directory:
+            raise RouteError(failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    return tuple(identities)
+
+
+def _javascript_strict_json_object(content: bytes, failure: str) -> dict[str, Any]:
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON object key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(content.decode("utf-8"), object_pairs_hook=reject_duplicate_keys)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RouteError(failure) from error
+    if not isinstance(value, dict):
+        raise RouteError(failure)
+    return value
+
+
+def _validate_javascript_typescript_metadata(contents: dict[str, bytes]) -> None:
+    failure = "JAVASCRIPT_TYPESCRIPT_ASSET_UNSAFE"
+    try:
+        manifest_content = contents["asset-manifest.json"]
+        package_content = contents["package.json"]
+    except KeyError as error:
+        raise RouteError(failure) from error
+    manifest = _javascript_strict_json_object(manifest_content, failure)
+    expected_files = [
+        {"path": name, "bytes": byte_count, "sha256": "sha256:" + digest}
+        for name, byte_count, digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS
+        if name != "asset-manifest.json"
+    ]
+    if manifest != {
+        "schema_version": "1.0.0",
+        "asset_id": "typescript-parser-5.9.2",
+        "package": {
+            "name": "typescript",
+            "version": "5.9.2",
+            "license": "Apache-2.0",
+            "repository": "https://github.com/microsoft/TypeScript.git",
+            "registry_tarball": "https://registry.npmjs.org/typescript/-/typescript-5.9.2.tgz",
+            "registry_integrity": (
+                "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A=="
+            ),
+        },
+        "files": expected_files,
+    }:
+        raise RouteError(failure)
+    package = _javascript_strict_json_object(package_content, failure)
+    if (
+        package.get("name") != "typescript"
+        or package.get("version") != "5.9.2"
+        or package.get("license") != "Apache-2.0"
+        or package.get("repository") != {"type": "git", "url": "https://github.com/microsoft/TypeScript.git"}
+        or package.get("main") != "./lib/typescript.js"
+    ):
+        raise RouteError(failure)
+
+
+def _javascript_typescript_assets() -> tuple[dict[str, object], dict[str, bytes]]:
+    failure = "JAVASCRIPT_TYPESCRIPT_ASSET_UNSAFE"
+    root = _JAVASCRIPT_TYPESCRIPT_ROOT
+    expected_names = tuple(name for name, _byte_count, _digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS)
+    try:
+        if not root.is_absolute() or root.name != "typescript-5.9.2":
+            raise RouteError(failure)
+        chain_before = _javascript_directory_chain(root, failure)
+        root_before = root.lstat()
+        names_before = tuple(sorted(item.name for item in root.iterdir()))
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    root_identity = _javascript_metadata_identity(root_before)
+    if (
+        resolved_root != root
+        or not stat.S_ISDIR(root_before.st_mode)
+        or root_before.st_uid != os.getuid()
+        or root_before.st_gid != os.getgid()
+        or stat.S_IMODE(root_before.st_mode) != _JAVASCRIPT_TYPESCRIPT_ROOT_MODE
+        or root_before.st_nlink != _JAVASCRIPT_TYPESCRIPT_ROOT_NLINK
+        or names_before != tuple(sorted(expected_names))
+    ):
+        raise RouteError(failure)
+
+    contents: dict[str, bytes] = {}
+    files: dict[str, object] = {}
+    for name, expected_bytes, expected_sha256 in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS:
+        path = root / name
+        try:
+            relative = path.relative_to(root)
+            metadata_before = path.lstat()
+            resolved = path.resolve(strict=True)
+        except (OSError, ValueError) as error:
+            raise RouteError(failure) from error
+        if (
+            relative.parts != (name,)
+            or resolved != path
+            or not resolved.is_relative_to(root)
+            or not stat.S_ISREG(metadata_before.st_mode)
+            or metadata_before.st_uid != os.getuid()
+            or metadata_before.st_gid != os.getgid()
+            or stat.S_IMODE(metadata_before.st_mode) != _JAVASCRIPT_TYPESCRIPT_ASSET_MODE
+            or metadata_before.st_nlink != 1
+        ):
+            raise RouteError(failure)
+        content = _stable_read_regular_file(
+            path,
+            failure=failure,
+            maximum_bytes=expected_bytes,
+            minimum_bytes=expected_bytes,
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        try:
+            metadata_after = path.lstat()
+        except OSError as error:
+            raise RouteError(failure) from error
+        if (
+            _javascript_metadata_identity(metadata_before) != _javascript_metadata_identity(metadata_after)
+            or len(content) != expected_bytes
+            or hashlib.sha256(content).hexdigest() != expected_sha256
+        ):
+            raise RouteError(failure)
+        contents[name] = content
+        files[name] = _javascript_file_receipt(path, content)
+
+    _validate_javascript_typescript_metadata(contents)
+    try:
+        names_after = tuple(sorted(item.name for item in root.iterdir()))
+        root_after = root.lstat()
+        chain_after = _javascript_directory_chain(root, failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        names_after != names_before
+        or _javascript_metadata_identity(root_after) != root_identity
+        or chain_after != chain_before
+    ):
+        raise RouteError(failure)
+    return (
+        {
+            "root": {
+                "path": str(root),
+                "mode": f"{stat.S_IMODE(root_after.st_mode):04o}",
+                "uid": root_after.st_uid,
+                "gid": root_after.st_gid,
+                "nlink": root_after.st_nlink,
+                "device": root_after.st_dev,
+                "inode": root_after.st_ino,
+                "mtime_ns": root_after.st_mtime_ns,
+                "ctime_ns": root_after.st_ctime_ns,
+            },
+            "path_set": list(expected_names),
+            "files": files,
+        },
+        contents,
+    )
+
+
+def _javascript_analyzer_inputs(
+    source: Path,
+    descriptor: dict[str, object] | None,
+) -> tuple[dict[str, object], dict[str, bytes]]:
+    try:
+        resolved_analyzer = _JAVASCRIPT_ANALYZER.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_SOURCE_UNSAFE") from error
+    if resolved_analyzer != _JAVASCRIPT_ANALYZER:
+        raise RouteError("JAVASCRIPT_ANALYZER_SOURCE_UNSAFE")
+    analyzer = _javascript_bound_content(
+        _JAVASCRIPT_ANALYZER,
+        _JAVASCRIPT_ANALYZER.parent,
+        expected_sha256=_JAVASCRIPT_ANALYZER_SHA256,
+        expected_bytes=_JAVASCRIPT_ANALYZER_BYTES,
+        failure="JAVASCRIPT_ANALYZER_SOURCE_UNSAFE",
+    )
+    typescript_binding, typescript_contents = _javascript_typescript_assets()
+    source_content = _stable_read_regular_file(
+        source,
+        failure="JAVASCRIPT_SOURCE_UNSAFE",
+        maximum_bytes=_JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+        require_nlink_one=True,
+    )
+    descriptor_content: bytes | None = None
+    if descriptor is not None:
+        descriptor_path = Path(str(descriptor.get("path", "")))
+        expected_sha256 = descriptor.get("sha256")
+        expected_bytes = descriptor.get("bytes")
+        if (
+            not descriptor_path.is_absolute()
+            or not isinstance(expected_sha256, str)
+            or not isinstance(expected_bytes, int)
+            or expected_bytes < 0
+        ):
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE")
+        descriptor_content = _stable_read_regular_file(
+            descriptor_path,
+            failure="JAVASCRIPT_ESM_DESCRIPTOR_PATH_UNSAFE",
+            maximum_bytes=expected_bytes,
+            minimum_bytes=expected_bytes,
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        if hashlib.sha256(descriptor_content).hexdigest() != expected_sha256:
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_READ")
+    binding: dict[str, object] = {
+        "analyzer_sha256": "sha256:" + hashlib.sha256(analyzer).hexdigest(),
+        "analyzer_bytes": len(analyzer),
+        "typescript_asset_manifest_sha256": (
+            "sha256:" + hashlib.sha256(typescript_contents["asset-manifest.json"]).hexdigest()
+        ),
+        "typescript_asset_manifest_bytes": len(typescript_contents["asset-manifest.json"]),
+        "typescript_license_sha256": "sha256:" + hashlib.sha256(typescript_contents["LICENSE.txt"]).hexdigest(),
+        "typescript_license_bytes": len(typescript_contents["LICENSE.txt"]),
+        "typescript_package_sha256": "sha256:" + hashlib.sha256(typescript_contents["package.json"]).hexdigest(),
+        "typescript_package_bytes": len(typescript_contents["package.json"]),
+        "typescript_sha256": "sha256:" + hashlib.sha256(typescript_contents["typescript.js"]).hexdigest(),
+        "typescript_bytes": len(typescript_contents["typescript.js"]),
+        "source_sha256": "sha256:" + hashlib.sha256(source_content).hexdigest(),
+        "source_bytes": len(source_content),
+        "live_seal": {
+            "analyzer": _javascript_file_receipt(_JAVASCRIPT_ANALYZER, analyzer),
+            "typescript_assets": typescript_binding,
+            "source": _javascript_file_receipt(source, source_content),
+        },
+    }
+    if descriptor is not None and descriptor_content is not None:
+        binding["source_esm_descriptor_sha256"] = "sha256:" + str(descriptor["sha256"])
+        binding["source_esm_descriptor_bytes"] = expected_bytes
+        binding["source_esm_descriptor_path"] = str(descriptor["path"])
+        live_seal = binding["live_seal"]
+        assert isinstance(live_seal, dict)
+        live_seal["source_esm_descriptor"] = _javascript_file_receipt(Path(str(descriptor["path"])), descriptor_content)
+    contents = {
+        "analyzer": analyzer,
+        "asset-manifest.json": typescript_contents["asset-manifest.json"],
+        "LICENSE.txt": typescript_contents["LICENSE.txt"],
+        "package.json": typescript_contents["package.json"],
+        "typescript.js": typescript_contents["typescript.js"],
+        "source": source_content,
+    }
+    if descriptor_content is not None:
+        contents["source_esm_descriptor"] = descriptor_content
+    return binding, contents
+
+
+def _write_javascript_snapshot(path: Path, content: bytes) -> None:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                size = os.write(descriptor, content[written:])
+                if size <= 0:
+                    raise OSError("zero-byte JavaScript analyzer snapshot write")
+                written += size
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+
+
+def _javascript_snapshot_binding(
+    root: Path,
+    source_name: str,
+    *,
+    descriptor_required: bool = False,
+) -> dict[str, object]:
+    failure = "JAVASCRIPT_ANALYZER_SNAPSHOT_UNSAFE"
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or root_metadata.st_gid != os.getgid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+    ):
+        raise RouteError(failure)
+    directories = (
+        root / "assets",
+        root / "assets" / "typescript-5.9.2",
+        root / "source",
+    )
+    for directory in directories:
+        try:
+            metadata = directory.lstat()
+            resolved_directory = directory.resolve(strict=True)
+        except OSError as error:
+            raise RouteError(failure) from error
+        if (
+            directory.is_symlink()
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o700
+            or not resolved_directory.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+    expected_sets = {
+        root: {"assets", "source"},
+        root / "assets": {"analyzer.mjs", "typescript-5.9.2"},
+        root / "assets" / "typescript-5.9.2": {
+            name for name, _byte_count, _digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS
+        },
+        root / "source": ({source_name, "package.json"} if descriptor_required else {source_name}),
+    }
+    try:
+        if any(
+            {item.name for item in directory.iterdir()} != expected for directory, expected in expected_sets.items()
+        ):
+            raise RouteError(failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    paths = {
+        "analyzer": root / "assets" / "analyzer.mjs",
+        "typescript_asset_manifest": root / "assets" / "typescript-5.9.2" / "asset-manifest.json",
+        "typescript_license": root / "assets" / "typescript-5.9.2" / "LICENSE.txt",
+        "typescript_package": root / "assets" / "typescript-5.9.2" / "package.json",
+        "typescript": root / "assets" / "typescript-5.9.2" / "typescript.js",
+        "source": root / "source" / source_name,
+    }
+    limits = {
+        "analyzer": _JAVASCRIPT_ANALYZER_BYTES,
+        "typescript_asset_manifest": _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[0][1],
+        "typescript_license": _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[1][1],
+        "typescript_package": _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[2][1],
+        "typescript": _JAVASCRIPT_TYPESCRIPT_BYTES,
+        "source": _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+    }
+    if descriptor_required:
+        paths["source_esm_descriptor"] = root / "source" / "package.json"
+        limits["source_esm_descriptor"] = _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES
+    result: dict[str, object] = {}
+    file_seals: dict[str, object] = {}
+    for role, path in paths.items():
+        try:
+            relative = path.relative_to(root)
+            metadata = path.lstat()
+            resolved_path = path.resolve(strict=True)
+        except (OSError, ValueError) as error:
+            raise RouteError(failure) from error
+        if (
+            len(relative.parts) not in {2, 3}
+            or path.is_symlink()
+            or not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or metadata.st_nlink != 1
+            or not resolved_path.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+        content = _stable_read_regular_file(
+            path,
+            failure=failure,
+            maximum_bytes=limits[role],
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        result[f"{role}_sha256"] = "sha256:" + hashlib.sha256(content).hexdigest()
+        result[f"{role}_bytes"] = len(content)
+        file_seals[role] = _javascript_file_receipt(path, content)
+    try:
+        directory_seals = {
+            str(directory.relative_to(root)): _javascript_metadata_identity(directory.lstat())
+            for directory in directories
+        }
+    except (OSError, ValueError) as error:
+        raise RouteError(failure) from error
+    result["snapshot_seal"] = {
+        "root": {
+            "path": str(root),
+            "mode": f"{stat.S_IMODE(root_metadata.st_mode):04o}",
+            "uid": root_metadata.st_uid,
+            "gid": root_metadata.st_gid,
+            "nlink": root_metadata.st_nlink,
+            "device": root_metadata.st_dev,
+            "inode": root_metadata.st_ino,
+            "mtime_ns": root_metadata.st_mtime_ns,
+            "ctime_ns": root_metadata.st_ctime_ns,
+        },
+        "directories": directory_seals,
+        "files": file_seals,
+    }
+    return result
+
+
+def _javascript_toolchain_binding(toolchain: ExactToolchain) -> dict[str, str]:
+    profile: dict[str, str] = {}
+    for item in toolchain.profile:
+        key, separator, value = item.partition("=")
+        if not separator or not key or not value or key in profile:
+            raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+        profile[key] = value
+    closure_items = [
+        (key, value) for key, value in profile.items() if re.fullmatch(r"node(?:-toolchain)?-closure-sha256", key)
+    ]
+    if (
+        len(closure_items) != 1
+        or re.fullmatch(r"[0-9a-f]{64}", closure_items[0][1]) is None
+        or profile.get("node-toolchain-closure-schema") != "v1"
+    ):
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    return {
+        "closure_field": closure_items[0][0],
+        "closure_sha256": closure_items[0][1],
+        "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
+    }
+
+
+def _verify_trusted_javascript_toolchain(expected: ExactToolchain) -> dict[str, str]:
+    if (
+        expected.language != "javascript"
+        or expected.version != "Node.js 26.0.0 / ES2022 / ESM"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or expected.executable_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", expected.executable_sha256) is None
+    ):
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    expected_binding = _javascript_toolchain_binding(expected)
+    try:
+        current = exact_toolchain("javascript")
+    except RouteError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected or _javascript_toolchain_binding(current) != expected_binding:
+        raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+    return expected_binding
+
+
+def _javascript_content_binding(binding: dict[str, object]) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in binding.items()
+        if key not in {"live_seal", "snapshot_seal", "source_esm_descriptor_path"}
+    }
+
+
+def _require_javascript_snapshot_unchanged(
+    root: Path,
+    source_name: str,
+    expected: dict[str, object],
+    *,
+    descriptor_required: bool = False,
+) -> None:
+    try:
+        current = _javascript_snapshot_binding(root, source_name, descriptor_required=descriptor_required)
+    except RouteError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+    if current != expected:
+        raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+
+
+def _require_javascript_inputs_unchanged(
+    source: Path,
+    expected: dict[str, object],
+    descriptor: dict[str, object] | None,
+) -> None:
+    try:
+        current_descriptor = javascript_esm_descriptor(source)
+        if current_descriptor != descriptor:
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_EXECUTION")
+        current, _contents = _javascript_analyzer_inputs(source, current_descriptor)
+    except RouteError as error:
+        raise RouteError("JAVASCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from error
+    if current != expected:
+        raise RouteError("JAVASCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION")
+
+
+def _run_trusted_javascript_analyzer(
+    toolchain: ExactToolchain,
+    source: Path,
+    selector: str,
+    *,
+    emitted_target: bool = False,
+) -> dict[str, Any]:
+    descriptor = javascript_esm_descriptor(source)
+    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None:
+        raise RouteError("JAVASCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    if selector == "--inventory" and emitted_target:
+        raise RouteError("JAVASCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    expected_inputs, contents = _javascript_analyzer_inputs(source, descriptor)
+    expected_toolchain = _verify_trusted_javascript_toolchain(toolchain)
+    with tempfile.TemporaryDirectory(prefix="elmos-javascript-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        _normalize_private_analyzer_root_group(
+            root,
+            failure="JAVASCRIPT_ANALYZER_SNAPSHOT_UNSAFE",
+        )
+        assets = root / "assets"
+        typescript_assets = assets / "typescript-5.9.2"
+        sources = root / "source"
+        assets.mkdir(mode=0o700)
+        typescript_assets.mkdir(mode=0o700)
+        sources.mkdir(mode=0o700)
+        analyzer = assets / "analyzer.mjs"
+        typescript = typescript_assets / "typescript.js"
+        source_snapshot = sources / source.name
+        _write_javascript_snapshot(analyzer, contents["analyzer"])
+        for name, _byte_count, _digest in _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS:
+            _write_javascript_snapshot(typescript_assets / name, contents[name])
+        _write_javascript_snapshot(source_snapshot, contents["source"])
+        if descriptor is not None:
+            _write_javascript_snapshot(sources / "package.json", contents["source_esm_descriptor"])
+        expected_snapshot = _javascript_snapshot_binding(root, source.name, descriptor_required=descriptor is not None)
+        if _javascript_content_binding(expected_snapshot) != _javascript_content_binding(expected_inputs):
+            raise RouteError("JAVASCRIPT_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+        _require_javascript_snapshot_unchanged(
+            root, source.name, expected_snapshot, descriptor_required=descriptor is not None
+        )
+        _require_javascript_inputs_unchanged(source, expected_inputs, descriptor)
+        if _verify_trusted_javascript_toolchain(toolchain) != expected_toolchain:
+            raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+        command = [
+            toolchain.executable,
+            str(analyzer),
+            str(typescript),
+            str(source_snapshot),
+            selector,
+            *(["--emitted-target"] if emitted_target else []),
+        ]
+        try:
+            value = _run(command, cwd=root)
+        except RouteError as error:
+            try:
+                _require_javascript_snapshot_unchanged(
+                    root, source.name, expected_snapshot, descriptor_required=descriptor is not None
+                )
+                _require_javascript_inputs_unchanged(source, expected_inputs, descriptor)
+            except RouteError as changed:
+                raise changed from error
+            _verify_trusted_javascript_toolchain(toolchain)
+            raise
+        _require_javascript_snapshot_unchanged(
+            root, source.name, expected_snapshot, descriptor_required=descriptor is not None
+        )
+        _require_javascript_inputs_unchanged(source, expected_inputs, descriptor)
+        if _verify_trusted_javascript_toolchain(toolchain) != expected_toolchain:
+            raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+        analyzer_version = value.get("analyzer_version")
+        if not isinstance(analyzer_version, str) or not analyzer_version:
+            raise RouteError("JAVASCRIPT_ANALYZER_VERSION_REQUIRED")
+        bound = dict(value)
+        bound["analyzer_version"] = (
+            f"{analyzer_version};analyzer={_JAVASCRIPT_ANALYZER_SHA256};"
+            f"typescript={_JAVASCRIPT_TYPESCRIPT_SHA256};"
+            f"typescript-assets={_JAVASCRIPT_TYPESCRIPT_MANIFEST_SHA256};"
+            f"node={toolchain.executable_sha256};"
+            f"node-closure={expected_toolchain['closure_sha256']};"
+            f"node-profile={expected_toolchain['profile_sha256']}"
+        )
+        return bound
+
+
+def _validated_typescript_parser_receipt(value: object) -> dict[str, str | int]:
+    failure = "TYPESCRIPT_ANALYZER_PARSER_RECEIPT_INVALID"
+    required_keys = {
+        "schema_version",
+        "path",
+        "sha256",
+        "bytes",
+        "mode",
+        "uid",
+        "gid",
+        "nlink",
+        "compiler_root",
+        "compiler_closure_sha256",
+        "compiler_closure_file_count",
+        "compiler_closure_bytes",
+        "semantic_soundness",
+    }
+    if not isinstance(value, dict) or set(value) != required_keys:
+        raise RouteError(failure)
+    path_value = value.get("path")
+    root_value = value.get("compiler_root")
+    sha256 = value.get("sha256")
+    closure_sha256 = value.get("compiler_closure_sha256")
+    mode = value.get("mode")
+    byte_count = value.get("bytes")
+    closure_file_count = value.get("compiler_closure_file_count")
+    closure_bytes = value.get("compiler_closure_bytes")
+    uid = value.get("uid")
+    gid = value.get("gid")
+    nlink = value.get("nlink")
+    if (
+        type(value.get("schema_version")) is not int
+        or value.get("schema_version") != 1
+        or value.get("semantic_soundness") != "NOT_RUN"
+        or not isinstance(path_value, str)
+        or not isinstance(root_value, str)
+        or not isinstance(sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", sha256) is None
+        or not isinstance(closure_sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", closure_sha256) is None
+        or not isinstance(mode, str)
+        or re.fullmatch(r"0[0-7]{3}", mode) is None
+        or type(byte_count) is not int
+        or byte_count <= 0
+        or type(closure_file_count) is not int
+        or closure_file_count <= 0
+        or type(closure_bytes) is not int
+        or closure_bytes < byte_count
+        or type(uid) is not int
+        or uid not in {0, os.getuid()}
+        or type(gid) is not int
+        or gid < 0
+        or type(nlink) is not int
+        or nlink != 1
+        or int(mode, 8) & 0o022
+    ):
+        raise RouteError(failure)
+    parser = Path(path_value)
+    compiler_root = Path(root_value)
+    try:
+        relative = parser.relative_to(compiler_root)
+    except ValueError as error:
+        raise RouteError(failure) from error
+    if (
+        not parser.is_absolute()
+        or not compiler_root.is_absolute()
+        or parser == compiler_root
+        or not relative.parts
+        or ".." in parser.parts
+        or ".." in compiler_root.parts
+    ):
+        raise RouteError(failure)
+    return {str(key): item for key, item in value.items() if isinstance(item, str | int)}
+
+
+def _typescript_toolchain_binding(
+    toolchain: ExactToolchain,
+    parser_receipt: dict[str, str | int],
+) -> dict[str, str]:
+    failure = "TYPESCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID"
+    profile: dict[str, str] = {}
+    for item in toolchain.profile:
+        key, separator, value = item.partition("=")
+        if not separator or not key or not value or key in profile:
+            raise RouteError(failure)
+        profile[key] = value
+    if (
+        toolchain.language != "typescript"
+        or toolchain.version != "5.9.2 / Node 26.0.0"
+        or not Path(toolchain.executable).is_absolute()
+        or toolchain.auxiliary is None
+        or not Path(toolchain.auxiliary).is_absolute()
+        or toolchain.executable_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", toolchain.executable_sha256) is None
+        or toolchain.auxiliary_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", toolchain.auxiliary_sha256) is None
+        or profile.get("typescript-toolchain-closure-schema") != "v1"
+        or profile.get("typescript-language-version") != "5.9.2"
+        or profile.get("typescript-package-root") != parser_receipt["compiler_root"]
+        or profile.get("typescript-closure-sha256") != parser_receipt["compiler_closure_sha256"]
+        or profile.get("typescript-closure-file-count") != str(parser_receipt["compiler_closure_file_count"])
+        or profile.get("typescript-closure-bytes") != str(parser_receipt["compiler_closure_bytes"])
+        or profile.get("typescript-parser-sha256") != parser_receipt["sha256"]
+        or profile.get("typescript-compiler-runtime-semantic-soundness") != "NOT_RUN"
+        or re.fullmatch(r"[0-9a-f]{64}", profile.get("node-closure-sha256", "")) is None
+    ):
+        raise RouteError(failure)
+    for key in (
+        "node-closure-component-count",
+        "node-closure-edge-count",
+        "node-closure-system-edge-count",
+    ):
+        try:
+            if int(profile.get(key, "")) <= 0:
+                raise ValueError
+        except ValueError as error:
+            raise RouteError(failure) from error
+    profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    return {
+        "typescript_closure_sha256": str(parser_receipt["compiler_closure_sha256"]),
+        "node_closure_sha256": profile["node-closure-sha256"],
+        "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
+    }
+
+
+def _typescript_file_seal(path: Path, content: bytes, failure: str) -> dict[str, object]:
+    try:
+        metadata = path.lstat()
+    except OSError as error:
+        raise RouteError(failure) from error
+    return {
+        "path": str(path),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+        "device": metadata.st_dev,
+        "inode": metadata.st_ino,
+        "mtime_ns": metadata.st_mtime_ns,
+        "ctime_ns": metadata.st_ctime_ns,
+    }
+
+
+def _typescript_parser_content(receipt: dict[str, str | int]) -> bytes:
+    failure = "TYPESCRIPT_ANALYZER_PARSER_INPUT_UNSAFE"
+    parser = Path(str(receipt["path"]))
+    compiler_root = Path(str(receipt["compiler_root"]))
+    try:
+        resolved_parser = parser.resolve(strict=True)
+        resolved_root = compiler_root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if resolved_parser != parser or resolved_root != compiler_root or not parser.is_relative_to(compiler_root):
+        raise RouteError(failure)
+    content = _stable_read_regular_file(
+        parser,
+        failure=failure,
+        maximum_bytes=int(receipt["bytes"]),
+        minimum_bytes=int(receipt["bytes"]),
+        allowed_uids=frozenset({int(receipt["uid"])}),
+        require_nlink_one=True,
+    )
+    seal = _typescript_file_seal(parser, content, failure)
+    if (
+        hashlib.sha256(content).hexdigest() != receipt["sha256"]
+        or seal["bytes"] != receipt["bytes"]
+        or seal["mode"] != receipt["mode"]
+        or seal["uid"] != receipt["uid"]
+        or seal["gid"] != receipt["gid"]
+        or seal["nlink"] != receipt["nlink"]
+    ):
+        raise RouteError(failure)
+    return content
+
+
+def _typescript_analyzer_inputs(
+    source: Path,
+    parser_receipt: dict[str, str | int],
+) -> tuple[dict[str, object], dict[str, bytes]]:
+    analyzer = _javascript_bound_content(
+        _TYPESCRIPT_ANALYZER,
+        _TYPESCRIPT_ANALYZER.parent,
+        expected_sha256=_TYPESCRIPT_ANALYZER_SHA256,
+        expected_bytes=_TYPESCRIPT_ANALYZER_BYTES,
+        failure="TYPESCRIPT_ANALYZER_SOURCE_UNSAFE",
+    )
+    parser = _typescript_parser_content(parser_receipt)
+    source_content = _stable_read_regular_file(
+        source,
+        failure="TYPESCRIPT_ANALYZER_SOURCE_INPUT_UNSAFE",
+        maximum_bytes=_TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+        require_nlink_one=True,
+    )
+    binding: dict[str, object] = {
+        "analyzer_sha256": "sha256:" + hashlib.sha256(analyzer).hexdigest(),
+        "analyzer_bytes": len(analyzer),
+        "parser_sha256": "sha256:" + hashlib.sha256(parser).hexdigest(),
+        "parser_bytes": len(parser),
+        "source_sha256": "sha256:" + hashlib.sha256(source_content).hexdigest(),
+        "source_bytes": len(source_content),
+        "parser_receipt": dict(parser_receipt),
+        "live_seal": {
+            "analyzer": _typescript_file_seal(
+                _TYPESCRIPT_ANALYZER,
+                analyzer,
+                "TYPESCRIPT_ANALYZER_SOURCE_UNSAFE",
+            ),
+            "parser": _typescript_file_seal(
+                Path(str(parser_receipt["path"])),
+                parser,
+                "TYPESCRIPT_ANALYZER_PARSER_INPUT_UNSAFE",
+            ),
+            "source": _typescript_file_seal(
+                source,
+                source_content,
+                "TYPESCRIPT_ANALYZER_SOURCE_INPUT_UNSAFE",
+            ),
+        },
+    }
+    return binding, {"analyzer": analyzer, "parser": parser, "source": source_content}
+
+
+def _write_typescript_snapshot(path: Path, content: bytes) -> None:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                size = os.write(descriptor, content[written:])
+                if size <= 0:
+                    raise OSError("zero-byte TypeScript analyzer snapshot write")
+                written += size
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+
+
+def _typescript_snapshot_binding(root: Path, source_name: str) -> dict[str, object]:
+    failure = "TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE"
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or root_metadata.st_gid != os.getgid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+    ):
+        raise RouteError(failure)
+    assets = root / "assets"
+    sources = root / "source"
+    directories = (assets, sources)
+    for directory in directories:
+        try:
+            metadata = directory.lstat()
+            resolved = directory.resolve(strict=True)
+        except OSError as error:
+            raise RouteError(failure) from error
+        if (
+            directory.is_symlink()
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o700
+            or not resolved.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+    expected_sets = {
+        root: {"assets", "source"},
+        assets: {"analyzer.mjs", "typescript.js"},
+        sources: {source_name},
+    }
+    try:
+        if any(
+            {item.name for item in directory.iterdir()} != expected for directory, expected in expected_sets.items()
+        ):
+            raise RouteError(failure)
+    except OSError as error:
+        raise RouteError(failure) from error
+    paths = {
+        "analyzer": assets / "analyzer.mjs",
+        "parser": assets / "typescript.js",
+        "source": sources / source_name,
+    }
+    limits = {
+        "analyzer": _TYPESCRIPT_ANALYZER_BYTES,
+        "parser": 20_000_000,
+        "source": _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES,
+    }
+    result: dict[str, object] = {}
+    files: dict[str, object] = {}
+    for role, path in paths.items():
+        try:
+            relative = path.relative_to(root)
+            metadata = path.lstat()
+            resolved = path.resolve(strict=True)
+        except (OSError, ValueError) as error:
+            raise RouteError(failure) from error
+        if (
+            len(relative.parts) != 2
+            or path.is_symlink()
+            or not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or metadata.st_gid != os.getgid()
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or metadata.st_nlink != 1
+            or not resolved.is_relative_to(resolved_root)
+        ):
+            raise RouteError(failure)
+        content = _stable_read_regular_file(
+            path,
+            failure=failure,
+            maximum_bytes=limits[role],
+            allowed_uids=frozenset({os.getuid()}),
+            require_nlink_one=True,
+        )
+        result[f"{role}_sha256"] = "sha256:" + hashlib.sha256(content).hexdigest()
+        result[f"{role}_bytes"] = len(content)
+        files[role] = _typescript_file_seal(path, content, failure)
+    result["snapshot_seal"] = {
+        "root": {
+            "path": str(root),
+            "mode": f"{stat.S_IMODE(root_metadata.st_mode):04o}",
+            "uid": root_metadata.st_uid,
+            "gid": root_metadata.st_gid,
+            "nlink": root_metadata.st_nlink,
+            "device": root_metadata.st_dev,
+            "inode": root_metadata.st_ino,
+            "mtime_ns": root_metadata.st_mtime_ns,
+            "ctime_ns": root_metadata.st_ctime_ns,
+        },
+        "directories": {
+            str(directory.relative_to(root)): _javascript_metadata_identity(directory.lstat())
+            for directory in directories
+        },
+        "files": files,
+    }
+    return result
+
+
+def _typescript_content_binding(binding: dict[str, object]) -> dict[str, object]:
+    keys = {
+        "analyzer_sha256",
+        "analyzer_bytes",
+        "parser_sha256",
+        "parser_bytes",
+        "source_sha256",
+        "source_bytes",
+    }
+    return {key: binding[key] for key in sorted(keys)}
+
+
+def _require_typescript_snapshot_unchanged(
+    root: Path,
+    source_name: str,
+    expected: dict[str, object],
+) -> None:
+    try:
+        current = _typescript_snapshot_binding(root, source_name)
+    except RouteError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+    if current != expected:
+        raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+
+
+def _require_typescript_inputs_unchanged(
+    source: Path,
+    expected_receipt: dict[str, str | int],
+    expected_inputs: dict[str, object],
+) -> dict[str, str | int]:
+    try:
+        current_receipt = _validated_typescript_parser_receipt(typescript_parser_receipt())
+        current_inputs, _ = _typescript_analyzer_inputs(source, current_receipt)
+    except RouteError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from error
+    if current_receipt != expected_receipt or current_inputs != expected_inputs:
+        raise RouteError("TYPESCRIPT_ANALYZER_INPUT_CHANGED_DURING_EXECUTION")
+    return current_receipt
+
+
+def _require_typescript_toolchain_unchanged(
+    expected: ExactToolchain,
+    expected_binding: dict[str, str],
+    parser_receipt: dict[str, str | int],
+) -> None:
+    try:
+        current = exact_toolchain("typescript")
+        current_binding = _typescript_toolchain_binding(current, parser_receipt)
+    except RouteError as error:
+        raise RouteError("TYPESCRIPT_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected or current_binding != expected_binding:
+        raise RouteError("TYPESCRIPT_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _run_trusted_typescript_analyzer(
+    toolchain: ExactToolchain,
+    source: Path,
+    selector: str,
+    *,
+    emitted_target: bool = False,
+) -> dict[str, Any]:
+    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None:
+        raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    if selector == "--inventory" and emitted_target:
+        raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
+    parser_receipt = _validated_typescript_parser_receipt(typescript_parser_receipt())
+    toolchain_binding = _typescript_toolchain_binding(toolchain, parser_receipt)
+    expected_inputs, contents = _typescript_analyzer_inputs(source, parser_receipt)
+    with tempfile.TemporaryDirectory(prefix="elmos-typescript-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        _normalize_private_analyzer_root_group(
+            root,
+            failure="TYPESCRIPT_ANALYZER_SNAPSHOT_UNSAFE",
+        )
+        assets = root / "assets"
+        sources = root / "source"
+        assets.mkdir(mode=0o700)
+        sources.mkdir(mode=0o700)
+        analyzer = assets / "analyzer.mjs"
+        parser = assets / "typescript.js"
+        source_snapshot = sources / source.name
+        _write_typescript_snapshot(analyzer, contents["analyzer"])
+        _write_typescript_snapshot(parser, contents["parser"])
+        _write_typescript_snapshot(source_snapshot, contents["source"])
+        expected_snapshot = _typescript_snapshot_binding(root, source.name)
+        if _typescript_content_binding(expected_snapshot) != _typescript_content_binding(expected_inputs):
+            raise RouteError("TYPESCRIPT_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+        _require_typescript_snapshot_unchanged(root, source.name, expected_snapshot)
+        command = [
+            toolchain.executable,
+            str(analyzer),
+            str(parser),
+            str(source_snapshot),
+            selector,
+            *(["--emitted-target"] if emitted_target else []),
+        ]
+        try:
+            value = _run(command, cwd=root)
+        except RouteError as error:
+            try:
+                _require_typescript_snapshot_unchanged(root, source.name, expected_snapshot)
+                current_receipt = _require_typescript_inputs_unchanged(source, parser_receipt, expected_inputs)
+                _require_typescript_toolchain_unchanged(toolchain, toolchain_binding, current_receipt)
+            except RouteError as changed:
+                raise changed from error
+            raise
+        _require_typescript_snapshot_unchanged(root, source.name, expected_snapshot)
+        current_receipt = _require_typescript_inputs_unchanged(source, parser_receipt, expected_inputs)
+        _require_typescript_toolchain_unchanged(toolchain, toolchain_binding, current_receipt)
+        analyzer_version = value.get("analyzer_version")
+        if analyzer_version != "5.9.2":
+            raise RouteError("TYPESCRIPT_ANALYZER_VERSION_MISMATCH")
+        bound = dict(value)
+        bound["analyzer_version"] = (
+            f"{analyzer_version};analyzer={_TYPESCRIPT_ANALYZER_SHA256};"
+            f"typescript-parser={parser_receipt['sha256']};"
+            f"typescript-closure={toolchain_binding['typescript_closure_sha256']};"
+            f"node={toolchain.executable_sha256};"
+            f"node-closure={toolchain_binding['node_closure_sha256']};"
+            f"typescript-profile={toolchain_binding['profile_sha256']}"
+        )
+        return bound
 
 
 def _java_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
@@ -4255,8 +5964,11 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
     enumerated callable fits ``typed-pure-function-v1``.
     """
 
-    source = source.resolve()
-    if not source.is_file() or source.is_symlink() or source.stat().st_size > 2_000_000:
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    source = raw_source.resolve()
+    if not source.is_file() or source.stat().st_size > 2_000_000:
         raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
     if language == "python":
         raise RouteError("PYTHON_MODULE_INVENTORY_USES_CPYTHON_AST")
@@ -4283,23 +5995,9 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
             [str(source), "--inventory"],
         )
     elif language == "typescript":
-        frontend = REPOSITORY_ROOT / "engines" / "frontend-client-engine"
-        cli = frontend / "dist" / "src" / "polyglot-cli.js"
-        if not cli.is_file():
-            pnpm = shutil.which("pnpm")
-            if pnpm is None:
-                raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:pnpm")
-            completed = subprocess.run(
-                [pnpm, "run", "build"],
-                cwd=frontend,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
-            if completed.returncode != 0:
-                raise RouteError("TYPESCRIPT_ANALYZER_BUILD_FAILED:" + completed.stderr[-2_000:])
-        value = _run([toolchain.executable, str(cli), str(source), "--inventory"], cwd=frontend)
+        value = _run_trusted_typescript_analyzer(toolchain, source, "--inventory")
+    elif language == "javascript":
+        value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
         value = _run([toolchain.executable, "run", str(helper), "--", str(source), "--inventory"], cwd=ENGINE_ROOT)
@@ -4321,6 +6019,7 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
             ],
             cwd=package,
             timeout=900,
+            isolated_cargo=True,
         )
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
@@ -4350,8 +6049,11 @@ def analyze(
     *,
     emitted_target: bool = False,
 ) -> SemanticIR:
-    source = source.resolve()
-    if not source.is_file() or source.is_symlink() or source.stat().st_size > 2_000_000:
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    source = raw_source.resolve()
+    if not source.is_file() or source.stat().st_size > 2_000_000:
         raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
     if emitted_target and language not in ROUTED_LANGUAGES and language not in NATIVE_RELIFTABLE_LANGUAGES:
         raise RouteError(f"EMITTED_TARGET_REANALYSIS_UNSUPPORTED:{language}")
@@ -4429,45 +6131,22 @@ def analyze(
             ],
             cwd=package,
             timeout=900,
+            isolated_cargo=True,
         )
-    elif emitted_target:
-        helper = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-        typescript_module = (
-            REPOSITORY_ROOT
-            / "engines"
-            / "frontend-client-engine"
-            / "node_modules"
-            / "typescript"
-            / "lib"
-            / "typescript.js"
+    elif language == "javascript":
+        value = _run_trusted_javascript_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=emitted_target,
         )
-        value = _run(
-            [
-                toolchain.executable,
-                str(helper),
-                str(typescript_module),
-                str(source),
-                function_name,
-                "--emitted-target",
-            ],
-            cwd=ENGINE_ROOT,
+    elif language == "typescript":
+        value = _run_trusted_typescript_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=emitted_target,
         )
     else:
-        frontend = REPOSITORY_ROOT / "engines" / "frontend-client-engine"
-        cli = frontend / "dist" / "src" / "polyglot-cli.js"
-        if not cli.is_file():
-            pnpm = shutil.which("pnpm")
-            if pnpm is None:
-                raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:pnpm")
-            completed = subprocess.run(
-                [pnpm, "run", "build"],
-                cwd=frontend,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
-            if completed.returncode != 0:
-                raise RouteError("TYPESCRIPT_ANALYZER_BUILD_FAILED:" + completed.stderr[-2_000:])
-        value = _run([toolchain.executable, str(cli), str(source), function_name], cwd=frontend)
+        raise RouteError(f"NATIVE_ANALYZER_UNSUPPORTED:{language}")
     return SemanticIR.from_mapping(value)

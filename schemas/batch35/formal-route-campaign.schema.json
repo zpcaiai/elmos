@@ -58,6 +58,10 @@
     "input_domain": {
       "const": "canonical-finite-no-error-input-domain"
     },
+    "packed_replay_runtime_evidence_id": {
+      "type": "string",
+      "const": "packed-replay-runtime"
+    },
     "required_route_keys": {
       "type": "array",
       "uniqueItems": true,
@@ -187,12 +191,9 @@
                 },
                 {
                   "const": [
-                    "uv",
-                    "--project",
-                    "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine",
-                    "run",
-                    "--locked",
                     "python",
+                    "-I",
+                    "-B",
                     "certification/replay/validate_packed_route.py",
                     "--route",
                     "."
@@ -293,6 +294,9 @@
         "required": ["schema_version"]
       },
       "then": {
+        "not": {
+          "required": ["packed_replay_runtime_evidence_id"]
+        },
         "properties": {
           "required_languages": {
             "minItems": 6,
@@ -318,7 +322,20 @@
             }
           },
           "route_set": {
-            "properties": {"routes": {"minItems": 30, "maxItems": 30}}
+            "properties": {
+              "routes": {
+                "minItems": 30,
+                "maxItems": 30,
+                "items": {
+                  "properties": {
+                    "packed_replay_evidence_ids": {
+                      "minItems": 3,
+                      "maxItems": 3
+                    }
+                  }
+                }
+              }
+            }
           },
           "compositions": {"minItems": 30, "maxItems": 30}
         }
@@ -330,10 +347,18 @@
         "required": ["schema_version"]
       },
       "then": {
-        "required": ["route_policy", "required_route_keys", "input_domain"],
+        "required": [
+          "route_policy",
+          "required_route_keys",
+          "input_domain",
+          "packed_replay_runtime_evidence_id"
+        ],
         "properties": {
           "route_policy": {"const": "exact-explicit-set"},
           "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+          "packed_replay_runtime_evidence_id": {
+            "const": "packed-replay-runtime"
+          },
           "required_route_keys": {
             "minItems": 8,
             "maxItems": 8,
@@ -361,12 +386,9 @@
                 "properties": {
                   "command": {
                     "const": [
-                      "uv",
-                      "--project",
-                      "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine",
-                      "run",
-                      "--locked",
                       "python",
+                      "-I",
+                      "-B",
                       "certification/replay/validate_packed_route.py",
                       "--route",
                       "."
@@ -385,8 +407,8 @@
                   "required": ["module_evidence_id"],
                   "properties": {
                     "packed_replay_evidence_ids": {
-                      "minItems": 5,
-                      "maxItems": 5
+                      "minItems": 8,
+                      "maxItems": 8
                     }
                   },
                   "oneOf": [
@@ -454,7 +476,7 @@
         "packed_replay_evidence_ids": {
           "type": "array",
           "minItems": 3,
-          "maxItems": 5,
+          "maxItems": 8,
           "uniqueItems": true,
           "items": {
             "type": "string"
@@ -863,6 +885,7 @@
             "route-set",
             "route-formal-evidence",
             "route-module-evidence",
+            "packed-replay-runtime",
             "replay-tool",
             "replay-schema",
             "artifact",

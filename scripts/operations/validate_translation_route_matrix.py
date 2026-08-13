@@ -36,8 +36,12 @@ from route_sets import (  # noqa: E402
     CORE_LANGUAGES,
     CORE_ROUTE_KEYS,
     EVIDENCED_ROUTE_KEYS,
-    SPECIALIZED_LANGUAGES,
+    MODULE_EQUIVALENCE_ROUTE_KEYS,
+    NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    NINE_LANGUAGE_MATRIX_LANGUAGES,
+    NODEJS_EXACT_ROUTE_KEYS,
     SPECIALIZED_ROUTE_KEYS,
+    SUPPORTED_ROUTE_LANGUAGES,
     provenance_route_set,
 )
 
@@ -148,11 +152,13 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         policy
         == {
             "mode": "complete-directed-matrix",
-            "cartesian_expansion": "EXPLICIT_NINE_LANGUAGE_MATRIX",
-            "complete_route_set": "nine-language-complete-72",
+            "cartesian_expansion": "EXPLICIT_TEN_LANGUAGE_MATRIX",
+            "complete_route_set": "ten-language-complete-90",
             "legacy_route_set": "legacy-complete-30",
             "specialized_route_set": "cpp-objc-swift-java-exact-8",
             "completion_route_set": "nine-language-completion-34",
+            "nodejs_route_set": "javascript-node26-completion-18",
+            "preserved_nine_language_route_set": "nine-language-complete-72",
         },
         "ROUTE_POLICY_DRIFT",
     )
@@ -166,21 +172,29 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
             "cpp-objc-swift-java-exact-8",
             "nine-language-completion-34",
             "nine-language-complete-72",
+            "javascript-node26-completion-18",
+            "ten-language-complete-90",
         },
         "ROUTE_SET_KEYS_DRIFT",
     )
     core_set = route_sets.get("legacy-complete-30")
     specialized_set = route_sets.get("cpp-objc-swift-java-exact-8")
     completion_set = route_sets.get("nine-language-completion-34")
-    complete_set = route_sets.get("nine-language-complete-72")
+    nine_complete_set = route_sets.get("nine-language-complete-72")
+    nodejs_set = route_sets.get("javascript-node26-completion-18")
+    complete_set = route_sets.get("ten-language-complete-90")
     require(isinstance(core_set, dict), "CORE_ROUTE_SET_INVALID")
     require(isinstance(specialized_set, dict), "SPECIALIZED_ROUTE_SET_INVALID")
     require(isinstance(completion_set, dict), "COMPLETION_ROUTE_SET_INVALID")
+    require(isinstance(nine_complete_set, dict), "NINE_COMPLETE_ROUTE_SET_INVALID")
+    require(isinstance(nodejs_set, dict), "NODEJS_ROUTE_SET_INVALID")
     require(isinstance(complete_set, dict), "COMPLETE_ROUTE_SET_INVALID")
     assert (
         isinstance(core_set, dict)
         and isinstance(specialized_set, dict)
         and isinstance(completion_set, dict)
+        and isinstance(nine_complete_set, dict)
+        and isinstance(nodejs_set, dict)
         and isinstance(complete_set, dict)
     )
     require(core_set.get("policy") == "complete-directed-permutation", "CORE_ROUTE_POLICY_DRIFT")
@@ -194,19 +208,46 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
     require(specialized_set.get("route_count") == 8, "SPECIALIZED_ROUTE_COUNT_DRIFT")
     require(specialized_set.get("route_keys") == list(SPECIALIZED_ROUTE_KEYS), "SPECIALIZED_ROUTE_KEYS_DRIFT")
     require(specialized_set.get("module_profile") == "typed-pure-module-v1", "SPECIALIZED_MODULE_PROFILE_DRIFT")
-    all_languages = [*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES]
+    nine_languages = list(NINE_LANGUAGE_MATRIX_LANGUAGES)
+    all_languages = list(SUPPORTED_ROUTE_LANGUAGES)
     require(
         completion_set.get("policy") == "exact-matrix-completion-set",
         "COMPLETION_ROUTE_POLICY_DRIFT",
     )
     require(
-        completion_set.get("languages") == all_languages,
+        completion_set.get("languages") == nine_languages,
         "COMPLETION_ROUTE_LANGUAGE_ORDER_DRIFT",
     )
     require(completion_set.get("route_count") == 34, "COMPLETION_ROUTE_COUNT_DRIFT")
     require(
         completion_set.get("route_keys") == list(COMPLETION_ROUTE_KEYS),
         "COMPLETION_ROUTE_KEYS_DRIFT",
+    )
+    require(
+        nine_complete_set.get("policy") == "complete-directed-permutation",
+        "NINE_COMPLETE_ROUTE_POLICY_DRIFT",
+    )
+    require(
+        nine_complete_set.get("languages") == nine_languages,
+        "NINE_COMPLETE_ROUTE_LANGUAGE_ORDER_DRIFT",
+    )
+    require(nine_complete_set.get("route_count") == 72, "NINE_COMPLETE_ROUTE_COUNT_DRIFT")
+    require(
+        nine_complete_set.get("route_keys") == list(NINE_LANGUAGE_COMPLETE_ROUTE_KEYS),
+        "NINE_COMPLETE_ROUTE_KEYS_DRIFT",
+    )
+    require(
+        nodejs_set.get("policy") == "exact-nodejs-matrix-completion-set",
+        "NODEJS_ROUTE_POLICY_DRIFT",
+    )
+    require(nodejs_set.get("languages") == all_languages, "NODEJS_ROUTE_LANGUAGE_ORDER_DRIFT")
+    require(nodejs_set.get("route_count") == 18, "NODEJS_ROUTE_COUNT_DRIFT")
+    require(nodejs_set.get("route_keys") == list(NODEJS_EXACT_ROUTE_KEYS), "NODEJS_ROUTE_KEYS_DRIFT")
+    require(nodejs_set.get("runtime_profile") == "Node.js 26.0.0 / ES2022 / ESM", "NODEJS_RUNTIME_DRIFT")
+    require(nodejs_set.get("module_profile") == "typed-pure-module-v1", "NODEJS_MODULE_PROFILE_DRIFT")
+    require(
+        nodejs_set.get("input_domain") == "nodejs-es2022-esm-safe-integer-finite-v1",
+        "NODEJS_INPUT_DOMAIN_DRIFT",
     )
     require(
         complete_set.get("policy") == "complete-directed-permutation",
@@ -216,14 +257,14 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         complete_set.get("languages") == all_languages,
         "COMPLETE_ROUTE_LANGUAGE_ORDER_DRIFT",
     )
-    require(complete_set.get("route_count") == 72, "COMPLETE_ROUTE_COUNT_DRIFT")
+    require(complete_set.get("route_count") == 90, "COMPLETE_ROUTE_COUNT_DRIFT")
     require(
         complete_set.get("route_keys") == list(COMPLETE_ROUTE_KEYS),
         "COMPLETE_ROUTE_KEYS_DRIFT",
     )
 
     require(inventory.get("route_count") == len(routes), "ROUTE_COUNT_DRIFT")
-    require(inventory.get("route_count") == 72, "ROUTE_EXPLICIT_COUNT_DRIFT")
+    require(inventory.get("route_count") == 90, "ROUTE_EXPLICIT_COUNT_DRIFT")
     require(isinstance(inventory.get("semantic_profile"), str), "SEMANTIC_PROFILE_MISSING")
     for field, allowed in (
         ("local_execution_evidence", LOCAL_STATUSES),
@@ -255,12 +296,12 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         expected_route_set = provenance_route_set(key)
         require(entry.get("route_set") == expected_route_set, f"ROUTE_SET_BINDING_DRIFT:{key}")
         module_status = entry.get("module_execution_status")
-        if key in SPECIALIZED_ROUTE_KEYS:
+        if key in MODULE_EQUIVALENCE_ROUTE_KEYS:
             require(module_status in LOCAL_STATUSES, f"ROUTE_MODULE_STATUS_INVALID:{key}")
             if entry.get("local_execution_status") == "PASSED_LOCAL":
                 require(module_status == "PASSED_LOCAL", f"ROUTE_MODULE_EVIDENCE_INVERTED:{key}")
         else:
-            require(module_status == "NOT_APPLICABLE", f"CORE_ROUTE_MODULE_STATUS_DRIFT:{key}")
+            require(module_status == "NOT_APPLICABLE", f"ROUTE_MODULE_STATUS_DRIFT:{key}")
         require(
             languages[source]["version"] == entry.get("source_version")
             and languages[target]["version"] == entry.get("target_version"),
@@ -342,7 +383,7 @@ def check_route_packs(routes: list[dict[str, str]], semantic_profile: str) -> No
         assert profile_entry is not None
         expected_capability_status = (
             "conditional"
-            if key in SPECIALIZED_ROUTE_KEYS
+            if key in MODULE_EQUIVALENCE_ROUTE_KEYS
             else {
                 "research": "detected-only",
                 "experimental": "experimental",
@@ -373,6 +414,77 @@ def check_route_packs(routes: list[dict[str, str]], semantic_profile: str) -> No
                 types.get("types") == ["integer", "number", "boolean"],
                 f"SPECIALIZED_TYPE_SET_DRIFT:{key}",
             )
+        if key in NODEJS_EXACT_ROUTE_KEYS:
+            gates = pack.get("gates", {})
+            profiles = pack.get("profiles", {})
+            nodejs_typescript = {entry.get("source"), entry.get("target")} == {
+                "javascript",
+                "typescript",
+            }
+            require(pack.get("status") == "limited", f"NODEJS_ROUTE_STATUS_DRIFT:{key}")
+            require(
+                profiles.get("input_domain") == "nodejs-es2022-esm-safe-integer-finite-v1",
+                f"NODEJS_INPUT_DOMAIN_DRIFT:{key}",
+            )
+            require(
+                profiles.get("module_profile") == "typed-pure-module-v1",
+                f"NODEJS_MODULE_PROFILE_DRIFT:{key}",
+            )
+            for field in ("module_equivalence_required", "concrete_spans_required"):
+                require(gates.get(field) is True, f"NODEJS_GATE_DRIFT:{key}:{field}")
+            require(
+                gates.get("nodejs_safe_integer_finite_domain_required") is True,
+                f"NODEJS_SAFE_DOMAIN_GATE_DRIFT:{key}",
+            )
+            require(
+                gates.get("nodejs_effects_async_io_allowed") is False,
+                f"NODEJS_EFFECT_GATE_DRIFT:{key}",
+            )
+            require(
+                gates.get("nodejs_typescript_integer_semantics_allowed")
+                is (not nodejs_typescript),
+                f"NODEJS_TYPESCRIPT_INTEGER_GATE_DRIFT:{key}",
+            )
+            types = json.loads((pack_dir / "mappings" / "types.json").read_text(encoding="utf-8"))
+            expected_types = (
+                ["number", "boolean", "string"]
+                if nodejs_typescript
+                else ["integer", "number", "boolean"]
+            )
+            capability_by_id = {
+                item.get("id"): item
+                for item in capabilities
+                if isinstance(item, dict)
+            }
+            expected_capability_statuses = {
+                "typed-pure-function-v1": "conditional",
+                "primitive-types": "conditional",
+                "nodejs-es2022-esm-safe-integer-finite-v1": "conditional",
+                "string-semantics": "conditional" if nodejs_typescript else "blocked",
+                "number-arithmetic": "blocked",
+                "if-return-control-flow": "conditional",
+                "framework-database-async-concurrency": "blocked",
+                "typed-pure-module-v1": "conditional",
+            }
+            for capability_id, expected_status in expected_capability_statuses.items():
+                require(
+                    capability_by_id.get(capability_id, {}).get("status")
+                    == expected_status,
+                    f"NODEJS_CAPABILITY_STATUS_DRIFT:{key}:{capability_id}",
+                )
+            require(
+                types.get("types") == expected_types,
+                f"NODEJS_TYPE_SET_DRIFT:{key}",
+            )
+            require(
+                types.get("integer_semantics")
+                == (
+                    "BLOCK_NO_EXPLICIT_INTEGER_TYPE"
+                    if nodejs_typescript
+                    else "SAFE_INTEGER_CONDITIONAL"
+                ),
+                f"NODEJS_INTEGER_DOMAIN_DRIFT:{key}",
+            )
 
 
 def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) -> None:
@@ -380,7 +492,7 @@ def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) ->
     assert isinstance(languages, dict)
     console = console_languages()
     exposed = inventory.get("console_exposed_languages")
-    expected_console_languages = (*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES)
+    expected_console_languages = SUPPORTED_ROUTE_LANGUAGES
     require(
         exposed == list(expected_console_languages),
         "CONSOLE_EXPOSED_LANGUAGE_POLICY_DRIFT",
@@ -389,8 +501,8 @@ def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) ->
         console_exposed_languages() == expected_console_languages,
         "CONSOLE_EXPOSED_LANGUAGE_SET_DRIFT",
     )
-    require(set(console) == set(engine_languages()), "CONSOLE_LANGUAGE_SET_DRIFT")
-    for language in engine_languages():
+    require(set(console) == set(expected_console_languages), "CONSOLE_LANGUAGE_SET_DRIFT")
+    for language in expected_console_languages:
         declared = languages[language]
         entry = console[language]
         require(

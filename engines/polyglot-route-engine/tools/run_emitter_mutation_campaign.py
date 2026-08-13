@@ -182,7 +182,9 @@ MUTANTS: tuple[Mutant, ...] = (
         "typescript-parameter-guard",
         "TypeScript stops checking that incoming integers are representable",
         '                _require_helper(context, "safe_integer")\n'
-        '                lines.append(f"    _elmosRequireSafeInteger({parameter.name});")',
+        '                context.normalization_rules.add("typescript.parameter.integer.safe-integer")\n'
+        '                context.normalization_rules.add("typescript.parameter.integer.negative-zero-normalized")\n'
+        '                lines.append(f"    {parameter.name} = _elmosRequireSafeInteger({parameter.name});")',
         '                pass',
     ),
     Mutant(

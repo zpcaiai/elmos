@@ -1,0 +1,56 @@
+{
+  "artifact_refs": [],
+  "certification_status": "NOT_CERTIFIED",
+  "composition": {
+    "analyzer_and_emitter_soundness": "NOT_RUN",
+    "function_count": 0,
+    "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+    "original_source_bytes_theorem": false,
+    "out_of_domain_arithmetic_behavior": "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1",
+    "passed_function_count": 0,
+    "proof_strength": "NONE",
+    "rule": "per-function-denotation-plus-module-composition",
+    "source_compiler_runtime_soundness": "NOT_RUN",
+    "source_user_call_graph": "NOT_RUN",
+    "status": "NOT_RUN",
+    "target_call_graph": "NOT_RUN",
+    "target_compiler_runtime_soundness": "NOT_RUN",
+    "target_profile_to_emitted_call_graph_scope": "NOT_RUN",
+    "target_profile_to_emitted_call_graph_status": "NOT_RUN"
+  },
+  "external_verification_status": "NOT_RUN",
+  "functions": [],
+  "kind": "typed-pure-module-equivalence",
+  "limitations": [
+    "Native three-function module verification has not run."
+  ],
+  "local_verification_status": "NOT_RUN",
+  "module_contract": {
+    "exact_generated_helper_symbol_set": false,
+    "exact_profile_signature_set": false,
+    "exact_profile_symbol_set": false,
+    "independence": {
+      "status": "NOT_RUN"
+    },
+    "manifest_symbols": [],
+    "source_profile_symbols": [],
+    "target_helper_symbols": [],
+    "target_profile_symbols": [],
+    "verified_language_prelude": {
+      "status": "NOT_RUN"
+    },
+    "verified_language_wrapper": {
+      "status": "NOT_RUN"
+    },
+    "whole_file_closure_sha256": null
+  },
+  "module_input_sha256": null,
+  "profile": "typed-pure-module-v1",
+  "route": {
+    "route_key": "javascript-to-objc",
+    "source_language": "javascript",
+    "target_language": "objc"
+  },
+  "schema_version": "1.0.0",
+  "status": "NOT_RUN"
+}

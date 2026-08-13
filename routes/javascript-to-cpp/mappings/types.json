@@ -1,0 +1,21 @@
+{
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "integer_semantics": "SAFE_INTEGER_CONDITIONAL",
+  "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
+  "out_of_domain_arithmetic_behavior": "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1",
+  "schema_version": 1,
+  "source": "javascript",
+  "string_semantics": "BLOCK",
+  "target": "cpp",
+  "type_evidence_corpora": {
+    "boolean": "corpus/module",
+    "integer": "corpus/development+corpus/module",
+    "number": "corpus/module"
+  },
+  "types": [
+    "integer",
+    "number",
+    "boolean"
+  ],
+  "unknown_type_policy": "BLOCK"
+}

@@ -10,13 +10,21 @@ to certification.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import posixpath
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
+import time
+import tomllib
+import urllib.parse
+import urllib.request
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 
 import generate_polyglot_formal_verification_pack as base
@@ -93,19 +101,47 @@ BLOCKS = (
     "out-of-domain-arithmetic-errors",
 )
 LOCALLY_EXERCISED_BLOCKS = frozenset(BLOCKS[:9])
+ARITHMETIC_EVIDENCE_ID = "arithmetic-campaign"
+ARITHMETIC_EVIDENCE_BLOCKS = frozenset(
+    {
+        "integer-arithmetic-safe-domain",
+        "out-of-domain-arithmetic-errors",
+    }
+)
 PACKED_REPLAY_COMMAND = [
-    "uv",
-    "--project",
-    "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine",
-    "run",
-    "--locked",
     "python",
+    "-I",
+    "-B",
     "certification/replay/validate_packed_route.py",
     "--route",
     ".",
 ]
 PACKED_REPLAY_FILES = {
-    **base.PACKED_REPLAY_FILES,
+    "certification/replay/validate_packed_route.py": (
+        "scripts/batch35/validate_packed_route.py",
+        "replay-tool",
+        "launcher",
+    ),
+    "certification/replay/scripts/batch29/validate_route.py": (
+        "scripts/batch29/validate_route.py",
+        "replay-tool",
+        "validator",
+    ),
+    "certification/replay/schemas/batch29/formal-equivalence-evidence.schema.json": (
+        "schemas/batch29/formal-equivalence-evidence.schema.json",
+        "replay-schema",
+        "schema",
+    ),
+    "certification/replay/schemas/batch29/formal-input.schema.json": (
+        "schemas/batch29/formal-input.schema.json",
+        "replay-schema",
+        "formal_input_schema",
+    ),
+    "certification/replay/schemas/batch29/identifier-plan.schema.json": (
+        "schemas/batch29/identifier-plan.schema.json",
+        "replay-schema",
+        "identifier_plan_schema",
+    ),
     "certification/replay/schemas/batch29/module-equivalence-evidence.schema.json": (
         "schemas/batch29/module-equivalence-evidence.schema.json",
         "replay-schema",
@@ -116,7 +152,419 @@ PACKED_REPLAY_FILES = {
         "replay-schema",
         "module_case_schema",
     ),
+    "certification/replay/schemas/batch29/formal-input-module-function.schema.json": (
+        "schemas/batch29/formal-input-module-function.schema.json",
+        "replay-schema",
+        "module_formal_input_schema",
+    ),
 }
+
+PACKED_RUNTIME_EVIDENCE_ID = "packed-replay-runtime"
+PACKED_RUNTIME_MANIFEST = "runtime/packed-replay-runtime.json"
+PACKED_RUNTIME_LOCK = "runtime/uv.lock"
+PRODUCTION_LOCK_SHA256 = (
+    "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+)
+PRODUCTION_LOCK_BYTES = 26_669
+PYTHON_ARCHIVE_NAME = (
+    "cpython-3.12.12+20260211-aarch64-apple-darwin-install_only_stripped.tar.gz"
+)
+PYTHON_ARCHIVE_PATH = f"runtime/{PYTHON_ARCHIVE_NAME}"
+PYTHON_ARCHIVE_URL = (
+    "https://releases.astral.sh/github/python-build-standalone/releases/download/"
+    "20260211/cpython-3.12.12%2B20260211-aarch64-apple-darwin-"
+    "install_only_stripped.tar.gz"
+)
+PYTHON_ARCHIVE_SHA256 = (
+    "sha256:22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84"
+)
+PYTHON_ARCHIVE_BYTES = 17_667_661
+PYTHON_TREE_SHA256 = (
+    "sha256:1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154"
+)
+PYTHON_TREE_FILE_COUNT = 1_890
+PYTHON_TREE_SYMLINKS = {
+    "bin/2to3": "2to3-3.12",
+    "bin/idle3": "idle3.12",
+    "bin/pydoc3": "pydoc3.12",
+    "bin/python": "python3.12",
+    "bin/python3": "python3.12",
+    "bin/python3-config": "python3.12-config",
+    "lib/pkgconfig/python3-embed.pc": "python-3.12-embed.pc",
+    "lib/pkgconfig/python3.pc": "python-3.12.pc",
+    "share/man/man1/python3.1": "python3.12.1",
+}
+PYTHON_TREE_BYTES = 47_880_708
+PRODUCTION_PACKAGE_NAMES = frozenset(
+    {
+        "attrs",
+        "jsonschema",
+        "jsonschema-specifications",
+        "referencing",
+        "rpds-py",
+        "typing-extensions",
+        "z3-solver",
+    }
+)
+PRODUCTION_WHEEL_FILENAMES = {
+    "attrs": "attrs-26.1.0-py3-none-any.whl",
+    "jsonschema": "jsonschema-4.25.1-py3-none-any.whl",
+    "jsonschema-specifications": (
+        "jsonschema_specifications-2025.9.1-py3-none-any.whl"
+    ),
+    "referencing": "referencing-0.37.0-py3-none-any.whl",
+    "rpds-py": "rpds_py-2026.6.3-cp312-cp312-macosx_11_0_arm64.whl",
+    "typing-extensions": "typing_extensions-4.16.0-py3-none-any.whl",
+    "z3-solver": "z3_solver-4.16.0.0-py3-none-macosx_15_0_arm64.whl",
+}
+
+
+def _canonical_digest(value: object) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def _safe_archive_member(name: str) -> str:
+    if not name or "\\" in name or name.startswith("/"):
+        raise RuntimeError("PACKED_RUNTIME_PYTHON_ARCHIVE_PATH_INVALID")
+    normalized = name.rstrip("/")
+    parts = PurePosixPath(normalized).parts
+    if any(part in {"", ".", ".."} for part in parts):
+        raise RuntimeError("PACKED_RUNTIME_PYTHON_ARCHIVE_PATH_INVALID")
+    if len(parts) < 2 or parts[0] != "python":
+        raise RuntimeError("PACKED_RUNTIME_PYTHON_ARCHIVE_ROOT_INVALID")
+    return PurePosixPath(*parts[1:]).as_posix()
+
+
+def python_archive_inventory(archive: Path) -> dict[str, Any]:
+    """Derive the exact stripped CPython tree without trusting extracted paths."""
+
+    records: list[dict[str, Any]] = []
+    names: set[str] = set()
+    with tarfile.open(archive, mode="r:gz") as bundle:
+        for member in bundle.getmembers():
+            relative = _safe_archive_member(member.name)
+            if relative in names:
+                raise RuntimeError("PACKED_RUNTIME_PYTHON_ARCHIVE_DUPLICATE")
+            names.add(relative)
+            if member.isfile():
+                stream = bundle.extractfile(member)
+                if stream is None:
+                    raise RuntimeError("PACKED_RUNTIME_PYTHON_ARCHIVE_FILE_INVALID")
+                content = stream.read()
+                records.append(
+                    {
+                        "bytes": len(content),
+                        "kind": "file",
+                        "mode": f"{member.mode:04o}",
+                        "path": relative,
+                        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+                    }
+                )
+            elif member.issym():
+                target = member.linkname
+                if not target or "\\" in target or target.startswith("/"):
+                    raise RuntimeError("PACKED_RUNTIME_PYTHON_SYMLINK_INVALID")
+                resolved_target = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(relative), target)
+                )
+                if resolved_target == ".." or resolved_target.startswith("../"):
+                    raise RuntimeError("PACKED_RUNTIME_PYTHON_SYMLINK_ESCAPE")
+                records.append(
+                    {
+                        "kind": "symlink",
+                        "mode": f"{member.mode:04o}",
+                        "path": relative,
+                        "target": target,
+                    }
+                )
+            elif member.isdir():
+                records.append(
+                    {
+                        "kind": "directory",
+                        "mode": f"{member.mode:04o}",
+                        "path": relative,
+                    }
+                )
+            else:
+                raise RuntimeError("PACKED_RUNTIME_PYTHON_ARCHIVE_SPECIAL_FILE")
+    records.sort(key=lambda item: item["path"])
+    return {
+        "inventory_sha256": _canonical_digest(records),
+        "record_count": len(records),
+        "regular_file_count": sum(item["kind"] == "file" for item in records),
+        "regular_file_bytes": sum(
+            int(item.get("bytes", 0)) for item in records if item["kind"] == "file"
+        ),
+        "symlinks": {
+            item["path"]: item["target"]
+            for item in records
+            if item["kind"] == "symlink"
+        },
+    }
+
+
+def _normalized_package_name(value: str) -> str:
+    return value.lower().replace("_", "-")
+
+
+def production_wheels_from_lock(lock_path: Path) -> list[dict[str, Any]]:
+    """Independently close production dependencies and select exact arm64 wheels."""
+
+    lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
+    packages = lock.get("package")
+    if not isinstance(packages, list):
+        raise RuntimeError("PACKED_RUNTIME_LOCK_PACKAGES_INVALID")
+    by_name: dict[str, dict[str, Any]] = {}
+    project: dict[str, Any] | None = None
+    for item in packages:
+        if not isinstance(item, dict) or not isinstance(item.get("name"), str):
+            raise RuntimeError("PACKED_RUNTIME_LOCK_PACKAGE_INVALID")
+        name = _normalized_package_name(item["name"])
+        if name in by_name:
+            raise RuntimeError("PACKED_RUNTIME_LOCK_PACKAGE_DUPLICATE")
+        by_name[name] = item
+        source = item.get("source")
+        if isinstance(source, dict) and source.get("editable") == ".":
+            if project is not None:
+                raise RuntimeError("PACKED_RUNTIME_LOCK_PROJECT_DUPLICATE")
+            project = item
+    if project is None:
+        raise RuntimeError("PACKED_RUNTIME_LOCK_PROJECT_MISSING")
+    pending = [
+        _normalized_package_name(item["name"])
+        for item in project.get("dependencies", [])
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    ]
+    closure: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if name in closure:
+            continue
+        package = by_name.get(name)
+        if package is None:
+            raise RuntimeError("PACKED_RUNTIME_LOCK_DEPENDENCY_MISSING")
+        closure.add(name)
+        pending.extend(
+            _normalized_package_name(item["name"])
+            for item in package.get("dependencies", [])
+            if isinstance(item, dict) and isinstance(item.get("name"), str)
+        )
+    if closure != PRODUCTION_PACKAGE_NAMES:
+        raise RuntimeError("PACKED_RUNTIME_LOCK_PRODUCTION_CLOSURE_INVALID")
+
+    selected: list[dict[str, Any]] = []
+    for name in sorted(closure):
+        package = by_name[name]
+        expected_filename = PRODUCTION_WHEEL_FILENAMES[name]
+        candidates = []
+        for wheel in package.get("wheels", []):
+            if not isinstance(wheel, dict) or not isinstance(wheel.get("url"), str):
+                continue
+            filename = urllib.parse.unquote(
+                PurePosixPath(urllib.parse.urlparse(wheel["url"]).path).name
+            )
+            if filename == expected_filename:
+                candidates.append(wheel)
+        if len(candidates) != 1:
+            raise RuntimeError("PACKED_RUNTIME_LOCK_WHEEL_SELECTION_INVALID")
+        wheel = candidates[0]
+        digest = wheel.get("hash")
+        size = wheel.get("size")
+        version = package.get("version")
+        if (
+            not isinstance(digest, str)
+            or not digest.startswith("sha256:")
+            or not isinstance(size, int)
+            or size <= 0
+            or not isinstance(version, str)
+        ):
+            raise RuntimeError("PACKED_RUNTIME_LOCK_WHEEL_METADATA_INVALID")
+        selected.append(
+            {
+                "name": name,
+                "version": version,
+                "dependencies": sorted(
+                    _normalized_package_name(item["name"])
+                    for item in package.get("dependencies", [])
+                    if isinstance(item, dict) and isinstance(item.get("name"), str)
+                ),
+                "filename": expected_filename,
+                "path": f"runtime/wheelhouse/{expected_filename}",
+                "url": wheel["url"],
+                "sha256": digest,
+                "bytes": size,
+            }
+        )
+    return selected
+
+
+def _copy_or_fetch_runtime_file(
+    *,
+    source: Path | None,
+    url: str,
+    target: Path,
+    expected_sha256: str,
+    expected_bytes: int,
+) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if source is not None:
+        base.copy_file(source, target)
+    else:
+        last_error: Exception | None = None
+        for attempt in range(3):
+            temporary = target.with_name(f".{target.name}.download-{attempt}")
+            try:
+                request = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "ELMOS-packed-runtime/1"},
+                )
+                with urllib.request.urlopen(request, timeout=60) as response:
+                    with temporary.open("wb") as output:
+                        shutil.copyfileobj(response, output, length=1024 * 1024)
+                os.replace(temporary, target)
+                last_error = None
+                break
+            except Exception as exc:
+                last_error = exc
+                temporary.unlink(missing_ok=True)
+                if attempt < 2:
+                    time.sleep(2**attempt)
+        if last_error is not None:
+            raise RuntimeError("PACKED_RUNTIME_DOWNLOAD_FAILED") from last_error
+    if (
+        base.digest_file(target) != expected_sha256
+        or target.stat().st_size != expected_bytes
+    ):
+        raise RuntimeError("PACKED_RUNTIME_DOWNLOAD_IDENTITY_MISMATCH")
+
+
+def prepare_packed_runtime(
+    pack: Path,
+    repo_root: Path,
+    runtime_cache: Path | None,
+) -> Path:
+    """Create one pack-level offline runtime closure before route validation."""
+
+    lock_source = repo_root / "engines" / "polyglot-route-engine" / "uv.lock"
+    lock_target = pack / PACKED_RUNTIME_LOCK
+    base.copy_file(lock_source, lock_target)
+    if (
+        base.digest_file(lock_target) != PRODUCTION_LOCK_SHA256
+        or lock_target.stat().st_size != PRODUCTION_LOCK_BYTES
+    ):
+        raise RuntimeError("PACKED_RUNTIME_LOCK_IDENTITY_MISMATCH")
+    wheels = production_wheels_from_lock(lock_target)
+    cache_root = runtime_cache.resolve(strict=True) if runtime_cache else None
+    archive_source = cache_root / PYTHON_ARCHIVE_NAME if cache_root else None
+    if archive_source is not None and not archive_source.is_file():
+        raise RuntimeError("PACKED_RUNTIME_CACHE_ARCHIVE_MISSING")
+    archive_target = pack / PYTHON_ARCHIVE_PATH
+    _copy_or_fetch_runtime_file(
+        source=archive_source,
+        url=PYTHON_ARCHIVE_URL,
+        target=archive_target,
+        expected_sha256=PYTHON_ARCHIVE_SHA256,
+        expected_bytes=PYTHON_ARCHIVE_BYTES,
+    )
+    inventory = python_archive_inventory(archive_target)
+    if inventory != {
+        "inventory_sha256": PYTHON_TREE_SHA256,
+        "record_count": PYTHON_TREE_FILE_COUNT + len(PYTHON_TREE_SYMLINKS),
+        "regular_file_count": PYTHON_TREE_FILE_COUNT,
+        "regular_file_bytes": PYTHON_TREE_BYTES,
+        "symlinks": PYTHON_TREE_SYMLINKS,
+    }:
+        raise RuntimeError("PACKED_RUNTIME_PYTHON_TREE_IDENTITY_MISMATCH")
+
+    for wheel in wheels:
+        cached_wheel = None
+        if cache_root is not None:
+            candidates = (
+                cache_root / "wheelhouse" / wheel["filename"],
+                cache_root / wheel["filename"],
+            )
+            cached_wheel = next((item for item in candidates if item.is_file()), None)
+            if cached_wheel is None:
+                raise RuntimeError("PACKED_RUNTIME_CACHE_WHEEL_MISSING")
+        _copy_or_fetch_runtime_file(
+            source=cached_wheel,
+            url=wheel["url"],
+            target=pack / wheel["path"],
+            expected_sha256=wheel["sha256"],
+            expected_bytes=wheel["bytes"],
+        )
+
+    runtime = {
+        "schema_version": 1,
+        "runtime_key": "macos-aarch64-cpython-3.12.12-z3-4.16.0",
+        "scope": "offline-evidence-integrity-and-semantic-closure-only",
+        "replay_command": list(PACKED_REPLAY_COMMAND),
+        "python_archive": {
+            "path": PYTHON_ARCHIVE_PATH,
+            "url": PYTHON_ARCHIVE_URL,
+            "sha256": PYTHON_ARCHIVE_SHA256,
+            "bytes": PYTHON_ARCHIVE_BYTES,
+            "implementation": "cpython",
+            "version": "3.12.12",
+            "build": "20260211",
+            "platform": "macos-aarch64-none",
+            "tree": inventory,
+        },
+        "production_lock": {
+            "path": PACKED_RUNTIME_LOCK,
+            "sha256": PRODUCTION_LOCK_SHA256,
+            "bytes": PRODUCTION_LOCK_BYTES,
+            "resolution": "independent-transitive-production-closure",
+        },
+        "wheelhouse": {
+            "package_count": len(wheels),
+            "install_policy": {
+                "offline": True,
+                "no_index": True,
+                "require_hashes": True,
+                "no_dependencies": True,
+                "link_mode": "copy",
+            },
+            "packages": wheels,
+        },
+        "uv": {
+            "path": "/opt/homebrew/Cellar/uv/0.11.16/bin/uv",
+            "sha256": "sha256:d4182a7bba32f331b2c5a74568cf1c88aa50f31fe643a2c56118c6610db0aff0",
+            "bytes": 46_541_136,
+            "version": "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)",
+        },
+        "sandbox": {
+            "path": "/usr/bin/sandbox-exec",
+            "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f",
+            "bytes": 102_368,
+            "mode": "100755",
+            "uid": 0,
+            "gid": 0,
+            "profile": "(version 1)\n(allow default)\n(deny network*)\n",
+            "profile_sha256": "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+            "socket_denial_probe": "SOCKET_DENIED:1",
+        },
+        "environment": {
+            "policy": "explicit-private-allowlist",
+            "private_home": True,
+            "private_tmp": True,
+            "private_cache": True,
+            "proxy_variables": [],
+        },
+        "native_route_reexecution": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+        "external_certification": "NOT_CERTIFIED",
+    }
+    manifest = pack / PACKED_RUNTIME_MANIFEST
+    base.write_json(manifest, runtime)
+    return manifest
 
 
 def configure_base(repo_root: Path) -> None:
@@ -197,10 +645,9 @@ def copy_module_closure(
     module_path = base.route_relative_file(
         route, module_relative, label=f"{route.name}_MODULE_WRAPPER"
     )
-    if (
-        base.digest_file(module_path) != module_ref.get("sha256")
-        or module_path.stat().st_size != module_ref.get("bytes")
-    ):
+    if base.digest_file(module_path) != module_ref.get(
+        "sha256"
+    ) or module_path.stat().st_size != module_ref.get("bytes"):
         raise RuntimeError(f"MODULE_REFERENCE_TAMPERED:{route.name}")
     module = base.load_json(module_path)
     if (
@@ -228,8 +675,7 @@ def copy_module_closure(
         != whole_file_closure.get("verified_language_prelude")
         or contract.get("verified_language_wrapper")
         != whole_file_closure.get("verified_language_wrapper")
-        or independence.get("source_user_call_graph_closure")
-        != "EMPTY_AND_CLOSED"
+        or independence.get("source_user_call_graph_closure") != "EMPTY_AND_CLOSED"
         or independence.get("source_user_call_graph_edges") != []
         or independence.get("target_call_graph_policy")
         != "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"
@@ -283,10 +729,9 @@ def copy_module_closure(
             artifact_ref.get("path"),
             label=f"{route.name}_MODULE_ARTIFACT_{index}",
         )
-        if (
-            base.digest_file(source) != artifact_ref.get("sha256")
-            or source.stat().st_size != artifact_ref.get("bytes")
-        ):
+        if base.digest_file(source) != artifact_ref.get(
+            "sha256"
+        ) or source.stat().st_size != artifact_ref.get("bytes"):
             raise RuntimeError(
                 f"MODULE_ARTIFACT_REF_TAMPERED:{route.name}:{artifact_ref.get('path')}"
             )
@@ -307,9 +752,7 @@ def collect_route_evidence(
     for route_key, source, target in exact_routes():
         route = ROOT / "routes" / route_key
         manifest = base.load_json(route / "route.json")
-        certification = base.load_json(
-            route / "certification" / "certification.json"
-        )
+        certification = base.load_json(route / "certification" / "certification.json")
         if (
             manifest.get("route_key") != route_key
             or manifest.get("source", {}).get("language") != source
@@ -318,9 +761,12 @@ def collect_route_evidence(
             raise RuntimeError(f"ROUTE_IDENTITY_MISMATCH:{route_key}")
         if manifest.get("profiles", {}).get("semantic_profile") != SEMANTIC_PROFILE:
             raise RuntimeError(f"SEMANTIC_PROFILE_MISMATCH:{route_key}")
-        if manifest.get("gates", {}).get(
-            "canonical_finite_no_error_input_domain_required"
-        ) is not True:
+        if (
+            manifest.get("gates", {}).get(
+                "canonical_finite_no_error_input_domain_required"
+            )
+            is not True
+        ):
             raise RuntimeError(f"SPECIALIZED_DOMAIN_GATE_MISSING:{route_key}")
         if (
             certification.get("status") != "limited"
@@ -333,9 +779,7 @@ def collect_route_evidence(
         formal, formal_relative, replay_members = base.copy_route_formal_bundle(
             route, target_root, certification
         )
-        module, module_relative = copy_module_closure(
-            route, target_root, certification
-        )
+        module, module_relative = copy_module_closure(route, target_root, certification)
         formal_receipts = [
             item
             for item in formal.get("artifact_refs", [])
@@ -353,26 +797,19 @@ def collect_route_evidence(
                 raise RuntimeError(
                     f"SWIFT_ANALYZER_BUILD_RECEIPT_COUNT_INVALID:{route_key}"
                 )
-            if (
-                formal_receipts[0].get("path")
-                != "certification/formal-artifacts/swift-analyzer-build-receipt.json"
-                or {
-                    key: formal_receipts[0].get(key)
-                    for key in ("path", "sha256", "bytes")
-                }
-                != {
-                    key: module_receipts[0].get(key)
-                    for key in ("path", "sha256", "bytes")
-                }
-            ):
+            if formal_receipts[0].get(
+                "path"
+            ) != "certification/formal-artifacts/swift-analyzer-build-receipt.json" or {
+                key: formal_receipts[0].get(key) for key in ("path", "sha256", "bytes")
+            } != {
+                key: module_receipts[0].get(key) for key in ("path", "sha256", "bytes")
+            }:
                 raise RuntimeError(
                     f"SWIFT_ANALYZER_BUILD_RECEIPT_BINDING_INVALID:{route_key}"
                 )
             validate_portable_swift_receipt(route, formal_receipts[0])
         elif formal_receipts or module_receipts:
-            raise RuntimeError(
-                f"SWIFT_ANALYZER_BUILD_RECEIPT_UNEXPECTED:{route_key}"
-            )
+            raise RuntimeError(f"SWIFT_ANALYZER_BUILD_RECEIPT_UNEXPECTED:{route_key}")
         proof_status = formal.get("formal_proof", {}).get("status")
         if proof_status != "PROVED_UNDER_ASSUMPTIONS":
             raise RuntimeError(
@@ -383,17 +820,15 @@ def collect_route_evidence(
         copies.append(
             {
                 "evidence_id": evidence_id,
-                "relative": (
-                    target_root / formal_relative
-                ).relative_to(pack).as_posix(),
+                "relative": (target_root / formal_relative)
+                .relative_to(pack)
+                .as_posix(),
                 "module_evidence_id": module_evidence_id,
-                "module_relative": (
-                    target_root / module_relative
-                ).relative_to(pack).as_posix(),
+                "module_relative": (target_root / module_relative)
+                .relative_to(pack)
+                .as_posix(),
                 "source_ir_sha256": formal["semantic_ir"]["source_ir_sha256"],
-                "target_ir_sha256": formal["semantic_ir"][
-                    "target_relift_ir_sha256"
-                ],
+                "target_ir_sha256": formal["semantic_ir"]["target_relift_ir_sha256"],
                 "environment_sha256": formal["environment_sha256"],
                 "artifact_sha256": formal["artifact_sha256"],
                 "behavior_cases": formal["behavior_equivalence"]["total_cases"],
@@ -423,6 +858,65 @@ def collect_route_evidence(
     return routes, copies
 
 
+def _bind_specialized_arithmetic_evidence(campaign: dict[str, Any]) -> None:
+    """Bind residual int64 evidence to the exact specialized target obligations."""
+
+    evidence = campaign.get("evidence")
+    obligations = campaign.get("obligations")
+    if not isinstance(evidence, list) or not isinstance(obligations, list):
+        raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+    evidence_entries = [
+        item
+        for item in evidence
+        if isinstance(item, dict) and item.get("evidence_id") == ARITHMETIC_EVIDENCE_ID
+    ]
+    if len(evidence_entries) != 1:
+        raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+
+    expected_obligation_ids = {
+        f"lowering-{language}-{block}"
+        for language in LANGUAGES
+        for block in ARITHMETIC_EVIDENCE_BLOCKS
+    }
+    matching_obligations: dict[str, dict[str, Any]] = {}
+    for obligation in obligations:
+        if not isinstance(obligation, dict):
+            raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+        obligation_id = obligation.get("obligation_id")
+        evidence_ids = obligation.get("evidence_ids")
+        if not isinstance(obligation_id, str) or not isinstance(evidence_ids, list):
+            raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+        if any(not isinstance(item, str) for item in evidence_ids):
+            raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+        if (
+            obligation.get("kind") == "target-lowering"
+            and obligation.get("semantic_block") in ARITHMETIC_EVIDENCE_BLOCKS
+        ):
+            if obligation_id in matching_obligations:
+                raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+            matching_obligations[obligation_id] = obligation
+
+    if set(matching_obligations) != expected_obligation_ids:
+        raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+    for obligation in matching_obligations.values():
+        evidence_ids = obligation["evidence_ids"]
+        if ARITHMETIC_EVIDENCE_ID not in evidence_ids:
+            evidence_ids.append(ARITHMETIC_EVIDENCE_ID)
+
+    bound_obligation_ids: set[str] = set()
+    for obligation in obligations:
+        evidence_ids = obligation["evidence_ids"]
+        binding_count = evidence_ids.count(ARITHMETIC_EVIDENCE_ID)
+        if binding_count == 0:
+            continue
+        obligation_id = obligation["obligation_id"]
+        if binding_count != 1 or obligation_id not in expected_obligation_ids:
+            raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+        bound_obligation_ids.add(obligation_id)
+    if bound_obligation_ids != expected_obligation_ids:
+        raise RuntimeError("ARITHMETIC_EVIDENCE_BINDING_INVALID")
+
+
 def build_campaign(
     pack: Path,
     routes: list[dict[str, Any]],
@@ -430,10 +924,19 @@ def build_campaign(
     bundle_paths: dict[str, str],
 ) -> dict[str, Any]:
     campaign = base.build_campaign(pack, routes, route_copies, bundle_paths)
+    _bind_specialized_arithmetic_evidence(campaign)
     campaign["schema_version"] = 2
     campaign["route_policy"] = "exact-explicit-set"
     campaign["required_route_keys"] = list(EXACT_ROUTE_KEYS)
     campaign["input_domain"] = INPUT_DOMAIN
+    base.add_evidence(
+        pack,
+        campaign,
+        PACKED_RUNTIME_EVIDENCE_ID,
+        PACKED_RUNTIME_MANIFEST,
+        role="packed-replay-runtime",
+    )
+    campaign["packed_replay_runtime_evidence_id"] = PACKED_RUNTIME_EVIDENCE_ID
     campaign["limitations"] = [
         "The route inventory is the explicit specialized eight; it is not a four-language complete matrix and does not imply 12 or 72 directions.",
         "Packed replay independently revalidates the byte-bound function and five-function module closure but does not regenerate native evidence.",
@@ -551,7 +1054,9 @@ def specialize_base_files(pack: Path) -> None:
 
     model = base.load_json(pack / "models" / "model.json")
     model["invariants"] = [
-        item.replace("route-set-is-exactly-thirty", "route-set-is-exact-specialized-eight")
+        item.replace(
+            "route-set-is-exactly-thirty", "route-set-is-exact-specialized-eight"
+        )
         for item in model["invariants"]
     ]
     base.write_json(pack / "models" / "model.json", model)
@@ -637,6 +1142,10 @@ def write_readme(pack: Path) -> None:
         "Every packed route includes the three independent function corpora, "
         "five-function module composition, function/module formal input-SMT-result "
         "closures, frozen validator/schema sources, and content-addressed replay. "
+        "Schema-v2 replay uses one content-bound CPython 3.12.12 private runtime, "
+        "the exact seven-package production wheel closure derived from uv.lock, "
+        "copy-only offline installation, isolated Python, and a pinned macOS "
+        "default-deny-network sandbox with an actual socket-denial probe. "
         "Native regeneration, compiler/runtime soundness, independent review, "
         "customer evidence, production execution, and external certification remain "
         "`NOT_RUN`; the pack remains `limited / NOT_CERTIFIED`.\n",
@@ -657,6 +1166,8 @@ def write_readme(pack: Path) -> None:
 
 def build_staged_pack(pack: Path, arithmetic_campaign: Path) -> tuple[int, int]:
     base.prepare_directories(pack)
+    if not (pack / PACKED_RUNTIME_MANIFEST).is_file():
+        raise RuntimeError("PACKED_RUNTIME_MUST_BE_PREPARED_BEFORE_ROUTE_COLLECTION")
     routes, route_copies = collect_route_evidence(pack)
     base.copy_file(arithmetic_campaign, pack / "solver" / "arithmetic-campaign.json")
     arithmetic = base.load_json(pack / "solver" / "arithmetic-campaign.json")
@@ -674,9 +1185,7 @@ def build_staged_pack(pack: Path, arithmetic_campaign: Path) -> tuple[int, int]:
         arithmetic_digest=base.digest_file(
             pack / "solver" / "arithmetic-campaign.json"
         ),
-        total_behavior_cases=sum(
-            int(item["behavior_cases"]) for item in route_copies
-        ),
+        total_behavior_cases=sum(int(item["behavior_cases"]) for item in route_copies),
         arithmetic_counts=arithmetic.get("counts", {}),
     )
     specialize_base_files(pack)
@@ -715,18 +1224,59 @@ def main() -> int:
         help="machine-readable residual campaign from prove_arithmetic_compensation.py",
     )
     parser.add_argument("--repo-root", type=Path, default=ROOT)
+    parser.add_argument(
+        "--runtime-cache",
+        type=Path,
+        help=(
+            "optional directory containing the pinned CPython archive and "
+            "wheelhouse; when omitted exact artifacts are downloaded"
+        ),
+    )
     args = parser.parse_args()
     repo_root = args.repo_root.resolve()
     arithmetic_campaign = args.arithmetic_campaign.resolve(strict=True)
+    runtime_cache = (
+        args.runtime_cache.resolve(strict=True)
+        if args.runtime_cache is not None
+        else None
+    )
     configure_base(repo_root)
-    validate_source_routes(repo_root)
     pack_parent = repo_root / "verification-packs"
     pack_parent.mkdir(parents=True, exist_ok=True)
     destination = pack_parent / PACK_KEY
-    staging = Path(
-        tempfile.mkdtemp(prefix=f".{PACK_KEY}-staging-", dir=pack_parent)
-    )
+    staging = Path(tempfile.mkdtemp(prefix=f".{PACK_KEY}-staging-", dir=pack_parent))
     try:
+        base.prepare_directories(staging)
+        prepare_packed_runtime(staging, repo_root, runtime_cache)
+        runtime_preflight = subprocess.run(
+            [
+                sys.executable,
+                str(
+                    repo_root
+                    / "scripts"
+                    / "batch35"
+                    / "validate_formal_route_campaign.py"
+                ),
+                str(staging),
+                "--runtime-preflight",
+                "--json",
+            ],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=300,
+        )
+        if runtime_preflight.returncode != 0:
+            diagnostic = (
+                runtime_preflight.stderr.strip()
+                or runtime_preflight.stdout.strip()
+                or "unknown packed runtime preflight failure"
+            )
+            raise RuntimeError(
+                "PACKED_RUNTIME_PRIVATE_PREFLIGHT_FAILED:" + diagnostic[-2048:]
+            )
+        validate_source_routes(repo_root)
         route_count, matrix_count = build_staged_pack(staging, arithmetic_campaign)
         base.validate_staged_pack(repo_root, staging)
         publish_staged_pack(staging, destination)

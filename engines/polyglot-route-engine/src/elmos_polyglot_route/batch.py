@@ -23,12 +23,14 @@ from pathlib import Path
 from typing import Any
 
 from .engine import migrate
+from .identifier_hygiene import repository_work_unit_namespace
 from .models import SUPPORTED_LANGUAGES, RouteError
 
 SCHEMA_VERSION = "1.0.0"
 CHECKPOINT_NAME = "batch-checkpoint.jsonl"
 REPORT_NAME = "batch-report.json"
 _UNIT_ID_PATTERN = re.compile(r"^WU-[0-9]{5}(?:-F[0-9]{3})?$")
+_RAW_SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 class UnitStatus:
@@ -106,6 +108,34 @@ def _checkpoint_identity(
     result: dict[str, Any],
     case_path: Path | None,
 ) -> dict[str, Any]:
+    unit_namespace: dict[str, Any] | None = None
+    unit_namespace_sha256: str | None = None
+    if result.get("verdict") == "READY":
+        snapshot_sha256 = discovery.get("snapshot_sha256")
+        source_sha256 = result.get("observed_sha256") or result.get(
+            "declared_sha256"
+        )
+        unit_id = result.get("id")
+        source_path = result.get("source_path")
+        if (
+            not isinstance(snapshot_sha256, str)
+            or _RAW_SHA256_PATTERN.fullmatch(snapshot_sha256) is None
+            or not isinstance(source_sha256, str)
+            or _RAW_SHA256_PATTERN.fullmatch(source_sha256) is None
+            or not isinstance(unit_id, str)
+            or _UNIT_ID_PATTERN.fullmatch(unit_id) is None
+            or not isinstance(source_path, str)
+            or not source_path
+        ):
+            raise RouteError("BATCH_IDENTIFIER_UNIT_NAMESPACE_INPUT_INVALID")
+        namespace = repository_work_unit_namespace(
+            repository_snapshot_sha256="sha256:" + snapshot_sha256,
+            work_unit_id=unit_id,
+            source_logical_path=source_path,
+            source_sha256="sha256:" + source_sha256,
+        )
+        unit_namespace = namespace.to_mapping()
+        unit_namespace_sha256 = namespace.digest
     return {
         "snapshot_sha256": discovery.get("snapshot_sha256"),
         "repository_scale": discovery.get("repository_scale"),
@@ -117,6 +147,8 @@ def _checkpoint_identity(
         "function_name": result.get("function_name"),
         "verdict": result.get("verdict"),
         "cases_sha256": (_stable_sha256(case_path, "BEHAVIOR_CASES") if case_path is not None else None),
+        "identifier_unit_namespace": unit_namespace,
+        "identifier_unit_namespace_sha256": unit_namespace_sha256,
     }
 
 
@@ -315,6 +347,23 @@ def run_batch(
                 if unit_output.is_symlink() or (unit_output.exists() and not unit_output.is_dir()):
                     raise RouteError(f"WORK_UNIT_OUTPUT_UNSAFE:{unit_id}")
                 try:
+                    identifier_unit_namespace = repository_work_unit_namespace(
+                        repository_snapshot_sha256=(
+                            "sha256:" + str(discovery["snapshot_sha256"])
+                        ),
+                        work_unit_id=unit_id,
+                        source_logical_path=str(result["source_path"]),
+                        source_sha256="sha256:" + observed_source_sha256,
+                    )
+                    if (
+                        identity.get("identifier_unit_namespace")
+                        != identifier_unit_namespace.to_mapping()
+                        or identity.get("identifier_unit_namespace_sha256")
+                        != identifier_unit_namespace.digest
+                    ):
+                        raise RouteError(
+                            f"BATCH_IDENTIFIER_UNIT_NAMESPACE_DRIFT:{unit_id}"
+                        )
                     report = migrate(
                         source,
                         source_language,
@@ -323,17 +372,34 @@ def run_batch(
                         case_path,
                         unit_output,
                         repository_execution_mode=True,
+                        identifier_unit_namespace=identifier_unit_namespace,
                     )
                     if _stable_sha256(source, "WORK_UNIT_SOURCE") != identity["source_sha256"]:
                         raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{result['source_path']}")
                     if _stable_sha256(case_path, "BEHAVIOR_CASES") != identity["cases_sha256"]:
                         raise RouteError(f"BEHAVIOR_CASES_CHANGED:{unit_id}")
                     evidence_path = unit_output / "route-evidence.json"
+                    identifier_hygiene = report.get("identifier_hygiene")
+                    if (
+                        not isinstance(identifier_hygiene, dict)
+                        or identifier_hygiene.get("unit_namespace")
+                        != identifier_unit_namespace.to_mapping()
+                        or identifier_hygiene.get("unit_namespace_sha256")
+                        != identifier_unit_namespace.digest
+                    ):
+                        raise RouteError(
+                            f"BATCH_IDENTIFIER_UNIT_NAMESPACE_EVIDENCE_MISMATCH:{unit_id}"
+                        )
                     entry = {
                         "id": unit_id,
                         "source_path": result.get("source_path"),
                         "status": UnitStatus.PASSED,
                         "function_name": result.get("function_name"),
+                        "target_function_name": report.get("target", {}).get("function_name"),
+                        "identifier_plan_path": report.get("identifier_hygiene", {}).get("plan_path"),
+                        "identifier_plan_sha256": report.get("identifier_hygiene", {}).get("plan_sha256"),
+                        "identifier_unit_namespace": identifier_unit_namespace.to_mapping(),
+                        "identifier_unit_namespace_sha256": identifier_unit_namespace.digest,
                         "behavior_case_count": report.get("behavior_case_count"),
                         "execution_status": report.get("status"),
                         "route_pack_status": report.get("route_pack_status"),

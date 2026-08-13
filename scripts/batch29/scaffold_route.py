@@ -22,7 +22,7 @@ def main() -> int:
     root = Path(a.repo_root).resolve()
     route_key = f"{a.source}-to-{a.target}"
     if route_key not in EVIDENCED_ROUTE_KEYS:
-        p.error("route is outside the approved explicit nine-language directed matrix")
+        p.error("route is outside the approved explicit ten-language directed matrix")
     route = root / "routes" / route_key
     if route.exists() and not a.force:
         print(f"EXISTS: {route}")

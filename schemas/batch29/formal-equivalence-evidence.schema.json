@@ -326,14 +326,15 @@
     },
     "swift_dependency_cache_receipt": {
       "type": "object",
-      "required": ["cache_key", "cache_schema", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
+      "required": ["cache_key", "cache_schema", "object_store_policy", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
       "properties": {
-        "cache_key": {"const": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
-        "cache_schema": {"const": "swift-dependencies-v1"},
+        "cache_key": {"const": "swift-syntax-standalone-v2-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "cache_schema": {"const": "swift-dependencies-standalone-v2"},
+        "object_store_policy": {"const": "standalone-no-alternates-no-hardlinks-v2"},
         "identity": {"const": "swift-syntax"},
         "version": {"const": "600.0.1"},
         "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
         "file_count": {"const": 753},
         "bytes": {"const": 8866479}
@@ -344,7 +345,7 @@
       "type": "object",
       "required": ["seed", "cache", "git", "identity", "version", "revision", "sha256", "file_count", "bytes"],
       "properties": {
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "cache": {"$ref": "#/$defs/swift_dependency_cache_receipt"},
         "git": {
           "const": {
@@ -366,7 +367,7 @@
       "type": "object",
       "required": ["seed", "identity", "version", "revision", "sha256", "file_count", "bytes", "git", "cache"],
       "properties": {
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "identity": {"const": "swift-syntax"},
         "version": {"const": "600.0.1"},
         "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
@@ -1219,6 +1220,9 @@
       "enum": [
         "source-ir",
         "target-ir",
+        "identifier-plan",
+        "raw-target-ir",
+        "normalized-target-ir",
         "target-artifact",
         "environment",
         "chunk-map",

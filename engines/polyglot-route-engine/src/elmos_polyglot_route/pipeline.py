@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 import zipfile
 from pathlib import Path
@@ -425,26 +426,38 @@ def _write_and_verify_project_graph(output: Path, graph: dict[str, object]) -> d
 def _bind_project_graph_to_plan(graph: dict[str, object], plan: dict[str, Any]) -> None:
     if graph.get("repository_ref") != plan.get("repository_ref"):
         raise RouteError("PROJECT_GRAPH_REPOSITORY_REF_MISMATCH")
+    graph_languages = graph.get("supported_languages")
+    if (
+        not isinstance(graph_languages, list)
+        or len(graph_languages) != len(SUPPORTED_LANGUAGES)
+        or any(not isinstance(language, str) for language in graph_languages)
+        or len(set(graph_languages)) != len(graph_languages)
+        or set(graph_languages) != set(SUPPORTED_LANGUAGES)
+    ):
+        raise RouteError("PROJECT_GRAPH_LANGUAGE_SET_MISMATCH")
     nodes = graph.get("nodes")
     work_units = plan.get("work_units")
-    if not isinstance(nodes, list) or not isinstance(work_units, list):
+    source_language = plan.get("source_language")
+    if not isinstance(nodes, list) or not isinstance(work_units, list) or source_language not in SUPPORTED_LANGUAGES:
         raise RouteError("PROJECT_GRAPH_PLAN_BINDING_INVALID")
 
-    file_sha256: dict[str, str] = {}
+    file_bindings: dict[str, tuple[str, str]] = {}
     for node in nodes:
         if not isinstance(node, dict) or node.get("kind") != "file":
             continue
         path = node.get("path")
+        language = node.get("language")
         attributes = node.get("attributes")
         if not isinstance(path, str) or not isinstance(attributes, dict):
             raise RouteError("PROJECT_GRAPH_FILE_NODE_INVALID")
         digest = attributes.get("sha256")
-        if not isinstance(digest, str):
+        if not isinstance(digest, str) or language not in SUPPORTED_LANGUAGES:
             continue
-        previous = file_sha256.get(path)
-        if previous is not None and previous != digest:
+        binding = (digest, str(language))
+        previous = file_bindings.get(path)
+        if previous is not None and previous != binding:
             raise RouteError("PROJECT_GRAPH_FILE_IDENTITY_CONTRADICTORY")
-        file_sha256[path] = digest
+        file_bindings[path] = binding
 
     for unit in work_units:
         if not isinstance(unit, dict):
@@ -453,7 +466,7 @@ def _bind_project_graph_to_plan(graph: dict[str, object], plan: dict[str, Any]) 
         digest = unit.get("source_sha256")
         if not isinstance(path, str) or not isinstance(digest, str):
             raise RouteError("PROJECT_GRAPH_PLAN_BINDING_INVALID")
-        if file_sha256.get(path) != digest:
+        if file_bindings.get(path) != (digest, source_language):
             raise RouteError(f"PROJECT_GRAPH_PLAN_SOURCE_MISMATCH:{path}")
 
 
@@ -665,11 +678,7 @@ def _behavior_coverage_summary(
     raw_status_counts: dict[str, int] = {}
     unit_ids: list[str] = []
     for unit in units:
-        if (
-            not isinstance(unit, dict)
-            or not isinstance(unit.get("id"), str)
-            or not isinstance(unit.get("status"), str)
-        ):
+        if not isinstance(unit, dict) or not isinstance(unit.get("id"), str) or not isinstance(unit.get("status"), str):
             raise RouteError("BEHAVIOR_COVERAGE_UNIT_INVALID")
         unit_id = unit["id"]
         if not unit_id or unit_id in unit_ids:
@@ -706,6 +715,9 @@ def _behavior_coverage_summary(
             raw_case_count = unit.get("behavior_case_count")
             raw_evidence_path = unit.get("evidence_path")
             raw_evidence_sha256 = unit.get("evidence_sha256")
+            raw_target_function = unit.get("target_function_name")
+            raw_identifier_plan_path = unit.get("identifier_plan_path")
+            raw_identifier_plan_sha256 = unit.get("identifier_plan_sha256")
             expected_evidence_path = f"units/{unit_id}/route-evidence.json"
             if (
                 execution_status not in {"PASSED", "PASSED_LOCAL_UNCERTIFIED"}
@@ -716,6 +728,11 @@ def _behavior_coverage_summary(
                 or not raw_evidence_sha256.startswith("sha256:")
                 or len(raw_evidence_sha256) != 71
                 or any(character not in "0123456789abcdef" for character in raw_evidence_sha256[7:])
+                or not isinstance(raw_target_function, str)
+                or not raw_target_function
+                or raw_identifier_plan_path != "identifier-plan.json"
+                or not isinstance(raw_identifier_plan_sha256, str)
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", raw_identifier_plan_sha256)
             ):
                 raise RouteError("BEHAVIOR_COVERAGE_PASSED_UNIT_INVALID")
             behavior_case_count = raw_case_count
@@ -732,6 +749,9 @@ def _behavior_coverage_summary(
                 "id": unit_id,
                 "source_path": discovery_unit.get("source_path"),
                 "function_name": discovered_function,
+                "target_function_name": unit.get("target_function_name"),
+                "identifier_plan_path": unit.get("identifier_plan_path"),
+                "identifier_plan_sha256": unit.get("identifier_plan_sha256"),
                 "batch_status": unit_status,
                 "status": status,
                 "behavior_case_count": behavior_case_count,
@@ -754,15 +774,7 @@ def _behavior_coverage_summary(
     expected_batch_status = "COMPLETE" if complete else "PARTIAL"
     if batch.get("status") != expected_batch_status:
         raise RouteError("BEHAVIOR_COVERAGE_BATCH_STATUS_CONTRADICTORY")
-    status = (
-        "PASSED"
-        if complete
-        else "FAILED"
-        if counts["FAILED"]
-        else "UNKNOWN"
-        if counts["UNKNOWN"]
-        else "NOT_RUN"
-    )
+    status = "PASSED" if complete else "FAILED" if counts["FAILED"] else "UNKNOWN" if counts["UNKNOWN"] else "NOT_RUN"
     return {
         "profile": "typed-pure-function-v1",
         "status": status,

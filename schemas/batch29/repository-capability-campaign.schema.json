@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://elmos.dev/schemas/batch29/repository-capability-campaign.schema.json",
   "title": "Batch29RepositoryCapabilityCampaign",
-  "description": "Fail-closed local engineering evidence for every directed route across the nine-language repository matrix.",
+  "description": "Fail-closed local engineering evidence for every directed route across the ten-language repository matrix.",
   "type": "object",
   "required": [
     "schema_version",
@@ -35,7 +35,8 @@
         "rust",
         "cpp",
         "objc",
-        "swift"
+        "swift",
+        "javascript"
       ]
     },
     "scope": {
@@ -63,8 +64,8 @@
     },
     "routes": {
       "type": "array",
-      "minItems": 72,
-      "maxItems": 72,
+      "minItems": 90,
+      "maxItems": 90,
       "items": {
         "$ref": "#/$defs/route"
       }
@@ -88,7 +89,8 @@
         "rust",
         "cpp",
         "objc",
-        "swift"
+        "swift",
+        "javascript"
       ]
     },
     "status": {

@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import json
+import struct
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
+import z3
 
 from elmos_polyglot_route.emitter import emit
-from elmos_polyglot_route.engine import migrate
+from elmos_polyglot_route.engine import declared_formal_input_domain, migrate
 from elmos_polyglot_route.equivalence import (
+    _Encoder,
     behavior_equivalence,
     canonical_json_bytes,
     chunk_equivalence,
@@ -213,10 +216,10 @@ def test_behavior_requires_canonical_expected_source_and_target_to_agree() -> No
     assert report["counterexample_count"] == 1
 
 
-def test_behavior_compares_json_numbers_as_declared_fp64_values() -> None:
-    function = replace(_integer_ir().functions[0], return_type="number")
-    cases = [{"args": [2, 3], "expected": 5}]
-    source = [{"case_id": 0, "status": "RETURNED", "value": 5}]
+def test_behavior_normalizes_json_integer_expected_to_exact_fp64_evidence() -> None:
+    function = _number_identity_ir().functions[0]
+    cases = [{"args": [5.0], "expected": 5}]
+    source = [{"case_id": 0, "status": "RETURNED", "value": 5.0}]
     target = [{"case_id": 0, "status": "RETURNED", "value": 5.0}]
 
     report = behavior_equivalence(function, cases, source, target)
@@ -224,6 +227,62 @@ def test_behavior_compares_json_numbers_as_declared_fp64_values() -> None:
     assert report["status"] == "PASSED"
     assert report["source_runtime_passed"] is True
     assert report["target_runtime_passed"] is True
+    result = report["results"][0]
+    assert type(result["independent_expected"]) is float
+    assert canonical_json_bytes(result["canonical"]["value"]) == canonical_json_bytes(
+        result["independent_expected"]
+    )
+
+
+@pytest.mark.parametrize(
+    ("return_type", "expected"),
+    [
+        ("number", True),
+        ("number", 2**53 + 1),
+        ("integer", 5.0),
+        ("boolean", 1),
+        ("string", 5),
+    ],
+)
+def test_behavior_rejects_expected_values_that_cannot_preserve_the_declared_type(
+    return_type: str,
+    expected: object,
+) -> None:
+    function = replace(_integer_ir().functions[0], return_type=return_type)
+
+    with pytest.raises(RouteError, match="BEHAVIOR_EXPECTED_(TYPE_MISMATCH|NUMBER_NOT_EXACT_BINARY64)"):
+        behavior_equivalence(
+            function,
+            [{"args": [2, 3], "expected": expected}],
+            [{"case_id": 0, "status": "RETURNED", "value": expected}],
+            [{"case_id": 0, "status": "RETURNED", "value": expected}],
+        )
+
+
+def test_behavior_preserves_negative_zero_bits_in_result_and_counterexample() -> None:
+    function = _number_identity_ir().functions[0]
+    passing = behavior_equivalence(
+        function,
+        [{"args": [-0.0], "expected": -0.0}],
+        [{"case_id": 0, "status": "RETURNED", "value": -0.0}],
+        [{"case_id": 0, "status": "RETURNED", "value": -0.0}],
+    )
+    report = behavior_equivalence(
+        function,
+        [{"args": [0.0], "expected": -0.0}],
+        [{"case_id": 0, "status": "RETURNED", "value": 0.0}],
+        [{"case_id": 0, "status": "RETURNED", "value": 0.0}],
+    )
+
+    assert passing["status"] == "PASSED"
+    passing_expected = passing["results"][0]["independent_expected"]
+    assert struct.pack(">d", passing_expected) == struct.pack(">d", -0.0)
+    assert report["status"] == "FAILED"
+    result_expected = report["results"][0]["independent_expected"]
+    counterexample_expected = report["counterexamples"][0]["expected"]
+    assert struct.pack(">d", result_expected) == struct.pack(">d", -0.0)
+    assert struct.pack(">d", counterexample_expected) == struct.pack(">d", -0.0)
+    assert canonical_json_bytes(result_expected) == canonical_json_bytes(counterexample_expected)
 
 
 def test_artifact_specific_formal_proof_uses_independent_encodings() -> None:
@@ -318,6 +377,193 @@ def test_typescript_formal_result_exposes_safe_integer_assumptions() -> None:
     assert result["status"] == "PROVED_UNDER_ASSUMPTIONS"
     assert any("typescript-safe-integer:parameter:left" in item for item in result["assumptions"])
     assert "async-and-concurrency" in result["unsupported_semantics"]
+
+
+def test_javascript_formal_result_binds_nodejs_safe_integer_domain() -> None:
+    function = _integer_ir().functions[0]
+
+    result, smt2 = formal_equivalence(
+        function,
+        function,
+        "java",
+        "javascript",
+        "sha256:" + "6" * 64,
+        input_domain="nodejs-es2022-esm-safe-integer-finite-v1",
+    )
+
+    assert result["status"] == "PROVED_UNDER_ASSUMPTIONS"
+    assert result["claim_scope"]["input_domain"] == "nodejs-es2022-esm-safe-integer-finite-v1"
+    assert any("javascript-safe-integer:parameter:left" in item for item in result["assumptions"])
+    assert not any("typescript-safe-integer" in item for item in result["assumptions"])
+    assert "; input-domain: nodejs-es2022-esm-safe-integer-finite-v1" in smt2
+
+
+@pytest.mark.parametrize(
+    ("source_language", "target_language"),
+    [
+        ("python", "typescript"),
+        ("typescript", "python"),
+        ("java", "javascript"),
+        ("javascript", "go"),
+    ],
+)
+def test_node_runtime_routes_declare_the_same_explicit_formal_domain(
+    source_language: Language,
+    target_language: Language,
+) -> None:
+    assert declared_formal_input_domain(source_language, target_language) == "nodejs-es2022-esm-safe-integer-finite-v1"
+
+
+def test_non_node_runtime_route_keeps_profile_total_formal_domain() -> None:
+    assert declared_formal_input_domain("python", "java") == "profile-total-domain"
+
+
+def test_javascript_formal_domain_excludes_intermediate_safe_integer_escape() -> None:
+    ir = SemanticIR.from_mapping(
+        {
+            "schema_version": "1.0.0",
+            "source_language": "javascript",
+            "source_file": "recover.mjs",
+            "analyzer": "test",
+            "analyzer_version": "1",
+            "functions": [
+                {
+                    "name": "recover",
+                    "parameters": [{"name": "value", "type": "integer"}],
+                    "return_type": "integer",
+                    "body": [
+                        {
+                            "kind": "return",
+                            "expression": {
+                                "kind": "binary",
+                                "operator": "-",
+                                "left": {
+                                    "kind": "binary",
+                                    "operator": "+",
+                                    "left": {"kind": "name", "value": "value"},
+                                    "right": {"kind": "literal", "value": 1},
+                                },
+                                "right": {"kind": "literal", "value": 1},
+                            },
+                        }
+                    ],
+                }
+            ],
+            "diagnostics": [],
+        }
+    )
+    encoder = _Encoder("target", ir.functions[0], "javascript")
+    encoder.encode()
+    value = encoder.environment["value"]
+
+    at_boundary = z3.Solver()
+    at_boundary.add(*encoder.assumptions, value == z3.BitVecVal(2**53 - 1, 64))
+    inside_boundary = z3.Solver()
+    inside_boundary.add(*encoder.assumptions, value == z3.BitVecVal(2**53 - 2, 64))
+
+    assert any("javascript-safe-integer:expression:+" in item for item in encoder.assumption_labels)
+    assert any("javascript-safe-integer:expression:-" in item for item in encoder.assumption_labels)
+    assert at_boundary.check() == z3.unsat
+    assert inside_boundary.check() == z3.sat
+
+
+@pytest.mark.parametrize("runtime_language", ["typescript", "javascript"])
+def test_node_formal_domain_excludes_intermediate_non_finite_number(
+    runtime_language: Language,
+) -> None:
+    ir = SemanticIR.from_mapping(
+        {
+            "schema_version": "1.0.0",
+            "source_language": "javascript",
+            "source_file": "overflow.mjs",
+            "analyzer": "test",
+            "analyzer_version": "1",
+            "functions": [
+                {
+                    "name": "square",
+                    "parameters": [{"name": "value", "type": "number"}],
+                    "return_type": "number",
+                    "body": [
+                        {
+                            "kind": "return",
+                            "expression": {
+                                "kind": "binary",
+                                "operator": "*",
+                                "left": {"kind": "name", "value": "value"},
+                                "right": {"kind": "name", "value": "value"},
+                            },
+                        }
+                    ],
+                }
+            ],
+            "diagnostics": [],
+        }
+    )
+    encoder = _Encoder("target", ir.functions[0], runtime_language)
+    encoded = encoder.encode()
+    value = encoder.environment["value"]
+
+    overflow_without_domain = z3.Solver()
+    overflow_without_domain.add(
+        z3.fpEQ(value, z3.FPVal(1e308, z3.Float64())),
+        z3.fpIsInf(encoded.value),
+    )
+    overflow_inside_domain = z3.Solver()
+    overflow_inside_domain.add(
+        *encoder.assumptions,
+        z3.fpEQ(value, z3.FPVal(1e308, z3.Float64())),
+    )
+    finite_inside_domain = z3.Solver()
+    finite_inside_domain.add(
+        *encoder.assumptions,
+        z3.fpEQ(value, z3.FPVal(2.0, z3.Float64())),
+    )
+
+    assert any(f"{runtime_language}-finite-number:expression:*" in item for item in encoder.assumption_labels)
+    assert f"{runtime_language}-finite-number:return" in encoder.assumption_labels
+    assert overflow_without_domain.check() == z3.sat
+    assert overflow_inside_domain.check() == z3.unsat
+    assert finite_inside_domain.check() == z3.sat
+
+
+@pytest.mark.parametrize("runtime_language", ["typescript", "javascript"])
+def test_node_formal_encoder_refuses_negative_zero_semantic_literal(
+    runtime_language: Language,
+) -> None:
+    ir = SemanticIR.from_mapping(
+        {
+            "schema_version": "1.0.0",
+            "source_language": runtime_language,
+            "source_file": "negative-zero",
+            "analyzer": "test",
+            "analyzer_version": "1",
+            "functions": [
+                {
+                    "name": "negative_zero",
+                    "parameters": [],
+                    "return_type": "number",
+                    "body": [
+                        {
+                            "kind": "return",
+                            "expression": {"kind": "literal", "value": -0.0},
+                        }
+                    ],
+                }
+            ],
+            "diagnostics": [],
+        }
+    )
+
+    result, _smt2 = formal_equivalence(
+        ir.functions[0],
+        ir.functions[0],
+        runtime_language,
+        runtime_language,
+        "sha256:" + "7" * 64,
+    )
+
+    assert result["status"] == "UNSUPPORTED"
+    assert result["reason"] == f"{runtime_language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED"
 
 
 def test_migrate_persists_and_backlinks_content_addressed_formal_input(tmp_path: Path) -> None:

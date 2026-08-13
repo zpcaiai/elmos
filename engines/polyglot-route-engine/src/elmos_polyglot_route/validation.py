@@ -4,6 +4,7 @@ import base64
 import hashlib
 import json
 import math
+import os
 import re
 import struct
 import subprocess
@@ -13,6 +14,7 @@ from typing import Any
 
 from .emitter import EmittedFile
 from .models import Function, Language, RouteError
+from .repository import javascript_esm_descriptor
 from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
@@ -48,11 +50,72 @@ def _run(
                 ),
             )
     except (OSError, subprocess.TimeoutExpired) as error:
-        raise RouteError(f"TARGET_VALIDATION_FAILED:{command[0]}:process") from error
+        raise RouteError(f"TARGET_VALIDATION_FAILED:{Path(command[0]).name}:process") from error
     if completed.returncode != 0:
-        detail = (completed.stderr or completed.stdout).strip()[-4_000:]
-        raise RouteError(f"TARGET_VALIDATION_FAILED:{command[0]}:{detail}")
+        stdout = _bounded_process_diagnostic(completed.stdout, cwd=cwd)
+        stderr = _bounded_process_diagnostic(completed.stderr, cwd=cwd)
+        raise RouteError(
+            "TARGET_VALIDATION_FAILED:"
+            f"{Path(command[0]).name}:returncode={completed.returncode}:"
+            f"stdout={json.dumps(stdout, ensure_ascii=True)}:"
+            f"stderr={json.dumps(stderr, ensure_ascii=True)}"
+        )
     return completed
+
+
+#: Disclosure policy for external-toolchain failure diagnostics.
+#:
+#: Reporting only one stream is not safe: a toolchain that writes a banner,
+#: telemetry notice or first-run message to ``stderr`` while writing its real
+#: diagnostics to ``stdout`` -- ``dotnet build`` on first invocation is the case
+#: that motivated this -- gets reported by the banner alone, hiding the reason
+#: the build failed behind text that says nothing.  Reporting *both* streams
+#: raw is not safe either, because a build log carries host paths and can carry
+#: credentials, and these messages are persisted into evidence.  So both streams
+#: are kept, and both are sanitised and bounded.
+#:
+#: These definitions deliberately mirror ``assembly._bounded_process_diagnostic``
+#: verb for verb: the two modules run third-party build tools for the same
+#: campaign and their failures must obey one disclosure rule, not two.  The copy
+#: lives here because ``assembly`` already imports from ``validation`` (see
+#: ``safe_output``), so ``validation`` is the lower module and is where the
+#: shared version belongs; folding ``assembly``'s copy into this one is a
+#: mechanical follow-up left to that module's owner.
+_PROCESS_DIAGNOSTIC_CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+_PROCESS_DIAGNOSTIC_SECRET_RE = re.compile(
+    r"(?im)\b(token|secret|password|passwd|api[_-]?key|cookie|credential)\b"
+    r"(\s*[:=]\s*)([^\s,;]+)"
+)
+_PROCESS_DIAGNOSTIC_AUTHORIZATION_RE = re.compile(
+    r"(?im)\b(authorization)\b(\s*:\s*)[^\r\n]*"
+)
+_PROCESS_DIAGNOSTIC_PRIVATE_PATH_RE = re.compile(
+    r"(?<![A-Za-z0-9._-])/(?:private|tmp|var/folders)/[^\s\"'<>]+"
+)
+_PROCESS_DIAGNOSTIC_LIMIT = 2_000
+
+
+def _bounded_process_diagnostic(value: str, *, cwd: Path) -> str:
+    """Return a bounded diagnostic with host paths and common secrets removed."""
+
+    cleaned = _PROCESS_DIAGNOSTIC_CONTROL_RE.sub("?", value)
+    for path, replacement in (
+        (str(cwd.resolve()), "<cwd>"),
+        (str(Path.home().resolve()), "<home>"),
+    ):
+        if path:
+            cleaned = cleaned.replace(path, replacement)
+    cleaned = _PROCESS_DIAGNOSTIC_AUTHORIZATION_RE.sub(
+        lambda match: f"{match.group(1)}{match.group(2)}<redacted>",
+        cleaned,
+    )
+    cleaned = _PROCESS_DIAGNOSTIC_SECRET_RE.sub(
+        lambda match: f"{match.group(1)}{match.group(2)}<redacted>",
+        cleaned,
+    )
+    cleaned = _PROCESS_DIAGNOSTIC_PRIVATE_PATH_RE.sub("<path>", cleaned)
+    bounded = cleaned.strip()[-_PROCESS_DIAGNOSTIC_LIMIT:]
+    return bounded or "<empty>"
 
 
 def _apple_sdk(toolchain_profile: tuple[str, ...]) -> str:
@@ -144,11 +207,7 @@ def _java_literal(value: object, value_type: str) -> str:
         if not data:
             return '""'
         items = ", ".join(f"(byte)0x{byte:02x}" for byte in data)
-        return (
-            "new String(new byte[]{"
-            + items
-            + "}, java.nio.charset.StandardCharsets.UTF_8)"
-        )
+        return "new String(new byte[]{" + items + "}, java.nio.charset.StandardCharsets.UTF_8)"
     raise RouteError(f"JAVA_CASE_TYPE_UNSUPPORTED:{value_type}")
 
 
@@ -179,8 +238,7 @@ def _java_harness(
         if not isinstance(values, list) or len(values) != len(function.parameters):
             raise RouteError("JAVA_CASE_ARGUMENT_COUNT_INVALID")
         args = ", ".join(
-            _java_literal(value, parameter.type)
-            for value, parameter in zip(values, function.parameters, strict=True)
+            _java_literal(value, parameter.type) for value, parameter in zip(values, function.parameters, strict=True)
         )
         expected = _java_literal(_returned_case_value(case), function.return_type)
         call = f"{owner}.{function.name}({args})"
@@ -206,14 +264,12 @@ def _java_harness(
             "integer": ("i64-dec", f"Long.toString({actual})"),
             "number": (
                 "fp64-hex",
-                "String.format(java.util.Locale.ROOT, \"%016x\", "
-                f"Double.doubleToRawLongBits({actual}))",
+                f'String.format(java.util.Locale.ROOT, "%016x", Double.doubleToRawLongBits({actual}))',
             ),
             "boolean": ("bool", f"Boolean.toString({actual})"),
             "string": (
                 "hex-utf8",
-                "java.util.HexFormat.of().formatHex("
-                f"{actual}.getBytes(java.nio.charset.StandardCharsets.UTF_8))",
+                f"java.util.HexFormat.of().formatHex({actual}.getBytes(java.nio.charset.StandardCharsets.UTF_8))",
             ),
         }[function.return_type]
         checks.extend(
@@ -221,8 +277,7 @@ def _java_harness(
                 f"        var {actual} = {call};",
                 f"        var {expected_name} = {expected};",
                 f'        if ({condition}) throw new AssertionError("case {index}");',
-                f'        System.out.println("ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t" + '
-                f"{rendered});",
+                f'        System.out.println("ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t" + {rendered});',
             ]
         )
     return (
@@ -255,6 +310,47 @@ def _csharp_harness(
     return "\n".join(checks) + "\n"
 
 
+def _python_literal(value: object, value_type: str) -> str:
+    """Render a behaviour-case value as a Python literal of the canonical type.
+
+    Python is the one target in this matrix whose annotations do not coerce
+    anything.  ``def add(left: float, right: float) -> float`` called as
+    ``add(2, 3)`` returns the **integer** ``5``, not ``5.0``; the observation is
+    then recorded as an int while the canonical value -- and every statically
+    typed target -- carries a float64 ``5.0``.  Byte-exact evidence comparison
+    correctly rejects that, so a perfectly good route is reported as a
+    behaviour failure.
+
+    Argument rendering therefore has to be driven by the canonical parameter
+    type, exactly as ``_java_literal`` and the TypeScript harness already do.
+    """
+
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**63) <= value <= 2**63 - 1:
+            raise RouteError("PYTHON_CASE_INTEGER_OUTSIDE_INT64")
+        return repr(value)
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise RouteError("PYTHON_CASE_NUMBER_REQUIRED")
+        number = float(value)
+        if math.isnan(number):
+            return 'float("nan")'
+        if math.isinf(number):
+            return 'float("-inf")' if number < 0 else 'float("inf")'
+        if number == 0.0 and math.copysign(1.0, number) < 0:
+            return "-0.0"
+        return repr(number)
+    if value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("PYTHON_CASE_BOOLEAN_REQUIRED")
+        return "True" if value else "False"
+    if value_type == "string":
+        if not isinstance(value, str):
+            raise RouteError("PYTHON_CASE_STRING_REQUIRED")
+        return json.dumps(value, ensure_ascii=False)
+    raise RouteError(f"PYTHON_CASE_TYPE_UNSUPPORTED:{value_type}")
+
+
 def _python_harness(
     function: Function,
     cases: list[dict[str, Any]],
@@ -263,17 +359,48 @@ def _python_harness(
 ) -> str:
     checks = []
     for index, case in enumerate(cases):
-        args = ", ".join(_argument(value, "python") for value in case["args"])
+        values = case.get("args")
+        if not isinstance(values, list) or len(values) != len(function.parameters):
+            raise RouteError("PYTHON_CASE_ARGUMENT_COUNT_INVALID")
+        args = ", ".join(
+            _python_literal(value, parameter.type)
+            for value, parameter in zip(values, function.parameters, strict=True)
+        )
+        expected = _python_literal(_returned_case_value(case), function.return_type)
         actual = f"actual_{index}"
+        expected_name = f"expected_{index}"
+        if function.return_type == "number":
+            # float64 identity, not `==`.  `0.0 == -0.0` is True and
+            # `nan == nan` is False, so `==` both accepts and rejects the wrong
+            # observations.  This is the same bit-exact rule `_java_harness`
+            # applies via `Double.doubleToRawLongBits`.
+            guard = f"assert type({actual}) is float"
+            comparison = (
+                f"assert (math.isnan({actual}) and math.isnan({expected_name})) or "
+                f"struct.pack('>d', {actual}) == struct.pack('>d', {expected_name})"
+            )
+        elif function.return_type == "integer":
+            # `type(...) is int` rather than isinstance: bool is a subclass of
+            # int, and True must not be accepted as the integer 1.
+            guard = f"assert type({actual}) is int"
+            comparison = f"assert {actual} == {expected_name}"
+        elif function.return_type == "boolean":
+            guard = f"assert type({actual}) is bool"
+            comparison = f"assert {actual} is {expected_name}"
+        else:
+            guard = f"assert type({actual}) is str"
+            comparison = f"assert {actual} == {expected_name}"
         checks.extend(
             [
+                f"{expected_name} = {expected}",
                 f"{actual} = {module}.{function.name}({args})",
-                f"assert {actual} == {_expected(case['expected'], 'python')}",
+                guard,
+                comparison,
                 f'print("ELMOS_OBSERVATION\\tjson\\t" + json.dumps('
                 f'{{"case_id": {index}, "value": {actual}}}, sort_keys=True, separators=(",", ":")))',
             ]
         )
-    return f"import json\nimport {module}\n" + "\n".join(checks) + "\n"
+    return f"import json\nimport math\nimport struct\nimport {module}\n" + "\n".join(checks) + "\n"
 
 
 def _typescript_harness(
@@ -282,23 +409,136 @@ def _typescript_harness(
     *,
     module_path: str = "./migrated.js",
 ) -> str:
-    checks = []
+    subject = "_elmosHarnessSubject"
+    checks: list[str] = []
     for index, case in enumerate(cases):
-        args = ", ".join(_argument(value, "typescript") for value in case["args"])
-        expected = _expected(case["expected"], "typescript")
-        # Built from the function name directly. An earlier revision templated
-        # the literal name `calculate` and then string-replaced it, which also
-        # rewrote any occurrence of "calculate" inside a string argument or
-        # expected value -- silently changing what the behaviour case asserts.
+        values = case.get("args")
+        if not isinstance(values, list) or len(values) != len(function.parameters):
+            raise RouteError("TYPESCRIPT_CASE_ARGUMENT_COUNT_INVALID")
+        args = ", ".join(_argument(value, "typescript") for value in values)
+        expected = _expected(_returned_case_value(case), "typescript")
         actual = f"actual{index}"
+        expected_name = f"expected{index}"
+        if function.return_type == "integer":
+            condition = f"!Number.isSafeInteger({actual}) || Object.is({actual}, -0) || {actual} !== {expected_name}"
+            encoding = "i64-dec"
+            rendered = f"String({actual})"
+        elif function.return_type == "number":
+            condition = f"!Number.isFinite({actual}) || !Object.is({actual}, {expected_name})"
+            encoding = "fp64-hex"
+            rendered = f"_elmosHarnessFP64({actual})"
+        elif function.return_type == "boolean":
+            condition = f'typeof {actual} !== "boolean" || {actual} !== {expected_name}'
+            encoding = "bool"
+            rendered = f"String({actual})"
+        elif function.return_type == "string":
+            condition = f'typeof {actual} !== "string" || {actual} !== {expected_name}'
+            encoding = "hex-utf8"
+            rendered = f"_elmosHarnessHexUTF8({actual})"
+        else:
+            raise RouteError(f"TYPESCRIPT_CASE_TYPE_UNSUPPORTED:{function.return_type}")
         checks.extend(
             [
-                f"const {actual} = {function.name}({args});",
-                f'if ({actual} !== {expected}) throw new Error("case {index}");',
-                f'console.log("ELMOS_OBSERVATION\\tjson\\t" + JSON.stringify({{case_id: {index}, value: {actual}}}));',
+                f"const {actual} = {subject}({args});",
+                f"const {expected_name} = {expected};",
+                f'if ({condition}) throw new Error("case {index}");',
+                f'console.log("ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t" + {rendered});',
             ]
         )
-    return "import { " + function.name + f' }} from "{module_path}";\n' + "\n".join(checks) + "\n"
+    return (
+        f'import {{ {function.name} as {subject} }} from "{module_path}";\n'
+        + "function _elmosHarnessFP64(value: number): string {\n"
+        + "  const bytes = new ArrayBuffer(8);\n"
+        + "  const view = new DataView(bytes);\n"
+        + "  view.setFloat64(0, value, false);\n"
+        + '  return view.getBigUint64(0, false).toString(16).padStart(16, "0");\n'
+        + "}\n"
+        + "function _elmosHarnessHexUTF8(value: string): string {\n"
+        + "  return Array.from(new TextEncoder().encode(value), "
+        + 'byte => byte.toString(16).padStart(2, "0")).join("");\n'
+        + "}\n"
+        + "\n".join(checks)
+        + "\n"
+    )
+
+
+def _javascript_literal(value: object, value_type: str) -> str:
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**53 - 1) <= value <= 2**53 - 1:
+            raise RouteError("JAVASCRIPT_CASE_INTEGER_OUTSIDE_SAFE_SUBSET")
+    elif value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(float(value)):
+            raise RouteError("JAVASCRIPT_CASE_NUMBER_OUTSIDE_FINITE_SUBSET")
+    elif value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("JAVASCRIPT_CASE_BOOLEAN_REQUIRED")
+    elif value_type == "string":
+        if not isinstance(value, str):
+            raise RouteError("JAVASCRIPT_CASE_STRING_REQUIRED")
+    else:
+        raise RouteError(f"JAVASCRIPT_CASE_TYPE_UNSUPPORTED:{value_type}")
+    return _argument(value, "javascript")
+
+
+def _javascript_harness(
+    function: Function,
+    cases: list[dict[str, Any]],
+    *,
+    module_path: str = "./migrated.mjs",
+) -> str:
+    subject = "_elmosHarnessSubject"
+    checks: list[str] = []
+    for index, case in enumerate(cases):
+        values = case.get("args")
+        if not isinstance(values, list) or len(values) != len(function.parameters):
+            raise RouteError("JAVASCRIPT_CASE_ARGUMENT_COUNT_INVALID")
+        args = ", ".join(
+            _javascript_literal(value, parameter.type)
+            for value, parameter in zip(values, function.parameters, strict=True)
+        )
+        expected = _javascript_literal(_returned_case_value(case), function.return_type)
+        actual = f"actual{index}"
+        expected_name = f"expected{index}"
+        if function.return_type == "integer":
+            condition = f"!Number.isSafeInteger({actual}) || Object.is({actual}, -0) || {actual} !== {expected_name}"
+            encoding = "i64-dec"
+            rendered = f"String({actual})"
+        elif function.return_type == "number":
+            condition = f"!Number.isFinite({actual}) || !Object.is({actual}, {expected_name})"
+            encoding = "fp64-hex"
+            rendered = f"elmosHarnessFP64({actual})"
+        elif function.return_type == "boolean":
+            condition = f'typeof {actual} !== "boolean" || {actual} !== {expected_name}'
+            encoding = "bool"
+            rendered = f"String({actual})"
+        elif function.return_type == "string":
+            condition = f'typeof {actual} !== "string" || {actual} !== {expected_name}'
+            encoding = "hex-utf8"
+            rendered = f"elmosHarnessHexUTF8({actual})"
+        else:
+            raise RouteError(f"JAVASCRIPT_CASE_TYPE_UNSUPPORTED:{function.return_type}")
+        checks.extend(
+            [
+                f"const {actual} = {subject}({args});",
+                f"const {expected_name} = {expected};",
+                f'if ({condition}) throw new Error("case {index}");',
+                f'console.log("ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t" + {rendered});',
+            ]
+        )
+    return (
+        f'import {{ {function.name} as {subject} }} from "{module_path}";\n'
+        + "function elmosHarnessFP64(value) {\n"
+        + "  const bytes = new ArrayBuffer(8);\n"
+        + "  const view = new DataView(bytes);\n"
+        + "  view.setFloat64(0, value, false);\n"
+        + '  return view.getBigUint64(0, false).toString(16).padStart(16, "0");\n'
+        + "}\n"
+        + "function elmosHarnessHexUTF8(value) {\n"
+        + '  return Buffer.from(value, "utf8").toString("hex");\n'
+        + "}\n"
+        + "\n".join(checks)
+        + "\n"
+    )
 
 
 def _native_literal(value: object, language: Language, value_type: str) -> str:
@@ -402,7 +642,7 @@ def _cpp_harness(
         encoding, rendered = {
             "integer": ("i64-dec", f"std::to_string({actual})"),
             "number": ("fp64-hex", f"elmos_harness_fp64({actual})"),
-            "boolean": ("bool", f"({actual} ? std::string(\"true\") : std::string(\"false\"))"),
+            "boolean": ("bool", f'({actual} ? std::string("true") : std::string("false"))'),
             "string": ("hex-utf8", f"elmos_harness_hex_utf8({actual})"),
         }[function.return_type]
         checks.extend(
@@ -434,7 +674,7 @@ def _cpp_harness(
         "    return stream.str();\n"
         "}\n\n"
         "[[maybe_unused]] static std::string elmos_harness_hex_utf8(const std::string &value) {\n"
-        "    static constexpr char digits[] = \"0123456789abcdef\";\n"
+        '    static constexpr char digits[] = "0123456789abcdef";\n'
         "    std::string encoded;\n"
         "    encoded.reserve(value.size() * 2);\n"
         "    for (const unsigned char byte : value) {\n"
@@ -477,15 +717,11 @@ def _objc_harness(
         observation = {
             "integer": f'printf("ELMOS_OBSERVATION\\t{index}\\ti64-dec\\t%lld\\n", {actual});',
             "number": (
-                f'printf("ELMOS_OBSERVATION\\t{index}\\tfp64-hex\\t%s\\n", '
-                f'[ElmosHarnessFP64({actual}) UTF8String]);'
+                f'printf("ELMOS_OBSERVATION\\t{index}\\tfp64-hex\\t%s\\n", [ElmosHarnessFP64({actual}) UTF8String]);'
             ),
-            "boolean": (
-                f'printf("ELMOS_OBSERVATION\\t{index}\\tbool\\t%s\\n", {actual} ? "true" : "false");'
-            ),
+            "boolean": (f'printf("ELMOS_OBSERVATION\\t{index}\\tbool\\t%s\\n", {actual} ? "true" : "false");'),
             "string": (
-                f'printf("ELMOS_OBSERVATION\\t{index}\\thex-utf8\\t%s\\n", '
-                f'[ElmosHarnessHexUTF8({actual}) UTF8String]);'
+                f'printf("ELMOS_OBSERVATION\\t{index}\\thex-utf8\\t%s\\n", [ElmosHarnessHexUTF8({actual}) UTF8String]);'
             ),
         }[function.return_type]
         checks.extend(
@@ -497,7 +733,7 @@ def _objc_harness(
             ]
         )
     return (
-        '#import <Foundation/Foundation.h>\n#include <math.h>\n#include <stdint.h>\n#include <string.h>\n'
+        "#import <Foundation/Foundation.h>\n#include <math.h>\n#include <stdint.h>\n#include <string.h>\n"
         f'#import "{include_file}"\n\n'
         "static __attribute__((unused)) uint64_t ElmosHarnessFP64Bits(double value) {\n"
         "    uint64_t bits = 0;\n"
@@ -509,7 +745,7 @@ def _objc_harness(
         "           ElmosHarnessFP64Bits(left) == ElmosHarnessFP64Bits(right);\n"
         "}\n\n"
         "static __attribute__((unused)) NSString *ElmosHarnessFP64(double value) {\n"
-        "    return [NSString stringWithFormat:@\"%016llx\", "
+        '    return [NSString stringWithFormat:@"%016llx", '
         "(unsigned long long)ElmosHarnessFP64Bits(value)];\n"
         "}\n\n"
         "static __attribute__((unused)) NSString *ElmosHarnessHexUTF8(NSString *value) {\n"
@@ -517,13 +753,11 @@ def _objc_harness(
         "    const unsigned char *bytes = data.bytes;\n"
         "    NSMutableString *result = [NSMutableString stringWithCapacity:data.length * 2];\n"
         "    for (NSUInteger index = 0; index < data.length; index++) {\n"
-        "        [result appendFormat:@\"%02x\", (unsigned int)bytes[index]];\n"
+        '        [result appendFormat:@"%02x", (unsigned int)bytes[index]];\n'
         "    }\n"
         "    return result;\n"
         "}\n\n"
-        "int main() {\n    @autoreleasepool {\n"
-        + "\n".join(checks)
-        + "\n    }\n    return 0;\n}\n"
+        "int main() {\n    @autoreleasepool {\n" + "\n".join(checks) + "\n    }\n    return 0;\n}\n"
     )
 
 
@@ -559,32 +793,99 @@ def _swift_harness(function: Function, cases: list[dict[str, Any]]) -> str:
         "    return (left.isNaN && right.isNaN) || left.bitPattern == right.bitPattern\n"
         "}\n\n"
         "func elmosHarnessFP64(_ value: Double) -> String {\n"
-        "    return String(format: \"%016llx\", value.bitPattern)\n"
+        '    return String(format: "%016llx", value.bitPattern)\n'
         "}\n\n"
         "func elmosHarnessHexUTF8(_ value: String) -> String {\n"
-        "    return value.utf8.map { String(format: \"%02x\", $0) }.joined()\n"
-        "}\n\n"
-        + "\n".join(checks)
-        + "\n"
+        '    return value.utf8.map { String(format: "%02x", $0) }.joined()\n'
+        "}\n\n" + "\n".join(checks) + "\n"
     )
 
 
+def _go_case_literal(value: object, value_type: str, *, math_alias: str = "math") -> str:
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(float(value)):
+            raise RouteError("GO_CASE_NUMBER_OUTSIDE_FINITE_SUBSET")
+        bits = struct.unpack(">Q", struct.pack(">d", float(value)))[0]
+        return f"{math_alias}.Float64frombits(0x{bits:016x})"
+    return _argument(value, "go")
+
+
+def _go_private_identifiers(function: Function, bases: tuple[str, ...]) -> tuple[str, ...]:
+    """Allocate bounded harness-only names around the certified subject.
+
+    A repository work unit currently carries exactly one compiler-inventoried
+    function.  That subject is therefore the complete user-declared name set
+    visible to these generated harness declarations.  Import aliases and the
+    source test entry point must not collide with it (for example a function
+    named ``fmt`` or ``TestElmosSourceBehavior``).
+    """
+
+    occupied = {function.name}
+    allocated: list[str] = []
+    for base in bases:
+        for suffix in range(17):
+            candidate = base if suffix == 0 else f"{base}{suffix}"
+            if candidate not in occupied:
+                occupied.add(candidate)
+                allocated.append(candidate)
+                break
+        else:
+            raise RouteError(f"GO_HARNESS_IDENTIFIER_EXHAUSTED:{base}")
+    return tuple(allocated)
+
+
 def _go_harness(function: Function, cases: list[dict[str, Any]]) -> str:
-    checks = []
+    if function.name == "main":
+        raise RouteError("GO_HARNESS_SUBJECT_NAME_CONFLICT:main")
+    fmt_alias, base64_alias, math_alias = _go_private_identifiers(
+        function,
+        ("_elmosFmt", "_elmosBase64", "_elmosMath"),
+    )
+    checks: list[str] = []
+    uses_number = function.return_type == "number" or any(
+        parameter.type == "number" for parameter in function.parameters
+    )
     for index, case in enumerate(cases):
-        args = ", ".join(_argument(value, "go") for value in case["args"])
-        expected = _expected(case["expected"], "go")
-        actual = f"actual{index}"
-        checks.extend(
-            [
-                f"    {actual} := {function.name}({args})",
-                f'    if {actual} != {expected} {{ panic("case {index}") }}',
-                f'    fmt.Printf("ELMOS_OBSERVATION\\t{index}\\tb64\\t%s\\n", '
-                f"base64.StdEncoding.EncodeToString([]byte(fmt.Sprint({actual}))))",
-            ]
+        args = ", ".join(
+            _go_case_literal(value, parameter.type, math_alias=math_alias)
+            for value, parameter in zip(case["args"], function.parameters, strict=True)
         )
+        expected = _go_case_literal(
+            _returned_case_value(case),
+            function.return_type,
+            math_alias=math_alias,
+        )
+        actual = f"actual{index}"
+        if function.return_type == "number":
+            checks.extend(
+                [
+                    f"    {actual} := {function.name}({args})",
+                    f"    if {math_alias}.Float64bits({actual}) != "
+                    f'{math_alias}.Float64bits({expected}) {{ panic("case {index}") }}',
+                    f'    {fmt_alias}.Printf("ELMOS_OBSERVATION\\t{index}\\tfp64-hex\\t%016x\\n", '
+                    f"{math_alias}.Float64bits({actual}))",
+                ]
+            )
+        else:
+            checks.extend(
+                [
+                    f"    {actual} := {function.name}({args})",
+                    f'    if {actual} != {expected} {{ panic("case {index}") }}',
+                    f'    {fmt_alias}.Printf("ELMOS_OBSERVATION\\t{index}\\tb64\\t%s\\n", '
+                    f"{base64_alias}.StdEncoding.EncodeToString([]byte({fmt_alias}.Sprint({actual}))))",
+                ]
+            )
+    imports = [f'{fmt_alias} "fmt"']
+    if function.return_type != "number":
+        imports.insert(0, f'{base64_alias} "encoding/base64"')
+    if uses_number:
+        imports.append(f'{math_alias} "math"')
     return (
-        'package main\n\nimport (\n    "encoding/base64"\n    "fmt"\n)\n\nfunc main() {\n' + "\n".join(checks) + "\n}\n"
+        "package main\n\nimport (\n    "
+        + "\n    ".join(imports)
+        + "\n)\n\nfunc main() {\n"
+        + "\n".join(checks)
+        + "\n}\n"
     )
 
 
@@ -740,25 +1041,65 @@ def _go_source_harness(
     package_name: str,
     function: Function,
     cases: list[dict[str, Any]],
-) -> str:
-    checks: list[str] = []
-    for index, case in enumerate(cases):
-        args = ", ".join(_argument(value, "go") for value in case["args"])
-        expected = _expected(case["expected"], "go")
-        actual = f"actual{index}"
-        checks.extend(
-            [
-                f"    {actual} := {function.name}({args})",
-                f'    if {actual} != {expected} {{ t.Fatalf("case {index}") }}',
-                f'    fmt.Printf("ELMOS_OBSERVATION\\t{index}\\tb64\\t%s\\n", '
-                f"base64.StdEncoding.EncodeToString([]byte(fmt.Sprint({actual}))))",
-            ]
-        )
-    return (
-        f"package {package_name}\n\n"
-        'import (\n    "encoding/base64"\n    "fmt"\n    "testing"\n)\n\n'
-        "func TestElmosSourceBehavior(t *testing.T) {\n" + "\n".join(checks) + "\n}\n"
+) -> tuple[str, str]:
+    fmt_alias, base64_alias, math_alias, testing_alias, test_parameter, test_name = _go_private_identifiers(
+        function,
+        (
+            "_elmosFmt",
+            "_elmosBase64",
+            "_elmosMath",
+            "_elmosTesting",
+            "_elmosT",
+            "TestElmosSourceBehavior",
+        ),
     )
+    checks: list[str] = []
+    uses_number = function.return_type == "number" or any(
+        parameter.type == "number" for parameter in function.parameters
+    )
+    for index, case in enumerate(cases):
+        args = ", ".join(
+            _go_case_literal(value, parameter.type, math_alias=math_alias)
+            for value, parameter in zip(case["args"], function.parameters, strict=True)
+        )
+        expected = _go_case_literal(
+            _returned_case_value(case),
+            function.return_type,
+            math_alias=math_alias,
+        )
+        actual = f"actual{index}"
+        if function.return_type == "number":
+            checks.extend(
+                [
+                    f"    {actual} := {function.name}({args})",
+                    f"    if {math_alias}.Float64bits({actual}) != "
+                    f'{math_alias}.Float64bits({expected}) {{ {test_parameter}.Fatalf("case {index}") }}',
+                    f'    {fmt_alias}.Printf("ELMOS_OBSERVATION\\t{index}\\tfp64-hex\\t%016x\\n", '
+                    f"{math_alias}.Float64bits({actual}))",
+                ]
+            )
+        else:
+            checks.extend(
+                [
+                    f"    {actual} := {function.name}({args})",
+                    f'    if {actual} != {expected} {{ {test_parameter}.Fatalf("case {index}") }}',
+                    f'    {fmt_alias}.Printf("ELMOS_OBSERVATION\\t{index}\\tb64\\t%s\\n", '
+                    f"{base64_alias}.StdEncoding.EncodeToString([]byte({fmt_alias}.Sprint({actual}))))",
+                ]
+            )
+    imports = [f'{fmt_alias} "fmt"', f'{testing_alias} "testing"']
+    if function.return_type != "number":
+        imports.insert(0, f'{base64_alias} "encoding/base64"')
+    if uses_number:
+        imports.append(f'{math_alias} "math"')
+    harness = (
+        f"package {package_name}\n\nimport (\n    "
+        + "\n    ".join(imports)
+        + f"\n)\n\nfunc {test_name}({test_parameter} *{testing_alias}.T) {{\n"
+        + "\n".join(checks)
+        + "\n}\n"
+    )
+    return harness, test_name
 
 
 def _safe_source_name(source: Path) -> str:
@@ -766,6 +1107,31 @@ def _safe_source_name(source: Path) -> str:
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", stem):
         raise RouteError("SOURCE_MODULE_NAME_UNSAFE")
     return stem
+
+
+def _javascript_descriptor_stable_projection(
+    source: Path,
+    descriptor: dict[str, object],
+) -> dict[str, object]:
+    descriptor_path = Path(str(descriptor.get("path", "")))
+    digest = descriptor.get("sha256")
+    byte_count = descriptor.get("bytes")
+    descriptor_type = descriptor.get("type")
+    if (
+        not descriptor_path.is_absolute()
+        or not isinstance(digest, str)
+        or not isinstance(byte_count, int)
+        or byte_count < 0
+        or descriptor_type != "module"
+    ):
+        raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_INVALID_DURING_VALIDATION")
+    normalized_digest = digest if digest.startswith("sha256:") else f"sha256:{digest}"
+    return {
+        "logical_path": Path(os.path.relpath(descriptor_path, source.parent)).as_posix(),
+        "sha256": normalized_digest,
+        "bytes": byte_count,
+        "type": descriptor_type,
+    }
 
 
 def validate_source(
@@ -787,6 +1153,27 @@ def validate_source(
     source_name = _safe_source_name(source)
     copied_source = output / source.name
     copied_source.write_bytes(source.read_bytes())
+    javascript_descriptor: dict[str, object] | None = None
+    javascript_descriptor_report: dict[str, object] | None = None
+    javascript_descriptor_observation: dict[str, object] | None = None
+    if language == "javascript":
+        javascript_descriptor = javascript_esm_descriptor(source)
+        if javascript_descriptor is not None:
+            descriptor_path = Path(str(javascript_descriptor["path"]))
+            descriptor_content = descriptor_path.read_bytes()
+            if (
+                len(descriptor_content) != javascript_descriptor["bytes"]
+                or hashlib.sha256(descriptor_content).hexdigest() != javascript_descriptor["sha256"]
+            ):
+                raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_VALIDATION")
+            (output / "package.json").write_bytes(descriptor_content)
+            javascript_descriptor_report = _javascript_descriptor_stable_projection(
+                source,
+                javascript_descriptor,
+            )
+            javascript_descriptor_observation = {
+                "observed_origin_path": str(descriptor_path),
+            }
     commands: list[list[str]]
     if language == "java":
         (output / "RouteHarness.java").write_text(_java_harness(function, cases, owner=source_name), encoding="utf-8")
@@ -852,12 +1239,24 @@ def validate_source(
             [toolchain.auxiliary, "-p", "tsconfig.json"],
             [toolchain.executable, "dist/source_harness.js"],
         ]
+    elif language == "javascript":
+        (output / "source_harness.mjs").write_text(
+            _javascript_harness(function, cases, module_path=f"./{source.name}"),
+            encoding="utf-8",
+        )
+        commands = [
+            [toolchain.executable, "--check", source.name],
+            [toolchain.executable, "--check", "source_harness.mjs"],
+            [toolchain.executable, "source_harness.mjs"],
+        ]
     elif language == "go":
         match = re.search(r"(?m)^package\s+([A-Za-z_][A-Za-z0-9_]*)\s*$", source.read_text(encoding="utf-8"))
         if match is None:
             raise RouteError("GO_SOURCE_PACKAGE_REQUIRED")
+        source_harness, source_test_name = _go_source_harness(match.group(1), function, cases)
         (output / "source_behavior_test.go").write_text(
-            _go_source_harness(match.group(1), function, cases), encoding="utf-8"
+            source_harness,
+            encoding="utf-8",
         )
         commands = [
             [
@@ -866,7 +1265,7 @@ def validate_source(
                 "-v",
                 "-count=1",
                 "-run",
-                "^TestElmosSourceBehavior$",
+                f"^{source_test_name}$",
                 source.name,
                 "source_behavior_test.go",
             ]
@@ -963,8 +1362,22 @@ def validate_source(
         )
         if index == len(commands) - 1:
             runtime_stdout = completed.stdout
+    if javascript_descriptor is not None:
+        current_descriptor = javascript_esm_descriptor(source)
+        if (
+            current_descriptor is None
+            or _javascript_descriptor_stable_projection(source, current_descriptor) != javascript_descriptor_report
+        ):
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_CHANGED_DURING_VALIDATION")
+        copied_descriptor = output / "package.json"
+        if (
+            not copied_descriptor.is_file()
+            or hashlib.sha256(copied_descriptor.read_bytes()).hexdigest() != javascript_descriptor["sha256"]
+            or copied_descriptor.stat().st_size != javascript_descriptor["bytes"]
+        ):
+            raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_SNAPSHOT_CHANGED_DURING_VALIDATION")
     observations = _observations(runtime_stdout, function, len(cases))
-    return {
+    report = {
         "status": "PASSED",
         "role": "source",
         "language": language,
@@ -975,6 +1388,10 @@ def validate_source(
         "case_count": len(cases),
         "observations": observations,
     }
+    if javascript_descriptor_report is not None:
+        report["javascript_esm_descriptor"] = javascript_descriptor_report
+        report["javascript_esm_descriptor_observation"] = javascript_descriptor_observation
+    return report
 
 
 def validate(
@@ -1094,6 +1511,13 @@ def validate(
         commands = [
             [toolchain.executable, "--edition=2021", "-D", "warnings", "-o", "route_harness", "route_harness.rs"],
             ["./route_harness"],
+        ]
+    elif language == "javascript":
+        (output / "route_harness.mjs").write_text(_javascript_harness(function, cases), encoding="utf-8")
+        commands = [
+            [toolchain.executable, "--check", emitted.relative_path],
+            [toolchain.executable, "--check", "route_harness.mjs"],
+            [toolchain.executable, "route_harness.mjs"],
         ]
     else:
         (output / "route_harness.ts").write_text(_typescript_harness(function, cases), encoding="utf-8")

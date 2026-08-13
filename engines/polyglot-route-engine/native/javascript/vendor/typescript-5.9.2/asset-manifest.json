@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "asset_id": "typescript-parser-5.9.2",
+  "package": {
+    "name": "typescript",
+    "version": "5.9.2",
+    "license": "Apache-2.0",
+    "repository": "https://github.com/microsoft/TypeScript.git",
+    "registry_tarball": "https://registry.npmjs.org/typescript/-/typescript-5.9.2.tgz",
+    "registry_integrity": "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A=="
+  },
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 9197,
+      "sha256": "sha256:a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+    },
+    {
+      "path": "package.json",
+      "bytes": 3620,
+      "sha256": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3"
+    },
+    {
+      "path": "typescript.js",
+      "bytes": 9111680,
+      "sha256": "sha256:e5f1f6b3e82228a89873cc7b941b2465185e839c0692860f83e3e63e53f94c2b"
+    }
+  ]
+}

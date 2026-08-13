@@ -33,6 +33,7 @@ from .project_graph import (
     semantic_coverage_key,
     verified_java_structural_wrapper,
 )
+from .repository import javascript_esm_descriptor
 
 SCHEMA_VERSION = "1.0.0"
 PROFILE = "typed-pure-function-v1"
@@ -54,6 +55,10 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
     ),
     "typescript": re.compile(
         r"^\s*(?:export\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(",
+        re.MULTILINE,
+    ),
+    "javascript": re.compile(
+        r"^\s*export\s+function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(",
         re.MULTILINE,
     ),
     "go": re.compile(
@@ -88,6 +93,7 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
 class Verdict:
     READY = "READY"
     UNSUPPORTED = "UNSUPPORTED"
+    NOT_RUN = "NOT_RUN"
     NO_CANDIDATE_DECLARATION = "NO_CANDIDATE_DECLARATION"
     UNREADABLE = "UNREADABLE"
 
@@ -132,6 +138,228 @@ def _reason(error: Exception) -> str:
     return detail[:300]
 
 
+_COMMON_SOURCE_REJECTION_CODES = frozenset(
+    {
+        "UNSUPPORTED_EXPRESSION",
+        "UNSUPPORTED_OPERATOR",
+        "UNSUPPORTED_STATEMENT",
+        "UNSUPPORTED_TYPE",
+    }
+)
+_SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
+    "python": frozenset(
+        {
+            "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET",
+            "PYTHON_PARAMETER_TYPE_REQUIRED",
+            "PYTHON_RETURN_TYPE_REQUIRED",
+            "PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET",
+            "PYTHON_UNSUPPORTED_EXPRESSION",
+            "PYTHON_UNSUPPORTED_STATEMENT",
+        }
+    ),
+    "java": frozenset(
+        {
+            "JAVA_BOXED_NULLABLE_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_INTERFACE_STRING_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_METHOD_SHAPE_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVA_UNSUPPORTED_EXPRESSION",
+            "JAVA_UNSUPPORTED_OPERATOR",
+            "JAVA_UNSUPPORTED_STATEMENT",
+            "JAVA_UNSUPPORTED_TYPE",
+        }
+    ),
+    "csharp": frozenset(
+        {
+            "CSHARP_BLOCK_BODY_REQUIRED",
+            "CSHARP_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "CSHARP_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
+            "CSHARP_UNSUPPORTED_EXPRESSION",
+            "CSHARP_UNSUPPORTED_OPERATOR",
+            "CSHARP_UNSUPPORTED_STATEMENT",
+            "CSHARP_UNSUPPORTED_TYPE",
+        }
+    ),
+    "typescript": frozenset(
+        {
+            "TYPESCRIPT_DESTRUCTURED_PARAMETER_UNSUPPORTED",
+            "TYPESCRIPT_EXPLICIT_TYPE_REQUIRED",
+            "TYPESCRIPT_FUNCTION_BODY_REQUIRED",
+            "TYPESCRIPT_NEGATIVE_ZERO_LITERAL_UNSUPPORTED",
+            "TYPESCRIPT_NON_FINITE_LITERAL_UNSUPPORTED",
+            "TYPESCRIPT_RETURN_EXPRESSION_REQUIRED",
+            "TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED",
+            "TYPESCRIPT_UNSUPPORTED_EXPRESSION",
+            "TYPESCRIPT_UNSUPPORTED_OPERATOR",
+            "TYPESCRIPT_UNSUPPORTED_STATEMENT",
+            "TYPESCRIPT_UNSUPPORTED_TYPE",
+        }
+    ),
+    "javascript": frozenset(
+        {
+            "JAVASCRIPT_ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVASCRIPT_DUPLICATE_FUNCTION",
+            "JAVASCRIPT_EXACT_JSDOC_TAG_SET_REQUIRED",
+            "JAVASCRIPT_EXACT_JSDOC_TYPE_REQUIRED",
+            "JAVASCRIPT_EXPRESSION_UNSUPPORTED",
+            "JAVASCRIPT_FUNCTION_BODY_REQUIRED",
+            "JAVASCRIPT_FUNCTION_SHAPE_UNSUPPORTED",
+            "JAVASCRIPT_INTEGER_LITERAL_OUTSIDE_SAFE_SUBSET",
+            "JAVASCRIPT_JSDOC_PARAMETER_ORDER_INVALID",
+            "JAVASCRIPT_JSDOC_RETURN_INVALID",
+            "JAVASCRIPT_MODULE_IMPORT_EXPORT_OUTSIDE_CERTIFIED_SUBSET",
+            "JAVASCRIPT_NAMED_EXPORT_REQUIRED",
+            "JAVASCRIPT_NEGATIVE_ZERO_LITERAL_UNSUPPORTED",
+            "JAVASCRIPT_NON_FINITE_LITERAL_UNSUPPORTED",
+            "JAVASCRIPT_OPERATOR_UNSUPPORTED",
+            "JAVASCRIPT_PARAMETER_SHAPE_UNSUPPORTED",
+            "JAVASCRIPT_PARSE_DIAGNOSTICS",
+            "JAVASCRIPT_STATEMENT_UNSUPPORTED",
+            "JAVASCRIPT_TOP_LEVEL_STATEMENT_OUTSIDE_CERTIFIED_SUBSET",
+        }
+    ),
+    "go": frozenset(
+        {
+            "GO_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET",
+            "GO_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET",
+            "GO_INVALID_LITERAL",
+            "GO_ONE_NAME_PER_PARAMETER_REQUIRED",
+            "GO_RETURN_EXPRESSION_REQUIRED",
+            "GO_SINGLE_RETURN_TYPE_REQUIRED",
+            "GO_UNSUPPORTED_EXPRESSION",
+            "GO_UNSUPPORTED_LITERAL",
+            "GO_UNSUPPORTED_OPERATOR",
+            "GO_UNSUPPORTED_STATEMENT",
+            "GO_UNSUPPORTED_TYPE",
+        }
+    ),
+    "rust": frozenset(
+        {
+            "RUST_ATTRIBUTE_OUTSIDE_CERTIFIED_SUBSET",
+            "RUST_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET",
+            "RUST_FUNCTION_QUALIFIER_OUTSIDE_CERTIFIED_SUBSET",
+            "RUST_GENERIC_OR_VARIADIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "RUST_INVALID_FLOAT",
+            "RUST_INVALID_INTEGER",
+            "RUST_INVALID_PATH",
+            "RUST_METHOD_OUTSIDE_CERTIFIED_SUBSET",
+            "RUST_PARAMETER_IDENTIFIER_REQUIRED",
+            "RUST_RETURN_EXPRESSION_REQUIRED",
+            "RUST_RETURN_TYPE_REQUIRED",
+            "RUST_UNSUPPORTED_EXPRESSION",
+            "RUST_UNSUPPORTED_LITERAL",
+            "RUST_UNSUPPORTED_OPERATOR",
+            "RUST_UNSUPPORTED_STATEMENT",
+            "RUST_UNSUPPORTED_TYPE",
+        }
+    ),
+    "cpp": frozenset(
+        {
+            "AMBIGUOUS_FUNCTION_DEFINITION",
+            "CPP_BOOLEAN_INTEGER_COERCION_OUTSIDE_CERTIFIED_SUBSET",
+            "CPP_BOOLEAN_LITERAL_TYPE_MISMATCH",
+            "CPP_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
+            "CPP_FUNCTION_BODY_REQUIRED",
+            "CPP_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET",
+            "CPP_INTEGER_FUNCTION_RETURN_REQUIRED",
+            "CPP_INTEGER_RETURN_EXPRESSION_REQUIRED",
+            "CPP_INTEGER_SPELLING_OUTSIDE_EXACT_PROFILE",
+            "CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
+            "CPP_PARAMETER_NAME_REQUIRED",
+            "CPP_STRING_CONSTRUCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "CPP_UNSUPPORTED_EXPRESSION",
+            "CPP_UNSUPPORTED_OPERATOR",
+            "CPP_UNSUPPORTED_STATEMENT",
+            "CPP_UNSUPPORTED_TYPE",
+            "SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS",
+        }
+    ),
+    "objc": frozenset(
+        {
+            "AMBIGUOUS_FUNCTION_DEFINITION",
+            "OBJC_BOOLEAN_INTEGER_COERCION_OUTSIDE_CERTIFIED_SUBSET",
+            "OBJC_BOOLEAN_LITERAL_TYPE_MISMATCH",
+            "OBJC_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
+            "OBJC_FUNCTION_BODY_REQUIRED",
+            "OBJC_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET",
+            "OBJC_INTEGER_FUNCTION_RETURN_REQUIRED",
+            "OBJC_INTEGER_RETURN_EXPRESSION_REQUIRED",
+            "OBJC_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
+            "OBJC_PARAMETER_NAME_REQUIRED",
+            "OBJC_STRING_POINTER_COMPARISON_OUTSIDE_CERTIFIED_SUBSET",
+            "OBJC_UNSUPPORTED_EXPRESSION",
+            "OBJC_UNSUPPORTED_OPERATOR",
+            "OBJC_UNSUPPORTED_STATEMENT",
+            "OBJC_UNSUPPORTED_TYPE",
+            "SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS",
+        }
+    ),
+    "swift": frozenset(
+        {
+            "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_CALL_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_DEFAULT_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_EXPLICIT_RETURN_TYPE_REQUIRED",
+            "SWIFT_EXPLICIT_TYPE_REQUIRED",
+            "SWIFT_EXPRESSION_TYPE_UNRESOLVED",
+            "SWIFT_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_FUNCTION_BODY_REQUIRED",
+            "SWIFT_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE",
+            "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_OPTIONAL_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_PARAMETER_NAME_REQUIRED",
+            "SWIFT_RETURN_WITHOUT_VALUE",
+            "SWIFT_STRING_INTERPOLATION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_THROWING_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_UNSIGNED_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "SWIFT_UNSUPPORTED_CONDITION",
+            "SWIFT_UNSUPPORTED_EXPRESSION",
+            "SWIFT_UNSUPPORTED_FLOAT_LITERAL",
+            "SWIFT_UNSUPPORTED_OPERATOR",
+            "SWIFT_UNSUPPORTED_STATEMENT",
+            "SWIFT_UNSUPPORTED_TYPE",
+        }
+    ),
+}
+_WRAPPED_NATIVE_DOMAIN_ERROR = re.compile(
+    r"\ANATIVE_ANALYZER_FAILED:(?P<executable>/[^:\r\n]+):"
+    r"(?P<detail>[A-Z][A-Z0-9_]*(?::[A-Za-z0-9_.:<>=/+,\-]+)*)\Z"
+)
+
+
+def _analyzer_failure_verdict(error: Exception, language: Language) -> str:
+    """Separate completed source rejection from analyzer non-execution.
+
+    Native analyzers sometimes wrap a precise source-domain rejection inside
+    ``NATIVE_ANALYZER_FAILED:<executable>:<code>``.  Only the explicit,
+    compiler-backed source rejection vocabulary below is semantic evidence.
+    Integrity, toolchain, filesystem, timeout, malformed-output, and unknown
+    failures mean analysis did not run to a trustworthy conclusion.
+    """
+
+    if not isinstance(error, RouteError):
+        return Verdict.NOT_RUN
+    diagnostic = str(error)
+    if diagnostic.startswith("NATIVE_ANALYZER_FAILED:"):
+        wrapped = _WRAPPED_NATIVE_DOMAIN_ERROR.fullmatch(diagnostic)
+        if wrapped is None:
+            return Verdict.NOT_RUN
+        diagnostic = wrapped.group("detail")
+    primary_code = diagnostic.partition(":")[0]
+    if re.fullmatch(r"[A-Z][A-Z0-9_]*", primary_code) is None:
+        return Verdict.NOT_RUN
+    allowed = _COMMON_SOURCE_REJECTION_CODES | _SOURCE_REJECTION_CODES[language]
+    return Verdict.UNSUPPORTED if primary_code in allowed else Verdict.NOT_RUN
+
+
 def _python_subject_inventory(content: bytes, relative: str) -> tuple[PythonCoverageSubject, ...]:
     try:
         tree = ast.parse(content, filename=relative)
@@ -158,13 +386,16 @@ def _mapped_subject_blocker(
     subject: dict[str, Any],
     code: str,
     reason: str,
+    *,
+    verdict: str = Verdict.UNSUPPORTED,
 ) -> dict[str, Any]:
-    subject["semantic_status"] = "BLOCKED"
+    subject["semantic_status"] = "NOT_RUN" if verdict == Verdict.NOT_RUN else "BLOCKED"
     subject["diagnostics"] = [code]
     return {
         "candidate": subject.get("name"),
         "blocker_code": code,
         "reason": reason,
+        "verdict": verdict,
         "coverage_key": subject.get("coverage_key"),
         "source_symbol": subject,
     }
@@ -380,6 +611,12 @@ def discover_unit(
         # The plan is content addressed. A changed file invalidates the whole
         # decomposition rather than being silently re-discovered.
         raise RouteError(f"WORK_UNIT_CONTENT_CHANGED:{relative}")
+    if source_language == "javascript":
+        descriptor = javascript_esm_descriptor(path, repository_root)
+        if descriptor != unit.get("javascript_esm_descriptor"):
+            raise RouteError(f"JAVASCRIPT_ESM_DESCRIPTOR_CHANGED:{relative}")
+        if descriptor is not None:
+            result["javascript_esm_descriptor"] = descriptor
 
     coverage_subjects: list[dict[str, Any]] = []
     candidate_symbols: list[dict[str, Any]] = []
@@ -434,6 +671,8 @@ def discover_unit(
             raw_inventory = inventory_module(path, source_language)
         except (RouteError, OSError, ValueError) as error:
             diagnostic = _reason(error)
+            blocker_verdict = _analyzer_failure_verdict(error, source_language)
+            enumeration_status = "FAILED" if blocker_verdict == Verdict.UNSUPPORTED else "NOT_RUN"
             inventory_blocker = _module_inventory_blocker_subject(
                 source_language,
                 relative,
@@ -443,8 +682,18 @@ def discover_unit(
             coverage_blockers.append(
                 _mapped_subject_blocker(
                     inventory_blocker,
-                    "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
-                    f"{relative} compiler-backed module enumeration did not run: {diagnostic}",
+                    (
+                        "COMPILER_MODULE_ENUMERATION_REJECTED_SOURCE"
+                        if blocker_verdict == Verdict.UNSUPPORTED
+                        else "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+                    ),
+                    (
+                        f"{relative} compiler-backed module enumeration rejected the source: "
+                        f"{diagnostic}"
+                        if blocker_verdict == Verdict.UNSUPPORTED
+                        else f"{relative} compiler-backed module enumeration did not run: {diagnostic}"
+                    ),
+                    verdict=blocker_verdict,
                 )
             )
             result["module_inventory"] = {
@@ -452,11 +701,16 @@ def discover_unit(
                 "language": source_language,
                 "source_sha256": observed,
                 "profile": "typed-pure-module-v1",
-                "enumeration_status": "NOT_RUN",
+                "enumeration_status": enumeration_status,
                 "analyzer": None,
                 "analyzer_version": None,
                 "subjects": coverage_subjects,
                 "diagnostics": [diagnostic],
+                **(
+                    {"javascript_esm_descriptor": result["javascript_esm_descriptor"]}
+                    if "javascript_esm_descriptor" in result
+                    else {}
+                ),
             }
         else:
             raw_subjects = raw_inventory.get("subjects")
@@ -505,6 +759,11 @@ def discover_unit(
                 "analyzer_version": raw_inventory.get("analyzer_version"),
                 "subjects": coverage_subjects,
                 "diagnostics": raw_inventory.get("diagnostics", []),
+                **(
+                    {"javascript_esm_descriptor": result["javascript_esm_descriptor"]}
+                    if "javascript_esm_descriptor" in result
+                    else {}
+                ),
             }
             if raw_inventory.get("enumeration_status") != "PASSED":
                 raw_diagnostics = raw_inventory.get("diagnostics", [])
@@ -601,6 +860,7 @@ def discover_unit(
 
     rejections: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
+    analyzer_execution_not_run = False
     for index, name in enumerate(candidates):
         candidate_subject = candidate_symbols[index]
         coverage_key = str(candidate_subject["coverage_key"])
@@ -611,12 +871,42 @@ def discover_unit(
         try:
             ir = analyze(path, source_language, name)
         except (RouteError, OSError, ValueError) as error:
+            diagnostic = _reason(error)
+            if _analyzer_failure_verdict(error, source_language) == Verdict.NOT_RUN:
+                # A trustworthy module decision requires every otherwise
+                # analyzable symbol to complete under the same sealed analyzer
+                # environment.  Discard earlier READY/semantic conclusions and
+                # make the whole analyzable file explicitly replayable.
+                eligible.clear()
+                rejections.clear()
+                for unresolved_subject in candidate_symbols[:MAX_CANDIDATES_PER_FILE]:
+                    unresolved_coverage_key = str(unresolved_subject["coverage_key"])
+                    if unresolved_subject.get("blocking_reasons") or any(
+                        blocker.get("coverage_key") == unresolved_coverage_key
+                        for blocker in coverage_blockers
+                    ):
+                        continue
+                    for stale_key in ("semantic_signature", "analyzer", "analyzer_version"):
+                        unresolved_subject.pop(stale_key, None)
+                    rejections.append(
+                        _mapped_subject_blocker(
+                            unresolved_subject,
+                            "NATIVE_ANALYZER_EXECUTION_NOT_PASSED",
+                            (
+                                f"{relative} native analysis did not reach a trustworthy "
+                                f"conclusion and must be replayed: {diagnostic}"
+                            ),
+                            verdict=Verdict.NOT_RUN,
+                        )
+                    )
+                analyzer_execution_not_run = True
+                break
             candidate_subject["semantic_status"] = "FAILED"
-            candidate_subject["diagnostics"] = [_reason(error)]
+            candidate_subject["diagnostics"] = [diagnostic]
             rejection: dict[str, Any] = {
                 "candidate": name,
                 "blocker_code": "NATIVE_ANALYZER_REJECTED",
-                "reason": _reason(error),
+                "reason": diagnostic,
                 "coverage_key": coverage_key,
                 "source_symbol": candidate_subject,
             }
@@ -684,7 +974,15 @@ def discover_unit(
         return result
 
     result.update(
-        verdict=Verdict.UNSUPPORTED,
+        verdict=(
+            Verdict.NOT_RUN
+            if analyzer_execution_not_run
+            or (
+                coverage_blockers
+                and all(blocker.get("verdict") == Verdict.NOT_RUN for blocker in coverage_blockers)
+            )
+            else Verdict.UNSUPPORTED
+        ),
         reason="No candidate declaration stayed inside the bounded profile.",
         rejected_candidates=rejections,
         coverage_blockers=coverage_blockers,
@@ -740,6 +1038,11 @@ def discover_repository(
                         "source_path": result.get("source_path"),
                         "declared_sha256": result.get("declared_sha256"),
                         "observed_sha256": result.get("observed_sha256"),
+                        **(
+                            {"javascript_esm_descriptor": result["javascript_esm_descriptor"]}
+                            if "javascript_esm_descriptor" in result
+                            else {}
+                        ),
                         "profile": PROFILE,
                         "execution_status": "NOT_RUN",
                         "verdict": Verdict.READY,
@@ -756,6 +1059,9 @@ def discover_repository(
             blocker_start = len(eligible) + 1 if isinstance(eligible, list) else 1
             for index, blocker in enumerate(blockers, start=blocker_start):
                 blocker_code = str(blocker.get("blocker_code", "SOURCE_CANDIDATE_CONVERSION_UNCOVERED"))
+                blocker_verdict = blocker.get("verdict", Verdict.UNSUPPORTED)
+                if blocker_verdict not in {Verdict.UNSUPPORTED, Verdict.NOT_RUN}:
+                    raise RouteError("DISCOVERY_BLOCKER_VERDICT_INVALID")
                 results.append(
                     {
                         "id": f"{parent_id}-F{index:03d}",
@@ -763,14 +1069,23 @@ def discover_repository(
                         "source_path": result.get("source_path"),
                         "declared_sha256": result.get("declared_sha256"),
                         "observed_sha256": result.get("observed_sha256"),
+                        **(
+                            {"javascript_esm_descriptor": result["javascript_esm_descriptor"]}
+                            if "javascript_esm_descriptor" in result
+                            else {}
+                        ),
                         "profile": PROFILE,
                         "execution_status": "NOT_RUN",
-                        "verdict": Verdict.UNSUPPORTED,
+                        "verdict": blocker_verdict,
                         "reason": str(blocker.get("reason", blocker_code)),
                         "blocker_code": blocker_code,
                         "coverage_key": blocker.get("coverage_key"),
                         "source_symbol": blocker.get("source_symbol"),
-                        "required_inputs": ["explicit_symbol_conversion_support"],
+                        "required_inputs": (
+                            ["restore_analyzer_execution_and_replay"]
+                            if blocker_verdict == Verdict.NOT_RUN
+                            else ["explicit_symbol_conversion_support"]
+                        ),
                     }
                 )
             continue

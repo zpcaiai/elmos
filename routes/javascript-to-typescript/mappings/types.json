@@ -1,0 +1,21 @@
+{
+  "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1",
+  "integer_semantics": "BLOCK_NO_EXPLICIT_INTEGER_TYPE",
+  "money_policy": "OUT_OF_SCOPE_REQUIRES_DECIMAL_PACK",
+  "out_of_domain_arithmetic_behavior": "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1",
+  "schema_version": 1,
+  "source": "javascript",
+  "string_semantics": "STRICT_ECMASCRIPT_VALUE_EQUALITY_CONCAT",
+  "target": "typescript",
+  "type_evidence_corpora": {
+    "boolean": "corpus/real-repository+corpus/module",
+    "number": "corpus/development+corpus/module",
+    "string": "corpus/holdout+corpus/module"
+  },
+  "types": [
+    "number",
+    "boolean",
+    "string"
+  ],
+  "unknown_type_policy": "BLOCK"
+}
