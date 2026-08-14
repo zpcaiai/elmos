@@ -7,18 +7,39 @@ target tuple is Spring Boot `3.5.3`, Spring Framework `6.2.8`, Java `21`, Maven
 `3.9.11`, Jakarta Servlet `6.1`, and embedded Tomcat `10.1.42`.
 
 The pack contains a typed Framework Contract Model, deterministic OpenRewrite
-recipe composition, an executable-shaped legacy MVC development fixture, and
-fail-closed target obligations. Its exact identity is now wired into the route
-catalog and source fingerprint, but that does not make the migration executable:
-the traditional WAR source still requires an exact approved Servlet 4 container,
-and Boot bootstrap, context merge, web.xml retirement and view strategy remain
-explicit FCM obligations rather than inferred edits. Source build/startup,
-transformation, target build/startup, behavior parity, negative cases, holdout,
-representative repository, customer, Rootless, and independent review evidence
-are all `NOT_RUN`.
+recipe composition, an executable-shaped legacy MVC development fixture, and a
+controlled target emitter for the admitted XML/Servlet/JSP construct set. The
+production execution port now calls a trusted, typed Java materializer after the
+pinned rewrite step and before target verification; it never executes repository
+Python. The materializer is deliberately limited to the complete 13-file exact
+fixture, bound by path, byte count and SHA-256. It creates a Boot main plus
+`SpringBootServletInitializer`, explicit Java
+configuration, a Tomcat Jasper executable WAR, health-only Actuator exposure,
+repackage configuration, and content-addressed XML/`web.xml` retirement receipts.
+It rejects unknown files, changed bytes, tuple drift and constructs instead of
+inferring their behavior. The exact checked-in fixture has now completed one
+fresh local engineering replay: Java 11/Maven 3.9.11 source `clean verify`
+(`6/6` tests), external Tomcat `9.0.120` startup, pinned OpenRewrite, the trusted
+Java materializer, Java 21/Maven 3.9.11 target `clean verify`/package (`9/9`
+tests), executable-WAR `WarLauncher`, exact Actuator health, two GET/JSP
+source-to-target comparisons and bounded shutdown. The JSP comparison produced
+the same 142 UTF-8 bytes; only the exact 32-hex-character `JSESSIONID` value is
+treated as governed nondeterminism while cookie attributes remain exact.
 
-Consequently the pack is `experimental` and `NOT_CERTIFIED`. Static validation
-must never be presented as migration success or behavior equivalence.
+The content-addressed evidence index is
+`certification/local-execution/2026-08-11/evidence-index.json`. It separately
+binds the 17,347-byte migrated-repository ZIP and the 28,990,394-byte executable
+WAR, whose manifest names Boot `3.5.3`, `WarLauncher` and
+`io.elmos.legacy.LegacyMvcApplication`. It also preserves the Java materializer
+receipt and source map, including exact byte/SHA-256 bindings for the controlled
+target profile and scaffold manifest. The Python scaffold remains static and was
+not the runtime materializer used by this replay.
+
+The result is therefore `PASSED_LOCAL` for this one exact fixture while the pack
+remains `experimental` and `NOT_CERTIFIED`. Negative and holdout corpora,
+representative/customer repositories, security/data/transaction/messaging
+profiles, Rootless execution and independent review remain `NOT_RUN`. This run
+must not be presented as an overall Spring migration success rate.
 
 Validation commands:
 

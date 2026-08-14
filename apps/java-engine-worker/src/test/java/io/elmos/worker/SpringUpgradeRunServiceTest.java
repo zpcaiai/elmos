@@ -11,6 +11,10 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
@@ -274,13 +278,52 @@ class SpringUpgradeRunServiceTest {
             SpringUpgradeExecutionPort transformer,
             SpringUpgradeIndependentValidationPort verifier
     ) {
+        return service(transformer, verifier, Clock.systemUTC());
+    }
+
+    private SpringUpgradeRunService service(
+            SpringUpgradeExecutionPort transformer,
+            SpringUpgradeIndependentValidationPort verifier,
+            Clock clock
+    ) {
         return new SpringUpgradeRunService(
                 transformer,
                 verifier,
                 workspace,
                 new ObjectMapper().findAndRegisterModules(),
-                Clock.systemUTC()
+                clock
         );
+    }
+
+    /** Readable by the run's virtual threads, so the instant must be volatile. */
+    private static final class MovableClock extends Clock {
+        private volatile Instant current;
+        private MovableClock(Instant current) { this.current = current; }
+        void advance(Duration amount) { current = current.plus(amount); }
+        @Override public ZoneId getZone() { return ZoneOffset.UTC; }
+        @Override public Clock withZone(ZoneId zone) { return this; }
+        @Override public Instant instant() { return current; }
+    }
+
+    @Test void terminalRunsAndTheirIdempotencyKeysAgeOutTogether() throws Exception {
+        MovableClock clock = new MovableClock(Instant.parse("2026-07-29T00:00:00Z"));
+        service = service(new SuccessfulTransformer(), new PassingVerifier(), clock);
+        StartRequest request = request("aged-key");
+        RunView first = service.create("org-a", request);
+        awaitTerminal(first.runId(), "org-a");
+
+        // Inside the window nothing is dropped and the key still replays the run.
+        clock.advance(Duration.ofHours(23));
+        service.evictAgedTerminalRuns();
+        assertEquals(first.runId(), service.create("org-a", request).runId());
+
+        // Past it the run and its key go together, so the replay starts a new run
+        // instead of failing to find the one the key points at.
+        clock.advance(Duration.ofHours(2));
+        service.evictAgedTerminalRuns();
+        assertThrows(SpringUpgradeRunService.NotFound.class,
+                () -> service.get("org-a", first.runId()));
+        assertNotEquals(first.runId(), service.create("org-a", request).runId());
     }
 
     private RunView awaitTerminal(String runId, String organizationId) {

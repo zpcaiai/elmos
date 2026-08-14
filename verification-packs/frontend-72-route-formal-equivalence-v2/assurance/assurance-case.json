@@ -2,22 +2,39 @@
   "schema_version": 1,
   "case_key": "frontend-72-route-formal-equivalence-v2-assurance-v1",
   "version": 1,
-  "owner": "TODO",
-  "top_claim": "The certified scope is acceptably correct for production use.",
+  "owner": "frontend-formal-verification-team",
+  "top_claim": "The exact bounded frontend interaction scope has local model evidence; production correctness remains unsupported.",
   "claims": [
     {
       "claim_id": "claim.behavior",
       "statement": "Critical migrated behavior remains correct.",
       "status": "unsupported",
-      "evidence_refs": [],
-      "assumptions": [],
+      "evidence_refs": [
+        "formal-campaign/frontend-formal-route-campaign-v2.json"
+      ],
+      "assumptions": [
+        "The proof is bounded to the typed bounded-frontend-interaction-v1 model, its finite input domains, and ELMOS-emitted strict grammar; arbitrary customer source is NOT_PROVED.",
+        "The authoritative model, source emitters, re-lifters, reference reducer, and SMT encoder are produced by one engine; this is self-consistency evidence and NOT_INDEPENDENT_SINGLE_ENGINE.",
+        "Strict expected consumer bytes establish generated-grammar reachability, not general compiler, framework, browser, operating-system, or device soundness.",
+        "Real SSR hydration, network servers, identity authority, tenant isolation enforcement, native adapters, browser journeys, and device journeys remain NOT_RUN unless independent channel evidence is attached.",
+        "Z3 UNSAT establishes only the encoded bounded transition obligations under these assumptions and therefore yields PROVED_UNDER_ASSUMPTIONS, never unconditional proof or certification."
+      ],
       "limitations": [
-        "Add independent evidence."
+        "Independent runtime, holdout, representative and customer evidence is NOT_RUN."
       ]
     }
   ],
   "evidence": [],
-  "residual_risks": [],
+  "residual_risks": [
+    {
+      "risk_id": "frontend-v2-external-evidence-not-run",
+      "description": "External runtime and customer qualification is absent.",
+      "severity": "critical",
+      "mitigation": "Run the externally trusted intake and replay protocol.",
+      "owner": "frontend-formal-verification-team",
+      "status": "open"
+    }
+  ],
   "monitoring_obligations": [],
   "approvals": []
 }

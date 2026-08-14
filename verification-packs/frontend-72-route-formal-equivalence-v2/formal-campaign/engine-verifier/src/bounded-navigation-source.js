@@ -11,7 +11,7 @@ export function navigationSourceSpec(profile) {
             return { sourcePath: "lib/elmos_bounded_navigation.dart", entryPath: "lib/main.dart", parser: "DART_BOUNDED_BASE64" };
         case "harmony-arkui":
             return {
-                sourcePath: "entry/src/main/ets/elmos-bounded-navigation.ets",
+                sourcePath: "entry/src/main/ets/elmos-bounded-navigation.ts",
                 entryPath: "entry/src/main/ets/pages/Index.ets",
                 parser: "TYPESCRIPT_AST",
             };

@@ -7,11 +7,11 @@
   "maintenance_owner": "frontend-client-platform-team",
   "scope": {
     "migration_route": "all-directed-pairs-nine-exact-frontend-profiles-12-blocks",
-    "source_artifact_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499",
-    "target_artifact_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499",
+    "source_artifact_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
+    "target_artifact_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
     "workload_key": "bounded-frontend-interaction-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:bbff130df448aa5208ecc4c10b279b434f76f4c4248cbd175467d82d98373f68"
+    "environment_digest": "sha256:e4867e6e9ac92096604b472b8bfc3d6cf0d0dd419784a6ce9b893d5cdff87de4"
   },
   "contracts": {
     "validation_profile": "validation-profile.json",
@@ -32,11 +32,16 @@
     "advanced-verification"
   ],
   "frontend_formal_route_campaign_v2": "formal-campaign/frontend-formal-route-campaign-v2.json",
-  "frontend_formal_campaign_v2_digest": "sha256:da5eea0dac6c402932be49f856cdf60a31531354b7b5b15a057dc497a8a3da14",
-  "frontend_formal_scope_v2_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499",
+  "frontend_formal_campaign_v2_digest": "sha256:bcbc3adc25219b55eee7dbd9aad5e85f165a9fa45fddbc4b06f80f87045788d3",
+  "frontend_formal_scope_v2_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2",
   "frontend_formal_peer_v2": {
     "pack_key": "frontend-72-route-equivalence-v2",
-    "campaign_sha256": "sha256:da5eea0dac6c402932be49f856cdf60a31531354b7b5b15a057dc497a8a3da14",
-    "scope_digest": "sha256:ee67a17be00292ebf3e6f4b35ef66778d7c38bd17b9ecdf3bf68056412b0b499"
+    "campaign_sha256": "sha256:bcbc3adc25219b55eee7dbd9aad5e85f165a9fa45fddbc4b06f80f87045788d3",
+    "scope_digest": "sha256:2bba74b820825c01b76677a80d8c35c9988b7383f04b7795f4dd7f8d690a55a2"
+  },
+  "frontend_governance_v2": {
+    "oracle_registry_sha256": "sha256:a74b6ce7510783d87a8eb625d1b71b185e8ba705964cfda1bb60ec31adb79a4f",
+    "assurance_case_sha256": "sha256:b211bc0bc908ad3326690d4faf005d4bcefc3f47a1a49f43ae90f514b6bbfadb",
+    "status": "NOT_RUN"
   }
 }

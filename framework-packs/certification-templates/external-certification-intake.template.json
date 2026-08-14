@@ -7,6 +7,7 @@
   "customer_organization_id": "UNKNOWN",
   "rootless_organization_id": "UNKNOWN",
   "independent_organization_id": "UNKNOWN",
+  "certification_organization_id": "UNKNOWN",
   "binding": {
     "pack_key": "UNKNOWN",
     "pack_version": "UNKNOWN",
@@ -47,6 +48,16 @@
     "size_bytes": 0,
     "media_type": "application/json"
   },
+  "evidence_executors": {
+    "authorized_customer_repository": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "customer_holdout": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "customer_acceptance": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "rootless_runner": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "rootless_transformer": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "rootless_verifier": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "independent_review": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"},
+    "external_certification": {"actor_id": "UNKNOWN", "organization_id": "UNKNOWN"}
+  },
   "customer_authorization": {
     "algorithm": "ed25519",
     "key_id": "UNKNOWN",
@@ -64,6 +75,15 @@
       "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
     },
     "customer_holdout": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "customer_acceptance": {
       "content": {
         "uri": "file:///approved/evidence/UNKNOWN",
         "digest": "sha256:UNKNOWN",
@@ -100,6 +120,15 @@
       "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
     },
     "independent_review": {
+      "content": {
+        "uri": "file:///approved/evidence/UNKNOWN",
+        "digest": "sha256:UNKNOWN",
+        "size_bytes": 0,
+        "media_type": "application/json"
+      },
+      "attestation": {"algorithm": "ed25519", "key_id": "UNKNOWN", "payload": {}, "signature": "UNKNOWN"}
+    },
+    "external_certification": {
       "content": {
         "uri": "file:///approved/evidence/UNKNOWN",
         "digest": "sha256:UNKNOWN",

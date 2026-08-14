@@ -9,7 +9,7 @@
     "namespace": {"const": "batch30-framework-external-certification"},
     "keys": {
       "type": "array",
-      "minItems": 7,
+      "minItems": 9,
       "uniqueItems": true,
       "items": {
         "type": "object",
@@ -37,10 +37,12 @@
                 "batch30-customer-authorizer",
                 "batch30-customer-repository-verifier",
                 "batch30-customer-holdout-verifier",
+                "batch30-customer-acceptance-approver",
                 "batch30-rootless-runner-attestor",
                 "batch30-rootless-transformer-attestor",
                 "batch30-rootless-verifier-attestor",
-                "batch30-independent-verifier"
+                "batch30-independent-verifier",
+                "batch30-external-certifier"
               ]
             }
           },

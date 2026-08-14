@@ -257,6 +257,15 @@ Use `.agents/skills/b37-*` for extension manifests, ABI and SDK contracts, sandb
 - `PROVED` requires a signed bounded-core proof record with pinned solver/version/options/assumptions/bounds and verified evidence bytes. Unexplained differences, unsupported semantics, missing provenance, test weakening, high-risk work without exact signed approval, and `NOT_RUN` evidence fail closed.
 - Run `make precision-migration-b01-44-check`; use `make precision-migration-b01-44-qualification` only to refresh bounded local engineering evidence. Batch 35 currently remains `experimental` / `NOT_CERTIFIED`; native domain, independent holdout, representative customer, shadow/canary, production, and certification evidence stays `NOT_RUN` until actually executed.
 
+## ChinaDB commercial SQL migration extensions
+
+- Canonical source specifications live under `skills/chinadb-commercial-migration-skills-v1.0.0/`; installed aliases are `$chinadb-*` under both `agent-skills/runtime/` and `.agents/skills/`.
+- Start implementation work with `$b31-database-modernization-factory`, then use the narrowest applicable `$b31-*` and `$chinadb-*` Skill. Query conversion specifically uses `$b31-query-semantic-migration`.
+- The 47 imported Skills, 13 target baselines and 78 planned routes are specification-only integration contracts. Installation proves structure and provenance only; it does not implement a target renderer, execute a database, or raise route support.
+- Never alias DM8, KingbaseES, openGauss, TiDB, GBase, HighGo, OceanBase, GaussDB or GoldenDB to an Oracle/MySQL/PostgreSQL dialect. An executable route requires an exact target version, edition, compatibility mode, driver, charset, collation, time zone, capability-snapshot digest and verified target adapter.
+- Missing target tuples, unknown capabilities, absent adapters, unsupported semantics and unavailable licensed runtimes fail closed. Their execution evidence remains `NOT_RUN` and certification remains `NOT_CERTIFIED`.
+- Run `make chinadb-commercial-migration-skills` for immutable package, checksum, normalized Skill, dual-root and provenance validation. Run `make sql-transpiler` for the typed adapter protocol, commercial capability registry and preflight-assessment tests. Only the Batch 31 gate may determine route readiness after real source/target and independent evidence exists.
+
 # Batch 46 runnable smoke packs
 
 Every project ELMOS converts or generates ships with a runnable smoke pack. A

@@ -296,7 +296,7 @@ export function interactionSourceSpec(profile: UiFrameworkId): InteractionSource
     case "flutter":
       return { sourcePath: "lib/elmos_bounded_interaction.dart", compatibilityPath: "lib/elmos_bounded_navigation.dart", parser: "DART_BOUNDED_BASE64" };
     case "harmony-arkui":
-      return { sourcePath: "entry/src/main/ets/elmos-bounded-interaction.ets", compatibilityPath: "entry/src/main/ets/elmos-bounded-navigation.ets", parser: "TYPESCRIPT_AST" };
+      return { sourcePath: "entry/src/main/ets/elmos-bounded-interaction.ts", compatibilityPath: "entry/src/main/ets/elmos-bounded-navigation.ts", parser: "TYPESCRIPT_AST" };
     case "vue3":
     case "react":
     case "jquery":

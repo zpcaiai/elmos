@@ -23,6 +23,22 @@ import static io.elmos.worker.SpringUpgradeModels.*;
 final class SpringUpgradeRunService {
     private static final int MAX_LOG_LINES = 5_000;
     private static final int MAX_EVENTS = 250;
+    /**
+     * How long a terminal run stays addressable in memory.
+     *
+     * <p>{@code runs} and {@code idempotency} are read only to answer "what
+     * happened to this run" and "has this idempotency key been used before", so
+     * both are bounded by time instead of kept for the life of the process.
+     * Twenty-four hours is the usual idempotency window; a key replayed after it
+     * starts a new run, which is exactly what already happens to a key that
+     * predates a worker restart.</p>
+     *
+     * <p>Only the in-memory maps are swept. The durable record on disk belongs
+     * to whatever retains evidence, so a restart may restore a run evicted here
+     * and then age it out again.</p>
+     */
+    private static final Duration TERMINAL_RUN_RETENTION = Duration.ofHours(24);
+    private static final Duration RETENTION_SWEEP_INTERVAL = Duration.ofMinutes(10);
     private static final Pattern SECRET = Pattern.compile(
             "(?i)(authorization\\s*[:=]|token\\s*[:=]|password\\s*[:=]|secret\\s*[:=])\\s*\\S+");
     private final SpringUpgradeExecutionPort transformer;
@@ -72,6 +88,50 @@ final class SpringUpgradeRunService {
                 this.workspaceRoot, "spring-upgrade", globalCapacity, tenantCapacity,
                 queueTtl, leaseTtl, clock);
         restoreDurableRuns();
+        this.scheduler.scheduleAtFixedRate(
+                this::evictAgedTerminalRuns,
+                RETENTION_SWEEP_INTERVAL.toSeconds(),
+                RETENTION_SWEEP_INTERVAL.toSeconds(),
+                TimeUnit.SECONDS);
+    }
+
+    /**
+     * Drops terminal runs, and the idempotency keys pointing at them, once they
+     * are older than {@link #TERMINAL_RUN_RETENTION}.
+     *
+     * <p>The two are removed together and under the monitor {@code create} and
+     * {@code retry} hold, because a key that outlived its run would answer a
+     * replay with a not-found rather than with the original run.</p>
+     *
+     * <p>A run whose isolated runtime is still starting or healthy is kept no
+     * matter its age: its handle is the only remaining way to stop that
+     * runtime.</p>
+     */
+    void evictAgedTerminalRuns() {
+        try {
+            Instant deadline = clock.instant().minus(TERMINAL_RUN_RETENTION);
+            synchronized (idempotency) {
+                Set<String> aged = new HashSet<>();
+                for (RunState state : runs.values()) {
+                    synchronized (state) {
+                        if (!terminal(state.status)) continue;
+                        if (state.runtimeStatus == RuntimeStatus.STARTING
+                                || state.runtimeStatus == RuntimeStatus.HEALTHY) continue;
+                        if (state.updatedAt == null || state.updatedAt.isAfter(deadline)) continue;
+                        aged.add(state.runId);
+                    }
+                }
+                if (aged.isEmpty()) return;
+                idempotency.values().removeIf(entry -> aged.contains(entry.runId()));
+                runs.keySet().removeAll(aged);
+            }
+        } catch (RuntimeException error) {
+            /*
+             * scheduleAtFixedRate stops repeating a task that throws, which
+             * would silently disable retention for the life of the process.
+             * Swallow and let the next tick retry instead.
+             */
+        }
     }
 
     RunView create(String authenticatedOrganizationId, StartRequest request) {
@@ -312,12 +372,28 @@ final class SpringUpgradeRunService {
             return;
         }
         ScheduledFuture<?> heartbeat = scheduler.scheduleAtFixedRate(() -> {
+            /*
+             * Only a genuine lease failure may cancel the run. Every other
+             * runtime failure is treated as transient and retried on the next
+             * tick; the lease TTL still bounds the damage if it never recovers.
+             *
+             * The catch-all stays deliberately: scheduleAtFixedRate stops
+             * repeating a task that throws, so letting an exception escape here
+             * would silently starve the lease and end the run with no recorded
+             * cause.
+             */
             try {
                 lease.heartbeat();
-            } catch (RuntimeException error) {
+            } catch (DurableRunLeaseStore.LeaseException error) {
                 state.cancelled.set(true);
                 Process process = state.activeProcess.getAndSet(null);
                 if (process != null) process.destroyForcibly();
+            } catch (RuntimeException error) {
+                synchronized (state) {
+                    appendEvent(state, state.stage, state.status.name(),
+                            "Durable lease heartbeat failed and will be retried: "
+                                    + error.getClass().getSimpleName());
+                }
             }
         }, lease.heartbeatInterval().toSeconds(), lease.heartbeatInterval().toSeconds(),
                 TimeUnit.SECONDS);

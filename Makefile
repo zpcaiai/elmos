@@ -21,19 +21,19 @@ PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 PROFILE ?= synthesis
 RUNTIME_STATUS_OUTPUT ?= .elmos/toolchains/runtime-status.json
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
-verify: business-line-contracts backend dotnet python frontend sql-dialect component-dialect web
-business-line-contracts: model-catalog-check makefile-portability-check
+verify: business-line-contracts backend dotnet python frontend sql-transpiler sql-dialect component-dialect web
+business-line-contracts: model-catalog-check makefile-portability-check chinadb-commercial-migration-skills
 	python3 scripts/operations/validate_spring_route_contract.py
 	python3 scripts/operations/validate_translation_route_matrix.py
 makefile-portability-check:
 	python3 scripts/operations/validate_makefile_portability.py
 model-catalog-check:
 	python3 scripts/operations/validate_model_catalog.py
-production-readiness-check: business-line-contracts batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
+production-readiness-check: business-line-contracts chinadb-commercial-migration-skills sql-transpiler batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
 	$(UV) run --quiet --with pyyaml python tooling/validate_runtime_operability.py
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
 backend:
@@ -98,6 +98,12 @@ precision-migration-b01-44-check: precision-migration-b01-44-skills
 	$(UV) run --quiet --with jsonschema python scripts/batch35/run_verification_gate.py verification-packs/precision-migration-b01-44-runtime
 precision-migration-b01-44-qualification: precision-migration-b01-44-check
 	python3 -m scripts.precision_migration.run_local_qualification
+chinadb-commercial-migration-skills:
+	cd skills/chinadb-commercial-migration-skills-v1.0.0 && PYTHONDONTWRITEBYTECODE=1 python3 validators/validate_package.py
+	cd skills/chinadb-commercial-migration-skills-v1.0.0 && shasum -a 256 -c CHECKSUMS.sha256
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/integrate_chinadb_commercial_migration_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/chinadb-commercial-migration -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python -m unittest discover -s tests/chinadb-sql-extension-schema -p 'test_*.py'
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:
@@ -321,6 +327,10 @@ project-synthesis-toolchains:
 frontend:
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine install --frozen-lockfile
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine check
+sql-transpiler:
+	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked pytest
+	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked ruff check src tests
+	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked mypy src
 sql-dialect:
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests

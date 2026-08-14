@@ -15,9 +15,11 @@
   "gate_results": {
     "authorized_customer_repository": "NOT_RUN",
     "customer_holdout": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN",
     "development_fixture": "PASSED_LOCAL",
     "github_app_private_repository": "NOT_RUN",
     "independent_review": "NOT_RUN",
+    "external_certification": "NOT_RUN",
     "rootless_runner": "NOT_RUN",
     "rootless_transformer": "NOT_RUN",
     "rootless_verifier": "NOT_RUN",

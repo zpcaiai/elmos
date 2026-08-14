@@ -27,8 +27,8 @@
   "proof_status": "REFUTED",
   "unconditional_proof": false,
   "route_id": "react-native--to--harmony-arkui",
-  "formal_input_digest": "sha256:fb2cf8be368df335d9fc1eff63a773608866b4945dbd792772cdec384f2b9e3a",
-  "solver_input_digest": "sha256:4a5d07cc2a3b7b9e2e4b16753e19de0faea31d9c33b1cf5a289659980131ae30",
-  "smt2_digest": "sha256:4a5d07cc2a3b7b9e2e4b16753e19de0faea31d9c33b1cf5a289659980131ae30",
+  "formal_input_digest": "sha256:2ac0879adf392adc5eec159d59457ae839940101e88cb75205960caab2b40e5b",
+  "solver_input_digest": "sha256:262d4f8eb44dc22432ecdb7104705bf6917ee8e6ff3f48550ed6ac919c8b029c",
+  "smt2_digest": "sha256:262d4f8eb44dc22432ecdb7104705bf6917ee8e6ff3f48550ed6ac919c8b029c",
   "precheck_status": "PASSED"
 }

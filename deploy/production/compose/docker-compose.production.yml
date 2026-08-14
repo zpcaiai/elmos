@@ -54,6 +54,12 @@ networks:
   backend:
     driver: bridge
 
+  # ChinaDB source-side parser has no database, customer-workspace or internet
+  # access. Only the database-data worker can reach this network.
+  chinadb-preflight:
+    driver: bridge
+    internal: true
+
 services:
 
   # ---------------------------------------------------------------------------
@@ -78,6 +84,9 @@ services:
       ELMOS_WORKSPACE_SERVICE_URL: http://workspace-service:8082
       # Repository BFF 当前代理的是 Control Plane 的 /api/v1/repository-workspaces。
       ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://control-plane:8080
+      # Enable only together with the chinadb-sql profile and an approved
+      # internal worker deployment. Disabled remains a safe 503/BLOCKED state.
+      ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED: "${ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED:-false}"
       # /generation 首发不开放 Spring 代理与整库转换
       ELMOS_SPRING_PROXY_ENABLED: "false"
       # 生产业务请求只入持久队列；Web 容器绝不直接启动客户进程。
@@ -109,6 +118,8 @@ services:
     environment:
       # 来自 env_file：ELMOS_DATABASE_URL / _USER / _PASSWORD（托管 PostgreSQL）
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
+      ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED: "${ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED:-false}"
+      ELMOS_DATABASE_DATA_ENGINE_BASE_URL: http://database-data-engine-worker:8089
     volumes:
       # owner-only 对象存储凭据与可选本地身份 pepper；只读挂载。
       - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}:/run/secrets/elmos:ro"
@@ -140,6 +151,52 @@ services:
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
     networks: [backend]
     expose: ["8082"]
+
+  # ---------------------------------------------------------------------------
+  # Tier 2 · ChinaDB SQL source-side typed preflight（profile: chinadb-sql）
+  # 只做源 SQL typed AST/义务分析；不发射目标 SQL、不连接数据库、不产生认证证据。
+  # ---------------------------------------------------------------------------
+  chinadb-sql-preflight:
+    <<: *hardening
+    profiles: ["chinadb-sql"]
+    build:
+      context: ../../..
+      dockerfile: engines/database-data-engine/sql-transpiler/Dockerfile
+    user: "10001:10001"
+    read_only: true
+    pids_limit: 64
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=16m"
+    environment:
+      ELMOS_CHINADB_PREFLIGHT_PORT: "8101"
+    networks: [chinadb-preflight]
+    expose: ["8101"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/health', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512m }
+
+  database-data-engine-worker:
+    <<: *java-service
+    profiles: ["chinadb-sql"]
+    build: { context: ../../.., dockerfile: engines/database-data-engine/Dockerfile }
+    environment:
+      ELMOS_DATABASE_DATA_PORT: "8089"
+      ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED: "true"
+      ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL: http://chinadb-sql-preflight:8101
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    networks: [backend, chinadb-preflight]
+    expose: ["8089"]
+    depends_on:
+      chinadb-sql-preflight: { condition: service_healthy }
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 1g }
 
   # ---------------------------------------------------------------------------
   # Tier 1 · 产物存储

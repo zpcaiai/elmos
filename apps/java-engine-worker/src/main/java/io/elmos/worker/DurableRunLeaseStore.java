@@ -21,6 +21,8 @@ import java.util.HexFormat;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
 /**
@@ -30,6 +32,19 @@ import java.util.stream.Stream;
  * bounded execution authority and are safe to expire after missed heartbeats.</p>
  */
 final class DurableRunLeaseStore {
+    /*
+     * In-process monitors, one per queue lock file.
+     *
+     * java.nio.channels.FileLock is held on behalf of the entire JVM rather
+     * than the acquiring thread. A second overlapping request from the same
+     * JVM therefore throws OverlappingFileLockException instead of blocking,
+     * so the file lock alone does not serialise concurrent runs inside one
+     * worker. Keyed by the normalised lock path so that two store instances
+     * addressing the same queue in one JVM share a single monitor.
+     */
+    private static final ConcurrentHashMap<Path, ReentrantLock> PROCESS_LOCKS =
+            new ConcurrentHashMap<>();
+
     enum Failure {
         QUEUE_ITEM_EXPIRED(false),
         QUEUE_GLOBAL_CAPACITY_REACHED(true),
@@ -297,7 +312,23 @@ final class DurableRunLeaseStore {
                 StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     }
 
+    /**
+     * Runs one queue mutation under both exclusion levels. Neither level alone
+     * is sufficient: the in-process monitor serialises threads within this JVM,
+     * which FileLock deliberately does not do, and the file lock serialises the
+     * several worker JVMs that may share one queue root.
+     *
+     * <p>Before the in-process monitor existed, a heartbeat overlapping an
+     * admission attempt raised OverlappingFileLockException. That exception is
+     * unchecked and neither catch clause below matches it, so it surfaced to the
+     * caller, which reads any heartbeat failure as a lost lease and destroys the
+     * run's build process. A healthy run was cancelled because an unrelated run
+     * happened to be admitted at the same moment.</p>
+     */
     private <T> T withLock(IoSupplier<T> operation) {
+        ReentrantLock processLock =
+                PROCESS_LOCKS.computeIfAbsent(lockPath, key -> new ReentrantLock());
+        processLock.lock();
         try (FileChannel channel = FileChannel.open(
                 lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
              FileLock ignored = channel.lock()) {
@@ -306,6 +337,8 @@ final class DurableRunLeaseStore {
             throw error;
         } catch (IOException error) {
             throw new IllegalStateException("durable queue lock unavailable", error);
+        } finally {
+            processLock.unlock();
         }
     }
 

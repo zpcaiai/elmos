@@ -44,6 +44,18 @@ import static io.elmos.worker.SpringUpgradeModels.BlockedException;
 
 /** Exact, local-engineering runtime for the single traditional Spring MVC route. */
 final class SpringMvcWarRuntime {
+    /**
+     * One client for every loopback probe this class makes.
+     *
+     * <p>Each {@link HttpClient} owns a selector thread and an executor, and the
+     * class is never closed here, so a client built per probe kept those threads
+     * alive until it was collected. Every run made several, and concurrent runs
+     * multiplied them. The probes all target 127.0.0.1 with the same two-second
+     * connect timeout, so a single shared client is equivalent.</p>
+     */
+    private static final HttpClient LOOPBACK_PROBE_CLIENT =
+            HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+
     static final String SOURCE_SPRING = "5.3.39";
     static final String SOURCE_JAVA = "11";
     static final String TARGET_BOOT = "3.5.3";
@@ -437,8 +449,7 @@ final class SpringMvcWarRuntime {
             Map<String, OracleObservation> observations = executeBusinessCasesOnce(
                     configuration.businessCases(), oracleCase -> {
                         requireActive(process, control);
-                        return exchange(HttpClient.newBuilder()
-                                .connectTimeout(Duration.ofSeconds(2)).build(), port, oracleCase);
+                        return exchange(LOOPBACK_PROBE_CLIENT, port, oracleCase);
                     });
             return new OracleRun(observations,
                     "apache-tomcat-" + tomcat.version() + ":" + tomcat.digest()
@@ -471,7 +482,7 @@ final class SpringMvcWarRuntime {
         try {
             Map<String, OracleResponse> targetOnly = awaitTargetOnlyProbe(
                     process, port, TargetOnlyProbe.actuatorHealth(), control);
-            HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+            HttpClient client = LOOPBACK_PROBE_CLIENT;
             Map<String, OracleObservation> observations = executeBusinessCasesOnce(
                     configuration.businessCases(), oracleCase -> {
                         requireActive(process, control);
@@ -697,7 +708,7 @@ final class SpringMvcWarRuntime {
             throw blocked("SPRING_MVC_HTTP_READINESS_NOT_SAFE",
                     "Only the explicitly marked body-free GET case may be retried for source readiness.");
         }
-        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+        HttpClient client = LOOPBACK_PROBE_CLIENT;
         long deadline = System.nanoTime() + Duration.ofMinutes(2).toNanos();
         int unexpectedStatuses = 0;
         int lastStatus = -1;
@@ -757,7 +768,7 @@ final class SpringMvcWarRuntime {
 
     private static Map<String, OracleResponse> awaitTargetOnlyProbe(
             Process process, int port, TargetOnlyProbe probe, Control control) {
-        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+        HttpClient client = LOOPBACK_PROBE_CLIENT;
         long deadline = System.nanoTime() + Duration.ofMinutes(2).toNanos();
         int unexpectedStatuses = 0;
         int lastStatus = -1;

@@ -43,6 +43,7 @@
       "spring-framework": "6.2.8",
       "servlet-api": "jakarta.servlet-6.1",
       "embedded-container": "tomcat-10.1.42",
+      "jsp-engine": "tomcat-embed-jasper-10.1.42",
       "validation-api": "jakarta.validation-3.0.2",
       "hibernate-validator": "8.0.2.Final"
     }
@@ -52,8 +53,10 @@
     "source_fingerprint": "source-fingerprint",
     "contracts": "contracts",
     "target_profile": "target-profile/profile.json",
+    "target_scaffold": "target-profile/scaffold/manifest.json",
     "corpus": "corpus",
-    "certification": "certification"
+    "certification": "certification",
+    "local_execution_evidence": "certification/local-execution/2026-08-11/evidence-index.json"
   },
   "gates": {
     "real_source_runtime": true,

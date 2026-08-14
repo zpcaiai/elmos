@@ -45,6 +45,18 @@ import static io.elmos.worker.SpringUpgradeModels.*;
  * security domain; the default configuration keeps this adapter disabled.
  */
 final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPort {
+    /**
+     * One client for every loopback probe this class makes.
+     *
+     * <p>Each {@link HttpClient} owns a selector thread and an executor, and the
+     * class is never closed here, so a client built per probe kept those threads
+     * alive until it was collected. Every run made several, and concurrent runs
+     * multiplied them. The probes all target 127.0.0.1 with the same two-second
+     * connect timeout, so a single shared client is equivalent.</p>
+     */
+    private static final HttpClient LOOPBACK_PROBE_CLIENT =
+            HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+
     private static final long MAX_SOURCE_BYTES = 512L * 1024 * 1024;
     private static final int MAX_SOURCE_FILES = 100_000;
     private static final long MAX_CAPABILITY_MANIFEST_BYTES = 512L * 1024;
@@ -1403,7 +1415,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     }
 
     private String waitForHealth(Process process, int port, List<String> candidates, Control control) {
-        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+        HttpClient client = LOOPBACK_PROBE_CLIENT;
         Instant deadline = Instant.now().plusSeconds(60);
         while (Instant.now().isBefore(deadline)) {
             checkCancelled(control);
@@ -1470,7 +1482,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             List<String> candidates,
             Control control
     ) {
-        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+        HttpClient client = LOOPBACK_PROBE_CLIENT;
         Instant deadline = Instant.now().plusSeconds(60);
         while (Instant.now().isBefore(deadline)) {
             checkCancelled(control);
@@ -2326,26 +2338,109 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
+    /**
+     * Files the run must own outright rather than share with the approved seed,
+     * because Maven's resolver rewrites them in place instead of replacing them.
+     */
+    private static final Set<String> RESOLVER_TRACKING_FILES =
+            Set.of("_remote.repositories", "resolver-status.properties");
+
+    /**
+     * Materialises the approved seed into the writable per-run repository.
+     *
+     * <p>Seed artifacts are hard-linked rather than copied. A seeded repository
+     * for a real Spring application runs to hundreds of megabytes across tens of
+     * thousands of files, and copying it byte by byte once per run dominated the
+     * cost of starting a run: it is the point at which concurrent runs contend
+     * for the disk, so its cost is multiplied by the queue's capacity rather
+     * than paid once.</p>
+     *
+     * <p>Linking cannot expose the shared seed to a run, by construction rather
+     * than by convention. A hard link shares the inode and therefore also the
+     * permissions, so a link is created only for a seed file that carries no
+     * owner write bit: an in-place write through such a link fails outright
+     * instead of reaching the seed. Every other file is copied — the resolver's
+     * tracking files, which Maven rewrites in place, and any seed file that is
+     * itself owner-writable, for which a link would carry a write path back into
+     * the seed. Copies keep the previous behaviour of being made owner-writable.</p>
+     *
+     * <p>That the permission bit is actually enforced is not an assumption: this
+     * port is only constructed once the private Runner carries a verified
+     * rootless isolation attestation, and a process that is not root cannot
+     * write through a file it has no write permission on. Without the
+     * attestation the configuration returns a disabled port and this code never
+     * runs at all.</p>
+     *
+     * <p>Hard links cannot cross filesystems, and the seed is required to live
+     * outside the workspace root, so the two may well be separate mounts. The
+     * first failed link therefore switches the whole tree to copying, which is
+     * exactly the previous behaviour.</p>
+     */
     static void copyDependencySeed(Path source, Path target) {
-        copyTree(source, target);
+        deleteTree(target);
+        final long[] bytes = {0};
+        final int[] files = {0};
+        final boolean[] linking = {true};
         try {
-            Files.walkFileTree(target, new SimpleFileVisitor<>() {
+            Files.walkFileTree(source, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE,
+                    new SimpleFileVisitor<>() {
                 @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                         throws IOException {
-                    makeOwnerWritable(dir, true);
+                    Path relative = source.relativize(dir);
+                    if (!relative.toString().isEmpty() && containsExcludedSegment(relative))
+                        return FileVisitResult.SKIP_SUBTREE;
+                    Path created = target.resolve(relative);
+                    Files.createDirectories(created);
+                    makeOwnerWritable(created, true);
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                         throws IOException {
-                    makeOwnerWritable(file, false);
+                    Path relative = source.relativize(file);
+                    if (containsExcludedSegment(relative)) return FileVisitResult.CONTINUE;
+                    if (attrs.isSymbolicLink())
+                        throw new SecurityException("symbolic links require snapshot materializer review");
+                    files[0]++;
+                    bytes[0] = Math.addExact(bytes[0], attrs.size());
+                    if (files[0] > MAX_SOURCE_FILES || bytes[0] > MAX_SOURCE_BYTES)
+                        throw new SecurityException("source copy limits exceeded");
+                    Path created = target.resolve(relative);
+                    if (linking[0] && !privateToTheRun(file)) {
+                        try {
+                            Files.createLink(created, file);
+                            return FileVisitResult.CONTINUE;
+                        } catch (IOException | UnsupportedOperationException error) {
+                            linking[0] = false;
+                        }
+                    }
+                    Files.copy(file, created, StandardCopyOption.COPY_ATTRIBUTES);
+                    makeOwnerWritable(created, false);
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch (IOException error) {
+        } catch (IOException | SecurityException error) {
             deleteTree(target);
             throw blocked("MAVEN_DEPENDENCY_SEED_MATERIALIZATION_FAILED",
-                    "The approved Maven seed could not be copied into a writable per-run repository.");
+                    "The approved Maven seed could not be materialized into a writable per-run repository.");
+        }
+    }
+
+    /**
+     * Whether a seed entry must be copied instead of linked: either Maven
+     * rewrites it in place, or the seed left it owner-writable and a link would
+     * carry that write path back into the shared seed. A filesystem without
+     * POSIX permissions cannot establish the read-only property at all, so
+     * nothing is linked there.
+     */
+    private static boolean privateToTheRun(Path file) {
+        String name = file.getFileName().toString();
+        if (RESOLVER_TRACKING_FILES.contains(name) || name.endsWith(".lastUpdated")) return true;
+        try {
+            return Files.getPosixFilePermissions(file, LinkOption.NOFOLLOW_LINKS)
+                    .contains(PosixFilePermission.OWNER_WRITE);
+        } catch (UnsupportedOperationException | IOException error) {
+            return true;
         }
     }
 

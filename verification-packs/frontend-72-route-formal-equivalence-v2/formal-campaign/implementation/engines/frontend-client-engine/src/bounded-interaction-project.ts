@@ -1363,7 +1363,7 @@ export function augmentBoundedInteractionFiles(
         "lib/main.dart");
       break;
     case "harmony-arkui":
-      files["entry/src/main/ets/elmos-interaction-runtime.ets"] = blockSpecificArkRuntimeModule();
+      files["entry/src/main/ets/elmos-interaction-runtime.ts"] = blockSpecificArkRuntimeModule();
       files["entry/src/main/ets/pages/Index.ets"] = replaceExact(files["entry/src/main/ets/pages/Index.ets"]!,
         "import { ELMOS_ROUTES, elmosSelectBoundedRoute } from '../elmos-bounded-navigation';",
         "import { ELMOS_ROUTES, elmosSelectBoundedRoute } from '../elmos-bounded-navigation';\nimport { ELMOS_INTERACTION_SCENARIOS } from '../elmos-bounded-interaction';\nimport { elmosArkObserverDeclarations } from '../elmos-interaction-runtime';",
@@ -1374,7 +1374,7 @@ export function augmentBoundedInteractionFiles(
         "entry/src/main/ets/pages/Index.ets");
       files["entry/src/main/ets/pages/Index.ets"] = replaceExact(files["entry/src/main/ets/pages/Index.ets"]!,
         "          Text('生成状态：等待 HarmonyOS 真机与无障碍验证').fontColor('#6B4F00')",
-        "          Text('生成状态：等待 HarmonyOS 真机与无障碍验证').fontColor('#6B4F00')\n          ForEach(ELMOS_INTERACTION_SCENARIOS, (_scenario: object, index: number) => { Column() { Button(String(index)).accessibilityText('action:' + String(index)).onClick(() => { this.dispatchInteraction(index); }); ForEach(this.interactionDeclarations[index], (declaration: string) => { Text(declaration).accessibilityText('scenario:' + String(index) + ':runtime:BLOCK_SPECIFIC_RUNTIME_OBSERVED:state:PARTIAL:sequence:' + String(this.interactionSequences[index]) + ':declaration:' + declaration) }) } })",
+        "          Text('生成状态：等待 HarmonyOS 真机与无障碍验证').fontColor('#6B4F00')\n          ForEach(ELMOS_INTERACTION_SCENARIOS.slice(), (_scenario: object, index: number) => { Column() { Button(String(index)).accessibilityText('action:' + String(index)).onClick(() => { this.dispatchInteraction(index); }); ForEach(this.interactionDeclarations[index], (declaration: string) => { Text(declaration).accessibilityText('scenario:' + String(index) + ':runtime:BLOCK_SPECIFIC_RUNTIME_OBSERVED:state:PARTIAL:sequence:' + String(this.interactionSequences[index]) + ':declaration:' + declaration) }) } })",
         "entry/src/main/ets/pages/Index.ets");
       break;
   }
@@ -1391,7 +1391,7 @@ export function boundedInteractionConsumerPaths(profile: UiFrameworkId): readonl
     case "svelte": return ["src/App.svelte", "src/elmos-interaction-runtime.ts", "src/ElmosInteractionPanel.svelte"];
     case "react-native": return ["App.tsx", "src/elmos-interaction-runtime.ts", "src/elmos-interaction-consumer.tsx"];
     case "flutter": return ["lib/main.dart", "lib/elmos_interaction_runtime.dart", "lib/elmos_interaction_consumer.dart"];
-    case "harmony-arkui": return ["entry/src/main/ets/pages/Index.ets", "entry/src/main/ets/elmos-interaction-runtime.ets"];
+    case "harmony-arkui": return ["entry/src/main/ets/pages/Index.ets", "entry/src/main/ets/elmos-interaction-runtime.ts"];
   }
 }
 

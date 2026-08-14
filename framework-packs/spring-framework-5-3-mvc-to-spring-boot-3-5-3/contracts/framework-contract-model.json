@@ -1,9 +1,11 @@
 {
   "schema_version": "1.0",
   "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
-  "model_status": "STATIC_DESIGN_ONLY",
-  "extraction_status": "NOT_RUN",
-  "source_snapshot_sha256": null,
+  "model_status": "LOCAL_ENGINEERING_EXACT_FIXTURE_PARTIAL",
+  "extraction_status": "PASSED_LOCAL_EXACT_FIXTURE",
+  "source_snapshot_sha256": "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
+  "source_commit": "f8c25fae8b26dff249d3870adab49361314b7787",
+  "execution_evidence_ref": "certification/local-execution/2026-08-11/evidence-index.json",
   "exact_tuple": {
     "framework": "spring-framework-mvc",
     "framework_version": "5.3.39",
@@ -17,7 +19,7 @@
       "id": "mvc-dispatch-and-json",
       "domain": "web",
       "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
-      "behavior_verification_status": "NOT_RUN",
+      "behavior_verification_status": "PASSED_LOCAL_EXACT_FIXTURE",
       "source_traces": [
         "WEB-INF/web.xml",
         "WEB-INF/spring/servlet-context.xml",
@@ -30,7 +32,10 @@
       ],
       "target_strategy": "Boot MVC with explicit FCM-derived configuration",
       "blockers": [
-        "runtime contract replay NOT_RUN"
+        "routes and media types outside the exact fixture remain NOT_RUN"
+      ],
+      "evidence_refs": [
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
@@ -77,7 +82,7 @@
       "id": "bean-validation-and-error-shape",
       "domain": "validation",
       "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
-      "behavior_verification_status": "NOT_RUN",
+      "behavior_verification_status": "PASSED_LOCAL_EXACT_FIXTURE",
       "source_traces": [
         "LegacyOrderForm.java",
         "LegacyOrderController.java",
@@ -90,7 +95,10 @@
       ],
       "target_strategy": "Jakarta Validation 3.0.2 with Hibernate Validator 8.0.2.Final",
       "blockers": [
-        "provider and locale replay NOT_RUN"
+        "validation groups, locale variants and alternate providers remain NOT_RUN"
+      ],
+      "evidence_refs": [
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
@@ -161,7 +169,7 @@
       "id": "controller-advice-errors",
       "domain": "error-handling",
       "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
-      "behavior_verification_status": "NOT_RUN",
+      "behavior_verification_status": "PASSED_LOCAL_EXACT_FIXTURE",
       "source_traces": [
         "ApiExceptionHandler.java"
       ],
@@ -171,14 +179,17 @@
       ],
       "target_strategy": "Boot ControllerAdvice with explicit error contract tests",
       "blockers": [
-        "negative replay NOT_RUN"
+        "non-validation exception families and independent negative corpus remain NOT_RUN"
+      ],
+      "evidence_refs": [
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
       "id": "filter-interceptor-order",
       "domain": "servlet-filters-and-interceptors",
       "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
-      "behavior_verification_status": "NOT_RUN",
+      "behavior_verification_status": "PARTIAL_PASSED_LOCAL_EXACT_FIXTURE",
       "source_traces": [
         "WEB-INF/web.xml",
         "WEB-INF/spring/servlet-context.xml",
@@ -191,7 +202,10 @@
       ],
       "target_strategy": "ordered FilterRegistrationBean and WebMvcConfigurer mapping",
       "blockers": [
-        "real container order replay NOT_RUN"
+        "async and error-dispatch ordering remain NOT_RUN"
+      ],
+      "evidence_refs": [
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
@@ -240,7 +254,7 @@
       "id": "view-resolution-and-resources",
       "domain": "views-and-static-resources",
       "observation_status": "DETECTED_IN_DECLARED_FIXTURE",
-      "behavior_verification_status": "NOT_RUN",
+      "behavior_verification_status": "PARTIAL_PASSED_LOCAL_EXACT_FIXTURE",
       "source_traces": [
         "WEB-INF/spring/servlet-context.xml"
       ],
@@ -248,17 +262,20 @@
         "preserve view resolver order, prefix/suffix and model exposure",
         "preserve static resource paths, caching and welcome behavior"
       ],
-      "target_strategy": "manual-view-technology-decision-required",
+      "target_strategy": "Boot executable WAR with Tomcat Jasper, preserved WEB-INF JSPs and explicit Java view/resource configuration",
       "blockers": [
-        "JSP on executable JAR is not assumed equivalent",
-        "view rendering corpus NOT_RUN"
+        "JSP tag libraries and XML actions are blocked without an exact profile",
+        "static resource delivery and other JSP pages remain NOT_RUN"
+      ],
+      "evidence_refs": [
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
       "id": "servlet-to-boot-lifecycle",
       "domain": "lifecycle",
       "observation_status": "CAPTURED_FROM_DECLARED_FIXTURE",
-      "behavior_verification_status": "NOT_RUN",
+      "behavior_verification_status": "PASSED_LOCAL_EXACT_FIXTURE",
       "source_traces": [
         "WEB-INF/web.xml"
       ],
@@ -269,7 +286,10 @@
       ],
       "target_strategy": "Boot application lifecycle with explicit startup/shutdown probes",
       "blockers": [
-        "source and target startup NOT_RUN"
+        "alternate containers and production lifecycle integrations remain NOT_RUN"
+      ],
+      "evidence_refs": [
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     }
   ],
@@ -286,17 +306,17 @@
     ],
     "property_precedence": "NOT_RUN",
     "default_error_mapping": "EXPLICIT_CONTROLLER_ADVICE_PLUS_CONTAINER_DEFAULTS_NOT_RUN",
-    "view_resolution": "InternalResourceViewResolver detected; target strategy blocked"
+    "view_resolution": "InternalResourceViewResolver exact JSP rendered 142 identical UTF-8 bytes in local Tomcat 9 and embedded Tomcat 10; other views remain NOT_RUN"
   },
   "unknowns": [
-    "effective Maven model",
-    "external servlet container",
+    "effective Maven model outside the exact fixture",
+    "external servlet containers other than the pinned local Tomcat 9.0.120",
     "container JNDI and realms",
     "programmatic servlet initialization",
     "runtime bean graph and shadowing",
     "custom handler order",
     "security filters and policies",
-    "JSP/container view behavior",
+    "JSP/container runtime rendering outside the single exact local page",
     "persistence provider",
     "transaction behavior",
     "messaging/cache/scheduler providers",

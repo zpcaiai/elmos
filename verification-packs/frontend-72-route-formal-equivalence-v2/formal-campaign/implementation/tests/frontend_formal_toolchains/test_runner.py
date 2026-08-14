@@ -1059,6 +1059,59 @@ with urlopen(sys.argv[-1], timeout=5) as response: sys.stdout.buffer.write(respo
     return binary, chrome_path
 
 
+def make_openharmony_sdk(root: Path) -> Path:
+    for component, display_name in runner.OPENHARMONY_SDK_COMPONENTS.items():
+        write_json(
+            root / component / "oh-uni-package.json",
+            {
+                "apiVersion": runner.OPENHARMONY_SDK_API_VERSION,
+                "displayName": display_name,
+                "meta": {"metaVersion": "3.0.0"},
+                "path": component,
+                "releaseType": "Release",
+                "version": runner.OPENHARMONY_SDK_PACKAGE_VERSION,
+            },
+        )
+    return root
+
+
+def fake_hvigor(path: Path, *, version_text: str, expected_sdk_home: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_executable(
+        path,
+        f"""#!/usr/bin/env python3
+import os, sys
+from pathlib import Path
+Path('.hvigor/outputs/build-logs').mkdir(parents=True, exist_ok=True)
+home = Path(os.environ.get('HOME', ''))
+if (
+    home.name != 'home'
+    or home.parent != Path.cwd().parent
+    or home.is_symlink()
+    or not home.is_dir()
+    or (home.stat().st_mode & 0o777) != 0o700
+):
+    raise SystemExit(91)
+(home / '.hvigor').mkdir(exist_ok=True)
+args = sys.argv[1:]
+if args == ['--version']:
+    print({version_text!r})
+    raise SystemExit(0)
+if os.environ.get('OHOS_BASE_SDK_HOME') != {str(expected_sdk_home.resolve())!r}:
+    raise SystemExit(92)
+if args == ['clean', '--no-daemon']:
+    raise SystemExit(0)
+if args and args[0] == 'assembleHap':
+    output = Path('entry/build/default/outputs/default')
+    output.mkdir(parents=True, exist_ok=True)
+    (output / 'entry-default-unsigned.hap').write_text('test hap\\n')
+    raise SystemExit(0)
+raise SystemExit(3)
+""",
+    )
+    return path
+
+
 def build_block_specific_partial_record(
     root: Path,
 ) -> tuple[dict[str, object], dict[str, object], Path, list[dict[str, object]]]:
@@ -1443,6 +1496,126 @@ class FrontendFormalToolchainTests(unittest.TestCase):
                 row["device_or_simulator_evidence"] == "NOT_RUN"
                 for row in evidence["route_records"]
             )
+        )
+
+    def test_harmony_uses_exact_sdk_metadata_not_hvigor_tool_version(self) -> None:
+        sdk_root = make_openharmony_sdk(self.root / "OpenHarmony" / "Sdk" / "20")
+        hvigor = fake_hvigor(
+            self.root / "tools" / "hvigorw",
+            version_text="6.24.4",
+            expected_sdk_home=sdk_root.parent,
+        )
+        source_project = (
+            self.root / "campaign" / "profiles" / "harmony-arkui" / "project"
+        )
+        source_modes = {
+            path: path.stat().st_mode
+            for path in (source_project, *source_project.rglob("*"))
+        }
+        for path, mode in source_modes.items():
+            path.chmod(mode & ~(stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
+        try:
+            evidence = runner.execute_campaign(
+                runner.load_campaign(self.fixture.path),
+                runner.RunnerPolicy(
+                    no_network=True,
+                    timeout_seconds=5,
+                    selected_profiles=frozenset({"harmony-arkui"}),
+                    fail_on_unavailable=False,
+                    harmony_tool=str(hvigor),
+                    harmony_sdk_root=sdk_root,
+                ),
+            )
+            harmony = next(
+                item
+                for item in evidence["profile_executions"]
+                if item["profile_id"] == "harmony-arkui"
+            )
+            self.assertEqual(harmony["status"], "PASSED", harmony["reason"])
+            self.assertEqual(harmony["target_build"], "PASSED")
+            self.assertEqual(evidence["policy"]["harmony_sdk_root"], str(sdk_root))
+            self.assertEqual(harmony["tool_versions"][0]["stdout"]["text"], "6.24.4\n")
+            self.assertEqual(len(harmony["commands"]), 2)
+            command_records = [harmony["tool_versions"][0], *harmony["commands"]]
+            private_homes = {
+                record["environment"]["explicit"]["HOME"]
+                for record in command_records
+            }
+            self.assertEqual(len(private_homes), 1)
+            self.assertTrue(next(iter(private_homes)).endswith("/home"))
+            sdk_rows = [
+                row
+                for row in harmony["tool_discovery"]
+                if row.get("kind") == "OPENHARMONY_SDK_COMPONENT_METADATA"
+            ]
+            self.assertEqual(
+                [row["component"] for row in sdk_rows],
+                list(runner.OPENHARMONY_SDK_COMPONENTS),
+            )
+            self.assertTrue(all(row["selected"] for row in sdk_rows))
+            self.assertTrue(
+                all(
+                    record["environment"]["explicit"]["OHOS_BASE_SDK_HOME"]
+                    == str(sdk_root.parent.resolve())
+                    for record in harmony["commands"]
+                )
+            )
+            self.assertTrue(
+                all(
+                    not bool(path.stat().st_mode & stat.S_IWUSR)
+                    for path in source_modes
+                ),
+                "execution must never make the frozen campaign project writable",
+            )
+        finally:
+            for path, mode in source_modes.items():
+                path.chmod(mode)
+
+    def test_harmony_sdk_metadata_drift_fails_before_build_even_with_banner(
+        self,
+    ) -> None:
+        sdk_root = make_openharmony_sdk(self.root / "OpenHarmony" / "Sdk" / "20")
+        drifted = sdk_root / "toolchains" / "oh-uni-package.json"
+        metadata = json.loads(drifted.read_text())
+        metadata["version"] = "6.1.1.125"
+        write_json(drifted, metadata)
+        hvigor = fake_hvigor(
+            self.root / "tools" / "hvigorw",
+            version_text="harmonyos-6.0.0-api20 6.0.0(20)",
+            expected_sdk_home=sdk_root.parent,
+        )
+        evidence = runner.execute_campaign(
+            runner.load_campaign(self.fixture.path),
+            runner.RunnerPolicy(
+                no_network=True,
+                timeout_seconds=5,
+                selected_profiles=frozenset({"harmony-arkui"}),
+                fail_on_unavailable=False,
+                harmony_tool=str(hvigor),
+                harmony_sdk_root=sdk_root,
+            ),
+        )
+        harmony = next(
+            item
+            for item in evidence["profile_executions"]
+            if item["profile_id"] == "harmony-arkui"
+        )
+        self.assertEqual(harmony["status"], "FAILED")
+        self.assertEqual(harmony["reason"], "OPENHARMONY_SDK_METADATA_DRIFT")
+        self.assertEqual(harmony["commands"], [])
+        sdk_rows = [
+            row
+            for row in harmony["tool_discovery"]
+            if row.get("kind") == "OPENHARMONY_SDK_COMPONENT_METADATA"
+        ]
+        self.assertEqual(len(sdk_rows), 5)
+        self.assertEqual(
+            [
+                (row["component"], row["validation"])
+                for row in sdk_rows
+                if row["validation"] == "FAILED"
+            ],
+            [("toolchains", "FAILED")],
         )
 
     def test_harmony_missing_tool_is_honest_not_run_and_policy_can_fail(self) -> None:

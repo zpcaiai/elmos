@@ -8,7 +8,7 @@
       "pointer_standard": "RFC6901",
       "block_id": null,
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 126,
         "end_byte": 3404,
         "content_hash": "sha256:154b431b721daca1018bc69e6d8b615d4392c7b34fad2febc9daab313f84dad1",
@@ -31,7 +31,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2652,
         "end_byte": 2850,
         "content_hash": "sha256:d2dafb985b368f1c9532ed5fc627d8db039060fef663bb77b998b49fab475a7c",
@@ -54,7 +54,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2745,
         "end_byte": 2752,
         "content_hash": "sha256:cf170110abc5849f756d7abf9a6131f853d2f68ba1ca7a10497850f973dc7ef0",
@@ -77,7 +77,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2718,
         "end_byte": 2726,
         "content_hash": "sha256:67be6d16aebf9040a5891d21c3bd560a19401b200e732ee826b56f786869c6dd",
@@ -100,7 +100,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2698,
         "end_byte": 2699,
         "content_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -123,7 +123,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2808,
         "end_byte": 2815,
         "content_hash": "sha256:4c4f28a0fc9a4f2950029d5207744506cb1a6c2a836be46bdd126cf6ff507309",
@@ -146,7 +146,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2839,
         "end_byte": 2846,
         "content_hash": "sha256:ed9140d42148c99bd98add4a4c0029903b21f19b30d06f090a14e6177118cb1a",
@@ -169,7 +169,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2772,
         "end_byte": 2780,
         "content_hash": "sha256:b717f458d02594cc2d44a9326ddb729ca763f84620b1afa5bcf2945d30780c57",
@@ -192,7 +192,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "accessibility-focus",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2670,
         "end_byte": 2676,
         "content_hash": "sha256:e4a9e4d8baa71a9d8ebf56ec8ae3ea1e82be9f96ae6fe89e36d701d4a5337f30",
@@ -215,7 +215,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1322,
         "end_byte": 1568,
         "content_hash": "sha256:1d5f4cfdca0e8bcc38fdd14bb23ef65430ca26ce976dcb977f567a806bac2358",
@@ -238,7 +238,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1346,
         "end_byte": 1504,
         "content_hash": "sha256:f831918f55b90cb41bb556e5966d1ce606d43a7fbe4715f9ac1422e3f468c194",
@@ -261,7 +261,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1354,
         "end_byte": 1360,
         "content_hash": "sha256:967abdaa7067e7ffc96a7501c8a25003a49717e94cc5461e5ad5b1bf573ba4c4",
@@ -284,7 +284,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1368,
         "end_byte": 1378,
         "content_hash": "sha256:1a448ed62226bb81646c237d6e2aaf994d5961859de97ca680bd056b0791555d",
@@ -307,7 +307,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1386,
         "end_byte": 1400,
         "content_hash": "sha256:774b5fdb719de58a22023998e22fb5218ff520a14d0da3246e16158fac653678",
@@ -330,7 +330,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1408,
         "end_byte": 1416,
         "content_hash": "sha256:f4f2b6493c52567d0f919da58e8572bf32ae165506509eb12092d52f87241aa8",
@@ -353,7 +353,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1424,
         "end_byte": 1432,
         "content_hash": "sha256:2625e2fe2d8986b8d2d4f614fee11265ea588f62e7686caa6c938433c5e7792b",
@@ -376,7 +376,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1440,
         "end_byte": 1449,
         "content_hash": "sha256:389aaea5890da075190aa6009cac37c6d5ee03010705ba65f96a3805bbc298c5",
@@ -399,7 +399,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1457,
         "end_byte": 1473,
         "content_hash": "sha256:8c8ab09885530b11fccf73d613b710ceba2d6e2cdf9a7113a1f1a0fff8a93613",
@@ -422,7 +422,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1481,
         "end_byte": 1498,
         "content_hash": "sha256:34099f7bc3eff3d6213e4715a91ecc935854019640e2040469210ded39137339",
@@ -445,7 +445,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1526,
         "end_byte": 1533,
         "content_hash": "sha256:6fdebd5c11d5ce978dd5a2bb4c1dbac69a593b90380d3d926834cba70f6f74a9",
@@ -468,7 +468,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "action-event",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1557,
         "end_byte": 1564,
         "content_hash": "sha256:ed9140d42148c99bd98add4a4c0029903b21f19b30d06f090a14e6177118cb1a",
@@ -491,7 +491,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1993,
         "end_byte": 2183,
         "content_hash": "sha256:b989d91c2858be3aa2b205beabd69b81101e9360a3fe06f4930338aa4e2f500c",
@@ -514,7 +514,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2136,
         "end_byte": 2150,
         "content_hash": "sha256:2db2b6307f75ecf2621faa0a7ca8d4e0ad50ed5ee0eb5159a76e50fd66f7c61d",
@@ -537,7 +537,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2175,
         "end_byte": 2179,
         "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
@@ -560,7 +560,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2038,
         "end_byte": 2044,
         "content_hash": "sha256:e46d3ae943664116b752137af856edb5f377c6d8012a39e3ef7f39f80a802cac",
@@ -583,7 +583,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2014,
         "end_byte": 2022,
         "content_hash": "sha256:6ad21f9d2ea182f9fe66f7791944c3bfa4eb4281c1609ca95e82a89c65e6a413",
@@ -606,7 +606,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2058,
         "end_byte": 2071,
         "content_hash": "sha256:63f77e94b99603af05e13f406234063d5123dfa5c942c155467fd912b6251254",
@@ -629,7 +629,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2109,
         "end_byte": 2116,
         "content_hash": "sha256:2793926495159609106ae651ff9a7ae5bbaeeb4d33599f7dfb281d594b045bf5",
@@ -652,7 +652,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "api-network",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2090,
         "end_byte": 2094,
         "content_hash": "sha256:40510175845988f13f6162ed8526f0b09f73384467fa855e1e79b44a56562a58",
@@ -675,7 +675,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 947,
         "end_byte": 1146,
         "content_hash": "sha256:0a1b848372ddfb77f7a36e194371b33b1b864c1ec0c52bfaf9f6a58f96c6d461",
@@ -698,7 +698,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 968,
         "end_byte": 987,
         "content_hash": "sha256:fbf9aa16fbb8c7611e4bbe754ec47c1b8cff09ecc54d51085859deb42914f46f",
@@ -721,7 +721,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1064,
         "end_byte": 1074,
         "content_hash": "sha256:fb47875bc07055fdb684d88b5bc31c99e0a955aec945bc7a39a693e07d4c35fa",
@@ -744,7 +744,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1009,
         "end_byte": 1047,
         "content_hash": "sha256:b80fa68b226b62b2493b25eed641c5bd22128b0acdc3909cba9bab34c186bd16",
@@ -767,7 +767,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1130,
         "end_byte": 1142,
         "content_hash": "sha256:5baa95ee43442a500a246652358ef8b5ee32fb381caf4abb01057075ab4a0e57",
@@ -790,7 +790,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1096,
         "end_byte": 1109,
         "content_hash": "sha256:2e2e1f1c25bbbcaea75aee6d5d04fd43c49cb3ccc572a5862a04ef13d2999268",
@@ -813,7 +813,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "effect-lifecycle",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1591,
         "end_byte": 1755,
         "content_hash": "sha256:2109027ab528abb9f3e7426ee2b4aa34dec8871c505f8d94032468397ddc11cf",
@@ -836,7 +836,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "effect-lifecycle",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1650,
         "end_byte": 1669,
         "content_hash": "sha256:d5fb2d76a5ca595bbdb5cf14d2becd566792c1feca37eb705c4584b252b687f3",
@@ -859,7 +859,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "effect-lifecycle",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1700,
         "end_byte": 1701,
         "content_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -882,7 +882,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "effect-lifecycle",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1612,
         "end_byte": 1627,
         "content_hash": "sha256:45d163223459fd30c9414a66a8c799600cc16cae82bab91b9568ea6757deaf10",
@@ -905,7 +905,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "effect-lifecycle",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1730,
         "end_byte": 1751,
         "content_hash": "sha256:c3288f76d13c6b97ac57d51aaae8449806f2c0ef1d2023aab481d55fff892cf7",
@@ -928,7 +928,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1784,
         "end_byte": 1975,
         "content_hash": "sha256:4475ec01e0354787a3cdae1a27c730cb1c8268919b55fd7fbf9403dee509c8a1",
@@ -951,7 +951,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1825,
         "end_byte": 1832,
         "content_hash": "sha256:4c4f28a0fc9a4f2950029d5207744506cb1a6c2a836be46bdd126cf6ff507309",
@@ -974,7 +974,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1800,
         "end_byte": 1808,
         "content_hash": "sha256:6ad21f9d2ea182f9fe66f7791944c3bfa4eb4281c1609ca95e82a89c65e6a413",
@@ -997,7 +997,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1854,
         "end_byte": 1856,
         "content_hash": "sha256:12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
@@ -1020,7 +1020,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1954,
         "end_byte": 1971,
         "content_hash": "sha256:49a9bcb244ee80d3c01e4caf192f60aeee7c61d3cbd7d6f38a645939b21fcacf",
@@ -1043,7 +1043,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1901,
         "end_byte": 1902,
         "content_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
@@ -1066,7 +1066,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1874,
         "end_byte": 1878,
         "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
@@ -1089,7 +1089,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "form-binding-validation",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1922,
         "end_byte": 1933,
         "content_hash": "sha256:63c9a1fd33881d745352c41713cdd9a994f183a0fe6b404d1f23f8395f03f96b",
@@ -1112,7 +1112,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2877,
         "end_byte": 3131,
         "content_hash": "sha256:815ca8e42da9f01bf382e52ca30642455dc1eb7a7a6f5bb2c6c57a0840320a82",
@@ -1135,7 +1135,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3077,
         "end_byte": 3080,
         "content_hash": "sha256:d829857eb1366e70be857a69886d1555af0d32681beab068afb93492c2e2b843",
@@ -1158,7 +1158,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3104,
         "end_byte": 3105,
         "content_hash": "sha256:6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -1181,7 +1181,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3043,
         "end_byte": 3050,
         "content_hash": "sha256:b7f4def8a013893d9ece6e582b2b8d7b6d45ec6b76202f5409e772f2b509682c",
@@ -1204,7 +1204,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2963,
         "end_byte": 2970,
         "content_hash": "sha256:c528452300440f47b4505e15d80ef5fb68d030675ad944dd54d1b8b6b9d45294",
@@ -1227,7 +1227,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2903,
         "end_byte": 2939,
         "content_hash": "sha256:f6dd440ed3ad72448f9940f3f4ff223119a72c2c65294f921ecc51a8c0502695",
@@ -1250,7 +1250,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2911,
         "end_byte": 2918,
         "content_hash": "sha256:cb6ad26bff207781ff22d264c287efef6765b9ca8f90d29c39244f73827fedcc",
@@ -1273,7 +1273,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2926,
         "end_byte": 2933,
         "content_hash": "sha256:c528452300440f47b4505e15d80ef5fb68d030675ad944dd54d1b8b6b9d45294",
@@ -1296,7 +1296,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2986,
         "end_byte": 3021,
         "content_hash": "sha256:cc89f46856eec1ea59a8caa1648b68d881b658d4a4e41577ea0571da1bf2953c",
@@ -1319,7 +1319,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2994,
         "end_byte": 3001,
         "content_hash": "sha256:b7f4def8a013893d9ece6e582b2b8d7b6d45ec6b76202f5409e772f2b509682c",
@@ -1342,7 +1342,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3009,
         "end_byte": 3015,
         "content_hash": "sha256:8a19f2ecd4a997c1471e09c6133b4176ff295b42bad615d7530b38e8a96b7b61",
@@ -1365,7 +1365,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "i18n-theme-responsive",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3126,
         "end_byte": 3127,
         "content_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
@@ -1388,7 +1388,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2209,
         "end_byte": 2448,
         "content_hash": "sha256:e89cecb817eca211a04e526a90d7cf9200917303a027e4dc8e7e42d7020e7825",
@@ -1411,7 +1411,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2232,
         "end_byte": 2243,
         "content_hash": "sha256:9f338305856ad2aed6b6e44373ca75b042118b520cbe78f649704bd6bd131596",
@@ -1434,7 +1434,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2270,
         "end_byte": 2278,
         "content_hash": "sha256:37af56238b5e5525731f9bbb951a396cb3fb081295066fac5eba53dbca2be805",
@@ -1457,7 +1457,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2346,
         "end_byte": 2362,
         "content_hash": "sha256:aa94282432d8461aca77b205939309410ecf4dd930a273939384493c882c02b1",
@@ -1480,7 +1480,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2306,
         "end_byte": 2322,
         "content_hash": "sha256:e7f67b541849b4c5a1e18c5653ba29c3df6ffd963bb35b57705fc08eb5db7ad7",
@@ -1503,7 +1503,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2440,
         "end_byte": 2444,
         "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
@@ -1526,7 +1526,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "identity-permission",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2387,
         "end_byte": 2407,
         "content_hash": "sha256:2344f544611979d600f2cb67ea395bb9300a37d1a1f6989ec38103392d5b3e4d",
@@ -1549,7 +1549,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3153,
         "end_byte": 3402,
         "content_hash": "sha256:54b325db51dee1f1b3393783890745dbed1e7f81941601a0bf66a47af59c9030",
@@ -1572,7 +1572,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3171,
         "end_byte": 3180,
         "content_hash": "sha256:5f61175024f601ee12bd663d6b2eecd1dc420e7f19c7a816fee09f9ca40b1795",
@@ -1595,7 +1595,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3200,
         "end_byte": 3216,
         "content_hash": "sha256:c75f2881e1bbfa22930a98d0f2f6b701ecd69f667e65c58716e2445d952a02de",
@@ -1618,7 +1618,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3346,
         "end_byte": 3362,
         "content_hash": "sha256:f78e4d159f7e24523b2128a94e7c3b02a69802f53d2c38bec886b4b6ff0b189b",
@@ -1641,7 +1641,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3241,
         "end_byte": 3287,
         "content_hash": "sha256:4eae64a0811d2b66420a4d924ad8b8d8770a2a7a6c9786c38a3ebf014103f48d",
@@ -1664,7 +1664,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3249,
         "end_byte": 3261,
         "content_hash": "sha256:7ce592b948832e0bb079a05b3c530222faf5dc319c00439d15d98e3ddcca0107",
@@ -1687,7 +1687,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3269,
         "end_byte": 3281,
         "content_hash": "sha256:5cacf473bb4a4d32c3ecb19780f56ebdd8e6478af5b5d4b04f4f5296101394ab",
@@ -1710,7 +1710,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3307,
         "end_byte": 3322,
         "content_hash": "sha256:a9347729a6249ee89938058a3f6892cffecb09d7042b6aca1e7d301bd34d4742",
@@ -1733,7 +1733,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "native-platform",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 3380,
         "end_byte": 3398,
         "content_hash": "sha256:012203952e421a039291112c71c4cd66183cf8abdb98108f9741739a5ef163c2",
@@ -1756,7 +1756,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 270,
         "end_byte": 922,
         "content_hash": "sha256:be58ae1a9570024717d9ae14ace9401d84228f41189eaedf4a5b03ddf4bc0426",
@@ -1779,7 +1779,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 317,
         "end_byte": 339,
         "content_hash": "sha256:a85168407d65785a449164c0eb04a19931f90d338319e110c45e999b6a228a07",
@@ -1802,7 +1802,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 285,
         "end_byte": 299,
         "content_hash": "sha256:88126f67c114375e9f64b337609f270e94ffed8aadcd26c245a234720d67084b",
@@ -1825,7 +1825,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 355,
         "end_byte": 918,
         "content_hash": "sha256:6fef5f0711d9b9944cbc4b27cbea71af6e8072c88db8f3bdb113b0010d74ef99",
@@ -1848,7 +1848,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 363,
         "end_byte": 536,
         "content_hash": "sha256:53453b85de73ea9e043dbe76fd33a7c1fb75466ee812c6af15d65d0a47ecad69",
@@ -1871,7 +1871,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 524,
         "end_byte": 528,
         "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
@@ -1894,7 +1894,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 379,
         "end_byte": 391,
         "content_hash": "sha256:18f42b19b060dfdd56c6d6149ea05d3a75813b94c8d59671cb9e6d30ba896d35",
@@ -1917,7 +1917,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 409,
         "end_byte": 412,
         "content_hash": "sha256:df7e940f72aa93cbcb6d70cc35124b0767c7a0e353043c7c24b660ea9be7b952",
@@ -1940,7 +1940,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 497,
         "end_byte": 502,
         "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
@@ -1963,7 +1963,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 457,
         "end_byte": 471,
         "content_hash": "sha256:9a226cf4cde554a5d37e7481c513e49d30b9a2e22c87477b751ba87a76e92cd9",
@@ -1986,7 +1986,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 431,
         "end_byte": 439,
         "content_hash": "sha256:51ad103901a64833d1d5386ce1659891d1625d2aa2082b4b148f33292f9d7010",
@@ -2009,7 +2009,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 544,
         "end_byte": 726,
         "content_hash": "sha256:f03e98ff66f9a2cc4a8f11aac9a2f83186d2f6a3961f8400e1dda57790c997f4",
@@ -2032,7 +2032,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 714,
         "end_byte": 718,
         "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
@@ -2055,7 +2055,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 560,
         "end_byte": 575,
         "content_hash": "sha256:a62fa51023e8aa31193e41816400db404983e2322e19bec2373f784702e9ce5d",
@@ -2078,7 +2078,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 593,
         "end_byte": 603,
         "content_hash": "sha256:baa8c79bd258790237774637932d98ffcf8713eb875f4ffa01f396108f991051",
@@ -2101,7 +2101,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 688,
         "end_byte": 692,
         "content_hash": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
@@ -2124,7 +2124,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 648,
         "end_byte": 662,
         "content_hash": "sha256:825bcb6299e2978874e0f044b103c16b3808b4b68413e0953e6ea85a67decf44",
@@ -2147,7 +2147,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 622,
         "end_byte": 630,
         "content_hash": "sha256:24cb9f833fa56bedc2b53fe3c97c6669b98c79fd934d0ca32baff7b0bfbd0b28",
@@ -2170,7 +2170,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 734,
         "end_byte": 912,
         "content_hash": "sha256:23128d184c2567c2e529af5d0f6707bf251cded8b11a6e3d1c93cd3262955195",
@@ -2193,7 +2193,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 899,
         "end_byte": 904,
         "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
@@ -2216,7 +2216,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 750,
         "end_byte": 762,
         "content_hash": "sha256:b10b3aab505a88c98f5f6a51fb0ed463da1bf929ca7460f03fde58cafaff1976",
@@ -2239,7 +2239,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 780,
         "end_byte": 787,
         "content_hash": "sha256:32b172451c87766eca746cee0ca77a2cf71f47ff0f3829041865171af841cc08",
@@ -2262,7 +2262,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "route-navigation-deeplink-404",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 872,
         "end_byte": 877,
         "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
@@ -2285,7 +2285,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 832,
         "end_byte": 846,
         "content_hash": "sha256:952a36e3d6698c723fcfc7a3c8f3fa2f7841af734e87406a636ddb9751e58bd6",
@@ -2308,7 +2308,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "component-template-view",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 806,
         "end_byte": 814,
         "content_hash": "sha256:8065d0033a609e40755429bd4657c3921b2d94100c358438906a533b5e17239e",
@@ -2331,7 +2331,7 @@
       "pointer_standard": "RFC6901",
       "block_id": null,
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 167,
         "end_byte": 200,
         "content_hash": "sha256:edc15edf2d0381974356204b3dfcbe1675d9b7a42ac01865393de0638dfe7072",
@@ -2354,7 +2354,7 @@
       "pointer_standard": "RFC6901",
       "block_id": null,
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 220,
         "end_byte": 252,
         "content_hash": "sha256:6e63337b7d2a876117aa0dd6015741008146b5bc5d29da98c7f9d14de49f06f0",
@@ -2377,7 +2377,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "rendering-hydration",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2474,
         "end_byte": 2626,
         "content_hash": "sha256:213730a19f83281e9eba255f2f7e675471b84f5a551091995a86b35110090e22",
@@ -2400,7 +2400,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "rendering-hydration",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2617,
         "end_byte": 2622,
         "content_hash": "sha256:fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
@@ -2423,7 +2423,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "rendering-hydration",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2529,
         "end_byte": 2544,
         "content_hash": "sha256:08b36709893c492c1a47111f82c46c68ce3b340ed39e3dac97b159da840d692f",
@@ -2446,7 +2446,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "rendering-hydration",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2570,
         "end_byte": 2584,
         "content_hash": "sha256:51411924059964251d051bc0a4625dc63f1988b54819ee62cc8dbb50865e69c5",
@@ -2469,7 +2469,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "rendering-hydration",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 2488,
         "end_byte": 2504,
         "content_hash": "sha256:236839cbecec33e47a216bab66a2e08056b1894febe8fa2643a0173a3b8bc0b0",
@@ -2492,7 +2492,7 @@
       "pointer_standard": "RFC6901",
       "block_id": null,
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 147,
         "end_byte": 152,
         "content_hash": "sha256:a51162aeeb057ca4e3df627977231de20b581f0d0d418ca3a111bc0e408ac6cc",
@@ -2515,7 +2515,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "state-management",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1169,
         "end_byte": 1303,
         "content_hash": "sha256:d6d62e2a8cbb172811fe353cb1ec68437c32dea1c49efa1c23d9fa20a14821aa",
@@ -2538,7 +2538,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "state-management",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1220,
         "end_byte": 1221,
         "content_hash": "sha256:5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
@@ -2561,7 +2561,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "state-management",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1256,
         "end_byte": 1257,
         "content_hash": "sha256:d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
@@ -2584,7 +2584,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "state-management",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1238,
         "end_byte": 1239,
         "content_hash": "sha256:5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
@@ -2607,7 +2607,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "state-management",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1186,
         "end_byte": 1203,
         "content_hash": "sha256:f99138ae44976be3aea4881121f9f2f044fd0e1459ed9f18033e94242a83b86a",
@@ -2630,7 +2630,7 @@
       "pointer_standard": "RFC6901",
       "block_id": "state-management",
       "source": {
-        "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+        "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
         "start_byte": 1277,
         "end_byte": 1299,
         "content_hash": "sha256:08dc2c287c5b046865d5255dc6c7444dc5ddec5e2a05e7b395f7178f9d09f5ad",

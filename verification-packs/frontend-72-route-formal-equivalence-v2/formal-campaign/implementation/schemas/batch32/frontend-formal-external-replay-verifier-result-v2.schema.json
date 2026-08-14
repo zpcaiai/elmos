@@ -22,7 +22,5 @@
     "verified_route_block_count": {"const": 864},
     "status": {"const": "PASSED"}
   },
-  "$defs": {
-    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
-  }
+  "$defs": {"sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
 }

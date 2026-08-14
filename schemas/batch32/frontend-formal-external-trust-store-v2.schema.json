@@ -23,7 +23,7 @@
     "expires_at": {"type": "string", "format": "date-time"},
     "keys": {
       "type": "array",
-      "minItems": 3,
+      "minItems": 4,
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/evidenceKey"}
     },
@@ -84,7 +84,7 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {"enum": ["AUTHORIZATION", "EXECUTOR", "VERIFIER"]}
+          "items": {"enum": ["AUTHORIZATION", "EXECUTOR", "VERIFIER", "CUSTOMER"]}
         },
         "public_key_pem": {
           "type": "string",

@@ -26,9 +26,12 @@ services:
       ELMOS_DATABASE_URL: jdbc:postgresql://postgres:5432/elmos
       ELMOS_DATABASE_USER: elmos
       ELMOS_DATABASE_PASSWORD: elmos-local-only
+      ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED: "true"
+      ELMOS_DATABASE_DATA_ENGINE_BASE_URL: http://database-data-engine-worker:8089
     ports: ["8080:8080"]
     depends_on:
       postgres: { condition: service_healthy }
+      database-data-engine-worker: { condition: service_started }
   java-engine-worker:
     build: { context: ../.., dockerfile: apps/java-engine-worker/Dockerfile }
     environment:
@@ -57,11 +60,39 @@ services:
       ELMOS_FRONTEND_PORT: "8088"
       ELMOS_FRONTEND_HOST: "0.0.0.0"
     ports: ["8088:8088"]
+  chinadb-sql-preflight:
+    build: { context: ../.., dockerfile: engines/database-data-engine/sql-transpiler/Dockerfile }
+    user: "10001:10001"
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=16m"
+    environment:
+      ELMOS_CHINADB_PREFLIGHT_PORT: "8101"
+    expose: ["8101"]
+    networks: [chinadb-preflight]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/health', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512m }
   database-data-engine-worker:
     build: { context: ../.., dockerfile: engines/database-data-engine/Dockerfile }
     environment:
       ELMOS_DATABASE_DATA_PORT: "8089"
+      ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED: "true"
+      ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL: http://chinadb-sql-preflight:8101
     ports: ["8089:8089"]
+    networks: [default, chinadb-preflight]
+    depends_on:
+      chinadb-sql-preflight: { condition: service_healthy }
   infrastructure-engine-worker:
     build: { context: ../.., dockerfile: engines/infrastructure-engine/Dockerfile }
     environment:
@@ -157,6 +188,7 @@ services:
       ELMOS_COMMERCIAL_API_URL: http://commercial-api:8085
       ELMOS_WORKSPACE_SERVICE_URL: http://workspace-service:8082
       ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://control-plane:8080
+      ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED: "true"
       ELMOS_TRUSTED_INTERNAL_HTTP: "true"
       JAVA_ENGINE_BASE_URL: http://java-engine-worker:8081
       ELMOS_SPRING_PROXY_ENABLED: "false"
@@ -179,3 +211,7 @@ volumes:
   dotnet-workspaces:
   python-workspaces:
   java-engine-workspaces:
+networks:
+  default: {}
+  chinadb-preflight:
+    internal: true

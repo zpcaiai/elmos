@@ -146,6 +146,26 @@ def _require_single_statement(sql: str, source_dialect: Dialect) -> exp.Expressi
     return statements[0]  # type: ignore[return-value]  # sqlglot's stub uses an internal "Expr" alias here
 
 
+def _statement(sql: str | exp.Expression, source_dialect: Dialect) -> exp.Expression:
+    """Accept either raw SQL or a statement already parsed from it.
+
+    `scan` splits a file with this very parser, so by the time it calls in
+    here it is already holding the parsed statement. Serialising that node
+    back to text just so this module can parse it again costs two thirds of
+    the work per statement, repeated for every statement in a repository, and
+    `scan` is the highest-frequency entry point in the engine.
+
+    Passing the node through is also the more faithful of the two: it is the
+    node the splitter produced, not one recovered from a source-to-source
+    round trip. An already-parsed statement carries the single-statement
+    property by construction, which is exactly what
+    `_require_single_statement` has to establish for text.
+    """
+    if isinstance(sql, exp.Expression):
+        return sql
+    return _require_single_statement(sql, source_dialect)
+
+
 def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTypeRef:
     sqlglot_type = data_type.this
     params = list(data_type.expressions or [])
@@ -325,8 +345,8 @@ def _column_constraints(
             unique_shorthand, inline_foreign_key, inline_checks)
 
 
-def parse_create_table(sql: str, source_dialect: Dialect) -> Table:
-    statement = _require_single_statement(sql, source_dialect)
+def parse_create_table(sql: str | exp.Expression, source_dialect: Dialect) -> Table:
+    statement = _statement(sql, source_dialect)
     _require(isinstance(statement, exp.Create) and statement.args.get("kind") == "TABLE",
               "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "certified-ddl-v1 only accepts a single CREATE TABLE statement")
     for flag in ("replace", "exists", "unique", "concurrently"):
@@ -447,8 +467,8 @@ def _apply_table_constraint(inner: exp.Expression, name: str | None, primary_key
                             f"named constraint clause {type(inner).__name__} is outside certified-ddl-v1")
 
 
-def parse_create_index(sql: str, source_dialect: Dialect) -> Index:
-    statement = _require_single_statement(sql, source_dialect)
+def parse_create_index(sql: str | exp.Expression, source_dialect: Dialect) -> Index:
+    statement = _statement(sql, source_dialect)
     _require(isinstance(statement, exp.Create) and statement.args.get("kind") == "INDEX",
               "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "certified-ddl-v1 only accepts a single CREATE INDEX statement here")
     for flag in ("replace", "exists", "concurrently"):
@@ -544,9 +564,9 @@ def _parse_alter_constraint(inner: exp.Expression, name: str | None) -> AddConst
                         f"ADD CONSTRAINT clause {type(inner).__name__} is outside certified-alter-v1")
 
 
-def parse_alter_table(sql: str, source_dialect: Dialect) -> AlterTable:
+def parse_alter_table(sql: str | exp.Expression, source_dialect: Dialect) -> AlterTable:
     """Parse one ALTER TABLE into the canonical certified-alter-v1 model."""
-    statement = _require_single_statement(sql, source_dialect)
+    statement = _statement(sql, source_dialect)
     _require(isinstance(statement, exp.Alter), "CERTIFIED_ALTER_UNSUPPORTED_STATEMENT",
               "certified-alter-v1 only accepts a single ALTER TABLE statement")
     assert isinstance(statement, exp.Alter)  # narrows for mypy

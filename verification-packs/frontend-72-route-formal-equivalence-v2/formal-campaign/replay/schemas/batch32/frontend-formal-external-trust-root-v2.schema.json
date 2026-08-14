@@ -32,7 +32,7 @@
     },
     "organization_key_allowlist": {
       "type": "array",
-      "minItems": 3,
+      "minItems": 4,
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/allowedKey"}
     },
@@ -86,7 +86,7 @@
       "properties": {
         "organization_id": {"$ref": "#/$defs/nonEmpty"},
         "key_id": {"$ref": "#/$defs/nonEmpty"},
-        "role": {"enum": ["AUTHORIZATION", "EXECUTOR", "VERIFIER"]},
+        "role": {"enum": ["AUTHORIZATION", "EXECUTOR", "VERIFIER", "CUSTOMER"]},
         "public_key_sha256": {"$ref": "#/$defs/sha256"}
       }
     }
