@@ -5152,6 +5152,22 @@ def _cargo_build_cache(package: Path, executable: Path) -> tuple[Path, Path, dic
 _ANALYZER_BUILD_RECEIPT = "build-receipt.json"
 
 
+#: The Swift analyzer cannot use this cache, and the reason is not a missing
+#: toolchain -- it is deliberate, in `_verify_swift_execution_seal`.
+#:
+#: That seal pins `st_dev` and `st_ino` of the directory holding the binary,
+#: alongside mode 0500 and `binary.parent == root`.  Copying a sealed analyzer
+#: into a cache directory reproduces the bytes and the mode but necessarily
+#: changes the inode, so the stored receipt stops verifying and the load fails
+#: with SWIFT_ANALYZER_EXECUTION_SEAL_CHANGED.  Measured on two identical
+#: copies on the same device: inode 966663 against 966679.
+#:
+#: That is the seal doing its job, not an obstacle to route around.  Making
+#: Swift cacheable means either re-deriving the seal at load time -- which is
+#: exactly the check that would be skipped -- or redesigning it to be
+#: location-independent.  Both change what the seal promises, so neither is a
+#: performance decision and neither belongs here.
+#:
 #: Reusing a *built analyzer binary* across processes is opt-in, unlike reusing
 #: a compiler's own build directory.
 #:

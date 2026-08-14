@@ -4,7 +4,7 @@ import base64
 import hashlib
 import json
 import subprocess
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, cast
@@ -14,6 +14,51 @@ import pytest
 from elmos_polyglot_route import native
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.toolchains import ExactToolchain
+
+
+@pytest.fixture(autouse=True)
+def _isolated_analyzer_binary_cache(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Give every test in this file its own cross-process analyzer cache.
+
+    `_persistent_analyzer_root` resolves under the account's real home
+    directory, deliberately -- it must not be redirectable by editing `HOME`.
+    That is right in production and wrong in a test, which would otherwise read
+    and write the developer's actual cache and let one test's build satisfy the
+    next test's call.
+
+    Two tests below assert how many build commands a single call issues.  That
+    assertion is correct, and enabling the cache does not make it incorrect;
+    what makes it incorrect is a cache shared across tests.  So the fix here is
+    isolation, not a weaker assertion.
+    """
+    root = tmp_path / "analyzer-binary-cache"
+
+    def isolated_root(kind: str, key: str) -> Path | None:
+        if not native._analyzer_binary_cache_enabled():
+            return None
+        directory = root / kind / key
+        directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+        return directory
+
+    def isolated_cache(kind: str, key: str, names: Sequence[str]) -> tuple[Path, ...] | None:
+        directories = []
+        for name in names:
+            directory = root / kind / key / name
+            directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+            directories.append(directory)
+        return tuple(directories)
+
+    # Both entry points, not just one.  `_csharp_package_restore_cache` reaches
+    # `_toolchain_build_cache` directly rather than going through
+    # `_persistent_analyzer_root`, so patching only the latter would leave the
+    # NuGet restore cache writing into the real home directory -- which is the
+    # exact cross-test leakage this fixture exists to prevent.
+    monkeypatch.setattr(native, "_persistent_analyzer_root", isolated_root)
+    monkeypatch.setattr(native, "_toolchain_build_cache", isolated_cache)
+    monkeypatch.delenv(native._ANALYZER_BINARY_CACHE_ENV, raising=False)
 
 
 def _fake_engine(
@@ -199,6 +244,7 @@ def test_csharp_analyzer_concurrent_first_use_builds_once_and_runs_private_dll(
     assert not temporary_root.exists()
 
 
+@pytest.mark.parametrize("binary_cache", (False, True), ids=("cache-off", "cache-on"))
 @pytest.mark.parametrize(
     ("drift", "error"),
     (
@@ -212,7 +258,12 @@ def test_csharp_analyzer_cache_rejects_content_drift_without_rebuilding(
     monkeypatch: pytest.MonkeyPatch,
     drift: str,
     error: str,
+    binary_cache: bool,
 ) -> None:
+    # Drift detection is the property under test, and it must hold identically
+    # whether or not the analyzer binary came from a cross-process cache.
+    if binary_cache:
+        monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
     engine, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
     monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
@@ -240,10 +291,14 @@ def test_csharp_analyzer_cache_rejects_content_drift_without_rebuilding(
         native._cleanup_csharp_analyzer()
 
 
+@pytest.mark.parametrize("binary_cache", (False, True), ids=("cache-off", "cache-on"))
 def test_csharp_analyzer_cache_rejects_same_version_bundle_replacement(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    binary_cache: bool,
 ) -> None:
+    if binary_cache:
+        monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
     _, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
     monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
@@ -350,5 +405,78 @@ def test_csharp_analyzer_rejects_symlinked_build_input_before_restore(
         with pytest.raises(RouteError, match="CSHARP_ANALYZER_INPUT_UNSAFE"):
             native._csharp_analyzer(toolchain)
         assert calls == 0
+    finally:
+        native._cleanup_csharp_analyzer()
+
+
+def test_csharp_analyzer_reuses_a_verified_cross_process_build(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A warm cache skips the build, and only ever after re-verifying it.
+
+    This is the path the build-count assertions above deliberately do not
+    cover: they each start from a cold, per-test cache, so they still see two
+    build commands.  Here the second process is simulated by clearing the
+    process-local globals, which is the only reason the first call's build was
+    remembered at all.
+    """
+    monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
+    _, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
+    commands: list[list[str]] = []
+    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+
+    try:
+        first_binary, first_receipt = native._csharp_analyzer(toolchain)
+        built = len(commands)
+        assert built > 0
+
+        # Stand in for a fresh process: same machine, same inputs, no globals.
+        native._cleanup_csharp_analyzer()
+        second_binary, second_receipt = native._csharp_analyzer(toolchain)
+
+        assert len(commands) == built, "a warm cache must not issue another build"
+        assert second_receipt["output"]["sha256"] == first_receipt["output"]["sha256"]
+        assert second_binary.name == first_binary.name
+        assert second_binary.is_file()
+    finally:
+        native._cleanup_csharp_analyzer()
+
+
+def test_csharp_analyzer_cross_process_cache_refuses_a_tampered_entry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A cache hit is a re-verification, not an act of trust.
+
+    If a cached output could be swapped for different bytes and still be
+    executed, the cache would be a way to defeat exactly the output binding
+    `_verify_csharp_analyzer_output` exists to enforce.  So a tampered entry
+    must not be reused -- rebuilding instead is the correct outcome.
+    """
+    monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
+    _, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
+    commands: list[list[str]] = []
+    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+
+    try:
+        native._csharp_analyzer(toolchain)
+        built = len(commands)
+        native._cleanup_csharp_analyzer()
+
+        # The first call missed and therefore built into a temporary directory,
+        # which cleanup has now removed; the copy that matters is the published
+        # one, so find it in this test's isolated cache.
+        cached = sorted(
+            (tmp_path / "analyzer-binary-cache").rglob(native._CSHARP_ANALYZER_ENTRYPOINT)
+        )
+        assert len(cached) == 1, f"expected exactly one published analyzer, found {cached}"
+        target = cached[0]
+        honest = target.read_bytes()
+        target.write_bytes(b"X" + honest[1:])
+
+        binary, _ = native._csharp_analyzer(toolchain)
+        assert len(commands) > built, "a tampered cache entry must be rebuilt, never reused"
+        assert binary.read_bytes() == honest, "the tampered bytes must never be handed back"
     finally:
         native._cleanup_csharp_analyzer()
