@@ -25,6 +25,8 @@ import stat
 import sys
 import tomllib
 import xml.etree.ElementTree as ET
+from collections import deque
+from concurrent.futures import ProcessPoolExecutor
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
@@ -530,10 +532,24 @@ def _classify(relative: PurePosixPath) -> tuple[FileRole, str | None]:
     return FileRole.UNKNOWN, None
 
 
-def _stable_read(path: Path) -> bytes:
+def _stable_read(path: Path | str) -> bytes:
     flags = os.O_RDONLY
     no_follow = cast(int, getattr(os, "O_NOFOLLOW", 0))
     flags |= no_follow
+    # O_NONBLOCK, or a named pipe stops the scan forever.
+    #
+    # The `S_ISREG` check below already refuses non-regular entries, but it runs
+    # *after* the open, and opening a FIFO for reading blocks until a writer
+    # appears -- which, for a repository under analysis, is never.  A single
+    # `mkfifo` in an untrusted repository would otherwise hang discovery
+    # indefinitely: no diagnostic, no obligation, no timeout, just a stuck
+    # worker.  That is the one failure mode this module cannot express, so it
+    # has to be made impossible rather than reported.
+    #
+    # On a regular file O_NONBLOCK has no effect, so the read path below is
+    # unchanged; on a FIFO or device node the open now returns immediately and
+    # `ENTRY_NOT_REGULAR_FILE` fails closed the way it was always meant to.
+    flags |= cast(int, getattr(os, "O_NONBLOCK", 0))
     descriptor = os.open(path, flags)
     try:
         before = os.fstat(descriptor)
@@ -579,31 +595,66 @@ def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, st
             relative = str(filename)
         inventory_issues.append((relative, f"DIRECTORY_SCAN_FAILED:{type(error).__name__}"))
 
-    for current, directories, files in os.walk(root, topdown=True, followlinks=False, onerror=on_error):
-        current_path = Path(current)
-        safe_directories: list[str] = []
-        for directory in sorted(directories):
-            candidate = current_path / directory
-            directory_relative = candidate.relative_to(root).as_posix()
-            if directory in _IGNORED_DIRECTORIES:
+    # Depth-first pre-order with both directories and files sorted, which is
+    # exactly what `os.walk(topdown=True)` produced once the loop below rewrote
+    # `directories[:]` in sorted order.  Order is not cosmetic here: it decides
+    # which entry trips MAX_FILES and MAX_REPOSITORY_BYTES, so a repository must
+    # fail on the same file it failed on before.
+    #
+    # `os.scandir` replaces `os.walk` so that the symlink test can read the
+    # cached `DirEntry` type instead of issuing a second `lstat` per entry, and
+    # relative paths are built by string concatenation instead of a
+    # `Path.__truediv__` / `relative_to` / `as_posix` round trip.  Only one
+    # `PurePosixPath` per file survives, for `_classify`.
+    stack: list[tuple[str, str]] = [(str(root), "")]
+    while stack:
+        current, current_relative = stack.pop()
+        try:
+            with os.scandir(current) as entries:
+                listing = list(entries)
+        except OSError as error:
+            on_error(error)
+            continue
+
+        directories: list[tuple[str, bool]] = []
+        files: list[tuple[str, bool]] = []
+        for entry in listing:
+            try:
+                is_directory = entry.is_dir()
+            except OSError as error:
+                on_error(error)
+                continue
+            try:
+                is_symlink = entry.is_symlink()
+            except OSError:
+                is_symlink = True
+            (directories if is_directory else files).append((entry.name, is_symlink))
+        directories.sort()
+        files.sort()
+
+        prefix = f"{current_relative}/" if current_relative else ""
+        descend: list[tuple[str, str]] = []
+        for name, is_symlink in directories:
+            directory_relative = f"{prefix}{name}"
+            if name in _IGNORED_DIRECTORIES:
                 inventory_issues.append((directory_relative, "IGNORED_DIRECTORY_SCOPE_NOT_VERIFIED"))
                 continue
-            if candidate.is_symlink():
+            if is_symlink:
                 inventory_issues.append((directory_relative, "DIRECTORY_SYMLINK_NOT_FOLLOWED"))
                 continue
-            safe_directories.append(directory)
-        directories[:] = safe_directories
+            descend.append((os.path.join(current, name), directory_relative))
+        # Reversed, because the stack pops last-in first.
+        stack.extend(reversed(descend))
 
-        for name in sorted(files):
+        for name, is_symlink in files:
             if len(scanned) >= MAX_FILES:
                 raise ProjectGraphError("REPOSITORY_FILE_LIMIT_EXCEEDED")
-            path = current_path / name
-            file_relative = PurePosixPath(path.relative_to(root).as_posix())
-            role, language = _classify(file_relative)
-            if path.is_symlink():
+            relative = f"{prefix}{name}"
+            role, language = _classify(PurePosixPath(relative))
+            if is_symlink:
                 scanned.append(
                     _ScannedFile(
-                        path=file_relative.as_posix(),
+                        path=relative,
                         role=FileRole.UNKNOWN,
                         language=None,
                         content=None,
@@ -612,14 +663,14 @@ def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, st
                         read_status=EvidenceStatus.NOT_RUN,
                     )
                 )
-                inventory_issues.append((file_relative.as_posix(), "FILE_SYMLINK_NOT_READ"))
+                inventory_issues.append((relative, "FILE_SYMLINK_NOT_READ"))
                 continue
             try:
-                content = _stable_read(path)
+                content = _stable_read(os.path.join(current, name))
             except (OSError, ProjectGraphError) as error:
                 scanned.append(
                     _ScannedFile(
-                        path=file_relative.as_posix(),
+                        path=relative,
                         role=role,
                         language=language,
                         content=None,
@@ -628,14 +679,14 @@ def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, st
                         read_status=EvidenceStatus.NOT_RUN,
                     )
                 )
-                inventory_issues.append((file_relative.as_posix(), f"FILE_READ_FAILED:{type(error).__name__}:{error}"))
+                inventory_issues.append((relative, f"FILE_READ_FAILED:{type(error).__name__}:{error}"))
                 continue
             total_bytes += len(content)
             if total_bytes > MAX_REPOSITORY_BYTES:
                 raise ProjectGraphError("REPOSITORY_BYTE_LIMIT_EXCEEDED")
             scanned.append(
                 _ScannedFile(
-                    path=file_relative.as_posix(),
+                    path=relative,
                     role=role,
                     language=language,
                     content=content,
@@ -1345,14 +1396,31 @@ def _absolute_import_name(
     return ".".join(base) or None
 
 
-def _import_records(
+def _import_and_dynamic_records(
     tree: ast.Module,
     module_name: str,
     *,
     package_module: bool,
-) -> list[tuple[str, ast.AST]]:
+) -> tuple[list[tuple[str, ast.AST]], ast.Call | None]:
+    """Both static imports and the first dynamic import, from one traversal.
+
+    Read order is byte-for-byte the breadth-first order of `ast.walk`, and the
+    loop body below *is* `ast.walk`'s body inlined.  That is deliberate rather
+    than incidental: the returned import sequence becomes graph edge order, and
+    the returned dynamic-import node becomes a reported source location, so a
+    depth-first or otherwise "equivalent" traversal would silently change the
+    graph digest on any module holding more than one dynamic import.
+
+    The win is not a cleverer algorithm.  It is visiting each node once instead
+    of twice, and paying no generator frame per node -- `ast.walk` is a Python
+    generator, so a 8,000-node module costs 8,000 resumptions per pass.
+    """
     imports: list[tuple[str, ast.AST]] = []
-    for node in ast.walk(tree):
+    dynamic: ast.Call | None = None
+    todo = deque([tree])
+    while todo:
+        node = todo.popleft()
+        todo.extend(ast.iter_child_nodes(node))
         if isinstance(node, ast.Import):
             imports.extend((alias.name, node) for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
@@ -1368,23 +1436,31 @@ def _import_records(
                 imports.extend((f"{base}.{alias.name}" if base else alias.name, node) for alias in node.names)
             else:
                 imports.append((base, node))
-    return imports
+        elif dynamic is None and isinstance(node, ast.Call):
+            function = node.func
+            if isinstance(function, ast.Name) and function.id == "__import__":
+                dynamic = node
+            elif (
+                isinstance(function, ast.Attribute)
+                and function.attr == "import_module"
+                and isinstance(function.value, ast.Name)
+                and function.value.id == "importlib"
+            ):
+                dynamic = node
+    return imports, dynamic
+
+
+def _import_records(
+    tree: ast.Module,
+    module_name: str,
+    *,
+    package_module: bool,
+) -> list[tuple[str, ast.AST]]:
+    return _import_and_dynamic_records(tree, module_name, package_module=package_module)[0]
 
 
 def _has_dynamic_import(tree: ast.Module) -> ast.Call | None:
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        if isinstance(node.func, ast.Name) and node.func.id == "__import__":
-            return node
-        if (
-            isinstance(node.func, ast.Attribute)
-            and node.func.attr == "import_module"
-            and isinstance(node.func.value, ast.Name)
-            and node.func.value.id == "importlib"
-        ):
-            return node
-    return None
+    return _import_and_dynamic_records(tree, "", package_module=False)[1]
 
 
 def _diagnostic(
@@ -2058,11 +2134,12 @@ def build_project_graph(
                         node_id=subject_node_ids[subject.coverage_key],
                     )
                 )
-        for imported_name, import_node in _import_records(
+        import_records, dynamic_import = _import_and_dynamic_records(
             tree,
             module_name,
             package_module=PurePosixPath(path).stem == "__init__",
-        ):
+        )
+        for imported_name, import_node in import_records:
             location = _source_location(path, import_node)
             candidates = alias_to_paths.get(imported_name, [])
             if len(candidates) == 1:
@@ -2131,7 +2208,6 @@ def build_project_graph(
                     {"import": imported_name, "resolution": resolution},
                 )
             )
-        dynamic_import = _has_dynamic_import(tree)
         if dynamic_import is not None:
             diagnostics.append(
                 _diagnostic(
@@ -2240,3 +2316,42 @@ def write_project_graph(graph: Mapping[str, object], output: Path) -> None:
         raise ProjectGraphError("PROJECT_GRAPH_OUTPUT_ALREADY_EXISTS")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(json.dumps(graph, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n")
+
+
+def _build_one(job: tuple[str, str]) -> dict[str, object]:
+    repository, repository_ref = job
+    return build_project_graph(Path(repository), repository_ref)
+
+
+def build_project_graphs(
+    repositories: Sequence[tuple[Path, str]],
+    *,
+    max_workers: int | None = None,
+) -> list[dict[str, object]]:
+    """Build many repository graphs concurrently, in the order they were given.
+
+    `build_project_graph` is a pure function of one repository snapshot: it
+    reads only inside that repository, holds no module state, and writes
+    nothing.  So the thousand-repository target parallelises at the repository
+    boundary with no change to any of the analysis below, and the portfolio
+    scale the benchmark specification asks for stops being bounded by a single
+    core.
+
+    Processes rather than threads, because the work is CPython bytecode --
+    `ast.parse`, tree traversal, dictionary construction -- and threads would
+    serialise on the GIL for all of it.
+
+    Results are returned positionally, never in completion order, so a graph
+    set is reproducible regardless of how the pool happened to schedule.  A
+    repository that raises propagates its exception rather than being silently
+    dropped from the set, because a partial portfolio that looks complete is
+    the failure mode this engine exists to prevent.
+    """
+    jobs = [(str(Path(repository).resolve()), repository_ref) for repository, repository_ref in repositories]
+    if not jobs:
+        return []
+    workers = max_workers if max_workers is not None else min(len(jobs), os.cpu_count() or 1)
+    if workers <= 1 or len(jobs) == 1:
+        return [_build_one(job) for job in jobs]
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        return list(pool.map(_build_one, jobs))

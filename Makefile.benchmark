@@ -1,0 +1,46 @@
+# Reproducible performance evidence for the repository-discovery path.
+#
+# docs/batch34/BENCHMARK_SPEC.md requires latency percentiles, throughput,
+# cold/warm runs and an environment digest to be recorded.  No target produced
+# them, which meant every claim about where time goes rested on intuition.
+#
+#   make -f Makefile.benchmark benchmark-project-graph
+#   make -f Makefile.benchmark benchmark-check      # fails on a regression
+#
+# Override the corpora with BENCHMARK_CORPORA="path1 path2".
+
+BENCHMARK_CORPORA ?= modules packages contracts schemas
+BENCHMARK_REPEATS ?= 15
+BENCHMARK_OUTPUT  ?= evidence/benchmarks/project-graph.json
+BENCHMARK_BASELINE ?= evidence/benchmarks/project-graph.baseline.json
+# A shared runner's p95 moves by more than measurement error alone, so the
+# regression gate is deliberately loose enough to survive normal noise and
+# tight enough to catch an accidental algorithmic change.
+BENCHMARK_TOLERANCE ?= 1.25
+
+.PHONY: benchmark-project-graph benchmark-baseline benchmark-check
+
+benchmark-project-graph:
+	python3 scripts/benchmark/project_graph_benchmark.py $(BENCHMARK_CORPORA) \
+		--repeats $(BENCHMARK_REPEATS) --output $(BENCHMARK_OUTPUT)
+
+benchmark-baseline:
+	python3 scripts/benchmark/project_graph_benchmark.py $(BENCHMARK_CORPORA) \
+		--repeats $(BENCHMARK_REPEATS) --output $(BENCHMARK_BASELINE)
+	@echo "baseline written to $(BENCHMARK_BASELINE) -- commit it to make regressions detectable"
+
+benchmark-check: benchmark-project-graph
+	@python3 -c "import json,sys; \
+	base=json.load(open('$(BENCHMARK_BASELINE)')); \
+	now=json.load(open('$(BENCHMARK_OUTPUT)')); \
+	b={m['corpus'].split('/')[-1]: m for m in base['measurements']}; \
+	tol=float('$(BENCHMARK_TOLERANCE)'); \
+	bad=[]; \
+	[bad.append((k, b[k]['build_project_graph']['p95_ms'], m['build_project_graph']['p95_ms'])) \
+	  for m in now['measurements'] \
+	  for k in [m['corpus'].split('/')[-1]] \
+	  if k in b and m['build_project_graph']['p95_ms'] > b[k]['build_project_graph']['p95_ms']*tol]; \
+	[print(f'REGRESSION {k}: p95 {was:.1f}ms -> {is_:.1f}ms') for k,was,is_ in bad]; \
+	print('environment differs from baseline; comparison is advisory only') \
+	  if base['environment'] != now['environment'] else None; \
+	sys.exit(1 if bad else 0)"

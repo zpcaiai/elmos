@@ -16,7 +16,25 @@ import (
 	"strings"
 )
 
+// domainRejection carries a rejection code out of one function's analysis
+// without ending the process, so batch mode can report a per-function verdict.
+// It is deliberately the *only* thing batch mode recovers from: any other panic
+// keeps propagating and takes the process down exactly as it does today,
+// because the caller is not entitled to read an unexpected crash as a domain
+// decision.
+type domainRejection struct{ code string }
+
+// batchMode is set once, before any analysis, and never cleared.  In
+// single-function mode `fail` keeps its original behaviour to the byte -- the
+// code on stderr and exit status 2 are what the Python side matches on.
+var batchMode bool
+
+const batchPrefix = "--functions="
+
 func fail(code string) {
+	if batchMode {
+		panic(domainRejection{code})
+	}
 	fmt.Fprintln(os.Stderr, code)
 	os.Exit(2)
 }
@@ -304,6 +322,27 @@ func main() {
 	}
 	sourcePath, functionName := arguments[0], arguments[1]
 	emittedTarget := len(arguments) == 3
+	// Batch mode: parsing the target file is the shared cost, and it is
+	// identical no matter which function is asked about.  Paying it once per
+	// file instead of once per candidate function is the entire point; every
+	// per-function answer still comes from `analyzeFunction`, unchanged.
+	var batchNames []string
+	if strings.HasPrefix(functionName, batchPrefix) {
+		seen := map[string]bool{}
+		for _, part := range strings.Split(strings.TrimPrefix(functionName, batchPrefix), ",") {
+			trimmed := strings.TrimSpace(part)
+			// Duplicates are dropped: an answer must not depend on how many
+			// times its name was requested.
+			if trimmed != "" && !seen[trimmed] {
+				seen[trimmed] = true
+				batchNames = append(batchNames, trimmed)
+			}
+		}
+		if len(batchNames) == 0 {
+			fail("USAGE:analyzer SOURCE --functions=NAME[,NAME...] [--emitted-target]")
+		}
+		batchMode = true
+	}
 	fileSet := token.NewFileSet()
 	parsed, err := parser.ParseFile(
 		fileSet,
@@ -331,6 +370,27 @@ func main() {
 		}
 		return
 	}
+	if batchMode {
+		emitBatch(sourcePath, parsed, batchNames, emittedTarget)
+		return
+	}
+	payload := analyzeFunction(sourcePath, parsed, functionName, emittedTarget)
+	encoder := json.NewEncoder(os.Stdout)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(payload); err != nil {
+		fail("GO_JSON_ENCODE_FAILED")
+	}
+}
+
+// analyzeFunction is the single source of truth for one function's result.
+// Batch mode calls exactly this, so a batch entry cannot drift from what the
+// per-function invocation it replaces would have produced.
+func analyzeFunction(
+	sourcePath string,
+	parsed *ast.File,
+	functionName string,
+	emittedTarget bool,
+) map[string]any {
 	var candidate *ast.FuncDecl
 	for _, declaration := range parsed.Decls {
 		if function, ok := declaration.(*ast.FuncDecl); ok && function.Name.Name == functionName {
@@ -354,7 +414,7 @@ func main() {
 	if candidate.Type.Results == nil || len(candidate.Type.Results.List) != 1 {
 		fail("GO_SINGLE_RETURN_TYPE_REQUIRED")
 	}
-	payload := map[string]any{
+	return map[string]any{
 		"schema_version":   "1.0.0",
 		"source_language":  "go",
 		"source_file":      filepath.Base(sourcePath),
@@ -368,9 +428,61 @@ func main() {
 		}},
 		"diagnostics": []string{},
 	}
+}
+
+// analyzeFunctionGuarded runs one function's analysis and converts a domain
+// rejection into a value.  Anything that is not a domain rejection is
+// re-panicked so the process still dies on it -- batch mode must never turn an
+// unexpected crash into a per-function verdict.
+func analyzeFunctionGuarded(
+	sourcePath string,
+	parsed *ast.File,
+	functionName string,
+	emittedTarget bool,
+) (payload map[string]any, code string) {
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			rejection, ok := recovered.(domainRejection)
+			if !ok {
+				panic(recovered)
+			}
+			payload, code = nil, rejection.code
+		}
+	}()
+	return analyzeFunction(sourcePath, parsed, functionName, emittedTarget), ""
+}
+
+func emitBatch(sourcePath string, parsed *ast.File, names []string, emittedTarget bool) {
+	results := []map[string]any{}
+	for _, name := range names {
+		payload, code := analyzeFunctionGuarded(sourcePath, parsed, name, emittedTarget)
+		entry := map[string]any{"function": name}
+		if code != "" {
+			entry["status"] = "domain_error"
+			entry["error"] = code
+			entry["value"] = nil
+		} else {
+			entry["status"] = "ok"
+			entry["error"] = nil
+			entry["value"] = payload
+		}
+		results = append(results, entry)
+	}
+	document := map[string]any{
+		"schema_version":   "1.0.0",
+		"kind":             "elmos.typed-pure-function-batch",
+		"source_language":  "go",
+		"source_file":      filepath.Base(sourcePath),
+		"analyzer":         "go/parser AST",
+		"analyzer_version": runtime.Version(),
+		"results":          results,
+	}
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetEscapeHTML(false)
-	if err := encoder.Encode(payload); err != nil {
+	if err := encoder.Encode(document); err != nil {
+		// Not reachable through batchMode's panic path, because encoding
+		// happens after every function has already been decided.
+		batchMode = false
 		fail("GO_JSON_ENCODE_FAILED")
 	}
 }

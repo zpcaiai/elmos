@@ -61,11 +61,30 @@ public final class Analyzer {
             throw new IllegalArgumentException("--inventory does not accept --emitted-target");
         }
         boolean emittedTarget = args.length == 3;
+        // Batch mode: the cost of this program is dominated by compiling the
+        // *target* source, and that work is identical no matter which function
+        // is being asked about.  The caller used to pay it once per candidate
+        // function; here it is paid once per file and each requested function is
+        // scanned over the already-analyzed tree.
+        //
+        // Each entry is produced by the same scanner and the same output shape
+        // as single-function mode, and a domain rejection is captured per entry
+        // instead of terminating the process, so batching changes only how many
+        // times javac runs -- never what any individual function is decided to
+        // be.  Anything else would make the batch a second, weaker oracle.
+        boolean batchMode = functionName.startsWith(BATCH_PREFIX);
+        List<String> batchNames = batchMode ? splitBatchNames(functionName.substring(BATCH_PREFIX.length())) : List.of();
+        if (batchMode && batchNames.isEmpty()) {
+            throw new IllegalArgumentException("--functions= requires at least one function name");
+        }
+
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) throw new IllegalStateException("JDK_COMPILER_UNAVAILABLE");
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         List<Map<String, Object>> functions = new ArrayList<>();
         List<Map<String, Object>> subjects = new ArrayList<>();
+        Map<String, Object> batchResults = new LinkedHashMap<>();
+        Map<String, String> batchFailures = new LinkedHashMap<>();
         try (StandardJavaFileManager files = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8)) {
             Iterable<? extends JavaFileObject> units = files.getJavaFileObjects(source);
             JavacTask task = (JavacTask) compiler.getTask(
@@ -81,6 +100,21 @@ public final class Analyzer {
                         source.getFileName().toString());
                 if (inventoryMode) {
                     new ModuleScanner(subjects, spans).scan(unit, null);
+                } else if (batchMode) {
+                    for (String name : batchNames) {
+                        if (batchFailures.containsKey(name)) continue;
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> collected =
+                                (List<Map<String, Object>>) batchResults.computeIfAbsent(name, key -> new ArrayList<>());
+                        try {
+                            new FunctionScanner(name, collected, emittedTarget, spans).scan(unit, null);
+                        } catch (CertifiedSubsetDomainException error) {
+                            // Exactly the message single-function mode would have
+                            // printed to stderr before exiting 2.
+                            batchFailures.put(name, error.getMessage());
+                            batchResults.remove(name);
+                        }
+                    }
                 } else {
                     new FunctionScanner(functionName, functions, emittedTarget, spans).scan(unit, null);
                 }
@@ -106,7 +140,60 @@ public final class Analyzer {
             System.out.println(Json.write(inventory));
             return;
         }
+        if (batchMode) {
+            List<Map<String, Object>> results = new ArrayList<>();
+            for (String name : batchNames) {
+                Map<String, Object> entry = new LinkedHashMap<>();
+                entry.put("function", name);
+                String failure = batchFailures.get(name);
+                if (failure != null) {
+                    entry.put("status", "domain_error");
+                    entry.put("error", failure);
+                    entry.put("value", null);
+                } else {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> collected =
+                            (List<Map<String, Object>>) batchResults.getOrDefault(name, new ArrayList<>());
+                    List<String> scoped = collected.isEmpty()
+                            ? append(errors, "FUNCTION_NOT_FOUND:" + name)
+                            : errors;
+                    entry.put("status", "ok");
+                    entry.put("error", null);
+                    entry.put("value", singleFunctionOutput(source, collected, scoped));
+                }
+                results.add(entry);
+            }
+            Map<String, Object> output = new LinkedHashMap<>();
+            output.put("schema_version", "1.0.0");
+            output.put("kind", "elmos.typed-pure-function-batch");
+            output.put("source_language", "java");
+            output.put("source_file", source.getFileName().toString());
+            output.put("analyzer", "JDK JavacTask Tree API");
+            output.put("analyzer_version", System.getProperty("java.version"));
+            output.put("results", results);
+            System.out.println(Json.write(output));
+            return;
+        }
         if (functions.isEmpty()) errors = append(errors, "FUNCTION_NOT_FOUND:" + functionName);
+        System.out.println(Json.write(singleFunctionOutput(source, functions, errors)));
+    }
+
+    private static final String BATCH_PREFIX = "--functions=";
+
+    private static List<String> splitBatchNames(String encoded) {
+        List<String> names = new ArrayList<>();
+        for (String part : encoded.split(",", -1)) {
+            String trimmed = part.trim();
+            // Duplicates are dropped rather than analyzed twice: the answer for
+            // one name cannot depend on how many times it was requested.
+            if (!trimmed.isEmpty() && !names.contains(trimmed)) names.add(trimmed);
+        }
+        return List.copyOf(names);
+    }
+
+    /** The exact payload single-function mode prints, so a batch entry is indistinguishable from it. */
+    private static Map<String, Object> singleFunctionOutput(
+            Path source, List<Map<String, Object>> functions, List<String> errors) {
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("schema_version", "1.0.0");
         output.put("source_language", "java");
@@ -115,7 +202,7 @@ public final class Analyzer {
         output.put("analyzer_version", System.getProperty("java.version"));
         output.put("functions", functions);
         output.put("diagnostics", errors);
-        System.out.println(Json.write(output));
+        return output;
     }
 
     private static List<String> append(List<String> values, String value) {
