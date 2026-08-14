@@ -1,9 +1,29 @@
 use serde_json::{json, Value};
-use std::{env, fs, path::Path, process};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::{env, fs, panic, path::Path, process};
 use syn::{Attribute, BinOp, Block, Expr, FnArg, Item, Lit, Pat, ReturnType, Stmt, Type};
 
+/// Carries a rejection code out of one function's analysis without ending the
+/// process, so batch mode can report a per-function verdict.
+///
+/// This is deliberately the *only* payload batch mode recovers from.  Any other
+/// panic keeps unwinding and takes the process down exactly as it does today,
+/// because the caller is not entitled to read an unexpected crash as a domain
+/// decision -- it has to fall back to the per-function path, where the existing
+/// fail-closed handling applies unchanged.
+struct DomainRejection(String);
+
+/// Set once, before any analysis, and never cleared.  In single-function mode
+/// `fail` keeps its original behaviour to the byte -- the code on stderr and
+/// exit status 2 are what the Python side matches on.
+static BATCH_MODE: AtomicBool = AtomicBool::new(false);
+
 fn fail(code: impl AsRef<str>) -> ! {
-    eprintln!("{}", code.as_ref());
+    let code = code.as_ref();
+    if BATCH_MODE.load(Ordering::Relaxed) {
+        panic::panic_any(DomainRejection(code.to_string()));
+    }
+    eprintln!("{code}");
     process::exit(2);
 }
 
@@ -386,6 +406,35 @@ fn main() {
         fail("RUST_INVENTORY_ARGUMENTS_INVALID");
     }
     let emitted_target = arguments.len() == 4;
+    // Batch mode: parsing the target file is the shared cost and is identical
+    // no matter which function is asked about.  Paying it once per file instead
+    // of once per candidate function is the whole point; every per-function
+    // answer still comes from `analyze_function`, unchanged.
+    let mut batch_names: Vec<String> = Vec::new();
+    if let Some(encoded) = function_name.strip_prefix("--functions=") {
+        for part in encoded.split(',') {
+            let trimmed = part.trim();
+            // Duplicates are dropped: an answer must not depend on how many
+            // times its name was requested.
+            if !trimmed.is_empty() && !batch_names.iter().any(|name| name == trimmed) {
+                batch_names.push(trimmed.to_string());
+            }
+        }
+        if batch_names.is_empty() {
+            fail("USAGE:elmos-rust-analyzer SOURCE --functions=NAME[,NAME...] [--emitted-target]");
+        }
+        // The default hook prints a panic banner to stderr.  A domain rejection
+        // is an ordinary per-function verdict here, not a crash, so it must not
+        // produce one; every other payload still gets the normal report, which
+        // is what makes an unexpected crash visibly different from a rejection.
+        let previous = panic::take_hook();
+        panic::set_hook(Box::new(move |info| {
+            if info.payload().downcast_ref::<DomainRejection>().is_none() {
+                previous(info);
+            }
+        }));
+        BATCH_MODE.store(true, Ordering::Relaxed);
+    }
     let source = fs::read_to_string(source_path)
         .unwrap_or_else(|error| fail(format!("RUST_SOURCE_READ_FAILED:{error}")));
     let file = match syn::parse_file(&source) {
@@ -410,6 +459,31 @@ fn main() {
         println!("{}", module_inventory(source_path, &file));
         return;
     }
+    if BATCH_MODE.load(Ordering::Relaxed) {
+        emit_batch(source_path, &file, &batch_names, emitted_target);
+        return;
+    }
+    println!(
+        "{}",
+        serde_json::to_string(&analyze_function(
+            source_path,
+            &file,
+            function_name,
+            emitted_target
+        ))
+        .unwrap_or_else(|error| fail(format!("RUST_JSON_FAILED:{error}")))
+    );
+}
+
+/// The single source of truth for one function's result.  Batch mode calls
+/// exactly this, so a batch entry cannot drift from what the per-function
+/// invocation it replaces would have produced.
+fn analyze_function(
+    source_path: &str,
+    file: &syn::File,
+    function_name: &str,
+    emitted_target: bool,
+) -> Value {
     let function = file
         .items
         .iter()
@@ -452,7 +526,7 @@ fn main() {
         ReturnType::Type(_, value) => canonical_type(value),
         ReturnType::Default => fail("RUST_RETURN_TYPE_REQUIRED"),
     };
-    let output = json!({
+    json!({
         "schema_version": "1.0.0",
         "source_language": "rust",
         "source_file": Path::new(source_path).file_name().and_then(|value| value.to_str()).unwrap_or(source_path),
@@ -465,10 +539,59 @@ fn main() {
             "body": statements(&function.block, emitted_target),
         }],
         "diagnostics": [],
+    })
+}
+
+/// Run one function's analysis, turning a domain rejection into a value.
+/// Anything that is not a domain rejection resumes unwinding, so the process
+/// still dies on it -- batch mode must never convert an unexpected crash into a
+/// per-function verdict.
+fn analyze_function_guarded(
+    source_path: &str,
+    file: &syn::File,
+    function_name: &str,
+    emitted_target: bool,
+) -> Result<Value, String> {
+    match panic::catch_unwind(panic::AssertUnwindSafe(|| {
+        analyze_function(source_path, file, function_name, emitted_target)
+    })) {
+        Ok(value) => Ok(value),
+        Err(payload) => match payload.downcast::<DomainRejection>() {
+            Ok(rejection) => Err(rejection.0),
+            Err(other) => panic::resume_unwind(other),
+        },
+    }
+}
+
+fn emit_batch(source_path: &str, file: &syn::File, names: &[String], emitted_target: bool) {
+    let results: Vec<Value> = names
+        .iter()
+        .map(
+            |name| match analyze_function_guarded(source_path, file, name, emitted_target) {
+                Ok(value) => json!({"function": name, "status": "ok", "error": Value::Null, "value": value}),
+                Err(code) => {
+                    json!({"function": name, "status": "domain_error", "error": code, "value": Value::Null})
+                }
+            },
+        )
+        .collect();
+    let document = json!({
+        "schema_version": "1.0.0",
+        "kind": "elmos.typed-pure-function-batch",
+        "source_language": "rust",
+        "source_file": Path::new(source_path).file_name().and_then(|value| value.to_str()).unwrap_or(source_path),
+        "analyzer": "syn AST",
+        "analyzer_version": "2.0.119 / rustc 1.89.0",
+        "results": results,
     });
-    println!(
-        "{}",
-        serde_json::to_string(&output)
-            .unwrap_or_else(|error| fail(format!("RUST_JSON_FAILED:{error}")))
-    );
+    match serde_json::to_string(&document) {
+        Ok(text) => println!("{text}"),
+        Err(error) => {
+            // Every function has already been decided by this point, so leaving
+            // batch mode here cannot swallow a verdict; it just restores the
+            // ordinary hard-failure exit for an encoding fault.
+            BATCH_MODE.store(false, Ordering::Relaxed);
+            fail(format!("RUST_JSON_FAILED:{error}"));
+        }
+    }
 }

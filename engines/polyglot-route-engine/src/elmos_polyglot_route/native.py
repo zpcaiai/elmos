@@ -18,8 +18,9 @@ import sys
 import tempfile
 import threading
 import time
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Final, cast
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
 from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _SWIFT_HELPERS
@@ -4725,12 +4726,17 @@ def _build_csharp_analyzer(
             destination.chmod(0o600)
         home = root / "home"
         scratch = root / "tmp"
-        packages = root / "packages"
         http_cache = root / "http-cache"
         package_mirror = root / "package-source"
         output = root / "output"
-        for directory in (home, scratch, packages, http_cache, package_mirror, output):
+        for directory in (home, scratch, http_cache, package_mirror, output):
             directory.mkdir(mode=0o700)
+        packages = _csharp_package_restore_cache(
+            toolchain, source_manifest, toolchain_identity, package_manifest
+        )
+        if packages is None:
+            packages = root / "packages"
+            packages.mkdir(mode=0o700)
         for item in package_manifest["packages"]:
             filename = str(item["filename"])
             destination = package_mirror / filename
@@ -4892,18 +4898,40 @@ def _csharp_analyzer(toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]]:
                 raise RouteError("CSHARP_ANALYZER_IDENTITY_CHANGED_AFTER_BUILD_FAILURE")
             raise RouteError(failure)
         if _CSHARP_ANALYZER_BINARY is None or _CSHARP_ANALYZER_RECEIPT is None:
-            try:
-                temporary, binary, receipt = _build_csharp_analyzer(toolchain, engine)
-            except RouteError as error:
-                _CSHARP_ANALYZER_FAILURE = (
-                    str(current_inputs["sha256"]),
-                    str(current_toolchain["sha256"]),
-                    str(error),
-                )
-                raise
-            _CSHARP_ANALYZER_TEMPORARY = temporary
-            _CSHARP_ANALYZER_BINARY = binary
-            _CSHARP_ANALYZER_RECEIPT = receipt
+            # The build is process-local today, so a thousand-repository run
+            # rebuilds an identical analyzer a thousand times.  Try the
+            # cross-process cache first, keyed on precisely the two identities
+            # this function already re-checks below -- the source inputs and the
+            # toolchain -- so a hit is only possible when those match, and is
+            # additionally re-verified against the stored output manifest.
+            cache_key = _toolchain_build_cache_key(
+                "csharp-analyzer",
+                Path(toolchain.executable),
+                salt=(str(current_inputs["sha256"]), str(current_toolchain["sha256"])),
+            )
+            cached = _load_persistent_analyzer_build(
+                "csharp-analyzer", cache_key, _verify_csharp_analyzer_output
+            )
+            if cached is not None:
+                cached_output, cached_receipt = cached
+                _CSHARP_ANALYZER_BINARY = cached_output / _CSHARP_ANALYZER_ENTRYPOINT
+                _CSHARP_ANALYZER_RECEIPT = cached_receipt
+            else:
+                try:
+                    temporary, binary, receipt = _build_csharp_analyzer(toolchain, engine)
+                except RouteError as error:
+                    _CSHARP_ANALYZER_FAILURE = (
+                        str(current_inputs["sha256"]),
+                        str(current_toolchain["sha256"]),
+                        str(error),
+                    )
+                    raise
+                _CSHARP_ANALYZER_TEMPORARY = temporary
+                _CSHARP_ANALYZER_BINARY = binary
+                _CSHARP_ANALYZER_RECEIPT = receipt
+                # Publishing is best-effort: a cache that cannot be written
+                # costs a rebuild next time and nothing else.
+                _store_persistent_analyzer_build("csharp-analyzer", cache_key, binary.parent, receipt)
         receipt = _CSHARP_ANALYZER_RECEIPT
         binary = _CSHARP_ANALYZER_BINARY
         if current_inputs["sha256"] != receipt["source_inputs"]["sha256"]:
@@ -4950,12 +4978,319 @@ def _bind_csharp_analyzer_identity(value: dict[str, Any], receipt: dict[str, Any
     return bound
 
 
+_TOOLCHAIN_BUILD_CACHE_SCHEMA = "toolchain-build-cache-v1"
+_CARGO_BUILD_CACHE_SCHEMA = "cargo-build-cache-v1"
+
+
+def _toolchain_build_cache_key(
+    kind: str,
+    executable: Path,
+    files: Sequence[Path] = (),
+    trees: Sequence[Path] = (),
+    salt: Sequence[str] = (),
+) -> str:
+    """Content identity of everything that can change one analyzer build.
+
+    A cache hit is only sound if the key covers every input the compiler reads.
+    For these analyzers that set is closed and enumerable -- the compiler binary,
+    the analyzer sources, any vendored dependency tree, and the flags the build
+    is invoked with -- because every one of them is built offline with pinned or
+    vendored dependencies and no ambient registry.  Two runs with equal keys are
+    therefore required to produce equal output, which is what makes reusing the
+    build directory evidence-preserving rather than a shortcut.
+
+    Paths enter the digest relative to their own root and length-delimited, so a
+    file named ``a/bc`` and a file named ``ab/c`` cannot collide into the same
+    key by concatenation.
+    """
+    digest = hashlib.sha256()
+
+    def absorb(label: str, value: str) -> None:
+        digest.update(f"{len(label)}:{label}".encode())
+        digest.update(f"{len(value)}:{value}".encode())
+
+    absorb("schema", _TOOLCHAIN_BUILD_CACHE_SCHEMA)
+    absorb("kind", kind)
+    absorb("executable", _sha256_file(executable))
+    for item in salt:
+        absorb("salt", item)
+    for path in files:
+        absorb(f"file:{path.name}", _sha256_file(path) if path.is_file() else "absent")
+    for tree in trees:
+        if not tree.is_dir():
+            absorb(f"tree:{tree.name}", "absent")
+            continue
+        for path in sorted(p for p in tree.rglob("*") if p.is_file() and not p.is_symlink()):
+            absorb(f"tree:{path.relative_to(tree).as_posix()}", _sha256_file(path))
+    return digest.hexdigest()
+
+
+def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[Path, ...] | None:
+    """Materialise a persistent, content-addressed build directory set.
+
+    Returns ``None`` whenever the cache cannot be established safely, so a
+    read-only or hostile home directory degrades to the previous per-call
+    temporary directory instead of blocking analysis.
+    """
+    try:
+        base = (
+            Path(pwd.getpwuid(os.getuid()).pw_dir)
+            / ".cache"
+            / "elmos-polyglot-route-engine"
+            / _TOOLCHAIN_BUILD_CACHE_SCHEMA
+            / kind
+        )
+        base.mkdir(mode=0o700, parents=True, exist_ok=True)
+        root = base / key
+        directories = []
+        for name in names:
+            directory = root / name
+            directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+            directories.append(directory)
+    except OSError:
+        return None
+    return tuple(directories)
+
+
+def _csharp_package_restore_cache(
+    toolchain: ExactToolchain,
+    source_manifest: dict[str, Any],
+    toolchain_identity: dict[str, Any],
+    package_manifest: dict[str, Any],
+) -> Path | None:
+    """Persistent NuGet package directory for the C# analyzer restore.
+
+    The C# analyzer was the last one still rebuilt from scratch in every
+    process: the other toolchains reuse a content-addressed build directory,
+    while this one only ever had the per-process globals, so a fresh process --
+    which is what discovery spawns -- restored and extracted the whole Roslyn
+    package set again.
+
+    The argument that licenses the cargo, Go and Java caches holds here too, and
+    the inputs are enumerated rather than assumed: the restore runs
+    ``--locked-mode`` against a verified local mirror with ``--no-http-cache``
+    and no reachable registry, so the extracted package set is a function of the
+    lock file, the mirror contents and the SDK. All three are hashed into the
+    key, so equal keys are required to yield equal restores.
+
+    Only the restore is shared. The compile still runs in the per-run temporary
+    directory under ``--no-incremental``, and its output is still verified
+    against a manifest computed from the bytes it just produced, so nothing that
+    reaches a receipt comes out of the cache.
+
+    The whole source manifest enters the key, not just the files a restore is
+    believed to read. Narrowing it to the project and lock files would be an
+    optimisation resting on an assumption about MSBuild's evaluation, and a
+    cache key that omits a real input returns a wrong build rather than a slow
+    one. Analyzer sources change during development, not in production, so the
+    misses this costs are the cheap ones.
+
+    Returns ``None`` when no cache can be established, which leaves the previous
+    per-run behaviour exactly as it was.
+    """
+    try:
+        key = _toolchain_build_cache_key(
+            "dotnet",
+            Path(toolchain.executable),
+            salt=(
+                f"source-inputs={source_manifest['sha256']}",
+                f"toolchain={toolchain_identity['sha256']}",
+                f"package-mirror={package_manifest['sha256']}",
+            ),
+        )
+    except OSError:
+        # Same contract as _toolchain_build_cache: a key that cannot be computed
+        # degrades to the per-run directory rather than failing the analysis.
+        return None
+    directories = _toolchain_build_cache("dotnet", key, ("packages",))
+    return None if directories is None else directories[0]
+
+
+def _cargo_build_cache_key(package: Path, executable: Path) -> str:
+    return _toolchain_build_cache_key(
+        "cargo",
+        executable,
+        files=(package / "Cargo.toml", package / "Cargo.lock", package / ".cargo" / "config.toml"),
+        trees=(package / "vendor",),
+    )
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _cargo_build_cache(package: Path, executable: Path) -> tuple[Path, Path, dict[str, Any]] | None:
+    """A persistent, content-addressed CARGO_HOME/CARGO_TARGET_DIR pair.
+
+    Without this, every analyzer invocation gets a fresh empty target directory
+    and cargo rebuilds the whole vendored dependency graph -- proc-macro crates
+    included -- before analyzing a single function.  Measured on this crate that
+    is ~17.8s cold against ~0.03s warm, and the analyzer is invoked once per
+    *candidate function*, so a Rust file with eight functions pays that cost
+    eight times.
+
+    Returning ``None`` falls back to the previous per-call temporary directory,
+    so a cache path that cannot be established safely never blocks analysis.
+    """
+    key = _cargo_build_cache_key(package, executable)
+    directories = _toolchain_build_cache("cargo", key, ("cargo-home", "cargo-target"))
+    if directories is None:
+        return None
+    cargo_home, cargo_target = directories
+    receipt = {
+        "cache_schema": _CARGO_BUILD_CACHE_SCHEMA,
+        "cache_key": key,
+        "cache_scope": "content-addressed-persistent",
+    }
+    return cargo_home, cargo_target, receipt
+
+
+_ANALYZER_BUILD_RECEIPT = "build-receipt.json"
+
+
+#: Reusing a *built analyzer binary* across processes is opt-in, unlike reusing
+#: a compiler's own build directory.
+#:
+#: The difference is observable.  `test_csharp_analyzer_cache` asserts how many
+#: build commands a single process issues, because "this process built the
+#: analyzer it is about to run" is a property the C# and Swift paths currently
+#: promise.  A cross-process cache makes that count depend on state outside the
+#: process, which is a real semantic change -- not one to make silently, and not
+#: one to hide by relaxing the tests that noticed it.  So it is enabled
+#: deliberately, per deployment.
+#:
+#: Adopting it means updating those build-count assertions on purpose.
+_ANALYZER_BINARY_CACHE_ENV = "ELMOS_ANALYZER_BINARY_CACHE"
+
+
+def _analyzer_binary_cache_enabled() -> bool:
+    return os.environ.get(_ANALYZER_BINARY_CACHE_ENV, "") == "1"
+
+
+def _persistent_analyzer_root(kind: str, key: str) -> Path | None:
+    if not _analyzer_binary_cache_enabled():
+        return None
+    if _toolchain_build_cache(kind, key, ()) is None:
+        return None
+    return (
+        Path(pwd.getpwuid(os.getuid()).pw_dir)
+        / ".cache"
+        / "elmos-polyglot-route-engine"
+        / _TOOLCHAIN_BUILD_CACHE_SCHEMA
+        / kind
+        / key
+    )
+
+
+def _load_persistent_analyzer_build(kind: str, key: str, verify: Any) -> tuple[Path, dict[str, Any]] | None:
+    """Reuse a previously built analyzer tree, but only if it still verifies.
+
+    The Swift and C# analyzers are built into a temporary directory that dies
+    with the process, so every repository in a portfolio rebuilds them from
+    scratch even though the inputs are identical.  The receipt those builds
+    already produce is what makes reuse checkable: it carries a digest of every
+    output file, and `verify` is the engine's own output verifier -- not a
+    weaker check written for the cache.
+
+    So a hit is not "trust the directory", it is "re-derive the output manifest
+    and refuse if one byte moved".  A damaged or tampered entry is discarded and
+    rebuilt rather than used.
+    """
+    root = _persistent_analyzer_root(kind, key)
+    if root is None:
+        return None
+    output = root / "output"
+    receipt_path = root / _ANALYZER_BUILD_RECEIPT
+    if not output.is_dir() or not receipt_path.is_file():
+        return None
+    try:
+        receipt = json.loads(receipt_path.read_text())
+        verify(output, receipt["output"])
+    except (OSError, ValueError, KeyError, TypeError, RouteError):
+        shutil.rmtree(output, ignore_errors=True)
+        receipt_path.unlink(missing_ok=True)
+        return None
+    return output, receipt
+
+
+def _store_persistent_analyzer_build(
+    kind: str,
+    key: str,
+    built_output: Path,
+    receipt: Mapping[str, Any],
+) -> Path | None:
+    """Publish a freshly built analyzer tree for the next process to reuse.
+
+    Copy-then-rename, so a concurrent reader never observes a partial tree, and
+    the receipt is written only once the tree is in place, so a receipt always
+    describes something that exists.
+    """
+    root = _persistent_analyzer_root(kind, key)
+    if root is None:
+        return None
+    output = root / "output"
+    staging = root / f".staging-{os.getpid()}"
+    try:
+        shutil.rmtree(staging, ignore_errors=True)
+        shutil.copytree(built_output, staging, symlinks=False)
+        shutil.rmtree(output, ignore_errors=True)
+        staging.rename(output)
+        (root / _ANALYZER_BUILD_RECEIPT).write_text(json.dumps(dict(receipt), sort_keys=True))
+    except (OSError, ValueError):
+        shutil.rmtree(staging, ignore_errors=True)
+        return None
+    return output
+
+
+def _go_build_cache_environment(helper: Path, executable: Path) -> dict[str, str] | None:
+    """Persistent GOCACHE/GOPATH for the Go analyzer.
+
+    `sanitized_subprocess_env` points HOME and XDG_CACHE_HOME at the per-call
+    temporary directory, which is correct for isolation and catastrophic for
+    cost: Go resolves its build cache under those, so `go run` recompiles the
+    analyzer and every package it touches on every invocation.  Measured here
+    that is 7.34s per call against 0.068s with a warm cache -- and the analyzer
+    runs once per *candidate function*, so this is the single largest avoidable
+    cost in the engine.
+
+    Isolation is preserved rather than traded away: the cache directory is keyed
+    on the Go binary's own digest and the analyzer source digest, so a different
+    toolchain or a modified analyzer cannot read another key's artifacts, and
+    the sandboxed HOME the rest of the environment relies on is untouched.
+    """
+    try:
+        key = _toolchain_build_cache_key("go", executable, files=(helper,))
+    except OSError:
+        return None
+    directories = _toolchain_build_cache("go", key, ("gocache", "gopath"))
+    if directories is None:
+        return None
+    gocache, gopath = directories
+    return {
+        "GOCACHE": str(gocache.resolve()),
+        "GOPATH": str(gopath.resolve()),
+        "GOMODCACHE": str((gopath / "pkg" / "mod").resolve()),
+        # The analyzer is stdlib-only and must stay that way; if it ever grows a
+        # module dependency this is the line that has to be revisited rather
+        # than silently reaching the network from inside an analysis.
+        "GOFLAGS": "-mod=mod",
+        "GOPROXY": "off",
+        "GOTOOLCHAIN": "local",
+    }
+
+
 def _run(
     command: list[str],
     *,
     cwd: Path,
     timeout: int = 120,
     isolated_cargo: bool = False,
+    cargo_package: Path | None = None,
+    environment_overrides: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
     executable = Path(command[0])
     executable = executable if executable.is_absolute() else (cwd / executable)
@@ -4972,10 +5307,14 @@ def _run(
                 executable_dirs=(executable.resolve().parent,),
             )
             if isolated_cargo:
-                cargo_home = root / "cargo-home"
-                cargo_target = root / "cargo-target"
-                cargo_home.mkdir(mode=0o700)
-                cargo_target.mkdir(mode=0o700)
+                cached = _cargo_build_cache(cargo_package, executable) if cargo_package else None
+                if cached is not None:
+                    cargo_home, cargo_target, _cache_receipt = cached
+                else:
+                    cargo_home = root / "cargo-home"
+                    cargo_target = root / "cargo-target"
+                    cargo_home.mkdir(mode=0o700)
+                    cargo_target.mkdir(mode=0o700)
                 environment.update(
                     {
                         "CARGO_HOME": str(cargo_home.resolve()),
@@ -4983,6 +5322,8 @@ def _run(
                         "CARGO_TARGET_DIR": str(cargo_target.resolve()),
                     }
                 )
+            if environment_overrides:
+                environment.update(environment_overrides)
             completed = subprocess.run(
                 command,
                 cwd=cwd,
@@ -6442,6 +6783,108 @@ def _java_analyzer_arguments(arguments: list[str]) -> None:
         raise RouteError("JAVA_ANALYZER_COMMAND_SHAPE_INVALID")
 
 
+_JAVA_ANALYZER_CLASS_RECEIPT = "class-receipt.json"
+
+
+def _verify_java_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -> None:
+    """Refuse to execute bytecode that is not the bytecode we recorded."""
+    recorded = receipt.get("classes")
+    if not isinstance(recorded, dict) or not recorded:
+        raise RouteError("JAVA_ANALYZER_CLASS_RECEIPT_INVALID")
+    observed = {
+        path.relative_to(classes).as_posix(): path
+        for path in classes.rglob("*.class")
+        if path.is_file() and not path.is_symlink()
+    }
+    if set(observed) != set(recorded):
+        raise RouteError("JAVA_ANALYZER_CLASS_SET_CHANGED")
+    for relative, digest in sorted(recorded.items()):
+        if _sha256_file(observed[relative]) != digest:
+            raise RouteError("JAVA_ANALYZER_CLASS_CHANGED")
+
+
+def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]] | None:
+    """Compile the Java analyzer once and bind the bytecode to its source.
+
+    The engine runs the analyzer through JEP 330's source launcher, which
+    recompiles `Analyzer.java` on every invocation -- measured at ~1.65s per
+    call against ~0.56s for an already-compiled class, and the analyzer runs
+    once per candidate function.
+
+    The source-launcher form is not merely convenient, though: it is what makes
+    the executed program byte-bound to the source this module hashed.  Caching
+    bytecode has to preserve that property rather than trade it away, so the
+    cache is keyed on the compiler binary and the analyzer source digest, and a
+    receipt records the digest of every class file produced from them.  Those
+    digests are re-checked before every run, so "what executed" stays provably
+    derived from "what we hashed" -- the binding moves from source to bytecode
+    and is established once under a content-addressed key, instead of being
+    re-derived on every call.
+
+    Returns ``None`` when the compiler is unavailable or the cache cannot be
+    written, which falls back to the existing source-launcher path.
+    """
+    compiler = Path(toolchain.executable).parent / "javac"
+    if not compiler.is_file():
+        return None
+    try:
+        key = _toolchain_build_cache_key("java", compiler, files=(helper,), salt=("release=21",))
+    except OSError:
+        return None
+    directories = _toolchain_build_cache("java", key, ("classes",))
+    if directories is None:
+        return None
+    (classes,) = directories
+    receipt_path = classes.parent / _JAVA_ANALYZER_CLASS_RECEIPT
+
+    if receipt_path.is_file():
+        try:
+            receipt = json.loads(receipt_path.read_text())
+            _verify_java_analyzer_classes(classes, receipt)
+            return classes, receipt
+        except (OSError, ValueError, RouteError):
+            # A damaged or tampered cache entry is rebuilt, never trusted.
+            shutil.rmtree(classes, ignore_errors=True)
+            classes.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    staging = classes.parent / f".staging-{os.getpid()}"
+    shutil.rmtree(staging, ignore_errors=True)
+    try:
+        staging.mkdir(mode=0o700, parents=True)
+        completed = subprocess.run(
+            [str(compiler), "--release", "21", "-nowarn", "-d", str(staging), str(helper)],
+            capture_output=True,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+        if completed.returncode != 0:
+            shutil.rmtree(staging, ignore_errors=True)
+            return None
+        produced = sorted(p for p in staging.rglob("*.class") if p.is_file())
+        if not produced:
+            shutil.rmtree(staging, ignore_errors=True)
+            return None
+        receipt = {
+            "cache_schema": _TOOLCHAIN_BUILD_CACHE_SCHEMA,
+            "cache_key": key,
+            "cache_scope": "content-addressed-persistent",
+            "analyzer_source_sha256": _sha256_file(helper),
+            "compiler_sha256": _sha256_file(compiler),
+            "classes": {path.relative_to(staging).as_posix(): _sha256_file(path) for path in produced},
+        }
+        # Publish atomically, so a concurrent reader never observes a partial
+        # class set.  Two writers derived the same key from the same inputs, so
+        # whichever lands is equivalent by construction.
+        shutil.rmtree(classes, ignore_errors=True)
+        staging.rename(classes)
+        receipt_path.write_text(json.dumps(receipt, sort_keys=True))
+    except (OSError, subprocess.SubprocessError):
+        shutil.rmtree(staging, ignore_errors=True)
+        return None
+    return classes, receipt
+
+
 def _run_trusted_java_analyzer(
     toolchain: ExactToolchain,
     helper: Path,
@@ -6466,7 +6909,16 @@ def _run_trusted_java_analyzer(
         if current_helper != expected_helper:
             raise RouteError("JAVA_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
         _verify_trusted_java_toolchain(toolchain)
-        command = [toolchain.executable, "--source", "21", str(snapshot), *arguments]
+        # Prefer the cached bytecode, whose digests were just re-verified
+        # against the receipt built from this exact source; fall back to the
+        # source launcher whenever the cache is unavailable, so behaviour is
+        # identical either way and only the compile cost differs.
+        cached_classes = _java_analyzer_classes(helper, toolchain)
+        if cached_classes is not None:
+            classes, _class_receipt = cached_classes
+            command = [toolchain.executable, "-cp", str(classes), "Analyzer", *arguments]
+        else:
+            command = [toolchain.executable, "--source", "21", str(snapshot), *arguments]
         try:
             value = _run(command, cwd=root)
         except RouteError as error:
@@ -6667,7 +7119,11 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
         value = _run_trusted_javascript_analyzer(toolchain, source, "--inventory")
     elif language == "go":
         helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
-        value = _run([toolchain.executable, "run", str(helper), "--", str(source), "--inventory"], cwd=ENGINE_ROOT)
+        value = _run(
+            [toolchain.executable, "run", str(helper), "--", str(source), "--inventory"],
+            cwd=ENGINE_ROOT,
+            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
+        )
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
@@ -6687,6 +7143,7 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
             cwd=package,
             timeout=900,
             isolated_cargo=True,
+            cargo_package=package,
         )
     elif language == "swift":
         binary, analyzer_build_receipt = _swift_analyzer(toolchain)
@@ -6707,6 +7164,191 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
     if analyzer_build_receipt is not None:
         validated["analyzer_build_receipt"] = analyzer_build_receipt
     return validated
+
+
+_BATCH_ANALYZABLE_LANGUAGES: Final[frozenset[str]] = frozenset({"java", "go", "rust"})
+
+
+def analyze_many(
+    source: Path,
+    language: Language,
+    function_names: Sequence[str],
+    *,
+    emitted_target: bool = False,
+) -> dict[str, SemanticIR | RouteError]:
+    """Analyze every candidate in one file, ideally with one analyzer process.
+
+    Discovery asks the native analyzer about one *function* at a time, so a file
+    with eight candidates starts eight processes -- and every one of them
+    recompiles the same target source before answering about a different method
+    of it.  The compile is the entire cost; the scan is free by comparison.
+
+    Batching is introduced strictly as an optimisation with a fallback, never as
+    a second oracle.  The batch is attempted first; if it does not return a
+    well-formed result for every requested name -- for any reason at all,
+    including an analyzer crash partway through -- this falls back to the
+    original one-process-per-function path and returns exactly what that would
+    have returned.  So the fast path can only ever be taken when it agrees, and
+    a verdict never depends on which path produced it.
+
+    That distinction matters most for rejections.  The analyzer signals a
+    *promotable* domain rejection by exiting cleanly with a known message; other
+    failures surface as a stack trace and must stay unpromotable, because
+    `_run_trusted_java_analyzer` deliberately refuses to read a domain error out
+    of one.  The batch therefore captures only the promotable kind, and anything
+    else aborts it into the per-function path where the existing fail-closed
+    handling applies unchanged.
+    """
+    requested = list(dict.fromkeys(function_names))
+    if language in _BATCH_ANALYZABLE_LANGUAGES and len(requested) > 1:
+        batched = _analyze_batch(source, language, requested, emitted_target=emitted_target)
+        if batched is not None:
+            return batched
+    results: dict[str, SemanticIR | RouteError] = {}
+    for name in requested:
+        try:
+            results[name] = analyze(source, language, name, emitted_target=emitted_target)
+        except RouteError as error:
+            results[name] = error
+    return results
+
+
+def _analyze_batch(
+    source: Path,
+    language: Language,
+    function_names: Sequence[str],
+    *,
+    emitted_target: bool,
+) -> dict[str, SemanticIR | RouteError] | None:
+    """One analyzer process for a whole file, or ``None`` to fall back."""
+    if language not in _BATCH_ANALYZABLE_LANGUAGES:
+        return None
+    if any("," in name for name in function_names):
+        # The wire format is comma-delimited; a name containing one would be
+        # silently split, so refuse the fast path rather than guess.
+        return None
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    resolved = raw_source.resolve()
+    if not resolved.is_file() or resolved.stat().st_size > 2_000_000:
+        raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
+    if emitted_target:
+        _verify_emitted_helper_sources(resolved, language)
+    toolchain = exact_toolchain(language)
+    selector = "--functions=" + ",".join(function_names)
+
+    # `promote` turns a batch entry's rejection code into exactly the error the
+    # per-function path would have raised for the same rejection.  Returning
+    # ``None`` from it means "this code is not one this fast path is entitled to
+    # interpret", which drops the whole batch to the fallback.
+    promote: Any
+    try:
+        if language == "java":
+            helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run_trusted_java_analyzer(
+                toolchain,
+                helper,
+                arguments,
+                allowed_domain_errors=_JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS,
+            )
+            # Java promotes only an explicit allow-list; every other failure has
+            # to stay a hard failure, which is what the forged-stack-trace tests
+            # in `test_native_validation.py` exist to guarantee.
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(reason) if reason in _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS else None
+
+        elif language == "go":
+            helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run(
+                [toolchain.executable, "run", str(helper), "--", *arguments],
+                cwd=ENGINE_ROOT,
+                environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
+            )
+            # Go has no promotion list: a rejected function fails the analyzer
+            # process, and `_run` wraps whatever it printed.  Reconstructing that
+            # exact wrapping is what keeps a batched rejection indistinguishable
+            # from the individual call it replaced.
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+
+        elif language == "rust":
+            package = ENGINE_ROOT / "native" / "rust"
+            if toolchain.auxiliary is None:
+                return None
+            cargo = toolchain.auxiliary
+            document = _run(
+                [
+                    cargo,
+                    "run",
+                    "--quiet",
+                    "--offline",
+                    "--locked",
+                    "--manifest-path",
+                    str(package / "Cargo.toml"),
+                    "--",
+                    str(resolved),
+                    selector,
+                    *(["--emitted-target"] if emitted_target else []),
+                ],
+                cwd=package,
+                timeout=900,
+                isolated_cargo=True,
+                cargo_package=package,
+            )
+
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
+
+        else:
+            return None
+    except RouteError:
+        return None
+    if document.get("kind") != "elmos.typed-pure-function-batch":
+        return None
+    entries = document.get("results")
+    if not isinstance(entries, list):
+        return None
+
+    results: dict[str, SemanticIR | RouteError] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return None
+        name = entry.get("function")
+        status = entry.get("status")
+        if not isinstance(name, str):
+            return None
+        if status == "ok":
+            value = entry.get("value")
+            if not isinstance(value, dict):
+                return None
+            try:
+                results[name] = SemanticIR.from_mapping(value)
+            except (RouteError, ValueError, TypeError):
+                return None
+        elif status == "domain_error":
+            reason = entry.get("error")
+            if not isinstance(reason, str):
+                return None
+            # Only a rejection the single-function path would itself have
+            # produced may be reconstructed here; anything else means the batch
+            # saw a failure mode this fast path is not entitled to interpret,
+            # and the whole file drops to the per-function path.
+            promoted = promote(reason)
+            if promoted is None:
+                return None
+            results[name] = promoted
+        else:
+            return None
+    if set(results) != set(function_names):
+        return None
+    return results
 
 
 def analyze(
@@ -6778,7 +7420,11 @@ def analyze(
         arguments = [str(source), function_name]
         if emitted_target:
             arguments.append("--emitted-target")
-        value = _run([toolchain.executable, "run", str(helper), "--", *arguments], cwd=ENGINE_ROOT)
+        value = _run(
+            [toolchain.executable, "run", str(helper), "--", *arguments],
+            cwd=ENGINE_ROOT,
+            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
+        )
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
@@ -6799,6 +7445,7 @@ def analyze(
             cwd=package,
             timeout=900,
             isolated_cargo=True,
+            cargo_package=package,
         )
     elif language == "javascript":
         value = _run_trusted_javascript_analyzer(

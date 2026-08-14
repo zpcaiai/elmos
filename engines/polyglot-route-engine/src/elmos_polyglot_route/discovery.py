@@ -25,7 +25,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .models import SUPPORTED_LANGUAGES, Language, RouteError
-from .native import analyze, inventory_module
+from .native import analyze, analyze_many, inventory_module
 from .project_graph import (
     PythonCoverageSubject,
     SourceLocation,
@@ -861,15 +861,41 @@ def discover_unit(
     rejections: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
     analyzer_execution_not_run = False
+
+    def _candidate_blocked(subject: Any) -> bool:
+        key = str(subject["coverage_key"])
+        return bool(subject.get("blocking_reasons")) or any(
+            blocker.get("coverage_key") == key for blocker in coverage_blockers
+        )
+
+    # One analyzer process for the whole file where the language supports it,
+    # instead of one per candidate.  `analyze_many` is required to return, for
+    # every name, exactly what `analyze` would have returned for that name --
+    # and falls back to per-function invocation whenever it cannot guarantee
+    # that -- so the decision loop below is untouched and simply reads its
+    # answer out of the map instead of making the call itself.
+    #
+    # The loop still stops at the first NOT_RUN verdict, so a batch can analyze
+    # candidates whose answers are then discarded.  That is a little extra work
+    # inside one already-running process and changes no outcome; analyzing
+    # lazily to avoid it would mean one process per candidate again, which is
+    # the cost this exists to remove.
+    analyzed = analyze_many(
+        path,
+        source_language,
+        [name for index, name in enumerate(candidates) if not _candidate_blocked(candidate_symbols[index])],
+    )
+
     for index, name in enumerate(candidates):
         candidate_subject = candidate_symbols[index]
         coverage_key = str(candidate_subject["coverage_key"])
-        if candidate_subject.get("blocking_reasons") or any(
-            blocker.get("coverage_key") == coverage_key for blocker in coverage_blockers
-        ):
+        if _candidate_blocked(candidate_subject):
             continue
         try:
-            ir = analyze(path, source_language, name)
+            outcome = analyzed[name]
+            if isinstance(outcome, BaseException):
+                raise outcome
+            ir = outcome
         except (RouteError, OSError, ValueError) as error:
             diagnostic = _reason(error)
             if _analyzer_failure_verdict(error, source_language) == Verdict.NOT_RUN:
