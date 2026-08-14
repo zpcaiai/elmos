@@ -4726,12 +4726,17 @@ def _build_csharp_analyzer(
             destination.chmod(0o600)
         home = root / "home"
         scratch = root / "tmp"
-        packages = root / "packages"
         http_cache = root / "http-cache"
         package_mirror = root / "package-source"
         output = root / "output"
-        for directory in (home, scratch, packages, http_cache, package_mirror, output):
+        for directory in (home, scratch, http_cache, package_mirror, output):
             directory.mkdir(mode=0o700)
+        packages = _csharp_package_restore_cache(
+            toolchain, source_manifest, toolchain_identity, package_manifest
+        )
+        if packages is None:
+            packages = root / "packages"
+            packages.mkdir(mode=0o700)
         for item in package_manifest["packages"]:
             filename = str(item["filename"])
             destination = package_mirror / filename
@@ -5046,6 +5051,59 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
         return None
     return tuple(directories)
 
+
+def _csharp_package_restore_cache(
+    toolchain: ExactToolchain,
+    source_manifest: dict[str, Any],
+    toolchain_identity: dict[str, Any],
+    package_manifest: dict[str, Any],
+) -> Path | None:
+    """Persistent NuGet package directory for the C# analyzer restore.
+
+    The C# analyzer was the last one still rebuilt from scratch in every
+    process: the other toolchains reuse a content-addressed build directory,
+    while this one only ever had the per-process globals, so a fresh process --
+    which is what discovery spawns -- restored and extracted the whole Roslyn
+    package set again.
+
+    The argument that licenses the cargo, Go and Java caches holds here too, and
+    the inputs are enumerated rather than assumed: the restore runs
+    ``--locked-mode`` against a verified local mirror with ``--no-http-cache``
+    and no reachable registry, so the extracted package set is a function of the
+    lock file, the mirror contents and the SDK. All three are hashed into the
+    key, so equal keys are required to yield equal restores.
+
+    Only the restore is shared. The compile still runs in the per-run temporary
+    directory under ``--no-incremental``, and its output is still verified
+    against a manifest computed from the bytes it just produced, so nothing that
+    reaches a receipt comes out of the cache.
+
+    The whole source manifest enters the key, not just the files a restore is
+    believed to read. Narrowing it to the project and lock files would be an
+    optimisation resting on an assumption about MSBuild's evaluation, and a
+    cache key that omits a real input returns a wrong build rather than a slow
+    one. Analyzer sources change during development, not in production, so the
+    misses this costs are the cheap ones.
+
+    Returns ``None`` when no cache can be established, which leaves the previous
+    per-run behaviour exactly as it was.
+    """
+    try:
+        key = _toolchain_build_cache_key(
+            "dotnet",
+            Path(toolchain.executable),
+            salt=(
+                f"source-inputs={source_manifest['sha256']}",
+                f"toolchain={toolchain_identity['sha256']}",
+                f"package-mirror={package_manifest['sha256']}",
+            ),
+        )
+    except OSError:
+        # Same contract as _toolchain_build_cache: a key that cannot be computed
+        # degrades to the per-run directory rather than failing the analysis.
+        return None
+    directories = _toolchain_build_cache("dotnet", key, ("packages",))
+    return None if directories is None else directories[0]
 
 
 def _cargo_build_cache_key(package: Path, executable: Path) -> str:
