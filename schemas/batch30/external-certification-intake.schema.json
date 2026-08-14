@@ -11,9 +11,11 @@
     "customer_organization_id",
     "rootless_organization_id",
     "independent_organization_id",
+    "certification_organization_id",
     "binding",
     "artifact",
     "execution_profile",
+    "evidence_executors",
     "customer_authorization",
     "evidence"
   ],
@@ -25,27 +27,33 @@
     "customer_organization_id": {"$ref": "#/$defs/identity"},
     "rootless_organization_id": {"$ref": "#/$defs/identity"},
     "independent_organization_id": {"$ref": "#/$defs/identity"},
+    "certification_organization_id": {"$ref": "#/$defs/identity"},
     "binding": {"$ref": "#/$defs/binding"},
     "artifact": {"$ref": "#/$defs/contentReference"},
     "execution_profile": {"$ref": "#/$defs/contentReference"},
+    "evidence_executors": {"$ref": "#/$defs/evidenceExecutors"},
     "customer_authorization": {"$ref": "#/$defs/signedEnvelope"},
     "evidence": {
       "type": "object",
       "required": [
         "authorized_customer_repository",
         "customer_holdout",
+        "customer_acceptance",
         "rootless_runner",
         "rootless_transformer",
         "rootless_verifier",
-        "independent_review"
+        "independent_review",
+        "external_certification"
       ],
       "properties": {
         "authorized_customer_repository": {"$ref": "#/$defs/evidenceItem"},
         "customer_holdout": {"$ref": "#/$defs/evidenceItem"},
+        "customer_acceptance": {"$ref": "#/$defs/evidenceItem"},
         "rootless_runner": {"$ref": "#/$defs/evidenceItem"},
         "rootless_transformer": {"$ref": "#/$defs/evidenceItem"},
         "rootless_verifier": {"$ref": "#/$defs/evidenceItem"},
-        "independent_review": {"$ref": "#/$defs/evidenceItem"}
+        "independent_review": {"$ref": "#/$defs/evidenceItem"},
+        "external_certification": {"$ref": "#/$defs/evidenceItem"}
       },
       "additionalProperties": false
     }
@@ -120,6 +128,39 @@
       },
       "additionalProperties": false
     },
+    "evidencePrincipal": {
+      "type": "object",
+      "required": ["actor_id", "organization_id"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"}
+      },
+      "additionalProperties": false
+    },
+    "evidenceExecutors": {
+      "type": "object",
+      "required": [
+        "authorized_customer_repository",
+        "customer_holdout",
+        "customer_acceptance",
+        "rootless_runner",
+        "rootless_transformer",
+        "rootless_verifier",
+        "independent_review",
+        "external_certification"
+      ],
+      "properties": {
+        "authorized_customer_repository": {"$ref": "#/$defs/evidencePrincipal"},
+        "customer_holdout": {"$ref": "#/$defs/evidencePrincipal"},
+        "customer_acceptance": {"$ref": "#/$defs/evidencePrincipal"},
+        "rootless_runner": {"$ref": "#/$defs/evidencePrincipal"},
+        "rootless_transformer": {"$ref": "#/$defs/evidencePrincipal"},
+        "rootless_verifier": {"$ref": "#/$defs/evidencePrincipal"},
+        "independent_review": {"$ref": "#/$defs/evidencePrincipal"},
+        "external_certification": {"$ref": "#/$defs/evidencePrincipal"}
+      },
+      "additionalProperties": false
+    },
     "authorizationScope": {
       "type": "object",
       "required": [
@@ -133,7 +174,9 @@
         "customer_organization_id",
         "rootless_organization_id",
         "independent_organization_id",
+        "certification_organization_id",
         "evidence_types",
+        "evidence_executors",
         "evidence_content_digests"
       ],
       "properties": {
@@ -147,37 +190,45 @@
         "customer_organization_id": {"$ref": "#/$defs/identity"},
         "rootless_organization_id": {"$ref": "#/$defs/identity"},
         "independent_organization_id": {"$ref": "#/$defs/identity"},
+        "certification_organization_id": {"$ref": "#/$defs/identity"},
         "evidence_types": {
           "type": "array",
-          "minItems": 6,
-          "maxItems": 6,
+          "minItems": 8,
+          "maxItems": 8,
           "prefixItems": [
             {"const": "authorized_customer_repository"},
             {"const": "customer_holdout"},
+            {"const": "customer_acceptance"},
             {"const": "rootless_runner"},
             {"const": "rootless_transformer"},
             {"const": "rootless_verifier"},
-            {"const": "independent_review"}
+            {"const": "independent_review"},
+            {"const": "external_certification"}
           ],
           "items": false
         },
+        "evidence_executors": {"$ref": "#/$defs/evidenceExecutors"},
         "evidence_content_digests": {
           "type": "object",
           "required": [
             "authorized_customer_repository",
             "customer_holdout",
+            "customer_acceptance",
             "rootless_runner",
             "rootless_transformer",
             "rootless_verifier",
-            "independent_review"
+            "independent_review",
+            "external_certification"
           ],
           "properties": {
             "authorized_customer_repository": {"$ref": "#/$defs/digest"},
             "customer_holdout": {"$ref": "#/$defs/digest"},
+            "customer_acceptance": {"$ref": "#/$defs/digest"},
             "rootless_runner": {"$ref": "#/$defs/digest"},
             "rootless_transformer": {"$ref": "#/$defs/digest"},
             "rootless_verifier": {"$ref": "#/$defs/digest"},
-            "independent_review": {"$ref": "#/$defs/digest"}
+            "independent_review": {"$ref": "#/$defs/digest"},
+            "external_certification": {"$ref": "#/$defs/digest"}
           },
           "additionalProperties": false
         }
@@ -224,11 +275,25 @@
     "customerHoldoutClaims": {
       "const": {"independent_from_development": true, "customer_owned_acceptance": true}
     },
+    "customerAcceptanceClaims": {
+      "const": {
+        "acceptance_subject_bound": true,
+        "accepted_exact_artifact_and_profile": true,
+        "customer_decision": "ACCEPTED"
+      }
+    },
     "rootlessClaims": {
       "const": {"rootless": true, "privileged": false, "effective_uid_nonzero": true}
     },
     "independentClaims": {
       "const": {"organizationally_independent": true, "separate_executor_and_verifier": true}
+    },
+    "externalCertificationClaims": {
+      "const": {
+        "certification_scope_bound": true,
+        "independent_certification_authority": true,
+        "certificate_decision": "CERTIFIED"
+      }
     },
     "attestationPayload": {
       "type": "object",
@@ -246,6 +311,8 @@
         "evidence_type",
         "content_digest",
         "content_size_bytes",
+        "executor_actor_id",
+        "executor_organization_id",
         "outcome",
         "evidence_class",
         "synthetic",
@@ -267,7 +334,9 @@
         "evidence_type": {"$ref": "#/$defs/identity"},
         "content_digest": {"$ref": "#/$defs/digest"},
         "content_size_bytes": {"type": "integer", "minimum": 1},
-        "outcome": {"const": "PASS"},
+        "executor_actor_id": {"$ref": "#/$defs/identity"},
+        "executor_organization_id": {"$ref": "#/$defs/identity"},
+        "outcome": {"enum": ["PASS", "ACCEPTED", "CERTIFIED"]},
         "evidence_class": {"const": "EXTERNAL_NON_SYNTHETIC"},
         "synthetic": {"const": false},
         "unknowns": {"type": "array", "maxItems": 0},
@@ -279,6 +348,7 @@
           "properties": {
             "evidence_type": {"const": "authorized_customer_repository"},
             "role": {"const": "batch30-customer-repository-verifier"},
+            "outcome": {"const": "PASS"},
             "claims": {"$ref": "#/$defs/customerRepositoryClaims"}
           }
         },
@@ -286,13 +356,23 @@
           "properties": {
             "evidence_type": {"const": "customer_holdout"},
             "role": {"const": "batch30-customer-holdout-verifier"},
+            "outcome": {"const": "PASS"},
             "claims": {"$ref": "#/$defs/customerHoldoutClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "customer_acceptance"},
+            "role": {"const": "batch30-customer-acceptance-approver"},
+            "outcome": {"const": "ACCEPTED"},
+            "claims": {"$ref": "#/$defs/customerAcceptanceClaims"}
           }
         },
         {
           "properties": {
             "evidence_type": {"const": "rootless_runner"},
             "role": {"const": "batch30-rootless-runner-attestor"},
+            "outcome": {"const": "PASS"},
             "claims": {"$ref": "#/$defs/rootlessClaims"}
           }
         },
@@ -300,6 +380,7 @@
           "properties": {
             "evidence_type": {"const": "rootless_transformer"},
             "role": {"const": "batch30-rootless-transformer-attestor"},
+            "outcome": {"const": "PASS"},
             "claims": {"$ref": "#/$defs/rootlessClaims"}
           }
         },
@@ -307,6 +388,7 @@
           "properties": {
             "evidence_type": {"const": "rootless_verifier"},
             "role": {"const": "batch30-rootless-verifier-attestor"},
+            "outcome": {"const": "PASS"},
             "claims": {"$ref": "#/$defs/rootlessClaims"}
           }
         },
@@ -314,7 +396,16 @@
           "properties": {
             "evidence_type": {"const": "independent_review"},
             "role": {"const": "batch30-independent-verifier"},
+            "outcome": {"const": "PASS"},
             "claims": {"$ref": "#/$defs/independentClaims"}
+          }
+        },
+        {
+          "properties": {
+            "evidence_type": {"const": "external_certification"},
+            "role": {"const": "batch30-external-certifier"},
+            "outcome": {"const": "CERTIFIED"},
+            "claims": {"$ref": "#/$defs/externalCertificationClaims"}
           }
         }
       ],

@@ -11,9 +11,9 @@
     "harmonyos"
   ],
   "project_path": "project",
-  "project_digest": "sha256:f9a00b024d2d7c3358326e74e12b33a34690ad91a5c405488909c5288e07ee4f",
+  "project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
   "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
-  "file_count": 30,
+  "file_count": 32,
   "files": [
     {
       "path": ".editorconfig",
@@ -62,8 +62,8 @@
     },
     {
       "path": "build-profile.json5",
-      "sha256": "sha256:b20a4c9f2442f08e5d44af5b633f48458cbffc447bd83250126173f7fecd6f4e",
-      "byte_count": 721
+      "sha256": "sha256:e1e1e47924d94d713d7e4fec1e65d6ef79ef59def30a2ec2237944f43cc4534a",
+      "byte_count": 738
     },
     {
       "path": "conversion/obligations.json",
@@ -77,8 +77,8 @@
     },
     {
       "path": "elmos.ui-migration.json",
-      "sha256": "sha256:4b5a4c7f204745456fde47b7fdaa5d08c1f8120c50f1ece3bcf4a2a0ac6ee562",
-      "byte_count": 3369
+      "sha256": "sha256:6d593bcc4f365c3c77b113d19ac02885b980ee088925eb41e168813112b317d5",
+      "byte_count": 3524
     },
     {
       "path": "entry/build-profile.json5",
@@ -96,17 +96,17 @@
       "byte_count": 158
     },
     {
-      "path": "entry/src/main/ets/elmos-bounded-interaction.ets",
+      "path": "entry/src/main/ets/elmos-bounded-interaction.ts",
       "sha256": "sha256:3e9c1df4c8ccfd8b7d7ac86027a4ef935d860fa99e3c3f5fb5ebeb372a62be9f",
       "byte_count": 26513
     },
     {
-      "path": "entry/src/main/ets/elmos-bounded-navigation.ets",
+      "path": "entry/src/main/ets/elmos-bounded-navigation.ts",
       "sha256": "sha256:38c6cf57227c154651791f3b88b01cdd1e7c3a1bf8dea736ee9b7f6a9cdcc537",
       "byte_count": 1045
     },
     {
-      "path": "entry/src/main/ets/elmos-interaction-runtime.ets",
+      "path": "entry/src/main/ets/elmos-interaction-runtime.ts",
       "sha256": "sha256:e2d83583d4d9fc0688fc6f2f53829f6dd7903fdb2b8afd1fdbfcc3b557a7a95c",
       "byte_count": 5866
     },
@@ -117,13 +117,18 @@
     },
     {
       "path": "entry/src/main/ets/pages/Index.ets",
-      "sha256": "sha256:471c6ef7cda764e3ca6071e53474d823b37d89eec4c24b21fcd738f2a16de76b",
-      "byte_count": 2706
+      "sha256": "sha256:2b1cf4a03f68312e5dd83e31d5bf91b6bd8d77ceec318180178cf94c06d4d34a",
+      "byte_count": 2722
     },
     {
       "path": "entry/src/main/module.json5",
-      "sha256": "sha256:fe2ec957ec43659d01304b010f4c90697baea9f35e3ee5f824ee973cf39f7131",
-      "byte_count": 759
+      "sha256": "sha256:dbd2ab005634a5ce11bff0882f7557ebaecdcda6dea60d5d653458b1c34e061e",
+      "byte_count": 844
+    },
+    {
+      "path": "entry/src/main/resources/base/element/color.json",
+      "sha256": "sha256:473b1fcb9f734c373fa6b6f886d674d3773a2e7831de7aaa1eaac1d64bd1c462",
+      "byte_count": 99
     },
     {
       "path": "entry/src/main/resources/base/element/string.json",
@@ -141,14 +146,19 @@
       "byte_count": 6518
     },
     {
+      "path": "hvigor/hvigor-config.json5",
+      "sha256": "sha256:875d669a4a58a7cfac802ffdbc6fbf2e5272f98a00831a99c0b3814ebd6d0278",
+      "byte_count": 128
+    },
+    {
       "path": "hvigorfile.ts",
       "sha256": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
       "byte_count": 103
     },
     {
       "path": "oh-package.json5",
-      "sha256": "sha256:c7b9b25fc6abf7ebeaf49bc87ac21dce52e02417a8eeed32ebf1930e4482cb63",
-      "byte_count": 178
+      "sha256": "sha256:0af6edd5a35f9c427e203b1c17ad2fb39337735747d403f341da2c60a317b5ad",
+      "byte_count": 219
     },
     {
       "path": "scripts/verify.sh",
@@ -157,8 +167,8 @@
     },
     {
       "path": "target-profile/profile.json",
-      "sha256": "sha256:e0800865800432d619c365cfe0b6643cd21d846e04d767ccdf29318321101693",
-      "byte_count": 830
+      "sha256": "sha256:a3b47b323afc7e10b969f7d05e6b709fe2a71ce4cac4b5c1111dbc4353edf5db",
+      "byte_count": 888
     },
     {
       "path": "ui-ir/model.json",
@@ -170,8 +180,8 @@
   "source_fixture_path": "generated-fixtures/harmony-arkui/typed-ui-interaction-ir.json",
   "source_fixture_digest": "sha256:8ea380704aba43a18af394f9124a3ea37f457a1d35a7ae72b4d65d8eecbc2cb3",
   "source_fixture_byte_count": 8426,
-  "interaction_source_path": "entry/src/main/ets/elmos-bounded-interaction.ets",
-  "navigation_compatibility_path": "entry/src/main/ets/elmos-bounded-navigation.ets",
+  "interaction_source_path": "entry/src/main/ets/elmos-bounded-interaction.ts",
+  "navigation_compatibility_path": "entry/src/main/ets/elmos-bounded-navigation.ts",
   "relift_model_digest": "sha256:5d90d010ffba14243b4a41a810a0147248a9d776d96a3f0ef2162a39aecf1c13",
   "relift_block_digests": {
     "route-navigation-deeplink-404": "sha256:3ba298fc08af42630a098d394640d2d786e4e127d3c0a602ce001e32c8a48330",
@@ -2486,5 +2496,5 @@
   },
   "target_build": "NOT_RUN",
   "target_runtime": "NOT_RUN",
-  "manifest_digest": "sha256:68ef663eb8cec7d605b7403884a9bbe03eee243b14f50102e144c6418603cf24"
+  "manifest_digest": "sha256:00d812d2f5a40d71793f013c851b8a2753d79960090ddd87cbd51dd84a6ed249"
 }

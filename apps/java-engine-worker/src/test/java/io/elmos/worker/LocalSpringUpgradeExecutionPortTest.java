@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -17,6 +18,7 @@ import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -422,6 +424,66 @@ class LocalSpringUpgradeExecutionPortTest {
     private static void writePom(Path path, String content) throws Exception {
         Files.createDirectories(path.getParent());
         Files.writeString(path, content);
+    }
+
+    @Test void immutableSeedArtifactsAreSharedByLinkAndCannotBeWrittenBackInto() throws Exception {
+        Path seed = temporaryDirectory.resolve("linkable-seed");
+        Path group = seed.resolve("org/example/library/1.0");
+        Files.createDirectories(group);
+        Path seedArtifact = group.resolve("library-1.0.jar");
+        Path seedTracking = group.resolve("_remote.repositories");
+        Files.writeString(seedArtifact, "artifact");
+        Files.writeString(seedTracking, "tracking");
+        makeReadOnly(seed);
+
+        Path perRunRepository = temporaryDirectory.resolve("linked-run/.m2/repository");
+        LocalSpringUpgradeExecutionPort.copyDependencySeed(seed, perRunRepository);
+        Path artifact = perRunRepository.resolve("org/example/library/1.0/library-1.0.jar");
+        Path tracking = perRunRepository.resolve("org/example/library/1.0/_remote.repositories");
+
+        // The immutable artifact is shared with the seed rather than duplicated.
+        assertEquals(Files.getAttribute(seedArtifact, "unix:ino"), Files.getAttribute(artifact, "unix:ino"));
+        assertEquals("artifact", Files.readString(artifact));
+        // A shared inode also shares permissions, so the link stays unwritable.
+        assertFalse(ownerCanWrite(artifact));
+
+        // The resolver rewrites its tracking file in place, so that one is the run's own.
+        assertNotEquals(Files.getAttribute(seedTracking, "unix:ino"), Files.getAttribute(tracking, "unix:ino"));
+        assertTrue(ownerCanWrite(tracking));
+        assertFalse(ownerCanWrite(seedTracking));
+
+        // Maven replaces an artifact by renaming a new file over it, which leaves the seed alone.
+        Path replacement = perRunRepository.resolve("org/example/library/1.0/library-1.0.jar.tmp");
+        Files.writeString(replacement, "redownloaded");
+        Files.move(replacement, artifact, StandardCopyOption.REPLACE_EXISTING);
+        assertEquals("redownloaded", Files.readString(artifact));
+        assertEquals("artifact", Files.readString(seedArtifact));
+    }
+
+    @Test void writableSeedEntriesAreCopiedBecauseALinkWouldReachBackIntoTheSeed() throws Exception {
+        Path seed = temporaryDirectory.resolve("mixed-seed");
+        Path group = seed.resolve("org/example/library/1.0");
+        Files.createDirectories(group);
+        Path locked = group.resolve("library-1.0.jar");
+        Path loose = group.resolve("library-1.0.pom");
+        Files.writeString(locked, "locked");
+        Files.writeString(loose, "loose");
+        makeReadOnly(seed);
+        Files.setPosixFilePermissions(group, EnumSet.of(
+                PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE,
+                PosixFilePermission.OWNER_EXECUTE));
+        Files.setPosixFilePermissions(loose, EnumSet.of(
+                PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
+
+        Path perRunRepository = temporaryDirectory.resolve("mixed-run/.m2/repository");
+        LocalSpringUpgradeExecutionPort.copyDependencySeed(seed, perRunRepository);
+
+        assertEquals(Files.getAttribute(locked, "unix:ino"),
+                Files.getAttribute(perRunRepository.resolve("org/example/library/1.0/library-1.0.jar"),
+                        "unix:ino"));
+        assertNotEquals(Files.getAttribute(loose, "unix:ino"),
+                Files.getAttribute(perRunRepository.resolve("org/example/library/1.0/library-1.0.pom"),
+                        "unix:ino"));
     }
 
     private static void makeReadOnly(Path root) throws Exception {

@@ -6,7 +6,10 @@
   "required": [
     "schema_version", "kind", "scope_digest", "route_id", "block_id",
     "corpus_case_ids", "execution_artifact_ids", "replay_environment_artifact_id",
-    "verifier_organization_id", "replayed_at", "independently_reconstructed", "status"
+    "verifier_organization_id", "replayed_at", "independently_reconstructed",
+    "comparison_relation", "source_observation_artifact_id",
+    "target_observation_artifact_id", "source_actuals_sha256",
+    "target_actuals_sha256", "difference_count", "status"
   ],
   "properties": {
     "schema_version": {"const": 2},
@@ -20,6 +23,12 @@
     "verifier_organization_id": {"$ref": "#/$defs/nonEmpty"},
     "replayed_at": {"type": "string", "format": "date-time"},
     "independently_reconstructed": {"const": true},
+    "comparison_relation": {"const": "EXACT_CANONICAL_ACTUAL_EQUALITY_V1"},
+    "source_observation_artifact_id": {"$ref": "#/$defs/sha256"},
+    "target_observation_artifact_id": {"$ref": "#/$defs/sha256"},
+    "source_actuals_sha256": {"$ref": "#/$defs/sha256"},
+    "target_actuals_sha256": {"$ref": "#/$defs/sha256"},
+    "difference_count": {"const": 0},
     "status": {"enum": ["PASSED", "FAILED"]}
   },
   "$defs": {

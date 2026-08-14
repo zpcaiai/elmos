@@ -11,7 +11,7 @@
     "target_profile": "angular",
     "target_framework_version": "22.0.8"
   },
-  "source_project_digest": "sha256:f9a00b024d2d7c3358326e74e12b33a34690ad91a5c405488909c5288e07ee4f",
+  "source_project_digest": "sha256:55ed341758c755419b194ada01e972c81eac5bc62207b73a22d5fb7f132fe9fa",
   "target_project_digest": "sha256:57c18537e340e5d7aad79092fd13ddf6f90965b0f4cd6563a2290466fecd61d0",
   "canonical_model": {
     "schemaVersion": "1.0",
@@ -194,12 +194,12 @@
     "i18n-theme-responsive": "sha256:9d8c5697ae4bd5e0e5c4992a4205f6abe4ba67cd15115bdb14e0bd9c48c16957",
     "native-platform": "sha256:bbef9b99dcfaf0a3eaf03bf6974addbc05a6048feffd00859988e32402f867f2"
   },
-  "source_model_artifact_digest": "sha256:f8632cdbf7c7e38af264e1863903c96337817c3288a5ea22ce742c6393c9d9f3",
+  "source_model_artifact_digest": "sha256:10c8ead32aa4e673b518f3930240a566ce38a4b68de1ba77a91b354d17fc759a",
   "target_model_artifact_digest": "sha256:c1083e731058c481e636bc2b45a352476628c9c36439ba12786922fc9a646113",
   "semantic_equal": true,
   "behavior_digest": "sha256:4b9e302fe8aaad61b795e0b4b69de5a4213cc2f99ec5b6d226ca58fe58a10baf",
   "behavior_equal": true,
-  "chunk_digest": "sha256:0b6a4571a1f3d6941c0fc260e0dba0d648568f4141a921ab92dfb2f5cb58e29f",
+  "chunk_digest": "sha256:b15293ca546d8bba133774320c06aafaa9ece793351301bb890e71635f5be33f",
   "chunk_equal": true,
   "scenario_manifest_digest": "sha256:52f60c2c8a65d2d0419be96e71357b90f3d2713e9895f5c532db923e76cfe619",
   "mutation_campaign_digest": "sha256:f257ca11174201035db83dc25ce76715c736c3efbc39989bd3c41236143127fb",

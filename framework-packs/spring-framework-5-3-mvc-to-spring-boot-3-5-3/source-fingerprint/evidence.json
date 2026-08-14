@@ -1,17 +1,25 @@
 {
   "schema_version": 1,
   "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
-  "evidence_class": "STATIC_FIXTURE_PREPARATION",
-  "execution_status": "NOT_RUN",
+  "evidence_class": "LOCAL_ENGINEERING_EXACT_FIXTURE",
+  "execution_status": "PASSED_LOCAL",
   "coverage": null,
-  "runs": [],
-  "source_snapshot_sha256": null,
-  "source_commit": null,
-  "runtime_facts_collected": 0,
-  "evidence_refs": [],
+  "runs": [
+    {
+      "id": "spring-mvc-5.3.39-to-boot-3.5.3-local-2026-08-11",
+      "status": "PASSED_LOCAL",
+      "evidence_index": "certification/local-execution/2026-08-11/evidence-index.json"
+    }
+  ],
+  "source_snapshot_sha256": "68fed1342ec39a2b5fb101f021a8632e3c78ea094318ded003855d0bf8c4e581",
+  "source_commit": "f8c25fae8b26dff249d3870adab49361314b7787",
+  "runtime_facts_collected": 5,
+  "evidence_refs": [
+    "certification/local-execution/2026-08-11/evidence-index.json"
+  ],
   "limitations": [
     "The checked-in fixture is not a fingerprint result for a customer repository.",
-    "No Java 11/Maven 3.9.11 source build or servlet-container startup was executed.",
+    "The exact checked-in fixture passed Java 11/Maven 3.9.11 source build and Tomcat 9.0.120 startup locally.",
     "No percentage is reported without a measured denominator."
   ]
 }

@@ -306,22 +306,31 @@ def _classify(statement: exp.Expr, dialect: Dialect) -> tuple[FindingStatus, str
     boundary; anything else is an engine defect and is reported as such
     rather than being folded into the blocked count.
     """
-    sql = statement.sql(dialect=dialect.value)
+    # The parsed node goes straight through. Serialising it back to SQL so the
+    # parser could parse it a second time was two thirds of the work here, and
+    # the round trip could only lose fidelity relative to the node the splitter
+    # already produced.
+    #
+    # sqlglot's stubs type a parsed statement as an internal `Expr` alias that
+    # is not assignable to `Expression` (see the same note in `parser.py`), so
+    # narrow it here. The runtime object is an `Expression`; `Expr` only ever
+    # appears in annotations, which this module never evaluates.
+    assert isinstance(statement, exp.Expression)
     try:
         if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-            parse_create_table(sql, dialect)
+            parse_create_table(statement, dialect)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "INDEX":
-            parse_create_index(sql, dialect)
+            parse_create_index(statement, dialect)
         elif isinstance(statement, exp.Alter):
             # certified-alter-v1. Routed here so the coverage number tracks
             # what the engine can really do rather than one profile of it.
-            parse_alter_table(sql, dialect)
+            parse_alter_table(statement, dialect)
         else:
             # Not a CREATE TABLE / CREATE INDEX at all. This is the single
             # most important number in the report, so it is produced by the
             # same fail-closed path as everything else rather than by a
             # special case that could drift from the parser.
-            parse_create_table(sql, dialect)
+            parse_create_table(statement, dialect)
         return "IN_SUBSET", None, None
     except DialectError as exc:
         return "OUT_OF_SUBSET", exc.code, exc.message

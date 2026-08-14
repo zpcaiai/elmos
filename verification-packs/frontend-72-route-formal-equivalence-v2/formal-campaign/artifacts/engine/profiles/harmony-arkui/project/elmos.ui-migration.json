@@ -35,6 +35,8 @@
     "testTool": "Hypium profile",
     "runnerProfile": "HARMONYOS",
     "requiredProjectFiles": [
+      "oh-package.json5",
+      "hvigor/hvigor-config.json5",
       "build-profile.json5",
       "AppScope/app.json5",
       "entry/src/main/module.json5",
@@ -42,7 +44,7 @@
     ]
   },
   "digestScope": "all generated files except elmos.ui-migration.json",
-  "contentDigest": "sha256:915d2deea91b2214d33883fa8d723783b271aa3fd824cd4b97ce5eb314f0d8c2",
+  "contentDigest": "sha256:8512d5966bcb9a399f4d66a5647fc2c1cffd63c9c87d139316bb1801f6feec62",
   "ownership": {
     "generated": [
       ".editorconfig",
@@ -60,13 +62,15 @@
       "entry/build-profile.json5",
       "entry/hvigorfile.ts",
       "entry/oh-package.json5",
-      "entry/src/main/ets/elmos-bounded-navigation.ets",
+      "entry/src/main/ets/elmos-bounded-navigation.ts",
       "entry/src/main/ets/entryability/EntryAbility.ets",
       "entry/src/main/ets/pages/Index.ets",
       "entry/src/main/module.json5",
+      "entry/src/main/resources/base/element/color.json",
       "entry/src/main/resources/base/element/string.json",
       "entry/src/main/resources/base/profile/main_pages.json",
       "entry/src/main/resources/rawfile/ui_ir.json",
+      "hvigor/hvigor-config.json5",
       "hvigorfile.ts",
       "oh-package.json5",
       "scripts/verify.sh",

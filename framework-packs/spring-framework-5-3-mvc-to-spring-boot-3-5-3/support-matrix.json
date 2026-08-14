@@ -6,9 +6,10 @@
       "id": "web",
       "status": "experimental",
       "strategy": "fcm-dispatcher-servlet-to-boot-mvc",
-      "reason": "DispatcherServlet, request mapping, response and interceptor obligations are modeled statically; runtime parity is NOT_RUN.",
+      "reason": "The exact fixture passed local source/target builds, Tomcat/WarLauncher startup, one exact JSON GET comparison and preserved controller tests; this does not generalize beyond the fixture.",
       "evidence_refs": [
-        "contracts/framework-contract-model.json"
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
@@ -33,9 +34,10 @@
       "id": "validation",
       "status": "experimental",
       "strategy": "javax-to-jakarta-validation-contract",
-      "reason": "Validation annotations and error shape are modeled; provider/runtime parity is NOT_RUN.",
+      "reason": "Two validation-error contracts and the controller advice contract passed in the preserved 6 source and 9 target tests for the exact fixture; locale, groups and other providers remain NOT_RUN.",
       "evidence_refs": [
-        "contracts/framework-contract-model.json"
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
@@ -70,18 +72,20 @@
       "id": "error-handling",
       "status": "experimental",
       "strategy": "controller-advice-contract",
-      "reason": "ControllerAdvice status and JSON shape are modeled statically; exception parity is NOT_RUN.",
+      "reason": "The exact fixture's ControllerAdvice status and JSON shape passed preserved source/target tests locally; broader exception resolvers and production errors remain NOT_RUN.",
       "evidence_refs": [
-        "contracts/framework-contract-model.json"
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
       "id": "servlet-filters-and-interceptors",
       "status": "experimental",
       "strategy": "ordered-filter-interceptor-contract",
-      "reason": "Encoding filter and audit interceptor ordering are modeled; real container order parity is NOT_RUN.",
+      "reason": "The exact fixture's UTF-8 filter and /api/** audit interceptor behavior passed preserved tests and the JSON HTTP comparison across Tomcat 9 and embedded Tomcat 10 locally.",
       "evidence_refs": [
-        "contracts/framework-contract-model.json"
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     },
     {
@@ -107,18 +111,23 @@
     },
     {
       "id": "views-and-static-resources",
-      "status": "blocked",
-      "strategy": "explicit-view-technology-profile",
-      "reason": "JSP/view resolver and static-resource behavior require an explicit target strategy; no silent REST conversion is allowed.",
-      "evidence_refs": []
+      "status": "experimental",
+      "strategy": "executable-war-tomcat-jasper-profile",
+      "reason": "The admitted JSP page rendered 142 identical bytes with exact stable headers across source Tomcat 9 and target embedded Tomcat 10; only the exact JSESSIONID token nondeterminism is governed, and other JSP constructs remain blocked.",
+      "evidence_refs": [
+        "target-profile/scaffold/manifest.json",
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-11/evidence-index.json"
+      ]
     },
     {
       "id": "lifecycle",
       "status": "experimental",
       "strategy": "listener-servlet-to-boot-lifecycle-contract",
-      "reason": "ContextLoaderListener and DispatcherServlet startup obligations are modeled; target startup and graceful shutdown are NOT_RUN.",
+      "reason": "The exact fixture passed bounded external Tomcat 9 source startup/shutdown and Boot WarLauncher target startup/Actuator/shutdown locally; alternate lifecycle integrations remain NOT_RUN.",
       "evidence_refs": [
-        "contracts/framework-contract-model.json"
+        "contracts/framework-contract-model.json",
+        "certification/local-execution/2026-08-11/evidence-index.json"
       ]
     }
   ]

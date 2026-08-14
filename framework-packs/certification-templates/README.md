@@ -1,10 +1,11 @@
 # Batch 30 external certification intake
 
 These files are fail-closed authoring templates for customer-repository,
-customer-holdout, rootless Runner/Transformer/Verifier, and organizationally
-independent review evidence. They are not evidence and are deliberately marked
+customer-holdout, explicit customer acceptance, rootless
+Runner/Transformer/Verifier, organizationally independent review, and external
+certification evidence. They are not evidence and are deliberately marked
 `NOT_RUN`; the validator rejects them until every placeholder is removed and
-every record is signed.
+every record is signed by a real authorized subject.
 
 The machine-readable shapes are:
 
@@ -19,17 +20,25 @@ repository Ed25519 verifier and additionally enforces:
   symlink, and exact byte count plus `sha256:<64 lowercase hex>`;
 - exact pack/version, source and target tuple, pack manifest, version matrix,
   recipe manifest, target profile, migrated artifact, and execution profile;
-- a customer authorization scoped to the exact binding, organizations, six
-  required evidence types, and all six evidence-content digests;
+- a customer authorization scoped to the exact binding, five organizations,
+  eight required evidence types, all eight executor principals, and all eight
+  evidence-content digests;
 - dedicated keys and distinct actor, key, public-key-material, and record
-  identities for all seven roles;
-- distinct producer, customer, rootless-provider, and independent-review
-  organizations. Customer roles belong to the customer organization, rootless
-  roles to the rootless-provider organization, and the independent verifier to
-  the independent organization;
+  identities for all nine roles;
+- distinct producer, customer, rootless-provider, independent-review, and
+  external-certification organizations. Customer roles belong to the customer
+  organization, rootless roles to the rootless-provider organization, the
+  independent verifier to the independent organization, and the external
+  certifier to the certification organization;
+- explicit executor actor and organization identities for every evidence item.
+  No authorizer or evidence signer may also be an executor anywhere in the
+  intake; the independent-review and external-certification signer
+  organizations must not execute any evidence role anywhere in the intake;
 - Ed25519 signatures from the separate trust store, key and record revocation,
-  key and envelope validity windows, non-synthetic PASS outcomes, zero unknowns,
-  and zero `NOT_RUN` items.
+  key and envelope validity windows, non-synthetic role-specific success
+  outcomes, zero unknowns, and zero `NOT_RUN` items. Customer acceptance uses
+  exact `ACCEPTED` semantics, and the external certificate uses exact signed
+  `CERTIFIED` semantics.
 
 Run the verifier only after the evidence bytes, trust store, and signatures are
 available:
@@ -41,8 +50,10 @@ python3 scripts/batch30/validate_external_certification_intake.py \
   --evidence-root /approved/evidence
 ```
 
-Success means `READY_FOR_EXTERNAL_GATE_REVIEW` and still returns
-`certification_decision=NOT_CERTIFIED`. The command does not edit the framework
+Success means the supplied external certificate signature and its content bytes
+were authenticated for review. It returns `READY_FOR_EXTERNAL_GATE_REVIEW` and
+still returns `certification_decision=NOT_CERTIFIED`; intake verification is not
+the repository certification decision. The command does not edit the framework
 pack. The framework certification gate keeps promotion disabled by default;
 local or synthetic fixtures cannot unlock it.
 

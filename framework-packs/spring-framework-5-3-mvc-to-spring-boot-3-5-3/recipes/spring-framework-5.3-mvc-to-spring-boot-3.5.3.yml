@@ -4,11 +4,12 @@ name: io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21
 displayName: Prepare Spring Framework 5.3.39 MVC for Spring Boot 3.5.3 on Java 21
 description: >-
   Applies deterministic Java, Jakarta and Spring Framework transformations for
-  the exact migration tuple. Boot bootstrap, context merge, web.xml retirement,
-  view strategy and provider selection remain FCM-governed fail-closed
-  obligations and are not inferred by this recipe.
+  the exact migration tuple. The FCM-governed target emitter owns Boot bootstrap,
+  context merge, web.xml retirement, executable-WAR JSP configuration, Actuator
+  and repackage configuration; this recipe does not infer those behaviors.
 recipeList:
   - org.openrewrite.java.migrate.UpgradeToJava21
+  - org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta
   - org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2
   - org.openrewrite.java.dependencies.ChangeDependency:
       oldGroupId: org.springframework

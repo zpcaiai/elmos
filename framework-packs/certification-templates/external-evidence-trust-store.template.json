@@ -37,6 +37,16 @@
       "key_id": "UNKNOWN",
       "actor_id": "UNKNOWN",
       "organization_id": "UNKNOWN",
+      "roles": ["batch30-customer-acceptance-approver"],
+      "public_key_path": "keys/customer-acceptance-approver.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
       "roles": ["batch30-rootless-runner-attestor"],
       "public_key_path": "keys/rootless-runner-attestor.pem",
       "not_before": "UNKNOWN",
@@ -69,6 +79,16 @@
       "organization_id": "UNKNOWN",
       "roles": ["batch30-independent-verifier"],
       "public_key_path": "keys/independent-verifier.pem",
+      "not_before": "UNKNOWN",
+      "not_after": "UNKNOWN",
+      "revoked": true
+    },
+    {
+      "key_id": "UNKNOWN",
+      "actor_id": "UNKNOWN",
+      "organization_id": "UNKNOWN",
+      "roles": ["batch30-external-certifier"],
+      "public_key_path": "keys/external-certifier.pem",
       "not_before": "UNKNOWN",
       "not_after": "UNKNOWN",
       "revoked": true

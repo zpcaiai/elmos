@@ -8,26 +8,31 @@
     "static-source-fingerprint-contract",
     "static-fcm-contract",
     "deterministic-recipe-plan",
-    "legacy-mvc-development-fixture"
+    "controlled-executable-war-target-emitter",
+    "legacy-mvc-development-fixture",
+    "exact-local-source-target-runtime-replay"
   ],
   "gate_results": {
     "pack_specific_static_validation": "PASSED_LOCAL_STATIC",
     "batch30_structural_validation": "PASSED_LOCAL",
     "batch30_gate": "PASSED_EXPERIMENTAL_NOT_CERTIFIED",
-    "source_build": "NOT_RUN",
-    "source_startup": "NOT_RUN",
-    "openrewrite_execution": "NOT_RUN",
-    "target_build": "NOT_RUN",
-    "target_startup": "NOT_RUN",
-    "behavior_equivalence": "NOT_RUN",
+    "source_build": "PASSED_LOCAL",
+    "source_startup": "PASSED_LOCAL",
+    "openrewrite_execution": "PASSED_LOCAL",
+    "target_build": "PASSED_LOCAL",
+    "target_startup": "PASSED_LOCAL",
+    "behavior_equivalence": "PASSED_LOCAL",
     "negative_corpus": "NOT_RUN",
     "holdout": "NOT_RUN",
     "representative_repository": "NOT_RUN",
     "authorized_customer_repository": "NOT_RUN",
+    "customer_holdout": "NOT_RUN",
+    "customer_acceptance": "NOT_RUN",
     "rootless_transformer": "NOT_RUN",
     "rootless_verifier": "NOT_RUN",
     "rootless_runner": "NOT_RUN",
-    "independent_review": "NOT_RUN"
+    "independent_review": "NOT_RUN",
+    "external_certification": "NOT_RUN"
   },
   "metrics": {
     "source_fingerprint_coverage": null,
@@ -41,15 +46,18 @@
     "certification/evidence.json",
     "source-fingerprint/manifest.json",
     "contracts/framework-contract-model.json",
-    "recipes/manifest.json"
+    "recipes/manifest.json",
+    "target-profile/scaffold/manifest.json",
+    "certification/local-execution/2026-08-11/evidence-index.json"
   ],
   "residual_risks": [
     "Traditional Spring MVC bootstrap can be split across web.xml, parent/child XML contexts, ServletContainerInitializer code and container descriptors.",
     "Existing corporate Maven parents cannot be replaced automatically without an approved dependency-management strategy.",
-    "JSP, security, persistence, transactions, messaging, cache and scheduler behavior require exact provider profiles and real execution.",
-    "Java 11/Maven 3.9.11 source baseline and Java 21/Maven 3.9.11 target execution remain NOT_RUN.",
+    "The admitted exact JSP page passed one local Tomcat 9 to embedded Tomcat 10.1.42 byte comparison; other JSP constructs remain blocked.",
+    "Security, persistence, transactions, messaging, cache and scheduler behavior require exact provider profiles and real execution.",
+    "The exact development fixture passed local Java 11/Maven 3.9.11 source and Java 21/Maven 3.9.11 target execution only.",
     "Holdout, representative repository, customer and independent evidence remain NOT_RUN."
   ],
-  "issued_at": "2026-08-09",
+  "issued_at": "2026-08-11",
   "next_review_at": "2026-11-09"
 }

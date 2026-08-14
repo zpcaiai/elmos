@@ -337,8 +337,13 @@ test("block-specific observer declarations and generated runtime dataflow fail c
   assert.equal(nativeScaffold.ios_runtime_status, "NOT_RUN");
   assert.deepEqual(nativeScaffold.required_captured_outputs, ["package-lock.json", "android", "ios"]);
   const ark = generateBoundedInteractionProject(boundedInteractionFixtureRequest("harmony-arkui"));
-  assert.match(ark.files["entry/src/main/ets/elmos-interaction-runtime.ets"]!, /spec\.native_status === 'PASSED'/);
-  assert.match(ark.files["entry/src/main/ets/elmos-interaction-runtime.ets"]!, /single native adapter call does not prove timeout, retry, tenant cache, and unmount cancellation/);
+  assert.ok("entry/src/main/ets/elmos-bounded-interaction.ts" in ark.files);
+  assert.ok("entry/src/main/ets/elmos-bounded-navigation.ts" in ark.files);
+  assert.ok(!("entry/src/main/ets/elmos-bounded-interaction.ets" in ark.files));
+  assert.ok(!("entry/src/main/ets/elmos-bounded-navigation.ets" in ark.files));
+  assert.match(ark.files["entry/src/main/ets/elmos-interaction-runtime.ts"]!, /spec\.native_status === 'PASSED'/);
+  assert.match(ark.files["entry/src/main/ets/elmos-interaction-runtime.ts"]!, /single native adapter call does not prove timeout, retry, tenant cache, and unmount cancellation/);
+  assert.match(ark.files["entry/src/main/ets/pages/Index.ets"]!, /ForEach\(ELMOS_INTERACTION_SCENARIOS\.slice\(\)/);
 });
 
 test("18 finite scenarios cover every non-echo leaf and the separate reference reducer agrees", () => {
