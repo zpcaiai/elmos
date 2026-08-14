@@ -313,16 +313,34 @@ function flutterTemplate(context) {
 }
 function harmonyTemplate(context) {
     return {
-        "oh-package.json5": lines('{ "name": "' + context.safeProjectName + '", "version": "0.1.0", "description": "ELMOS generated ArkUI project", "main": "", "author": "", "license": "UNLICENSED", "dependencies": {} }'),
+        "oh-package.json5": json({
+            modelVersion: "5.0.0",
+            name: context.safeProjectName,
+            version: "0.1.0",
+            description: "ELMOS generated ArkUI project",
+            main: "",
+            author: "",
+            license: "UNLICENSED",
+            dependencies: {},
+        }),
+        "hvigor/hvigor-config.json5": json({
+            modelVersion: "5.0.0",
+            dependencies: {},
+            execution: {},
+            logging: {},
+            debugging: {},
+            nodeOptions: {},
+        }),
         "hvigorfile.ts": lines("import { appTasks } from '@ohos/hvigor-ohos-plugin';", "export default { system: appTasks, plugins: [] };"),
         "build-profile.json5": json({
             app: {
                 signingConfigs: [],
                 products: [{
                         name: "default",
-                        compatibleSdkVersion: "6.0.0(20)",
-                        targetSdkVersion: "6.0.0(20)",
-                        runtimeOS: "HarmonyOS",
+                        compileSdkVersion: 20,
+                        compatibleSdkVersion: 20,
+                        targetSdkVersion: 20,
+                        runtimeOS: "OpenHarmony",
                         buildOption: { strictMode: { caseSensitiveCheck: true, useNormalizedOHMUrl: true } },
                     }],
                 buildModeSet: [{ name: "debug" }, { name: "release" }],
@@ -350,7 +368,7 @@ function harmonyTemplate(context) {
                 type: "entry",
                 description: "$string:module_desc",
                 mainElement: "EntryAbility",
-                deviceTypes: ["phone", "tablet", "2in1"],
+                deviceTypes: ["default"],
                 deliveryWithInstall: true,
                 installationFree: false,
                 pages: "$profile:main_pages",
@@ -359,6 +377,8 @@ function harmonyTemplate(context) {
                         srcEntry: "./ets/entryability/EntryAbility.ets",
                         description: "$string:ability_desc",
                         label: "$string:app_name",
+                        startWindowIcon: "$media:app_icon",
+                        startWindowBackground: "$color:start_window_background",
                         exported: true,
                         skills: [{ entities: ["entity.system.home"], actions: ["action.system.home"] }],
                     }],
@@ -371,10 +391,13 @@ function harmonyTemplate(context) {
                 { name: "ability_desc", value: "ELMOS generated entry ability" },
             ],
         }),
+        "entry/src/main/resources/base/element/color.json": json({
+            color: [{ name: "start_window_background", value: "#15223D" }],
+        }),
         "entry/src/main/resources/base/profile/main_pages.json": json({ src: ["pages/Index"] }),
         "entry/src/main/resources/rawfile/ui_ir.json": json(context.request.uiIr),
         "entry/src/main/ets/entryability/EntryAbility.ets": lines("import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';", "import { window } from '@kit.ArkUI';", "export default class EntryAbility extends UIAbility {", "  onCreate(_want: Want, _launchParam: AbilityConstant.LaunchParam): void {}", "  onWindowStageCreate(windowStage: window.WindowStage): void { windowStage.loadContent('pages/Index'); }", "}"),
-        "entry/src/main/ets/pages/Index.ets": lines("import { ELMOS_ROUTES, elmosSelectBoundedRoute } from '../elmos-bounded-navigation';", "interface GeneratedRoute { id: string; path: string; title: string; text: string; requiresAuth: boolean; deepLink: boolean; }", "const GENERATED_ROUTES: readonly GeneratedRoute[] = ELMOS_ROUTES;", "@Entry", "@Component", "struct Index {", "  @State selected: number = 0;", "  private currentRoute(): GeneratedRoute { return elmosSelectBoundedRoute(GENERATED_ROUTES[this.selected]?.path ?? '/__unknown__'); }", "  build() {", "    Navigation() {", "      Row() {", "        Column({ space: 8 }) {", "          Text(" + js(context.request.title) + ").fontSize(22).fontWeight(FontWeight.Bold)", "          ForEach(GENERATED_ROUTES, (item: GeneratedRoute) => {", "            Button(item.title).width('100%').accessibilityText(item.id + '|' + item.path + '|auth:' + item.requiresAuth + '|deep:' + item.deepLink).onClick(() => { this.selected = GENERATED_ROUTES.indexOf(item); })", "          }, (item: GeneratedRoute) => item.id)", "        }.width('34%').padding(16)", "        Column({ space: 16 }) {", "          Text(this.currentRoute().title).fontSize(30).fontWeight(FontWeight.Bold)", "          Text(this.currentRoute().text).fontSize(18)", "          Text('生成状态：等待 HarmonyOS 真机与无障碍验证').fontColor('#6B4F00')", "        }.alignItems(HorizontalAlign.Start).width('66%').padding(24)", "      }.height('100%')", "    }.title(" + js(context.request.title) + ")", "  }", "}"),
+        "entry/src/main/ets/pages/Index.ets": lines("import { ELMOS_ROUTES, elmosSelectBoundedRoute } from '../elmos-bounded-navigation';", "interface GeneratedRoute { id: string; path: string; title: string; text: string; requiresAuth: boolean; deepLink: boolean; }", "const GENERATED_ROUTES: readonly GeneratedRoute[] = ELMOS_ROUTES;", "@Entry", "@Component", "struct Index {", "  @State selected: number = 0;", "  private currentRoute(): GeneratedRoute { return elmosSelectBoundedRoute(GENERATED_ROUTES[this.selected]?.path ?? '/__unknown__'); }", "  build() {", "    Navigation() {", "      Row() {", "        Column({ space: 8 }) {", "          Text(" + js(context.request.title) + ").fontSize(22).fontWeight(FontWeight.Bold)", "          ForEach(GENERATED_ROUTES.slice(), (item: GeneratedRoute) => {", "            Button(item.title).width('100%').accessibilityText(item.id + '|' + item.path + '|auth:' + item.requiresAuth + '|deep:' + item.deepLink).onClick(() => { this.selected = GENERATED_ROUTES.indexOf(item); })", "          }, (item: GeneratedRoute) => item.id)", "        }.width('34%').padding(16)", "        Column({ space: 16 }) {", "          Text(this.currentRoute().title).fontSize(30).fontWeight(FontWeight.Bold)", "          Text(this.currentRoute().text).fontSize(18)", "          Text('生成状态：等待 HarmonyOS 真机与无障碍验证').fontColor('#6B4F00')", "        }.alignItems(HorizontalAlign.Start).width('66%').padding(24)", "      }.height('100%')", "    }.title(" + js(context.request.title) + ")", "  }", "}"),
     };
 }
 export function renderTargetProject(context) {

@@ -87,10 +87,43 @@ final class SpringRouteCatalog {
             String verifiedSourceBoot,
             String verifiedSourceJava,
             String notes,
-            SourceFamily sourceFamily
+            SourceFamily sourceFamily,
+            String exactSourceVersion
     ) {
         SpringRoute {
             sourceJavaVersions = Set.copyOf(sourceJavaVersions);
+            exactSourceVersion = normalize(exactSourceVersion);
+            if (!exactSourceVersion.isEmpty()
+                    && !withinRange(exactSourceVersion, sourceBootMinInclusive, sourceBootMaxExclusive)) {
+                throw new IllegalArgumentException(
+                        "exact source version must be inside the route's declared range");
+            }
+        }
+
+        SpringRoute(
+                String routeId,
+                String packKey,
+                String label,
+                String sourceBootMinInclusive,
+                String sourceBootMaxExclusive,
+                Set<String> sourceJavaVersions,
+                String buildTool,
+                String targetBoot,
+                String targetJava,
+                String recipeResource,
+                String recipeId,
+                String rewriteSpring,
+                String rewriteMavenPlugin,
+                EvidenceStatus routeEvidence,
+                String verifiedSourceBoot,
+                String verifiedSourceJava,
+                String notes,
+                SourceFamily sourceFamily
+        ) {
+            this(routeId, packKey, label, sourceBootMinInclusive, sourceBootMaxExclusive,
+                    sourceJavaVersions, buildTool, targetBoot, targetJava, recipeResource,
+                    recipeId, rewriteSpring, rewriteMavenPlugin, routeEvidence,
+                    verifiedSourceBoot, verifiedSourceJava, notes, sourceFamily, "");
         }
 
         boolean implemented() {
@@ -109,6 +142,18 @@ final class SpringRouteCatalog {
                     : EvidenceStatus.NOT_RUN;
         }
 
+        boolean acceptsSourceVersion(String sourceVersion) {
+            return exactSourceVersion.isEmpty()
+                    ? withinRange(sourceVersion, sourceBootMinInclusive, sourceBootMaxExclusive)
+                    : exactSourceVersion.equals(normalize(sourceVersion));
+        }
+
+        String sourceConstraint() {
+            return exactSourceVersion.isEmpty()
+                    ? "[" + sourceBootMinInclusive + ", " + sourceBootMaxExclusive + ")"
+                    : "exact:" + exactSourceVersion;
+        }
+
         String artifactFileName() {
             return "migrated-spring-boot-" + targetBoot + ".zip";
         }
@@ -116,9 +161,11 @@ final class SpringRouteCatalog {
         SpringUpgradeModels.ExactTuple tuple(String detectedBoot, String detectedJava) {
             String toolchain = GRADLE_BUILD_TOOL.equals(buildTool) ? GRADLE_TOOLCHAIN : MAVEN_TOOLCHAIN;
             return new SpringUpgradeModels.ExactTuple(
-                    detectedBoot, detectedJava, toolchain,
+                    sourceFamily == SourceFamily.SPRING_BOOT ? detectedBoot : null,
+                    detectedJava, toolchain,
                     targetBoot, targetJava, toolchain,
-                    rewriteSpring, rewriteMavenPlugin);
+                    rewriteSpring, rewriteMavenPlugin,
+                    sourceFamily.contractValue(), detectedBoot);
         }
     }
 
@@ -351,18 +398,20 @@ final class SpringRouteCatalog {
             new SpringRoute(
                     "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
                     "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
-                    "Spring Framework 5.3.x MVC / Java 11 / Maven → Boot 3.5.3 / Java 21",
-                    "5.3.0", "5.4.0", Set.of("11"), MAVEN_BUILD_TOOL,
+                    "Spring Framework 5.3.39 MVC / Java 11 / Maven → Boot 3.5.3 / Java 21",
+                    "5.3.39", "5.3.40", Set.of("11"), MAVEN_BUILD_TOOL,
                     TARGET_BOOT, TARGET_JAVA,
                     "/rewrite/spring-framework-5.3-mvc-to-spring-boot-3.5.3.yml",
                     "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
                     REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
-                    EvidenceStatus.NOT_RUN, "", "",
+                    EvidenceStatus.PASSED_LOCAL, "5.3.39", "11",
                     "Binds the runtime directory to the exact experimental Batch 30 Spring "
-                            + "Framework 5.3 MVC pack. XML servlet initialization, Boot bootstrap, "
-                            + "container behavior and security/data/transaction/messaging contracts "
-                            + "remain NOT_RUN until real source and target execution passes.",
-                    SourceFamily.SPRING_MVC)
+                            + "Framework 5.3 MVC pack. The exact checked-in fixture passed local "
+                            + "source/target build, Tomcat/WarLauncher startup and bounded HTTP/JSP "
+                            + "oracles only; customer, holdout, complex provider and independent "
+                            + "evidence remain NOT_RUN and the pack remains NOT_CERTIFIED.",
+                    SourceFamily.SPRING_MVC,
+                    "5.3.39")
     );
 
     static List<SpringRoute> routes() {
@@ -481,8 +530,7 @@ final class SpringRouteCatalog {
         }
 
         List<SpringRoute> sourceMatches = buildMatches.stream()
-                .filter(route -> withinRange(
-                        source, route.sourceBootMinInclusive(), route.sourceBootMaxExclusive()))
+                .filter(route -> route.acceptsSourceVersion(source))
                 .toList();
         if (sourceMatches.isEmpty()) {
             String code = family == SourceFamily.SPRING_BOOT
@@ -565,7 +613,7 @@ final class SpringRouteCatalog {
         return catalog.stream()
                 .filter(route -> route.sourceFamily() == family)
                 .filter(route -> route.buildTool().equals(buildTool))
-                .map(route -> "[" + route.sourceBootMinInclusive() + ", " + route.sourceBootMaxExclusive() + ")")
+                .map(SpringRoute::sourceConstraint)
                 .distinct()
                 .reduce((left, right) -> left + ", " + right)
                 .orElse("none");

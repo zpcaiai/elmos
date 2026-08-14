@@ -60,6 +60,51 @@ final class SpringDeploymentGuidance {
                     """.formatted(route.routeId(), route.targetBoot(), route.targetJava(), buildTool));
         }
         writeRouteAwareLocalRun(migratedRepository, buildTool, route);
+        if (route.sourceFamily() == SpringRouteCatalog.SourceFamily.SPRING_MVC
+                && SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool)) {
+            writeMvcExecutableWarContainer(migratedRepository);
+        }
+    }
+
+    private static void writeMvcExecutableWarContainer(Path migratedRepository) {
+        write(migratedRepository.resolve("deploy/cloud-run/Dockerfile"), """
+                FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237 AS build
+                WORKDIR /workspace
+                COPY . .
+                RUN set -eu; \\
+                    mvn -B -ntp verify; \\
+                    war_candidates="$(find target -maxdepth 1 -type f -name '*.war' \
+                      ! -name '*.original' ! -name 'original-*' -print)"; \\
+                    test -n "$war_candidates"; \\
+                    test "$(printf '%s\\n' "$war_candidates" | wc -l | tr -d ' ')" -eq 1; \\
+                    war_path="$war_candidates"; \\
+                    jar tf "$war_path" > /tmp/elmos-war-entries.txt; \\
+                    test "$(grep -Fxc 'org/springframework/boot/loader/launch/WarLauncher.class' \
+                      /tmp/elmos-war-entries.txt)" -eq 1; \\
+                    mkdir /tmp/elmos-war-manifest; \\
+                    (cd /tmp/elmos-war-manifest && \
+                      jar xf "/workspace/$war_path" META-INF/MANIFEST.MF); \\
+                    tr -d '\\r' < /tmp/elmos-war-manifest/META-INF/MANIFEST.MF \
+                      > /tmp/elmos-war-manifest/manifest.txt; \\
+                    test "$(grep -Fxc 'Main-Class: org.springframework.boot.loader.launch.WarLauncher' \
+                      /tmp/elmos-war-manifest/manifest.txt)" -eq 1; \\
+                    test "$(grep -Fxc 'Spring-Boot-Version: 3.5.3' \
+                      /tmp/elmos-war-manifest/manifest.txt)" -eq 1; \\
+                    test "$(grep -Ec '^Start-Class: [^[:space:]].*$' \
+                      /tmp/elmos-war-manifest/manifest.txt)" -eq 1; \\
+                    cp "$war_path" /workspace/application.war
+
+                FROM eclipse-temurin:21-jre@sha256:8cef5fc7bebe421363ab543a2f4db5caf7d119d8db67d56b0f56c485d2de4d55
+                WORKDIR /app
+                COPY --from=build --chown=10001:10001 /workspace/application.war /app/application.war
+                USER 10001:10001
+                ENV SERVER_ADDRESS=0.0.0.0
+                ENV SERVER_PORT=8080
+                ENV MANAGEMENT_SERVER_ADDRESS=0.0.0.0
+                ENV MANAGEMENT_SERVER_PORT=8080
+                EXPOSE 8080
+                ENTRYPOINT ["java", "-jar", "/app/application.war"]
+                """);
     }
 
     private static void writeRouteAwareLocalRun(
@@ -71,25 +116,56 @@ final class SpringDeploymentGuidance {
         String buildCommand = gradle
                 ? "gradle --no-daemon build"
                 : "mvn -B -ntp verify";
-        String jarCommand = gradle
+        String artifactCommand = gradle
                 ? "find build/libs -maxdepth 1 -type f -name '*.jar' | sort | head -n 1"
                 : "find target -maxdepth 1 -type f -name '*.jar' ! -name '*.original' "
                     + "! -name '*-sources.jar' ! -name '*-javadoc.jar' | sort | head -n 1";
+        String artifactSelection = """
+                ARTIFACT_PATH="$(%s)"
+                test -n "$ARTIFACT_PATH"
+                """.formatted(artifactCommand);
+        String artifactLabel = "executable JAR";
+        if (route.sourceFamily() == SpringRouteCatalog.SourceFamily.SPRING_MVC) {
+            String outputDirectory = gradle ? "build/libs" : "target";
+            artifactSelection = """
+                    ARTIFACT_CANDIDATES="$(find %s -maxdepth 1 -type f -name '*.war' \
+                      ! -name '*.original' ! -name 'original-*' -print)"
+                    test -n "$ARTIFACT_CANDIDATES"
+                    test "$(printf '%%s\\n' "$ARTIFACT_CANDIDATES" | wc -l | tr -d ' ')" -eq 1
+                    ARTIFACT_PATH="$(pwd)/$ARTIFACT_CANDIDATES"
+                    WAR_CHECK_DIR="$(mktemp -d)"
+                    trap 'rm -rf "$WAR_CHECK_DIR"' EXIT
+                    jar tf "$ARTIFACT_PATH" > "$WAR_CHECK_DIR/entries.txt"
+                    test "$(grep -Fxc 'org/springframework/boot/loader/launch/WarLauncher.class' \
+                      "$WAR_CHECK_DIR/entries.txt")" -eq 1
+                    (cd "$WAR_CHECK_DIR" && jar xf "$ARTIFACT_PATH" META-INF/MANIFEST.MF)
+                    tr -d '\\r' < "$WAR_CHECK_DIR/META-INF/MANIFEST.MF" > "$WAR_CHECK_DIR/manifest.txt"
+                    test "$(grep -Fxc 'Main-Class: org.springframework.boot.loader.launch.WarLauncher' \
+                      "$WAR_CHECK_DIR/manifest.txt")" -eq 1
+                    test "$(grep -Fxc 'Spring-Boot-Version: 3.5.3' \
+                      "$WAR_CHECK_DIR/manifest.txt")" -eq 1
+                    test "$(grep -Ec '^Start-Class: [^[:space:]].*$' \
+                      "$WAR_CHECK_DIR/manifest.txt")" -eq 1
+                    """.formatted(outputDirectory);
+            artifactLabel = "executable Spring Boot WAR";
+        }
         write(migratedRepository.resolve("docs/LOCAL_RUN.md"), """
                 # Spring Boot %s 本地运行与验证
 
                 精确路线：`%s`
 
-                - 声明源范围：%s [%s, %s)，Java %s，%s
+                - 声明源约束：%s `%s`，版本匹配：`%s`，Java %s，%s
                 - 精确目标：Spring Boot %s，Java %s
+                - 启动产物：%s（传统 Spring MVC 路线不得退化为普通 JAR）
                 - 路线工程证据：%s；这不是客户、生产或认证证据
 
                 ```bash
+                set -eu
                 java -version
                 %s
-                JAR_PATH="$(%s)"
-                test -n "$JAR_PATH"
-                SERVER_ADDRESS=127.0.0.1 SERVER_PORT=8080 java -jar "$JAR_PATH"
+                %s
+                SERVER_ADDRESS=127.0.0.1 MANAGEMENT_SERVER_ADDRESS=127.0.0.1 \
+                  SERVER_PORT=8080 MANAGEMENT_SERVER_PORT=8080 java -jar "$ARTIFACT_PATH"
                 ```
 
                 在另一终端对声明的健康端点执行回环检查。安全身份与授权、数据库结构和数据、
@@ -99,15 +175,16 @@ final class SpringDeploymentGuidance {
                 route.targetBoot(),
                 route.routeId(),
                 route.sourceFamily().contractValue(),
-                route.sourceBootMinInclusive(),
-                route.sourceBootMaxExclusive(),
+                route.sourceConstraint(),
+                route.exactSourceVersion().isEmpty() ? "RANGE" : "EXACT",
                 String.join(",", route.sourceJavaVersions().stream().sorted().toList()),
                 buildTool,
                 route.targetBoot(),
                 route.targetJava(),
+                artifactLabel,
                 route.routeEvidence(),
                 buildCommand,
-                jarCommand));
+                artifactSelection));
     }
 
     static void writeTo(Path migratedRepository, String buildTool) {

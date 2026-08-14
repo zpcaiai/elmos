@@ -87,11 +87,61 @@ final class SpringUpgradeModels {
             String targetJava,
             String targetBuildTool,
             String rewriteSpring,
-            String rewriteMavenPlugin
+            String rewriteMavenPlugin,
+            String sourceFrameworkFamily,
+            String sourceFrameworkVersion
     ) {
+        ExactTuple {
+            String declaredBoot = normalizeNullable(sourceSpringBoot);
+            String family = normalizeNullable(sourceFrameworkFamily);
+            String frameworkVersion = normalizeNullable(sourceFrameworkVersion);
+
+            // Older Boot-only JSON supplied sourceSpringBoot but did not carry
+            // the two framework identity fields. Preserve that wire format
+            // without treating a traditional MVC framework version as Boot.
+            if (family == null) {
+                family = declaredBoot == null ? "unknown" : "spring-boot";
+            }
+            if (frameworkVersion == null) {
+                frameworkVersion = declaredBoot == null ? "UNKNOWN" : declaredBoot;
+            }
+            if ("spring-boot".equals(family)) {
+                if (declaredBoot == null) declaredBoot = frameworkVersion;
+                if (!frameworkVersion.equals(declaredBoot)) {
+                    throw new IllegalArgumentException(
+                            "sourceSpringBoot must equal the Spring Boot framework version");
+                }
+            } else if (declaredBoot != null) {
+                throw new IllegalArgumentException(
+                        "sourceSpringBoot is only valid for the spring-boot source family");
+            }
+            sourceSpringBoot = declaredBoot;
+            sourceFrameworkFamily = family;
+            sourceFrameworkVersion = frameworkVersion;
+        }
+
+        /** Source-compatible constructor for the original Boot-only tuple model. */
+        ExactTuple(
+                String sourceSpringBoot,
+                String sourceJava,
+                String sourceBuildTool,
+                String targetSpringBoot,
+                String targetJava,
+                String targetBuildTool,
+                String rewriteSpring,
+                String rewriteMavenPlugin
+        ) {
+            this(sourceSpringBoot, sourceJava, sourceBuildTool, targetSpringBoot, targetJava,
+                    targetBuildTool, rewriteSpring, rewriteMavenPlugin, null, null);
+        }
+
         static ExactTuple supported(String sourceBuildTool, String targetBuildTool) {
             return new ExactTuple(SOURCE_BOOT, SOURCE_JAVA, sourceBuildTool, TARGET_BOOT, TARGET_JAVA,
                     targetBuildTool, REWRITE_SPRING, REWRITE_MAVEN_PLUGIN);
+        }
+
+        private static String normalizeNullable(String value) {
+            return value == null || value.isBlank() ? null : value.trim();
         }
     }
 

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+  "emitter": "target-profile/scaffold/materialize_target.py",
+  "emitter_status": "IMPLEMENTED_STATIC_NOT_RUNTIME_VERIFIED",
+  "source_mutation": false,
+  "overwrite_existing_output": false,
+  "target_packaging": "executable-war",
+  "bootstrap": {
+    "main_class": "io.elmos.legacy.LegacyMvcApplication",
+    "servlet_initializer": true
+  },
+  "mapped_constructs": [
+    "single DispatcherServlet mapped to /",
+    "ContextLoaderListener plus root and servlet XML contexts",
+    "UTF-8 CharacterEncodingFilter on REQUEST and ERROR",
+    "component scans for io.elmos.legacy.service and io.elmos.legacy.web",
+    "LocalValidatorFactoryBean",
+    "RequestAuditInterceptor on /api/**",
+    "InternalResourceViewResolver with /WEB-INF/views and .jsp",
+    "static /assets/** resources with 3600 second cache",
+    "default servlet fallback through DefaultServletHandlerConfigurer",
+    "JSP through Tomcat Jasper in an executable WAR",
+    "health-only Spring Boot Actuator exposure"
+  ],
+  "blocked_constructs": [
+    "existing Maven parent",
+    "additional servlet, listener, filter or web.xml element",
+    "WebApplicationInitializer or ServletContainerInitializer",
+    "XML import, profile or unknown bean graph",
+    "component stereotype or Java configuration drift that can duplicate XML beans",
+    "dependency version, scope or build plugin drift",
+    "JSP tag libraries or JSP XML actions",
+    "security, persistence, transaction, messaging, cache or scheduler integration without an exact profile",
+    "unknown Maven dependency"
+  ],
+  "generated_receipts": [
+    ".elmos/migration-receipt.json",
+    ".elmos/source-map.json"
+  ],
+  "runtime_evidence_status": "NOT_RUN"
+}

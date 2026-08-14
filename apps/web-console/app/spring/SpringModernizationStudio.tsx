@@ -57,7 +57,9 @@ type Run = {
   snapshotId?: string | null;
   snapshotDigest?: string | null;
   exactTuple: {
-    sourceSpringBoot: string;
+    sourceSpringBoot: string | null;
+    sourceFrameworkFamily: "spring-boot" | "spring-mvc" | "unknown";
+    sourceFrameworkVersion: string;
     sourceJava: string;
     sourceBuildTool: string;
     targetSpringBoot: string;
@@ -159,6 +161,15 @@ function routeSourceFamilyLabel(route: SpringRouteDescriptor) {
   return route.sourceFrameworkFamily === "spring-mvc"
     ? "Spring Framework MVC"
     : "Spring Boot";
+}
+
+function routeSourceConstraintLabel(route: SpringRouteDescriptor) {
+  if (route.exactSourceVersion) return `exact ${route.exactSourceVersion}`;
+  if (route.sourceConstraint?.startsWith("exact:")) {
+    return `exact ${route.sourceConstraint.slice("exact:".length)}`;
+  }
+  return route.sourceConstraint
+    ?? `[${route.sourceBootMinInclusive}, ${route.sourceBootMaxExclusive})`;
 }
 
 function routeEvidenceLabel(route: SpringRouteDescriptor) {
@@ -910,7 +921,7 @@ export function SpringModernizationStudio() {
               tabIndex={0}
             >
               <div className="spring-route-row spring-route-head" role="row">
-                <span role="columnheader">源版本区间</span>
+                <span role="columnheader">源版本约束</span>
                 <span role="columnheader">源 JDK</span>
                 <span role="columnheader">构建工具</span>
                 <span role="columnheader">目标</span>
@@ -923,7 +934,7 @@ export function SpringModernizationStudio() {
                   key={route.routeId}
                 >
                   <span role="cell" title={`${route.routeId}${route.notes ? ` · ${route.notes}` : ""}`}>
-                    {routeSourceFamilyLabel(route)} [{route.sourceBootMinInclusive}, {route.sourceBootMaxExclusive})
+                    {routeSourceFamilyLabel(route)} {routeSourceConstraintLabel(route)}
                   </span>
                   <span role="cell">{route.sourceJavaVersions.join(" / ")}</span>
                   <span role="cell">{route.buildTool}</span>

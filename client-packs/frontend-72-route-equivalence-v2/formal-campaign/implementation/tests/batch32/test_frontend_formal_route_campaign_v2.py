@@ -111,6 +111,7 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             runtime_runner.RUNTIME_CHANNEL_RECORD_KEYS,
             validator.TOOLCHAIN_CHANNEL_KEYS,
         )
+        self.assertIn("harmony_sdk_root", validator.TOOLCHAIN_POLICY_KEYS)
         self.assertEqual(
             {"SELF_REPORTED_REDUCER_JSON", "RUNTIME_OBSERVED"},
             runtime_runner.FORBIDDEN_RUNTIME_ACTUAL_SOURCES,
@@ -118,6 +119,14 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
         self.assertEqual(
             ("browser", "android", "ios"),
             validator.REQUIRED_RUNTIME_CHANNELS["flutter"],
+        )
+        self.assertEqual(
+            frozenset(generator.V2_IMPLEMENTATION_PATHS),
+            validator.REQUIRED_IMPLEMENTATION_REPOSITORY_PATHS,
+        )
+        self.assertEqual(
+            frozenset(generator.V2_REPLAY_PATHS),
+            validator.REQUIRED_REPLAY_REPOSITORY_PATHS,
         )
 
     def test_dimension_closure_schema_reference_is_resolvable(self) -> None:
@@ -139,6 +148,24 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 "status": "NOT_APPLICABLE",
             }
         )
+        external_schema_names = (
+            "frontend-formal-external-corpus-manifest-v2.schema.json",
+            "frontend-formal-external-evidence-v2.schema.json",
+            "frontend-formal-external-replay-verifier-result-v2.schema.json",
+            "frontend-formal-external-route-block-execution-v2.schema.json",
+            "frontend-formal-external-route-block-replay-v2.schema.json",
+            "frontend-formal-external-runtime-observation-v2.schema.json",
+            "frontend-formal-external-trust-root-v2.schema.json",
+            "frontend-formal-external-trust-store-v2.schema.json",
+        )
+        for name in external_schema_names:
+            with self.subTest(schema=name):
+                batch32_schema = load(ROOT / "schemas/batch32" / name)
+                batch35_schema = load(ROOT / "schemas/batch35" / name)
+                validator.jsonschema.Draft202012Validator.check_schema(batch32_schema)
+                validator.jsonschema.Draft202012Validator.check_schema(batch35_schema)
+                batch32_schema["$id"] = batch35_schema["$id"]
+                self.assertEqual(batch32_schema, batch35_schema)
         self.assertEqual(
             "NOT_APPLICABLE",
             validator.aggregate_status([], applicable=False),
@@ -177,13 +204,18 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 "org-verifier",
                 "org-customer",
             )
-            three_keys = ("key-approver", "key-executor", "key-verifier")
+            role_keys = (
+                "key-approver",
+                "key-executor",
+                "key-verifier",
+                "key-customer",
+            )
             openssl = shutil.which("openssl")
             if openssl is None:
                 self.skipTest("openssl is required for the Ed25519 forgery fixture")
             private_keys: dict[str, Path] = {}
             public_keys: dict[str, str] = {}
-            for key_id in ("root-key", *three_keys):
+            for key_id in ("root-key", *role_keys):
                 private_path = pack / f"{key_id}.private.pem"
                 public_path = pack / f"{key_id}.public.pem"
                 subprocess.run(
@@ -225,9 +257,9 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             verifier_path.chmod(0o755)
             organization_keys = tuple(
                 zip(
-                    four_organizations[:3],
-                    three_keys,
-                    ("AUTHORIZATION", "EXECUTOR", "VERIFIER"),
+                    four_organizations,
+                    role_keys,
+                    ("AUTHORIZATION", "EXECUTOR", "VERIFIER", "CUSTOMER"),
                 )
             )
             root = {
@@ -327,6 +359,18 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                     signature_path.read_bytes()
                 ).decode("ascii"),
             }
+            three_key_root = json.loads(json.dumps(root))
+            three_key_root["organization_key_allowlist"] = three_key_root[
+                "organization_key_allowlist"
+            ][:-1]
+            three_key_trust = json.loads(json.dumps(trust))
+            three_key_trust["keys"] = three_key_trust["keys"][:-1]
+            with self.assertRaisesRegex(RuntimeError, "ALLOWLIST_MISSING"):
+                generator._validate_external_trust_chain_v2(
+                    trust_root=three_key_root,
+                    trust=three_key_trust,
+                    now=generator.datetime(2026, 8, 10, tzinfo=generator.UTC),
+                )
             valid_self_chain = generator._validate_external_trust_chain_v2(
                 trust_root=root,
                 trust=trust,
@@ -356,7 +400,7 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             write(evidence_path, {})
             write(trust_path, trust)
             with self.assertRaisesRegex(
-                RuntimeError, "V2_EXTERNAL_TRUST_ROOT_MUST_REMAIN_OUTSIDE_PACK"
+                RuntimeError, "V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED"
             ):
                 generator.add_external_evidence_v2(
                     pack_root=pack,
@@ -364,6 +408,18 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                     evidence_path=evidence_path,
                     trust_store_path=trust_path,
                     trust_root_path=root_path,
+                    scope_digest="sha256:" + "1" * 64,
+                )
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "V2_EXTERNAL_EVIDENCE_TRUST_STORE_AND_EXTERNAL_ROOT_REQUIRED",
+            ):
+                generator.add_external_evidence_v2(
+                    pack_root=pack,
+                    catalog=generator.ArtifactCatalog(pack),
+                    evidence_path=evidence_path,
+                    trust_store_path=None,
+                    trust_root_path=None,
                     scope_digest="sha256:" + "1" * 64,
                 )
 
@@ -554,6 +610,211 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 route_results=not_run_route_results,
                 campaign=unconditional_campaign,
             )
+        )
+
+    def test_external_actual_contract_rejects_wrong_type_and_enum(self) -> None:
+        actual = {
+            "requestedPath": "/protected",
+            "selectedRouteId": "route.protected",
+            "selectedPath": "/protected",
+            "resolution": "DECLARED",
+            "deepLink": True,
+            "requiresAuth": True,
+        }
+        self.assertTrue(
+            generator.external_actual_value_valid_v2(
+                "route-navigation-deeplink-404", actual
+            )
+        )
+        self.assertTrue(
+            validator.external_actual_value_valid_v2(
+                "route-navigation-deeplink-404", actual
+            )
+        )
+        for mutation in (
+            {**actual, "deepLink": 1},
+            {**actual, "resolution": "SELF_REPORTED_PASS"},
+        ):
+            self.assertFalse(
+                generator.external_actual_value_valid_v2(
+                    "route-navigation-deeplink-404", mutation
+                )
+            )
+            self.assertFalse(
+                validator.external_actual_value_valid_v2(
+                    "route-navigation-deeplink-404", mutation
+                )
+            )
+
+        api_actual = {
+            "operationId": "search",
+            "called": True,
+            "method": "POST",
+            "path": "/api/search",
+            "outcome": "OPENED",
+            "canceled": False,
+            "staleIgnored": False,
+            "cacheKey": "tenant:query",
+        }
+        native_actual = {
+            "boundary": "ADAPTER",
+            "lifecycle": "FOREGROUND",
+            "attempted": True,
+            "permission": "GRANTED",
+            "available": True,
+            "outcome": "SUCCESS",
+            "recovery": "NOT_REQUIRED",
+        }
+        for module in (generator, validator):
+            self.assertFalse(
+                module.external_actual_value_valid_v2("api-network", api_actual)
+            )
+            self.assertFalse(
+                module.external_actual_value_valid_v2(
+                    "native-platform", native_actual
+                )
+            )
+            self.assertTrue(
+                module.external_actual_value_valid_v2(
+                    "native-platform",
+                    {**native_actual, "outcome": "NO_OP_REPORTED"},
+                )
+            )
+            self.assertTrue(
+                module.external_actual_value_valid_v2(
+                    "form-binding-validation",
+                    {
+                        "formId": "search-form",
+                        "fieldId": "query",
+                        "value": "",
+                        "submitted": False,
+                        "valid": False,
+                        "errorCode": None,
+                    },
+                )
+            )
+            self.assertTrue(
+                module.external_actual_value_valid_v2(
+                    "accessibility-focus",
+                    {
+                        "mainRole": "main",
+                        "headingLevel": 1,
+                        "formLabel": "Search",
+                        "errorRole": None,
+                        "liveRegion": "polite",
+                        "keyboardSubmit": False,
+                        "focusTarget": None,
+                    },
+                )
+            )
+            self.assertFalse(
+                module.external_actual_value_valid_v2(
+                    "component-template-view",
+                    {
+                        "componentId": "GeneratedPage",
+                        "key": "route.home",
+                        "title": "",
+                        "text": "Home",
+                        "visible": True,
+                    },
+                )
+            )
+
+        trust_issued_at = generator.datetime(2026, 6, 1, tzinfo=generator.UTC)
+        trust_expires_at = generator.datetime(2027, 6, 1, tzinfo=generator.UTC)
+        issued_at = generator.datetime(2026, 7, 1, tzinfo=generator.UTC)
+        expires_at = generator.datetime(2027, 1, 1, tzinfo=generator.UTC)
+        now = generator.datetime(2026, 8, 10, tzinfo=generator.UTC)
+        for module in (generator, validator):
+            self.assertTrue(
+                module.external_authorization_time_valid_v2(
+                    trust_issued_at=trust_issued_at,
+                    trust_expires_at=trust_expires_at,
+                    issued_at=issued_at,
+                    expires_at=expires_at,
+                    now=now,
+                )
+            )
+            self.assertFalse(
+                module.external_authorization_time_valid_v2(
+                    trust_issued_at=generator.datetime(
+                        2026, 7, 2, tzinfo=generator.UTC
+                    ),
+                    trust_expires_at=trust_expires_at,
+                    issued_at=issued_at,
+                    expires_at=expires_at,
+                    now=now,
+                )
+            )
+            self.assertFalse(
+                module.external_authorization_time_valid_v2(
+                    trust_issued_at=trust_issued_at,
+                    trust_expires_at=trust_expires_at,
+                    issued_at=issued_at,
+                    expires_at=None,
+                    now=now,
+                )
+            )
+            self.assertFalse(
+                module.external_authorization_time_valid_v2(
+                    trust_issued_at=trust_issued_at,
+                    trust_expires_at=generator.datetime(
+                        2026, 12, 1, tzinfo=generator.UTC
+                    ),
+                    issued_at=issued_at,
+                    expires_at=expires_at,
+                    now=now,
+                )
+            )
+
+        with tempfile.TemporaryDirectory(
+            prefix="frontend-v2-external-actual-negative-"
+        ) as directory:
+            observation_path = Path(directory) / "observation.json"
+            scope_digest = "sha256:" + "1" * 64
+            write(
+                observation_path,
+                {
+                    "schema_version": 2,
+                    "kind": "frontend-formal-runtime-observation-v2",
+                    "scope_digest": scope_digest,
+                    "route_id": "angular--to--react",
+                    "block_id": "route-navigation-deeplink-404",
+                    "profile_id": "angular",
+                    "corpus_case_ids": ["case-1"],
+                    "observer_protocol": "block-specific-runtime-observation-v1",
+                    "model_values_used_as_actual": False,
+                    "actuals": [
+                        {
+                            "case_id": "case-1",
+                            "actual": {**actual, "deepLink": 1},
+                        }
+                    ],
+                },
+            )
+            errors: list[str] = []
+            self.assertIsNone(
+                validator.external_actuals_v2(
+                    path=observation_path,
+                    scope_digest=scope_digest,
+                    route_id="angular--to--react",
+                    block_id="route-navigation-deeplink-404",
+                    profile_id="angular",
+                    case_ids={"case-1"},
+                    schema_path=ROOT
+                    / "schemas/batch32/frontend-formal-external-runtime-observation-v2.schema.json",
+                    errors=errors,
+                )
+            )
+            self.assertTrue(errors)
+
+        external_schema = load(
+            ROOT / "schemas/batch32/frontend-formal-external-evidence-v2.schema.json"
+        )
+        self.assertEqual(4, external_schema["properties"]["signatures"]["minItems"])
+        self.assertIn(
+            "CUSTOMER",
+            external_schema["$defs"]["signature"]["properties"]["role"]["enum"],
         )
 
     def test_unconditional_proof_contract_closes_all_logical_layers(self) -> None:
@@ -1530,6 +1791,74 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             )
             self.assertIn("--output", command)
 
+    def test_v2_external_positive_protocol_rejects_before_io_or_build(self) -> None:
+        nonexistent = ROOT / "does-not-exist-external-positive-v2"
+        argv = [
+            "generate_frontend_formal_verification_pack.py",
+            "--repo-root",
+            str(ROOT),
+            "--contract-version",
+            "2",
+            "--engine-output",
+            str(nonexistent / "engine"),
+            "--toolchain-evidence",
+            str(nonexistent / "toolchain.json"),
+            "--external-evidence",
+            str(nonexistent / "evidence.json"),
+            "--external-trust-store",
+            str(nonexistent / "trust-store.json"),
+            "--external-trust-root",
+            str(nonexistent / "trust-root.json"),
+            "--force",
+        ]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(generator, "run_checked") as engine,
+            mock.patch.object(generator, "build_packs_v2") as build,
+            mock.patch.object(generator, "copy_engine_output_v2") as copy,
+            self.assertRaisesRegex(
+                RuntimeError, "V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED"
+            ),
+        ):
+            generator.main()
+        engine.assert_not_called()
+        build.assert_not_called()
+        copy.assert_not_called()
+
+        with (
+            mock.patch.object(generator, "verify_engine_campaign_v2") as engine,
+            mock.patch.object(generator, "copy_engine_output_v2") as copy,
+            self.assertRaisesRegex(
+                RuntimeError, "V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED"
+            ),
+        ):
+            generator.build_common_campaign_v2(
+                repo_root=ROOT,
+                engine_root=nonexistent / "engine",
+                common_root=nonexistent / "common",
+                toolchain_evidence_path=nonexistent / "toolchain.json",
+                external_evidence_path=nonexistent / "evidence.json",
+            )
+        engine.assert_not_called()
+        copy.assert_not_called()
+
+        staging_root = nonexistent / "staging"
+        with (
+            mock.patch.object(generator, "build_common_campaign_v2") as build,
+            self.assertRaisesRegex(
+                RuntimeError, "V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED"
+            ),
+        ):
+            generator.build_packs_v2(
+                repo_root=ROOT,
+                engine_root=nonexistent / "engine",
+                staging_root=staging_root,
+                toolchain_evidence_path=nonexistent / "toolchain.json",
+                external_trust_root_path=nonexistent / "trust-root.json",
+            )
+        build.assert_not_called()
+        self.assertFalse((staging_root / "common-v2").exists())
+
     def copy_pack(self) -> tuple[tempfile.TemporaryDirectory[str], Path]:
         temporary = tempfile.TemporaryDirectory(prefix="frontend-v2-negative-")
         destination = Path(temporary.name) / "pack"
@@ -1561,7 +1890,12 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
         content: bytes,
     ) -> None:
         reference = self.artifact(campaign, artifact_id)
-        (pack / reference["path"]).write_bytes(content)
+        artifact_path = pack / reference["path"]
+        # Captured pack artifacts are intentionally read-only. Negative tests
+        # mutate only their disposable copy, so make that copy owner-writable
+        # before exercising the fully rehashed tamper path.
+        artifact_path.chmod(artifact_path.stat().st_mode | 0o200)
+        artifact_path.write_bytes(content)
         reference["sha256"] = digest(content)
         reference["bytes"] = len(content)
 
@@ -1597,6 +1931,42 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
         self.assertTrue(
             any(text in error for error in result["errors"]), result["errors"]
         )
+
+    @unittest.skipUnless(
+        frozen_v2_pack_available(
+            ROOT / "client-packs/frontend-72-route-equivalence-v2",
+            "ELMOS_FRONTEND_V2_CLIENT_PACK",
+        ),
+        "frozen block-specific v2 pack has not been staged or published",
+    )
+    def test_fully_rehashed_external_pass_declaration_fails_closed(self) -> None:
+        temporary, pack = self.copy_pack()
+        try:
+            _, campaign = self.campaign(pack)
+            campaign["external_evidence"] = {
+                "provided": True,
+                "status": "PASSED",
+                "intake_artifact_id": "attacker-intake",
+                "trust_store_artifact_id": "attacker-trust",
+                "trust_root_id": "attacker-root",
+                "trust_root_fingerprint": "sha256:" + "1" * 64,
+                "trust_store_authorization_status": "PASSED",
+                "replay_verifier_fingerprint": "sha256:" + "2" * 64,
+                "artifact_ids": ["attacker-intake", "attacker-trust"],
+                "scope_digest": campaign["peer_binding"]["scope_digest"],
+                "authorization_status": "PASSED",
+                "signature_status": "PASSED",
+                "replay_status": "PASSED",
+                "independent_status": "PASSED",
+                "holdout_status": "PASSED",
+                "representative_status": "PASSED",
+                "customer_status": "PASSED",
+                "organization_ids": ["org-executor", "org-verifier", "org-approver", "org-customer"],
+            }
+            self.save_campaign(pack, campaign)
+            self.assert_invalid(pack, "V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED")
+        finally:
+            temporary.cleanup()
 
     @unittest.skipUnless(
         frozen_v2_pack_available(
@@ -1705,7 +2075,7 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                         {"status": "PASSED"}
                     ),
                 ),
-                "PASS contains NOT_RUN blocks",
+                "declared runtime status reconstruction drift",
             ),
             (
                 "raw-summary-tamper",

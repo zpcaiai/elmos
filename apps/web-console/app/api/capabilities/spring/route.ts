@@ -11,9 +11,9 @@ export async function GET() {
     fetchedAt: new Date().toISOString(),
     target: { java: "21", framework: "Spring Boot 3.5.3", build: "Maven 3.9.11" },
     recognizedSources: [
-      { id: "spring-framework-xml", label: "Spring Framework XML", detail: "可识别 web.xml、DispatcherServlet、applicationContext.xml 与 XML Bean；经典非 Boot 路线未执行，需审阅", status: "REVIEW" },
-      { id: "spring-framework-annotation", label: "Spring Framework 注解", detail: "可识别非 Boot 的 @Controller / Java Config；经典非 Boot 路线未执行，需审阅", status: "REVIEW" },
-      { id: "spring-boot-legacy", label: "旧版 Spring Boot", detail: "仅 Boot 2.7.18 / Java 17 / Maven 3.9.11 有 PASSED_LOCAL；其余 1.5–3.4 精确元组仍为 NOT_RUN，Gradle 为 NOT_IMPLEMENTED", status: "REVIEW" },
+      { id: "spring-framework-xml", label: "Spring Framework XML", detail: "Spring Framework MVC 5.3.39 / Java 11 / Maven 3.9.11 精确夹具已 PASSED_LOCAL；其他经典非 Boot 组合仍需审阅", status: "REVIEW" },
+      { id: "spring-framework-annotation", label: "Spring Framework 注解", detail: "精确 MVC 5.3.39 夹具的 @Controller、XML MVC 与 JSP 路线已完成本地工程验证；客户、复杂能力与独立证据仍为 NOT_RUN", status: "REVIEW" },
+      { id: "spring-boot-legacy", label: "旧版 Spring Boot", detail: "Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17 的精确 Maven 点有 PASSED_LOCAL；其余精确元组仍为 NOT_RUN，Gradle 为 NOT_IMPLEMENTED", status: "REVIEW" },
     ],
     researchPack: {
       key: "spring-boot-2-7-18-to-3-5-3",
@@ -22,6 +22,6 @@ export async function GET() {
     },
     deploymentGuidance: springDeploymentGuidance,
     stages: springModernizationStages,
-    note: "Spring Boot 2.7.18 / Java 17 / Maven 3.9.11 → Spring Boot 3.5.3 / Java 21 的 Web、配置和生命周期子集已通过真实公共仓库、源/目标构建与启动验证，状态为受限支持；DI、校验、持久化仅探测，安全与事务阻断，客户私库、Rootless Runner 和外部独立认证仍为 NOT_RUN。",
+    note: "Spring Framework MVC 5.3.39 / Java 11 / Maven 3.9.11 → Spring Boot 3.5.3 / Java 21 的精确开发夹具已通过源/目标构建、Tomcat/WarLauncher 启动及 GET/JSP 行为比较，仅属于本地工程证据；Boot pack 仍为受限支持，MVC pack 仍为 experimental / NOT_CERTIFIED，客户私库、复杂能力、Rootless Runner 和外部独立认证仍为 NOT_RUN。",
   });
 }

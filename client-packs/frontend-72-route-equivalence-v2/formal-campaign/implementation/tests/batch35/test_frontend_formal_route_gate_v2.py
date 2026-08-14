@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -10,9 +11,9 @@ import unittest
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[2]
 GATE = ROOT / "scripts/batch35/run_verification_gate.py"
+GATE_TEST_TIMEOUT_SECONDS = 600
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -61,7 +62,10 @@ class FrontendFormalRouteGateV2Tests(unittest.TestCase):
             capture_output=True,
             text=True,
             check=False,
-            timeout=300,
+            # The gate may execute the pack's independently bounded 300-second
+            # replay after schema and generic-pack validation. Keep the outer
+            # test process bounded while leaving enough orchestration margin.
+            timeout=GATE_TEST_TIMEOUT_SECONDS,
         )
 
     @unittest.skipUnless(
@@ -113,6 +117,61 @@ class FrontendFormalRouteGateV2Tests(unittest.TestCase):
                 "certification_ready",
             ):
                 self.assertIn(field, completed.stderr)
+
+    @unittest.skipUnless(
+        frozen_v2_pack_available(
+            ROOT / "verification-packs/frontend-72-route-formal-equivalence-v2",
+            "ELMOS_FRONTEND_V2_VERIFICATION_PACK",
+        ),
+        "frozen block-specific v2 pack has not been staged or published",
+    )
+    def test_fully_rehashed_governance_tamper_fails_closed(self) -> None:
+        for relative, mutate, expected in (
+            (
+                "oracle-registry.json",
+                lambda value: value["oracles"][0].update({"owner": "TODO"}),
+                "oracle registry exact closure drift",
+            ),
+            (
+                "assurance/assurance-case.json",
+                lambda value: value["claims"][0].update({"status": "supported"}),
+                "assurance case exact fail-closed closure drift",
+            ),
+            (
+                "oracle-registry.json",
+                lambda value: value["precedence_rules"][0].update(
+                    {"ordered_oracles": ["oracle.bounded-z3-v2"]}
+                ),
+                "oracle registry exact closure drift",
+            ),
+            (
+                "assurance/assurance-case.json",
+                lambda value: value.update({"top_claim": "production certified"}),
+                "assurance case exact fail-closed closure drift",
+            ),
+        ):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory(
+                prefix="frontend-v2-governance-negative-"
+            ) as directory:
+                pack = Path(directory) / "pack"
+                shutil.copytree(self.pack, pack)
+                path = pack / relative
+                value = load(path)
+                mutate(value)
+                write(path, value)
+                manifest = load(pack / "pack.json")
+                key = (
+                    "oracle_registry_sha256"
+                    if relative == "oracle-registry.json"
+                    else "assurance_case_sha256"
+                )
+                manifest["frontend_governance_v2"][key] = (
+                    "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+                )
+                write(pack / "pack.json", manifest)
+                completed = self.run_gate(pack)
+                self.assertEqual(2, completed.returncode)
+                self.assertIn(expected, completed.stderr)
 
 
 if __name__ == "__main__":

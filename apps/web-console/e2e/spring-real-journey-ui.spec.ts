@@ -142,18 +142,21 @@ const capabilities = {
     {
       routeId: "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
       packKey: "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
-      label: "Spring Framework 5.3.x MVC / Java 11 / Maven → Boot 3.5.3 / Java 21",
+      label: "Spring Framework 5.3.39 MVC / Java 11 / Maven → Boot 3.5.3 / Java 21",
       sourceFrameworkFamily: "spring-mvc",
       buildTool: "maven",
-      sourceBootMinInclusive: "5.3.0",
-      sourceBootMaxExclusive: "5.4.0",
+      sourceBootMinInclusive: "5.3.39",
+      sourceBootMaxExclusive: "5.3.40",
+      exactSourceVersion: "5.3.39",
+      sourceConstraint: "exact:5.3.39",
+      sourceVersionMatch: "EXACT",
       sourceJavaVersions: ["11"],
       targetSpringBoot: "3.5.3",
       targetJava: "21",
       recipeId: "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",
-      evidenceStatus: "NOT_RUN",
-      verifiedSourceSpringBoot: "",
-      verifiedSourceJava: "",
+      evidenceStatus: "PASSED_LOCAL",
+      verifiedSourceSpringBoot: "5.3.39",
+      verifiedSourceJava: "11",
     },
     {
       routeId: "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
@@ -239,6 +242,8 @@ function completedRun(overrides: Record<string, unknown> = {}) {
     snapshotDigest: snapshotSha,
     exactTuple: {
       sourceSpringBoot: "2.7.18",
+      sourceFrameworkFamily: "spring-boot",
+      sourceFrameworkVersion: "2.7.18",
       sourceJava: "17",
       sourceBuildTool: "maven-3.9.11",
       targetSpringBoot: "3.5.3",
@@ -320,7 +325,9 @@ function completedMvcRun() {
     ...base,
     exactTuple: {
       ...base.exactTuple,
-      sourceSpringBoot: "5.3.39",
+      sourceSpringBoot: null,
+      sourceFrameworkFamily: "spring-mvc",
+      sourceFrameworkVersion: "5.3.39",
       sourceJava: "11",
     },
     fingerprint: {
@@ -463,8 +470,10 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   const catalog = page.getByRole("table", { name: "Spring 遗留版本路线目录" });
   await expect(catalog.getByRole("cell", { name: "Spring Boot [2.0.0, 2.7.0)" })).toBeVisible();
   await expect(catalog.getByRole("cell", { name: "Spring Boot [2.7.0, 2.8.0)" }).first()).toBeVisible();
-  await expect(catalog.getByRole("cell", { name: "Spring Framework MVC [5.3.0, 5.4.0)" })).toBeVisible();
-  await expect(catalog.getByRole("cell", { name: "NOT_RUN · Spring Framework MVC" })).toBeVisible();
+  await expect(catalog.getByRole("cell", { name: "Spring Framework MVC exact 5.3.39" })).toBeVisible();
+  await expect(
+    catalog.getByRole("cell", { name: "PASSED_LOCAL @ Spring Framework MVC 5.3.39 / Java 11" }),
+  ).toBeVisible();
   await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(2);
   await expect(page.getByText("NOT_IMPLEMENTED 仅记录 inventory gap", { exact: false })).toBeVisible();
   await expect(

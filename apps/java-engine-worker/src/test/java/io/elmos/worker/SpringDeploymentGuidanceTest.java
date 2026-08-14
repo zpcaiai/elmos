@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SpringDeploymentGuidanceTest {
@@ -60,5 +61,43 @@ class SpringDeploymentGuidanceTest {
                 .contains("gradle:8.14.3-jdk21"));
         assertTrue(Files.readString(temporaryDirectory.resolve("deploy/cloud-run/Dockerfile.dockerignore"))
                 .contains("**/.gradle"));
+    }
+
+    @Test void writesExactMvcExecutableWarGuidanceWithoutCallingFrameworkBoot() throws Exception {
+        Files.writeString(temporaryDirectory.resolve("README.md"), "# Customer project\n");
+        SpringRouteCatalog.SpringRoute route = SpringRouteCatalog
+                .byId("spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21")
+                .orElseThrow();
+
+        SpringDeploymentGuidance.writeTo(temporaryDirectory, "maven", route);
+
+        String local = Files.readString(temporaryDirectory.resolve("docs/LOCAL_RUN.md"));
+        assertTrue(local.contains("spring-mvc `exact:5.3.39`"));
+        assertTrue(local.contains("版本匹配：`EXACT`"));
+        assertTrue(local.contains("executable Spring Boot WAR"));
+        assertTrue(local.contains("-name '*.war'"));
+        assertTrue(local.contains("MANAGEMENT_SERVER_ADDRESS=127.0.0.1"));
+        assertTrue(local.contains("wc -l"));
+        assertTrue(local.contains("printf '%s\\n'"));
+        assertTrue(local.contains("tr -d '\\r'"));
+        assertTrue(local.contains("WarLauncher.class"));
+        assertTrue(local.contains("Main-Class: org.springframework.boot.loader.launch.WarLauncher"));
+        assertTrue(local.contains("Spring-Boot-Version: 3.5.3"));
+        assertFalse(local.contains("sort | head -n 1"));
+        String dockerfile = Files.readString(
+                temporaryDirectory.resolve("deploy/cloud-run/Dockerfile"));
+        assertTrue(dockerfile.contains("-name '*.war'"));
+        assertTrue(dockerfile.contains("wc -l"));
+        assertTrue(dockerfile.contains("printf '%s\\n'"));
+        assertTrue(dockerfile.contains("tr -d '\\r'"));
+        assertTrue(dockerfile.contains("WarLauncher.class"));
+        assertTrue(dockerfile.contains(
+                "Main-Class: org.springframework.boot.loader.launch.WarLauncher"));
+        assertTrue(dockerfile.contains("Spring-Boot-Version: 3.5.3"));
+        assertTrue(dockerfile.contains(
+                "eclipse-temurin:21-jre@sha256:8cef5fc7bebe421363ab543a2f4db5caf7d119d8db67d56b0f56c485d2de4d55"));
+        assertFalse(dockerfile.contains("sort | head -n 1"));
+        assertTrue(dockerfile.contains("/app/application.war"));
+        assertTrue(dockerfile.contains("ENTRYPOINT [\"java\", \"-jar\", \"/app/application.war\"]"));
     }
 }

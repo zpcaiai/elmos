@@ -1,7 +1,11 @@
 package io.elmos.controlplane;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.elmos.application.DatabaseDataCutoverGovernance;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +22,11 @@ import java.util.Map;
 @RequestMapping("/api/v1/database-data")
 public final class DatabaseDataController {
     private final DatabaseDataCutoverGovernance governance = new DatabaseDataCutoverGovernance();
+    private final ChinaDbSqlPreflightGateway sqlPreflight;
+
+    public DatabaseDataController(ChinaDbSqlPreflightGateway sqlPreflight) {
+        this.sqlPreflight = sqlPreflight;
+    }
 
     public record Capabilities(String engine, String workerContract, String status,
                                List<String> tracks, List<String> sharedAuthorities,
@@ -41,10 +50,42 @@ public final class DatabaseDataController {
         return governance.evaluate(evidence);
     }
 
+    @GetMapping(value = "/sql-preflight/capabilities", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonNode sqlPreflightCapabilities() {
+        principal("workspace:view");
+        return sqlPreflight.capabilities();
+    }
+
+    @PostMapping(
+            value = "/sql-preflight/assess",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonNode assessSql(@RequestBody byte[] request) {
+        ControlPlanePrincipal principal = principal("translation:execute");
+        return sqlPreflight.assess(request, principal.organizationId(), principal.actorId());
+    }
+
+    @ExceptionHandler(ChinaDbSqlPreflightFailure.class)
+    ResponseEntity<Map<String, Object>> sqlPreflightFailure(ChinaDbSqlPreflightFailure error) {
+        return ResponseEntity.status(error.status()).body(Map.of(
+                "status", "BLOCKED",
+                "errorCode", error.errorCode(),
+                "message", error.safeMessage(),
+                "retryable", error.retryable(),
+                "certification", "NOT_CERTIFIED"));
+    }
+
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     Map<String, Object> badRequest(RuntimeException error) {
         return Map.of("errorCode", "DATABASE_DATA_REQUEST_REJECTED", "message", "The database and data request was rejected by its contract.",
                 "retryable", false);
+    }
+
+    private static ControlPlanePrincipal principal(String permission) {
+        ControlPlanePrincipal principal = ControlPlanePrincipal.current()
+                .orElseThrow(() -> new AccessDeniedException("CONTROL_PLANE_AUTH_REQUIRED"));
+        principal.require(principal.organizationId(), principal.actorId(), permission);
+        return principal;
     }
 }

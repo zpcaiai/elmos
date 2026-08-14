@@ -49,6 +49,12 @@ class SpringUpgradeConfiguration {
             @Value("${elmos.worker.spring-upgrade.runtime-runner-enabled:false}") boolean runtimeRunnerEnabled,
             @Value("${elmos.worker.spring-upgrade.runtime-runner-base-url:http://workspace-service:8082}") String runtimeRunnerBaseUrl,
             @Value("${elmos.worker.spring-upgrade.runtime-runner-secret-file:/run/secrets/elmos_runtime_hmac}") String runtimeRunnerSecretFile,
+            @Value("${elmos.worker.spring-upgrade.spring-mvc.tomcat-home:}") String springMvcTomcatHome,
+            @Value("${elmos.worker.spring-upgrade.spring-mvc.tomcat-version:}") String springMvcTomcatVersion,
+            @Value("${elmos.worker.spring-upgrade.spring-mvc.catalina-jar-sha256:}") String springMvcCatalinaJarSha256,
+            @Value("${elmos.worker.spring-upgrade.spring-mvc.tomcat-consumed-manifest-sha256:}") String springMvcTomcatConsumedManifestSha256,
+            @Value("${elmos.worker.spring-upgrade.spring-mvc.http-oracle-paths:}") String springMvcHttpOraclePaths,
+            @Value("${elmos.worker.spring-upgrade.spring-mvc.http-oracle-cases-json:}") String springMvcHttpOracleCasesJson,
             SpringUpgradeCodingAgentPort codingAgentPort,
             ObjectMapper json,
             Clock clock
@@ -74,7 +80,15 @@ class SpringUpgradeConfiguration {
                     optionalPath(mavenDependencySeed),
                     experimentalRoutesEnabled,
                     json,
-                    codingAgentPort
+                    codingAgentPort,
+                    springMvcRuntimeConfiguration(
+                            springMvcTomcatHome,
+                            springMvcTomcatVersion,
+                            springMvcCatalinaJarSha256,
+                            springMvcTomcatConsumedManifestSha256,
+                            springMvcHttpOraclePaths,
+                            springMvcHttpOracleCasesJson,
+                            json)
             );
         } else {
             if (!rootlessRunnerAttested) {
@@ -196,6 +210,20 @@ class SpringUpgradeConfiguration {
 
     private static Path optionalPath(String value) {
         return value == null || value.isBlank() ? null : Path.of(value);
+    }
+
+    static SpringMvcWarRuntime.Configuration springMvcRuntimeConfiguration(
+            String tomcatHome,
+            String tomcatVersion,
+            String catalinaJarSha256,
+            String consumedManifestSha256,
+            String oraclePaths,
+            String oracleCasesJson,
+            ObjectMapper json
+    ) {
+        return SpringMvcWarRuntime.Configuration.of(
+                tomcatHome, tomcatVersion, catalinaJarSha256, consumedManifestSha256,
+                oraclePaths, oracleCasesJson, json);
     }
 
     /**

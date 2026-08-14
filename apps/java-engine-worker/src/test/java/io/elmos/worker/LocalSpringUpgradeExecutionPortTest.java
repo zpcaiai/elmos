@@ -53,6 +53,31 @@ class LocalSpringUpgradeExecutionPortTest {
         assertFalse(LocalSpringUpgradeExecutionPort.isStartupStatus(500));
     }
 
+    @Test void runtimeHealthRequiresBoundedTwoXxJsonWithExactUpStatus() {
+        ObjectMapper json = new ObjectMapper();
+        assertTrue(LocalSpringUpgradeExecutionPort.strictHealthUp(
+                200, "{\"status\":\"UP\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8), json));
+        assertFalse(LocalSpringUpgradeExecutionPort.strictHealthUp(
+                200, "{\"status\":\"DOWN\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8), json));
+        assertFalse(LocalSpringUpgradeExecutionPort.strictHealthUp(
+                200, "UP".getBytes(java.nio.charset.StandardCharsets.UTF_8), json));
+        assertFalse(LocalSpringUpgradeExecutionPort.strictHealthUp(
+                503, "{\"status\":\"UP\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8), json));
+        assertFalse(LocalSpringUpgradeExecutionPort.strictHealthUp(
+                200, new byte[(64 * 1024) + 1], json));
+    }
+
+    @Test void runtimeAndManagementEndpointsAreBothPinnedToLoopback() {
+        ProcessBuilder builder = new ProcessBuilder("java", "-version");
+        LocalSpringUpgradeExecutionPort.bindLoopbackEnvironment(builder, 18081);
+        assertEquals("127.0.0.1", builder.environment().get("SERVER_ADDRESS"));
+        assertEquals("18081", builder.environment().get("SERVER_PORT"));
+        assertEquals("127.0.0.1", builder.environment().get("MANAGEMENT_SERVER_ADDRESS"));
+        assertEquals("18081", builder.environment().get("MANAGEMENT_SERVER_PORT"));
+        assertThrows(IllegalArgumentException.class,
+                () -> LocalSpringUpgradeExecutionPort.bindLoopbackEnvironment(builder, 0));
+    }
+
     @Test void routeSelectionUsesTheRequestedTargetTuple() {
         SpringUpgradeModels.Fingerprint fingerprint = new SpringUpgradeModels.Fingerprint(
                 "2.7.18", "17", "maven", List.of(), List.of("spring-boot-parent"),
@@ -67,21 +92,19 @@ class LocalSpringUpgradeExecutionPortTest {
         assertEquals(SpringRouteCatalog.EvidenceStatus.NOT_RUN, selection.evidence());
     }
 
-    @Test void springMvcNeedsProductionTracesAndExperimentalOptIn() {
+    @Test void springMvcNeedsProductionTracesAndUsesRecordedExactLocalEvidence() {
         SpringUpgradeModels.Fingerprint activeMvc = new SpringUpgradeModels.Fingerprint(
                 "UNKNOWN", "11", "maven", List.of(), List.of("spring-mvc", "spring-mvc-xml"),
                 List.of(), Map.of("spring-mvc", List.of(
                         "observed|source|src/main/java/example/Controller.java:2|Spring MVC controller")),
                 "spring-mvc", "5.3.39");
 
-        SpringUpgradeModels.BlockedException evidenceBlocked = assertThrows(
-                SpringUpgradeModels.BlockedException.class,
-                () -> LocalSpringUpgradeExecutionPort.selectRoute(
-                        activeMvc, "3.5.3", "21", false));
-        assertEquals("SPRING_ROUTE_EVIDENCE_NOT_RUN", evidenceBlocked.code());
         assertEquals("spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
                 LocalSpringUpgradeExecutionPort.selectRoute(
-                        activeMvc, "3.5.3", "21", true).route().routeId());
+                        activeMvc, "3.5.3", "21", false).route().routeId());
+        assertEquals(SpringRouteCatalog.EvidenceStatus.PASSED_LOCAL,
+                LocalSpringUpgradeExecutionPort.selectRoute(
+                        activeMvc, "3.5.3", "21", false).evidence());
 
         SpringUpgradeModels.Fingerprint dependencyOnly = new SpringUpgradeModels.Fingerprint(
                 "UNKNOWN", "11", "maven", List.of(), List.of(), List.of(),
@@ -90,23 +113,8 @@ class LocalSpringUpgradeExecutionPortTest {
         SpringUpgradeModels.BlockedException activationBlocked = assertThrows(
                 SpringUpgradeModels.BlockedException.class,
                 () -> LocalSpringUpgradeExecutionPort.selectRoute(
-                        dependencyOnly, "3.5.3", "21", true));
+                        dependencyOnly, "3.5.3", "21", false));
         assertEquals("SPRING_MVC_RUNTIME_EVIDENCE_REQUIRED", activationBlocked.code());
-    }
-
-    @Test void traditionalSpringMvcStartupFailsWithExplicitContainerBoundary() {
-        SpringUpgradeModels.Fingerprint mvc = new SpringUpgradeModels.Fingerprint(
-                "UNKNOWN", "11", "maven", List.of(), List.of("spring-mvc"), List.of(),
-                Map.of("spring-mvc", List.of(
-                        "observed|source|src/main/java/example/WebConfig.java:2|Spring MVC route")),
-                "spring-mvc", "5.3.39");
-
-        SpringUpgradeModels.BlockedException blocked = assertThrows(
-                SpringUpgradeModels.BlockedException.class,
-                () -> LocalSpringUpgradeExecutionPort.requireSupportedSourceStartup(mvc));
-
-        assertEquals("SPRING_MVC_SOURCE_CONTAINER_NOT_PROVISIONED", blocked.code());
-        assertTrue(blocked.getMessage().contains("Servlet 4"));
     }
 
     @Test void mavenFingerprintUsesExactChildAuthorityForAggregatorRoots() throws Exception {

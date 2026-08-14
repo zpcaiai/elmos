@@ -19,6 +19,7 @@ function businessLine(path: string): string {
   if (path.startsWith("/api/translation")) return "LANGUAGE_TRANSLATION";
   if (path.startsWith("/api/generation")) return "PROJECT_SYNTHESIS";
   if (path.startsWith("/api/repository-workspaces") || path.startsWith("/api/github")) return "REPOSITORY_WORKSPACE";
+  if (path.startsWith("/api/database-sql") || path.startsWith("/api/capabilities/database-sql")) return "DATABASE_DATA_SQL";
   if (path.startsWith("/api/capabilities/migration")) return "MIGRATION_GOVERNANCE";
   if (path.startsWith("/api/capabilities/product")) return "COMMERCIALIZATION";
   if (path.startsWith("/api/billing") || path.startsWith("/api/usage") || path.startsWith("/api/pricing")) return "PRICING_USAGE";

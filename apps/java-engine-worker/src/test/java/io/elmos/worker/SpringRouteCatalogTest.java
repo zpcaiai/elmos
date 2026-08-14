@@ -12,6 +12,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -210,8 +211,26 @@ class SpringRouteCatalogTest {
                 selection.route().recipeId());
         assertEquals(SpringRouteCatalog.SourceFamily.SPRING_MVC,
                 selection.route().sourceFamily());
-        assertEquals(EvidenceStatus.NOT_RUN, selection.evidence());
-        assertTrue(selection.requiresExperimentalOptIn());
+        assertEquals("5.3.39", selection.route().exactSourceVersion());
+        assertEquals("exact:5.3.39", selection.route().sourceConstraint());
+        var tuple = selection.route().tuple("5.3.39", "11");
+        assertNull(tuple.sourceSpringBoot());
+        assertEquals("spring-mvc", tuple.sourceFrameworkFamily());
+        assertEquals("5.3.39", tuple.sourceFrameworkVersion());
+        assertEquals(EvidenceStatus.PASSED_LOCAL, selection.evidence());
+        assertEquals("5.3.39", selection.route().verifiedSourceBoot());
+        assertEquals("11", selection.route().verifiedSourceJava());
+        assertFalse(selection.requiresExperimentalOptIn());
+    }
+
+    @Test void exactMvcRouteRejectsAdjacentAndQualifiedVersions() {
+        for (String unsupported : List.of("5.3.38", "5.3.40", "5.3.39-SNAPSHOT", "5.3.39.RELEASE")) {
+            assertEquals("UNSUPPORTED_SOURCE_SPRING_FRAMEWORK_VERSION",
+                    assertThrows(BlockedException.class,
+                            () -> SpringRouteCatalog.selectSpringMvc(
+                                    unsupported, "11", "maven", "3.5.3", "21"),
+                            unsupported).code());
+        }
     }
 
     @Test void olderSpringMvcLinesRemainDeclaredButCannotBeSelected() {

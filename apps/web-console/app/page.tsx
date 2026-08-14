@@ -31,6 +31,15 @@ const workspaces = [
     meta: "草稿 → 批准 → 生成 → 验证",
   },
   {
+    eyebrow: "BATCH 31 · CHINADB SQL",
+    title: "国产数据库 SQL 转换",
+    description: "在 13 个国产数据库目标和 78 条规划路线中做 typed SQL 预评估；缺少精确版本、能力快照或目标适配器时明确阻断。",
+    href: "/migration",
+    icon: "database" as const,
+    accent: "amber",
+    meta: "47 Skills · SPEC_ONLY · 外部证据 NOT_RUN",
+  },
+  {
     eyebrow: "GOVERNANCE · M29–M37",
     title: "迁移能力与验证",
     description: "检查迁移能力包、开发者工作流、外部控制面和严格门禁；结构就绪不自动升级为运行或认证结论。",
@@ -53,9 +62,9 @@ export default function Home() {
       <section className="welcome-card">
         <div className="welcome-copy">
           <span className="overline">ELMOS CONTROL CENTER</span>
-          <h1>三条业务线，一套可验证的交付闭环。</h1>
+          <h1>四类核心工作空间，一套可验证的交付闭环。</h1>
           <p>
-            Spring 老项目翻新、全库跨语言转换与多语言项目生成分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
+            Spring 老项目翻新、全库跨语言转换、多语言项目生成与国产数据库 SQL 转换分别拥有清晰入口、精确状态、阻断原因和恢复动作。任何执行、认证、合并或发布仍由对应门禁和人工权限决定。
           </p>
           <div className="welcome-actions">
             <Link className="button button-primary" href="/spring">
@@ -80,6 +89,7 @@ export default function Home() {
         <article><span className="metric-icon tone-cyan"><Icon name="workflow" size={18} /></span><div><small>Spring 实验 Pack</small><strong>1</strong><em>外部证据 NOT_RUN</em></div></article>
         <article><span className="metric-icon tone-violet"><Icon name="route" size={18} /></span><div><small>跨语言方向</small><strong>12</strong><em>本地 Profile 已通过</em></div></article>
         <article><span className="metric-icon tone-amber"><Icon name="spark" size={18} /></span><div><small>项目生成目标</small><strong>8</strong><em>逐目标验证</em></div></article>
+        <article><span className="metric-icon tone-violet"><Icon name="database" size={18} /></span><div><small>国产数据库目标</small><strong>13</strong><em>78 条路线 SPEC_ONLY</em></div></article>
         <article><span className="metric-icon tone-green"><Icon name="shield" size={18} /></span><div><small>外部认证</small><strong>0</strong><em>Fail closed</em></div></article>
       </section>
 

@@ -1,5 +1,38 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/batch35/frontend-formal-external-route-block-execution-v2.schema.json",
-  "$ref": "../batch32/frontend-formal-external-route-block-execution-v2.schema.json"
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "scope_digest", "route_id", "block_id",
+    "corpus_case_ids", "source_profile_id", "target_profile_id",
+    "executor_organization_id", "source_runtime_artifact_ids",
+    "target_runtime_artifact_ids", "environment_artifact_id", "started_at",
+    "finished_at", "model_values_used_as_actual", "status"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "kind": {"const": "frontend-formal-route-block-execution-v2"},
+    "scope_digest": {"$ref": "#/$defs/sha256"},
+    "route_id": {"$ref": "#/$defs/routeId"},
+    "block_id": {"$ref": "#/$defs/blockId"},
+    "corpus_case_ids": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}},
+    "source_profile_id": {"$ref": "#/$defs/profileId"},
+    "target_profile_id": {"$ref": "#/$defs/profileId"},
+    "executor_organization_id": {"$ref": "#/$defs/nonEmpty"},
+    "source_runtime_artifact_ids": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+    "target_runtime_artifact_ids": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sha256"}},
+    "environment_artifact_id": {"$ref": "#/$defs/sha256"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"},
+    "model_values_used_as_actual": {"const": false},
+    "status": {"enum": ["PASSED", "FAILED"]}
+  },
+  "$defs": {
+    "nonEmpty": {"type": "string", "minLength": 1},
+    "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "profileId": {"enum": ["angular", "flutter", "harmony-arkui", "jquery", "react", "react-native", "svelte", "vue2", "vue3"]},
+    "routeId": {"type": "string", "pattern": "^(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)--to--(angular|flutter|harmony-arkui|jquery|react|react-native|svelte|vue2|vue3)$"},
+    "blockId": {"enum": ["route-navigation-deeplink-404", "component-template-view", "state-management", "action-event", "effect-lifecycle", "form-binding-validation", "api-network", "identity-permission", "rendering-hydration", "accessibility-focus", "i18n-theme-responsive", "native-platform"]}
+  }
 }

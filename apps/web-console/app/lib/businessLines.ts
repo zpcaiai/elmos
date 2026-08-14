@@ -24,11 +24,12 @@ export const translationLanguages: TranslationLanguage[] = [
   { id: "swift", label: "Swift", compiler: "Swift 6.3.3", runtime: "arm64-apple-macosx26.0", enginePath: "engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift" },
   { id: "python", label: "Python", compiler: "CPython AST 3.12.12", runtime: "CPython 3.12.12", enginePath: "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py" },
   { id: "typescript", label: "TypeScript", compiler: "TypeScript 5.9.2 Compiler API", runtime: "Node.js 26.0.0", enginePath: "engines/frontend-client-engine/src/polyglot.ts" },
+  { id: "javascript", label: "JavaScript (Node.js)", compiler: "ES2022 ESM / exact JSDoc contract", runtime: "Node.js 26.0.0", enginePath: "engines/polyglot-route-engine/native/javascript/analyzer.mjs" },
 ];
 
 /**
  * Offline/editorial fallback only. The live console exposure list is read from
- * routes/inventory.json; these nine IDs mirror the checked-in complete matrix.
+ * routes/inventory.json; these ten IDs mirror the checked-in complete matrix.
  * Every fallback route remains NOT_RUN and cannot authorize execution.
  */
 export const fallbackConsoleLanguageIds = new Set<TranslationLanguageId>([
@@ -41,6 +42,7 @@ export const fallbackConsoleLanguageIds = new Set<TranslationLanguageId>([
   "cpp",
   "objc",
   "swift",
+  "javascript",
 ]);
 
 export const consoleTranslationLanguages = translationLanguages.filter((language) =>
@@ -74,6 +76,7 @@ const sourceHazards: Record<TranslationLanguageId, string[]> = {
   swift: ["值/引用语义、可选值与协议派发", "actor、async 与 Sendable", "模块 ABI、桥接与 Apple 平台约束"],
   python: ["动态属性、MRO 与 duck typing", "truthiness、任意精度整数与生成器", "装饰器、元类、运行时导入与原生扩展"],
   typescript: ["结构类型、联合/交叉类型", "undefined/null 与 number 精度", "Promise 事件循环、原型与运行时类型守卫"],
+  javascript: ["JSDoc 契约缺失、冲突或运行时类型漂移", "undefined/null、number 精度与隐式强制转换", "Promise 事件循环、原型、模块副作用与 Node API"],
 };
 
 const targetHazards: Record<TranslationLanguageId, string[]> = {
@@ -86,6 +89,7 @@ const targetHazards: Record<TranslationLanguageId, string[]> = {
   swift: ["目标必须显式表达 Optional、溢出、值语义与错误", "actor、协议对象、桥接、框架与 I/O 不属于当前纯函数 profile"],
   python: ["目标类型证据与运行时约束必须分开", "动态对象、装饰器、导入副作用不属于当前纯函数 profile"],
   typescript: ["目标必须区分 null、undefined 与缺失属性", "Promise、原型、I/O 与框架不属于当前纯函数 profile"],
+  javascript: ["目标必须保留精确 JSDoc 类型、safe-integer 守卫与严格相等", "CommonJS、Promise、原型、I/O、包生命周期与框架不属于当前纯函数 profile"],
 };
 
 export function translationHazards(

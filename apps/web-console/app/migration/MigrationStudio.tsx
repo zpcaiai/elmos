@@ -41,6 +41,7 @@ const extensions: Array<{
   status: "DRAFT" | "REVIEW" | "EXPERIMENTAL";
   icon: IconName;
 }> = [
+  { name: "ChinaDB Commercial Migration", publisher: "ELMOS First-party", type: "SQL 转换增强", description: "登记 47 个可调用迁移 Skill、13 个国产目标与 78 条规划路线；无精确版本、能力快照或验证适配器时失败关闭。", version: "1.0.0", compatibility: "Batch 31 · SPEC_ONLY", status: "EXPERIMENTAL", icon: "database" },
   { name: "Language Adapter SDK", publisher: "ELMOS First-party", type: "语言适配器", description: "对接解析器、PSP、类型语义和发射器，并保留未知语义。", version: "0.1.0", compatibility: "Platform 0.1", status: "EXPERIMENTAL", icon: "code" },
   { name: "Evidence Collector SDK", publisher: "ELMOS First-party", type: "证据采集器", description: "采集原生证据并与归一化记录分离，保留首个失败。", version: "0.1.0", compatibility: "Platform 0.1", status: "REVIEW", icon: "file" },
   { name: "Runner Job SDK", publisher: "ELMOS First-party", type: "Runner 扩展", description: "声明最小能力、网络和文件权限；默认拒绝宿主访问。", version: "0.1.0", compatibility: "Platform 0.1", status: "DRAFT", icon: "server" },
@@ -249,6 +250,7 @@ export function MigrationStudio() {
             <div className="gate-block"><span>唯一认证门禁</span><code>{selectedCapability.gateCommand}</code></div>
             {selectedCapability.id === "M29" && <div className="feature-callout"><Icon name="code" size={17} /><div><strong>12 个本地实验 Profile 已精确验证</strong><small>结论只覆盖 typed-pure-function-v1；整库拆分、独立验证与外部认证仍需单独证据。</small><a className="text-link" href="/translation">打开跨语言转换 <Icon name="arrow" size={13} /></a></div></div>}
             {selectedCapability.id === "M30" && <div className="feature-callout"><Icon name="workflow" size={17} /><div><strong>Spring 老项目专属流程已接入</strong><small>支持经典 Spring XML、注解与旧 Boot 画像；外部运行与升级认证仍为 NOT_RUN。</small><a className="text-link" href="/spring">打开 Spring 翻新 <Icon name="arrow" size={13} /></a></div></div>}
+            {selectedCapability.id === "M31" && <div className="feature-callout"><Icon name="database" size={17} /><div><strong>ChinaDB 商业迁移扩展已接入</strong><small>47 个 Runtime Skills 和 13 个目标能力目录可发现；78 条路线仍需精确版本、模式、目标适配器、实库与独立证据。</small><code>elmos-sql-transpiler commercial-capabilities</code><a className="text-link" href="/migration/sql">运行只读 SQL 预检 <Icon name="arrow" size={13} /></a><a className="text-link" href="/api/capabilities/database-sql" target="_blank" rel="noreferrer">查看目标与路线契约 <Icon name="external" size={13} /></a></div></div>}
             {selectedCapability.id === "M36" && <div className="feature-callout"><Icon name="spark" size={17} /><div><strong>开发者预览已接入</strong><small>支持来源—目标导航、受保护区域和无写入预览；真实 IDE Host 证据仍未运行。</small></div></div>}
             <div className="detail-actions"><button className="button button-secondary" onClick={() => openDialog(selectedCapability.id)}>以此创建草稿</button><a className="icon-button bordered" href={`/api/capabilities/migration`} target="_blank" rel="noreferrer" aria-label="打开能力 API"><Icon name="external" size={17} /></a></div>
           </aside>}

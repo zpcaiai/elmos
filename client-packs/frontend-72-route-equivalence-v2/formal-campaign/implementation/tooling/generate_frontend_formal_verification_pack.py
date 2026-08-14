@@ -27,7 +27,6 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import urlsplit
 
-
 CLIENT_KEY = "frontend-72-route-equivalence-v1"
 VERIFICATION_KEY = "frontend-72-route-formal-equivalence-v1"
 CAMPAIGN_KEY = "frontend-72-route-formal-equivalence-v1"
@@ -209,6 +208,126 @@ RUNTIME_ACTUAL_KEYS_V2 = {
         "recovery",
     },
 }
+RUNTIME_ACTUAL_BOOL_FIELDS_V2 = {
+    "deepLink", "requiresAuth", "visible", "saturated", "handled", "cleanup",
+    "staleResponseIgnored", "submitted", "valid", "called", "canceled",
+    "staleIgnored", "permissionGranted", "tenantMatch", "authorized",
+    "serverAuthorityRequired", "duplicateEffects", "mismatchVisible",
+    "keyboardSubmit", "attempted", "available",
+}
+RUNTIME_ACTUAL_INT_FIELDS_V2 = {
+    "before", "after", "executions", "headingLevel", "viewportWidth", "columns"
+}
+RUNTIME_ACTUAL_NULLABLE_STRING_FIELDS_V2 = {
+    "keyboardKey",
+    "errorCode",
+    "errorRole",
+    "focusTarget",
+}
+RUNTIME_ACTUAL_EMPTY_STRING_FIELDS_BY_BLOCK_V2 = {
+    "form-binding-validation": {"value"},
+}
+RUNTIME_ACTUAL_ENUMS_BY_BLOCK_V2 = {
+    "route-navigation-deeplink-404": {
+        "resolution": {
+            "DECLARED",
+            "FIRST_DECLARED_FALLBACK",
+            "AUTH_DENIED_FALLBACK",
+        },
+    },
+    "action-event": {
+        "event": {
+            "BOOT",
+            "NAVIGATE",
+            "AUTHENTICATE",
+            "SUBMIT",
+            "CANCEL",
+            "HYDRATE",
+            "DISPLAY_CHANGE",
+            "NATIVE_DEEPLINK",
+        },
+        "action": {
+            "BOOT",
+            "NAVIGATE",
+            "AUTHENTICATE",
+            "SUBMIT_ACCEPTED",
+            "BLOCK",
+            "CANCEL",
+            "HYDRATE",
+            "DISPLAY_CHANGE",
+            "NATIVE_DEEPLINK",
+        },
+    },
+    "effect-lifecycle": {
+        "lifecycle": {"MOUNT", "ACTIVE", "UNMOUNT"},
+        "effect": {"LOAD_ON_MOUNT", "CANCEL_ON_UNMOUNT", "NONE"},
+    },
+    "api-network": {
+        "method": {"POST"},
+        "outcome": {"NOT_CALLED", "CANCELED", "SUCCESS", "ERROR", "PENDING"},
+    },
+    "identity-permission": {
+        "role": {"ANONYMOUS", "MEMBER"},
+    },
+    "rendering-hydration": {
+        "mode": {"HYDRATABLE_CSR"},
+        "requested": {"MATCH", "MISMATCH", "NONE"},
+        "status": {"MATCHED", "RENDER_ERROR", "NOT_ATTEMPTED"},
+    },
+    "native-platform": {
+        "boundary": {"ADAPTER"},
+        "lifecycle": {"FOREGROUND", "BACKGROUND"},
+        "permission": {"GRANTED", "DENIED", "NOT_REQUESTED"},
+        "outcome": {"NOT_ATTEMPTED", "OPENED", "NO_OP_REPORTED"},
+        "recovery": {"NOT_REQUIRED", "FOREGROUND_RETRY"},
+    },
+}
+
+
+def external_actual_value_valid_v2(block_id: str, actual: object) -> bool:
+    if not isinstance(actual, dict):
+        return False
+    block_enums = RUNTIME_ACTUAL_ENUMS_BY_BLOCK_V2.get(block_id, {})
+    empty_string_fields = RUNTIME_ACTUAL_EMPTY_STRING_FIELDS_BY_BLOCK_V2.get(
+        block_id, set()
+    )
+    for field, value in actual.items():
+        if field in block_enums:
+            if value not in block_enums[field]:
+                return False
+        elif field in RUNTIME_ACTUAL_BOOL_FIELDS_V2:
+            if type(value) is not bool:
+                return False
+        elif field in RUNTIME_ACTUAL_INT_FIELDS_V2:
+            if type(value) is not int or value < 0:
+                return False
+        elif field in RUNTIME_ACTUAL_NULLABLE_STRING_FIELDS_V2:
+            if value is not None and (not isinstance(value, str) or not value):
+                return False
+        elif field in empty_string_fields:
+            if not isinstance(value, str):
+                return False
+        elif not isinstance(value, str) or not value:
+            return False
+    return True
+
+
+def external_authorization_time_valid_v2(
+    *,
+    trust_issued_at: datetime | None,
+    trust_expires_at: datetime | None,
+    issued_at: datetime | None,
+    expires_at: datetime | None,
+    now: datetime | None,
+) -> bool:
+    return (
+        trust_issued_at is not None
+        and trust_expires_at is not None
+        and issued_at is not None
+        and expires_at is not None
+        and now is not None
+        and trust_issued_at <= issued_at <= now < expires_at <= trust_expires_at
+    )
 BLOCK_OBSERVER_CONTRACT_V2 = "block-specific-runtime-observation-v1"
 BLOCK_OBSERVER_SPECS_V2 = {
     "route-navigation-deeplink-404": {
@@ -582,6 +701,8 @@ V2_IMPLEMENTATION_PATHS = (
     "schemas/batch32/frontend-formal-external-trust-root-v2.schema.json",
     "schemas/batch32/frontend-formal-external-route-block-execution-v2.schema.json",
     "schemas/batch32/frontend-formal-external-route-block-replay-v2.schema.json",
+    "schemas/batch32/frontend-formal-external-runtime-observation-v2.schema.json",
+    "schemas/batch32/frontend-formal-external-corpus-manifest-v2.schema.json",
     "schemas/batch32/frontend-formal-external-replay-verifier-result-v2.schema.json",
     "schemas/batch35/verification-pack.schema.json",
     "schemas/batch35/frontend-formal-route-campaign-v2.schema.json",
@@ -591,6 +712,8 @@ V2_IMPLEMENTATION_PATHS = (
     "schemas/batch35/frontend-formal-external-trust-root-v2.schema.json",
     "schemas/batch35/frontend-formal-external-route-block-execution-v2.schema.json",
     "schemas/batch35/frontend-formal-external-route-block-replay-v2.schema.json",
+    "schemas/batch35/frontend-formal-external-runtime-observation-v2.schema.json",
+    "schemas/batch35/frontend-formal-external-corpus-manifest-v2.schema.json",
     "schemas/batch35/frontend-formal-external-replay-verifier-result-v2.schema.json",
     "tests/batch32/test_frontend_formal_route_campaign_v2.py",
     "tests/batch35/test_frontend_formal_route_gate_v2.py",
@@ -610,6 +733,8 @@ V2_REPLAY_PATHS = (
     "schemas/batch32/frontend-formal-external-trust-root-v2.schema.json",
     "schemas/batch32/frontend-formal-external-route-block-execution-v2.schema.json",
     "schemas/batch32/frontend-formal-external-route-block-replay-v2.schema.json",
+    "schemas/batch32/frontend-formal-external-runtime-observation-v2.schema.json",
+    "schemas/batch32/frontend-formal-external-corpus-manifest-v2.schema.json",
     "schemas/batch32/frontend-formal-external-replay-verifier-result-v2.schema.json",
     "schemas/batch35/frontend-formal-route-campaign-v2.schema.json",
     "schemas/batch35/frontend-formal-route-evidence-v2.schema.json",
@@ -618,6 +743,8 @@ V2_REPLAY_PATHS = (
     "schemas/batch35/frontend-formal-external-trust-root-v2.schema.json",
     "schemas/batch35/frontend-formal-external-route-block-execution-v2.schema.json",
     "schemas/batch35/frontend-formal-external-route-block-replay-v2.schema.json",
+    "schemas/batch35/frontend-formal-external-runtime-observation-v2.schema.json",
+    "schemas/batch35/frontend-formal-external-corpus-manifest-v2.schema.json",
     "schemas/batch35/frontend-formal-external-replay-verifier-result-v2.schema.json",
 )
 V2_ENGINE_VERIFIER_MODULES = (
@@ -1504,7 +1631,6 @@ def add_corpora_v2(
     catalog: ArtifactCatalog,
     *,
     scenario_ids: list[str],
-    external_intake: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     cases = {
         "development": scenario_ids,
@@ -1518,19 +1644,6 @@ def add_corpora_v2(
         "holdout": "NOT_RUN",
         "representative_workloads": "NOT_RUN",
     }
-    external_corpora = (
-        external_intake.get("corpora", {})
-        if isinstance(external_intake, dict)
-        else {}
-    )
-    for local_name, external_name in (
-        ("holdout", "holdout"),
-        ("representative_workloads", "representative"),
-    ):
-        external = external_corpora.get(external_name)
-        if isinstance(external, dict):
-            cases[local_name] = list(external.get("case_ids", []))
-            statuses[local_name] = str(external.get("status", "FAILED"))
     result: dict[str, Any] = {}
     for name in CORPUS_KINDS:
         value = {
@@ -1617,12 +1730,56 @@ def add_oracle_graph_v2(
         "independent_oracle_status": "PASSED" if external_passed else "NOT_RUN",
     }
     if external_passed:
-        graph["nodes"].append(
-            {
-                "id": "external-runtime-oracle",
-                "kind": "INDEPENDENT_ORACLE",
-                "producer_fingerprint": external_capture["producer_fingerprint"],
-            }
+        graph["nodes"].extend(
+            [
+                {
+                    "id": "external-trust-root",
+                    "kind": "TRUST_ROOT",
+                    "producer_fingerprint": external_capture[
+                        "trust_root_fingerprint"
+                    ],
+                },
+                {
+                    "id": "external-replay-verifier",
+                    "kind": "INDEPENDENT_REPLAY_VERIFIER",
+                    "producer_fingerprint": external_capture[
+                        "replay_verifier_fingerprint"
+                    ],
+                },
+                {
+                    "id": "external-intake",
+                    "kind": "EXTERNAL_INTAKE",
+                    "producer_fingerprint": external_capture[
+                        "producer_fingerprint"
+                    ],
+                },
+                {
+                    "id": "external-runtime-oracle",
+                    "kind": "INDEPENDENT_ORACLE",
+                    "producer_fingerprint": external_capture[
+                        "artifact_set_fingerprint"
+                    ],
+                },
+            ]
+        )
+        graph["edges"].extend(
+            [
+                {
+                    "from": "external-trust-root",
+                    "to": "external-replay-verifier",
+                    "relation": "AUTHORIZES",
+                },
+                {
+                    "from": "external-intake",
+                    "to": "external-runtime-oracle",
+                    "relation": "EVIDENCES",
+                },
+                {
+                    "from": "external-replay-verifier",
+                    "to": "external-runtime-oracle",
+                    "relation": "INDEPENDENTLY_REPLAYS",
+                },
+            ]
         )
     relative = "formal-campaign/oracle/provenance-graph.json"
     write_json(pack_root / relative, graph, canonical=True)
@@ -1814,7 +1971,7 @@ def _validate_external_trust_chain_v2(
 
     allow_rows = trust_root.get("organization_key_allowlist")
     allowed: dict[tuple[str, str, str], str] = {}
-    if not isinstance(allow_rows, list) or len(allow_rows) < 3:
+    if not isinstance(allow_rows, list) or len(allow_rows) < 4:
         raise RuntimeError("V2_EXTERNAL_ORGANIZATION_KEY_ALLOWLIST_MISSING")
     for row in allow_rows:
         if not isinstance(row, dict) or set(row) != {
@@ -1832,7 +1989,7 @@ def _validate_external_trust_chain_v2(
         if (
             not all(key)
             or key in allowed
-            or key[2] not in {"AUTHORIZATION", "EXECUTOR", "VERIFIER"}
+            or key[2] not in {"AUTHORIZATION", "EXECUTOR", "VERIFIER", "CUSTOMER"}
             or key[0] in root_revoked_orgs
             or key[1] in root_revoked_keys
             or not isinstance(row.get("public_key_sha256"), str)
@@ -1920,7 +2077,7 @@ def _validate_external_trust_chain_v2(
     )
 
     keys = trust.get("keys")
-    if not isinstance(keys, list) or len(keys) < 3:
+    if not isinstance(keys, list) or len(keys) < 4:
         raise RuntimeError("V2_EXTERNAL_TRUST_KEYS_MISSING")
     key_by_id: dict[str, dict[str, Any]] = {}
     for row in keys:
@@ -1997,6 +2154,7 @@ def _validate_external_trust_chain_v2(
         "root_id": trust_root["root_id"],
         "key_by_id": key_by_id,
         "issued_at": issued_at,
+        "expires_at": expires_at,
         "revoked_key_ids": revoked_keys,
         "revoked_organization_ids": revoked_orgs,
         "replay_verifier": verifier,
@@ -2052,8 +2210,70 @@ def _run_external_replay_verifier_v2(
     if completed.returncode or result != expected:
         raise RuntimeError("V2_EXTERNAL_REPLAY_VERIFIER_FAILED_OR_INCOMPLETE")
     return result
+def _external_actuals_v2(
+    *,
+    path: Path,
+    scope_digest: str,
+    route_id: str,
+    block_id: str,
+    profile_id: str,
+    case_ids: set[str],
+) -> tuple[dict[str, dict[str, Any]], str]:
+    """Load a typed runtime observation and return independently comparable actuals."""
 
-
+    payload = load_json(path)
+    expected_keys = {
+        "schema_version",
+        "kind",
+        "scope_digest",
+        "route_id",
+        "block_id",
+        "profile_id",
+        "corpus_case_ids",
+        "observer_protocol",
+        "model_values_used_as_actual",
+        "actuals",
+    }
+    rows = payload.get("actuals")
+    if (
+        set(payload) != expected_keys
+        or payload.get("schema_version") != 2
+        or payload.get("kind") != "frontend-formal-runtime-observation-v2"
+        or payload.get("scope_digest") != scope_digest
+        or payload.get("route_id") != route_id
+        or payload.get("block_id") != block_id
+        or payload.get("profile_id") != profile_id
+        or set(payload.get("corpus_case_ids", [])) != case_ids
+        or payload.get("observer_protocol")
+        != "block-specific-runtime-observation-v1"
+        or payload.get("model_values_used_as_actual") is not False
+        or not isinstance(rows, list)
+        or len(rows) != len(case_ids)
+    ):
+        raise RuntimeError("V2_EXTERNAL_RUNTIME_OBSERVATION_STRUCTURE_DRIFT")
+    actuals: dict[str, dict[str, Any]] = {}
+    required_actual_keys = RUNTIME_ACTUAL_KEYS_V2[block_id]
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != {"case_id", "actual"}:
+            raise RuntimeError("V2_EXTERNAL_RUNTIME_OBSERVATION_ROW_DRIFT")
+        case_id = str(row.get("case_id"))
+        actual = row.get("actual")
+        if (
+            case_id not in case_ids
+            or case_id in actuals
+            or not isinstance(actual, dict)
+            or set(actual) != required_actual_keys
+            or not external_actual_value_valid_v2(block_id, actual)
+        ):
+            raise RuntimeError("V2_EXTERNAL_RUNTIME_OBSERVATION_ACTUAL_DRIFT")
+        actuals[case_id] = actual
+    if set(actuals) != case_ids:
+        raise RuntimeError("V2_EXTERNAL_RUNTIME_OBSERVATION_CASE_CLOSURE_DRIFT")
+    normalized = [
+        {"case_id": case_id, "actual": actuals[case_id]}
+        for case_id in sorted(actuals)
+    ]
+    return actuals, canonical_digest(normalized)
 def add_external_evidence_v2(
     *,
     pack_root: Path,
@@ -2063,635 +2283,16 @@ def add_external_evidence_v2(
     trust_root_path: Path | None,
     scope_digest: str,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Fail closed until the independent positive protocol is implemented end to end."""
+
+    del pack_root, catalog, scope_digest
     if evidence_path is None and trust_store_path is None and trust_root_path is None:
         return external_evidence_not_run_v2()
     if evidence_path is None or trust_store_path is None or trust_root_path is None:
         raise RuntimeError(
             "V2_EXTERNAL_EVIDENCE_TRUST_STORE_AND_EXTERNAL_ROOT_REQUIRED"
         )
-    if (
-        evidence_path.is_symlink()
-        or trust_store_path.is_symlink()
-        or trust_root_path.is_symlink()
-    ):
-        raise RuntimeError("V2_EXTERNAL_INPUT_REGULAR_FILES_REQUIRED")
-    evidence_source = evidence_path.resolve(strict=True)
-    trust_source = trust_store_path.resolve(strict=True)
-    root_source = trust_root_path.resolve(strict=True)
-    try:
-        root_source.relative_to(pack_root.resolve(strict=True))
-    except ValueError:
-        pass
-    else:
-        raise RuntimeError("V2_EXTERNAL_TRUST_ROOT_MUST_REMAIN_OUTSIDE_PACK")
-    if (
-        not evidence_source.is_file()
-        or not trust_source.is_file()
-        or not root_source.is_file()
-    ):
-        raise RuntimeError("V2_EXTERNAL_INPUT_REGULAR_FILES_REQUIRED")
-    intake = load_json(evidence_source)
-    trust = load_json(trust_source)
-    trust_root = load_json(root_source)
-    if (
-        set(intake)
-        != {
-            "schema_version",
-            "kind",
-            "campaign_key",
-            "scope_digest",
-            "authorization",
-            "organizations",
-            "corpora",
-            "route_block_results",
-            "artifacts",
-            "replay",
-            "signatures",
-            "status",
-        }
-        or
-        intake.get("schema_version") != 2
-        or intake.get("kind") != "frontend-formal-external-evidence-v2"
-        or intake.get("campaign_key") != CAMPAIGN_KEY_V2
-        or intake.get("scope_digest") != scope_digest
-    ):
-        raise RuntimeError("V2_EXTERNAL_IDENTITY_OR_SCOPE_DRIFT")
-    now = datetime.now(UTC)
-    trust_chain = _validate_external_trust_chain_v2(
-        trust_root=trust_root, trust=trust, now=now
-    )
-    organizations = intake.get("organizations")
-    if not isinstance(organizations, dict) or set(organizations) != {
-        "executor",
-        "verifier",
-        "approver",
-        "customer",
-    }:
-        raise RuntimeError("V2_EXTERNAL_ORGANIZATION_CLOSURE_DRIFT")
-    organization_ids = [
-        organizations[role].get("organization_id")
-        if isinstance(organizations.get(role), dict)
-        else None
-        for role in ("executor", "verifier", "approver", "customer")
-    ]
-    if any(not isinstance(item, str) or not item for item in organization_ids) or len(
-        set(organization_ids)
-    ) != 4:
-        raise RuntimeError("V2_EXTERNAL_ORGANIZATION_SEPARATION_REQUIRED")
-    if any(
-        not isinstance(organizations[role], dict)
-        or set(organizations[role]) != {"organization_id", "name"}
-        or not isinstance(organizations[role].get("name"), str)
-        or not organizations[role]["name"]
-        for role in ("executor", "verifier", "approver", "customer")
-    ):
-        raise RuntimeError("V2_EXTERNAL_ORGANIZATION_IDENTITY_DRIFT")
-    authorization = intake.get("authorization")
-    if not isinstance(authorization, dict) or set(authorization) != {
-        "authorization_id",
-        "purpose",
-        "issued_at",
-        "expires_at",
-        "scope_digest",
-        "authorized_organization_ids",
-        "authorized_corpus_ids",
-        "authorized_route_ids",
-        "status",
-    }:
-        raise RuntimeError("V2_EXTERNAL_AUTHORIZATION_MISSING")
-    issued_at = _parse_utc_v2(authorization.get("issued_at"), "authorization.issued_at")
-    expires_at = _parse_utc_v2(
-        authorization.get("expires_at"), "authorization.expires_at"
-    )
-    if (
-        authorization.get("status") != "PASSED"
-        or authorization.get("purpose")
-        != "INDEPENDENT_FRONTEND_EQUIVALENCE_QUALIFICATION"
-        or authorization.get("scope_digest") != scope_digest
-        or not issued_at <= now < expires_at
-        or set(authorization.get("authorized_organization_ids", []))
-        != set(organization_ids)
-        or set(authorization.get("authorized_route_ids", [])) != expected_routes()
-    ):
-        raise RuntimeError("V2_EXTERNAL_AUTHORIZATION_INVALID_OR_EXPIRED")
-
-    external_root = evidence_source.parent.resolve(strict=True)
-    artifact_rows = intake.get("artifacts")
-    if not isinstance(artifact_rows, list) or not artifact_rows:
-        raise RuntimeError("V2_EXTERNAL_ARTIFACTS_MISSING")
-    external_ids: list[str] = []
-    external_by_id: dict[str, dict[str, Any]] = {}
-    external_packed_paths: dict[str, Path] = {}
-    for row in artifact_rows:
-        if not isinstance(row, dict) or set(row) != {
-            "id",
-            "role",
-            "producer_organization_id",
-            "path",
-            "sha256",
-            "bytes",
-        }:
-            raise RuntimeError("V2_EXTERNAL_ARTIFACT_REF_INVALID")
-        identifier = str(row.get("id"))
-        expected_identifier = canonical_digest(
-            {
-                key: row[key]
-                for key in (
-                    "role",
-                    "producer_organization_id",
-                    "path",
-                    "sha256",
-                    "bytes",
-                )
-            }
-        )
-        if (
-            identifier != expected_identifier
-            or row.get("producer_organization_id") not in set(organization_ids)
-            or identifier in external_by_id
-            or identifier in catalog.by_id
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_ARTIFACT_ID_COLLISION:{identifier}")
-        source = _runtime_evidence_file_v2(external_root, row.get("path"), identifier)
-        content = source.read_bytes()
-        if row.get("sha256") != digest_bytes(content) or row.get("bytes") != len(
-            content
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_ARTIFACT_BYTES_DRIFT:{identifier}")
-        relative = (
-            "formal-campaign/external/artifacts/"
-            + safe_relative(row["path"], f"external:{identifier}")
-        )
-        destination = pack_root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
-        catalog.add(identifier, f"external-v2:{row['role']}", relative)
-        external_ids.append(identifier)
-        external_by_id[identifier] = row
-        external_packed_paths[identifier] = destination
-
-    for source, relative, namespace, role in (
-        (
-            evidence_source,
-            "formal-campaign/external/intake.json",
-            "v2-external-intake",
-            "external-intake-v2",
-        ),
-        (
-            trust_source,
-            "formal-campaign/external/trust-store.json",
-            "v2-external-trust-store",
-            "external-trust-store-v2",
-        ),
-    ):
-        destination = pack_root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
-        identifier = artifact_identifier(namespace, source.name)
-        catalog.add(identifier, role, relative)
-        external_ids.append(identifier)
-        if role == "external-intake-v2":
-            intake_id = identifier
-            intake_packed_path = destination
-        else:
-            trust_id = identifier
-            trust_packed_path = destination
-
-    corpora = intake.get("corpora")
-    if not isinstance(corpora, dict) or set(corpora) != {
-        "holdout",
-        "representative",
-        "customer",
-    }:
-        raise RuntimeError("V2_EXTERNAL_CORPUS_CLOSURE_DRIFT")
-    corpus_ids: list[str] = []
-    all_external_case_ids: set[str] = set()
-    corpus_case_sets: dict[str, set[str]] = {}
-    referenced_external_ids: set[str] = set()
-    structured_execution_ids: set[str] = set()
-    structured_replay_ids: set[str] = set()
-    structured_raw_ids: set[str] = set()
-    structured_replay_environment_ids: set[str] = set()
-    execution_owner: dict[str, tuple[str, str]] = {}
-    replay_owner: dict[str, tuple[str, str]] = {}
-    observation_owner: dict[str, tuple[str, str]] = {}
-    for name in ("holdout", "representative", "customer"):
-        corpus = corpora[name]
-        if (
-            not isinstance(corpus, dict)
-            or set(corpus)
-            != {
-                "corpus_id",
-                "status",
-                "case_ids",
-                "manifest_artifact_id",
-                "provenance",
-            }
-            or corpus.get("status") != "PASSED"
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_CORPUS_NOT_PASSED:{name}")
-        corpus_id = corpus.get("corpus_id")
-        cases = corpus.get("case_ids")
-        manifest_id = corpus.get("manifest_artifact_id")
-        provenance = corpus.get("provenance")
-        if (
-            not isinstance(corpus_id, str)
-            or not isinstance(cases, list)
-            or not cases
-            or len(cases) != len(set(cases))
-            or all_external_case_ids.intersection(cases)
-            or manifest_id not in external_by_id
-            or not isinstance(provenance, dict)
-            or set(provenance)
-            != {
-                "source_organization_id",
-                "created_at",
-                "license_or_authorization",
-                "content_digest",
-            }
-            or provenance.get("content_digest")
-            != external_by_id[manifest_id].get("sha256")
-            or provenance.get("source_organization_id")
-            not in set(organization_ids)
-            or provenance.get("source_organization_id") == organization_ids[0]
-            or external_by_id[manifest_id].get("role")
-            != f"{name}-corpus-manifest"
-            or external_by_id[manifest_id].get("producer_organization_id")
-            != provenance.get("source_organization_id")
-            or (
-                name == "customer"
-                and provenance.get("source_organization_id") != organization_ids[3]
-            )
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_CORPUS_PROVENANCE_DRIFT:{name}")
-        corpus_ids.append(corpus_id)
-        corpus_case_sets[name] = {str(item) for item in cases}
-        all_external_case_ids.update(corpus_case_sets[name])
-        referenced_external_ids.add(str(manifest_id))
-    if set(authorization.get("authorized_corpus_ids", [])) != set(corpus_ids):
-        raise RuntimeError("V2_EXTERNAL_CORPUS_AUTHORIZATION_DRIFT")
-
-    results = intake.get("route_block_results")
-    result_map: dict[tuple[str, str], dict[str, Any]] = {}
-    if not isinstance(results, list) or len(results) != 72 * len(SEMANTIC_BLOCKS):
-        raise RuntimeError("V2_EXTERNAL_ROUTE_BLOCK_CLOSURE_DRIFT")
-    for row in results:
-        if not isinstance(row, dict) or set(row) != {
-            "route_id",
-            "block_id",
-            "status",
-            "corpus_case_ids",
-            "execution_artifact_ids",
-            "replay_artifact_id",
-            "executor_organization_id",
-            "verifier_organization_id",
-        }:
-            raise RuntimeError("V2_EXTERNAL_ROUTE_BLOCK_RESULT_INVALID")
-        key = (str(row.get("route_id")), str(row.get("block_id")))
-        execution_ids = row.get("execution_artifact_ids")
-        corpus_case_values = row.get("corpus_case_ids")
-        replay_id = row.get("replay_artifact_id")
-        if (
-            not isinstance(execution_ids, list)
-            or not execution_ids
-            or len(execution_ids) != len(set(execution_ids))
-            or not isinstance(corpus_case_values, list)
-            or not corpus_case_values
-            or len(corpus_case_values) != len(set(corpus_case_values))
-            or not isinstance(replay_id, str)
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_ROUTE_BLOCK_RESULT_DRIFT:{key}")
-        referenced_ids = [
-            *execution_ids,
-            replay_id,
-        ]
-        case_ids = {str(item) for item in corpus_case_values}
-        if (
-            key in result_map
-            or key[0] not in expected_routes()
-            or key[1] not in SEMANTIC_BLOCKS
-            or row.get("status") not in {"PASSED", "FAILED"}
-            or not case_ids.issubset(all_external_case_ids)
-            or any(not (case_ids & corpus_case_sets[name]) for name in corpus_case_sets)
-            or not set(referenced_ids).issubset(external_by_id)
-            or row.get("executor_organization_id") != organization_ids[0]
-            or row.get("verifier_organization_id") != organization_ids[1]
-            or any(
-                external_by_id[identifier].get("role") != "route-block-execution"
-                or external_by_id[identifier].get("producer_organization_id")
-                != organization_ids[0]
-                for identifier in execution_ids
-                if identifier in external_by_id
-            )
-            or (
-                replay_id in external_by_id
-                and (
-                    external_by_id[replay_id].get("role")
-                    != "route-block-replay"
-                    or external_by_id[replay_id].get(
-                        "producer_organization_id"
-                    )
-                    != organization_ids[1]
-                )
-            )
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_ROUTE_BLOCK_RESULT_DRIFT:{key}")
-        source_profile_id, target_profile_id = key[0].split("--to--", 1)
-        for execution_id in execution_ids:
-            execution_path = external_packed_paths.get(str(execution_id))
-            if execution_path is None:
-                raise RuntimeError(
-                    f"V2_EXTERNAL_EXECUTION_BYTES_MISSING:{key}:{execution_id}"
-                )
-            execution = load_json(execution_path)
-            if set(execution) != {
-                "schema_version",
-                "kind",
-                "scope_digest",
-                "route_id",
-                "block_id",
-                "corpus_case_ids",
-                "source_profile_id",
-                "target_profile_id",
-                "executor_organization_id",
-                "source_runtime_artifact_ids",
-                "target_runtime_artifact_ids",
-                "environment_artifact_id",
-                "started_at",
-                "finished_at",
-                "model_values_used_as_actual",
-                "status",
-            }:
-                raise RuntimeError(
-                    f"V2_EXTERNAL_EXECUTION_STRUCTURE_DRIFT:{key}:{execution_id}"
-                )
-            started = _parse_utc_v2(
-                execution.get("started_at"), f"execution:{execution_id}:started"
-            )
-            finished = _parse_utc_v2(
-                execution.get("finished_at"), f"execution:{execution_id}:finished"
-            )
-            source_runtime_ids = execution.get("source_runtime_artifact_ids")
-            target_runtime_ids = execution.get("target_runtime_artifact_ids")
-            environment_id = execution.get("environment_artifact_id")
-            if (
-                execution.get("schema_version") != 2
-                or execution.get("kind")
-                != "frontend-formal-route-block-execution-v2"
-                or execution.get("scope_digest") != scope_digest
-                or execution.get("route_id") != key[0]
-                or execution.get("block_id") != key[1]
-                or set(execution.get("corpus_case_ids", [])) != case_ids
-                or execution.get("source_profile_id") != source_profile_id
-                or execution.get("target_profile_id") != target_profile_id
-                or execution.get("executor_organization_id") != organization_ids[0]
-                or execution.get("model_values_used_as_actual") is not False
-                or execution.get("status") != row.get("status")
-                or not started <= finished <= now
-                or not isinstance(source_runtime_ids, list)
-                or not source_runtime_ids
-                or len(source_runtime_ids) != len(set(source_runtime_ids))
-                or not isinstance(target_runtime_ids, list)
-                or not target_runtime_ids
-                or len(target_runtime_ids) != len(set(target_runtime_ids))
-                or set(source_runtime_ids) & set(target_runtime_ids)
-                or not isinstance(environment_id, str)
-                or external_by_id.get(environment_id, {}).get("role")
-                != "route-block-runtime-environment"
-                or external_by_id.get(environment_id, {}).get(
-                    "producer_organization_id"
-                )
-                != organization_ids[0]
-            ):
-                raise RuntimeError(
-                    f"V2_EXTERNAL_EXECUTION_CONTENT_DRIFT:{key}:{execution_id}"
-                )
-            for runtime_id, expected_role in (
-                *((value, "source-runtime-observation") for value in source_runtime_ids),
-                *((value, "target-runtime-observation") for value in target_runtime_ids),
-            ):
-                runtime_id = str(runtime_id)
-                if (
-                    external_by_id.get(runtime_id, {}).get("role") != expected_role
-                    or external_by_id.get(runtime_id, {}).get(
-                        "producer_organization_id"
-                    )
-                    != organization_ids[0]
-                    or (
-                        runtime_id in observation_owner
-                        and observation_owner[runtime_id] != key
-                    )
-                ):
-                    raise RuntimeError(
-                        f"V2_EXTERNAL_RUNTIME_OBSERVATION_DRIFT:{key}:{runtime_id}"
-                    )
-                observation_owner[runtime_id] = key
-                structured_raw_ids.add(runtime_id)
-                referenced_external_ids.add(runtime_id)
-            structured_raw_ids.add(environment_id)
-            referenced_external_ids.add(environment_id)
-            if execution_id in execution_owner and execution_owner[execution_id] != key:
-                raise RuntimeError(
-                    f"V2_EXTERNAL_EXECUTION_REUSED_ACROSS_BLOCKS:{execution_id}"
-                )
-            execution_owner[str(execution_id)] = key
-            structured_execution_ids.add(str(execution_id))
-
-        replay_path = external_packed_paths.get(str(replay_id))
-        if replay_path is None:
-            raise RuntimeError(f"V2_EXTERNAL_REPLAY_BYTES_MISSING:{key}:{replay_id}")
-        replay_payload = load_json(replay_path)
-        if set(replay_payload) != {
-            "schema_version",
-            "kind",
-            "scope_digest",
-            "route_id",
-            "block_id",
-            "corpus_case_ids",
-            "execution_artifact_ids",
-            "replay_environment_artifact_id",
-            "verifier_organization_id",
-            "replayed_at",
-            "independently_reconstructed",
-            "status",
-        }:
-            raise RuntimeError(f"V2_EXTERNAL_REPLAY_STRUCTURE_DRIFT:{key}:{replay_id}")
-        replayed_at = _parse_utc_v2(
-            replay_payload.get("replayed_at"), f"replay:{replay_id}:at"
-        )
-        replay_environment_id = replay_payload.get("replay_environment_artifact_id")
-        if (
-            replay_payload.get("schema_version") != 2
-            or replay_payload.get("kind")
-            != "frontend-formal-route-block-replay-v2"
-            or replay_payload.get("scope_digest") != scope_digest
-            or replay_payload.get("route_id") != key[0]
-            or replay_payload.get("block_id") != key[1]
-            or set(replay_payload.get("corpus_case_ids", [])) != case_ids
-            or replay_payload.get("execution_artifact_ids") != execution_ids
-            or replay_payload.get("verifier_organization_id") != organization_ids[1]
-            or replay_payload.get("independently_reconstructed") is not True
-            or replay_payload.get("status") != row.get("status")
-            or replayed_at > now
-            or external_by_id.get(replay_environment_id, {}).get("role")
-            != "replay-environment"
-            or external_by_id.get(replay_environment_id, {}).get(
-                "producer_organization_id"
-            )
-            != organization_ids[1]
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_REPLAY_CONTENT_DRIFT:{key}:{replay_id}")
-        if replay_id in replay_owner and replay_owner[replay_id] != key:
-            raise RuntimeError(f"V2_EXTERNAL_REPLAY_REUSED_ACROSS_BLOCKS:{replay_id}")
-        replay_owner[str(replay_id)] = key
-        structured_replay_ids.add(str(replay_id))
-        structured_raw_ids.add(str(replay_environment_id))
-        structured_replay_environment_ids.add(str(replay_environment_id))
-        referenced_external_ids.add(str(replay_environment_id))
-        result_map[key] = row
-        referenced_external_ids.update(str(item) for item in referenced_ids)
-    expected_result_keys = {
-        (route_id, block_id)
-        for route_id in expected_routes()
-        for block_id in SEMANTIC_BLOCKS
-    }
-    if set(result_map) != expected_result_keys:
-        raise RuntimeError("V2_EXTERNAL_ROUTE_BLOCK_RESULT_MATRIX_DRIFT")
-    replay = intake.get("replay")
-    if (
-        not isinstance(replay, dict)
-        or set(replay) != {"status", "protocol", "environment_artifact_id"}
-        or replay.get("status") != "PASSED"
-        or replay.get("protocol") != "EXTERNAL_TRUST_ROOT_VERIFIER_V2"
-        or replay.get("environment_artifact_id") not in external_by_id
-        or external_by_id.get(replay.get("environment_artifact_id"), {}).get("role")
-        != "replay-environment"
-        or external_by_id.get(replay.get("environment_artifact_id"), {}).get(
-            "producer_organization_id"
-        )
-        != organization_ids[1]
-    ):
-        raise RuntimeError("V2_EXTERNAL_REPLAY_CLOSURE_DRIFT")
-    referenced_external_ids.add(str(replay["environment_artifact_id"]))
-    structured_raw_ids.add(str(replay["environment_artifact_id"]))
-    if structured_replay_environment_ids != {str(replay["environment_artifact_id"])}:
-        raise RuntimeError("V2_EXTERNAL_REPLAY_ENVIRONMENT_IDENTITY_DRIFT")
-    if referenced_external_ids != set(external_by_id):
-        raise RuntimeError("V2_EXTERNAL_ARTIFACT_REFERENCE_CLOSURE_DRIFT")
-
-    payload = dict(intake)
-    signatures = payload.pop("signatures", None)
-    payload_bytes = canonical_bytes(payload)
-    payload_digest = digest_bytes(payload_bytes)
-    key_by_id = trust_chain["key_by_id"]
-    expected_signature_org = {
-        "AUTHORIZATION": organization_ids[2],
-        "EXECUTOR": organization_ids[0],
-        "VERIFIER": organization_ids[1],
-    }
-    if not isinstance(signatures, list) or len(signatures) != 3:
-        raise RuntimeError("V2_EXTERNAL_SIGNATURE_CLOSURE_DRIFT")
-    roles: set[str] = set()
-    for signature in signatures:
-        if not isinstance(signature, dict) or set(signature) != {
-            "role",
-            "organization_id",
-            "key_id",
-            "algorithm",
-            "signed_payload_sha256",
-            "signature_base64",
-        }:
-            raise RuntimeError("V2_EXTERNAL_SIGNATURE_INVALID")
-        role = str(signature.get("role"))
-        key = key_by_id.get(str(signature.get("key_id")))
-        key_valid_from = (
-            _parse_utc_v2(key.get("valid_from"), f"key:{role}:valid_from")
-            if isinstance(key, dict)
-            else None
-        )
-        key_valid_until = (
-            _parse_utc_v2(key.get("valid_until"), f"key:{role}:valid_until")
-            if isinstance(key, dict)
-            else None
-        )
-        if (
-            role in roles
-            or role not in expected_signature_org
-            or signature.get("organization_id") != expected_signature_org[role]
-            or signature.get("algorithm") != "ed25519"
-            or signature.get("signed_payload_sha256") != payload_digest
-            or not isinstance(key, dict)
-            or key.get("organization_id") != expected_signature_org[role]
-            or role not in key.get("roles", [])
-            or key.get("revoked") is not False
-            or key.get("key_id") in trust_chain["revoked_key_ids"]
-            or key.get("organization_id")
-            in trust_chain["revoked_organization_ids"]
-            or key_valid_from is None
-            or key_valid_until is None
-            or not key_valid_from <= issued_at <= now < key_valid_until
-        ):
-            raise RuntimeError(f"V2_EXTERNAL_SIGNATURE_TRUST_DRIFT:{role}")
-        _verify_ed25519_v2(
-            public_key_pem=str(key.get("public_key_pem")),
-            signature_base64=str(signature.get("signature_base64")),
-            payload=payload_bytes,
-            label=role,
-        )
-        roles.add(role)
-    if roles != set(expected_signature_org):
-        raise RuntimeError("V2_EXTERNAL_SIGNATURE_ROLE_CLOSURE_DRIFT")
-    replay_verifier_result = _run_external_replay_verifier_v2(
-        verifier=trust_chain["replay_verifier"],
-        intake_path=intake_packed_path,
-        trust_store_path=trust_packed_path,
-        artifact_root=pack_root / "formal-campaign/external/artifacts",
-        scope_digest=scope_digest,
-        execution_ids=structured_execution_ids,
-        replay_ids=structured_replay_ids,
-        raw_ids=structured_raw_ids,
-    )
-    all_passed = intake.get("status") == "PASSED" and all(
-        row.get("status") == "PASSED" for row in result_map.values()
-    )
-    status = "PASSED" if all_passed else "FAILED"
-    return (
-        {
-            "provided": True,
-            "status": status,
-            "intake_artifact_id": intake_id,
-            "trust_store_artifact_id": trust_id,
-            "trust_root_id": trust_chain["root_id"],
-            "trust_root_fingerprint": digest_bytes(root_source.read_bytes()),
-            "trust_store_authorization_status": "PASSED",
-            "replay_verifier_fingerprint": canonical_digest(
-                trust_chain["replay_verifier"]
-            ),
-            "artifact_ids": sorted(external_ids),
-            "scope_digest": scope_digest,
-            "authorization_status": "PASSED",
-            "signature_status": "PASSED",
-            "replay_status": "PASSED",
-            "independent_status": status,
-            "holdout_status": "PASSED",
-            "representative_status": "PASSED",
-            "customer_status": "PASSED",
-            "organization_ids": organization_ids,
-        },
-        {
-            "results": result_map,
-            "producer_fingerprint": digest_bytes(evidence_source.read_bytes()),
-            "authorization_artifact_id": intake_id,
-            "executor_organization_id": organization_ids[0],
-            "verifier_organization_id": organization_ids[1],
-            "artifact_ids": sorted(external_ids),
-            "status": status,
-            "trust_root_fingerprint": digest_bytes(root_source.read_bytes()),
-            "replay_verifier_result": replay_verifier_result,
-        },
-    )
-
-
+    raise RuntimeError("V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED")
 def add_gap_inventory_v2(
     pack_root: Path,
     catalog: ArtifactCatalog,
@@ -2766,21 +2367,37 @@ def add_gap_inventory_v2(
     lines = [
         "# Frontend v2 formal-equivalence gap inventory",
         "",
-        "This inventory is exact for 9 profiles, 72 directed routes, 12 semantic blocks and 18 scenarios. Model/formal proof claims are kept separate from actual runtime and independent evidence.",
+        (
+            "This inventory is exact for 9 profiles, 72 directed routes, 12 "
+            "semantic blocks and 18 scenarios. Model/formal proof claims are kept "
+            "separate from actual runtime and independent evidence."
+        ),
         "",
         "| dimension | status | blocking reason |",
         "| --- | --- | --- |",
         "| model | PASSED | bounded same-engine relift model only |",
         f"| formal | {formal_status} | {formal_reason} |",
         f"| browser | {browser_status} | derived from applicable endpoint channels and route cross-channel closure |",
-        f"| native | {native_status} | derived from applicable native endpoints and native-to-native route closure only |",
+        (
+            f"| native | {native_status} | derived from applicable native "
+            "endpoints and native-to-native route closure only |"
+        ),
         f"| android | {channel_status['android']} | derived from exact applicable Android profile channels |",
         f"| ios | {channel_status['ios']} | derived from exact applicable iOS profile channels |",
         f"| harmonyos | {channel_status['harmonyos']} | derived from the exact HarmonyOS profile channel |",
-        f"| runtime | {runtime_status} | all required endpoint observations plus channel-specific canonical projections |",
-        f"| independent | {independent_status} | derived from signed external route/block evidence; same producer never upgrades this dimension |",
+        (
+            f"| runtime | {runtime_status} | all required endpoint observations "
+            "plus channel-specific canonical projections |"
+        ),
+        (
+            f"| independent | {independent_status} | derived from signed external "
+            "route/block evidence; same producer never upgrades this dimension |"
+        ),
         f"| holdout | {holdout_status} | derived from independently attested holdout corpus provenance |",
-        f"| representative | {representative_status} | derived from independently attested representative workload provenance |",
+        (
+            f"| representative | {representative_status} | derived from "
+            "independently attested representative workload provenance |"
+        ),
         "",
         "| route | block | model | formal | browser | android | ios | harmonyos | independent | certification |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -3355,7 +2972,15 @@ def runtime_actual_from_block_measurement_v2(
             raise RuntimeError(f"V2_BLOCK_OBSERVER_ACCESSIBILITY_INVALID:{label}")
         state = exact(
             measured["accessibility_state"],
-            {"main_role", "heading_level", "form_label", "error_role", "live_region", "focus_target", "keyboard_submit"},
+            {
+                "main_role",
+                "heading_level",
+                "form_label",
+                "error_role",
+                "live_region",
+                "focus_target",
+                "keyboard_submit",
+            },
             "accessibility_state",
         )
         main_role = string(state["main_role"], "main_role")
@@ -4030,7 +3655,7 @@ def _validate_playwright_raw_proof_v2(
         raise RuntimeError(
             f"V2_PLAYWRIGHT_BROWSER_MATRIX_DRIFT:{profile_execution.get('profile_id')}"
         )
-    for browser, matrix_row in zip(browser_runs, matrix):
+    for browser, matrix_row in zip(browser_runs, matrix, strict=True):
         scenarios = browser.get("scenarios")
         engine = str(browser.get("engine"))
         browser_version = browser.get("browser_version")
@@ -4732,7 +4357,9 @@ def pack_runtime_evidence_v2(
                         }
                         or item.get("role") != expected_role
                         or source_references.get(str(item.get("artifact_id"))) != item
-                        for item, expected_role in zip(supporting, expected_support_roles)
+                        for item, expected_role in zip(
+                            supporting, expected_support_roles, strict=True
+                        )
                     )
                     or actual != derived_block_actuals[trace_id][0]
                 ):
@@ -5590,7 +5217,10 @@ def add_toolchain_evidence(
         "algorithm": "sha256(canonical-json(identity_payload))",
         "identity_payload": identity_core,
         "sha256": canonical_digest(identity_core),
-        "scope": "producer+engine-preverification+implementation+campaign+scenario+policy+profile-executions+route-bindings",
+        "scope": (
+            "producer+engine-preverification+implementation+campaign+scenario+"
+            "policy+profile-executions+route-bindings"
+        ),
     }:
         raise RuntimeError("TOOLCHAIN_EVIDENCE_IDENTITY_DRIFT")
 
@@ -6235,7 +5865,7 @@ def normalize_route(
         f"; formal_input_sha256 {formal_input_sha}\n"
         f"; implementation_fingerprint {implementation['fingerprint']}\n"
         f"; replay_fingerprint {replay['fingerprint']}\n"
-    ).encode("utf-8") + raw_smt
+    ).encode() + raw_smt
     smt_relative = f"{route_prefix}/proof.smt2"
     (pack_root / smt_relative).write_bytes(smt_content)
     smt_id = artifact_identifier("solver-input", route_id)
@@ -7849,6 +7479,15 @@ def build_common_campaign_v2(
     external_trust_store_path: Path | None = None,
     external_trust_root_path: Path | None = None,
 ) -> Path:
+    if any(
+        path is not None
+        for path in (
+            external_evidence_path,
+            external_trust_store_path,
+            external_trust_root_path,
+        )
+    ):
+        raise RuntimeError("V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED")
     engine = verify_engine_campaign_v2(repo_root, engine_root)
     exact = exact_profiles(
         repo_root / "schemas/batch32/frontend-formal-route-campaign.schema.json"
@@ -7946,18 +7585,10 @@ def build_common_campaign_v2(
         route_entries=routes,
         relative_path="formal-campaign/environment/z3",
     )
-    if external_evidence_path is not None and external_evidence_path.is_symlink():
-        raise RuntimeError("V2_EXTERNAL_INPUT_REGULAR_FILES_REQUIRED")
-    external_intake = (
-        load_json(external_evidence_path.resolve(strict=True))
-        if external_evidence_path is not None
-        else None
-    )
     corpora = add_corpora_v2(
         common_root,
         catalog,
         scenario_ids=scenario_ids,
-        external_intake=external_intake,
     )
     toolchain, raw_toolchain, runtime_capture = add_toolchain_evidence_v2(
         repo_root=repo_root,
@@ -8230,13 +7861,23 @@ def build_common_campaign_v2(
         },
         "limitations": [
             (
-                "All 864 semantic blocks have bounded assumption-free solver claims; this remains bounded-profile evidence."
+                "All 864 semantic blocks have bounded assumption-free solver "
+                "claims; this remains bounded-profile evidence."
                 if engine.get("unconditional_proof") is True
-                else "All 864 semantic blocks have bounded same-engine model/formal evidence under assumptions."
+                else (
+                    "All 864 semantic blocks have bounded same-engine model/formal "
+                    "evidence under assumptions."
+                )
             ),
             "No model output is counted as browser or native runtime evidence.",
-            "Runtime readiness is derived only from packed actual observations and exact channel-specific canonical projections.",
-            "Independent, holdout, representative/customer and certification states are derived separately from strict external evidence.",
+            (
+                "Runtime readiness is derived only from packed actual observations "
+                "and exact channel-specific canonical projections."
+            ),
+            (
+                "Independent, holdout, representative/customer and certification "
+                "states are derived separately from strict external evidence."
+            ),
         ],
     }
     campaign_path = (
@@ -8611,6 +8252,129 @@ def complete_verification_pack_v2(
     runtime_status = campaign.get("toolchain_evidence", {}).get(
         "runtime_status", "NOT_RUN"
     )
+    external_status = campaign.get("external_evidence", {}).get(
+        "status", "NOT_RUN"
+    )
+    external_passed = external_status == "PASSED"
+    external_limitation = (
+        "Scoped independent runtime, holdout, representative and customer "
+        "evidence passed the external trust protocol; unconditional proof, "
+        "complete browser/native production coverage and certification remain open."
+        if external_passed
+        else "Independent runtime, holdout, representative and customer evidence is NOT_RUN."
+    )
+    external_risk = (
+        {
+            "risk_id": "frontend-v2-production-certification-incomplete",
+            "description": (
+                "Scoped external qualification does not establish unconditional "
+                "proof, complete browser/native production coverage or certification."
+            ),
+            "severity": "critical",
+            "mitigation": (
+                "Close unconditional formal, required runtime, operational and "
+                "certification gates."
+            ),
+            "owner": "frontend-formal-verification-team",
+            "status": "open",
+        }
+        if external_passed
+        else {
+            "risk_id": "frontend-v2-external-evidence-not-run",
+            "description": "External runtime and customer qualification is absent.",
+            "severity": "critical",
+            "mitigation": "Run the externally trusted intake and replay protocol.",
+            "owner": "frontend-formal-verification-team",
+            "status": "open",
+        }
+    )
+    oracle_registry = {
+        "schema_version": 1,
+        "pack_key": VERIFICATION_KEY_V2,
+        "oracles": [
+            {
+                "oracle_id": "oracle.canonical-model-v2",
+                "type": "formal-spec",
+                "owner": "frontend-formal-verification-team",
+                "scope": ["claim.behavior"],
+                "independence": "dependent",
+                "trust_level": "supporting",
+                "version": "2.0.0",
+                "status": "PASSED",
+                "evidence_refs": [
+                    campaign_relative,
+                    "formal-campaign/oracle/provenance-graph.json",
+                ],
+            },
+            {
+                "oracle_id": "oracle.bounded-z3-v2",
+                "type": "solver",
+                "owner": "frontend-formal-verification-team",
+                "scope": ["claim.behavior"],
+                "independence": "dependent",
+                "trust_level": "supporting",
+                "version": "4.16.0",
+                "status": "PASSED",
+                "evidence_refs": [campaign_relative],
+            },
+            {
+                "oracle_id": "oracle.external-runtime-v2",
+                "type": "reference-implementation",
+                "owner": "external-independent-verifier",
+                "scope": ["claim.behavior"],
+                "independence": "independent",
+                "trust_level": "strong",
+                "version": "2.0.0",
+                "status": external_status,
+                "evidence_refs": (
+                    [
+                        campaign_relative,
+                        "formal-campaign/oracle/provenance-graph.json",
+                    ]
+                    if external_status == "PASSED"
+                    else []
+                ),
+            },
+        ],
+        "precedence_rules": [
+            {
+                "claim_type": "behavior",
+                "ordered_oracles": [
+                    "oracle.external-runtime-v2",
+                    "oracle.canonical-model-v2",
+                    "oracle.bounded-z3-v2",
+                ],
+            }
+        ],
+        "conflicts": [],
+        "approvals": [],
+    }
+    write_json(pack / "oracle-registry.json", oracle_registry)
+    assurance = load_json(pack / "assurance/assurance-case.json")
+    assurance.update(
+        {
+            "owner": "frontend-formal-verification-team",
+            "top_claim": (
+                "The exact bounded frontend interaction scope has local model "
+                "evidence; production correctness remains unsupported."
+            ),
+            "claims": [
+                {
+                    "claim_id": "claim.behavior",
+                    "statement": "Critical migrated behavior remains correct.",
+                    "status": "unsupported",
+                    "evidence_refs": [campaign_relative],
+                    "assumptions": list(campaign.get("assumptions", [])),
+                    "limitations": [external_limitation],
+                }
+            ],
+            "evidence": [],
+            "residual_risks": [external_risk],
+            "monitoring_obligations": [],
+            "approvals": [],
+        }
+    )
+    write_json(pack / "assurance/assurance-case.json", assurance)
     manifest = load_json(pack / "pack.json")
     manifest.update(
         {
@@ -8634,6 +8398,15 @@ def complete_verification_pack_v2(
                 "campaign_sha256": campaign_sha,
                 "scope_digest": scope_digest,
             },
+            "frontend_governance_v2": {
+                "oracle_registry_sha256": digest_bytes(
+                    (pack / "oracle-registry.json").read_bytes()
+                ),
+                "assurance_case_sha256": digest_bytes(
+                    (pack / "assurance/assurance-case.json").read_bytes()
+                ),
+                "status": "NOT_RUN" if external_status != "PASSED" else "PASSED",
+            },
         }
     )
     write_json(pack / "pack.json", manifest)
@@ -8650,7 +8423,10 @@ def complete_verification_pack_v2(
             "limitations": [
                 "All 864 blocks have bounded proof under assumptions from one engine.",
                 f"Packed actual runtime aggregate is {runtime_status}.",
-                "Independent holdout, representative/customer and certification evidence remain NOT_RUN without strict external intake.",
+                (
+                    "Independent holdout, representative/customer and certification "
+                    "evidence remain NOT_RUN without strict external intake."
+                ),
             ],
         }
     )
@@ -8840,6 +8616,15 @@ def build_packs_v2(
     external_trust_store_path: Path | None = None,
     external_trust_root_path: Path | None = None,
 ) -> tuple[Path, Path]:
+    if any(
+        path is not None
+        for path in (
+            external_evidence_path,
+            external_trust_store_path,
+            external_trust_root_path,
+        )
+    ):
+        raise RuntimeError("V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED")
     common_root = staging_root / "common-v2"
     common_root.mkdir(parents=True)
     common_campaign = build_common_campaign_v2(
@@ -9083,6 +8868,20 @@ def main() -> int:
     parser.add_argument("--node", default="node")
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
+    external_arguments = (
+        args.external_evidence,
+        args.external_trust_store,
+        args.external_trust_root,
+    )
+    if any(path is not None for path in external_arguments) and not all(
+        path is not None for path in external_arguments
+    ):
+        raise SystemExit(
+            "--external-evidence, --external-trust-store and --external-trust-root "
+            "must be supplied together"
+        )
+    if any(path is not None for path in external_arguments):
+        raise RuntimeError("V2_EXTERNAL_POSITIVE_PROTOCOL_NOT_IMPLEMENTED")
     repo_root = Path(args.repo_root).resolve()
     if args.engine_output is not None:
         supplied_engine_root = args.engine_output.resolve(strict=True)
@@ -9118,18 +8917,6 @@ def main() -> int:
         raise SystemExit("output exists; pass --force to refresh the paired packs")
     if contract_version == "2" and args.toolchain_evidence is None:
         raise SystemExit("v2 requires --toolchain-evidence with exact raw evidence")
-    if len(
-        {
-            args.external_evidence is None,
-            args.external_trust_store is None,
-            args.external_trust_root is None,
-        }
-    ) != 1:
-        raise SystemExit(
-            "--external-evidence, --external-trust-store and --external-trust-root "
-            "must be supplied together"
-        )
-
     with tempfile.TemporaryDirectory(
         prefix=".frontend-formal-pack-stage-", dir=repo_root
     ) as directory:

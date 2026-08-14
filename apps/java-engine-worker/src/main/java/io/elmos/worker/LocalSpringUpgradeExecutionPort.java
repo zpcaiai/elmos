@@ -15,6 +15,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -47,6 +48,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private static final long MAX_SOURCE_BYTES = 512L * 1024 * 1024;
     private static final int MAX_SOURCE_FILES = 100_000;
     private static final long MAX_CAPABILITY_MANIFEST_BYTES = 512L * 1024;
+    private static final int MAX_HEALTH_RESPONSE_BYTES = 64 * 1024;
     private static final Path CAPABILITY_TEST_MANIFEST =
             Path.of("elmos", "spring-capability-tests.json");
     private static final Set<String> COMPLEX_CAPABILITY_STATES = Set.of(
@@ -93,6 +95,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     private final Path dependencySeedRepository;
     private final boolean experimentalRoutesEnabled;
     private final ObjectMapper json;
+    private final SpringMvcWarRuntime.Configuration springMvcWarRuntime;
     /**
      * Defaults to {@link DisabledSpringUpgradeCodingAgentPort} in every constructor
      * that does not accept one explicitly, so every existing call site keeps its
@@ -167,6 +170,19 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                                     boolean mavenOffline, Path dependencySeedRepository,
                                     boolean experimentalRoutesEnabled, ObjectMapper json,
                                     SpringUpgradeCodingAgentPort codingAgentPort) {
+        this(workspaceRoot, configuredJavaHomes, mavenExecutable, gradleExecutable,
+                allowedGitHosts, allowFileRepositories, mavenOffline, dependencySeedRepository,
+                experimentalRoutesEnabled, json, codingAgentPort,
+                SpringMvcWarRuntime.Configuration.unconfigured());
+    }
+
+    LocalSpringUpgradeExecutionPort(Path workspaceRoot, Map<String, Path> configuredJavaHomes,
+                                    String mavenExecutable, String gradleExecutable,
+                                    Set<String> allowedGitHosts, boolean allowFileRepositories,
+                                    boolean mavenOffline, Path dependencySeedRepository,
+                                    boolean experimentalRoutesEnabled, ObjectMapper json,
+                                    SpringUpgradeCodingAgentPort codingAgentPort,
+                                    SpringMvcWarRuntime.Configuration springMvcWarRuntime) {
         this.workspaceRoot = normalizeRoot(workspaceRoot);
         this.javaHomes = verifiedJavaHomes(configuredJavaHomes);
         Path mavenProbeJavaHome = this.javaHomes.entrySet().stream()
@@ -183,6 +199,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         this.experimentalRoutesEnabled = experimentalRoutesEnabled;
         this.json = Objects.requireNonNull(json);
         this.codingAgentPort = Objects.requireNonNull(codingAgentPort, "codingAgentPort");
+        this.springMvcWarRuntime = Objects.requireNonNull(springMvcWarRuntime, "springMvcWarRuntime");
     }
 
     /** Java releases this Runner can build a source baseline with. */
@@ -281,8 +298,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         routeSelection.put("detected_source_framework_version", fingerprint.sourceFrameworkVersion());
         routeSelection.put("detected_java", sourceJava);
         routeSelection.put("detected_build_tool", fingerprint.buildTool());
-        routeSelection.put("accepted_source_range",
-                "[" + route.sourceBootMinInclusive() + ", " + route.sourceBootMaxExclusive() + ")");
+        routeSelection.put("accepted_source_constraint", route.sourceConstraint());
         routeSelection.put("route_evidence", selection.evidence().name());
         routeSelection.put("experimental_opt_in_required", selection.requiresExperimentalOptIn());
         routeSelection.put("recipe_id", route.recipeId());
@@ -304,6 +320,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
         copyTree(source, sourceBaseline);
         TestSummary sourceTests;
+        SpringMvcWarRuntime.OracleRun sourceMvcOracle = null;
         try {
             /*
              * Run verify, not only test. Customer repositories frequently bind
@@ -322,8 +339,8 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             sourceTests = testSummary(sourceBaseline);
             requireSourceTests(sourceTests);
             writeJson(runRoot.resolve("evidence/source-test-summary.json"), sourceTests);
-            validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome, buildTool,
-                    fingerprint);
+            sourceMvcOracle = validateSourceStartup(sourceBaseline, runRoot, control, sourceJavaHome,
+                    buildTool, fingerprint, route);
         } finally {
             deleteTree(sourceBaseline);
         }
@@ -351,12 +368,50 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         runRewrite(migrated, toolHome, control, route, targetJavaHome);
         checkCancelled(control);
 
+        if (SpringMvcExactTargetMaterializer.supports(route)) {
+            /*
+             * The exact non-Boot MVC route cannot be completed by source-level
+             * OpenRewrite alone: web.xml and the two XML application contexts
+             * have to become a governed Boot bootstrap/configuration graph.
+             * Materialize from the still-immutable source snapshot, never by
+             * executing the repository's Python scaffold. The Java emitter
+             * accepts only the complete content-addressed 5.3.39 fixture and
+             * publishes a fresh target tree atomically.
+             */
+            Path exactMvcTarget = runRoot.resolve("mvc-exact-materialized-target");
+            SpringMvcExactTargetMaterializer.Materialization materialization =
+                    SpringMvcExactTargetMaterializer.materialize(
+                            source, exactMvcTarget, route, json);
+            deleteTree(migrated);
+            try {
+                Files.move(exactMvcTarget, migrated, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException unsupported) {
+                try {
+                    Files.move(exactMvcTarget, migrated);
+                } catch (IOException error) {
+                    throw blocked("MVC_TARGET_PUBLISH_FAILED",
+                            "The validated exact MVC target could not replace the disposable rewrite tree.");
+                }
+            } catch (IOException error) {
+                throw blocked("MVC_TARGET_PUBLISH_FAILED",
+                        "The validated exact MVC target could not replace the disposable rewrite tree.");
+            }
+            control.log("exact MVC target materialized status=" + materialization.status()
+                    + " manifest-sha256:" + materialization.manifestSha256()
+                    + " source-files=" + materialization.sourceFileCount());
+        }
+
         control.stage(Stage.BUILD_AND_TEST,
                 "Running the target repository's complete " + buildTool + " build with Java " + route.targetJava());
         CommandOutcome firstBuild = runBuildOutcome(migrated, targetJavaHome, toolHome, control,
                 List.of(SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool) ? "verify" : "build"),
                 Duration.ofMinutes(30), buildTool);
         if (firstBuild.exitCode() != 0) {
+            if (SpringMvcExactTargetMaterializer.supports(route)) {
+                throw blocked("MVC_EXACT_TARGET_BUILD_FAILED",
+                        "The content-addressed exact MVC target failed its real build; generic repair "
+                                + "is forbidden because it would invalidate the emitter receipt.");
+            }
             control.stage(Stage.DETERMINISTIC_REPAIR,
                     "Target build failed; applying one bounded deterministic OpenRewrite repair cycle");
             runRewrite(migrated, toolHome, control, route, targetJavaHome);
@@ -402,6 +457,16 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                             + String.join(", ", complexCapabilityDecision.blockers().stream()
                             .limit(8).toList()));
         }
+        if (sourceMvcOracle != null) {
+            control.stage(Stage.HEALTH_CHECK,
+                    "Starting the target executable WAR and comparing the exact source HTTP oracle");
+            SpringMvcWarRuntime runtime = new SpringMvcWarRuntime();
+            SpringMvcWarRuntime.OracleRun targetMvcOracle = runtime.runTarget(
+                    migrated, runRoot, targetJavaHome, buildTool, springMvcWarRuntime, control);
+            writeJson(runRoot.resolve("evidence/spring-mvc-http-oracle.json"),
+                    SpringMvcWarRuntime.compare(sourceMvcOracle, targetMvcOracle));
+            control.log("Spring MVC source/target HTTP oracle matched for every configured path");
+        }
         SpringDeploymentGuidance.writeTo(migrated, buildTool, route);
 
         control.stage(Stage.PACKAGE_ARTIFACT, "Packaging migrated repository as a content-addressed ZIP");
@@ -425,19 +490,19 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         String targetJava = SpringRouteCatalog.normalizeJava(request.targetJava());
         Path targetJavaHome = targetJavaHome(targetJava);
         control.stage(Stage.START_APPLICATION, "Starting verified artifact with Java " + targetJava);
-        Path jar = bootJar(result.migratedRepository(), result.fingerprint().buildTool());
+        Path jar = bootArtifact(result.migratedRepository(), result.fingerprint());
         int port = reservePort();
         Path log = runRoot.resolve("runtime/application.log");
         createDirectory(log.getParent());
         ProcessBuilder builder = new ProcessBuilder(targetJavaHome.resolve("bin/java").toString(), "-jar", jar.toString());
         builder.directory(result.migratedRepository().toFile());
         builder.environment().put("JAVA_HOME", targetJavaHome.toString());
-        builder.environment().put("SERVER_PORT", Integer.toString(port));
-        builder.environment().put("MANAGEMENT_SERVER_PORT", Integer.toString(port));
+        bindLoopbackEnvironment(builder, port);
         builder.redirectErrorStream(true);
         builder.redirectOutput(ProcessBuilder.Redirect.appendTo(log.toFile()));
+        Process process = null;
         try {
-            Process process = builder.start();
+            process = builder.start();
             control.process(process);
             control.stage(Stage.HEALTH_CHECK, "Waiting for application health endpoint");
             String health = waitForHealth(process, port, result.healthCandidates(), control);
@@ -445,6 +510,9 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             return new RuntimeHandle(process, null, request.organizationId(), port, health);
         } catch (IOException error) {
             throw blocked("APPLICATION_START_FAILED", "Verified artifact could not be started in the private Runner.");
+        } catch (RuntimeException error) {
+            if (process != null && process.isAlive()) process.destroyForcibly();
+            throw error;
         }
     }
 
@@ -462,9 +530,22 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         control.log("application stopped");
     }
 
-    private void validateSourceStartup(Path source, Path runRoot, Control control, Path sourceJavaHome,
-                                      String buildTool, Fingerprint fingerprint) {
-        requireSupportedSourceStartup(fingerprint);
+    private SpringMvcWarRuntime.OracleRun validateSourceStartup(
+            Path source,
+            Path runRoot,
+            Control control,
+            Path sourceJavaHome,
+            String buildTool,
+            Fingerprint fingerprint,
+            SpringRouteCatalog.SpringRoute route
+    ) {
+        if ("spring-mvc".equals(fingerprint.sourceFrameworkFamily())) {
+            SpringMvcWarRuntime.requireExactTuple(fingerprint, route);
+            control.stage(Stage.HEALTH_CHECK,
+                    "Starting source WAR in the digest-bound external Tomcat 9 runtime");
+            return new SpringMvcWarRuntime().runSource(
+                    source, runRoot, sourceJavaHome, buildTool, springMvcWarRuntime, control);
+        }
         Path jar = bootJar(source, buildTool);
         int port = reservePort();
         Path log = runRoot.resolve("evidence/source-startup.log");
@@ -476,8 +557,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         );
         builder.directory(source.toFile());
         builder.environment().put("JAVA_HOME", sourceJavaHome.toString());
-        builder.environment().put("SERVER_PORT", Integer.toString(port));
-        builder.environment().put("MANAGEMENT_SERVER_PORT", Integer.toString(port));
+        bindLoopbackEnvironment(builder, port);
         builder.redirectErrorStream(true);
         builder.redirectOutput(ProcessBuilder.Redirect.appendTo(log.toFile()));
         Process process = null;
@@ -506,16 +586,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
                 }
             }
         }
-    }
-
-    static void requireSupportedSourceStartup(Fingerprint fingerprint) {
-        Objects.requireNonNull(fingerprint, "fingerprint");
-        if ("spring-mvc".equals(fingerprint.sourceFrameworkFamily())) {
-            throw blocked("SPRING_MVC_SOURCE_CONTAINER_NOT_PROVISIONED",
-                    "Traditional Spring MVC source startup requires an exact approved Servlet 4 "
-                            + "container and executable WAR deployment contract; Boot bootstrap/context, "
-                            + "web.xml, and view behavior conversion is not implemented.");
-        }
+        return null;
     }
 
     @Override public boolean configured() { return true; }
@@ -1340,9 +1411,17 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
             for (String path : candidates) {
                 try {
                     var response = client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
-                                    .timeout(Duration.ofSeconds(2)).GET().build(),
-                            HttpResponse.BodyHandlers.discarding());
-                    if (response.statusCode() >= 200 && response.statusCode() < 300) return path;
+                                    .timeout(Duration.ofSeconds(2))
+                                    .header("Accept", "application/json")
+                                    .GET().build(),
+                            HttpResponse.BodyHandlers.ofInputStream());
+                    try (InputStream body = response.body()) {
+                        byte[] bytes = body.readNBytes(MAX_HEALTH_RESPONSE_BYTES + 1);
+                        if (bytes.length <= MAX_HEALTH_RESPONSE_BYTES
+                                && strictHealthUp(response.statusCode(), bytes, json)) {
+                            return path;
+                        }
+                    }
                 } catch (IOException ignored) {
                     // Retry until the bounded deadline.
                 } catch (InterruptedException error) {
@@ -1358,6 +1437,31 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
         process.destroyForcibly();
         throw blocked("APPLICATION_HEALTH_TIMEOUT", "The application did not become healthy within 60 seconds.");
+    }
+
+    static boolean strictHealthUp(int statusCode, byte[] body, ObjectMapper json) {
+        if (statusCode < 200 || statusCode >= 300 || body == null
+                || body.length == 0 || body.length > MAX_HEALTH_RESPONSE_BYTES) {
+            return false;
+        }
+        try {
+            JsonNode document = json.readTree(body);
+            return document != null && document.isObject()
+                    && "UP".equals(document.path("status").asText());
+        } catch (IOException | RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    static void bindLoopbackEnvironment(ProcessBuilder builder, int port) {
+        Objects.requireNonNull(builder, "builder");
+        if (port < 1 || port > 65_535) {
+            throw new IllegalArgumentException("runtime port must be between 1 and 65535");
+        }
+        builder.environment().put("SERVER_ADDRESS", "127.0.0.1");
+        builder.environment().put("SERVER_PORT", Integer.toString(port));
+        builder.environment().put("MANAGEMENT_SERVER_ADDRESS", "127.0.0.1");
+        builder.environment().put("MANAGEMENT_SERVER_PORT", Integer.toString(port));
     }
 
     private HttpProbe waitForStartup(
@@ -2293,6 +2397,14 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         } catch (IOException error) {
             throw blocked("BOOT_JAR_NOT_FOUND", "Verified Spring Boot artifact was not found.");
         }
+    }
+
+    private static Path bootArtifact(Path root, Fingerprint sourceFingerprint) {
+        if (SpringRouteCatalog.SourceFamily.SPRING_MVC.contractValue()
+                .equals(sourceFingerprint.sourceFrameworkFamily())) {
+            return SpringMvcWarRuntime.executableBootWar(root, sourceFingerprint.buildTool());
+        }
+        return bootJar(root, sourceFingerprint.buildTool());
     }
 
     private static boolean isExecutableBootJar(Path path) {

@@ -37,6 +37,7 @@ const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
   { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
   { href: "/translation", label: "选择跨语言方向路线", hint: "Java / C# / Go / Rust / Python / TypeScript", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 30 routes Java C# Go Rust Python TypeScript" },
+  { href: "/migration/sql", label: "运行国产数据库 SQL 只读预检", hint: "DM8 / KingbaseES / openGauss / TiDB / OceanBase / GaussDB", icon: "database" as IconName, group: "业务线", keywords: "ChinaDB 国产数据库 SQL 预检 转换 DM8 人大金仓 openGauss TiDB GBase 瀚高 OceanBase GaussDB GoldenDB" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
   { href: "/migration", label: "查看 M37 扩展 Marketplace", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "M37 Marketplace SDK 签名 撤销" },
   { href: "/proof-loop", label: "运行 B105–B108 证据闭环", hint: "Golden route / Preview / Live validation / Certificate", icon: "shield" as IconName, group: "业务线", keywords: "B105 B106 B107 B108 现代化 预览 验证 证书" },

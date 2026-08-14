@@ -1,5 +1,6 @@
 package io.elmos.worker;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import java.security.MessageDigest;
 import java.time.Clock;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.elmos.worker.SpringUpgradeModels.*;
@@ -98,6 +100,33 @@ class SpringUpgradeRunServiceTest {
         assertFalse(completed.downloadAvailable());
     }
 
+    @Test void legacyBootOnlyPendingPackWithoutFingerprintNormalizesWithoutInventingARoute() throws Exception {
+        SpringUpgradeExecutionPort disabled =
+                new DisabledSpringUpgradeExecutionPort("rootless Runner unavailable");
+        SpringUpgradeIndependentValidationPort verifier =
+                new DisabledSpringUpgradeIndependentValidationPort("verifier unavailable");
+        service = service(disabled, verifier);
+        RunView blocked = awaitTerminal(
+                service.create("org-a", request("legacy-pending-pack")).runId(), "org-a");
+        assertNull(blocked.fingerprint());
+        Path stateFile = workspace.resolve("spring-upgrades").resolve(blocked.runId())
+                .resolve("evidence/run-state.json");
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        com.fasterxml.jackson.databind.node.ObjectNode persisted =
+                (com.fasterxml.jackson.databind.node.ObjectNode) mapper.readTree(stateFile.toFile());
+        persisted.put("schema_version", "1.0");
+        persisted.put("pack_key", SpringUpgradeModels.PACK_KEY);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile.toFile(), persisted);
+        service.close();
+
+        service = service(disabled, verifier);
+        RunView restored = service.get("org-a", blocked.runId());
+        assertEquals("PENDING_ROUTE_SELECTION", restored.packKey());
+        JsonNode normalized = mapper.readTree(stateFile.toFile());
+        assertEquals("1.1", normalized.path("schema_version").asText());
+        assertEquals("PENDING_ROUTE_SELECTION", normalized.path("pack_key").asText());
+    }
+
     @Test void conflictingIdempotencyInputAndNonTerminalRetryAreRejected() {
         SpringUpgradeExecutionPort delayed = new SuccessfulTransformer() {
             @Override public ExecutionResult execute(StartRequest request, Path runRoot, Control control) {
@@ -171,6 +200,74 @@ class SpringUpgradeRunServiceTest {
         assertEquals("DOWNLOAD_ARTIFACT_DIGEST_MISMATCH", conflict.code());
         assertThrows(SpringUpgradeRunService.Conflict.class,
                 () -> service.startRuntime("org-a", completed.runId()));
+    }
+
+    @Test void mvcRunPersistsAndRestoresItsSelectedPackAndHonestExactTuple() throws Exception {
+        StartRequest request = request("mvc-durable-key");
+        service = service(new MvcTransformer(), new PassingVerifier());
+        RunView completed = awaitTerminal(service.create("org-a", request).runId(), "org-a");
+
+        assertEquals(RunStatus.SUCCEEDED, completed.status());
+        assertEquals("spring-framework-5-3-mvc-to-spring-boot-3-5-3", completed.packKey());
+        assertNull(completed.exactTuple().sourceSpringBoot());
+        assertEquals("spring-mvc", completed.exactTuple().sourceFrameworkFamily());
+        assertEquals("5.3.39", completed.exactTuple().sourceFrameworkVersion());
+        Path stateFile = workspace.resolve("spring-upgrades").resolve(completed.runId())
+                .resolve("evidence/run-state.json");
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        com.fasterxml.jackson.databind.node.ObjectNode persisted =
+                (com.fasterxml.jackson.databind.node.ObjectNode) mapper.readTree(stateFile.toFile());
+        assertEquals("1.1", persisted.path("schema_version").asText());
+        assertEquals(completed.packKey(), persisted.path("pack_key").asText());
+        service.close();
+
+        persisted.put("schema_version", "1.0");
+        mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile.toFile(), persisted);
+        service = service(new MvcTransformer(), new PassingVerifier());
+        RunView recovered = service.get("org-a", completed.runId());
+        assertEquals(completed.packKey(), recovered.packKey());
+        assertNull(recovered.exactTuple().sourceSpringBoot());
+        assertEquals("spring-mvc", recovered.exactTuple().sourceFrameworkFamily());
+        assertEquals("1.1", mapper.readTree(stateFile.toFile()).path("schema_version").asText());
+
+        assertThrows(IllegalStateException.class,
+                () -> SpringUpgradeRunService.requirePersistedPackKey(
+                        SpringUpgradeModels.PACK_KEY, recovered.fingerprint(), request));
+        assertThrows(IllegalStateException.class,
+                () -> SpringUpgradeRunService.requirePersistedPackKey(
+                        null, recovered.fingerprint(), request));
+        Fingerprint adjacentMvc = new Fingerprint(
+                "UNKNOWN", "11", "maven", List.of(), List.of("spring-mvc"), List.of(),
+                Map.of("spring-mvc", List.of("Controller.java")),
+                "spring-mvc", "5.3.38");
+        assertThrows(BlockedException.class,
+                () -> SpringUpgradeRunService.requirePersistedPackKey(
+                        completed.packKey(), adjacentMvc, request));
+    }
+
+    @Test void mvcFcmCannotAliasSpringFrameworkVersionAsSpringBoot() {
+        service = service(new MvcTransformer(true), new PassingVerifier());
+        RunView blocked = awaitTerminal(
+                service.create("org-a", request("mvc-dishonest-boot")).runId(), "org-a");
+
+        assertEquals(RunStatus.BLOCKED, blocked.status());
+        assertEquals("FCM_MVC_SOURCE_BOOT_FORBIDDEN", blocked.failureCode());
+        assertFalse(blocked.downloadAvailable());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test void capabilitiesPublishAuthoritativeExactMvcSourceConstraint() {
+        service = service(new SuccessfulTransformer(), new PassingVerifier());
+        List<Map<String, Object>> routes =
+                (List<Map<String, Object>>) service.capabilities().get("routes");
+        Map<String, Object> mvc = routes.stream()
+                .filter(route -> "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21"
+                        .equals(route.get("routeId")))
+                .findFirst().orElseThrow();
+
+        assertEquals("exact:5.3.39", mvc.get("sourceConstraint"));
+        assertEquals("EXACT", mvc.get("sourceVersionMatch"));
+        assertEquals("5.3.39", mvc.get("exactSourceVersion"));
     }
 
     private SpringUpgradeRunService service(
@@ -304,6 +401,62 @@ class SpringUpgradeRunServiceTest {
         @Override public void stop(RuntimeHandle handle, Control control) {}
         @Override public boolean configured() { return true; }
         @Override public String configurationReason() { return "test"; }
+    }
+
+    private static class MvcTransformer extends SuccessfulTransformer {
+        private final boolean aliasesFrameworkAsBoot;
+
+        MvcTransformer() {
+            this(false);
+        }
+
+        MvcTransformer(boolean aliasesFrameworkAsBoot) {
+            this.aliasesFrameworkAsBoot = aliasesFrameworkAsBoot;
+        }
+
+        @Override public ExecutionResult execute(StartRequest request, Path runRoot, Control control) {
+            ExecutionResult boot = super.execute(request, runRoot, control);
+            try {
+                Files.writeString(runRoot.resolve("evidence/framework-contract-model.json"), """
+                        {
+                          "schema_version": "1.0",
+                          "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
+                          "route_id": "spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
+                          "route_evidence": "NOT_RUN",
+                          "source_commit": "%s",
+                          "source_snapshot_sha256": "%s",
+                          "extraction_status": "STATIC_AND_SOURCE_BASELINE",
+                          "source_framework": {"family": "spring-mvc", "version": "5.3.39"},
+                          "exact_tuple": {
+                            "sourceSpringBoot": %s,
+                            "sourceFrameworkFamily": "spring-mvc",
+                            "sourceFrameworkVersion": "5.3.39",
+                            "sourceJava": "11",
+                            "sourceBuildTool": "maven-3.9.11",
+                            "targetSpringBoot": "3.5.3",
+                            "targetJava": "21",
+                            "targetBuildTool": "maven-3.9.11",
+                            "rewriteSpring": "6.35.0",
+                            "rewriteMavenPlugin": "6.44.0"
+                          },
+                          "capabilities": [],
+                          "unknowns": []
+                        }
+                        """.formatted(
+                        boot.resolvedCommitSha(), boot.snapshotDigest(),
+                        aliasesFrameworkAsBoot ? "\"5.3.39\"" : "null"));
+                Fingerprint mvc = new Fingerprint(
+                        "UNKNOWN", "11", "maven", List.of(), List.of("spring-mvc"), List.of(),
+                        java.util.Map.of("spring-mvc", List.of("Controller.java")),
+                        "spring-mvc", "5.3.39");
+                return new ExecutionResult(
+                        boot.resolvedCommitSha(), boot.snapshotId(), boot.snapshotDigest(), mvc,
+                        boot.fcmArtifact(), boot.migratedRepository(), boot.downloadArtifact(),
+                        boot.artifactSha256(), boot.artifactSize(), boot.healthCandidates());
+            } catch (Exception error) {
+                throw new RuntimeException(error);
+            }
+        }
     }
 
     private static final class PassingVerifier implements SpringUpgradeIndependentValidationPort {

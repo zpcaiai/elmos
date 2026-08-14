@@ -1,5 +1,6 @@
 package io.elmos.worker;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -42,5 +43,15 @@ class SpringUpgradeConfigurationTest {
                 "/legacy/java-17", "/legacy/java-21", "11=relative/jdk-11"));
         assertThrows(IllegalArgumentException.class, () -> SpringUpgradeConfiguration.javaHomes(
                 "/legacy/java-17", "/legacy/java-21", "11"));
+    }
+
+    @Test
+    void consumedTomcatManifestDigestIsPassedIntoRuntimeConfiguration() {
+        String digest = "a".repeat(64);
+        SpringMvcWarRuntime.Configuration configuration =
+                SpringUpgradeConfiguration.springMvcRuntimeConfiguration(
+                        "", "9.0.83", "b".repeat(64), digest, "", "", new ObjectMapper());
+
+        assertEquals(digest, configuration.consumedTomcatManifestSha256());
     }
 }

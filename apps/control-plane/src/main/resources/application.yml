@@ -20,6 +20,11 @@ spring:
     problemdetails:
       enabled: true
 elmos:
+  database-data-preflight:
+    enabled: ${ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED:false}
+    engine-base-url: ${ELMOS_DATABASE_DATA_ENGINE_BASE_URL:http://database-data-engine-worker:8089}
+    connect-timeout: ${ELMOS_DATABASE_DATA_PREFLIGHT_CONNECT_TIMEOUT:2s}
+    request-timeout: ${ELMOS_DATABASE_DATA_PREFLIGHT_REQUEST_TIMEOUT:20s}
   identity:
     issuer-uri: ${ELMOS_OIDC_ISSUER_URI:}
     jwk-set-uri: ${ELMOS_OIDC_JWKS_URI:}

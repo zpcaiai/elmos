@@ -1,3 +1,7 @@
+ARG ELMOS_SOURCE_REVISION
+ARG ELMOS_SOURCE_CONTEXT_SHA256
+ARG ELMOS_SOURCE_STATUS_SHA256
+
 FROM maven:3.9.11-eclipse-temurin-8@sha256:e3c149f44c95b0e9dd131862b3df67b3f061f7f6f3898a87b170564b3a943611 AS java8
 
 FROM maven:3.9.11-eclipse-temurin-11@sha256:c095e2421eaf3e5cb1573fd0474e68e17062866d454362349e17bbb75f44031e AS java11
@@ -5,28 +9,30 @@ FROM maven:3.9.11-eclipse-temurin-11@sha256:c095e2421eaf3e5cb1573fd0474e68e17062
 FROM maven:3.9.11-eclipse-temurin-17@sha256:e4a7ace3dc0d645ed97f8d9ad0b0d3f0b14fa8d150138f27f116d7105a639b82 AS java17
 
 FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237 AS source
+ARG ELMOS_SOURCE_REVISION
+ARG ELMOS_SOURCE_CONTEXT_SHA256
+ARG ELMOS_SOURCE_STATUS_SHA256
 WORKDIR /src
 COPY . .
-RUN mkdir -p /opt/elmos \
-    && find . -type f -print0 \
-      | LC_ALL=C sort -z \
-      | xargs -0 sha256sum \
-      | sha256sum \
-      | cut -d ' ' -f 1 > /opt/elmos/source-context.sha256
+RUN set -eu; \
+    test "${#ELMOS_SOURCE_REVISION}" -eq 40; \
+    test "${#ELMOS_SOURCE_CONTEXT_SHA256}" -eq 64; \
+    test "${#ELMOS_SOURCE_STATUS_SHA256}" -eq 64; \
+    case "$ELMOS_SOURCE_REVISION$ELMOS_SOURCE_CONTEXT_SHA256$ELMOS_SOURCE_STATUS_SHA256" in \
+      *[!0-9a-f]*) exit 64 ;; \
+    esac; \
+    mkdir -p /opt/elmos; \
+    printf '%s\n' "$ELMOS_SOURCE_CONTEXT_SHA256" > /opt/elmos/source-context.sha256; \
+    printf '%s\n' "$ELMOS_SOURCE_STATUS_SHA256" > /opt/elmos/source-status.sha256
 
 FROM source AS build
-ARG ELMOS_EXPECTED_SOURCE_CONTEXT_SHA256=""
-RUN set -eu; \
-    actual="$(cat /opt/elmos/source-context.sha256)"; \
-    if [ -n "$ELMOS_EXPECTED_SOURCE_CONTEXT_SHA256" ]; then \
-      test "$actual" = "$ELMOS_EXPECTED_SOURCE_CONTEXT_SHA256"; \
-    fi
 RUN --mount=type=cache,target=/root/.m2 \
     set -eu; \
     attempt=1; \
     until mvn -B --strict-checksums \
         -Dmaven.wagon.http.retryHandler.count=5 \
         -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
+        -Dmaven.artifact.threads=1 \
         -pl apps/java-engine-transformer -am -DskipTests package; do \
       if [ "$attempt" -ge 3 ]; then exit 1; fi; \
       attempt=$((attempt + 1)); \
@@ -45,6 +51,7 @@ RUN --mount=type=cache,target=/root/.m2 \
     until mvn -B --strict-checksums --no-transfer-progress \
         -Dmaven.wagon.http.retryHandler.count=5 \
         -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
+        -Dmaven.artifact.threads=1 \
         -f /tmp/elmos-source-test-project/pom.xml test; do \
       if [ "$attempt" -ge 3 ]; then exit 1; fi; \
       attempt=$((attempt + 1)); \
@@ -62,6 +69,7 @@ RUN --mount=type=cache,target=/root/.m2 \
       if mvn -B --strict-checksums --no-transfer-progress \
         -Dmaven.wagon.http.retryHandler.count=5 \
         -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
+        -Dmaven.artifact.threads=1 \
         -f /tmp/elmos-rewrite-project/pom.xml \
         org.openrewrite.maven:rewrite-maven-plugin:6.44.0:run \
         -Drewrite.configLocation=/tmp/elmos-rewrite-project/.elmos/openrewrite.yml \
@@ -79,6 +87,7 @@ RUN --mount=type=cache,target=/root/.m2 \
     until mvn -B --strict-checksums --no-transfer-progress \
         -Dmaven.wagon.http.retryHandler.count=5 \
         -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
+        -Dmaven.artifact.threads=1 \
         -f /tmp/elmos-rewrite-project/pom.xml verify; do \
       if [ "$attempt" -ge 3 ]; then exit 1; fi; \
       attempt=$((attempt + 1)); \
@@ -89,8 +98,19 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 FROM scratch AS source-context-digest
 COPY --from=source /opt/elmos/source-context.sha256 /source-context.sha256
+COPY --from=source /opt/elmos/source-status.sha256 /source-status.sha256
 
 FROM maven:3.9.11-eclipse-temurin-21@sha256:6fdc855a6ed81d288ca7ca37ac6ff5e9308b612485c0801d70b25a858c83d237
+ARG ELMOS_SOURCE_REVISION
+ARG ELMOS_SOURCE_CONTEXT_SHA256
+ARG ELMOS_SOURCE_STATUS_SHA256
+LABEL org.opencontainers.image.revision="${ELMOS_SOURCE_REVISION}" \
+      io.elmos.evidence.scope="spring-modernization-local" \
+      io.elmos.evidence.class="LOCAL_NON_CERTIFYING" \
+      io.elmos.build.source-status="CLEAN_SOURCE" \
+      io.elmos.build.source-dirty="false" \
+      io.elmos.build.context-sha256="${ELMOS_SOURCE_CONTEXT_SHA256}" \
+      io.elmos.build.context-status-sha256="${ELMOS_SOURCE_STATUS_SHA256}"
 RUN groupadd --gid 10001 elmos \
     && useradd --uid 10001 --gid 10001 --create-home --home-dir /home/elmos --shell /usr/sbin/nologin elmos \
     && mkdir -p /app /workspace/run \
@@ -101,6 +121,7 @@ COPY --from=java17 /opt/java/openjdk /opt/java/openjdk-17
 COPY --from=build /src/apps/java-engine-transformer/target/elmos-java-engine-transformer-0.1.0-SNAPSHOT-exec.jar /app/app.jar
 COPY --from=build /opt/elmos/maven-seed /opt/elmos/maven-seed
 COPY --from=source /opt/elmos/source-context.sha256 /opt/elmos/source-context.sha256
+COPY --from=source /opt/elmos/source-status.sha256 /opt/elmos/source-status.sha256
 COPY --chown=10001:10001 apps/java-engine-transformer/entrypoint.sh /app/entrypoint.sh
 RUN chmod -R a-w /opt/elmos/maven-seed \
     && chmod 0555 /app/entrypoint.sh

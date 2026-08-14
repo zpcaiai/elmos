@@ -250,6 +250,10 @@ final class SpringUpgradeRunService {
                         Map.entry("buildTool", route.buildTool()),
                         Map.entry("sourceBootMinInclusive", route.sourceBootMinInclusive()),
                         Map.entry("sourceBootMaxExclusive", route.sourceBootMaxExclusive()),
+                        Map.entry("exactSourceVersion", route.exactSourceVersion()),
+                        Map.entry("sourceConstraint", route.sourceConstraint()),
+                        Map.entry("sourceVersionMatch",
+                                route.exactSourceVersion().isEmpty() ? "RANGE" : "EXACT"),
                         Map.entry("sourceJavaVersions",
                                 route.sourceJavaVersions().stream().sorted().toList()),
                         Map.entry("targetSpringBoot", route.targetBoot()),
@@ -337,6 +341,7 @@ final class SpringUpgradeRunService {
                     transformer.execute(state.request, executionRoot, control(state))
             );
             synchronized (state) {
+                state.selectedPackKey = selectedPackKey(result.fingerprint(), state.request);
                 state.result = result;
                 state.resolvedCommitSha = result.resolvedCommitSha();
                 state.snapshotId = result.snapshotId();
@@ -462,11 +467,46 @@ final class SpringUpgradeRunService {
             requireFcmText(fcm, "pack_key", route.packKey());
             JsonNode tuple = fcm.path("exact_tuple");
             String declaredSourceBoot = tuple.path("sourceSpringBoot").asText("");
+            String declaredSourceFamily = tuple.path("sourceFrameworkFamily").asText("");
+            String declaredSourceVersion = tuple.path("sourceFrameworkVersion").asText("");
+            boolean legacyBootTuple = declaredSourceFamily.isBlank()
+                    && declaredSourceVersion.isBlank()
+                    && !declaredSourceBoot.isBlank();
+            if (legacyBootTuple) {
+                // Backward compatibility is limited to the original Boot-only
+                // tuple. Spring Framework 5.3.39 is never re-labelled as Boot.
+                declaredSourceFamily = SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue();
+                declaredSourceVersion = declaredSourceBoot;
+            }
+            if (!route.sourceFamily().contractValue().equals(declaredSourceFamily)
+                    || !candidate.fingerprint().sourceFrameworkFamily().equals(declaredSourceFamily)) {
+                throw new BlockedException("FCM_SOURCE_FRAMEWORK_FAMILY_MISMATCH",
+                        "Framework Contract Model source family differs from the fingerprint or route.");
+            }
+            JsonNode declaredFramework = fcm.path("source_framework");
+            if (!declaredFramework.isMissingNode()) {
+                if (!declaredSourceFamily.equals(declaredFramework.path("family").asText(""))
+                        || !declaredSourceVersion.equals(declaredFramework.path("version").asText(""))) {
+                    throw new BlockedException("FCM_SOURCE_FRAMEWORK_IDENTITY_MISMATCH",
+                            "Framework Contract Model source identity is inconsistent across fields.");
+                }
+            } else if (!legacyBootTuple) {
+                throw new BlockedException("FCM_SOURCE_FRAMEWORK_IDENTITY_MISSING",
+                        "Framework Contract Model must carry an explicit source framework identity.");
+            }
+            if (route.sourceFamily() == SpringRouteCatalog.SourceFamily.SPRING_BOOT) {
+                if (declaredSourceBoot.isBlank() || !declaredSourceBoot.equals(declaredSourceVersion)) {
+                    throw new BlockedException("FCM_SOURCE_BOOT_IDENTITY_MISMATCH",
+                            "A Spring Boot tuple must carry identical Boot and framework versions.");
+                }
+            } else if (!declaredSourceBoot.isBlank()) {
+                throw new BlockedException("FCM_MVC_SOURCE_BOOT_FORBIDDEN",
+                        "A traditional Spring MVC tuple must not label Spring Framework as Spring Boot.");
+            }
             String declaredSourceJava = tuple.path("sourceJava").asText("");
-            if (!Objects.equals(candidate.fingerprint().sourceFrameworkVersion(), declaredSourceBoot)
-                    || !SpringRouteCatalog.withinRange(declaredSourceBoot,
-                            route.sourceBootMinInclusive(), route.sourceBootMaxExclusive())) {
-                throw new BlockedException("FCM_SOURCE_BOOT_OUTSIDE_ROUTE",
+            if (!Objects.equals(candidate.fingerprint().sourceFrameworkVersion(), declaredSourceVersion)
+                    || !route.acceptsSourceVersion(declaredSourceVersion)) {
+                throw new BlockedException("FCM_SOURCE_FRAMEWORK_OUTSIDE_ROUTE",
                         "Framework Contract Model source version differs from the fingerprint or route range.");
             }
             if (!Objects.equals(SpringRouteCatalog.normalizeJava(candidate.fingerprint().javaVersion()),
@@ -476,7 +516,7 @@ final class SpringUpgradeRunService {
                         "Framework Contract Model source Java differs from the fingerprint or route set.");
             }
             SpringUpgradeModels.ExactTuple exact = route.tuple(
-                    declaredSourceBoot, SpringRouteCatalog.normalizeJava(declaredSourceJava));
+                    declaredSourceVersion, SpringRouteCatalog.normalizeJava(declaredSourceJava));
             requireFcmText(tuple, "sourceBuildTool", exact.sourceBuildTool());
             requireFcmText(tuple, "targetSpringBoot", route.targetBoot());
             requireFcmText(tuple, "targetJava", route.targetJava());
@@ -693,6 +733,11 @@ final class SpringUpgradeRunService {
     private void restoreDurableRun(String expectedRunId, Path runRoot, Path stateFile) {
         try {
             JsonNode node = json.readTree(stateFile.toFile());
+            String schemaVersion = node.path("schema_version").asText();
+            if (!"1.0".equals(schemaVersion) && !"1.1".equals(schemaVersion)) {
+                throw new IllegalStateException("unsupported durable Spring run schema_version");
+            }
+            boolean normalized = "1.0".equals(schemaVersion);
             requirePersistedText(node, "run_id", expectedRunId);
             StartRequest request = json.treeToValue(node.path("request"), StartRequest.class);
             if (request == null) throw new IllegalStateException("persisted request is missing");
@@ -724,6 +769,15 @@ final class SpringUpgradeRunService {
             state.logsTruncated = node.path("logs_truncated").asBoolean(false);
             if (!node.path("fingerprint").isMissingNode() && !node.path("fingerprint").isNull()) {
                 state.fingerprint = json.treeToValue(node.path("fingerprint"), Fingerprint.class);
+            }
+            String persistedPackKey = nullableText(node, "pack_key");
+            if (state.fingerprint != null) {
+                state.selectedPackKey = requirePersistedPackKey(
+                        persistedPackKey, state.fingerprint, state.request);
+            } else if (!"PENDING_ROUTE_SELECTION".equals(persistedPackKey)
+                    && !("1.0".equals(schemaVersion) && PACK_KEY.equals(persistedPackKey))) {
+                throw new IllegalStateException(
+                        "persisted pack_key must remain pending until a route is selected");
             }
             if (!node.path("independent_validation").isMissingNode()
                     && !node.path("independent_validation").isNull()) {
@@ -771,7 +825,6 @@ final class SpringUpgradeRunService {
                         healthCandidates
                 );
             }
-            boolean normalized = false;
             if (state.status == RunStatus.QUEUED || state.status == RunStatus.RUNNING) {
                 state.status = RunStatus.BLOCKED;
                 state.failureCode = "WORKER_RESTARTED_RETRY_REQUIRED";
@@ -899,9 +952,10 @@ final class SpringUpgradeRunService {
     private static ExactTuple exactTuple(Fingerprint fingerprint, StartRequest request) {
         if (fingerprint == null) {
             return new ExactTuple(
-                    "UNKNOWN", "UNKNOWN", "UNKNOWN",
+                    null, "UNKNOWN", "UNKNOWN",
                     request.targetSpringBoot(), request.targetJava(), "UNKNOWN",
-                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN);
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    "unknown", "UNKNOWN");
         }
         try {
             SpringRouteCatalog.Selection selection = selectRoute(fingerprint, request);
@@ -910,22 +964,43 @@ final class SpringUpgradeRunService {
         } catch (RuntimeException ignored) {
             // A queued or blocked run may not have a complete route tuple yet.
             // Preserve the requested target without fabricating a source tuple.
+            boolean boot = SpringRouteCatalog.SourceFamily.SPRING_BOOT.contractValue()
+                    .equals(fingerprint.sourceFrameworkFamily());
             return new ExactTuple(
-                    Objects.toString(fingerprint.sourceFrameworkVersion(), "UNKNOWN"),
+                    boot ? Objects.toString(fingerprint.springBootVersion(), "UNKNOWN") : null,
                     Objects.toString(fingerprint.javaVersion(), "UNKNOWN"),
                     Objects.toString(fingerprint.buildTool(), "UNKNOWN"),
                     request.targetSpringBoot(), request.targetJava(), "UNKNOWN",
-                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN);
+                    REWRITE_SPRING, REWRITE_MAVEN_PLUGIN,
+                    Objects.toString(fingerprint.sourceFrameworkFamily(), "unknown"),
+                    Objects.toString(fingerprint.sourceFrameworkVersion(), "UNKNOWN"));
         }
     }
 
     private static String packKey(RunState state) {
-        if (state.fingerprint == null) return "PENDING_ROUTE_SELECTION";
-        try {
-            return selectRoute(state.fingerprint, state.request).route().packKey();
-        } catch (RuntimeException ignored) {
-            return "PENDING_ROUTE_SELECTION";
+        if (state.selectedPackKey != null) {
+            return state.selectedPackKey;
         }
+        if (state.fingerprint == null) return "PENDING_ROUTE_SELECTION";
+        throw new IllegalStateException(
+                "fingerprinted Spring run is missing its immutable selected pack identity");
+    }
+
+    private static String selectedPackKey(Fingerprint fingerprint, StartRequest request) {
+        return selectRoute(fingerprint, request).route().packKey();
+    }
+
+    static String requirePersistedPackKey(
+            String persistedPackKey,
+            Fingerprint fingerprint,
+            StartRequest request
+    ) {
+        String authoritativePackKey = selectedPackKey(fingerprint, request);
+        if (!authoritativePackKey.equals(persistedPackKey)) {
+            throw new IllegalStateException(
+                    "persisted pack_key does not match the authoritative selected route");
+        }
+        return authoritativePackKey;
     }
 
     private static SpringRouteCatalog.Selection selectRoute(
@@ -984,11 +1059,11 @@ final class SpringUpgradeRunService {
 
     private Map<String, Object> viewWithoutRecursion(RunState state) {
         Map<String, Object> value = new LinkedHashMap<>();
-        value.put("schema_version", "1.0");
+        value.put("schema_version", "1.1");
         value.put("run_id", state.runId);
         value.put("retry_of_run_id", state.retryOfRunId);
         value.put("organization_id", state.request.organizationId());
-        value.put("pack_key", PACK_KEY);
+        value.put("pack_key", packKey(state));
         value.put("status", state.status);
         value.put("stage", state.stage);
         value.put("runtime_status", state.runtimeStatus);
@@ -1209,6 +1284,7 @@ final class SpringUpgradeRunService {
         RuntimeHandle runtimeHandle;
         IndependentValidationResult independentValidation;
         Fingerprint fingerprint;
+        String selectedPackKey;
         String resolvedCommitSha;
         String snapshotId;
         String snapshotDigest;

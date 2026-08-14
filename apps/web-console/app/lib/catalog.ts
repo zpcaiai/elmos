@@ -21,15 +21,15 @@ export const generationStages: GenerationStage[] = [
 ];
 
 export const installedSkillInventory = {
-  codexSkillCount: 1220,
-  runtimeSkillCount: 3364,
+  codexSkillCount: 1267,
+  runtimeSkillCount: 3411,
   countingRule: "directories-with-SKILL.md",
 } as const;
 
 export const migrationCapabilities: MigrationCapability[] = [
   { id: "M29", batch: 29, title: "跨语言路由", domain: "Directed language routes", description: "12 个方向的 typed-pure-function-v1 已通过精确本地工具链、独立 holdout 与代表性语料，提升为受限支持；任意整库语义和外部认证仍为 NOT_RUN。", skillCount: 20, schemaCount: 3, gateCommand: "scripts/batch29/run_route_gate.py", status: "LIMITED", icon: "code", accent: "cyan" },
   { id: "M30", batch: 30, title: "框架现代化", domain: "Framework modernization", description: "Spring Boot 2.7.18→3.5.3 的 Web、配置和生命周期子集已通过真实公共仓库、源/目标构建与启动验证；客户私库、Rootless 和外部独立认证仍为 NOT_RUN。", skillCount: 20, schemaCount: 4, gateCommand: "scripts/batch30/run_framework_gate.py", status: "LIMITED", icon: "workflow", accent: "blue" },
-  { id: "M31", batch: 31, title: "数据库与数据平台", domain: "Database & data", description: "类型、约束、SQL、ETL 与逐项对账的精确迁移。", skillCount: 22, schemaCount: 6, gateCommand: "scripts/batch31/run_database_gate.py", status: "READY", icon: "database", accent: "violet" },
+  { id: "M31", batch: 31, title: "数据库与数据平台", domain: "Database & data", description: "类型、约束、SQL、ETL 与逐项对账的精确迁移；ChinaDB 扩展已登记 13 个国产目标与 78 条规划路线，精确适配器和实库证据缺失时一律阻断。", skillCount: 69, schemaCount: 9, gateCommand: "scripts/batch31/run_database_gate.py", status: "READY", icon: "database", accent: "violet" },
   { id: "M32", batch: 32, title: "前端与客户端", domain: "Frontend & client", description: "路由、状态、权限、可访问性与真实浏览器旅程。", skillCount: 20, schemaCount: 7, gateCommand: "scripts/batch32/run_client_gate.py", status: "READY", icon: "layers", accent: "amber" },
   { id: "M33", batch: 33, title: "Cloud / IaC / DevOps", domain: "Cloud & infrastructure", description: "架构契约、IaC IR、计划、回滚与安全边界。", skillCount: 20, schemaCount: 8, gateCommand: "scripts/batch33/run_cloud_gate.py", status: "READY", icon: "cloud", accent: "blue" },
   { id: "M34", batch: 34, title: "超大组合调度", domain: "Portfolio scale", description: "组合图、分片、检查点、公平调度与 DR 回放。", skillCount: 22, schemaCount: 10, gateCommand: "scripts/batch34/run_portfolio_gate.py", status: "READY", icon: "box", accent: "green" },

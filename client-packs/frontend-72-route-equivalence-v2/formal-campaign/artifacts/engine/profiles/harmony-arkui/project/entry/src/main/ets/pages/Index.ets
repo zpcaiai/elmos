@@ -17,7 +17,7 @@ struct Index {
       Row() {
         Column({ space: 8 }) {
           Text("ELMOS 有界前端交互验证").fontSize(22).fontWeight(FontWeight.Bold)
-          ForEach(GENERATED_ROUTES, (item: GeneratedRoute) => {
+          ForEach(GENERATED_ROUTES.slice(), (item: GeneratedRoute) => {
             Button(item.title).width('100%').accessibilityText(item.id + '|' + item.path + '|auth:' + item.requiresAuth + '|deep:' + item.deepLink).onClick(() => { this.selected = GENERATED_ROUTES.indexOf(item); })
           }, (item: GeneratedRoute) => item.id)
         }.width('34%').padding(16)
@@ -25,7 +25,7 @@ struct Index {
           Text(this.currentRoute().title).fontSize(30).fontWeight(FontWeight.Bold)
           Text(this.currentRoute().text).fontSize(18)
           Text('生成状态：等待 HarmonyOS 真机与无障碍验证').fontColor('#6B4F00')
-          ForEach(ELMOS_INTERACTION_SCENARIOS, (_scenario: object, index: number) => { Column() { Button(String(index)).accessibilityText('action:' + String(index)).onClick(() => { this.dispatchInteraction(index); }); ForEach(this.interactionDeclarations[index], (declaration: string) => { Text(declaration).accessibilityText('scenario:' + String(index) + ':runtime:BLOCK_SPECIFIC_RUNTIME_OBSERVED:state:PARTIAL:sequence:' + String(this.interactionSequences[index]) + ':declaration:' + declaration) }) } })
+          ForEach(ELMOS_INTERACTION_SCENARIOS.slice(), (_scenario: object, index: number) => { Column() { Button(String(index)).accessibilityText('action:' + String(index)).onClick(() => { this.dispatchInteraction(index); }); ForEach(this.interactionDeclarations[index], (declaration: string) => { Text(declaration).accessibilityText('scenario:' + String(index) + ':runtime:BLOCK_SPECIFIC_RUNTIME_OBSERVED:state:PARTIAL:sequence:' + String(this.interactionSequences[index]) + ':declaration:' + declaration) }) } })
         }.alignItems(HorizontalAlign.Start).width('66%').padding(24)
       }.height('100%')
     }.title("ELMOS 有界前端交互验证")

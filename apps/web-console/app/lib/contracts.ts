@@ -568,6 +568,9 @@ export type SpringRouteDescriptor = {
   buildTool: string;
   sourceBootMinInclusive: string;
   sourceBootMaxExclusive: string;
+  exactSourceVersion?: string;
+  sourceConstraint?: string;
+  sourceVersionMatch?: "EXACT" | "RANGE";
   sourceJavaVersions: string[];
   targetSpringBoot: string;
   targetJava: string;
@@ -587,7 +590,8 @@ export type TranslationLanguageId =
   | "rust"
   | "swift"
   | "python"
-  | "typescript";
+  | "typescript"
+  | "javascript";
 
 export type TranslationLanguage = {
   id: TranslationLanguageId;
