@@ -41,9 +41,25 @@ SYNTHESIS_LANGUAGES = frozenset(
     {"java", "python", "csharp", "typescript", "go", "kotlin", "php", "rust"}
 )
 ROUTE_LANGUAGES = frozenset(
-    {"java", "python", "csharp", "typescript", "go", "rust", "cpp", "objc", "swift"}
+    {
+        "java",
+        "python",
+        "csharp",
+        "typescript",
+        "javascript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift",
+    }
 )
 KNOWN_APPLICATION_LANGUAGES = SYNTHESIS_LANGUAGES | ROUTE_LANGUAGES
+# Node is shared by the TypeScript synthesis toolchain and the independent
+# JavaScript route toolchain.  Its manifest language list is intentionally
+# broader than the synthesis product surface, so profile validation must not
+# turn runtime availability into a JavaScript Project Synthesis claim.
+SYNTHESIS_EXCLUDED_SHARED_LANGUAGES = frozenset({"javascript"})
 AUTOMATED_INSTALL_PROFILES = frozenset({"core", "synthesis", "routes-macos", "all"})
 
 
@@ -418,7 +434,9 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
                 f"profile {profile_name} cannot require unresolved external runtimes: {','.join(external_required)}"
             )
 
-    synthesis_languages = _profile_languages(manifest, "synthesis") & KNOWN_APPLICATION_LANGUAGES
+    synthesis_languages = (
+        _profile_languages(manifest, "synthesis") & KNOWN_APPLICATION_LANGUAGES
+    ) - SYNTHESIS_EXCLUDED_SHARED_LANGUAGES
     if synthesis_languages != SYNTHESIS_LANGUAGES:
         errors.append(
             "synthesis profile language coverage mismatch: "

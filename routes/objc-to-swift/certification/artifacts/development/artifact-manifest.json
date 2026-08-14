@@ -67,22 +67,22 @@
     {
       "bytes": 3172,
       "path": "formal-composition.json",
-      "sha256": "sha256:6cb7ccab8127289b5c4bcde36f4046dfdad72dd1de0dd995002b97e84f5b5085"
+      "sha256": "sha256:ca3c76246d5dac50d81d267e04b8075ddbb2a427fce8fea35ab3e9d79d05c57d"
     },
     {
       "bytes": 2026,
       "path": "formal-equivalence.smt2",
-      "sha256": "sha256:30684cc7a3259a400220968bbfa3428335692068446b2c2ea255c7aa55d67f30"
+      "sha256": "sha256:64e1c3569bdc925425871536f67b768c13209592f1f9d1a49aad51f1ab44ccce"
     },
     {
-      "bytes": 8867,
+      "bytes": 9716,
       "path": "formal-input.json",
-      "sha256": "sha256:914d44c58877051a38bb1e198023d96388a0a1da6a04a991b363f5358c929dfe"
+      "sha256": "sha256:46d5389f24619192780ec3fbc2692055bcb4c7e7b41d75fb59e1a93ce357f0eb"
     },
     {
       "bytes": 2514,
       "path": "formal-proof-result.json",
-      "sha256": "sha256:0524ff52427b7509997d19f06706058a462627afc9d7a997543f28bb6f9c307f"
+      "sha256": "sha256:fca60da1f0372626d1010928f00b8d63c3be1c2539e933e23f3952a3ab664cae"
     },
     {
       "bytes": 205,
@@ -95,9 +95,9 @@
       "sha256": "sha256:4f58b2d71b67f8c9fcf27b4509c42b09de991e20271a7c63367a851113edc923"
     },
     {
-      "bytes": 3879,
+      "bytes": 4303,
       "path": "layered-equivalence.json",
-      "sha256": "sha256:c2e4ed3d4bbf5039238b3b31400327a476e48944890433b224bff53e53af8e95"
+      "sha256": "sha256:3a9820fd3b50888fbe2193ad069fa2e170d28958b78f9936c9bd1b7fd12e18e1"
     },
     {
       "bytes": 939,
@@ -112,7 +112,7 @@
     {
       "bytes": 8990,
       "path": "route-evidence.json",
-      "sha256": "sha256:90bd4c0cd65dec06a91e47b088f7fdb1614abab9ee83e98d4c51b7ed80ccf0b2"
+      "sha256": "sha256:43f01f328f15c47387b2176ed23233e17fb56d894030edf68d15b1242b58020b"
     },
     {
       "bytes": 309,
@@ -140,13 +140,13 @@
       "sha256": "sha256:6fa7f5c151a3e33135b7ed72448d28a74f0bca15b5b45c78f75cf8796fc72fca"
     },
     {
-      "bytes": 1852,
+      "bytes": 2276,
       "path": "target-semantic-ir.normalized.json",
-      "sha256": "sha256:87add93652bc67d8183ae58ac5d4b0bef6d743b504be0bb0c45f83522ca2f9e6"
+      "sha256": "sha256:dea51b30dbb4c7459d987acfbbeafb7592cc5f3b02d64991fd5bcd1b28dcfa06"
     }
   ],
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "objc-to-swift",
   "schema_version": 1,
-  "total_bytes": 51854
+  "total_bytes": 53551
 }

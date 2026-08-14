@@ -13,6 +13,12 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+elmos:
+  chinadb-sql-preflight:
+    enabled: ${ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED:false}
+    base-url: ${ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL:http://chinadb-sql-preflight:8101}
+    connect-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_CONNECT_TIMEOUT:2s}
+    request-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_REQUEST_TIMEOUT:15s}
 management:
   endpoint:
     health:

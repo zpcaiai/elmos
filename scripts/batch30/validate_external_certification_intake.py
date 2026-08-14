@@ -53,16 +53,28 @@ CUSTOMER_AUTHORIZATION_ROLE = "batch30-customer-authorizer"
 EVIDENCE_ROLES = {
     "authorized_customer_repository": "batch30-customer-repository-verifier",
     "customer_holdout": "batch30-customer-holdout-verifier",
+    "customer_acceptance": "batch30-customer-acceptance-approver",
     "rootless_runner": "batch30-rootless-runner-attestor",
     "rootless_transformer": "batch30-rootless-transformer-attestor",
     "rootless_verifier": "batch30-rootless-verifier-attestor",
     "independent_review": "batch30-independent-verifier",
+    "external_certification": "batch30-external-certifier",
 }
 REQUIRED_EVIDENCE = tuple(EVIDENCE_ROLES)
 ALLOWED_ROLES = {CUSTOMER_AUTHORIZATION_ROLE, *EVIDENCE_ROLES.values()}
 
-CUSTOMER_EVIDENCE = {"authorized_customer_repository", "customer_holdout"}
+CUSTOMER_EVIDENCE = {
+    "authorized_customer_repository",
+    "customer_holdout",
+    "customer_acceptance",
+}
 ROOTLESS_EVIDENCE = {"rootless_runner", "rootless_transformer", "rootless_verifier"}
+ORGANIZATIONALLY_INDEPENDENT_EVIDENCE = {"independent_review", "external_certification"}
+EVIDENCE_OUTCOMES = {
+    **{evidence_type: "PASS" for evidence_type in EVIDENCE_ROLES},
+    "customer_acceptance": "ACCEPTED",
+    "external_certification": "CERTIFIED",
+}
 
 AUTHORIZATION_PAYLOAD_FIELDS = {
     "record_id",
@@ -93,6 +105,8 @@ ATTESTATION_PAYLOAD_FIELDS = {
     "evidence_type",
     "content_digest",
     "content_size_bytes",
+    "executor_actor_id",
+    "executor_organization_id",
     "outcome",
     "evidence_class",
     "synthetic",
@@ -443,7 +457,36 @@ def _organization_for(evidence_type: str, intake: dict[str, Any]) -> str:
         return intake["customer_organization_id"]
     if evidence_type in ROOTLESS_EVIDENCE:
         return intake["rootless_organization_id"]
-    return intake["independent_organization_id"]
+    if evidence_type == "independent_review":
+        return intake["independent_organization_id"]
+    return intake["certification_organization_id"]
+
+
+def _evidence_executors(value: Any) -> dict[str, dict[str, str]]:
+    executors = _require_object(value, "intake.evidence_executors")
+    _require_exact_fields(executors, set(REQUIRED_EVIDENCE), "intake.evidence_executors")
+    normalized: dict[str, dict[str, str]] = {}
+    for evidence_type in REQUIRED_EVIDENCE:
+        principal = _require_object(
+            executors[evidence_type],
+            f"intake.evidence_executors.{evidence_type}",
+        )
+        _require_exact_fields(
+            principal,
+            {"actor_id", "organization_id"},
+            f"intake.evidence_executors.{evidence_type}",
+        )
+        normalized[evidence_type] = {
+            "actor_id": _require_identity(
+                principal.get("actor_id"),
+                f"intake.evidence_executors.{evidence_type}.actor_id",
+            ),
+            "organization_id": _require_identity(
+                principal.get("organization_id"),
+                f"intake.evidence_executors.{evidence_type}.organization_id",
+            ),
+        }
+    return normalized
 
 
 def _expected_claims(evidence_type: str) -> dict[str, Any]:
@@ -451,9 +494,21 @@ def _expected_claims(evidence_type: str) -> dict[str, Any]:
         return {"authorized_repository": True, "fixed_commit": True, "acceptance_subject_bound": True}
     if evidence_type == "customer_holdout":
         return {"independent_from_development": True, "customer_owned_acceptance": True}
+    if evidence_type == "customer_acceptance":
+        return {
+            "acceptance_subject_bound": True,
+            "accepted_exact_artifact_and_profile": True,
+            "customer_decision": "ACCEPTED",
+        }
     if evidence_type in ROOTLESS_EVIDENCE:
         return {"rootless": True, "privileged": False, "effective_uid_nonzero": True}
-    return {"organizationally_independent": True, "separate_executor_and_verifier": True}
+    if evidence_type == "independent_review":
+        return {"organizationally_independent": True, "separate_executor_and_verifier": True}
+    return {
+        "certification_scope_bound": True,
+        "independent_certification_authority": True,
+        "certificate_decision": "CERTIFIED",
+    }
 
 
 def _verify_signed_payload(
@@ -510,7 +565,8 @@ def evaluate_external_intake(
     intake_fields = {
         "schema_version", "namespace", "intake_id", "producer_organization_id",
         "customer_organization_id", "rootless_organization_id", "independent_organization_id",
-        "binding", "artifact", "execution_profile", "customer_authorization", "evidence",
+        "certification_organization_id", "binding", "artifact", "execution_profile",
+        "evidence_executors", "customer_authorization", "evidence",
     }
     _require_exact_fields(item, intake_fields, "intake")
     if item.get("schema_version") != 1 or item.get("namespace") != NAMESPACE:
@@ -523,10 +579,20 @@ def evaluate_external_intake(
             "customer_organization_id",
             "rootless_organization_id",
             "independent_organization_id",
+            "certification_organization_id",
         )
     }
     if len(set(organizations.values())) != len(organizations):
-        raise ExternalIntakeError("producer, customer, rootless, and independent organizations must be distinct")
+        raise ExternalIntakeError(
+            "producer, customer, rootless, independent, and certification organizations must be distinct"
+        )
+    evidence_executors = _evidence_executors(item.get("evidence_executors"))
+    executor_actor_ids = {
+        principal["actor_id"] for principal in evidence_executors.values()
+    }
+    executor_organization_ids = {
+        principal["organization_id"] for principal in evidence_executors.values()
+    }
     _reject_non_success(item, "intake")
 
     expected_binding, primary_artifacts = build_expected_binding(
@@ -571,7 +637,9 @@ def evaluate_external_intake(
         "customer_organization_id": organizations["customer_organization_id"],
         "rootless_organization_id": organizations["rootless_organization_id"],
         "independent_organization_id": organizations["independent_organization_id"],
+        "certification_organization_id": organizations["certification_organization_id"],
         "evidence_types": list(REQUIRED_EVIDENCE),
+        "evidence_executors": evidence_executors,
         "evidence_content_digests": {
             name: content_observations[name]["digest"] for name in REQUIRED_EVIDENCE
         },
@@ -597,6 +665,10 @@ def evaluate_external_intake(
         now=now,
     )
     authorization_payload_digest = canonical_digest(authorization_payload)
+    if authorization_receipt["actor_id"] in executor_actor_ids:
+        raise ExternalIntakeError(
+            "customer authorizer must be separate from every evidence executor"
+        )
 
     receipts: dict[str, dict[str, Any]] = {}
     actor_ids = {authorization_receipt["actor_id"]}
@@ -607,6 +679,7 @@ def evaluate_external_intake(
         evidence_item = evidence_items[evidence_type]
         content = content_observations[evidence_type]
         role = EVIDENCE_ROLES[evidence_type]
+        executor = evidence_executors[evidence_type]
         bindings = {
             "role": role,
             "intake_id": intake_id,
@@ -616,8 +689,10 @@ def evaluate_external_intake(
             "evidence_type": evidence_type,
             "content_digest": content["digest"],
             "content_size_bytes": content["size_bytes"],
+            "executor_actor_id": executor["actor_id"],
+            "executor_organization_id": executor["organization_id"],
             "organization_id": _organization_for(evidence_type, item),
-            "outcome": "PASS",
+            "outcome": EVIDENCE_OUTCOMES[evidence_type],
             "evidence_class": "EXTERNAL_NON_SYNTHETIC",
             "synthetic": False,
             "unknowns": [],
@@ -633,6 +708,18 @@ def evaluate_external_intake(
             expected_fields=ATTESTATION_PAYLOAD_FIELDS,
             now=now,
         )
+        if receipt["actor_id"] in executor_actor_ids:
+            raise ExternalIntakeError(
+                "external evidence signer must be separate from every evidence executor"
+            )
+        if (
+            evidence_type in ORGANIZATIONALLY_INDEPENDENT_EVIDENCE
+            and receipt["organization_id"] in executor_organization_ids
+        ):
+            raise ExternalIntakeError(
+                f"{evidence_type} signer organization must be separate from every "
+                "evidence executor organization"
+            )
         for observed, used, label in (
             (receipt["actor_id"], actor_ids, "actor identity"),
             (receipt["key_id"], key_ids, "key identity"),
@@ -659,12 +746,16 @@ def evaluate_external_intake(
         "trust_store_digest": loaded.store.digest,
         "evidence_status": "VERIFIED_EXTERNAL_INTAKE",
         "verified_roles": [CUSTOMER_AUTHORIZATION_ROLE, *EVIDENCE_ROLES.values()],
+        "verified_executor_principals": evidence_executors,
         "verified_content_digests": {
             "artifact": primary_artifacts["artifact"]["digest"],
             "execution_profile": primary_artifacts["execution_profile"]["digest"],
             **{name: receipt["content_digest"] for name, receipt in receipts.items()},
         },
         "decision": "READY_FOR_EXTERNAL_GATE_REVIEW",
+        "customer_acceptance_signature_verified": True,
+        "independent_review_signature_verified": True,
+        "external_certification_signature_verified": True,
         "certification_decision": "NOT_CERTIFIED",
         "certification_promoted": False,
         "pack_status_mutated": False,

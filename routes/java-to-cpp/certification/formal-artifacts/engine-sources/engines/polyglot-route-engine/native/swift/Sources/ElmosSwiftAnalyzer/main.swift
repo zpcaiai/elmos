@@ -465,6 +465,77 @@ func liftFunction(_ declaration: FunctionDeclSyntax, _ context: LiftContext) thr
     ], declaration, context)
 }
 
+func moduleSubject(_ statement: CodeBlockItemSyntax, _ context: LiftContext) throws -> JSONValue {
+    if let declaration = statement.item.as(FunctionDeclSyntax.self) {
+        let modifierNames = Set(declaration.modifiers.map { $0.name.text })
+        let visibility: String
+        if modifierNames.contains("private") {
+            visibility = "private"
+        } else if modifierNames.contains("fileprivate") {
+            visibility = "fileprivate"
+        } else if modifierNames.contains("public") {
+            visibility = "public"
+        } else if modifierNames.contains("package") {
+            visibility = "package"
+        } else {
+            visibility = "internal"
+        }
+        let parameters = declaration.signature.parameterClause.parameters.map { parameter in
+            JSONValue.object([
+                ("name", .string(parameter.secondName?.text ?? parameter.firstName.text)),
+                ("source_type", .string(parameter.type.trimmedDescription)),
+            ])
+        }
+        let supportedParameters = declaration.signature.parameterClause.parameters.allSatisfy {
+            $0.defaultValue == nil
+        }
+        let analyzable = declaration.body != nil
+            && declaration.signature.effectSpecifiers?.asyncSpecifier == nil
+            && declaration.signature.effectSpecifiers?.throwsClause == nil
+            && declaration.genericParameterClause == nil
+            && declaration.attributes.isEmpty
+            && supportedParameters
+        return try spanned([
+            ("name", .string(declaration.name.text)),
+            ("qualified_name", .string(declaration.name.text)),
+            ("declaration_kind", .string("FunctionDeclSyntax")),
+            ("analyzable", .bool(analyzable)),
+            ("signature", .object([
+                ("parameters", .array(parameters)),
+                ("source_return_type", .string(
+                    declaration.signature.returnClause?.type.trimmedDescription ?? "")),
+                ("visibility", .string(visibility)),
+                ("storage", .string("file-scope")),
+            ])),
+        ], declaration, context)
+    }
+
+    let name: String
+    if let imported = statement.item.as(ImportDeclSyntax.self) {
+        name = imported.path.trimmedDescription
+    } else if let declaration = statement.item.as(ClassDeclSyntax.self) {
+        name = declaration.name.text
+    } else if let declaration = statement.item.as(StructDeclSyntax.self) {
+        name = declaration.name.text
+    } else if let declaration = statement.item.as(EnumDeclSyntax.self) {
+        name = declaration.name.text
+    } else if let declaration = statement.item.as(ProtocolDeclSyntax.self) {
+        name = declaration.name.text
+    } else {
+        name = "<\(String(describing: statement.item.kind))@\(statement.position.utf8Offset)>"
+    }
+    return try spanned([
+        ("name", .string(name)),
+        ("qualified_name", .string(name)),
+        ("declaration_kind", .string(String(describing: statement.item.kind))),
+        ("analyzable", .bool(false)),
+        ("signature", .object([
+            ("visibility", .string("not-applicable")),
+            ("storage", .string("not-applicable")),
+        ])),
+    ], statement, context)
+}
+
 // MARK: - Entry point
 
 let arguments = CommandLine.arguments
@@ -477,6 +548,11 @@ guard arguments.count == 3 || (arguments.count == 4 && arguments[3] == "--emitte
 
 let sourcePath = URL(fileURLWithPath: arguments[1]).standardizedFileURL
 let functionName = arguments[2]
+let inventoryMode = functionName == "--inventory"
+if inventoryMode && arguments.count != 3 {
+    FileHandle.standardError.write(Data("--inventory does not accept --emitted-target\n".utf8))
+    exit(2)
+}
 let context = LiftContext(
     sourceFile: sourcePath.lastPathComponent,
     emittedTarget: arguments.count == 4,
@@ -531,6 +607,24 @@ do {
             return "\(text):\(line)"
         }
         .sorted()
+
+    if inventoryMode {
+        let subjects = try tree.statements.map { try moduleSubject($0, context) }
+        let output = JSONValue.object([
+            ("schema_version", .string("1.0.0")),
+            ("kind", .string("elmos.typed-pure-module-inventory")),
+            ("profile", .string("typed-pure-module-v1")),
+            ("source_language", .string("swift")),
+            ("source_file", .string(sourcePath.lastPathComponent)),
+            ("analyzer", .string("SwiftSyntax")),
+            ("analyzer_version", .string(swiftSyntaxVersion)),
+            ("enumeration_status", .string(diagnostics.isEmpty ? "PASSED" : "FAILED")),
+            ("subjects", .array(subjects)),
+            ("diagnostics", .array(diagnostics.map { JSONValue.string($0) })),
+        ])
+        print(output.encoded)
+        exit(0)
+    }
 
     var functions: [JSONValue] = []
     var failures: [String] = []

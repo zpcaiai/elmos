@@ -18,6 +18,7 @@ if __name__ == "__main__":
         raise SystemExit(fresh_runtime_exit)
 
 from validate_route import (
+    SWIFT_ANALYZER_RECEIPT_PATH,
     _validate_specialized_native_runtime_replay,
     main as validate_route_main,
     strict_evidence_requested,
@@ -517,8 +518,7 @@ def main() -> int:
                     "Swift route must bind exactly one shared analyzer build receipt in function and module evidence"
                 )
             elif (
-                formal_receipts[0].get("path")
-                != "certification/formal-artifacts/swift-analyzer-build-receipt.json"
+                formal_receipts[0].get("path") != SWIFT_ANALYZER_RECEIPT_PATH
                 or {
                     key: formal_receipts[0].get(key)
                     for key in ("path", "sha256", "bytes")

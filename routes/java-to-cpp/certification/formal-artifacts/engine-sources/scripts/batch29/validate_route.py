@@ -11,9 +11,11 @@ import math
 import os
 import re
 import shutil
+import stat
 import struct
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -24,8 +26,110 @@ ENGINE_RUNTIME_MODULES = {
     "elmos_polyglot_route.emitter": "elmos_polyglot_route/emitter.py",
     "elmos_polyglot_route.types": "elmos_polyglot_route/types.py",
     "elmos_polyglot_route.canonical": "elmos_polyglot_route/canonical.py",
+    "elmos_polyglot_route.native": "elmos_polyglot_route/native.py",
+    "elmos_polyglot_route.clang_analyzer": "elmos_polyglot_route/clang_analyzer.py",
+    "elmos_polyglot_route.python_analyzer": "elmos_polyglot_route/python_analyzer.py",
+    "elmos_polyglot_route.toolchains": "elmos_polyglot_route/toolchains.py",
+    "elmos_polyglot_route.validation": "elmos_polyglot_route/validation.py",
 }
 PINNED_Z3_VERSION = "4.16.0"
+
+SPECIALIZED_NEGATIVE_CASES = {
+    "java": frozenset(
+        {"java-int-width", "java-string-raw-reference-equality"}
+    ),
+    "cpp": frozenset({"cpp-long-width", "cpp-unsigned-domain"}),
+    "objc": frozenset(
+        {"objc-nsinteger-width", "objc-nsstring-pointer-identity"}
+    ),
+    "swift": frozenset({"swift-int-requires-int64", "swift-helper-tamper"}),
+}
+SPECIALIZED_COMMON_NEGATIVE_CASES = frozenset(
+    {
+        "specialized-string-semantics-unsupported",
+        "specialized-number-arithmetic-unsupported",
+        "specialized-non-finite-case-unsupported",
+        "specialized-overflow-outside-no-error-domain",
+        "undeclared-directed-route-fails-closed",
+        "missing-symbol-fails-closed",
+    }
+)
+SPECIALIZED_NEGATIVE_ANALYZE_SPECS = {
+    "java-int-width": ("java", "width", False),
+    "java-string-raw-reference-equality": ("java", "same", False),
+    "cpp-long-width": ("cpp", "width", False),
+    "cpp-unsigned-domain": ("cpp", "unsigned_value", False),
+    "objc-nsinteger-width": ("objc", "width", False),
+    "objc-nsstring-pointer-identity": ("objc", "same", False),
+    "swift-int-requires-int64": ("swift", "width", False),
+    "swift-helper-tamper": ("swift", "quotient", True),
+}
+SPECIALIZED_NEGATIVE_INPUT_ROLES = {
+    **{
+        case_id: ("source",)
+        for case_id in SPECIALIZED_NEGATIVE_ANALYZE_SPECS
+    },
+    "specialized-string-semantics-unsupported": ("source", "cases"),
+    "specialized-number-arithmetic-unsupported": ("source", "cases"),
+    "specialized-non-finite-case-unsupported": ("source", "cases"),
+    "specialized-overflow-outside-no-error-domain": ("source", "cases"),
+    "missing-symbol-fails-closed": ("source", "cases"),
+    "undeclared-directed-route-fails-closed": (
+        "source-module",
+        "case-manifest",
+    ),
+}
+SPECIALIZED_NEGATIVE_STATIC_REASONS = {
+    "java-int-width": frozenset(
+        {"JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"}
+    ),
+    "java-string-raw-reference-equality": frozenset(
+        {"JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"}
+    ),
+    "cpp-long-width": frozenset(
+        {"CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:long"}
+    ),
+    "cpp-unsigned-domain": frozenset(
+        {"CPP_UNSUPPORTED_TYPE:unsigned long long"}
+    ),
+    "objc-nsinteger-width": frozenset(
+        {"OBJC_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:NSInteger"}
+    ),
+    "objc-nsstring-pointer-identity": frozenset(
+        {"OBJC_STRING_POINTER_COMPARISON_OUTSIDE_CERTIFIED_SUBSET"}
+    ),
+    "swift-int-requires-int64": frozenset(
+        {"SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int"}
+    ),
+    "swift-helper-tamper": frozenset(
+        {"EMITTED_HELPER_SOURCE_MISMATCH:swift:non_zero_double:elmosNonZero"}
+    ),
+    "undeclared-directed-route-fails-closed": frozenset(
+        {"SOURCE_AND_TARGET_MUST_DIFFER"}
+    ),
+}
+SPECIALIZED_NEGATIVE_SOURCE_FILES = {
+    "java-int-width": "JavaIntWidth.java",
+    "java-string-raw-reference-equality": "JavaStringIdentity.java",
+    "cpp-long-width": "cpp_long_width.cpp",
+    "cpp-unsigned-domain": "cpp_unsigned_domain.cpp",
+    "objc-nsinteger-width": "objc_nsinteger_width.m",
+    "objc-nsstring-pointer-identity": "objc_nsstring_pointer_identity.m",
+    "swift-int-requires-int64": "swift_int_width.swift",
+    "swift-helper-tamper": "swift_helper_tamper.swift",
+}
+SPECIALIZED_NUMBER_ARITHMETIC_SOURCE_FILES = {
+    "java": "NumberArithmetic.java",
+    "cpp": "number_arithmetic.cpp",
+    "objc": "number_arithmetic.m",
+    "swift": "number_arithmetic.swift",
+}
+SPECIALIZED_STRING_SOURCE_FILES = {
+    "java": "CanonicalStringEquality.java",
+    "cpp": "canonical_string_equality.cpp",
+    "objc": "canonical_string_equality.m",
+    "swift": "canonical_string_equality.swift",
+}
 
 REQUIRED_ROUTE = [
     "schema_version",
@@ -175,6 +279,7 @@ ARTIFACT_ROLES = {
     "corpus-artifact",
     "replay-tool",
     "replay-schema",
+    "swift-analyzer-build-receipt",
 }
 ARTIFACT_ID_RE = re.compile(r"^[a-z][a-z0-9-]{7,95}$")
 FORMAL_INPUT_REQUIRED_KEYS = {
@@ -210,6 +315,877 @@ MODULE_ARTIFACT_ROLES = {
     "target-module-validation",
     "original-source-module-artifact",
     "module-case-manifest",
+    "source-module-inventory",
+    "target-module-inventory",
+    "whole-file-module-closure",
+    "swift-analyzer-build-receipt",
+}
+MODULE_INVENTORY_BASE_KEYS = {
+    "schema_version",
+    "kind",
+    "profile",
+    "source_language",
+    "source_file",
+    "analyzer",
+    "analyzer_version",
+    "enumeration_status",
+    "subjects",
+    "diagnostics",
+    "source_artifact_sha256",
+    "source_artifact_bytes",
+    "directives",
+}
+SWIFT_ANALYZER_RECEIPT_PATH = (
+    "certification/formal-artifacts/swift-analyzer-build-receipt.json"
+)
+SWIFT_ANALYZER_MIRROR_SEEDS = frozenset(
+    {
+        "verified-content-addressed-cache",
+    }
+)
+SWIFT_DEPENDENCY_IDENTITY = "swift-syntax"
+SWIFT_DEPENDENCY_VERSION = "600.0.1"
+SWIFT_DEPENDENCY_REVISION = "0687f71944021d616d34d922343dcef086855920"
+SWIFT_DEPENDENCY_SHA256 = (
+    "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+)
+SWIFT_DEPENDENCY_FILE_COUNT = 753
+SWIFT_DEPENDENCY_BYTES = 8_866_479
+SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
+SWIFT_DEPENDENCY_CACHE_KEY = (
+    "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-"
+    "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+)
+SWIFT_DEPENDENCY_CACHE_KEYS = {
+    "cache_key",
+    "cache_schema",
+    "identity",
+    "version",
+    "revision",
+    "seed",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_ANALYZER_MIRROR_KEYS = {
+    "seed",
+    "cache",
+    "git",
+    "identity",
+    "version",
+    "revision",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_GIT_PATH = "/Applications/Xcode.app/Contents/Developer/usr/bin/git"
+SWIFT_GIT_SHA256 = (
+    "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
+)
+SWIFT_GIT_BYTES = 3_704_880
+SWIFT_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
+SWIFT_ANALYZER_RECEIPT_KEYS = {
+    "schema_version",
+    "kind",
+    "source_inputs",
+    "dependency",
+    "toolchain",
+    "network_isolation",
+    "build",
+    "binary",
+    "execution_seal",
+    "canonical_identity",
+}
+SWIFT_ANALYZER_BINARY_KEYS = {
+    "name",
+    "path",
+    "sha256",
+    "bytes",
+    "mode",
+    "uid",
+    "gid",
+    "nlink",
+    "device",
+    "inode",
+}
+SWIFT_ANALYZER_EXECUTION_SEAL_KEYS = {
+    "policy",
+    "root",
+    "mode",
+    "uid",
+    "gid",
+    "device",
+    "inode",
+    "binary",
+}
+SWIFT_XCODE_ROOT = "/Applications/Xcode.app/Contents"
+SWIFT_TOOLCHAIN_ROOT = (
+    f"{SWIFT_XCODE_ROOT}/Developer/Toolchains/XcodeDefault.xctoolchain"
+)
+SWIFT_PLATFORM_ROOT = (
+    f"{SWIFT_XCODE_ROOT}/Developer/Platforms/MacOSX.platform/Developer"
+)
+SWIFT_SDK_ROOT = f"{SWIFT_PLATFORM_ROOT}/SDKs/MacOSX26.5.sdk"
+SWIFT_SDK_RESOLVED_ROOT = f"{SWIFT_PLATFORM_ROOT}/SDKs/MacOSX.sdk"
+SWIFT_SHARED_FRAMEWORKS = f"{SWIFT_XCODE_ROOT}/SharedFrameworks"
+SWIFT_BUILD_CLOSURE_SCHEMA = "swiftpm-build-execution-closure-v1"
+SWIFT_BUILD_CLOSURE_SCOPE = (
+    "pinned-local-xcode-swiftpm-direct-components-and-critical-sdk-projection-v1"
+)
+SWIFT_BUILD_CLOSURE_COMPONENT_SPECS = (
+    (
+        "swift-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        "swift-frontend",
+        "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        171_036_592,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swiftc-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swiftc",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        "swift-frontend",
+        "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        171_036_592,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-build-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-build",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-package",
+        "swift-package",
+        "dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753",
+        23_293_616,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-package",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-package",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-package",
+        None,
+        "dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753",
+        23_293_616,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-driver",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-driver",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-driver",
+        None,
+        "fead52ebe00ec6ec700ecbb4be30f0b6204dd0506cb271dda72ac257261bd64b",
+        3_011_968,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-frontend",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        None,
+        "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        171_036_592,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "clang",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang",
+        None,
+        "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        141_373_024,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "clangxx-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang++",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang",
+        "clang",
+        "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        141_373_024,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "linker",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ld",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ld",
+        None,
+        "5897b275efd93b201b6df5832dd541262b3f20f290859ba78f2200a6a66ef38b",
+        2_331_792,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "archiver",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ar",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ar",
+        None,
+        "e49ffad64ad1cee722540fc5ecb00a230fd8071680682c60d9c851029d20e814",
+        73_520,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "libtool",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/libtool",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/libtool",
+        None,
+        "229eb9d8027953d2aee0590f983eed587d52bdd1ebc21114a62ce693f77b03f1",
+        210_800,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "platform-swift-plugin-server",
+        f"{SWIFT_PLATFORM_ROOT}/usr/bin/swift-plugin-server",
+        f"{SWIFT_PLATFORM_ROOT}/usr/bin/swift-plugin-server",
+        None,
+        "438b8b9027176baed23c149a51250a94dc6a6360116aa818523168d1c4df68c8",
+        71_520,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "in-process-plugin-server",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/libSwiftInProcPluginServer.dylib",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/libSwiftInProcPluginServer.dylib",
+        None,
+        "55385f1fbf98dd8e9a73cd0e87c0d93fbc778c6abe04c6fb744bff9278ef5811",
+        91_424,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-driver-library",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftDriver.dylib",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftDriver.dylib",
+        None,
+        "38ea28895a054a7d72da72042a786722884b62cdefdf0362d18f84a174ef87fb",
+        3_031_376,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-tools-support-library",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftToolsSupport.dylib",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftToolsSupport.dylib",
+        None,
+        "066f824adc6dffbfb4b88aeec2bce96bc2634b4cda4922ee2e999b4c9df431c1",
+        1_190_496,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "build-server-protocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/BuildServerProtocol.framework/Versions/A/BuildServerProtocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/BuildServerProtocol.framework/Versions/A/BuildServerProtocol",
+        None,
+        "05be7dcb9f19802d036a5caa5cc5530c63ed0f2b3133185910200a5ee48dcec3",
+        488_112,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "language-server-protocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocol.framework/Versions/A/LanguageServerProtocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocol.framework/Versions/A/LanguageServerProtocol",
+        None,
+        "7c4f0641f2d7533c2432bd0234e285bbd464274b8928b335bf2861cda19f5e00",
+        2_689_424,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "language-server-protocol-transport",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocolTransport.framework/Versions/A/LanguageServerProtocolTransport",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocolTransport.framework/Versions/A/LanguageServerProtocolTransport",
+        None,
+        "3ef1a0607d060769cdae18edbae5f622d974d2f2b157385d6cb03c6d6e6f8069",
+        254_480,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swb-build-service",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBBuildService.framework/Versions/A/SWBBuildService",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBBuildService.framework/Versions/A/SWBBuildService",
+        None,
+        "9e8908fcb0d74d0348b31641c0d3ec0fc97bd6467f82a574b1756432a73433de",
+        1_395_264,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swb-project-model",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBProjectModel.framework/Versions/A/SWBProjectModel",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBProjectModel.framework/Versions/A/SWBProjectModel",
+        None,
+        "46c09eeff03bf97d179e6b6385fe6a58fea28245d6125ac61943a7615cc2acf9",
+        540_144,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swb-util",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBUtil.framework/Versions/A/SWBUtil",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBUtil.framework/Versions/A/SWBUtil",
+        None,
+        "165998df0e1326f5b254f40e0efe57e501f03c93bbe8ce306c82e8a77f14646c",
+        3_196_784,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-build-framework",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/SwiftBuild",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/SwiftBuild",
+        None,
+        "3ae14a15416d3641949cb4eedecd972eec863eb058e753f1f564e5f35fe01973",
+        3_413_216,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "tools-protocols-swift-extensions",
+        f"{SWIFT_SHARED_FRAMEWORKS}/ToolsProtocolsSwiftExtensions.framework/Versions/A/ToolsProtocolsSwiftExtensions",
+        f"{SWIFT_SHARED_FRAMEWORKS}/ToolsProtocolsSwiftExtensions.framework/Versions/A/ToolsProtocolsSwiftExtensions",
+        None,
+        "cf57590d1be3819fbbb7ebc51435423804e9b34723b068a1b5f83e11abe603bd",
+        199_824,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "llbuild-framework",
+        f"{SWIFT_SHARED_FRAMEWORKS}/llbuild.framework/Versions/A/llbuild",
+        f"{SWIFT_SHARED_FRAMEWORKS}/llbuild.framework/Versions/A/llbuild",
+        None,
+        "25bfb2c3d42c28cc5b01bd303268f63e26ee017c54c626d98bddbe135ed28f36",
+        1_432_608,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-settings-json",
+        f"{SWIFT_SDK_ROOT}/SDKSettings.json",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/SDKSettings.json",
+        None,
+        "f8d005f09381389167f9e0aeaa169bc9e7dff162ef22ca2fd8e98df7ff1acafe",
+        7_774,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-settings-plist",
+        f"{SWIFT_SDK_ROOT}/SDKSettings.plist",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/SDKSettings.plist",
+        None,
+        "e5c7c40b8c5dc1a9f99f8b9fa51870f8fe180421225b8201d0c4c826aad11bdc",
+        5_388,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-foundation-tbd",
+        f"{SWIFT_SDK_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation.tbd",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation.tbd",
+        None,
+        "f425b7c55986e46ab62fd8d8a457ee3fb1ddbe4af46b41abe1e63110ef7fba44",
+        5_602_567,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-libswift-foundation-tbd",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/libswiftFoundation.tbd",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/libswiftFoundation.tbd",
+        None,
+        "c9a08100fa08663ed70835c177b05ce9ff4a0f81bfb6b7d32114cdc0e0371539",
+        420,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+)
+SWIFT_BUILD_CLOSURE_TREE_SPECS = (
+    (
+        "manifest-api",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/ManifestAPI",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/ManifestAPI",
+        "aaf47697e4ada643c682431426648cc1a915416afd2caf5beec096f8fa36417a",
+        9,
+        3_659_442,
+    ),
+    (
+        "plugin-api",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/PluginAPI",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/PluginAPI",
+        "1a3dd060b6803d6873648832cea0b52635f9ae1a261e34bfeb133f7178ca645a",
+        5,
+        3_386_557,
+    ),
+    (
+        "toolchain-host-plugins",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/plugins",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/plugins",
+        "912a7dbdbe6735e08ce84b0c7f313d18e4bb0ebf850c36f199cc1b46e35357ed",
+        4,
+        1_617_344,
+    ),
+    (
+        "platform-host-plugins",
+        f"{SWIFT_PLATFORM_ROOT}/usr/lib/swift/host/plugins",
+        f"{SWIFT_PLATFORM_ROOT}/usr/lib/swift/host/plugins",
+        "6408d05c19f22daf7918307aa95077d8f2849fce8c85b722c90d5d9b1fa6d417",
+        15,
+        5_125_484,
+    ),
+    (
+        "sdk-foundation-module",
+        f"{SWIFT_SDK_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Modules",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Modules",
+        "7165c4716fa827f8803998ea3e436e4458539900c0511cd61d3327293890d1f9",
+        9,
+        7_727_385,
+    ),
+    (
+        "sdk-corefoundation-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/CoreFoundation.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/CoreFoundation.swiftmodule",
+        "a0405db90f83fb73a3fa7c63d4aa5f23c801d9fe07c24e690fb309837569710d",
+        8,
+        104_510,
+    ),
+    (
+        "sdk-objectivec-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/ObjectiveC.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/ObjectiveC.swiftmodule",
+        "09c0b3b5ccc32bf959edf60385077623eda7e9f3b8a03f229fd655a08376845c",
+        8,
+        52_177,
+    ),
+    (
+        "sdk-darwin-foundation1-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/_DarwinFoundation1.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/_DarwinFoundation1.swiftmodule",
+        "afd2771e20e7908556e4093be833fc27a989610d1a67adcf3d2192fc0bed20a1",
+        8,
+        162_910,
+    ),
+    (
+        "sdk-darwin-foundation2-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/_DarwinFoundation2.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/_DarwinFoundation2.swiftmodule",
+        "7cb0327244e386b14d8464ed2bcabcbd307ac72e303786d590a0dc90b9535b72",
+        8,
+        12_270,
+    ),
+    (
+        "sdk-darwin-foundation3-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/_DarwinFoundation3.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/_DarwinFoundation3.swiftmodule",
+        "8662a95e3ab622e93e92ce13177a31d6831760e49906357c457e7aa811ece40a",
+        8,
+        7_854,
+    ),
+    (
+        "toolchain-foundation-prebuilt-module",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/macosx/prebuilt-modules/26.5/Foundation.swiftmodule",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/macosx/prebuilt-modules/26.5/Foundation.swiftmodule",
+        "cc03cfb24425d6842fe72ed89c2f2b2e26ae641cb35cd3211e3f2d93d5bd9b93",
+        4,
+        15_112_272,
+    ),
+    (
+        "sdk-foundation-headers",
+        f"{SWIFT_SDK_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Headers",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Headers",
+        "7c6b6a8f06f51aeaa26411b9fb79cb28800461f939eac310c2be9a4f5edcec91",
+        174,
+        1_707_906,
+    ),
+    (
+        "sdk-objc-headers",
+        f"{SWIFT_SDK_ROOT}/usr/include/objc",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/include/objc",
+        "798fa35ace9193dc45fceb26954f025f04b67116e329596673319d851485517a",
+        17,
+        136_132,
+    ),
+)
+
+
+def _expected_swift_build_closure() -> dict[str, Any]:
+    return {
+        "schema": SWIFT_BUILD_CLOSURE_SCHEMA,
+        "scope": SWIFT_BUILD_CLOSURE_SCOPE,
+        "compiler_runtime_soundness": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "components": [
+            {
+                "role": role,
+                "path": path,
+                "resolved_path": resolved,
+                "link_target": link_target,
+                "sha256": "sha256:" + sha256,
+                "bytes": byte_count,
+                "mode": mode,
+                "uid": uid,
+                "gid": gid,
+                "nlink": nlink,
+            }
+            for (
+                role,
+                path,
+                resolved,
+                link_target,
+                sha256,
+                byte_count,
+                mode,
+                uid,
+                gid,
+                nlink,
+            ) in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
+        ],
+        "trees": [
+            {
+                "role": role,
+                "root": root,
+                "sha256": "sha256:" + sha256,
+                "file_count": file_count,
+                "bytes": byte_count,
+            }
+            for role, root, _resolved, sha256, file_count, byte_count in SWIFT_BUILD_CLOSURE_TREE_SPECS
+        ],
+    }
+
+
+SWIFT_ANALYZER_BUILD_CLOSURE = _expected_swift_build_closure()
+SWIFT_ANALYZER_TOOLCHAIN = {
+    "swiftc": (
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/"
+        "XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ),
+    "swiftc_sha256": (
+        "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+    ),
+    "swift_driver": (
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/"
+        "XcodeDefault.xctoolchain/usr/bin/swift"
+    ),
+    "swift_driver_sha256": (
+        "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+    ),
+    "version": (
+        "Apple Swift version 6.3.3 "
+        "(swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    ),
+    "profile": [
+        "platform=Darwin/arm64",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        (
+            "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
+            "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk"
+        ),
+        "swift-language-mode=6",
+        "integer=Int64",
+    ],
+    "build_closure": SWIFT_ANALYZER_BUILD_CLOSURE,
+}
+SWIFT_ANALYZER_BUILD = {
+    "configuration": "release",
+    "automatic_resolution": False,
+    "manifest_cache": "none",
+    "environment_policy": "minimal-empty-home-deterministic-v1",
+    "deterministic_environment": {
+        "SOURCE_DATE_EPOCH": "0",
+        "SWIFT_DETERMINISTIC_HASHING": "1",
+        "ZERO_AR_DATE": "1",
+    },
+    "mtime_normalization": {
+        "epoch_nanoseconds": 0,
+        "scope": ["source-snapshot", "dependency-mirror"],
+    },
+    "reproducible_path_policy": "debug-file-macro-prefix-map-no-uuid-v1",
+    "argv": [
+        "<sandbox-exec>",
+        "-p",
+        "<deny-network-policy>",
+        "<swift-driver>",
+        "build",
+        "--package-path",
+        "<source-snapshot>",
+        "--cache-path",
+        "<isolated-cache>",
+        "--config-path",
+        "<isolated-config>",
+        "--security-path",
+        "<isolated-security>",
+        "--scratch-path",
+        "<isolated-build>",
+        "--manifest-cache",
+        "none",
+        "--disable-sandbox",
+        "--disable-automatic-resolution",
+        "-c",
+        "release",
+        "-Xswiftc",
+        "-debug-prefix-map",
+        "-Xswiftc",
+        "<build-root>=/elmos/swift-analyzer",
+        "-Xswiftc",
+        "-file-prefix-map",
+        "-Xswiftc",
+        "<build-root>=/elmos/swift-analyzer",
+        "-Xswiftc",
+        "-file-compilation-dir",
+        "-Xswiftc",
+        "<canonical-compilation-dir>",
+        "-Xswiftc",
+        "-gnone",
+        "-Xswiftc",
+        "-no-serialize-debugging-options",
+        "-Xcc",
+        "-fdebug-prefix-map=<build-root>=/elmos/swift-analyzer",
+        "-Xcc",
+        "-ffile-prefix-map=<build-root>=/elmos/swift-analyzer",
+        "-Xcc",
+        "-fmacro-prefix-map=<build-root>=/elmos/swift-analyzer",
+        "-Xcc",
+        "-frandom-seed=elmos-swift-analyzer",
+        "-Xlinker",
+        "-no_uuid",
+    ],
+}
+SWIFT_NETWORK_PROBE_COMPILER = next(
+    component
+    for component in SWIFT_ANALYZER_BUILD_CLOSURE["components"]
+    if component["role"] == "clang"
+)
+SWIFT_NETWORK_POLICY_TEXT = "(version 1)\n(allow default)\n(deny network*)\n"
+SWIFT_NETWORK_POLICY_SHA256 = (
+    "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08"
+)
+SWIFT_NETWORK_PROBE_SOURCE = r"""#include <arpa/inet.h>
+#include <errno.h>
+#include <stdint.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+int main(void) {
+    const int descriptor = socket(AF_INET, SOCK_STREAM, 0);
+    if (descriptor < 0) {
+        return 2;
+    }
+    struct sockaddr_in address = {0};
+    address.sin_family = AF_INET;
+    address.sin_port = htons(9);
+    address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    errno = 0;
+    const int status = connect(
+        descriptor,
+        (const struct sockaddr *)&address,
+        (socklen_t)sizeof(address)
+    );
+    const int error = errno;
+    if (close(descriptor) != 0) {
+        return 3;
+    }
+    if (status != -1 || error != EPERM) {
+        return 4;
+    }
+    static const char result[] = "NETWORK_DENIED:1\n";
+    const ssize_t written = write(STDOUT_FILENO, result, sizeof(result) - 1);
+    if (written != (ssize_t)(sizeof(result) - 1)) {
+        return 5;
+    }
+    return 0;
+}
+"""
+SWIFT_NETWORK_PROBE_SOURCE_SHA256 = (
+    "sha256:8a82a5f438ec38c0e733881eb868d91a4fb82c3ce95c3d8f27507a720dee7c19"
+)
+SWIFT_NETWORK_PROBE_SOURCE_BYTES = 923
+SWIFT_NETWORK_PROBE_BINARY_NAME = "ElmosNetworkDenyProbe"
+SWIFT_NETWORK_PROBE_BINARY_SHA256 = (
+    "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7"
+)
+SWIFT_NETWORK_PROBE_BINARY_BYTES = 33_784
+SWIFT_NETWORK_PROBE_UUID = "3C8F074C-FA7E-3977-B467-A98D3FC2BE00"
+SWIFT_NETWORK_PROBE_CDHASH_FULL = (
+    "5e87ec802f0589e8d88db8eed94de7f41f5c855110c202ec3959cb8cfb9d7dc4"
+)
+SWIFT_NETWORK_PROBE_LINKED_LIBRARIES = ["/usr/lib/libSystem.B.dylib"]
+SWIFT_NETWORK_PROBE_BUILD_ARGV = [
+    "<sandbox-exec>",
+    "-p",
+    "<deny-network-policy>",
+    "<clang>",
+    "-x",
+    "c",
+    "-std=c17",
+    "-target",
+    "arm64-apple-macosx26.0",
+    "-Os",
+    "-fno-ident",
+    "-isysroot",
+    "<swift-sdk>",
+    "-Wl,-dead_strip",
+    "-o",
+    "<probe-output>",
+    "-",
+]
+SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT = {
+    "PATH": (
+        "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:"
+        "<system-usr-sbin>:<system-sbin>"
+    ),
+    "HOME": "<isolated-home>",
+    "TMPDIR": "<isolated-tmp>",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TZ": "UTC",
+    "NO_COLOR": "1",
+    "CLICOLOR": "0",
+    "SOURCE_DATE_EPOCH": "0",
+    "ZERO_AR_DATE": "1",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "<null-device>",
+    "GIT_TERMINAL_PROMPT": "0",
+    "XDG_CACHE_HOME": "<isolated-home>/.cache",
+    "PYTHONHASHSEED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "SWIFT_DETERMINISTIC_HASHING": "1",
+}
+SWIFT_NETWORK_SANDBOX = {
+    "path": "/usr/bin/sandbox-exec",
+    "sha256": (
+        "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+    ),
+    "bytes": 102_368,
+    "mode": "0755",
+    "uid": 0,
+    "gid": 0,
+    "nlink": 1,
+    "cdhash_full": (
+        "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"
+    ),
+}
+SWIFT_NETWORK_VERIFIER = {
+    "path": "/usr/bin/codesign",
+    "sha256": (
+        "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+    ),
+    "bytes": 458_576,
+    "mode": "0755",
+    "uid": 0,
+    "gid": 0,
+    "nlink": 1,
+}
+SWIFT_NETWORK_PROBE_KEYS = {
+    "result",
+    "source",
+    "build",
+    "binary",
+    "execution_seal",
+    "mach_o",
+}
+MODULE_INVENTORY_SUBJECT_KEYS = {
+    "name",
+    "qualified_name",
+    "declaration_kind",
+    "analyzable",
+    "source_span",
+    "signature",
+    "occurrence",
+}
+WHOLE_FILE_CLOSURE_KEYS = {
+    "schema_version",
+    "kind",
+    "profile",
+    "route",
+    "status",
+    "source_inventory_sha256",
+    "source_inventory_bytes",
+    "target_inventory_sha256",
+    "target_inventory_bytes",
+    "manifest_symbols",
+    "source_profile_symbols",
+    "target_profile_symbols",
+    "target_helper_symbols",
+    "verified_generated_helpers",
+    "verified_language_prelude",
+    "verified_language_wrapper",
+    "blocked_declarations",
+    "source_user_call_graph",
+    "target_call_graph_policy",
+    "target_call_graph",
+    "target_builtin_normalizations",
 }
 SPECIALIZED_INPUT_DOMAIN = "canonical-finite-no-error-input-domain"
 SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC = "BLOCKED_NOT_EQUIVALENTLY_MODELED"
@@ -278,6 +1254,48 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def _private_snapshot(
+    root: Path,
+    *,
+    role: str,
+    logical_name: str,
+    content: bytes,
+) -> Path:
+    """Write one immutable-by-convention input below a private replay root."""
+
+    destination_root = root / role
+    destination_root.mkdir(mode=0o700, parents=True, exist_ok=False)
+    destination = destination_root / logical_name
+    if destination.name != logical_name or not logical_name:
+        raise ValueError(f"unsafe snapshot logical name: {logical_name!r}")
+    destination.write_bytes(content)
+    destination.chmod(0o400)
+    return destination
+
+
+def _validate_snapshot_stability(
+    *,
+    label: str,
+    origin: Path,
+    snapshot: Path,
+    expected_bytes: bytes,
+    expected_digest: str,
+    failures: list[str],
+) -> None:
+    """Fail closed if either the private snapshot or bound origin drifted."""
+
+    try:
+        snapshot_bytes = snapshot.read_bytes()
+        origin_bytes = origin.read_bytes()
+    except OSError as exc:
+        failures.append(f"{label} snapshot/origin stability check failed: {exc}")
+        return
+    if snapshot_bytes != expected_bytes or sha256_bytes(snapshot_bytes) != expected_digest:
+        failures.append(f"{label} private snapshot changed during replay")
+    if origin_bytes != expected_bytes or sha256_bytes(origin_bytes) != expected_digest:
+        failures.append(f"{label} bound origin changed during replay")
+
+
 def canonical_json_sha256(value: object) -> str:
     encoded = (
         json.dumps(
@@ -302,10 +1320,40 @@ def _runtime_layout() -> tuple[Path, Path, Path] | None:
     """
 
     executable = Path(os.path.abspath(sys.executable))
-    if executable.parent.name != "bin" or executable.parent.parent.name != ".venv":
+    if executable.parent.name != "bin":
         return None
     venv_root = executable.parent.parent
-    engine_project = venv_root.parent
+    if not (venv_root / "pyvenv.cfg").is_file():
+        return None
+    declared_environment = os.environ.get("UV_PROJECT_ENVIRONMENT")
+    if declared_environment:
+        try:
+            if Path(declared_environment).resolve(strict=True) != venv_root.resolve(
+                strict=True
+            ):
+                return None
+        except OSError:
+            return None
+    validator_path = Path(__file__).resolve(strict=True)
+    engine_projects = (
+        validator_path.parents[2] / "engines" / "polyglot-route-engine",
+        validator_path.parents[3]
+        / "formal-artifacts"
+        / "engine-sources"
+        / "engines"
+        / "polyglot-route-engine",
+    )
+    engine_project = next(
+        (
+            candidate
+            for candidate in engine_projects
+            if (candidate / "pyproject.toml").is_file()
+            and (candidate / "uv.lock").is_file()
+        ),
+        None,
+    )
+    if engine_project is None:
+        return None
     source_root = engine_project / "src"
     if not all((source_root / relative).is_file() for relative in ENGINE_RUNTIME_MODULES.values()):
         return None
@@ -487,6 +1535,1729 @@ def _engine_domain_api(
     )
 
 
+def _engine_negative_replay_api(
+    failures: list[str], label: str
+) -> tuple[Any, Any, Any, Any] | None:
+    """Load only the origin-bound entry points used to replay negative cases."""
+
+    if _runtime_provenance(failures, label) is None:
+        return None
+    try:
+        from elmos_polyglot_route.engine import (  # type: ignore[import-not-found]
+            migrate,
+            migrate_module,
+        )
+        from elmos_polyglot_route.models import (  # type: ignore[import-not-found]
+            RouteError,
+        )
+        from elmos_polyglot_route.native import (  # type: ignore[import-not-found]
+            analyze,
+        )
+    except Exception as exc:
+        failures.append(f"{label} cannot load pinned negative replay API: {exc}")
+        return None
+    return migrate, migrate_module, analyze, RouteError
+
+
+def _engine_module_closure_api(
+    failures: list[str], label: str
+) -> tuple[Any, Any, Any, Any, Any, Any, Any, Any] | None:
+    """Load the exact module inventory/emission closure implementation."""
+
+    if _runtime_provenance(failures, label) is None:
+        return None
+    try:
+        from elmos_polyglot_route.emitter import emit  # type: ignore[import-not-found]
+        from elmos_polyglot_route.engine import (  # type: ignore[import-not-found]
+            _build_whole_file_closure,
+            _combine_function_irs,
+        )
+        from elmos_polyglot_route.models import (  # type: ignore[import-not-found]
+            SemanticIR,
+        )
+        from elmos_polyglot_route.native import (  # type: ignore[import-not-found]
+            analyze,
+            inventory_module,
+        )
+        from elmos_polyglot_route.validation import (  # type: ignore[import-not-found]
+            validate,
+            validate_source,
+        )
+    except Exception as exc:
+        failures.append(f"{label} cannot load pinned module closure API: {exc}")
+        return None
+    return (
+        SemanticIR,
+        emit,
+        analyze,
+        inventory_module,
+        _combine_function_irs,
+        _build_whole_file_closure,
+        validate_source,
+        validate,
+    )
+
+
+def _engine_swift_analyzer_api(
+    failures: list[str], label: str
+) -> tuple[Any, Any, Any] | None:
+    """Load the receipt builder and its live binary handle from bound sources."""
+
+    if _runtime_provenance(failures, label) is None:
+        return None
+    try:
+        from elmos_polyglot_route.native import (  # type: ignore[import-not-found]
+            _swift_analyzer,
+            swift_analyzer_build_receipt,
+        )
+        from elmos_polyglot_route.toolchains import (  # type: ignore[import-not-found]
+            exact_toolchain,
+        )
+    except Exception as exc:
+        failures.append(f"{label} cannot load pinned Swift analyzer receipt API: {exc}")
+        return None
+    return _swift_analyzer, swift_analyzer_build_receipt, exact_toolchain
+
+
+def _receipt_payload_sha256(value: object) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return sha256_bytes(encoded)
+
+
+def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...], ...]:
+    xcode_root = Path(SWIFT_XCODE_ROOT)
+    if not directory.is_absolute() or not directory.is_relative_to(xcode_root):
+        raise ValueError("path is outside pinned Xcode root")
+    cursor = Path("/")
+    identities: list[tuple[object, ...]] = []
+    for part in directory.parts[1:]:
+        cursor = cursor / part
+        metadata = cursor.lstat()
+        applications_exception = cursor == Path("/Applications") and (
+            stat.S_IMODE(metadata.st_mode) == 0o775
+            and metadata.st_uid == 0
+            and metadata.st_gid == 80
+        )
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != 0
+            or (stat.S_IMODE(metadata.st_mode) & 0o022 and not applications_exception)
+        ):
+            raise ValueError(f"unsafe Xcode directory: {cursor}")
+        identities.append(
+            (
+                str(cursor),
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_mtime_ns,
+            )
+        )
+    if directory.resolve(strict=True) != directory:
+        raise ValueError("Xcode directory chain resolves elsewhere")
+    return tuple(identities)
+
+
+def _stable_read_swift_closure_file(file_path: Path) -> tuple[bytes, os.stat_result]:
+    before = file_path.lstat()
+    descriptor = os.open(
+        file_path,
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    try:
+        opened_before = os.fstat(descriptor)
+        chunks: list[bytes] = []
+        total = 0
+        while chunk := os.read(descriptor, 1024 * 1024):
+            total += len(chunk)
+            if total > 250_000_000:
+                raise ValueError("Swift closure component exceeds maximum size")
+            chunks.append(chunk)
+        opened_after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    after = file_path.lstat()
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    for observed in (opened_before, opened_after, after):
+        if identity != (
+            observed.st_dev,
+            observed.st_ino,
+            observed.st_mode,
+            observed.st_nlink,
+            observed.st_uid,
+            observed.st_gid,
+            observed.st_size,
+            observed.st_mtime_ns,
+            observed.st_ctime_ns,
+        ):
+            raise ValueError("Swift closure component changed while read")
+    content = b"".join(chunks)
+    if (
+        not stat.S_ISREG(after.st_mode)
+        or after.st_uid != 0
+        or after.st_gid != 0
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or len(content) != after.st_size
+    ):
+        raise ValueError("Swift closure component metadata is unsafe")
+    return content, after
+
+
+def _stable_read_exact_file(
+    file_path: Path,
+    *,
+    maximum_bytes: int,
+    allowed_uids: frozenset[int],
+) -> tuple[bytes, os.stat_result, tuple[object, ...]]:
+    before = file_path.lstat()
+    descriptor = os.open(
+        file_path,
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    try:
+        opened_before = os.fstat(descriptor)
+        chunks: list[bytes] = []
+        total = 0
+        while chunk := os.read(descriptor, 1024 * 1024):
+            total += len(chunk)
+            if total > maximum_bytes:
+                raise ValueError("file exceeds maximum size")
+            chunks.append(chunk)
+        opened_after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    after = file_path.lstat()
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    for observed in (opened_before, opened_after, after):
+        if identity != (
+            observed.st_dev,
+            observed.st_ino,
+            observed.st_mode,
+            observed.st_nlink,
+            observed.st_uid,
+            observed.st_gid,
+            observed.st_size,
+            observed.st_mtime_ns,
+            observed.st_ctime_ns,
+        ):
+            raise ValueError("file changed while read")
+    content = b"".join(chunks)
+    if (
+        not stat.S_ISREG(after.st_mode)
+        or after.st_uid not in allowed_uids
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or after.st_nlink != 1
+        or len(content) != after.st_size
+        or file_path.resolve(strict=True) != file_path
+    ):
+        raise ValueError("file metadata is unsafe")
+    return content, after, identity
+
+
+def _system_directory_chain(directory: Path) -> tuple[tuple[object, ...], ...]:
+    if directory != Path("/usr/bin"):
+        raise ValueError("system tool directory is not pinned")
+    cursor = Path("/")
+    identities: list[tuple[object, ...]] = []
+    for part in directory.parts[1:]:
+        cursor = cursor / part
+        metadata = cursor.lstat()
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != 0
+            or stat.S_IMODE(metadata.st_mode) & 0o022
+        ):
+            raise ValueError(f"unsafe system directory: {cursor}")
+        identities.append(
+            (
+                str(cursor),
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_mtime_ns,
+                metadata.st_ctime_ns,
+            )
+        )
+    if directory.resolve(strict=True) != directory:
+        raise ValueError("system tool directory resolves elsewhere")
+    return tuple(identities)
+
+
+def _observe_swift_network_system_tool(
+    expected: dict[str, Any],
+) -> tuple[dict[str, Any], tuple[object, ...]]:
+    path = Path(expected["path"])
+    chain_before = _system_directory_chain(path.parent)
+    content, metadata, identity = _stable_read_exact_file(
+        path,
+        maximum_bytes=int(expected["bytes"]),
+        allowed_uids=frozenset({0}),
+    )
+    chain_after = _system_directory_chain(path.parent)
+    observed = {
+        "path": str(path),
+        "sha256": sha256_bytes(content),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+    }
+    expected_file = {
+        key: expected[key] for key in ("path", "sha256", "bytes", "mode", "uid", "gid", "nlink")
+    }
+    if chain_before != chain_after or observed != expected_file:
+        raise ValueError("network system tool identity differs")
+    return observed, (chain_after, identity)
+
+
+def _verify_swift_network_sandbox_signature(
+    *,
+    environment: dict[str, str],
+    cwd: Path,
+) -> None:
+    verify = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", SWIFT_NETWORK_SANDBOX["path"]],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    details = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", SWIFT_NETWORK_SANDBOX["path"]],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    lines = set((details.stdout + details.stderr).splitlines())
+    if verify.returncode != 0 or details.returncode != 0 or not {
+        "Identifier=com.apple.sandbox-exec",
+        "Authority=Apple Root CA",
+        "TeamIdentifier=not set",
+        f"CandidateCDHashFull sha256={SWIFT_NETWORK_SANDBOX['cdhash_full']}",
+    }.issubset(lines):
+        raise ValueError("sandbox-exec code-signature identity differs")
+
+
+def _observe_swift_git_identity() -> dict[str, str]:
+    path = Path(SWIFT_GIT_PATH)
+    chain_before = _swift_closure_directory_chain(path.parent)
+    content_before, _metadata_before, identity_before = _stable_read_exact_file(
+        path,
+        maximum_bytes=SWIFT_GIT_BYTES,
+        allowed_uids=frozenset({0}),
+    )
+    version = subprocess.run(
+        [str(path), "--version"],
+        cwd=path.parent,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env={"LANG": "C", "LC_ALL": "C", "PATH": str(path.parent)},
+    )
+    content_after, _metadata_after, identity_after = _stable_read_exact_file(
+        path,
+        maximum_bytes=SWIFT_GIT_BYTES,
+        allowed_uids=frozenset({0}),
+    )
+    chain_after = _swift_closure_directory_chain(path.parent)
+    if (
+        version.returncode != 0
+        or version.stdout.strip() != SWIFT_GIT_VERSION
+        or version.stderr != ""
+        or chain_before != chain_after
+        or identity_before != identity_after
+        or content_before != content_after
+        or len(content_after) != SWIFT_GIT_BYTES
+        or sha256_bytes(content_after) != SWIFT_GIT_SHA256
+    ):
+        raise ValueError("direct Xcode Git identity differs")
+    return {
+        "path": SWIFT_GIT_PATH,
+        "sha256": SWIFT_GIT_SHA256,
+        "version": SWIFT_GIT_VERSION,
+    }
+
+
+def _inspect_swift_network_probe_macho(content: bytes) -> dict[str, Any]:
+    if len(content) < 32:
+        raise ValueError("probe Mach-O header is truncated")
+    magic, cpu_type, _cpu_subtype, file_type, command_count, command_bytes, _flags, _reserved = struct.unpack_from(
+        "<IiiIIIII", content, 0
+    )
+    if magic != 0xFEEDFACF or cpu_type != 0x0100000C or file_type != 2:
+        raise ValueError("probe Mach-O identity differs")
+    command_end = 32 + command_bytes
+    if command_end > len(content):
+        raise ValueError("probe Mach-O commands are truncated")
+    offset = 32
+    uuids: list[bytes] = []
+    linked_libraries: list[str] = []
+    signature_commands: list[tuple[int, int]] = []
+    dylib_commands = frozenset(
+        {0xC, 0x18 | 0x80000000, 0x1F | 0x80000000, 0x23 | 0x80000000, 0x20}
+    )
+    for _index in range(command_count):
+        if offset + 8 > command_end:
+            raise ValueError("probe Mach-O command header is truncated")
+        command, size = struct.unpack_from("<II", content, offset)
+        if size < 8 or size % 8 != 0 or offset + size > command_end:
+            raise ValueError("probe Mach-O command size is invalid")
+        if command == 0x1B:
+            if size != 24:
+                raise ValueError("probe LC_UUID is invalid")
+            uuids.append(content[offset + 8 : offset + 24])
+        elif command in dylib_commands:
+            if size < 24:
+                raise ValueError("probe dylib command is invalid")
+            name_offset = struct.unpack_from("<I", content, offset + 8)[0]
+            if name_offset < 24 or name_offset >= size:
+                raise ValueError("probe dylib name offset is invalid")
+            name = content[offset + name_offset : offset + size].split(b"\0", 1)[0]
+            linked_libraries.append(name.decode("utf-8"))
+        elif command == 0x1D:
+            if size != 16:
+                raise ValueError("probe code-signature command is invalid")
+            signature_commands.append(struct.unpack_from("<II", content, offset + 8))
+        offset += size
+    if offset != command_end or len(uuids) != 1 or len(signature_commands) != 1:
+        raise ValueError("probe Mach-O command inventory is invalid")
+    signature_offset, signature_size = signature_commands[0]
+    if signature_size == 0 or signature_offset + signature_size != len(content):
+        raise ValueError("probe code-signature range is invalid")
+    uuid_hex = uuids[0].hex().upper()
+    uuid_value = (
+        f"{uuid_hex[:8]}-{uuid_hex[8:12]}-{uuid_hex[12:16]}-"
+        f"{uuid_hex[16:20]}-{uuid_hex[20:]}"
+    )
+    return {
+        "architecture": "arm64",
+        "file_type": "MH_EXECUTE",
+        "uuid": uuid_value,
+        "cdhash_full": SWIFT_NETWORK_PROBE_CDHASH_FULL,
+        "linked_libraries": linked_libraries,
+    }
+
+
+def _verify_swift_network_probe_signature(
+    binary: Path,
+    *,
+    environment: dict[str, str],
+    cwd: Path,
+) -> None:
+    verify = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", str(binary)],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    if verify.returncode != 0:
+        raise ValueError("probe code signature did not verify")
+    details = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", str(binary)],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    lines = set((details.stdout + details.stderr).splitlines())
+    if details.returncode != 0 or not {
+        f"Identifier={SWIFT_NETWORK_PROBE_BINARY_NAME}",
+        "Signature=adhoc",
+        "TeamIdentifier=not set",
+        f"CandidateCDHashFull sha256={SWIFT_NETWORK_PROBE_CDHASH_FULL}",
+    }.issubset(lines):
+        raise ValueError("probe code-signature identity differs")
+
+
+def _probe_validation_environment(root: Path) -> dict[str, str]:
+    home = root / "home"
+    temporary = root / "tmp"
+    home.mkdir(mode=0o700)
+    temporary.mkdir(mode=0o700)
+    return {
+        "HOME": str(home),
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": os.pathsep.join(
+            (
+                str(Path(SWIFT_NETWORK_PROBE_COMPILER["path"]).parent),
+                "/usr/bin",
+                "/bin",
+                "/usr/sbin",
+                "/sbin",
+            )
+        ),
+        "SOURCE_DATE_EPOCH": "0",
+        "SWIFT_DETERMINISTIC_HASHING": "1",
+        "TMPDIR": str(temporary),
+        "ZERO_AR_DATE": "1",
+        "TZ": "UTC",
+        "NO_COLOR": "1",
+        "CLICOLOR": "0",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_TERMINAL_PROMPT": "0",
+        "XDG_CACHE_HOME": str(home / ".cache"),
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+    }
+
+
+def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
+    compiler = Path(SWIFT_NETWORK_PROBE_COMPILER["path"])
+    chain_before = _swift_closure_directory_chain(compiler.parent)
+    content, metadata, identity = _stable_read_exact_file(
+        compiler,
+        maximum_bytes=int(SWIFT_NETWORK_PROBE_COMPILER["bytes"]),
+        allowed_uids=frozenset({0}),
+    )
+    chain_after = _swift_closure_directory_chain(compiler.parent)
+    observed_compiler = {
+        **SWIFT_NETWORK_PROBE_COMPILER,
+        "sha256": sha256_bytes(content),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+    }
+    sdk = Path(SWIFT_SDK_ROOT)
+    sdk_metadata = sdk.lstat()
+    sdk_target = os.readlink(sdk)
+    sdk_resolved = sdk.resolve(strict=True)
+    if (
+        chain_before != chain_after
+        or observed_compiler != SWIFT_NETWORK_PROBE_COMPILER
+        or stat.S_ISLNK(compiler.lstat().st_mode)
+        or compiler.resolve(strict=True)
+        != Path(SWIFT_NETWORK_PROBE_COMPILER["resolved_path"])
+        or SWIFT_NETWORK_PROBE_COMPILER["link_target"] is not None
+        or not stat.S_ISLNK(sdk_metadata.st_mode)
+        or sdk_metadata.st_uid != 0
+        or sdk_metadata.st_gid != 0
+        or sdk_target != "MacOSX.sdk"
+        or sdk_resolved != Path(SWIFT_SDK_RESOLVED_ROOT)
+    ):
+        raise ValueError("probe compiler or SDK identity differs")
+    return (
+        chain_after,
+        identity,
+        _swift_closure_directory_chain(sdk_resolved),
+        sdk_metadata.st_dev,
+        sdk_metadata.st_ino,
+        sdk_metadata.st_mode,
+        sdk_metadata.st_uid,
+        sdk_metadata.st_gid,
+        sdk_metadata.st_mtime_ns,
+        sdk_target,
+    )
+
+
+def _independently_rebuild_swift_network_probe() -> None:
+    with tempfile.TemporaryDirectory(
+        prefix="elmos-swift-network-probe-validator-"
+    ) as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        environment = _probe_validation_environment(root)
+        sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+        verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+        toolchain_before = _observe_swift_network_probe_toolchain()
+        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        output = root / SWIFT_NETWORK_PROBE_BINARY_NAME
+        command = [
+            SWIFT_NETWORK_SANDBOX["path"],
+            "-p",
+            SWIFT_NETWORK_POLICY_TEXT,
+            SWIFT_NETWORK_PROBE_COMPILER["path"],
+            "-x",
+            "c",
+            "-std=c17",
+            "-target",
+            "arm64-apple-macosx26.0",
+            "-Os",
+            "-fno-ident",
+            "-isysroot",
+            SWIFT_SDK_ROOT,
+            "-Wl,-dead_strip",
+            "-o",
+            str(output),
+            "-",
+        ]
+        build = subprocess.run(
+            command,
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+            input=SWIFT_NETWORK_PROBE_SOURCE,
+            timeout=120,
+            env=environment,
+        )
+        if build.returncode != 0:
+            raise ValueError(f"independent probe compile failed: {build.stderr[-500:]}")
+        content, metadata, _identity = _stable_read_exact_file(
+            output,
+            maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
+            allowed_uids=frozenset({os.getuid()}),
+        )
+        if (
+            sha256_bytes(content) != SWIFT_NETWORK_PROBE_BINARY_SHA256
+            or len(content) != SWIFT_NETWORK_PROBE_BINARY_BYTES
+            or f"{stat.S_IMODE(metadata.st_mode):04o}" != "0755"
+            or _inspect_swift_network_probe_macho(content)
+            != {
+                "architecture": "arm64",
+                "file_type": "MH_EXECUTE",
+                "uuid": SWIFT_NETWORK_PROBE_UUID,
+                "cdhash_full": SWIFT_NETWORK_PROBE_CDHASH_FULL,
+                "linked_libraries": SWIFT_NETWORK_PROBE_LINKED_LIBRARIES,
+            }
+        ):
+            raise ValueError("independently rebuilt probe identity differs")
+        _verify_swift_network_probe_signature(
+            output,
+            environment=environment,
+            cwd=root,
+        )
+        execution = subprocess.run(
+            [
+                SWIFT_NETWORK_SANDBOX["path"],
+                "-p",
+                SWIFT_NETWORK_POLICY_TEXT,
+                str(output),
+            ],
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=environment,
+        )
+        if (
+            execution.returncode != 0
+            or execution.stdout != "NETWORK_DENIED:1\n"
+            or execution.stderr != ""
+        ):
+            raise ValueError("independently rebuilt probe did not observe exact EPERM")
+        sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+        verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+        toolchain_after = _observe_swift_network_probe_toolchain()
+        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        if (
+            sandbox_before != sandbox_after
+            or verifier_before != verifier_after
+            or toolchain_before != toolchain_after
+        ):
+            raise ValueError("probe build/execution closure changed during replay")
+
+
+def _observe_swift_build_closure() -> dict[str, Any]:
+    sdk_root = Path(SWIFT_SDK_ROOT)
+    sdk_link = sdk_root.lstat()
+    if (
+        not stat.S_ISLNK(sdk_link.st_mode)
+        or sdk_link.st_uid != 0
+        or sdk_link.st_gid != 0
+        or os.readlink(sdk_root) != "MacOSX.sdk"
+        or sdk_root.resolve(strict=True) != Path(SWIFT_SDK_RESOLVED_ROOT)
+    ):
+        raise ValueError("pinned Swift SDK root link is invalid")
+
+    content_cache: dict[Path, tuple[bytes, os.stat_result]] = {}
+    components: list[dict[str, Any]] = []
+    for role, path_text, resolved_text, link_target, *_expected in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS:
+        lexical = Path(path_text)
+        lexical_metadata = lexical.lstat()
+        if link_target is None:
+            if stat.S_ISLNK(lexical_metadata.st_mode):
+                raise ValueError(f"unexpected component symlink: {role}")
+        elif (
+            not stat.S_ISLNK(lexical_metadata.st_mode)
+            or lexical_metadata.st_uid != 0
+            or lexical_metadata.st_gid != 0
+            or os.readlink(lexical) != link_target
+            or Path(link_target).is_absolute()
+            or ".." in Path(link_target).parts
+        ):
+            raise ValueError(f"component symlink differs: {role}")
+        resolved = lexical.resolve(strict=True)
+        if resolved != Path(resolved_text):
+            raise ValueError(f"component resolution differs: {role}")
+        _swift_closure_directory_chain(resolved.parent)
+        if resolved not in content_cache:
+            content_cache[resolved] = _stable_read_swift_closure_file(resolved)
+        content, metadata = content_cache[resolved]
+        components.append(
+            {
+                "role": role,
+                "path": str(lexical),
+                "resolved_path": str(resolved),
+                "link_target": link_target,
+                "sha256": sha256_bytes(content),
+                "bytes": len(content),
+                "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+                "uid": metadata.st_uid,
+                "gid": metadata.st_gid,
+                "nlink": metadata.st_nlink,
+            }
+        )
+
+    trees: list[dict[str, Any]] = []
+    for role, root_text, resolved_text, *_expected in SWIFT_BUILD_CLOSURE_TREE_SPECS:
+        root = Path(root_text)
+        resolved = root.resolve(strict=True)
+        if resolved != Path(resolved_text):
+            raise ValueError(f"tree resolution differs: {role}")
+        root_identity = _swift_closure_directory_chain(resolved)
+
+        def discover(tree_root: Path, tree_role: str) -> list[Path]:
+            files: list[Path] = []
+            candidates = sorted(
+                tree_root.rglob("*"),
+                key=lambda item: item.relative_to(tree_root).as_posix(),
+            )
+            if len(candidates) > 10_000:
+                raise ValueError(f"tree is unexpectedly large: {tree_role}")
+            for item in candidates:
+                metadata = item.lstat()
+                if (
+                    stat.S_ISLNK(metadata.st_mode)
+                    or metadata.st_uid != 0
+                    or metadata.st_gid != 0
+                    or stat.S_IMODE(metadata.st_mode) & 0o022
+                    or not (stat.S_ISDIR(metadata.st_mode) or stat.S_ISREG(metadata.st_mode))
+                ):
+                    raise ValueError(f"tree entry is unsafe: {tree_role}")
+                if stat.S_ISREG(metadata.st_mode):
+                    files.append(item)
+            return files
+
+        paths = discover(resolved, role)
+        file_records: list[dict[str, Any]] = []
+        total = 0
+        for item in paths:
+            content, _metadata = _stable_read_swift_closure_file(item)
+            total += len(content)
+            file_records.append(
+                {
+                    "path": item.relative_to(resolved).as_posix(),
+                    "sha256": sha256_bytes(content),
+                    "bytes": len(content),
+                }
+            )
+        if [
+            item.relative_to(resolved).as_posix()
+            for item in discover(resolved, role)
+        ] != [
+            item["path"] for item in file_records
+        ] or _swift_closure_directory_chain(resolved) != root_identity:
+            raise ValueError(f"tree changed while read: {role}")
+        trees.append(
+            {
+                "role": role,
+                "root": str(root),
+                "sha256": _receipt_payload_sha256({"files": file_records}),
+                "file_count": len(file_records),
+                "bytes": total,
+            }
+        )
+    return {
+        "schema": SWIFT_BUILD_CLOSURE_SCHEMA,
+        "scope": SWIFT_BUILD_CLOSURE_SCOPE,
+        "compiler_runtime_soundness": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "components": components,
+        "trees": trees,
+    }
+
+
+def _canonical_swift_build_closure_identity(closure: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema": closure.get("schema"),
+        "scope": closure.get("scope"),
+        "compiler_runtime_soundness": closure.get("compiler_runtime_soundness"),
+        "certification": closure.get("certification"),
+        "components": [
+            {key: item.get(key) for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")}
+            for item in closure.get("components", [])
+            if isinstance(item, dict)
+        ],
+        "trees": [
+            {key: item.get(key) for key in ("role", "sha256", "file_count", "bytes")}
+            for item in closure.get("trees", [])
+            if isinstance(item, dict)
+        ],
+    }
+
+
+def _canonical_swift_toolchain_identity(
+    toolchain: dict[str, Any],
+) -> dict[str, Any]:
+    """Rebuild the portable Swift toolchain identity from exact raw fields."""
+
+    profile = toolchain.get("profile")
+    profile_items = profile if isinstance(profile, list) else []
+    return {
+        "swiftc_sha256": toolchain.get("swiftc_sha256"),
+        "swift_driver_sha256": toolchain.get("swift_driver_sha256"),
+        "version": toolchain.get("version"),
+        "profile": [
+            item
+            for item in profile_items
+            if isinstance(item, str) and not item.startswith("sdk-path=")
+        ],
+        "build_closure": _canonical_swift_build_closure_identity(
+            toolchain.get("build_closure")
+            if isinstance(toolchain.get("build_closure"), dict)
+            else {}
+        ),
+    }
+
+
+def _rebuild_portable_swift_receipt_identity(
+    receipt: dict[str, Any],
+) -> dict[str, Any]:
+    """Independently construct the host-path-free canonical receipt.
+
+    This deliberately does not read ``receipt.canonical_identity`` and only
+    selects exact portable fields from the raw, independently validated
+    receipt.  Scratch roots, executable paths, device/inode and ownership are
+    therefore incapable of entering persisted stable comparisons.
+    """
+
+    dependency = receipt["dependency"]
+    mirror = dependency["mirror"]
+    cache = mirror["cache"]
+    network = receipt["network_isolation"]
+    network_probe = network["probe"]
+    probe_compiler = network_probe["build"]["compiler"]
+    binary = receipt["binary"]
+    seal = receipt["execution_seal"]
+    return {
+        "schema_version": receipt["schema_version"],
+        "kind": receipt["kind"],
+        "source_inputs": receipt["source_inputs"],
+        "dependency": {
+            "identity": dependency["identity"],
+            "version": dependency["version"],
+            "revision": dependency["revision"],
+            "sha256": dependency["sha256"],
+            "file_count": dependency["file_count"],
+            "bytes": dependency["bytes"],
+            "mirror": {
+                "seed": mirror["seed"],
+                "identity": mirror["identity"],
+                "version": mirror["version"],
+                "revision": mirror["revision"],
+                "sha256": mirror["sha256"],
+                "file_count": mirror["file_count"],
+                "bytes": mirror["bytes"],
+                "git": {
+                    "sha256": mirror["git"]["sha256"],
+                    "version": mirror["git"]["version"],
+                },
+                "cache": {
+                    key: cache[key]
+                    for key in (
+                        "cache_key",
+                        "cache_schema",
+                        "identity",
+                        "version",
+                        "revision",
+                        "seed",
+                        "sha256",
+                        "file_count",
+                        "bytes",
+                    )
+                },
+            },
+        },
+        "toolchain": _canonical_swift_toolchain_identity(receipt["toolchain"]),
+        "build": receipt["build"],
+        "network_isolation": {
+            "status": network["status"],
+            "scope": network["scope"],
+            "sandbox": {
+                key: network["sandbox"][key]
+                for key in ("sha256", "bytes", "mode", "nlink", "cdhash_full")
+            },
+            "verifier": {
+                key: network["verifier"][key]
+                for key in ("sha256", "bytes", "mode", "nlink")
+            },
+            "policy": network["policy"],
+            "probe": {
+                "result": network_probe["result"],
+                "source": network_probe["source"],
+                "build": {
+                    "environment_policy": network_probe["build"][
+                        "environment_policy"
+                    ],
+                    "argv": network_probe["build"]["argv"],
+                    "environment": network_probe["build"]["environment"],
+                    "compiler": {
+                        key: probe_compiler[key]
+                        for key in (
+                            "role",
+                            "link_target",
+                            "sha256",
+                            "bytes",
+                            "mode",
+                            "nlink",
+                        )
+                    },
+                },
+                "binary": {
+                    key: network_probe["binary"][key]
+                    for key in ("name", "sha256", "bytes", "mode", "nlink")
+                },
+                "execution_seal": {
+                    "policy": network_probe["execution_seal"]["policy"],
+                    "mode": network_probe["execution_seal"]["mode"],
+                    "binary": {
+                        key: network_probe["execution_seal"]["binary"][key]
+                        for key in ("name", "sha256", "bytes", "mode", "nlink")
+                    },
+                },
+                "mach_o": {
+                    **{
+                        key: network_probe["mach_o"][key]
+                        for key in (
+                            "architecture",
+                            "file_type",
+                            "uuid",
+                            "cdhash_full",
+                        )
+                    },
+                    "linked_libraries": ["system-libSystem"],
+                },
+            },
+        },
+        "binary": {
+            key: binary[key]
+            for key in ("name", "sha256", "bytes", "mode", "nlink")
+        },
+        "execution_seal": {
+            "policy": seal["policy"],
+            "mode": seal["mode"],
+            "binary": {
+                key: seal["binary"][key]
+                for key in ("name", "sha256", "bytes", "mode", "nlink")
+            },
+        },
+    }
+
+
+def _swift_receipt_stable_projection(receipt: dict[str, Any]) -> dict[str, Any]:
+    """Return an independently rebuilt content-addressed stable identity."""
+
+    canonical = _rebuild_portable_swift_receipt_identity(receipt)
+    return {
+        "sha256": _receipt_payload_sha256(canonical),
+        "receipt": canonical,
+    }
+
+
+def _module_inventory_stable_projection(
+    inventory: dict[str, Any],
+) -> dict[str, Any]:
+    """Normalize only the explicitly non-reproducible Swift build fields."""
+
+    projected = json.loads(
+        json.dumps(inventory, ensure_ascii=False, allow_nan=False),
+        parse_constant=_reject_json_constant,
+    )
+    receipt = projected.get("analyzer_build_receipt")
+    if isinstance(receipt, dict):
+        projected["analyzer_build_receipt"] = _swift_receipt_stable_projection(
+            receipt
+        )
+    return projected
+
+
+def _canonical_json_bytes_for_binding(value: object) -> bytes:
+    return (
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+
+
+def _whole_file_closure_stable_projection(
+    closure: dict[str, Any],
+    *,
+    source_inventory: dict[str, Any],
+    target_inventory: dict[str, Any],
+) -> dict[str, Any]:
+    projected = json.loads(
+        json.dumps(closure, ensure_ascii=False, allow_nan=False),
+        parse_constant=_reject_json_constant,
+    )
+    for side, inventory in (
+        ("source", source_inventory),
+        ("target", target_inventory),
+    ):
+        stable_inventory = _module_inventory_stable_projection(inventory)
+        stable_bytes = _canonical_json_bytes_for_binding(stable_inventory)
+        projected[f"{side}_inventory_sha256"] = sha256_bytes(stable_bytes)
+        projected[f"{side}_inventory_bytes"] = len(stable_bytes)
+    return projected
+
+
+def _validate_swift_analyzer_receipt_document(
+    receipt: object,
+    *,
+    label: str,
+    failures: list[str],
+    live_binary: Path | None = None,
+) -> dict[str, Any] | None:
+    """Validate one persisted or freshly rebuilt Swift analyzer receipt.
+
+    Persisted binary bytes intentionally are not present in route evidence, so
+    their digest is a receipt boundary rather than an independent executable
+    replay.  A freshly rebuilt receipt is additionally checked against its live
+    private binary below.  Compiler/runtime soundness remains ``NOT_RUN``.
+    """
+
+    if not isinstance(receipt, dict):
+        failures.append(f"{label} must be an object")
+        return None
+    starting_failure_count = len(failures)
+    if set(receipt) != SWIFT_ANALYZER_RECEIPT_KEYS:
+        failures.append(f"{label} top-level keys are not exact")
+    if (
+        receipt.get("schema_version") != "1.0.0"
+        or receipt.get("kind") != "elmos.swift-analyzer-build-receipt"
+    ):
+        failures.append(f"{label} identity is invalid")
+
+    source_inputs = receipt.get("source_inputs")
+    if not isinstance(source_inputs, dict) or set(source_inputs) != {
+        "sha256",
+        "files",
+    }:
+        failures.append(f"{label}.source_inputs keys are not exact")
+        source_inputs = {}
+    _require_digest(
+        failures,
+        source_inputs.get("sha256"),
+        f"{label}.source_inputs.sha256",
+    )
+    files = source_inputs.get("files")
+    if not isinstance(files, list) or len(files) < 3:
+        failures.append(f"{label}.source_inputs.files is incomplete")
+        files = []
+    observed_paths: list[str] = []
+    for index, item in enumerate(files):
+        item_label = f"{label}.source_inputs.files[{index}]"
+        if not isinstance(item, dict) or set(item) != {"path", "sha256", "bytes"}:
+            failures.append(f"{item_label} keys are not exact")
+            continue
+        relative = item.get("path")
+        if (
+            not isinstance(relative, str)
+            or not relative
+            or Path(relative).is_absolute()
+            or "\\" in relative
+            or any(part in {"", ".", ".."} for part in Path(relative).parts)
+        ):
+            failures.append(f"{item_label}.path is invalid")
+        else:
+            observed_paths.append(relative)
+        _require_digest(failures, item.get("sha256"), f"{item_label}.sha256")
+        if not _is_int(item.get("bytes"), minimum=1):
+            failures.append(f"{item_label}.bytes is invalid")
+    if observed_paths != list(dict.fromkeys(observed_paths)):
+        failures.append(f"{label}.source_inputs.files paths are duplicated")
+    if source_inputs.get("sha256") != _receipt_payload_sha256({"files": files}):
+        failures.append(f"{label}.source_inputs aggregate digest mismatch")
+
+    layout = _runtime_layout()
+    if layout is None:
+        failures.append(f"{label} cannot resolve locked Swift analyzer sources")
+    else:
+        source_root, _, _ = layout
+        package = source_root.parent / "native" / "swift"
+        expected_sources = [
+            package / "Package.swift",
+            package / "Package.resolved",
+            *sorted(
+                (package / "Sources").rglob("*.swift"),
+                key=lambda path: path.relative_to(package).as_posix(),
+            ),
+        ]
+        expected_paths = [path.relative_to(package).as_posix() for path in expected_sources]
+        if observed_paths != expected_paths:
+            failures.append(f"{label}.source_inputs file set differs from locked engine sources")
+        records_by_path = {
+            item.get("path"): item for item in files if isinstance(item, dict)
+        }
+        for source in expected_sources:
+            relative = source.relative_to(package).as_posix()
+            record = records_by_path.get(relative)
+            try:
+                if source.is_symlink() or not source.is_file():
+                    raise ValueError("not a regular locked source")
+                content = source.read_bytes()
+            except (OSError, ValueError) as exc:
+                failures.append(f"{label}.source_inputs locked source invalid: {relative}: {exc}")
+                continue
+            if not isinstance(record, dict) or (
+                record.get("sha256") != sha256_bytes(content)
+                or record.get("bytes") != len(content)
+            ):
+                failures.append(f"{label}.source_inputs source binding mismatch: {relative}")
+
+    dependency = receipt.get("dependency")
+    dependency_keys = {
+        "identity",
+        "version",
+        "revision",
+        "sha256",
+        "file_count",
+        "bytes",
+        "mirror",
+    }
+    if not isinstance(dependency, dict) or set(dependency) != dependency_keys:
+        failures.append(f"{label}.dependency keys are not exact")
+        dependency = {}
+    if {
+        field: dependency.get(field)
+        for field in ("identity", "version", "revision")
+    } != {
+        "identity": SWIFT_DEPENDENCY_IDENTITY,
+        "version": SWIFT_DEPENDENCY_VERSION,
+        "revision": SWIFT_DEPENDENCY_REVISION,
+    }:
+        failures.append(f"{label}.dependency identity is invalid")
+    _require_digest(failures, dependency.get("sha256"), f"{label}.dependency.sha256")
+    if dependency.get("sha256") != SWIFT_DEPENDENCY_SHA256:
+        failures.append(f"{label}.dependency.sha256 is not the pinned tree")
+    for field in ("file_count", "bytes"):
+        if not _is_int(dependency.get(field), minimum=1):
+            failures.append(f"{label}.dependency.{field} is invalid")
+    if dependency.get("file_count") != SWIFT_DEPENDENCY_FILE_COUNT:
+        failures.append(f"{label}.dependency.file_count is not the pinned tree")
+    if dependency.get("bytes") != SWIFT_DEPENDENCY_BYTES:
+        failures.append(f"{label}.dependency.bytes is not the pinned tree")
+
+    mirror = dependency.get("mirror")
+    if not isinstance(mirror, dict) or set(mirror) != SWIFT_ANALYZER_MIRROR_KEYS:
+        failures.append(f"{label}.dependency.mirror keys are not exact")
+        mirror = {}
+    if mirror.get("seed") not in SWIFT_ANALYZER_MIRROR_SEEDS:
+        failures.append(f"{label}.dependency.mirror.seed is invalid")
+    if {
+        field: mirror.get(field)
+        for field in ("identity", "version", "revision")
+    } != {
+        "identity": SWIFT_DEPENDENCY_IDENTITY,
+        "version": SWIFT_DEPENDENCY_VERSION,
+        "revision": SWIFT_DEPENDENCY_REVISION,
+    }:
+        failures.append(f"{label}.dependency.mirror identity is invalid")
+    for field in ("sha256", "file_count", "bytes"):
+        if mirror.get(field) != dependency.get(field):
+            failures.append(f"{label}.dependency.mirror.{field} differs from dependency tree")
+
+    cache = mirror.get("cache")
+    if not isinstance(cache, dict) or set(cache) != SWIFT_DEPENDENCY_CACHE_KEYS:
+        failures.append(f"{label}.dependency.mirror.cache keys are not exact")
+        cache = {}
+    if cache.get("cache_key") != SWIFT_DEPENDENCY_CACHE_KEY:
+        failures.append(f"{label}.dependency.mirror.cache.cache_key is invalid")
+    if cache.get("cache_schema") != SWIFT_DEPENDENCY_CACHE_SCHEMA:
+        failures.append(f"{label}.dependency.mirror.cache.cache_schema is invalid")
+    if cache.get("seed") not in SWIFT_ANALYZER_MIRROR_SEEDS:
+        failures.append(f"{label}.dependency.mirror.cache.seed is invalid")
+    if {
+        field: cache.get(field)
+        for field in ("identity", "version", "revision")
+    } != {
+        "identity": SWIFT_DEPENDENCY_IDENTITY,
+        "version": SWIFT_DEPENDENCY_VERSION,
+        "revision": SWIFT_DEPENDENCY_REVISION,
+    }:
+        failures.append(f"{label}.dependency.mirror.cache identity is invalid")
+    for field in ("sha256", "file_count", "bytes"):
+        if cache.get(field) != dependency.get(field):
+            failures.append(
+                f"{label}.dependency.mirror.cache.{field} differs from dependency tree"
+            )
+
+    git = mirror.get("git")
+    if not isinstance(git, dict) or set(git) != {"path", "sha256", "version"}:
+        failures.append(f"{label}.dependency.mirror.git keys are not exact")
+        git = {}
+    if git != {
+        "path": SWIFT_GIT_PATH,
+        "sha256": SWIFT_GIT_SHA256,
+        "version": SWIFT_GIT_VERSION,
+    }:
+        failures.append(f"{label}.dependency.mirror.git identity is invalid")
+    _require_digest(failures, git.get("sha256"), f"{label}.dependency.mirror.git.sha256")
+    try:
+        if _observe_swift_git_identity() != git:
+            raise ValueError("direct Xcode Git receipt differs")
+    except (OSError, ValueError) as exc:
+        failures.append(f"{label}.dependency.mirror.git provenance invalid: {exc}")
+
+    toolchain = receipt.get("toolchain")
+    if not isinstance(toolchain, dict) or set(toolchain) != set(
+        SWIFT_ANALYZER_TOOLCHAIN
+    ):
+        failures.append(f"{label}.toolchain keys are not exact")
+        toolchain = {}
+    if toolchain != SWIFT_ANALYZER_TOOLCHAIN:
+        failures.append(f"{label}.toolchain exact identity is invalid")
+    build_closure = toolchain.get("build_closure")
+    if not isinstance(build_closure, dict) or set(build_closure) != {
+        "schema",
+        "scope",
+        "compiler_runtime_soundness",
+        "certification",
+        "components",
+        "trees",
+    }:
+        failures.append(f"{label}.toolchain.build_closure keys are not exact")
+    try:
+        observed_build_closure = _observe_swift_build_closure()
+    except (OSError, ValueError) as exc:
+        failures.append(f"{label}.toolchain.build_closure live provenance invalid: {exc}")
+    else:
+        if observed_build_closure != SWIFT_ANALYZER_BUILD_CLOSURE:
+            failures.append(f"{label}.toolchain.build_closure pinned identity differs")
+        if build_closure != observed_build_closure:
+            failures.append(f"{label}.toolchain.build_closure receipt mismatch")
+    for path_field, digest_field in (
+        ("swiftc", "swiftc_sha256"),
+        ("swift_driver", "swift_driver_sha256"),
+    ):
+        _require_digest(
+            failures,
+            toolchain.get(digest_field),
+            f"{label}.toolchain.{digest_field}",
+        )
+        tool_path = Path(str(toolchain.get(path_field, "")))
+        try:
+            link_metadata = tool_path.lstat()
+            resolved_tool = tool_path.resolve(strict=True)
+            metadata = resolved_tool.lstat()
+            if (
+                not tool_path.is_absolute()
+                or not stat.S_ISREG(metadata.st_mode)
+                or resolved_tool.parent != tool_path.parent
+                or resolved_tool.name != "swift-frontend"
+                or not stat.S_ISLNK(link_metadata.st_mode)
+                or link_metadata.st_uid != 0
+                or os.readlink(tool_path) != "swift-frontend"
+                or metadata.st_uid != 0
+                or stat.S_IMODE(metadata.st_mode) & 0o022
+                or sha256_file(tool_path) != toolchain.get(digest_field)
+            ):
+                raise ValueError(f"{path_field} identity differs")
+        except (OSError, ValueError) as exc:
+            failures.append(
+                f"{label}.toolchain.{path_field} provenance invalid: {exc}"
+            )
+
+    build = receipt.get("build")
+    if not isinstance(build, dict) or set(build) != set(SWIFT_ANALYZER_BUILD):
+        failures.append(f"{label}.build keys are not exact")
+        build = {}
+    if build != SWIFT_ANALYZER_BUILD:
+        failures.append(f"{label}.build policy is invalid")
+
+    network = receipt.get("network_isolation")
+    if not isinstance(network, dict) or set(network) != {
+        "status",
+        "scope",
+        "sandbox",
+        "verifier",
+        "policy",
+        "probe",
+    }:
+        failures.append(f"{label}.network_isolation keys are not exact")
+        network = {}
+    sandbox = network.get("sandbox")
+    verifier = network.get("verifier")
+    policy = network.get("policy")
+    probe = network.get("probe")
+    if not isinstance(probe, dict) or set(probe) != SWIFT_NETWORK_PROBE_KEYS:
+        failures.append(f"{label}.network_isolation.probe keys are not exact")
+        probe = {}
+    expected_policy = {
+        "text": SWIFT_NETWORK_POLICY_TEXT,
+        "sha256": SWIFT_NETWORK_POLICY_SHA256,
+        "bytes": len(SWIFT_NETWORK_POLICY_TEXT.encode("utf-8")),
+    }
+    if (
+        network.get("status") != "PASSED"
+        or network.get("scope") != "swift-build-process-tree"
+        or sandbox != SWIFT_NETWORK_SANDBOX
+        or verifier != SWIFT_NETWORK_VERIFIER
+        or policy != expected_policy
+    ):
+        failures.append(f"{label}.network_isolation policy/provenance is invalid")
+    source = probe.get("source")
+    expected_source = {
+        "text": SWIFT_NETWORK_PROBE_SOURCE,
+        "sha256": SWIFT_NETWORK_PROBE_SOURCE_SHA256,
+        "bytes": SWIFT_NETWORK_PROBE_SOURCE_BYTES,
+    }
+    if source != expected_source or (
+        sha256_bytes(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8"))
+        != SWIFT_NETWORK_PROBE_SOURCE_SHA256
+    ) or len(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8")) != SWIFT_NETWORK_PROBE_SOURCE_BYTES:
+        failures.append(f"{label}.network_isolation.probe.source is invalid")
+    probe_build = probe.get("build")
+    expected_probe_build = {
+        "environment_policy": "sanitized-swift-build-deterministic-v1",
+        "argv": SWIFT_NETWORK_PROBE_BUILD_ARGV,
+        "environment": SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT,
+        "compiler": SWIFT_NETWORK_PROBE_COMPILER,
+    }
+    if (
+        not isinstance(probe_build, dict)
+        or set(probe_build) != {"environment_policy", "argv", "environment", "compiler"}
+        or probe_build != expected_probe_build
+    ):
+        failures.append(f"{label}.network_isolation.probe.build is invalid")
+    probe_binary = probe.get("binary")
+    if not isinstance(probe_binary, dict) or set(probe_binary) != SWIFT_ANALYZER_BINARY_KEYS:
+        failures.append(f"{label}.network_isolation.probe.binary keys are not exact")
+        probe_binary = {}
+    probe_binary_path = Path(str(probe_binary.get("path", "")))
+    if (
+        probe.get("result") != "NETWORK_DENIED:1"
+        or probe_binary.get("name") != SWIFT_NETWORK_PROBE_BINARY_NAME
+        or probe_binary.get("sha256") != SWIFT_NETWORK_PROBE_BINARY_SHA256
+        or probe_binary.get("bytes") != SWIFT_NETWORK_PROBE_BINARY_BYTES
+        or probe_binary.get("mode") != "0500"
+        or probe_binary.get("uid") != os.getuid()
+        or not _is_int(probe_binary.get("gid"), minimum=0)
+        or probe_binary.get("nlink") != 1
+        or not _is_int(probe_binary.get("device"), minimum=1)
+        or not _is_int(probe_binary.get("inode"), minimum=1)
+        or not probe_binary_path.is_absolute()
+        or probe_binary_path.name != SWIFT_NETWORK_PROBE_BINARY_NAME
+        or probe_binary_path.parent.name != "network-probe-execution"
+        or not probe_binary_path.parent.parent.name.startswith("elmos-swift-analyzer-")
+        or ".." in probe_binary_path.parts
+    ):
+        failures.append(f"{label}.network_isolation.probe.binary identity is invalid")
+    probe_seal = probe.get("execution_seal")
+    if (
+        not isinstance(probe_seal, dict)
+        or set(probe_seal) != SWIFT_ANALYZER_EXECUTION_SEAL_KEYS
+    ):
+        failures.append(f"{label}.network_isolation.probe.execution_seal keys are not exact")
+        probe_seal = {}
+    probe_seal_root = Path(str(probe_seal.get("root", "")))
+    if (
+        probe_seal.get("policy") != "private-nonwritable-execution-root-v1"
+        or probe_seal.get("mode") != "0500"
+        or probe_seal.get("uid") != probe_binary.get("uid")
+        or probe_seal.get("gid") != probe_binary.get("gid")
+        or probe_seal.get("device") != probe_binary.get("device")
+        or not _is_int(probe_seal.get("inode"), minimum=1)
+        or probe_seal.get("binary") != probe_binary
+        or probe_seal_root != probe_binary_path.parent
+        or not probe_seal_root.is_absolute()
+        or ".." in probe_seal_root.parts
+    ):
+        failures.append(f"{label}.network_isolation.probe.execution_seal is invalid")
+    expected_mach_o = {
+        "architecture": "arm64",
+        "file_type": "MH_EXECUTE",
+        "uuid": SWIFT_NETWORK_PROBE_UUID,
+        "cdhash_full": SWIFT_NETWORK_PROBE_CDHASH_FULL,
+        "linked_libraries": SWIFT_NETWORK_PROBE_LINKED_LIBRARIES,
+    }
+    mach_o = probe.get("mach_o")
+    if not isinstance(mach_o, dict) or set(mach_o) != set(expected_mach_o) or mach_o != expected_mach_o:
+        failures.append(f"{label}.network_isolation.probe.mach_o is invalid")
+
+    validation_environment = {"LANG": "C", "LC_ALL": "C", "PATH": "/usr/bin"}
+    try:
+        sandbox_observed = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)[0]
+        verifier_observed = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)[0]
+        _verify_swift_network_sandbox_signature(
+            environment=validation_environment,
+            cwd=Path.cwd(),
+        )
+        if (
+            sandbox_observed
+            != {key: SWIFT_NETWORK_SANDBOX[key] for key in sandbox_observed}
+            or verifier_observed != SWIFT_NETWORK_VERIFIER
+        ):
+            raise ValueError("system tool receipt differs")
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        failures.append(f"{label}.network_isolation live system provenance invalid: {exc}")
+
+    if live_binary is not None:
+        try:
+            analyzer_root = live_binary.resolve(strict=True).parent
+            if probe_binary_path.parent.parent != analyzer_root:
+                raise ValueError("probe is outside the fresh analyzer execution root")
+            sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+            verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+            content_before, metadata_before, identity_before = _stable_read_exact_file(
+                probe_binary_path,
+                maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
+                allowed_uids=frozenset({os.getuid()}),
+            )
+            observed_binary = {
+                "name": SWIFT_NETWORK_PROBE_BINARY_NAME,
+                "path": str(probe_binary_path),
+                "sha256": sha256_bytes(content_before),
+                "bytes": len(content_before),
+                "mode": f"{stat.S_IMODE(metadata_before.st_mode):04o}",
+                "uid": metadata_before.st_uid,
+                "gid": metadata_before.st_gid,
+                "nlink": metadata_before.st_nlink,
+                "device": metadata_before.st_dev,
+                "inode": metadata_before.st_ino,
+            }
+            seal_metadata = probe_seal_root.lstat()
+            observed_seal_root = {
+                "policy": "private-nonwritable-execution-root-v1",
+                "root": str(probe_seal_root),
+                "mode": f"{stat.S_IMODE(seal_metadata.st_mode):04o}",
+                "uid": seal_metadata.st_uid,
+                "gid": seal_metadata.st_gid,
+                "device": seal_metadata.st_dev,
+                "inode": seal_metadata.st_ino,
+            }
+            if (
+                observed_binary != probe_binary
+                or observed_seal_root
+                != {key: probe_seal[key] for key in observed_seal_root}
+                or _inspect_swift_network_probe_macho(content_before) != expected_mach_o
+            ):
+                raise ValueError("fresh probe receipt differs from live sealed bytes")
+            _verify_swift_network_probe_signature(
+                probe_binary_path,
+                environment=validation_environment,
+                cwd=analyzer_root,
+            )
+            execution = subprocess.run(
+                [
+                    SWIFT_NETWORK_SANDBOX["path"],
+                    "-p",
+                    SWIFT_NETWORK_POLICY_TEXT,
+                    str(probe_binary_path),
+                ],
+                cwd=analyzer_root,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                env=validation_environment,
+            )
+            content_after, metadata_after, identity_after = _stable_read_exact_file(
+                probe_binary_path,
+                maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
+                allowed_uids=frozenset({os.getuid()}),
+            )
+            sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+            verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+            if (
+                execution.returncode != 0
+                or execution.stdout != "NETWORK_DENIED:1\n"
+                or execution.stderr != ""
+                or content_before != content_after
+                or identity_before != identity_after
+                or metadata_before.st_dev != metadata_after.st_dev
+                or sandbox_before != sandbox_after
+                or verifier_before != verifier_after
+            ):
+                raise ValueError("fresh sealed probe changed or did not observe exact EPERM")
+            _independently_rebuild_swift_network_probe()
+        except (OSError, subprocess.SubprocessError, ValueError) as exc:
+            failures.append(f"{label}.network_isolation live probe provenance invalid: {exc}")
+
+    binary = receipt.get("binary")
+    if not isinstance(binary, dict) or set(binary) != SWIFT_ANALYZER_BINARY_KEYS:
+        failures.append(f"{label}.binary keys are not exact")
+        binary = {}
+    binary_path = Path(str(binary.get("path", "")))
+    if (
+        binary.get("name") != "ElmosSwiftAnalyzer"
+        or not binary_path.is_absolute()
+        or binary_path.name != "ElmosSwiftAnalyzer"
+        or not binary_path.parent.name.startswith("elmos-swift-analyzer-")
+        or ".." in binary_path.parts
+        or not _is_int(binary.get("bytes"), minimum=1)
+        or int(binary.get("bytes", 0)) > 100_000_000
+        or binary.get("mode") != "0500"
+        or binary.get("uid") != os.getuid()
+        or binary.get("gid") != os.getgid()
+        or binary.get("nlink") != 1
+        or not _is_int(binary.get("device"), minimum=1)
+        or not _is_int(binary.get("inode"), minimum=1)
+    ):
+        failures.append(f"{label}.binary identity/seal metadata is invalid")
+    _require_digest(failures, binary.get("sha256"), f"{label}.binary.sha256")
+
+    execution_seal = receipt.get("execution_seal")
+    if (
+        not isinstance(execution_seal, dict)
+        or set(execution_seal) != SWIFT_ANALYZER_EXECUTION_SEAL_KEYS
+    ):
+        failures.append(f"{label}.execution_seal keys are not exact")
+        execution_seal = {}
+    seal_root = Path(str(execution_seal.get("root", "")))
+    if (
+        execution_seal.get("policy")
+        != "private-nonwritable-execution-root-v1"
+        or not seal_root.is_absolute()
+        or not seal_root.name.startswith("elmos-swift-analyzer-")
+        or ".." in seal_root.parts
+        or execution_seal.get("mode") != "0500"
+        or execution_seal.get("uid") != binary.get("uid")
+        or execution_seal.get("gid") != binary.get("gid")
+        or execution_seal.get("device") != binary.get("device")
+        or not _is_int(execution_seal.get("inode"), minimum=1)
+        or binary_path.parent != seal_root
+        or execution_seal.get("binary") != binary
+    ):
+        failures.append(f"{label}.execution_seal identity is invalid")
+
+    canonical_identity = receipt.get("canonical_identity")
+    if not isinstance(canonical_identity, dict) or set(canonical_identity) != {
+        "sha256",
+        "receipt",
+    }:
+        failures.append(f"{label}.canonical_identity keys are not exact")
+        canonical_identity = {}
+    try:
+        rebuilt_canonical = _rebuild_portable_swift_receipt_identity(receipt)
+    except (KeyError, TypeError) as exc:
+        failures.append(f"{label}.canonical_identity cannot be rebuilt: {exc}")
+        rebuilt_canonical = None
+    if rebuilt_canonical is not None:
+        rebuilt_digest = _receipt_payload_sha256(rebuilt_canonical)
+
+        def contains_host_path(value: object) -> bool:
+            if isinstance(value, dict):
+                return any(contains_host_path(item) for item in value.values())
+            if isinstance(value, list):
+                return any(contains_host_path(item) for item in value)
+            return isinstance(value, str) and Path(value).is_absolute()
+
+        if contains_host_path(rebuilt_canonical):
+            failures.append(f"{label}.canonical_identity contains a host path")
+        if (
+            canonical_identity.get("receipt") != rebuilt_canonical
+            or canonical_identity.get("sha256") != rebuilt_digest
+        ):
+            failures.append(f"{label}.canonical_identity mismatch")
+
+    if live_binary is not None:
+        try:
+            if live_binary.is_symlink():
+                raise ValueError("binary is a symlink")
+            resolved_binary = live_binary.resolve(strict=True)
+            if str(resolved_binary) != binary.get("path"):
+                raise ValueError("binary path differs from receipt")
+            metadata = resolved_binary.lstat()
+            if (
+                not stat.S_ISREG(metadata.st_mode)
+                or metadata.st_size != binary.get("bytes")
+                or f"{stat.S_IMODE(metadata.st_mode):04o}" != binary.get("mode")
+                or metadata.st_uid != binary.get("uid")
+                or metadata.st_gid != binary.get("gid")
+                or metadata.st_nlink != binary.get("nlink")
+                or metadata.st_dev != binary.get("device")
+                or metadata.st_ino != binary.get("inode")
+                or sha256_file(resolved_binary) != binary.get("sha256")
+            ):
+                raise ValueError("binary bytes/identity differ from receipt")
+            root_metadata = seal_root.lstat()
+            if (
+                not stat.S_ISDIR(root_metadata.st_mode)
+                or f"{stat.S_IMODE(root_metadata.st_mode):04o}"
+                != execution_seal.get("mode")
+                or root_metadata.st_uid != execution_seal.get("uid")
+                or root_metadata.st_gid != execution_seal.get("gid")
+                or root_metadata.st_dev != execution_seal.get("device")
+                or root_metadata.st_ino != execution_seal.get("inode")
+                or resolved_binary.parent != seal_root
+            ):
+                raise ValueError("execution root identity differs from receipt")
+            if layout is not None and resolved_binary.is_relative_to(layout[0].parent):
+                raise ValueError("repository build cache was used as analyzer binary")
+        except (OSError, ValueError) as exc:
+            failures.append(f"{label}.binary live provenance invalid: {exc}")
+
+    return receipt if len(failures) == starting_failure_count else None
+
+
+def _validate_swift_receipt_binding(
+    *,
+    source_language: object,
+    target_language: object,
+    records: list[tuple[dict[str, Any], Path, str]],
+    label: str,
+    failures: list[str],
+) -> dict[str, Any] | None:
+    """Require one shared receipt for Swift routes and independently rebuild it."""
+
+    swift_required = "swift" in {source_language, target_language}
+    if not swift_required:
+        if records:
+            failures.append(f"{label} is forbidden on a non-Swift route")
+        return None
+    if len(records) != 1:
+        failures.append(f"{label} must be bound exactly once on a Swift route")
+        return None
+    record = records[0]
+    if record[0].get("path") != SWIFT_ANALYZER_RECEIPT_PATH:
+        failures.append(f"{label} path is not the canonical route receipt path")
+    try:
+        persisted = load(record[1])
+    except Exception as exc:
+        failures.append(f"{label} is invalid JSON: {exc}")
+        return None
+    persisted = _validate_swift_analyzer_receipt_document(
+        persisted,
+        label=label,
+        failures=failures,
+    )
+    api = _engine_swift_analyzer_api(failures, label)
+    if persisted is None or api is None:
+        return persisted
+    swift_analyzer, public_receipt, exact_toolchain = api
+    try:
+        binary_path, fresh = swift_analyzer(exact_toolchain("swift"))
+        public = public_receipt()
+    except Exception as exc:
+        failures.append(f"{label} independent scratch rebuild failed: {exc}")
+        return persisted
+    if public != fresh:
+        failures.append(f"{label} public/private receipt API results differ")
+    validated_fresh = _validate_swift_analyzer_receipt_document(
+        fresh,
+        label=f"{label} fresh",
+        failures=failures,
+        live_binary=Path(binary_path),
+    )
+    if validated_fresh is not None and (
+        _swift_receipt_stable_projection(persisted)
+        != _swift_receipt_stable_projection(validated_fresh)
+    ):
+        failures.append(f"{label} stable projection differs from independent scratch rebuild")
+    return persisted
+
+
+def _validate_swift_analyzer_version_binding(
+    *,
+    semantic_document: object,
+    receipt: dict[str, Any] | None,
+    label: str,
+    failures: list[str],
+) -> bool:
+    if not isinstance(semantic_document, dict) or semantic_document.get(
+        "source_language"
+    ) != "swift":
+        return False
+    if receipt is None:
+        failures.append(f"{label} has no bound Swift analyzer build receipt")
+        return True
+    source_inputs = receipt.get("source_inputs")
+    toolchain = receipt.get("toolchain")
+    dependency = receipt.get("dependency")
+    binary = receipt.get("binary")
+    network = receipt.get("network_isolation")
+    canonical = receipt.get("canonical_identity")
+    if not all(
+        isinstance(item, dict)
+        for item in (
+            source_inputs,
+            toolchain,
+            dependency,
+            binary,
+            network,
+            canonical,
+        )
+    ):
+        failures.append(f"{label} Swift analyzer receipt projection is invalid")
+        return True
+    canonical_toolchain = _canonical_swift_toolchain_identity(toolchain)
+    network_policy = network.get("policy")
+    policy_digest = (
+        network_policy.get("sha256") if isinstance(network_policy, dict) else None
+    )
+    expected_suffix = (
+        f";source-inputs={source_inputs.get('sha256')};"
+        f"swift-driver={toolchain.get('swift_driver_sha256')};"
+        f"swift-syntax-tree={dependency.get('sha256')};"
+        f"canonical-receipt={canonical.get('sha256')};"
+        f"binary={binary.get('sha256')};"
+        f"toolchain={_receipt_payload_sha256(canonical_toolchain)};"
+        f"build-closure={_receipt_payload_sha256(canonical_toolchain['build_closure'])};"
+        f"network-policy={policy_digest}"
+    )
+    analyzer_version = semantic_document.get("analyzer_version")
+    if not isinstance(analyzer_version, str) or not analyzer_version.endswith(
+        expected_suffix
+    ):
+        failures.append(f"{label} analyzer_version is detached from the Swift receipt")
+    return True
+
+
 def _load_json_array(path: Path) -> list[Any]:
     value = json.loads(
         path.read_text(encoding="utf-8"), parse_constant=_reject_json_constant
@@ -588,7 +3359,18 @@ result, smt = formal_equivalence(
     formal_input_reference=p["formal_input_reference"],
     input_domain=p["input_domain"],
 )
-print(json.dumps({"result": result, "smt_base64": base64.b64encode(smt.encode("utf-8")).decode("ascii"), "provenance": provenance}, sort_keys=True, separators=(",", ":"), allow_nan=False))
+print(
+    json.dumps(
+        {
+            "result": result,
+            "smt_base64": base64.b64encode(smt.encode("utf-8")).decode("ascii"),
+            "provenance": provenance,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+)
 """
     try:
         completed = subprocess.run(
@@ -1659,18 +4441,49 @@ def _validate_replay_command(
     if executable == "uv":
         if shutil.which("uv") is None:
             failures.append("formal_proof.replay.command executable uv is unavailable")
-        if len(command) < 8 or command[1] != "--directory":
+        if len(command) < 8 or command[1] not in {"--directory", "--project"}:
             failures.append(
-                "formal_proof.replay.command uv form must declare --directory"
+                "formal_proof.replay.command uv form must declare --directory or --project"
             )
             return
-        _resolve_replay_directory(
+        uv_scope = command[1].removeprefix("--")
+        uv_root = _resolve_replay_directory(
             cwd,
             command[2],
             execution_root,
-            "formal_proof.replay.command uv directory",
+            f"formal_proof.replay.command uv {uv_scope}",
             failures,
         )
+        if command[1] == "--project" and uv_root is not None:
+            for project_member in ("pyproject.toml", "uv.lock"):
+                member_path = uv_root / project_member
+                if not member_path.is_file():
+                    failures.append(
+                        "formal_proof.replay.command uv project is missing "
+                        f"{project_member}"
+                    )
+                    continue
+                member_digest = sha256_file(member_path)
+                try:
+                    member_relative = member_path.relative_to(route.resolve()).as_posix()
+                except ValueError:
+                    failures.append(
+                        "formal_proof.replay.command uv project member is outside the route: "
+                        f"{project_member}"
+                    )
+                    continue
+                member_bindings = [
+                    record
+                    for record in records.values()
+                    if record[0].get("role") == "engine-source"
+                    and record[0].get("path") == member_relative
+                    and record[2] == member_digest
+                ]
+                if len(member_bindings) != 1:
+                    failures.append(
+                        "formal_proof.replay.command uv project member must have exactly "
+                        f"one engine-source binding: {project_member}"
+                    )
         if command[3:6] != ["run", "--locked", "python"]:
             failures.append(
                 "formal_proof.replay.command uv form must use run --locked python"
@@ -2321,6 +5134,38 @@ def validate_formal_equivalence(
                         )
                     else:
                         ref_records[artifact_id] = (item, verified[0], verified[1])
+
+    formal_swift_receipt = _validate_swift_receipt_binding(
+        source_language=manifest.get("source", {}).get("language"),
+        target_language=manifest.get("target", {}).get("language"),
+        records=[
+            record
+            for record in ref_records.values()
+            if record[0].get("role") == "swift-analyzer-build-receipt"
+        ],
+        label="formal Swift analyzer build receipt",
+        failures=failures,
+    )
+    if formal_swift_receipt is not None:
+        swift_semantic_ir_count = 0
+        for record in ref_records.values():
+            if record[0].get("role") not in {"source-ir", "target-ir"}:
+                continue
+            try:
+                semantic_document = load(record[1])
+            except Exception:
+                continue
+            if _validate_swift_analyzer_version_binding(
+                semantic_document=semantic_document,
+                receipt=formal_swift_receipt,
+                label=f"formal Swift semantic IR {record[0].get('path')}",
+                failures=failures,
+            ):
+                swift_semantic_ir_count += 1
+        if swift_semantic_ir_count != 3:
+            failures.append(
+                "formal Swift analyzer receipt must bind exactly three corpus semantic IR documents"
+            )
 
     top_artifact_records: dict[str, tuple[dict[str, Any], Path, str]] = {}
     for label, artifact_id, digest, roles in (
@@ -3572,12 +6417,900 @@ def validate_formal_equivalence(
     return evidence, failures
 
 
-def validate_module_equivalence(
+def _validate_module_inventory_document(
+    *,
+    document: dict[str, Any],
+    label: str,
+    language: object,
+    artifact_record: tuple[dict[str, Any], Path, str] | None,
+    route_swift_receipt: dict[str, Any] | None,
+    failures: list[str],
+) -> None:
+    expected_keys = set(MODULE_INVENTORY_BASE_KEYS)
+    if language == "swift":
+        expected_keys.add("analyzer_build_receipt")
+    if set(document) != expected_keys:
+        failures.append(f"{label} top-level keys are not exact")
+    expected_file = artifact_record[1].name if artifact_record is not None else None
+    if (
+        document.get("schema_version") != "1.0.0"
+        or document.get("kind") != "elmos.typed-pure-module-inventory"
+        or document.get("profile") != "typed-pure-module-v1"
+        or document.get("source_language") != language
+        or document.get("source_file") != expected_file
+        or document.get("enumeration_status") != "PASSED"
+        or document.get("diagnostics") != []
+    ):
+        failures.append(f"{label} identity/status is invalid")
+    for field in ("analyzer", "analyzer_version"):
+        if not isinstance(document.get(field), str) or not document.get(field):
+            failures.append(f"{label}.{field} is missing")
+    if language == "swift":
+        embedded_receipt = document.get("analyzer_build_receipt")
+        _validate_swift_analyzer_receipt_document(
+            embedded_receipt,
+            label=f"{label}.analyzer_build_receipt",
+            failures=failures,
+        )
+        if route_swift_receipt is None or embedded_receipt != route_swift_receipt:
+            failures.append(
+                f"{label}.analyzer_build_receipt differs from the route receipt artifact"
+            )
+        _validate_swift_analyzer_version_binding(
+            semantic_document=document,
+            receipt=(embedded_receipt if isinstance(embedded_receipt, dict) else None),
+            label=label,
+            failures=failures,
+        )
+    elif "analyzer_build_receipt" in document:
+        failures.append(f"{label} contains an unexpected Swift analyzer receipt")
+    if artifact_record is not None:
+        if document.get("source_artifact_sha256") != artifact_record[2]:
+            failures.append(f"{label} source artifact digest backlink mismatch")
+        if document.get("source_artifact_bytes") != artifact_record[1].stat().st_size:
+            failures.append(f"{label} source artifact byte-count backlink mismatch")
+        fresh_directives = _scan_module_language_directives(
+            artifact_record[1], language
+        )
+        if document.get("directives") != fresh_directives:
+            failures.append(f"{label}.directives differ from raw artifact bytes")
+
+    subjects = document.get("subjects")
+    if not isinstance(subjects, list) or not subjects:
+        failures.append(f"{label}.subjects must be a non-empty array")
+        return
+    occurrences: dict[tuple[str, str], int] = {}
+    artifact_size = artifact_record[1].stat().st_size if artifact_record else 0
+    for index, subject in enumerate(subjects):
+        subject_label = f"{label}.subjects[{index}]"
+        if not isinstance(subject, dict):
+            failures.append(f"{subject_label} must be an object")
+            continue
+        if set(subject) != MODULE_INVENTORY_SUBJECT_KEYS:
+            failures.append(f"{subject_label} keys are not exact")
+        name = subject.get("name")
+        qualified_name = subject.get("qualified_name")
+        declaration_kind = subject.get("declaration_kind")
+        signature = subject.get("signature")
+        if any(
+            not isinstance(value, str) or not value
+            for value in (name, qualified_name, declaration_kind)
+        ):
+            failures.append(f"{subject_label} identity is invalid")
+        if not isinstance(subject.get("analyzable"), bool):
+            failures.append(f"{subject_label}.analyzable must be boolean")
+        if (
+            not isinstance(signature, dict)
+            or not isinstance(signature.get("visibility"), str)
+            or not signature.get("visibility")
+            or not isinstance(signature.get("storage"), str)
+            or not signature.get("storage")
+        ):
+            failures.append(f"{subject_label}.signature visibility/storage is invalid")
+        span = subject.get("source_span")
+        if not isinstance(span, dict) or set(span) != {
+            "file",
+            "start_byte",
+            "end_byte",
+        }:
+            failures.append(f"{subject_label}.source_span is invalid")
+        else:
+            start = span.get("start_byte")
+            end = span.get("end_byte")
+            valid_offsets = _is_int(start, minimum=0) and _is_int(end, minimum=1)
+            if span.get("file") != expected_file or not valid_offsets:
+                failures.append(f"{subject_label}.source_span identity/bounds are invalid")
+            else:
+                assert isinstance(start, int) and isinstance(end, int)
+                if end <= start:
+                    failures.append(
+                        f"{subject_label}.source_span identity/bounds are invalid"
+                    )
+                elif artifact_record is not None and end > artifact_size:
+                    failures.append(f"{subject_label}.source_span exceeds artifact bytes")
+        if isinstance(declaration_kind, str) and isinstance(qualified_name, str):
+            key = (declaration_kind, qualified_name)
+            expected_occurrence = occurrences.get(key, 0) + 1
+            occurrences[key] = expected_occurrence
+            if subject.get("occurrence") != expected_occurrence:
+                failures.append(f"{subject_label}.occurrence is not canonical")
+
+
+def _scan_module_language_directives(
+    artifact: Path, language: object
+) -> list[dict[str, Any]]:
+    """Independently enumerate every C-family directive from raw UTF-8 bytes."""
+
+    if language not in {"cpp", "objc"}:
+        return []
+    content = artifact.read_bytes()
+    directives: list[dict[str, Any]] = []
+    offset = 0
+    for line in content.splitlines(keepends=True):
+        body = line.rstrip(b"\r\n")
+        candidates = [
+            (index, marker)
+            for marker in (b"#", b"%:", b"??=")
+            if (index := body.find(marker)) >= 0
+        ]
+        if not candidates:
+            offset += len(line)
+            continue
+        marker_offset, marker = min(candidates, key=lambda item: item[0])
+        raw = body[marker_offset:]
+        payload = raw[len(marker) :].lstrip()
+        match = re.match(rb"([A-Za-z_][A-Za-z0-9_]*)", payload)
+        if marker != b"#":
+            kind = "alternative-directive-marker"
+            value_bytes = raw
+        elif match is None:
+            kind = "invalid"
+            value_bytes = payload
+        else:
+            kind = match.group(1).decode("ascii").lower()
+            value_bytes = payload[match.end() :].strip()
+        directives.append(
+            {
+                "order": len(directives),
+                "kind": kind,
+                "value": value_bytes.decode(
+                    "utf-8", errors="backslashreplace"
+                ),
+                "source_span": {
+                    "file": artifact.name,
+                    "start_byte": offset + marker_offset,
+                    "end_byte": offset + len(body),
+                },
+                "sha256": sha256_bytes(raw),
+            }
+        )
+        offset += len(line)
+    return directives
+
+
+def _validate_module_language_boundary(
+    *,
+    side: str,
+    language: object,
+    inventory: dict[str, Any],
+    closure: dict[str, Any],
+    artifact_record: tuple[dict[str, Any], Path, str] | None,
+    failures: list[str],
+) -> None:
+    prelude = closure.get("verified_language_prelude", {}).get(side)
+    expected_prelude = {
+        "status": "EXACT_AND_CLOSED",
+        "role": side,
+        "language": language,
+        "directives": inventory.get("directives"),
+    }
+    if prelude != expected_prelude:
+        failures.append(f"module {side} verified language prelude is detached")
+    expected_directives = {
+        ("cpp", "source"): [("include", "<cstdint>")],
+        ("cpp", "target"): [
+            ("include", "<cstdint>"),
+            ("include", "<stdexcept>"),
+            ("include", "<string>"),
+        ],
+        ("objc", "source"): [("import", "<Foundation/Foundation.h>")],
+        ("objc", "target"): [("import", "<Foundation/Foundation.h>")],
+    }.get((language, side), [])
+    directives = inventory.get("directives")
+    observed_directives = (
+        [(item.get("kind"), item.get("value")) for item in directives]
+        if isinstance(directives, list)
+        and all(isinstance(item, dict) for item in directives)
+        else None
+    )
+    if observed_directives != expected_directives:
+        failures.append(f"module {side} language prelude is not exact")
+
+    wrapper = closure.get("verified_language_wrapper", {}).get(side)
+    file_name = artifact_record[1].name if artifact_record is not None else None
+    if language != "java":
+        if wrapper != {
+            "status": "NOT_APPLICABLE",
+            "role": side,
+            "language": language,
+            "file": file_name,
+        }:
+            failures.append(f"module {side} language wrapper must be NOT_APPLICABLE")
+        return
+    if not isinstance(wrapper, dict) or set(wrapper) != {
+        "status",
+        "role",
+        "language",
+        "file",
+        "name",
+        "qualified_name",
+        "declaration_kind",
+        "analyzable",
+        "occurrence",
+        "source_span",
+        "signature",
+        "member_span_status",
+        "member_subjects",
+    }:
+        failures.append(f"module {side} Java wrapper keys are invalid")
+        return
+    expected_name = Path(str(file_name)).stem
+    expected_signature = {
+        "type_kind": "CLASS",
+        "visibility": "public",
+        "storage": "top-level",
+        "modifiers": ["final", "public"],
+        "final": True,
+        "abstract": False,
+        "extends": "",
+        "implements": [],
+        "type_parameters": [],
+        "annotations": [],
+        "permits": [],
+    }
+    if (
+        wrapper.get("status") != "EXACT_AND_CLOSED"
+        or wrapper.get("role") != side
+        or wrapper.get("language") != "java"
+        or wrapper.get("file") != file_name
+        or wrapper.get("name") != expected_name
+        or wrapper.get("qualified_name") != expected_name
+        or wrapper.get("declaration_kind") != "top-level-class-wrapper"
+        or wrapper.get("analyzable") is not False
+        or wrapper.get("occurrence") != 1
+        or wrapper.get("signature") != expected_signature
+        or wrapper.get("member_span_status") != "ALL_CONTAINED"
+    ):
+        failures.append(f"module {side} Java wrapper identity/signature drift")
+    subjects = inventory.get("subjects")
+    wrapper_subjects = [
+        item
+        for item in (subjects if isinstance(subjects, list) else [])
+        if isinstance(item, dict)
+        and item.get("declaration_kind") == "top-level-class-wrapper"
+    ]
+    if len(wrapper_subjects) != 1:
+        failures.append(f"module {side} Java wrapper count is not exactly one")
+        return
+    wrapper_subject = wrapper_subjects[0]
+    for field in (
+        "name",
+        "qualified_name",
+        "declaration_kind",
+        "analyzable",
+        "occurrence",
+        "source_span",
+        "signature",
+    ):
+        if wrapper.get(field) != wrapper_subject.get(field):
+            failures.append(
+                f"module {side} Java wrapper {field} differs from inventory"
+            )
+    wrapper_span = wrapper.get("source_span")
+    if not isinstance(wrapper_span, dict):
+        failures.append(f"module {side} Java wrapper span is invalid")
+        return
+    wrapper_start = wrapper_span.get("start_byte")
+    wrapper_end = wrapper_span.get("end_byte")
+    if not isinstance(wrapper_start, int) or not isinstance(wrapper_end, int):
+        failures.append(f"module {side} Java wrapper span is invalid")
+        return
+    member_kinds = {
+        "constructor",
+        "field",
+        "instance-initializer",
+        "method",
+        "nested-type",
+        "static-initializer",
+    }
+    expected_members: list[dict[str, Any]] = []
+    for subject in subjects if isinstance(subjects, list) else []:
+        if (
+            not isinstance(subject, dict)
+            or subject is wrapper_subject
+            or subject.get("declaration_kind") not in member_kinds
+        ):
+            continue
+        span = subject.get("source_span")
+        if not isinstance(span, dict):
+            failures.append(f"module {side} Java member span is invalid")
+            continue
+        start = span.get("start_byte")
+        end = span.get("end_byte")
+        if (
+            not isinstance(start, int)
+            or not isinstance(end, int)
+            or not (wrapper_start <= start and end <= wrapper_end)
+        ):
+            failures.append(f"module {side} Java member escapes wrapper span")
+        expected_members.append(
+            {
+                "name": subject.get("name"),
+                "qualified_name": subject.get("qualified_name"),
+                "declaration_kind": subject.get("declaration_kind"),
+                "occurrence": subject.get("occurrence"),
+                "source_span": span,
+            }
+        )
+    expected_members.sort(
+        key=lambda item: (
+            int(item["source_span"]["start_byte"]),
+            str(item["qualified_name"]),
+        )
+    )
+    if wrapper.get("member_subjects") != expected_members:
+        failures.append(f"module {side} Java wrapper members differ from inventory")
+
+
+def _validate_module_profile_span_bindings(
+    *,
+    side: str,
+    closure: dict[str, Any],
+    semantic_document: dict[str, Any],
+    failures: list[str],
+) -> None:
+    records = closure.get(f"{side}_profile_symbols")
+    functions = semantic_document.get("functions")
+    if not isinstance(records, list) or not isinstance(functions, list):
+        failures.append(f"module {side} profile span binding inputs are invalid")
+        return
+    by_symbol = {
+        item.get("name"): item
+        for item in functions
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    }
+    if len(by_symbol) != len(functions):
+        failures.append(f"module {side} semantic symbol index is invalid")
+    observed_symbols: list[str] = []
+    for index, record in enumerate(records):
+        if not isinstance(record, dict):
+            failures.append(f"module {side} profile_symbols[{index}] is invalid")
+            continue
+        symbol = record.get("symbol")
+        if not isinstance(symbol, str) or not symbol:
+            failures.append(f"module {side} profile_symbols[{index}].symbol is invalid")
+            continue
+        observed_symbols.append(symbol)
+        function = by_symbol.get(symbol)
+        if function is None:
+            failures.append(f"module {side} inventory symbol {symbol} is absent from IR")
+            continue
+        if record.get("source_span") != function.get("source_span"):
+            failures.append(
+                f"module {side} inventory span for {symbol} differs from semantic IR"
+            )
+        canonical_signature = {
+            "parameters": [
+                {"name": parameter.get("name"), "type": parameter.get("type")}
+                for parameter in function.get("parameters", [])
+                if isinstance(parameter, dict)
+            ],
+            "return_type": function.get("return_type"),
+        }
+        if record.get("canonical_signature") != canonical_signature:
+            failures.append(
+                f"module {side} inventory signature for {symbol} differs from semantic IR"
+            )
+    if len(observed_symbols) != len(set(observed_symbols)):
+        failures.append(f"module {side} profile inventory contains duplicate symbols")
+
+
+def _validate_module_whole_file_closure(
+    *,
+    manifest: dict[str, Any],
+    module_manifest: dict[str, Any],
+    module_input: dict[str, Any],
+    source_semantic_document: dict[str, Any],
+    target_semantic_document: dict[str, Any],
+    source_inventory_document: dict[str, Any],
+    target_inventory_document: dict[str, Any],
+    closure_document: dict[str, Any],
+    source_validation_document: dict[str, Any],
+    target_validation_document: dict[str, Any],
+    source_observation_document: dict[str, Any],
+    target_observation_document: dict[str, Any],
+    source_artifact_record: tuple[dict[str, Any], Path, str] | None,
+    target_artifact_record: tuple[dict[str, Any], Path, str] | None,
+    source_inventory_record: tuple[dict[str, Any], Path, str] | None,
+    target_inventory_record: tuple[dict[str, Any], Path, str] | None,
+    closure_record: tuple[dict[str, Any], Path, str] | None,
+    route_swift_receipt: dict[str, Any] | None,
+    replay_native_behavior: bool,
+    failures: list[str],
+) -> None:
+    source_language = manifest.get("source", {}).get("language")
+    target_language = manifest.get("target", {}).get("language")
+    _validate_module_inventory_document(
+        document=source_inventory_document,
+        label="source-module-inventory",
+        language=source_language,
+        artifact_record=source_artifact_record,
+        route_swift_receipt=route_swift_receipt,
+        failures=failures,
+    )
+    _validate_module_inventory_document(
+        document=target_inventory_document,
+        label="target-module-inventory",
+        language=target_language,
+        artifact_record=target_artifact_record,
+        route_swift_receipt=route_swift_receipt,
+        failures=failures,
+    )
+    if set(closure_document) != WHOLE_FILE_CLOSURE_KEYS:
+        failures.append("whole-file-module-closure top-level keys are not exact")
+    if (
+        closure_document.get("schema_version") != "1.0.0"
+        or closure_document.get("kind")
+        != "elmos.typed-pure-module-whole-file-closure"
+        or closure_document.get("profile") != "typed-pure-module-v1"
+        or closure_document.get("status") != "PASSED"
+        or closure_document.get("route")
+        != {
+            "source_language": source_language,
+            "target_language": target_language,
+        }
+    ):
+        failures.append("whole-file-module-closure identity/status is invalid")
+    for side, inventory_record in (
+        ("source", source_inventory_record),
+        ("target", target_inventory_record),
+    ):
+        if inventory_record is None:
+            continue
+        if closure_document.get(f"{side}_inventory_sha256") != inventory_record[2]:
+            failures.append(
+                f"whole-file-module-closure {side} inventory digest backlink mismatch"
+            )
+        if closure_document.get(f"{side}_inventory_bytes") != inventory_record[
+            1
+        ].stat().st_size:
+            failures.append(
+                f"whole-file-module-closure {side} inventory byte backlink mismatch"
+            )
+    if closure_record is not None and module_input.get(
+        "whole_file_closure_sha256"
+    ) != closure_record[2]:
+        failures.append("module_input whole-file closure digest backlink mismatch")
+    if closure_document.get("blocked_declarations") != {"source": [], "target": []}:
+        failures.append("whole-file-module-closure contains blocked declarations")
+    if closure_document.get("source_user_call_graph") != {
+        "edges": [],
+        "status": "EMPTY_AND_CLOSED",
+    }:
+        failures.append("whole-file source user call graph is not empty and closed")
+    _validate_module_language_boundary(
+        side="source",
+        language=source_language,
+        inventory=source_inventory_document,
+        closure=closure_document,
+        artifact_record=source_artifact_record,
+        failures=failures,
+    )
+    _validate_module_language_boundary(
+        side="target",
+        language=target_language,
+        inventory=target_inventory_document,
+        closure=closure_document,
+        artifact_record=target_artifact_record,
+        failures=failures,
+    )
+    if (
+        closure_document.get("target_call_graph_policy")
+        != "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"
+    ):
+        failures.append("whole-file target call graph policy drift")
+    entries = module_manifest.get("functions")
+    manifest_symbols = sorted(
+        entry.get("symbol")
+        for entry in (entries if isinstance(entries, list) else [])
+        if isinstance(entry, dict) and isinstance(entry.get("symbol"), str)
+    )
+    if closure_document.get("manifest_symbols") != manifest_symbols:
+        failures.append("whole-file closure manifest symbol set mismatch")
+    target_call_graph = closure_document.get("target_call_graph")
+    if not isinstance(target_call_graph, dict) or set(target_call_graph) != {
+        "status",
+        "scope",
+        "edges",
+        "helper_internal_calls",
+    }:
+        failures.append("whole-file target call graph is invalid")
+    else:
+        if (
+            target_call_graph.get("status")
+            != "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+            or target_call_graph.get("scope")
+            != "profile-functions-to-emitted-callees"
+            or target_call_graph.get("helper_internal_calls")
+            != {
+                "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+                "binding": "verified_generated_helpers-exact-bytes-and-digests",
+            }
+        ):
+            failures.append("whole-file target call graph identity drift")
+        helper_identifiers = {
+            identifier
+            for helper in closure_document.get("target_helper_symbols", [])
+            if isinstance(helper, dict)
+            for identifier in (helper.get("name"), helper.get("qualified_name"))
+            if isinstance(identifier, str) and identifier
+        }
+        normalizations = closure_document.get("target_builtin_normalizations")
+        normalization_set = (
+            set(normalizations) if isinstance(normalizations, list) else set()
+        )
+        edges = target_call_graph.get("edges")
+        if not isinstance(edges, list):
+            failures.append("whole-file target call graph edges are invalid")
+        else:
+            edge_keys = {
+                "caller",
+                "callee",
+                "callee_kind",
+                "canonical_domain",
+                "canonical_operator",
+                "normalization_rule",
+            }
+            normalized_edges: list[tuple[str, str, str, str]] = []
+            for index, edge in enumerate(edges):
+                if not isinstance(edge, dict) or set(edge) != edge_keys:
+                    failures.append(
+                        f"whole-file target call graph edge {index} keys are invalid"
+                    )
+                    continue
+                caller = edge.get("caller")
+                callee = edge.get("callee")
+                callee_kind = edge.get("callee_kind")
+                domain = edge.get("canonical_domain")
+                operator = edge.get("canonical_operator")
+                rule = edge.get("normalization_rule")
+                if (
+                    caller not in manifest_symbols
+                    or not isinstance(callee, str)
+                    or not callee
+                    or domain not in {"integer", "number"}
+                    or operator not in {"+", "-", "*", "/", "%"}
+                    or rule not in normalization_set
+                ):
+                    failures.append(
+                        f"whole-file target call graph edge {index} is detached"
+                    )
+                    continue
+                if callee_kind == "exact-generated-helper":
+                    if callee not in helper_identifiers:
+                        failures.append(
+                            f"whole-file target helper edge {index} is not inventory-bound"
+                        )
+                elif callee_kind == "pinned-target-builtin":
+                    if callee in helper_identifiers:
+                        failures.append(
+                            f"whole-file target builtin edge {index} aliases a helper"
+                        )
+                else:
+                    failures.append(
+                        f"whole-file target call graph edge {index} callee kind is invalid"
+                    )
+                normalized_edges.append((caller, callee, str(domain), str(operator)))
+            if len(normalized_edges) != len(set(normalized_edges)):
+                failures.append("whole-file target call graph contains duplicate edges")
+            if normalized_edges != sorted(normalized_edges):
+                failures.append("whole-file target call graph edges are not canonical")
+    _validate_module_profile_span_bindings(
+        side="source",
+        closure=closure_document,
+        semantic_document=source_semantic_document,
+        failures=failures,
+    )
+    _validate_module_profile_span_bindings(
+        side="target",
+        closure=closure_document,
+        semantic_document=target_semantic_document,
+        failures=failures,
+    )
+
+    required_values = (
+        source_artifact_record,
+        target_artifact_record,
+        source_inventory_record,
+        target_inventory_record,
+        closure_record,
+    )
+    if any(value is None for value in required_values):
+        return
+    if not all(
+        isinstance(value, dict) and value
+        for value in (
+            module_manifest,
+            source_semantic_document,
+            target_semantic_document,
+            source_inventory_document,
+            target_inventory_document,
+            closure_document,
+        )
+    ):
+        return
+    assert source_artifact_record is not None
+    assert target_artifact_record is not None
+    snapshot_owner = tempfile.TemporaryDirectory(
+        prefix="elmos-module-validator-snapshot-"
+    )
+    snapshot_root = Path(snapshot_owner.name)
+    snapshot_root.chmod(0o700)
+    try:
+        source_bytes = source_artifact_record[1].read_bytes()
+        target_bytes = target_artifact_record[1].read_bytes()
+        source_digest = str(source_artifact_record[0].get("sha256"))
+        target_digest = str(target_artifact_record[0].get("sha256"))
+        if (
+            sha256_bytes(source_bytes) != source_digest
+            or source_artifact_record[2] != source_digest
+            or len(source_bytes) != source_artifact_record[0].get("bytes")
+        ):
+            raise ValueError("source artifact changed before private snapshot")
+        if (
+            sha256_bytes(target_bytes) != target_digest
+            or target_artifact_record[2] != target_digest
+            or len(target_bytes) != target_artifact_record[0].get("bytes")
+        ):
+            raise ValueError("target artifact changed before private snapshot")
+        source_snapshot = _private_snapshot(
+            snapshot_root,
+            role="source",
+            logical_name=source_artifact_record[1].name,
+            content=source_bytes,
+        )
+        target_snapshot = _private_snapshot(
+            snapshot_root,
+            role="target",
+            logical_name=target_artifact_record[1].name,
+            content=target_bytes,
+        )
+    except (OSError, ValueError) as exc:
+        failures.append(f"module private artifact snapshot failed: {exc}")
+        return
+    closure_api = _engine_module_closure_api(
+        failures, "module whole-file closure"
+    )
+    if closure_api is None:
+        return
+    (
+        SemanticIR,
+        emit,
+        analyze,
+        inventory_module,
+        combine_function_irs,
+        build_whole_file_closure,
+        validate_source,
+        validate_target,
+    ) = closure_api
+    try:
+        persisted_source_ir = SemanticIR.from_mapping(source_semantic_document)
+        persisted_target_ir = SemanticIR.from_mapping(target_semantic_document)
+        fresh_source_ir = combine_function_irs(
+            [
+                analyze(source_snapshot, source_language, symbol)
+                for symbol in manifest_symbols
+            ],
+            manifest_symbols,
+            source_language,
+            "source-validator-replay",
+        )
+        fresh_target_ir = combine_function_irs(
+            [
+                analyze(
+                    target_snapshot,
+                    target_language,
+                    symbol,
+                    emitted_target=True,
+                )
+                for symbol in manifest_symbols
+            ],
+            manifest_symbols,
+            target_language,
+            "target-validator-replay",
+        )
+        fresh_emitted = emit(fresh_source_ir, target_language)
+    except Exception as exc:
+        failures.append(f"module independent semantic re-lift/emitter replay failed: {exc}")
+        return
+    if fresh_source_ir.to_mapping() != persisted_source_ir.to_mapping():
+        failures.append(
+            "source-module-semantic-ir differs from independent source analysis"
+        )
+    if fresh_target_ir.to_mapping() != persisted_target_ir.to_mapping():
+        failures.append(
+            "target-module-semantic-ir differs from independent target re-lift"
+        )
+    if fresh_emitted.relative_path != module_input.get("target_logical_file"):
+        failures.append("module deterministic emitter target path differs")
+    if fresh_emitted.content.encode("utf-8") != target_bytes:
+        failures.append("module deterministic emitter target bytes differ")
+    if list(fresh_emitted.normalization_rules) != closure_document.get(
+        "target_builtin_normalizations"
+    ):
+        failures.append("module deterministic emitter normalizations differ")
+    try:
+        fresh_source_inventory = inventory_module(
+            source_snapshot, source_language
+        )
+        fresh_target_inventory = inventory_module(
+            target_snapshot, target_language
+        )
+    except Exception as exc:
+        failures.append(f"module independent whole-file inventory failed: {exc}")
+        return
+    if _module_inventory_stable_projection(
+        fresh_source_inventory
+    ) != _module_inventory_stable_projection(source_inventory_document):
+        failures.append(
+            "source-module-inventory differs from independent compiler enumeration"
+        )
+    if _module_inventory_stable_projection(
+        fresh_target_inventory
+    ) != _module_inventory_stable_projection(target_inventory_document):
+        failures.append(
+            "target-module-inventory differs from independent compiler enumeration"
+        )
+    try:
+        fresh_closure = build_whole_file_closure(
+            source_inventory=fresh_source_inventory,
+            target_inventory=fresh_target_inventory,
+            source_ir=fresh_source_ir,
+            target_ir=fresh_target_ir,
+            manifest=module_manifest,
+            source_bytes=source_bytes,
+            emitted=fresh_emitted,
+        )
+    except Exception as exc:
+        failures.append(f"module independent whole-file closure rejected: {exc}")
+        return
+    if _whole_file_closure_stable_projection(
+        fresh_closure,
+        source_inventory=fresh_source_inventory,
+        target_inventory=fresh_target_inventory,
+    ) != _whole_file_closure_stable_projection(
+        closure_document,
+        source_inventory=source_inventory_document,
+        target_inventory=target_inventory_document,
+    ):
+        failures.append(
+            "whole-file-module-closure differs from independent reconstruction"
+        )
+    if not replay_native_behavior:
+        _validate_snapshot_stability(
+            label="module source",
+            origin=source_artifact_record[1],
+            snapshot=source_snapshot,
+            expected_bytes=source_bytes,
+            expected_digest=source_digest,
+            failures=failures,
+        )
+        _validate_snapshot_stability(
+            label="module target",
+            origin=target_artifact_record[1],
+            snapshot=target_snapshot,
+            expected_bytes=target_bytes,
+            expected_digest=target_digest,
+            failures=failures,
+        )
+        return
+    cases_by_symbol = {
+        entry.get("symbol"): entry.get("cases")
+        for entry in (
+            module_manifest.get("functions")
+            if isinstance(module_manifest.get("functions"), list)
+            else []
+        )
+        if isinstance(entry, dict)
+        and isinstance(entry.get("symbol"), str)
+        and isinstance(entry.get("cases"), list)
+    }
+    source_functions = {
+        function.name: function for function in fresh_source_ir.functions
+    }
+    fresh_source_validation: dict[str, Any] = {}
+    fresh_target_validation: dict[str, Any] = {}
+    try:
+        with tempfile.TemporaryDirectory(
+            prefix="elmos-module-native-validator-replay-"
+        ) as temporary:
+            replay_root = Path(temporary)
+            for index, symbol in enumerate(manifest_symbols):
+                function = source_functions[symbol]
+                cases = cases_by_symbol[symbol]
+                fresh_source_validation[symbol] = validate_source(
+                    source_snapshot,
+                    source_language,
+                    function,
+                    cases,
+                    replay_root / "source" / f"{index:03d}",
+                )
+                fresh_target_validation[symbol] = validate_target(
+                    fresh_emitted,
+                    target_language,
+                    function,
+                    cases,
+                    replay_root / "target" / f"{index:03d}",
+                )
+    except Exception as exc:
+        failures.append(f"module independent native behavior replay failed: {exc}")
+        return
+    if fresh_source_validation != source_validation_document:
+        failures.append(
+            "source-module-validation differs from independent native replay"
+        )
+    if fresh_target_validation != target_validation_document:
+        failures.append(
+            "target-module-validation differs from independent native replay"
+        )
+    fresh_source_observations = {
+        symbol: validation.get("observations")
+        for symbol, validation in fresh_source_validation.items()
+    }
+    fresh_target_observations = {
+        symbol: validation.get("observations")
+        for symbol, validation in fresh_target_validation.items()
+    }
+    if fresh_source_observations != source_observation_document:
+        failures.append(
+            "source-module-observations differ from independent native replay"
+        )
+    if fresh_target_observations != target_observation_document:
+        failures.append(
+            "target-module-observations differ from independent native replay"
+        )
+    _validate_snapshot_stability(
+        label="module source",
+        origin=source_artifact_record[1],
+        snapshot=source_snapshot,
+        expected_bytes=source_bytes,
+        expected_digest=source_digest,
+        failures=failures,
+    )
+    _validate_snapshot_stability(
+        label="module target",
+        origin=target_artifact_record[1],
+        snapshot=target_snapshot,
+        expected_bytes=target_bytes,
+        expected_digest=target_digest,
+        failures=failures,
+    )
+
+
+def _validate_module_equivalence(
     route: Path,
     manifest: dict[str, Any],
     certification: dict[str, Any],
+    *,
+    replay_native_behavior: bool,
 ) -> tuple[dict[str, Any] | None, list[str]]:
-    """Validate module composition evidence without turning NOT_RUN into pass."""
+    """Validate module composition evidence without turning NOT_RUN into pass.
+
+    Native source/target behavior replay is mandatory by default.  The frozen
+    Batch 35 packed-evidence launcher explicitly disables only that step and
+    reports ``native_route_reexecution=NOT_RUN``; semantic re-lift, emission,
+    inventory, closure, proof re-encoding, and solver replay remain mandatory.
+    """
 
     failures: list[str] = []
     gates = manifest.get("gates", {})
@@ -3675,6 +7408,18 @@ def validate_module_equivalence(
     role_records: dict[str, list[tuple[dict[str, Any], Path, str]]] = {}
     for record in artifacts_by_path.values():
         role_records.setdefault(str(record[0].get("role")), []).append(record)
+    if evidence.get("status") == "PASSED":
+        route_swift_receipt = _validate_swift_receipt_binding(
+            source_language=manifest.get("source", {}).get("language"),
+            target_language=manifest.get("target", {}).get("language"),
+            records=role_records.get("swift-analyzer-build-receipt", []),
+            label="module Swift analyzer build receipt",
+            failures=failures,
+        )
+    else:
+        route_swift_receipt = None
+        if role_records.get("swift-analyzer-build-receipt"):
+            failures.append("non-passing module evidence cannot bind a Swift analyzer receipt")
     module_cases: dict[str, Any] = {}
     source_validation_document: dict[str, Any] = {}
     target_validation_document: dict[str, Any] = {}
@@ -3682,6 +7427,9 @@ def validate_module_equivalence(
     target_observation_document: dict[str, Any] = {}
     source_semantic_document: dict[str, Any] = {}
     target_semantic_document: dict[str, Any] = {}
+    source_inventory_document: dict[str, Any] = {}
+    target_inventory_document: dict[str, Any] = {}
+    whole_file_closure_document: dict[str, Any] = {}
     if evidence.get("status") == "PASSED":
         if len(module_inputs) != 1:
             failures.append("passed module evidence must bind exactly one module formal input")
@@ -3706,6 +7454,7 @@ def validate_module_equivalence(
                 "formal-function-input",
                 "formal-function-smt2",
                 "formal-function-result",
+                "swift-analyzer-build-receipt",
             }
             for role in sorted(single_roles):
                 if len(role_records.get(role, [])) != 1:
@@ -3714,6 +7463,9 @@ def validate_module_equivalence(
                 ("original-source-module-artifact", "source_artifact_sha256"),
                 ("emitted-target-module-artifact", "target_artifact_sha256"),
                 ("module-case-manifest", "corpus_sha256"),
+                ("source-module-inventory", "source_inventory_sha256"),
+                ("target-module-inventory", "target_inventory_sha256"),
+                ("whole-file-module-closure", "whole_file_closure_sha256"),
             )
             for role, field in input_bindings:
                 records = role_records.get(role, [])
@@ -3739,6 +7491,8 @@ def validate_module_equivalence(
             count_bindings = (
                 ("original-source-module-artifact", "source_artifact_byte_count"),
                 ("emitted-target-module-artifact", "target_artifact_byte_count"),
+                ("source-module-inventory", "source_inventory_byte_count"),
+                ("target-module-inventory", "target_inventory_byte_count"),
             )
             for role, field in count_bindings:
                 records = role_records.get(role, [])
@@ -3787,6 +7541,13 @@ def validate_module_equivalence(
                             semantic_document.get(identity_field), str
                         ) or not semantic_document.get(identity_field):
                             failures.append(f"{role} {identity_field} is missing")
+                    if expected_language == "swift":
+                        _validate_swift_analyzer_version_binding(
+                            semantic_document=semantic_document,
+                            receipt=route_swift_receipt,
+                            label=role,
+                            failures=failures,
+                        )
                     try:
                         from elmos_polyglot_route.models import (  # type: ignore[import-not-found]
                             SemanticIR,
@@ -3804,6 +7565,29 @@ def validate_module_equivalence(
                         source_semantic_document = semantic_document
                     else:
                         target_semantic_document = semantic_document
+            for role, destination_name in (
+                ("source-module-inventory", "source"),
+                ("target-module-inventory", "target"),
+                ("whole-file-module-closure", "closure"),
+            ):
+                records = role_records.get(role, [])
+                if len(records) != 1:
+                    continue
+                try:
+                    document = load(records[0][1])
+                except Exception as exc:
+                    failures.append(f"{role} is invalid JSON: {exc}")
+                    continue
+                if destination_name == "source":
+                    source_inventory_document = document
+                elif destination_name == "target":
+                    target_inventory_document = document
+                else:
+                    whole_file_closure_document = document
+                    if evidence.get("whole_file_closure") != document:
+                        failures.append(
+                            "module report whole_file_closure differs from bound artifact"
+                        )
             case_records = role_records.get("module-case-manifest", [])
             if len(case_records) == 1:
                 try:
@@ -3863,7 +7647,11 @@ def validate_module_equivalence(
         failures.append("module_contract must be an object")
         contract = {}
     symbol_sets: dict[str, list[str]] = {}
-    for field in ("source_symbols", "target_symbols", "manifest_symbols"):
+    for field in (
+        "source_profile_symbols",
+        "target_profile_symbols",
+        "manifest_symbols",
+    ):
         values = contract.get(field)
         if not isinstance(values, list) or any(
             not isinstance(item, str) or not item for item in values
@@ -3891,6 +7679,42 @@ def validate_module_equivalence(
     target_artifact_record = next(
         iter(role_records.get("emitted-target-module-artifact", [])), None
     )
+    source_inventory_record = next(
+        iter(role_records.get("source-module-inventory", [])), None
+    )
+    target_inventory_record = next(
+        iter(role_records.get("target-module-inventory", [])), None
+    )
+    closure_record = next(
+        iter(role_records.get("whole-file-module-closure", [])), None
+    )
+    if evidence.get("status") == "PASSED":
+        _validate_module_whole_file_closure(
+            manifest=manifest,
+            module_manifest=module_cases,
+            module_input=(
+                evidence.get("module_input")
+                if isinstance(evidence.get("module_input"), dict)
+                else {}
+            ),
+            source_semantic_document=source_semantic_document,
+            target_semantic_document=target_semantic_document,
+            source_inventory_document=source_inventory_document,
+            target_inventory_document=target_inventory_document,
+            closure_document=whole_file_closure_document,
+            source_validation_document=source_validation_document,
+            target_validation_document=target_validation_document,
+            source_observation_document=source_observation_document,
+            target_observation_document=target_observation_document,
+            source_artifact_record=source_artifact_record,
+            target_artifact_record=target_artifact_record,
+            source_inventory_record=source_inventory_record,
+            target_inventory_record=target_inventory_record,
+            closure_record=closure_record,
+            route_swift_receipt=route_swift_receipt,
+            replay_native_behavior=replay_native_behavior,
+            failures=failures,
+        )
     semantic_functions: dict[str, dict[str, dict[str, Any]]] = {}
     for side, document in (
         ("source", source_semantic_document),
@@ -4061,10 +7885,80 @@ def validate_module_equivalence(
         for field, values in symbol_sets.items():
             if set(values) != expected_symbols:
                 failures.append(f"module_contract.{field} does not match function symbols")
-        if contract.get("exact_symbol_set") is not True:
-            failures.append("module exact_symbol_set is not true")
-        if contract.get("exact_signature_set") is not True:
-            failures.append("module exact_signature_set is not true")
+        if contract.get("exact_profile_symbol_set") is not True:
+            failures.append("module exact_profile_symbol_set is not true")
+        if contract.get("exact_generated_helper_symbol_set") is not True:
+            failures.append(
+                "module exact_generated_helper_symbol_set is not true"
+            )
+        if contract.get("exact_profile_signature_set") is not True:
+            failures.append("module exact_profile_signature_set is not true")
+        closure_records = role_records.get("whole-file-module-closure", [])
+        if len(closure_records) == 1 and contract.get(
+            "whole_file_closure_sha256"
+        ) != closure_records[0][2]:
+            failures.append(
+                "module_contract.whole_file_closure_sha256 does not bind closure artifact"
+            )
+        if contract.get("target_helper_symbols") != whole_file_closure_document.get(
+            "target_helper_symbols"
+        ):
+            failures.append(
+                "module_contract.target_helper_symbols differ from whole-file closure"
+            )
+        for side in ("source", "target"):
+            closure_profile = whole_file_closure_document.get(
+                f"{side}_profile_symbols"
+            )
+            closure_symbols = (
+                [
+                    item.get("symbol")
+                    for item in closure_profile
+                    if isinstance(item, dict)
+                ]
+                if isinstance(closure_profile, list)
+                else None
+            )
+            if contract.get(f"{side}_profile_symbols") != closure_symbols:
+                failures.append(
+                    f"module_contract.{side}_profile_symbols differ from whole-file closure"
+                )
+        for field in (
+            "verified_language_prelude",
+            "verified_language_wrapper",
+        ):
+            if contract.get(field) != whole_file_closure_document.get(field):
+                failures.append(
+                    f"module_contract.{field} differs from whole-file closure"
+                )
+        target_helpers = contract.get("target_helper_symbols")
+        if isinstance(target_helpers, list) and any(
+            not isinstance(helper, dict) or helper.get("analyzable") is not True
+            for helper in target_helpers
+        ):
+            failures.append("module target helper symbols are not all analyzable")
+        independence = contract.get("independence")
+        if not isinstance(independence, dict):
+            failures.append("module_contract.independence is invalid")
+        else:
+            if independence.get("target_call_graph") != whole_file_closure_document.get(
+                "target_call_graph"
+            ):
+                failures.append(
+                    "module_contract.independence.target_call_graph differs from closure"
+                )
+            if independence.get(
+                "target_generated_helper_symbols"
+            ) != whole_file_closure_document.get("target_helper_symbols"):
+                failures.append(
+                    "module_contract independence helper symbols differ from closure"
+                )
+            if independence.get(
+                "target_builtin_normalizations"
+            ) != whole_file_closure_document.get("target_builtin_normalizations"):
+                failures.append(
+                    "module_contract independence normalizations differ from closure"
+                )
         if composition.get("function_count") != len(functions):
             failures.append("module composition function_count mismatch")
         if composition.get("passed_function_count") != len(functions):
@@ -4088,6 +7982,23 @@ def validate_module_equivalence(
             failures.append("module composition proof strength is overstated or invalid")
         if composition.get("analyzer_and_emitter_soundness") != "ASSUMPTION":
             failures.append("module analyzer/emitter soundness boundary must remain ASSUMPTION")
+        if composition.get("source_user_call_graph") != "EMPTY_AND_CLOSED":
+            failures.append("module source user call graph is not empty and closed")
+        if (
+            composition.get("target_call_graph")
+            != "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"
+        ):
+            failures.append("module target call graph policy drift")
+        if (
+            composition.get("target_profile_to_emitted_call_graph_status")
+            != "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+        ):
+            failures.append("module target profile call graph status drift")
+        if (
+            composition.get("target_profile_to_emitted_call_graph_scope")
+            != "profile-functions-to-emitted-callees"
+        ):
+            failures.append("module target profile call graph scope drift")
         for role in (
             "formal-function-input",
             "formal-function-smt2",
@@ -4157,10 +8068,833 @@ def validate_module_equivalence(
     return evidence, failures
 
 
+def validate_module_equivalence(
+    route: Path,
+    manifest: dict[str, Any],
+    certification: dict[str, Any],
+) -> tuple[dict[str, Any] | None, list[str]]:
+    """Authoritative Batch29 validation, including same-host native replay."""
+
+    return _validate_module_equivalence(
+        route,
+        manifest,
+        certification,
+        replay_native_behavior=True,
+    )
+
+
+def validate_packed_module_equivalence(
+    route: Path,
+    manifest: dict[str, Any],
+    certification: dict[str, Any],
+) -> tuple[dict[str, Any] | None, list[str]]:
+    """Frozen packed closure replay that explicitly leaves native execution NOT_RUN."""
+
+    return _validate_module_equivalence(
+        route,
+        manifest,
+        certification,
+        replay_native_behavior=False,
+    )
+
+
+def _validate_specialized_native_runtime_replay(
+    route: Path,
+    manifest: dict[str, Any],
+    failures: list[str],
+) -> None:
+    """Re-execute all three exact-eight function corpora on pinned toolchains."""
+
+    replay_api = _engine_module_closure_api(
+        failures, "specialized function native replay"
+    )
+    domain_api = _engine_domain_api(
+        failures, "specialized function native replay domain"
+    )
+    if replay_api is None or domain_api is None:
+        return
+    (
+        _SemanticIR,
+        emit,
+        analyze,
+        _inventory_module,
+        _combine_function_irs,
+        _build_whole_file_closure,
+        validate_source,
+        validate_target,
+    ) = replay_api
+    _, enforce_semantic_domain, enforce_case_domain = domain_api
+    source_language = manifest.get("source", {}).get("language")
+    target_language = manifest.get("target", {}).get("language")
+    evidence_names = {
+        "development": "local-development-evidence.json",
+        "holdout": "local-holdout-evidence.json",
+        "real-repository": "local-representative-evidence.json",
+    }
+    with tempfile.TemporaryDirectory(
+        prefix="elmos-specialized-native-validator-replay-"
+    ) as temporary:
+        replay_root = Path(temporary)
+        for corpus, evidence_name in evidence_names.items():
+            corpus_root = route / "corpus" / corpus
+            try:
+                corpus_manifest = load(corpus_root / "manifest.json")
+                source_name = corpus_manifest["source_file"]
+                cases_name = corpus_manifest["cases_file"]
+                function_name = corpus_manifest["function_name"]
+                if any(
+                    not isinstance(value, str) or not value
+                    for value in (source_name, cases_name, function_name)
+                ):
+                    raise ValueError("corpus manifest source/cases/function is invalid")
+                source_path = _resolve_below(
+                    corpus_root,
+                    source_name,
+                    f"specialized {corpus} source_file",
+                    failures,
+                )
+                cases_path = _resolve_below(
+                    corpus_root,
+                    cases_name,
+                    f"specialized {corpus} cases_file",
+                    failures,
+                )
+                if source_path is None or cases_path is None:
+                    continue
+                persisted = load(route / "certification" / evidence_name)
+                source_bytes = source_path.read_bytes()
+                cases_bytes = cases_path.read_bytes()
+                source_digest = sha256_bytes(source_bytes)
+                cases_digest = sha256_bytes(cases_bytes)
+                persisted_source = persisted.get("source_validation")
+                persisted_target = persisted.get("validation")
+                persisted_target_artifact = persisted.get("target")
+                if (
+                    not isinstance(persisted_source, dict)
+                    or persisted_source.get("artifact_sha256") != source_digest
+                    or not isinstance(persisted_target, dict)
+                    or not isinstance(persisted_target_artifact, dict)
+                ):
+                    raise ValueError("persisted runtime artifact binding is invalid")
+                certified_input_root = (
+                    route / "certification" / "artifacts" / corpus / "inputs"
+                )
+                certified_source = certified_input_root / source_path.name
+                certified_cases = certified_input_root / "cases.json"
+                if (
+                    not certified_source.is_file()
+                    or certified_source.is_symlink()
+                    or certified_source.read_bytes() != source_bytes
+                    or not certified_cases.is_file()
+                    or certified_cases.is_symlink()
+                    or certified_cases.read_bytes() != cases_bytes
+                ):
+                    raise ValueError("route corpus differs from byte-bound certified inputs")
+                snapshot_parent = replay_root / corpus / "snapshot"
+                snapshot_parent.mkdir(mode=0o700, parents=True, exist_ok=False)
+                source_snapshot = _private_snapshot(
+                    snapshot_parent,
+                    role="source",
+                    logical_name=source_path.name,
+                    content=source_bytes,
+                )
+                cases_snapshot = _private_snapshot(
+                    snapshot_parent,
+                    role="cases",
+                    logical_name=cases_path.name,
+                    content=cases_bytes,
+                )
+                cases = _load_json_array(cases_snapshot)
+                source_ir = analyze(
+                    source_snapshot, source_language, function_name
+                )
+                if len(source_ir.functions) != 1:
+                    raise ValueError("source analysis must contain exactly one function")
+                source_function = source_ir.functions[0]
+                enforce_semantic_domain(
+                    source_ir, source_language, target_language
+                )
+                enforce_case_domain(
+                    source_function, cases, source_language, target_language
+                )
+                emitted = emit(source_ir, target_language)
+                target_artifact = (
+                    route
+                    / "certification"
+                    / "artifacts"
+                    / corpus
+                    / emitted.relative_path
+                )
+                if not target_artifact.is_file() or target_artifact.is_symlink():
+                    raise ValueError("persisted target artifact is missing or unsafe")
+                target_bytes = target_artifact.read_bytes()
+                target_digest = sha256_bytes(target_bytes)
+                if (
+                    persisted_target_artifact.get("path") != emitted.relative_path
+                    or persisted_target_artifact.get("sha256") != target_digest
+                ):
+                    raise ValueError("persisted target runtime artifact binding is invalid")
+                target_snapshot = _private_snapshot(
+                    snapshot_parent,
+                    role="target",
+                    logical_name=target_artifact.name,
+                    content=target_bytes,
+                )
+                fresh_target_bytes = emitted.content.encode("utf-8")
+                if target_bytes != fresh_target_bytes:
+                    failures.append(
+                        f"specialized {corpus} target artifact differs from fresh emitter"
+                    )
+                fresh_target_snapshot = _private_snapshot(
+                    snapshot_parent,
+                    role="fresh-target",
+                    logical_name=emitted.relative_path,
+                    content=fresh_target_bytes,
+                )
+                target_ir = analyze(
+                    fresh_target_snapshot,
+                    target_language,
+                    function_name,
+                    emitted_target=True,
+                )
+                if len(target_ir.functions) != 1:
+                    raise ValueError("target re-lift must contain exactly one function")
+                enforce_semantic_domain(
+                    target_ir, source_language, target_language
+                )
+
+                artifact_root = route / "certification" / "artifacts" / corpus
+                semantic_report = persisted.get("semantic_equivalence")
+                if not isinstance(semantic_report, dict):
+                    raise ValueError("persisted semantic-equivalence binding is missing")
+                source_ir_record = _resolve_below(
+                    artifact_root,
+                    semantic_report.get("source_ir_path"),
+                    f"specialized {corpus} source semantic IR",
+                    failures,
+                )
+                target_ir_record = _resolve_below(
+                    artifact_root,
+                    semantic_report.get("target_ir_path"),
+                    f"specialized {corpus} target semantic IR",
+                    failures,
+                )
+                if source_ir_record is None or target_ir_record is None:
+                    raise ValueError("persisted semantic IR path is invalid")
+                persisted_source_ir = load(source_ir_record)
+                persisted_target_ir = load(target_ir_record)
+                if (
+                    sha256_file(source_ir_record)
+                    != semantic_report.get("source_ir_sha256")
+                    or sha256_file(target_ir_record)
+                    != semantic_report.get("target_ir_sha256")
+                ):
+                    raise ValueError("persisted semantic IR digest binding is invalid")
+                fresh_source_mapping = source_ir.to_mapping()
+                fresh_target_mapping = target_ir.to_mapping()
+                if persisted_source_ir != fresh_source_mapping:
+                    failures.append(
+                        f"specialized {corpus} source semantic IR differs from independent source analysis"
+                    )
+                if persisted_target_ir != fresh_target_mapping:
+                    failures.append(
+                        f"specialized {corpus} target semantic IR differs from independent emitted-target re-lift"
+                    )
+
+                formal_input_path = artifact_root / "formal-input.json"
+                formal_input = load(formal_input_path)
+                source_binding = formal_input.get("source_normalized_ir")
+                target_binding = formal_input.get("target_relift_normalized_ir")
+                if not isinstance(source_binding, dict) or not isinstance(
+                    target_binding, dict
+                ):
+                    raise ValueError("formal input normalized bindings are missing")
+                if source_binding.get("semantic_ir") != fresh_source_mapping:
+                    failures.append(
+                        f"specialized {corpus} formal source IR is detached from fresh source analysis"
+                    )
+                if target_binding.get("semantic_ir") != fresh_target_mapping:
+                    failures.append(
+                        f"specialized {corpus} formal target IR is detached from fresh target re-lift"
+                    )
+                if source_binding.get("formal_function") != semantic_value(
+                    fresh_source_mapping["functions"][0]
+                ):
+                    failures.append(
+                        f"specialized {corpus} formal source function is detached from fresh source analysis"
+                    )
+                if target_binding.get("formal_function") != semantic_value(
+                    fresh_target_mapping["functions"][0]
+                ):
+                    failures.append(
+                        f"specialized {corpus} formal target function is detached from fresh target re-lift"
+                    )
+                fresh_source_validation = validate_source(
+                    source_snapshot,
+                    source_language,
+                    source_function,
+                    cases,
+                    replay_root / corpus / "source",
+                )
+                fresh_target_validation = validate_target(
+                    emitted,
+                    target_language,
+                    source_function,
+                    cases,
+                    replay_root / corpus / "target",
+                )
+            except Exception as exc:
+                failures.append(
+                    f"specialized {corpus} independent native replay failed: {exc}"
+                )
+                continue
+            if persisted.get("source_validation") != fresh_source_validation:
+                failures.append(
+                    f"specialized {corpus} source validation differs from native replay"
+                )
+            if persisted.get("validation") != fresh_target_validation:
+                failures.append(
+                    f"specialized {corpus} target validation differs from native replay"
+                )
+            for label, origin, snapshot, expected_bytes, expected_digest in (
+                (
+                    f"specialized {corpus} route source",
+                    source_path,
+                    source_snapshot,
+                    source_bytes,
+                    source_digest,
+                ),
+                (
+                    f"specialized {corpus} certified source",
+                    certified_source,
+                    source_snapshot,
+                    source_bytes,
+                    source_digest,
+                ),
+                (
+                    f"specialized {corpus} route cases",
+                    cases_path,
+                    cases_snapshot,
+                    cases_bytes,
+                    cases_digest,
+                ),
+                (
+                    f"specialized {corpus} certified cases",
+                    certified_cases,
+                    cases_snapshot,
+                    cases_bytes,
+                    cases_digest,
+                ),
+                (
+                    f"specialized {corpus} target",
+                    target_artifact,
+                    target_snapshot,
+                    target_bytes,
+                    target_digest,
+                ),
+                (
+                    f"specialized {corpus} fresh emitted target",
+                    fresh_target_snapshot,
+                    fresh_target_snapshot,
+                    fresh_target_bytes,
+                    sha256_bytes(fresh_target_bytes),
+                ),
+            ):
+                _validate_snapshot_stability(
+                    label=label,
+                    origin=origin,
+                    snapshot=snapshot,
+                    expected_bytes=expected_bytes,
+                    expected_digest=expected_digest,
+                    failures=failures,
+                )
+
+
+def specialized_negative_expected_reasons(
+    route_key: str,
+    source_language: str,
+    case_id: str,
+) -> frozenset[str]:
+    """Return the complete, stable RouteError strings allowed for one case."""
+
+    dynamic = {
+        "specialized-string-semantics-unsupported": frozenset(
+            {f"SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:{route_key}:same"}
+        ),
+        "specialized-number-arithmetic-unsupported": frozenset(
+            {
+                "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:"
+                f"{route_key}:addNumber"
+            }
+        ),
+        "specialized-non-finite-case-unsupported": frozenset(
+            {
+                "SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:"
+                f"{route_key}:echoNumber:0"
+            }
+        ),
+        "specialized-overflow-outside-no-error-domain": frozenset(
+            {
+                "SPECIALIZED_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN:"
+                f"{route_key}:calculate:0:IntegerOverflow"
+            }
+        ),
+        "missing-symbol-fails-closed": frozenset(
+            {
+                "NO_SUPPORTED_FUNCTIONS"
+                if source_language in {"java", "swift"}
+                else "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+            }
+        ),
+    }
+    return dynamic.get(
+        case_id,
+        SPECIALIZED_NEGATIVE_STATIC_REASONS.get(case_id, frozenset()),
+    )
+
+
+def _specialized_negative_expected_paths(
+    route: Path,
+    source_language: str,
+    case_id: str,
+) -> tuple[str, ...]:
+    """Derive exact evidence paths without deriving the replayed bytes."""
+
+    negative_prefix = "corpus/negative/"
+    language_filename = SPECIALIZED_NEGATIVE_SOURCE_FILES.get(case_id)
+    if language_filename is not None:
+        return (negative_prefix + language_filename,)
+    if case_id == "specialized-number-arithmetic-unsupported":
+        return (
+            negative_prefix
+            + SPECIALIZED_NUMBER_ARITHMETIC_SOURCE_FILES[source_language],
+            negative_prefix + "number_arithmetic_cases.json",
+        )
+    if case_id == "specialized-string-semantics-unsupported":
+        return (
+            negative_prefix + SPECIALIZED_STRING_SOURCE_FILES[source_language],
+            negative_prefix + "canonical_string_cases.json",
+        )
+    if case_id in {
+        "specialized-non-finite-case-unsupported",
+        "specialized-overflow-outside-no-error-domain",
+        "missing-symbol-fails-closed",
+    }:
+        corpus = (
+            "holdout"
+            if case_id == "specialized-non-finite-case-unsupported"
+            else "development"
+        )
+        corpus_manifest = load(route / "corpus" / corpus / "manifest.json")
+        source_file = corpus_manifest.get("source_file")
+        cases_file = corpus_manifest.get("cases_file")
+        if not isinstance(source_file, str) or not isinstance(cases_file, str):
+            raise ValueError(f"{corpus} corpus manifest input paths are invalid")
+        cases_relative = (
+            negative_prefix + "non_finite_number_cases.json"
+            if case_id == "specialized-non-finite-case-unsupported"
+            else negative_prefix + "canonical_overflow_cases.json"
+            if case_id == "specialized-overflow-outside-no-error-domain"
+            else f"corpus/{corpus}/{cases_file}"
+        )
+        return f"corpus/{corpus}/{source_file}", cases_relative
+    if case_id == "undeclared-directed-route-fails-closed":
+        return (
+            negative_prefix + "undeclared_java_to_java.java",
+            negative_prefix + "undeclared_java_to_java_cases.json",
+        )
+    raise ValueError(f"undeclared specialized negative case: {case_id}")
+
+
+def validate_specialized_negative_evidence(
+    route: Path,
+    manifest: dict[str, Any],
+    evidence: dict[str, Any],
+    failures: list[str],
+) -> None:
+    """Replay every exact-eight negative case from its byte-bound inputs.
+
+    A negative report is not evidence merely because it names an expected
+    error.  This validator snapshots the report-bound inputs, selects the API
+    from the fixed case contract, and requires the origin-bound engine to raise
+    the exact persisted ``RouteError`` without creating any output tree.
+    """
+
+    route_key = manifest.get("route_key")
+    source_language = manifest.get("source", {}).get("language")
+    target_language = manifest.get("target", {}).get("language")
+    if not all(
+        isinstance(value, str) and value
+        for value in (route_key, source_language, target_language)
+    ):
+        failures.append("specialized negative replay route tuple is invalid")
+        return
+    if source_language not in SPECIALIZED_NEGATIVE_CASES or target_language not in (
+        SPECIALIZED_NEGATIVE_CASES
+    ):
+        failures.append("specialized negative replay language is outside exact-eight")
+        return
+
+    expected_case_ids = {
+        *SPECIALIZED_NEGATIVE_CASES[source_language],
+        *SPECIALIZED_NEGATIVE_CASES[target_language],
+        *SPECIALIZED_COMMON_NEGATIVE_CASES,
+    }
+    references = evidence.get("negative_runs")
+    expected_reference = "certification/local-negative-evidence.json"
+    if references != [expected_reference]:
+        failures.append("specialized negative evidence reference set is not exact")
+        return
+    negative_path = _resolve_below(
+        route,
+        expected_reference,
+        "specialized negative evidence",
+        failures,
+    )
+    if negative_path is None:
+        return
+    try:
+        negative_stat = negative_path.lstat()
+        if negative_path.is_symlink() or not stat.S_ISREG(negative_stat.st_mode):
+            raise ValueError("not a regular non-symlink file")
+        negative_bytes = negative_path.read_bytes()
+        result = json.loads(
+            negative_bytes.decode("utf-8"),
+            parse_constant=_reject_json_constant,
+        )
+        if not isinstance(result, dict):
+            raise ValueError("JSON root must be an object")
+    except Exception as exc:
+        failures.append(f"specialized negative evidence is unreadable: {exc}")
+        return
+
+    if set(result) != {
+        "schema_version",
+        "route",
+        "status",
+        "expected_result",
+        "test_integrity",
+        "cases",
+        "independent_verifier",
+        "external_certification",
+    }:
+        failures.append("specialized negative evidence top-level keys are not exact")
+    if (
+        result.get("schema_version") != 1
+        or result.get("route") != route_key
+        or result.get("status") != "PASSED"
+        or result.get("expected_result") != "BLOCKED"
+        or result.get("test_integrity") != "PRESERVED"
+        or result.get("independent_verifier") != "NOT_RUN"
+        or result.get("external_certification") != "NOT_RUN"
+    ):
+        failures.append("specialized negative evidence boundary is invalid")
+
+    cases = result.get("cases")
+    if not isinstance(cases, list):
+        failures.append("specialized negative cases are missing")
+        return
+    case_ids = [
+        item.get("case_id") if isinstance(item, dict) else None for item in cases
+    ]
+    if case_ids != sorted(expected_case_ids):
+        failures.append("specialized negative case order/set is not exact")
+    if len(case_ids) != len(set(case_ids)):
+        failures.append("specialized negative case IDs are duplicated")
+
+    api = _engine_negative_replay_api(
+        failures, f"specialized negative replay {route_key}"
+    )
+    if api is None:
+        return
+    migrate, migrate_module, analyze, RouteError = api
+    provenance_before = _runtime_provenance(
+        failures, f"specialized negative replay {route_key} before execution"
+    )
+    if provenance_before is None:
+        return
+
+    with tempfile.TemporaryDirectory(
+        prefix=f"elmos-specialized-negative-replay-{route_key}-"
+    ) as temporary:
+        replay_root = Path(temporary)
+        replay_root.chmod(0o700)
+        for index, item in enumerate(cases):
+            item_label = f"specialized negative cases[{index}]"
+            if not isinstance(item, dict):
+                failures.append(f"{item_label} must be an object")
+                continue
+            if set(item) != {
+                "case_id",
+                "status",
+                "expected_result",
+                "observed_reason",
+                "input_refs",
+                "native_analysis",
+                "target_execution",
+            }:
+                failures.append(f"{item_label} keys are not exact")
+            case_id = item.get("case_id")
+            if not isinstance(case_id, str) or case_id not in expected_case_ids:
+                failures.append(f"{item_label}.case_id is not declared for this route")
+                continue
+            if (
+                item.get("status") != "PASSED"
+                or item.get("expected_result") != "BLOCKED"
+                or item.get("native_analysis") != "EXECUTED"
+                or item.get("target_execution") != "NOT_REACHED_BY_DESIGN"
+            ):
+                failures.append(f"{item_label} did not preserve fail-closed status")
+            observed_reason = item.get("observed_reason")
+            expected_reasons = specialized_negative_expected_reasons(
+                route_key, source_language, case_id
+            )
+            if not isinstance(observed_reason, str) or observed_reason not in expected_reasons:
+                failures.append(f"{item_label}.observed_reason is not exact")
+
+            expected_roles = SPECIALIZED_NEGATIVE_INPUT_ROLES.get(case_id)
+            input_refs = item.get("input_refs")
+            if expected_roles is None or not isinstance(input_refs, list):
+                failures.append(f"{item_label}.input_refs contract is missing")
+                continue
+            try:
+                expected_paths = _specialized_negative_expected_paths(
+                    route, source_language, case_id
+                )
+            except Exception as exc:
+                failures.append(f"{item_label}.input_refs paths cannot be derived: {exc}")
+                continue
+            observed_roles = [
+                reference.get("role") if isinstance(reference, dict) else None
+                for reference in input_refs
+            ]
+            if tuple(observed_roles) != expected_roles:
+                failures.append(f"{item_label}.input_refs roles/order are not exact")
+                continue
+            observed_paths = [
+                reference.get("path") if isinstance(reference, dict) else None
+                for reference in input_refs
+            ]
+            if tuple(observed_paths) != expected_paths:
+                failures.append(f"{item_label}.input_refs paths are not exact")
+                continue
+            if len(observed_roles) != len(set(observed_roles)):
+                failures.append(f"{item_label}.input_refs roles are duplicated")
+                continue
+
+            case_root = replay_root / f"{index:03d}-{case_id}"
+            case_root.mkdir(mode=0o700)
+            snapshots: dict[str, Path] = {}
+            bound_inputs: list[tuple[str, Path, Path, bytes, str]] = []
+            inputs_valid = True
+            for input_index, (role, reference) in enumerate(
+                zip(expected_roles, input_refs, strict=True)
+            ):
+                input_label = f"{item_label}.input_refs[{input_index}]"
+                if not isinstance(reference, dict) or set(reference) != {
+                    "role",
+                    "path",
+                    "sha256",
+                    "bytes",
+                }:
+                    failures.append(f"{input_label} keys are not exact")
+                    inputs_valid = False
+                    continue
+                relative = reference.get("path")
+                relative_path = Path(relative) if isinstance(relative, str) else None
+                if (
+                    relative_path is None
+                    or not relative
+                    or relative_path.is_absolute()
+                    or "\\" in relative
+                    or any(part in {"", ".", ".."} for part in relative_path.parts)
+                ):
+                    failures.append(f"{input_label}.path is unsafe")
+                    inputs_valid = False
+                    continue
+                unresolved_origin = route / relative_path
+                try:
+                    origin_stat = unresolved_origin.lstat()
+                    if unresolved_origin.is_symlink() or not stat.S_ISREG(
+                        origin_stat.st_mode
+                    ):
+                        raise ValueError("not a regular non-symlink file")
+                    origin = unresolved_origin.resolve(strict=True)
+                    origin.relative_to(route.resolve(strict=True))
+                    content = origin.read_bytes()
+                except Exception as exc:
+                    failures.append(f"{input_label} is not a safe bound file: {exc}")
+                    inputs_valid = False
+                    continue
+                digest = sha256_bytes(content)
+                byte_count = reference.get("bytes")
+                if (
+                    reference.get("role") != role
+                    or reference.get("sha256") != digest
+                    or not isinstance(byte_count, int)
+                    or isinstance(byte_count, bool)
+                    or byte_count != len(content)
+                ):
+                    failures.append(f"{input_label} byte binding drift")
+                    inputs_valid = False
+                    continue
+                snapshot = _private_snapshot(
+                    case_root,
+                    role=role,
+                    logical_name=origin.name,
+                    content=content,
+                )
+                snapshots[role] = snapshot
+                bound_inputs.append((role, origin, snapshot, content, digest))
+            if not inputs_valid or set(snapshots) != set(expected_roles):
+                continue
+
+            output_root = case_root / "engine-output-must-not-exist"
+            output = output_root / "output"
+            fresh_reason: str | None = None
+            if case_id == "missing-symbol-fails-closed":
+                try:
+                    development_manifest = load(
+                        route / "corpus" / "development" / "manifest.json"
+                    )
+                    declared_function = development_manifest.get("function_name")
+                    if not isinstance(declared_function, str) or not declared_function:
+                        raise ValueError(
+                            "development function_name is missing"
+                        )
+                    valid_source_ir = analyze(
+                        snapshots["source"],
+                        source_language,
+                        declared_function,
+                    )
+                    if len(valid_source_ir.functions) != 1:
+                        raise ValueError(
+                            "development source did not yield exactly one declared function"
+                        )
+                except Exception as exc:
+                    failures.append(
+                        f"{item_label} valid development-source preflight failed: {exc}"
+                    )
+                    for role, origin, snapshot, content, digest in bound_inputs:
+                        _validate_snapshot_stability(
+                            label=f"{item_label}.{role}",
+                            origin=origin,
+                            snapshot=snapshot,
+                            expected_bytes=content,
+                            expected_digest=digest,
+                            failures=failures,
+                        )
+                    continue
+            try:
+                analyze_spec = SPECIALIZED_NEGATIVE_ANALYZE_SPECS.get(case_id)
+                if analyze_spec is not None:
+                    language, function_name, emitted_target = analyze_spec
+                    analyze(
+                        snapshots["source"],
+                        language,
+                        function_name,
+                        emitted_target=emitted_target,
+                    )
+                elif case_id == "undeclared-directed-route-fails-closed":
+                    migrate_module(
+                        snapshots["source-module"],
+                        "java",
+                        "java",
+                        snapshots["case-manifest"],
+                        output,
+                    )
+                else:
+                    function_name = {
+                        "specialized-string-semantics-unsupported": "same",
+                        "specialized-number-arithmetic-unsupported": "addNumber",
+                        "specialized-non-finite-case-unsupported": "echoNumber",
+                        "specialized-overflow-outside-no-error-domain": "calculate",
+                        "missing-symbol-fails-closed": "__elmos_missing_function__",
+                    }[case_id]
+                    migrate(
+                        snapshots["source"],
+                        source_language,
+                        target_language,
+                        function_name,
+                        snapshots["cases"],
+                        output,
+                    )
+            except Exception as exc:
+                if type(exc) is not RouteError:
+                    failures.append(
+                        f"{item_label} raised unexpected exception type "
+                        f"{type(exc).__module__}.{type(exc).__qualname__}: {exc}"
+                    )
+                else:
+                    fresh_reason = str(exc)
+            else:
+                failures.append(f"{item_label} unexpectedly passed fresh replay")
+            if output_root.exists():
+                failures.append(f"{item_label} created an output/artifact directory")
+            if fresh_reason is not None:
+                if fresh_reason not in expected_reasons:
+                    failures.append(
+                        f"{item_label} fresh RouteError reason is not exact: {fresh_reason}"
+                    )
+                if fresh_reason != observed_reason:
+                    failures.append(
+                        f"{item_label} observed_reason differs from fresh replay: "
+                        f"{observed_reason!r} != {fresh_reason!r}"
+                    )
+            for role, origin, snapshot, content, digest in bound_inputs:
+                _validate_snapshot_stability(
+                    label=f"{item_label}.{role}",
+                    origin=origin,
+                    snapshot=snapshot,
+                    expected_bytes=content,
+                    expected_digest=digest,
+                    failures=failures,
+                )
+                try:
+                    if origin.is_symlink() or not stat.S_ISREG(origin.lstat().st_mode):
+                        raise ValueError("origin is no longer a regular non-symlink file")
+                    if snapshot.is_symlink() or not stat.S_ISREG(
+                        snapshot.lstat().st_mode
+                    ):
+                        raise ValueError("snapshot is no longer a regular non-symlink file")
+                except Exception as exc:
+                    failures.append(f"{item_label}.{role} file identity drift: {exc}")
+
+    try:
+        if negative_path.read_bytes() != negative_bytes:
+            failures.append("specialized negative evidence changed during replay")
+        if negative_path.is_symlink() or not stat.S_ISREG(negative_path.lstat().st_mode):
+            failures.append("specialized negative evidence file identity changed during replay")
+    except OSError as exc:
+        failures.append(f"specialized negative evidence final stability check failed: {exc}")
+    provenance_after = _runtime_provenance(
+        failures, f"specialized negative replay {route_key} after execution"
+    )
+    if provenance_after is not None and provenance_after != provenance_before:
+        failures.append("specialized negative replay runtime provenance changed during execution")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("route_dir")
+    parser.add_argument("route_dir", nargs="?")
+    parser.add_argument(
+        "--runtime-proof-probe",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     args = parser.parse_args()
+    if args.runtime_proof_probe:
+        probe_failures: list[str] = []
+        if _engine_proof_api(probe_failures, "Batch29 fresh runtime probe") is None:
+            print(
+                "\n".join(f"ERROR: {failure}" for failure in probe_failures),
+                file=sys.stderr,
+            )
+            return 1
+        print("OK: Batch29 fresh locked proof runtime")
+        return 0
+    if args.route_dir is None:
+        parser.error("route_dir is required")
     route = Path(args.route_dir)
     errors: list[str] = []
     manifest: dict[str, Any] = {}
@@ -4375,6 +9109,15 @@ def main() -> int:
                     errors.append(
                         "specialized evidence out-of-domain arithmetic boundary drift"
                     )
+                validate_specialized_negative_evidence(
+                    route,
+                    manifest,
+                    route_evidence,
+                    errors,
+                )
+                _validate_specialized_native_runtime_replay(
+                    route, manifest, errors
+                )
         if manifest.get("gates", {}).get("module_equivalence_required") is True:
             module_root = route / "corpus" / "module"
             module_manifest_path = module_root / "manifest.json"
@@ -4451,4 +9194,11 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    from fresh_route_runtime import run_in_fresh_locked_runtime
+
+    fresh_runtime_exit = run_in_fresh_locked_runtime(
+        Path(__file__), sys.argv[1:]
+    )
+    if fresh_runtime_exit is not None:
+        raise SystemExit(fresh_runtime_exit)
     raise SystemExit(main())

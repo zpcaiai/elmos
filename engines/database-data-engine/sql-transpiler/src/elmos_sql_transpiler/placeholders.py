@@ -86,7 +86,11 @@ def is_placeholder(node: exp.Expression) -> bool:
 
 def placeholder_nodes(expression: exp.Expression) -> list[exp.Expression]:
     """Every placeholder in document order."""
-    return [node for node in expression.walk() if is_placeholder(node)]
+    return [
+        node
+        for node in expression.walk()
+        if isinstance(node, exp.Expression) and is_placeholder(node)
+    ]
 
 
 def _target_node(dialect: str, ordinal: int, name: str) -> exp.Expression:

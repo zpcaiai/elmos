@@ -75,6 +75,47 @@ MODULE_SINGLE_ARTIFACT_ROLES = frozenset(
 MODULE_PER_FUNCTION_ARTIFACT_ROLES = frozenset(
     {"formal-function-input", "formal-function-smt2", "formal-function-result"}
 )
+SWIFT_DEPENDENCY_TREE = {
+    "identity": "swift-syntax",
+    "version": "600.0.1",
+    "revision": "0687f71944021d616d34d922343dcef086855920",
+    "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+    "file_count": 753,
+    "bytes": 8_866_479,
+}
+SWIFT_DEPENDENCY_CACHE_KEYS = {
+    "cache_key",
+    "cache_schema",
+    "identity",
+    "version",
+    "revision",
+    "seed",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_DEPENDENCY_MIRROR_KEYS = {
+    "seed",
+    "cache",
+    "git",
+    "identity",
+    "version",
+    "revision",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_DEPENDENCY_SEED = "verified-content-addressed-cache"
+SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
+SWIFT_DEPENDENCY_CACHE_KEY = (
+    "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-"
+    "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+)
+SWIFT_GIT_IDENTITY = {
+    "path": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
+    "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+    "version": "git version 2.50.1 (Apple Git-155)",
+}
 
 
 def declared_input_domain(route_key: str) -> str:
@@ -362,6 +403,29 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
         json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+
+
+def validate_portable_swift_analyzer_receipt(receipt: dict[str, Any]) -> None:
+    """Validate the complete receipt before any route artifact is written."""
+
+    from validate_route import _validate_swift_analyzer_receipt_document
+
+    binary = receipt.get("binary")
+    live_binary = (
+        Path(binary["path"])
+        if isinstance(binary, dict) and isinstance(binary.get("path"), str)
+        else None
+    )
+    failures: list[str] = []
+    validated = _validate_swift_analyzer_receipt_document(
+        receipt,
+        label="generated Swift analyzer build receipt",
+        failures=failures,
+        live_binary=live_binary,
+    )
+    if validated is None or failures:
+        detail = " | ".join(failures) if failures else "unknown receipt failure"
+        raise RuntimeError(f"SWIFT_ANALYZER_BUILD_RECEIPT_INVALID:{detail}")
 
 
 def sha256_file(path: Path) -> str:
@@ -1885,6 +1949,10 @@ def execute_module_route(
 
 
 def execute_route(repo: Path, fixtures: Path, source: Language, target: Language) -> None:
+    swift_receipt: dict[str, Any] | None = None
+    if "swift" in {source, target}:
+        swift_receipt = swift_analyzer_build_receipt()
+        validate_portable_swift_analyzer_receipt(swift_receipt)
     route = configure_route(repo, source, target)
     populate_corpus(route, fixtures, source)
     reports: dict[str, dict[str, Any]] = {}
@@ -1930,10 +1998,9 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             / "formal-artifacts"
             / "swift-analyzer-build-receipt.json"
         )
-        write_json(
-            swift_analyzer_receipt_path,
-            swift_analyzer_build_receipt(),
-        )
+        if swift_receipt is None:
+            raise RuntimeError("SWIFT_ANALYZER_BUILD_RECEIPT_PREFLIGHT_MISSING")
+        write_json(swift_analyzer_receipt_path, swift_receipt)
     evidence = {
         "schema_version": 1,
         "route_key": f"{source}-to-{target}",

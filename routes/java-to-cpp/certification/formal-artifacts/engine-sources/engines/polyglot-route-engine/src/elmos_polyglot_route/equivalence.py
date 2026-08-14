@@ -1570,11 +1570,19 @@ def module_equivalence(
     emitted: EmittedFile,
     source_artifact_bytes: bytes,
     source_logical_file: str,
+    source_inventory_sha256: str,
+    source_inventory_byte_count: int,
+    target_inventory_sha256: str,
+    target_inventory_byte_count: int,
+    whole_file_closure: dict[str, Any],
 ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     """Compose per-function layers for one independent pure-function module.
 
-    This is a conjunction over an empty call graph.  It is deliberately not a
-    theorem about original source bytes or either compiler/runtime.
+    This is a conjunction over the source module's empty user call graph plus
+    the target emitter's exact profile-to-helper/builtin call edges. Helper
+    internals are content-bound, not modeled as a raw transitive call graph.
+    It is deliberately not a theorem about original source bytes or either
+    compiler/runtime.
     """
 
     source_index = _module_function_index(source, "source")
@@ -1612,6 +1620,11 @@ def module_equivalence(
         "source_semantic_ir_sha256": sha256_bytes(canonical_json_bytes(source.to_mapping())),
         "target_semantic_ir_sha256": sha256_bytes(canonical_json_bytes(target.to_mapping())),
         "case_manifest_sha256": sha256_bytes(canonical_json_bytes(case_manifest)),
+        "source_inventory_sha256": source_inventory_sha256,
+        "source_inventory_byte_count": source_inventory_byte_count,
+        "target_inventory_sha256": target_inventory_sha256,
+        "target_inventory_byte_count": target_inventory_byte_count,
+        "whole_file_closure_sha256": sha256_bytes(canonical_json_bytes(whole_file_closure)),
     }
     module_input_sha256 = sha256_bytes(canonical_json_bytes(module_input))
     function_reports: list[dict[str, Any]] = []
@@ -1805,22 +1818,39 @@ def module_equivalence(
         "module_input_sha256": module_input_sha256,
         "module_input": module_input,
         "module_contract": {
-            "source_symbols": source_symbols,
-            "target_symbols": target_symbols,
+            "source_profile_symbols": source_symbols,
+            "target_profile_symbols": target_symbols,
+            "target_helper_symbols": whole_file_closure["target_helper_symbols"],
+            "verified_language_prelude": whole_file_closure[
+                "verified_language_prelude"
+            ],
+            "verified_language_wrapper": whole_file_closure[
+                "verified_language_wrapper"
+            ],
             "manifest_symbols": sorted(cases_by_symbol),
-            "exact_symbol_set": True,
-            "exact_signature_set": True,
+            "exact_profile_symbol_set": True,
+            "exact_generated_helper_symbol_set": True,
+            "exact_profile_signature_set": True,
+            "whole_file_closure_sha256": module_input["whole_file_closure_sha256"],
             "independence": {
-                "call_graph_edges": [],
-                "call_graph_closure": "EMPTY_AND_CLOSED",
-                "function_calls": "UNSUPPORTED",
+                "source_user_call_graph_edges": [],
+                "source_user_call_graph_closure": "EMPTY_AND_CLOSED",
+                "target_call_graph_policy": whole_file_closure[
+                    "target_call_graph_policy"
+                ],
+                "target_call_graph": whole_file_closure["target_call_graph"],
+                "target_generated_helper_symbols": whole_file_closure["target_helper_symbols"],
+                "target_builtin_normalizations": whole_file_closure[
+                    "target_builtin_normalizations"
+                ],
+                "function_calls": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
                 "mutable_state": "UNSUPPORTED",
                 "shared_state": "ABSENT_BY_IR_CONSTRUCTION",
             },
         },
         "functions": function_reports,
         "composition": {
-            "rule": "per-function-denotation-plus-call-graph-closure",
+            "rule": "per-function-denotation-plus-exact-emitter-helper-closure",
             "function_count": len(function_reports),
             "passed_function_count": passed_function_count,
             "status": EvidenceStatus.PASSED if passed else EvidenceStatus.FAILED,
@@ -1831,6 +1861,14 @@ def module_equivalence(
             "source_compiler_runtime_soundness": "NOT_RUN",
             "target_compiler_runtime_soundness": "NOT_RUN",
             "analyzer_and_emitter_soundness": "ASSUMPTION",
+            "source_user_call_graph": "EMPTY_AND_CLOSED",
+            "target_call_graph": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+            "target_profile_to_emitted_call_graph_status": whole_file_closure[
+                "target_call_graph"
+            ]["status"],
+            "target_profile_to_emitted_call_graph_scope": whole_file_closure[
+                "target_call_graph"
+            ]["scope"],
         },
         "unsupported_semantics": list(L1_PLUS_UNSUPPORTED),
         "certification_status": "NOT_CERTIFIED",

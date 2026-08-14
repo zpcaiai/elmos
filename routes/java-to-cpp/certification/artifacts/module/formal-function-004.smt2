@@ -1,5 +1,5 @@
-; formal_input_digest: sha256:5d27b3c2ab2fb4c42205d07c221e7a31a51ca6d652159432201119d298f85e08
-; formal-input-sha256: sha256:5d27b3c2ab2fb4c42205d07c221e7a31a51ca6d652159432201119d298f85e08
+; formal_input_digest: sha256:c0c814ae5258f496ae884c01f3ca93882b7f52f0c99e3c141436c7ce28a25328
+; formal-input-sha256: sha256:c0c814ae5258f496ae884c01f3ca93882b7f52f0c99e3c141436c7ce28a25328
 ; claim-scope: canonical-normalized-source-ir-to-target-relift-ir
 ; input-domain: canonical-finite-no-error-input-domain
 ; original-source-bytes-theorem: false
@@ -18,21 +18,21 @@
 (assert
  (= source_right target_right))
 (assert
- (let ((?x64 (bvsub ((_ sign_extend 64) source_left) ((_ sign_extend 64) source_right))))
- (let ((?x74 ((_ extract 63 0) ?x64)))
- (let ((?x60 (ite (and (distinct ?x64 ((_ sign_extend 64) ?x74)) true) 1 0)))
- (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x16 (and (distinct ?x73 0) true)))
- (let ((?x43 (ite $x16 ?x73 ?x60)))
- (= ?x43 0))))))))
+ (let ((?x77 (bvsub ((_ sign_extend 64) source_left) ((_ sign_extend 64) source_right))))
+ (let ((?x4010 ((_ extract 63 0) ?x77)))
+ (let ((?x826 (ite (and (distinct ?x77 ((_ sign_extend 64) ?x4010)) true) 1 0)))
+ (let ((?x3383 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x56 (and (distinct ?x3383 0) true)))
+ (let ((?x3096 (ite $x56 ?x3383 ?x826)))
+ (= ?x3096 0))))))))
 (assert
- (let ((?x64 (bvsub ((_ sign_extend 64) source_left) ((_ sign_extend 64) source_right))))
- (let ((?x74 ((_ extract 63 0) ?x64)))
- (let ((?x60 (ite (and (distinct ?x64 ((_ sign_extend 64) ?x74)) true) 1 0)))
- (let ((?x73 (ite (and (distinct 0 0) true) 0 0)))
- (let (($x16 (and (distinct ?x73 0) true)))
- (let ((?x43 (ite $x16 ?x73 ?x60)))
- (= ?x43 0))))))))
+ (let ((?x77 (bvsub ((_ sign_extend 64) source_left) ((_ sign_extend 64) source_right))))
+ (let ((?x4010 ((_ extract 63 0) ?x77)))
+ (let ((?x826 (ite (and (distinct ?x77 ((_ sign_extend 64) ?x4010)) true) 1 0)))
+ (let ((?x3383 (ite (and (distinct 0 0) true) 0 0)))
+ (let (($x56 (and (distinct ?x3383 0) true)))
+ (let ((?x3096 (ite $x56 ?x3383 ?x826)))
+ (= ?x3096 0))))))))
 (assert
  false)
 (check-sat)

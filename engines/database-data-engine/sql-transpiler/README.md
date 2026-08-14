@@ -14,12 +14,46 @@ This module is the local, fail-closed SQL syntax transpilation component of the 
 
 These seven profiles form 42 directional syntax routes. Reverse directions are distinct. The local execution Runner is limited to PostgreSQL 17.5, SQLite 3.53.3, and DuckDB 1.5.4. MariaDB, DB2, BigQuery, Snowflake, and ClickHouse are registered as conditional, detected-only, or planned instead of being silently aliased to another engine.
 
+## ChinaDB commercial extension boundary
+
+The ChinaDB commercial registry adds 13 independent target identities and 78
+planned routes (six source families by 13 targets): DM8, KingbaseES, openGauss,
+TiDB, GBase 8s/8c/8a, HighGo/HGDB, OceanBase Oracle/MySQL modes, GaussDB
+Oracle/M modes, and GoldenDB. PolarDB, PolarDB-X, and TDSQL are explicitly
+excluded.
+
+This is a static `SPEC_ONLY` registry. It does not add any target to the seven
+exact transpilation profiles, alias a ChinaDB product or compatibility mode to
+Oracle/MySQL/PostgreSQL, or claim a verified renderer. All 78 planned routes
+remain `NOT_RUN` and `NOT_CERTIFIED`.
+
+`commercial-assess` is a read-only preflight. It requires an existing exact
+source profile, concrete target ID/version/edition/compatibility mode/driver/
+charset/collation/time zone, and a SHA-256 capability-snapshot identity. It
+parses source SQL into typed AST and semantic
+obligations, but it always returns `BLOCKED`, includes explicit blockers, and
+sets `targetSql` to null because no commercial target renderer or target
+capability snapshot has been independently verified. The example snapshot
+digest is a specimen identity only and is deliberately reported as unverified.
+
+The machine-readable contracts are:
+
+- `schemas/batch31/chinadb-commercial-capabilities.schema.json`
+- `schemas/batch31/chinadb-sql-preflight-request.schema.json`
+- `schemas/batch31/chinadb-sql-preflight-result.schema.json`
+
 ## Run
 
 ```bash
 uv sync --frozen
 uv run pytest
 uv run elmos-sql-transpiler capabilities
+uv run elmos-sql-transpiler commercial-capabilities
+uv run elmos-sql-transpiler commercial-capabilities \
+  --output /tmp/elmos-chinadb-commercial-capabilities.json
+uv run elmos-sql-transpiler commercial-assess \
+  examples/chinadb-commercial-assess.json \
+  --output /tmp/elmos-chinadb-commercial-assessment.json
 uv run elmos-sql-transpiler transpile \
   examples/postgresql-to-mysql.json \
   /tmp/elmos-orders-mysql
@@ -37,6 +71,10 @@ uv run elmos-sql-transpiler verify-route \
 uv run elmos-sql-transpiler verify-local-matrix \
   /tmp/elmos-local-sql-matrix
 ```
+
+Capability and assessment `--output` files are create-only. The commercial
+assessment command returns exit status 3 after successfully writing its typed
+`BLOCKED` result; exit status 0 would incorrectly suggest a renderer is ready.
 
 The output directory is create-only. A successful materialization contains target SQL, typed source/target AST, source and target profiles, route, source map identity, Runner configuration, verification state, and a transpilation report. The raw source SQL is not copied, although its typed AST and literals are retained in the canonical IR; customer handling policy still applies.
 
@@ -58,6 +96,16 @@ The output directory is create-only. A successful materialization contains targe
    a real placeholder in the target engine.
 
 It does not mean the target database executed the SQL or returned equivalent rows, types, ordering, errors, locks, plans, or performance. Those remain `NOT_RUN`; certification remains `NOT_CERTIFIED`.
+
+### Target adapter protocol and trace
+
+All existing exact-profile emission now passes through the versioned target
+adapter protocol and registry. Each adapter is bound to one exact profile and
+dialect; the registry refuses duplicate or absent adapters. Successful
+transpilation metadata records the adapter ID, protocol and implementation
+versions, adapter digest, per-rule input/output/rule digests, and a digest of
+the ordered rule trace. This makes core SQLGlot emission auditable without
+turning ChinaDB compatibility labels into core dialect aliases.
 
 ### Bind parameters
 

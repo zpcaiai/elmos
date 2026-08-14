@@ -2,7 +2,7 @@
   "artifact_manifest": {
     "bytes": 4081,
     "path": "certification/artifacts/development/artifact-manifest.json",
-    "sha256": "sha256:d7456c089d14e0a2c3649a7b3248d0d17e9b8c8cfa576ea8189951966d166bd1"
+    "sha256": "sha256:a628443169d67a9d8cc94723d47dfd094dd21f6c457073d37e0c47bd2cc274cd"
   },
   "artifact_root": "certification/artifacts/development",
   "authorization": "local-engineering-validation",
@@ -21,7 +21,7 @@
   "certification_status": "NOT_CERTIFIED",
   "chunk_equivalence": {
     "artifact_path": "chunk-map.json",
-    "artifact_sha256": "sha256:ab8f3f10522b5b989bca53319d569b11670bf6f3fa638af8a81dc8caaa1b6b74",
+    "artifact_sha256": "sha256:f2549bcf2a4a90a7fa167ff06ae0636decc608c25ef73c5c55d4990c7bd2ef21",
     "coverage": 1.0,
     "mapped_source_chunk_count": 13,
     "required_source_chunk_count": 13,
@@ -34,31 +34,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:46504f2f8adbb99f20458c3abd1e7d661d1c99ede585152ade81595bb3775d7f",
+    "artifact_sha256": "sha256:a2afbcc095672a09e69627828ee9be806b4c51d12acc37bd7a8b6583257ca7fa",
     "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
-    "formal_input_digest": "sha256:bfe933a54ebf32519464194ee5f682833a042fc1eba0671364712ea2b9c87617",
+    "formal_input_digest": "sha256:137daa02a0f7cd5c60f418de6ea3c1480faba6bcb922f8c701aae3c719842c33",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:bfe933a54ebf32519464194ee5f682833a042fc1eba0671364712ea2b9c87617",
+    "formal_input_sha256": "sha256:137daa02a0f7cd5c60f418de6ea3c1480faba6bcb922f8c701aae3c719842c33",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:bfe933a54ebf32519464194ee5f682833a042fc1eba0671364712ea2b9c87617",
+        "formal_input_sha256": "sha256:137daa02a0f7cd5c60f418de6ea3c1480faba6bcb922f8c701aae3c719842c33",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:8eacd1045a1bbec36425dddd6b375c97a9f0e7706b328ea950f1eb6bc295a59a",
+        "sha256": "sha256:e29d678cdd1f2dde3812b820b772ae556ba523b2800eb3b25b90553d1559d07d",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:bfe933a54ebf32519464194ee5f682833a042fc1eba0671364712ea2b9c87617",
+        "formal_input_sha256": "sha256:137daa02a0f7cd5c60f418de6ea3c1480faba6bcb922f8c701aae3c719842c33",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:4b5a5ac837d85de56146c53dd5b68afc32bf2df6d0d65c9ab9f0ba99097045f6",
+        "sha256": "sha256:e49991ac0fb35050eaed0c7e29fdbf87b3687044bcd3c5a3de657068ffe362be",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:8eacd1045a1bbec36425dddd6b375c97a9f0e7706b328ea950f1eb6bc295a59a",
+    "solver_input_digest": "sha256:e29d678cdd1f2dde3812b820b772ae556ba523b2800eb3b25b90553d1559d07d",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -72,7 +72,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:87cadb9b50859dde2b77c8b2afbbb978a29e8c80b2be27e63f5d4e2ff6cedb8d",
+    "artifact_sha256": "sha256:f728120f54b87aa0355060dd9b32295a14e54b1f81551e416439bc6c88113d12",
     "status": "PASSED"
   },
   "limitations": [
@@ -93,7 +93,7 @@
     "source_ir_sha256": "sha256:fb9ad378fb5b67772da20e1b22467e4923b17ad8a192dea121d3f5d8ca4ab931",
     "status": "PASSED",
     "target_ir_path": "target-semantic-ir.normalized.json",
-    "target_ir_sha256": "sha256:0d80d875a3e3be1e25dae984f6f03adaf31b46b4ec83ef62c98da3c2fb16377f"
+    "target_ir_sha256": "sha256:7d49495011d85d179926c6202b62c9c60aca0937554fc43ff18acbc36b96590f"
   },
   "semantic_ir_sha256": "sha256:fb9ad378fb5b67772da20e1b22467e4923b17ad8a192dea121d3f5d8ca4ab931",
   "source": {
@@ -156,10 +156,20 @@
     "role": "source",
     "status": "PASSED",
     "toolchain": {
+      "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+      "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
       "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-      "executable_sha256": null,
+      "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
       "language": "java",
-      "profile": [],
+      "profile": [
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-openjdk@21",
+        "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+        "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+        "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+        "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+        "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+      ],
       "version": "21.0.11"
     }
   },
@@ -167,7 +177,7 @@
   "target": {
     "language": "cpp",
     "path": "migrated.cpp",
-    "sha256": "sha256:33ddd5596f5db6103a0e46e6433cb2045bdebda1e3e39df1bbab9436f7454edb"
+    "sha256": "sha256:e116fef17eda17739a30548135250fbbb07dba3f271bdd875e7389ec4b3587d9"
   },
   "validation": {
     "case_count": 3,
@@ -222,6 +232,8 @@
     ],
     "status": "PASSED",
     "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
       "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
       "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
       "language": "cpp",

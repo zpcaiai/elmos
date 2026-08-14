@@ -255,7 +255,7 @@ _GO_HELPERS: dict[str, str] = {
 #: keep the emitted source compilable on the whole declared source range.
 _JAVA_HELPERS: dict[str, str] = {
     "checked_div": (
-        "    public static long elmosCheckedDiv(long left, long right) {\n"
+        "    private static long elmosCheckedDiv(long left, long right) {\n"
         "        if (right == 0L) {\n"
         f'            throw new ArithmeticException("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "        }\n"
@@ -266,7 +266,7 @@ _JAVA_HELPERS: dict[str, str] = {
         "    }"
     ),
     "checked_mod": (
-        "    public static long elmosCheckedMod(long left, long right) {\n"
+        "    private static long elmosCheckedMod(long left, long right) {\n"
         "        if (right == 0L) {\n"
         f'            throw new ArithmeticException("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "        }\n"
@@ -277,7 +277,7 @@ _JAVA_HELPERS: dict[str, str] = {
         "    }"
     ),
     "non_zero_double": (
-        "    public static double elmosNonZero(double value) {\n"
+        "    private static double elmosNonZero(double value) {\n"
         "        if (value == 0.0) {\n"
         f'            throw new ArithmeticException("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "        }\n"
@@ -323,7 +323,7 @@ _RUST_HELPERS: dict[str, str] = {
 #: so only the float divisor needs a guard.
 _SWIFT_HELPERS: dict[str, str] = {
     "non_zero_double": (
-        "func elmosNonZero(_ value: Double) -> Double {\n"
+        "private func elmosNonZero(_ value: Double) -> Double {\n"
         "    if value == 0.0 {\n"
         f'        fatalError("{_DIVIDE_BY_ZERO_MESSAGE}")\n'
         "    }\n"
@@ -335,11 +335,11 @@ _SWIFT_HELPERS: dict[str, str] = {
 
 #: Signed overflow and integer division by zero are both *undefined behaviour*
 #: in C and C++, so these two targets need every arm of R1 and R2 spelled out.
-#: The functions have external linkage on purpose: the harness compiles with
-#: -Wall -Wextra -Werror, and a `static` helper left unused would be an error.
+#: Helpers have internal linkage. They are emitted only when referenced, so
+#: -Wall -Wextra -Werror cannot turn an unused internal helper into a failure.
 _CPP_HELPERS: dict[str, str] = {
     "checked_add": (
-        "std::int64_t elmos_checked_add(std::int64_t left, std::int64_t right) {\n"
+        "static std::int64_t elmos_checked_add(std::int64_t left, std::int64_t right) {\n"
         "    std::int64_t result = 0;\n"
         "    if (__builtin_add_overflow(left, right, &result)) {\n"
         f'        throw std::overflow_error("{_OVERFLOW_MESSAGE}");\n'
@@ -348,7 +348,7 @@ _CPP_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_sub": (
-        "std::int64_t elmos_checked_sub(std::int64_t left, std::int64_t right) {\n"
+        "static std::int64_t elmos_checked_sub(std::int64_t left, std::int64_t right) {\n"
         "    std::int64_t result = 0;\n"
         "    if (__builtin_sub_overflow(left, right, &result)) {\n"
         f'        throw std::overflow_error("{_OVERFLOW_MESSAGE}");\n'
@@ -357,7 +357,7 @@ _CPP_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_mul": (
-        "std::int64_t elmos_checked_mul(std::int64_t left, std::int64_t right) {\n"
+        "static std::int64_t elmos_checked_mul(std::int64_t left, std::int64_t right) {\n"
         "    std::int64_t result = 0;\n"
         "    if (__builtin_mul_overflow(left, right, &result)) {\n"
         f'        throw std::overflow_error("{_OVERFLOW_MESSAGE}");\n'
@@ -366,7 +366,7 @@ _CPP_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_div": (
-        "std::int64_t elmos_checked_div(std::int64_t left, std::int64_t right) {\n"
+        "static std::int64_t elmos_checked_div(std::int64_t left, std::int64_t right) {\n"
         "    if (right == 0) {\n"
         f'        throw std::overflow_error("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "    }\n"
@@ -377,7 +377,7 @@ _CPP_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_mod": (
-        "std::int64_t elmos_checked_mod(std::int64_t left, std::int64_t right) {\n"
+        "static std::int64_t elmos_checked_mod(std::int64_t left, std::int64_t right) {\n"
         "    if (right == 0) {\n"
         f'        throw std::overflow_error("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "    }\n"
@@ -388,7 +388,7 @@ _CPP_HELPERS: dict[str, str] = {
         "}"
     ),
     "non_zero_double": (
-        "double elmos_non_zero(double value) {\n"
+        "static double elmos_non_zero(double value) {\n"
         "    if (value == 0.0) {\n"
         f'        throw std::overflow_error("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
         "    }\n"
@@ -403,7 +403,7 @@ _CPP_HELPERS: dict[str, str] = {
 #: mode that reaches the harness.
 _OBJC_HELPERS: dict[str, str] = {
     "checked_add": (
-        "long long ElmosCheckedAdd(long long left, long long right) {\n"
+        "static long long ElmosCheckedAdd(long long left, long long right) {\n"
         "    long long result = 0;\n"
         "    if (__builtin_add_overflow(left, right, &result)) {\n"
         f'        [NSException raise:@"ElmosArithmeticError" format:@"{_OVERFLOW_MESSAGE}"];\n'
@@ -412,7 +412,7 @@ _OBJC_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_sub": (
-        "long long ElmosCheckedSub(long long left, long long right) {\n"
+        "static long long ElmosCheckedSub(long long left, long long right) {\n"
         "    long long result = 0;\n"
         "    if (__builtin_sub_overflow(left, right, &result)) {\n"
         f'        [NSException raise:@"ElmosArithmeticError" format:@"{_OVERFLOW_MESSAGE}"];\n'
@@ -421,7 +421,7 @@ _OBJC_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_mul": (
-        "long long ElmosCheckedMul(long long left, long long right) {\n"
+        "static long long ElmosCheckedMul(long long left, long long right) {\n"
         "    long long result = 0;\n"
         "    if (__builtin_mul_overflow(left, right, &result)) {\n"
         f'        [NSException raise:@"ElmosArithmeticError" format:@"{_OVERFLOW_MESSAGE}"];\n'
@@ -430,7 +430,7 @@ _OBJC_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_div": (
-        "long long ElmosCheckedDiv(long long left, long long right) {\n"
+        "static long long ElmosCheckedDiv(long long left, long long right) {\n"
         "    if (right == 0) {\n"
         f'        [NSException raise:@"ElmosArithmeticError" format:@"{_DIVIDE_BY_ZERO_MESSAGE}"];\n'
         "    }\n"
@@ -441,7 +441,7 @@ _OBJC_HELPERS: dict[str, str] = {
         "}"
     ),
     "checked_mod": (
-        "long long ElmosCheckedMod(long long left, long long right) {\n"
+        "static long long ElmosCheckedMod(long long left, long long right) {\n"
         "    if (right == 0) {\n"
         f'        [NSException raise:@"ElmosArithmeticError" format:@"{_DIVIDE_BY_ZERO_MESSAGE}"];\n'
         "    }\n"
@@ -452,7 +452,7 @@ _OBJC_HELPERS: dict[str, str] = {
         "}"
     ),
     "non_zero_double": (
-        "double ElmosNonZero(double value) {\n"
+        "static double ElmosNonZero(double value) {\n"
         "    if (value == 0.0) {\n"
         f'        [NSException raise:@"ElmosArithmeticError" format:@"{_DIVIDE_BY_ZERO_MESSAGE}"];\n'
         "    }\n"

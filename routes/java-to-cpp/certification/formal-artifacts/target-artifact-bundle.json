@@ -4,10 +4,10 @@
   "semantic_profile": "typed-pure-function-v1",
   "target_artifacts": [
     {
-      "bytes": 468,
+      "bytes": 475,
       "corpus": "development",
       "path": "certification/artifacts/development/migrated.cpp",
-      "sha256": "sha256:33ddd5596f5db6103a0e46e6433cb2045bdebda1e3e39df1bbab9436f7454edb"
+      "sha256": "sha256:e116fef17eda17739a30548135250fbbb07dba3f271bdd875e7389ec4b3587d9"
     },
     {
       "bytes": 113,

@@ -1,14 +1,14 @@
 {
   "authority": "local-engineering-validation",
   "engine_source_manifest": {
-    "bytes": 11665,
+    "bytes": 11973,
     "path": "certification/formal-artifacts/engine-source-manifest.json",
-    "sha256": "sha256:7af3541cc67a1c47d9012e9c97a468232f5886555a04953ac98cc4f92bcc5534"
+    "sha256": "sha256:a3a3de05551380d8b2779bf7a7354faffe7c9f5e758600ff071ac28eb621f398"
   },
   "external_certification": "NOT_RUN",
   "independent_verification": "NOT_RUN",
   "platform": "macOS-26.6-arm64-arm-64bit",
-  "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:34:53) [Clang 19.1.7 ]",
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
   "route_engine_lock": {
     "path": "engines/polyglot-route-engine/uv.lock",
     "sha256": "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"

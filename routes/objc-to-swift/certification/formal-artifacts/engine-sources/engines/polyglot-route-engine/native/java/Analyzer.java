@@ -40,6 +40,15 @@ public final class Analyzer {
     private Analyzer() {}
 
     public static void main(String[] args) throws Exception {
+        try {
+            run(args);
+        } catch (CertifiedSubsetDomainException error) {
+            System.err.println(error.getMessage());
+            System.exit(2);
+        }
+    }
+
+    private static void run(String[] args) throws Exception {
         if (args.length < 2 || args.length > 3 || (args.length == 3 && !args[2].equals("--emitted-target"))) {
             throw new IllegalArgumentException(
                     "usage: Analyzer.java <source> <function|--inventory> [--emitted-target]");
@@ -450,7 +459,9 @@ public final class Analyzer {
             case "String" -> "string";
             case "float" -> throw new IllegalArgumentException(
                     "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
-            case "byte", "short", "int", "char" -> throw new IllegalArgumentException(
+            case "int" -> throw new CertifiedSubsetDomainException(
+                    CertifiedSubsetDomainError.INTEGER_WIDTH_INT);
+            case "byte", "short", "char" -> throw new IllegalArgumentException(
                     "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
             case "CharSequence" -> throw new IllegalArgumentException(
                     "JAVA_INTERFACE_STRING_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
@@ -461,6 +472,23 @@ public final class Analyzer {
                             "JAVA_BOXED_NULLABLE_TYPE_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
             default -> throw new IllegalArgumentException("JAVA_UNSUPPORTED_TYPE:" + sourceType);
         };
+    }
+
+    private enum CertifiedSubsetDomainError {
+        INTEGER_WIDTH_INT("JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"),
+        STRING_REFERENCE_EQUALITY("JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET");
+
+        private final String reason;
+
+        CertifiedSubsetDomainError(String reason) {
+            this.reason = reason;
+        }
+    }
+
+    private static final class CertifiedSubsetDomainException extends RuntimeException {
+        private CertifiedSubsetDomainException(CertifiedSubsetDomainError error) {
+            super(error.reason, null, false, false);
+        }
     }
 
     private static List<Map<String, Object>> statements(
@@ -550,8 +578,8 @@ public final class Analyzer {
             if ((symbol.equals("==") || symbol.equals("!="))
                     && (isStringExpression(binary.getLeftOperand(), environment)
                             || isStringExpression(binary.getRightOperand(), environment))) {
-                throw new IllegalArgumentException(
-                        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET");
+                throw new CertifiedSubsetDomainException(
+                        CertifiedSubsetDomainError.STRING_REFERENCE_EQUALITY);
             }
             return withSpan(
                     tree,

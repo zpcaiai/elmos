@@ -1,8 +1,8 @@
-"""Authoritative directed route sets for Batch 29.
+"""Authoritative directed route sets for the explicit nine-language matrix.
 
-The original six-language matrix remains a complete 6 x 5 set.  C++,
-Objective-C and Swift are deliberately introduced through an exact eight-route
-specialized set; their presence must never imply the unsupported 9 x 8 matrix.
+The original six-language matrix and exact-eight native profile retain their
+identities for provenance.  The completion set contains every remaining pair,
+so the union is the one explicit 9 x 8 matrix requested by product policy.
 """
 
 from __future__ import annotations
@@ -13,11 +13,15 @@ CORE_LANGUAGES = ("java", "csharp", "go", "rust", "python", "typescript")
 SPECIALIZED_LANGUAGES = ("cpp", "objc", "swift")
 SUPPORTED_ROUTE_LANGUAGES = (*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES)
 
-CORE_ROUTE_KEYS = tuple(
+COMPLETE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
-    for source in CORE_LANGUAGES
-    for target in CORE_LANGUAGES
+    for source in SUPPORTED_ROUTE_LANGUAGES
+    for target in SUPPORTED_ROUTE_LANGUAGES
     if source != target
+)
+
+CORE_ROUTE_KEYS = tuple(
+    f"{source}-to-{target}" for source in CORE_LANGUAGES for target in CORE_LANGUAGES if source != target
 )
 
 SPECIALIZED_ROUTE_KEYS = (
@@ -31,11 +35,29 @@ SPECIALIZED_ROUTE_KEYS = (
     "java-to-cpp",
 )
 
+COMPLETION_ROUTE_KEYS = tuple(
+    route_key for route_key in COMPLETE_ROUTE_KEYS if route_key not in {*CORE_ROUTE_KEYS, *SPECIALIZED_ROUTE_KEYS}
+)
+
 EXACT_ROUTE_SETS = {
     "legacy-complete-30": CORE_ROUTE_KEYS,
     "cpp-objc-swift-java-exact-8": SPECIALIZED_ROUTE_KEYS,
+    "nine-language-completion-34": COMPLETION_ROUTE_KEYS,
+    "nine-language-complete-72": COMPLETE_ROUTE_KEYS,
 }
-EVIDENCED_ROUTE_KEYS = (*CORE_ROUTE_KEYS, *SPECIALIZED_ROUTE_KEYS)
+EVIDENCED_ROUTE_KEYS = COMPLETE_ROUTE_KEYS
+
+
+def provenance_route_set(route_key: str) -> str:
+    """Return the disjoint provenance set owning one complete-matrix route."""
+
+    if route_key in CORE_ROUTE_KEYS:
+        return "legacy-complete-30"
+    if route_key in SPECIALIZED_ROUTE_KEYS:
+        return "cpp-objc-swift-java-exact-8"
+    if route_key in COMPLETION_ROUTE_KEYS:
+        return "nine-language-completion-34"
+    raise ValueError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
 
 
 def split_route_key(route_key: str) -> tuple[str, str]:

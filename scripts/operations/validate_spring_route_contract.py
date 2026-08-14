@@ -181,6 +181,9 @@ def parse_catalog() -> list[dict[str, object]]:
             source_family.group(1) in {"SPRING_BOOT", "SPRING_MVC"},
             f"CATALOG_ROUTE_SOURCE_FAMILY_INVALID:{route_id}:{source_family.group(1)}",
         )
+        exact_source = re.search(
+            r"SourceFamily\.[A-Z_]+\s*,\s*\"([^\"]*)\"\s*\)", body, re.DOTALL
+        )
 
         routes.append({
             "route_id": route_id,
@@ -188,6 +191,7 @@ def parse_catalog() -> list[dict[str, object]]:
             "label": head_strings[2],
             "source_boot_min": head_strings[3],
             "source_boot_max": head_strings[4],
+            "exact_source_version": exact_source.group(1) if exact_source else "",
             "source_family": source_family.group(1),
             "source_family_contract": {
                 "SPRING_BOOT": "spring-boot",
@@ -322,7 +326,6 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
         "boot-2.0-2.6-maven-to-boot-3.2.12-java-17",
         "boot-2.7-maven-to-boot-3.2.12-java-17",
         "boot-3.0-3.1-maven-to-boot-3.2.12-java-17",
-        MVC_EXECUTABLE_ROUTE_ID,
     }
     for route_id in sorted(required_not_run_edges):
         edge = next((route for route in routes if route["route_id"] == route_id), None)
@@ -333,6 +336,17 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             edge["verified_boot"] == "" and edge["verified_java"] == "",
             f"UNEXECUTED_EDGE_DECLARES_VERIFIED_TUPLE:{route_id}",
         )
+
+    mvc_executed = next(
+        (route for route in routes if route["route_id"] == MVC_EXECUTABLE_ROUTE_ID), None
+    )
+    require(mvc_executed is not None, f"REQUIRED_DIRECTED_EDGE_MISSING:{MVC_EXECUTABLE_ROUTE_ID}")
+    assert mvc_executed is not None
+    require(mvc_executed["evidence"] == "PASSED_LOCAL", "MVC_EXECUTED_EDGE_NOT_PASSED_LOCAL")
+    require(
+        mvc_executed["verified_boot"] == "5.3.39" and mvc_executed["verified_java"] == "11",
+        "MVC_EXECUTED_EDGE_VERIFIED_TUPLE_DRIFT",
+    )
 
     for route_id, ordered_steps in REQUIRED_BOOT_3_2_COMPOSITIONS.items():
         edge = next((route for route in routes if route["route_id"] == route_id), None)
@@ -407,10 +421,14 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
     )
     require(mvc["source_family"] == "SPRING_MVC", "MVC_SOURCE_FAMILY_DRIFT")
     require(
-        mvc["source_boot_min"] == "5.3.0" and mvc["source_boot_max"] == "5.4.0",
-        "MVC_SOURCE_RANGE_NOT_5_3_X",
+        mvc["source_boot_min"] == "5.3.39" and mvc["source_boot_max"] == "5.3.40",
+        "MVC_SOURCE_RANGE_NOT_EXACT_FIXTURE_WINDOW",
     )
+    require(mvc["exact_source_version"] == "5.3.39", "MVC_SOURCE_NOT_EXACT_5_3_39")
     require(mvc["source_java_versions"] == ["11"], "MVC_SOURCE_JAVA_NOT_PACK_BOUND")
+    require(mvc["evidence"] == "PASSED_LOCAL", "MVC_LOCAL_EXECUTION_EVIDENCE_NOT_RECORDED")
+    require(mvc["verified_boot"] == "5.3.39", "MVC_VERIFIED_SOURCE_VERSION_DRIFT")
+    require(mvc["verified_java"] == "11", "MVC_VERIFIED_SOURCE_JAVA_DRIFT")
     require(
         mvc["recipe_id"]
         == "io.elmos.openrewrite.SpringFramework5_3MvcToSpringBoot3_5_3Java21",

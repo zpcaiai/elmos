@@ -401,10 +401,12 @@ class ToolkitTests(unittest.TestCase):
             for field in (
                 "authorized_customer_repository",
                 "customer_holdout",
+                "customer_acceptance",
                 "rootless_runner",
                 "rootless_transformer",
                 "rootless_verifier",
                 "independent_review",
+                "external_certification",
             ):
                 certification["gate_results"][field] = "PASSED"
             certification_path.write_text(json.dumps(certification, indent=2) + "\n")

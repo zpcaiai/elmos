@@ -43,112 +43,130 @@
       "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
     },
     {
-      "bytes": 890,
+      "bytes": 1262,
       "path": "module-formal-input.json",
       "role": "module-formal-input",
-      "sha256": "sha256:3bc368a81e8e9b37896eb296b7a92e0787448f9172af5ef99766e4b21f68ca87"
+      "sha256": "sha256:a42f32910b72f7a70fb055a03225933ef2ce61c478fee1e3d2f576df7347037b"
+    },
+    {
+      "bytes": 2903,
+      "path": "source-module-inventory.json",
+      "role": "source-module-inventory",
+      "sha256": "sha256:68f2b4ca55c3c77cdbf6e57aa054c63093c9604274656890ab604420852ba86c"
+    },
+    {
+      "bytes": 3478,
+      "path": "target-module-inventory.json",
+      "role": "target-module-inventory",
+      "sha256": "sha256:36bc41eb9e6db4548e096bdc5375da8f7a8e33b096e30983d1560567d86a14c0"
+    },
+    {
+      "bytes": 10211,
+      "path": "whole-file-module-closure.json",
+      "role": "whole-file-module-closure",
+      "sha256": "sha256:97ab14e70547da64a3db6dac98c3e47f1e8fb3839c1f868b4749eeac43e2d826"
     },
     {
       "bytes": 1361,
       "path": "formal-function-000-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895"
+      "sha256": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5"
     },
     {
       "bytes": 1299,
       "path": "formal-function-000.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc"
+      "sha256": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2"
     },
     {
       "bytes": 2414,
       "path": "formal-function-000-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:6d9b9875555859df29b734c13c47b63f4fa8ba314da5f04c9083774533a1acf2"
+      "sha256": "sha256:0b48c04e473c0c655072b4623ca08ad6e1ac1caad9c02b29acec53c1efe5ca48"
     },
     {
       "bytes": 1818,
       "path": "formal-function-001-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb"
+      "sha256": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da"
     },
     {
       "bytes": 2057,
       "path": "formal-function-001.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7"
+      "sha256": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a"
     },
     {
       "bytes": 2423,
       "path": "formal-function-001-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:3f91aa9646488f946d8c07adfd2c2601e8e8cc00c7721b6f4a3adb88e30dc690"
+      "sha256": "sha256:aceb7cbb4bf82f940206da6ec0febaf090b3258561121dc5726b3fa6341d50aa"
     },
     {
       "bytes": 2217,
       "path": "formal-function-002-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a"
+      "sha256": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de"
     },
     {
       "bytes": 1933,
       "path": "formal-function-002.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163"
+      "sha256": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d"
     },
     {
       "bytes": 2450,
       "path": "formal-function-002-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:95803bfcbbc360bab0aa448ca5b0987983e357bd220145a4a9d5f36efc035580"
+      "sha256": "sha256:db64a30234d07e9474f7d832945f979a591938b4288ad7e552c0d54cd96dab07"
     },
     {
       "bytes": 2223,
       "path": "formal-function-003-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2"
+      "sha256": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31"
     },
     {
       "bytes": 2615,
       "path": "formal-function-003.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e"
+      "sha256": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8"
     },
     {
       "bytes": 2734,
       "path": "formal-function-003-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:11cdcc9fd4e64c68c232fad2e29f168c7385f15a642092e4debc8b5641fba3c0"
+      "sha256": "sha256:b454f7d039effe464029708c1964423502777f25f53ff6f0955483b53b9ad8d0"
     },
     {
       "bytes": 1377,
       "path": "formal-function-004-input.json",
       "role": "formal-function-input",
-      "sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471"
+      "sha256": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304"
     },
     {
       "bytes": 1813,
       "path": "formal-function-004.smt2",
       "role": "formal-function-smt2",
-      "sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163"
+      "sha256": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae"
     },
     {
       "bytes": 2420,
       "path": "formal-function-004-result.json",
       "role": "formal-function-result",
-      "sha256": "sha256:48f44b0a72884b17c3acf49598e708f0cac4aeb37398dbb477f1f3e5dfc64dfb"
+      "sha256": "sha256:f6cbe8e24b248e6fe3aaae31b12ad50fabe53b7060969f00fcec89ff24ef8e5b"
     },
     {
-      "bytes": 8228,
+      "bytes": 8433,
       "path": "source-module-validation.json",
       "role": "source-module-validation",
-      "sha256": "sha256:3a2532fa10d32d6797915a323b75adc6758769df7f45401885889c79fdd867b9"
+      "sha256": "sha256:a13ced4cd2462d515b3fae9caafe512e2a9ee531f15c5ee1541413fe87131e52"
     },
     {
-      "bytes": 5623,
+      "bytes": 9228,
       "path": "target-module-validation.json",
       "role": "target-module-validation",
-      "sha256": "sha256:fb0624e356e0fc6113e6fb2651085078fc38810b78ba483895940baa8b8550d0"
+      "sha256": "sha256:f13fb6fb0fa1c088a79734695c61bfa7d5491b8c576f32912a614c123a57cb0f"
     }
   ],
   "certification_status": "NOT_CERTIFIED",
@@ -160,10 +178,14 @@
     "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
     "passed_function_count": 5,
     "proof_strength": "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS",
-    "rule": "per-function-denotation-plus-call-graph-closure",
+    "rule": "per-function-denotation-plus-exact-emitter-helper-closure",
     "source_compiler_runtime_soundness": "NOT_RUN",
+    "source_user_call_graph": "EMPTY_AND_CLOSED",
     "status": "PASSED",
-    "target_compiler_runtime_soundness": "NOT_RUN"
+    "target_call_graph": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+    "target_compiler_runtime_soundness": "NOT_RUN",
+    "target_profile_to_emitted_call_graph_scope": "profile-functions-to-emitted-callees",
+    "target_profile_to_emitted_call_graph_status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
   },
   "external_verification_status": "NOT_RUN",
   "functions": [
@@ -518,13 +540,13 @@
           },
           "formal_input": {
             "path": "formal-function-000-input.json",
-            "sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895"
+            "sha256": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5"
           },
-          "formal_input_digest": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895",
+          "formal_input_digest": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5",
           "formal_input_path": "formal-function-000-input.json",
-          "formal_input_sha256": "sha256:5f035c43a00c6d6e5db10cb73db8cf6bca50dd8a6c85ef4c6fea765d40357895",
+          "formal_input_sha256": "sha256:2ad1409b679891b524e506435391870fd974a0edb71a6142ac73ce94884fefb5",
           "formal_result_path": "formal-function-000-result.json",
-          "formal_result_sha256": "sha256:6d9b9875555859df29b734c13c47b63f4fa8ba314da5f04c9083774533a1acf2",
+          "formal_result_sha256": "sha256:0b48c04e473c0c655072b4623ca08ad6e1ac1caad9c02b29acec53c1efe5ca48",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:6f2a21b2edd2a1d48fcbcc6bd4d271a2077f4d2a6f839a5db112f8a84fface11",
@@ -563,11 +585,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-000.smt2",
-            "sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc"
+            "sha256": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2"
           },
-          "solver_input_digest": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc",
+          "solver_input_digest": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2",
           "solver_input_path": "formal-function-000.smt2",
-          "solver_input_sha256": "sha256:7952531036686924f86d280f93b00da8b816847c1c3a35b1bc178af93e609fbc",
+          "solver_input_sha256": "sha256:ee2b592cb0df7da757dd63570862fb5b242d579ce9f8c92d985ef7def48caaf2",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "both",
           "version": "4.16.0"
@@ -1075,13 +1097,13 @@
           },
           "formal_input": {
             "path": "formal-function-001-input.json",
-            "sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb"
+            "sha256": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da"
           },
-          "formal_input_digest": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb",
+          "formal_input_digest": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da",
           "formal_input_path": "formal-function-001-input.json",
-          "formal_input_sha256": "sha256:37ab6569e8801af25301363f1c212cf8115004a511517cb1560b95ee878f8feb",
+          "formal_input_sha256": "sha256:e34bf6cf0312a11a38934a1084800d1f95ba81b89042adbd3cf968be0e2d41da",
           "formal_result_path": "formal-function-001-result.json",
-          "formal_result_sha256": "sha256:3f91aa9646488f946d8c07adfd2c2601e8e8cc00c7721b6f4a3adb88e30dc690",
+          "formal_result_sha256": "sha256:aceb7cbb4bf82f940206da6ec0febaf090b3258561121dc5726b3fa6341d50aa",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:0ea3506a291ba9e34d6410fcee148d1fe945c5f185c3064e0b6f71d36816be78",
@@ -1120,11 +1142,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-001.smt2",
-            "sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7"
+            "sha256": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a"
           },
-          "solver_input_digest": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7",
+          "solver_input_digest": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a",
           "solver_input_path": "formal-function-001.smt2",
-          "solver_input_sha256": "sha256:84acbb7b8b43a4e26ed66352587f6637c2e3360b3915206bb26d9f8f2e96cfa7",
+          "solver_input_sha256": "sha256:a7657ab86c3e603c3c0594a51cd67db6fc7c5a04875d15c645e7e8428ff2a66a",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "calculate",
           "version": "4.16.0"
@@ -1763,13 +1785,13 @@
           },
           "formal_input": {
             "path": "formal-function-002-input.json",
-            "sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a"
+            "sha256": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de"
           },
-          "formal_input_digest": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a",
+          "formal_input_digest": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de",
           "formal_input_path": "formal-function-002-input.json",
-          "formal_input_sha256": "sha256:845f4476c5eee8fb354bb012b31d7b36789f32e95e25dc15a26f0118df9df44a",
+          "formal_input_sha256": "sha256:2656a08540703ae8f359d74e33cf7e4c82f101de6d1583dfbdb415e014f5c3de",
           "formal_result_path": "formal-function-002-result.json",
-          "formal_result_sha256": "sha256:95803bfcbbc360bab0aa448ca5b0987983e357bd220145a4a9d5f36efc035580",
+          "formal_result_sha256": "sha256:db64a30234d07e9474f7d832945f979a591938b4288ad7e552c0d54cd96dab07",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:2a9f5f06e16464ef3df8aa26bdaa21bccd3d4930f9a645385368958438970911",
@@ -1808,11 +1830,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-002.smt2",
-            "sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163"
+            "sha256": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d"
           },
-          "solver_input_digest": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163",
+          "solver_input_digest": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d",
           "solver_input_path": "formal-function-002.smt2",
-          "solver_input_sha256": "sha256:2c3acbbb913d4a5f03c8cbf49c2efa6d823d66e4b24e33e2f954d8e891540163",
+          "solver_input_sha256": "sha256:8977b76b21235427e9b75e2eb0362eda094c7ff88bd257a65ab39ed2c959d72d",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clamp",
           "version": "4.16.0"
@@ -2461,13 +2483,13 @@
           },
           "formal_input": {
             "path": "formal-function-003-input.json",
-            "sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2"
+            "sha256": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31"
           },
-          "formal_input_digest": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2",
+          "formal_input_digest": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31",
           "formal_input_path": "formal-function-003-input.json",
-          "formal_input_sha256": "sha256:8ab5e94b84595b7a0e5672447770cfa56332528b70e1d3a5eeded3f02220d2c2",
+          "formal_input_sha256": "sha256:264d704f47ad9556603611e40492ae4dad769e70717aa8a9b4dd24851fc1ec31",
           "formal_result_path": "formal-function-003-result.json",
-          "formal_result_sha256": "sha256:11cdcc9fd4e64c68c232fad2e29f168c7385f15a642092e4debc8b5641fba3c0",
+          "formal_result_sha256": "sha256:b454f7d039effe464029708c1964423502777f25f53ff6f0955483b53b9ad8d0",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:d11ca1a62c16815bca6c75cddb722cb973d11f45830d1513b759a723450808f8",
@@ -2506,11 +2528,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-003.smt2",
-            "sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e"
+            "sha256": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8"
           },
-          "solver_input_digest": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e",
+          "solver_input_digest": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8",
           "solver_input_path": "formal-function-003.smt2",
-          "solver_input_sha256": "sha256:f4faadeefb844911f88b1938c9bf75f623df30df5c2f19f67c227ae681bb536e",
+          "solver_input_sha256": "sha256:9066b0a3f1bed1218be01484f39fd34759742a2f2b931fc580d1f937112b59a8",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "clampNumber",
           "version": "4.16.0"
@@ -2896,13 +2918,13 @@
           },
           "formal_input": {
             "path": "formal-function-004-input.json",
-            "sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471"
+            "sha256": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304"
           },
-          "formal_input_digest": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471",
+          "formal_input_digest": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304",
           "formal_input_path": "formal-function-004-input.json",
-          "formal_input_sha256": "sha256:828d30b7e3c6162fe7fe3a61f12e990f90959a09f689aa6cf780f1bcf81a7471",
+          "formal_input_sha256": "sha256:a65e579d5033b73740ace8bd928fb21bc5af4aaa52aed287944a790e706d5304",
           "formal_result_path": "formal-function-004-result.json",
-          "formal_result_sha256": "sha256:48f44b0a72884b17c3acf49598e708f0cac4aeb37398dbb477f1f3e5dfc64dfb",
+          "formal_result_sha256": "sha256:f6cbe8e24b248e6fe3aaae31b12ad50fabe53b7060969f00fcec89ff24ef8e5b",
           "independent_encodings": {
             "input_alignment": "positional-substitution-after-independent-encoding",
             "source_denotation_sha256": "sha256:a421c8d48182015667427029ceb5ec02e8a49f68e6ff3a61d6b70c40290fd7b5",
@@ -2941,11 +2963,11 @@
           "solver": "z3",
           "solver_input": {
             "path": "formal-function-004.smt2",
-            "sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163"
+            "sha256": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae"
           },
-          "solver_input_digest": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163",
+          "solver_input_digest": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae",
           "solver_input_path": "formal-function-004.smt2",
-          "solver_input_sha256": "sha256:c0a8b41c60c183ad1daf5caaa397a62f918989169ffa48b8a631190c39c9c163",
+          "solver_input_sha256": "sha256:6b4ba61699facf04011957a26f5618dc7f7e2fdf6de838485a9f05137d6475ae",
           "status": "PROVED_UNDER_ASSUMPTIONS",
           "symbol": "difference",
           "version": "4.16.0"
@@ -2980,14 +3002,47 @@
   "kind": "typed-pure-module-equivalence",
   "local_verification_status": "PASSED",
   "module_contract": {
-    "exact_signature_set": true,
-    "exact_symbol_set": true,
+    "exact_generated_helper_symbol_set": true,
+    "exact_profile_signature_set": true,
+    "exact_profile_symbol_set": true,
     "independence": {
-      "call_graph_closure": "EMPTY_AND_CLOSED",
-      "call_graph_edges": [],
-      "function_calls": "UNSUPPORTED",
+      "function_calls": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
       "mutable_state": "UNSUPPORTED",
-      "shared_state": "ABSENT_BY_IR_CONSTRUCTION"
+      "shared_state": "ABSENT_BY_IR_CONSTRUCTION",
+      "source_user_call_graph_closure": "EMPTY_AND_CLOSED",
+      "source_user_call_graph_edges": [],
+      "target_builtin_normalizations": [
+        "java.integer.+.call:Math.addExact",
+        "java.integer.-.call:Math.subtractExact"
+      ],
+      "target_call_graph": {
+        "edges": [
+          {
+            "callee": "Math.addExact",
+            "callee_kind": "pinned-target-builtin",
+            "caller": "calculate",
+            "canonical_domain": "integer",
+            "canonical_operator": "+",
+            "normalization_rule": "java.integer.+.call:Math.addExact"
+          },
+          {
+            "callee": "Math.subtractExact",
+            "callee_kind": "pinned-target-builtin",
+            "caller": "difference",
+            "canonical_domain": "integer",
+            "canonical_operator": "-",
+            "normalization_rule": "java.integer.-.call:Math.subtractExact"
+          }
+        ],
+        "helper_internal_calls": {
+          "binding": "verified_generated_helpers-exact-bytes-and-digests",
+          "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED"
+        },
+        "scope": "profile-functions-to-emitted-callees",
+        "status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+      },
+      "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+      "target_generated_helper_symbols": []
     },
     "manifest_symbols": [
       "both",
@@ -2996,20 +3051,146 @@
       "clampNumber",
       "difference"
     ],
-    "source_symbols": [
+    "source_profile_symbols": [
       "both",
       "calculate",
       "clamp",
       "clampNumber",
       "difference"
     ],
-    "target_symbols": [
+    "target_helper_symbols": [],
+    "target_profile_symbols": [
       "both",
       "calculate",
       "clamp",
       "clampNumber",
       "difference"
-    ]
+    ],
+    "verified_language_prelude": {
+      "source": {
+        "directives": [
+          {
+            "kind": "include",
+            "order": 0,
+            "sha256": "sha256:fe556a0d2f95219e790635abe6863f154b3655e873e9fba231881c1f76103a6c",
+            "source_span": {
+              "end_byte": 18,
+              "file": "equivalence_module.cpp",
+              "start_byte": 0
+            },
+            "value": "<cstdint>"
+          }
+        ],
+        "language": "cpp",
+        "role": "source",
+        "status": "EXACT_AND_CLOSED"
+      },
+      "target": {
+        "directives": [],
+        "language": "java",
+        "role": "target",
+        "status": "EXACT_AND_CLOSED"
+      }
+    },
+    "verified_language_wrapper": {
+      "source": {
+        "file": "equivalence_module.cpp",
+        "language": "cpp",
+        "role": "source",
+        "status": "NOT_APPLICABLE"
+      },
+      "target": {
+        "analyzable": false,
+        "declaration_kind": "top-level-class-wrapper",
+        "file": "Migrated.java",
+        "language": "java",
+        "member_span_status": "ALL_CONTAINED",
+        "member_subjects": [
+          {
+            "declaration_kind": "method",
+            "name": "both",
+            "occurrence": 1,
+            "qualified_name": "Migrated.both",
+            "source_span": {
+              "end_byte": 129,
+              "file": "Migrated.java",
+              "start_byte": 34
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "calculate",
+            "occurrence": 1,
+            "qualified_name": "Migrated.calculate",
+            "source_span": {
+              "end_byte": 303,
+              "file": "Migrated.java",
+              "start_byte": 135
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "clamp",
+            "occurrence": 1,
+            "qualified_name": "Migrated.clamp",
+            "source_span": {
+              "end_byte": 545,
+              "file": "Migrated.java",
+              "start_byte": 309
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "clampNumber",
+            "occurrence": 1,
+            "qualified_name": "Migrated.clampNumber",
+            "source_span": {
+              "end_byte": 801,
+              "file": "Migrated.java",
+              "start_byte": 551
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "difference",
+            "occurrence": 1,
+            "qualified_name": "Migrated.difference",
+            "source_span": {
+              "end_byte": 915,
+              "file": "Migrated.java",
+              "start_byte": 807
+            }
+          }
+        ],
+        "name": "Migrated",
+        "occurrence": 1,
+        "qualified_name": "Migrated",
+        "role": "target",
+        "signature": {
+          "abstract": false,
+          "annotations": [],
+          "extends": "",
+          "final": true,
+          "implements": [],
+          "modifiers": [
+            "final",
+            "public"
+          ],
+          "permits": [],
+          "storage": "top-level",
+          "type_kind": "CLASS",
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 917,
+          "file": "Migrated.java",
+          "start_byte": 0
+        },
+        "status": "EXACT_AND_CLOSED"
+      }
+    },
+    "whole_file_closure_sha256": "sha256:97ab14e70547da64a3db6dac98c3e47f1e8fb3839c1f868b4749eeac43e2d826"
   },
   "module_input": {
     "case_manifest_sha256": "sha256:765081f57632fdff2499118ddeb6c12023e942c433675ac3d5e9b9864720a7ed",
@@ -3022,14 +3203,19 @@
     },
     "source_artifact_byte_count": 742,
     "source_artifact_sha256": "sha256:48f3c2b3eec15f912b4bfff382347c7dabb3347f15711f9dd1f60b10a27eb576",
+    "source_inventory_byte_count": 2903,
+    "source_inventory_sha256": "sha256:68f2b4ca55c3c77cdbf6e57aa054c63093c9604274656890ab604420852ba86c",
     "source_logical_file": "equivalence_module.cpp",
     "source_semantic_ir_sha256": "sha256:939a6c00741e82fe3c773e6adc8b5ebf8de49aa0f923ca3a5ffbd55ffc0a3071",
     "target_artifact_byte_count": 918,
     "target_artifact_sha256": "sha256:d56ee27534c8352a5af9852d044bc1bead0c6198a30128666a1329638ae598be",
+    "target_inventory_byte_count": 3478,
+    "target_inventory_sha256": "sha256:36bc41eb9e6db4548e096bdc5375da8f7a8e33b096e30983d1560567d86a14c0",
     "target_logical_file": "Migrated.java",
-    "target_semantic_ir_sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c"
+    "target_semantic_ir_sha256": "sha256:f4f911d92efca63e445e06d66e42223aadbd018063a37e17c3d17192e9e4489c",
+    "whole_file_closure_sha256": "sha256:97ab14e70547da64a3db6dac98c3e47f1e8fb3839c1f868b4749eeac43e2d826"
   },
-  "module_input_sha256": "sha256:3bc368a81e8e9b37896eb296b7a92e0787448f9172af5ef99766e4b21f68ca87",
+  "module_input_sha256": "sha256:a42f32910b72f7a70fb055a03225933ef2ce61c478fee1e3d2f576df7347037b",
   "profile": "typed-pure-module-v1",
   "route": {
     "route_key": "cpp-to-java",
@@ -3101,6 +3287,8 @@
       "role": "source",
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
         "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
         "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
         "language": "cpp",
@@ -3177,6 +3365,8 @@
       "role": "source",
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
         "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
         "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
         "language": "cpp",
@@ -3260,6 +3450,8 @@
       "role": "source",
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
         "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
         "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
         "language": "cpp",
@@ -3343,6 +3535,8 @@
       "role": "source",
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
         "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
         "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
         "language": "cpp",
@@ -3419,6 +3613,8 @@
       "role": "source",
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": null,
+        "auxiliary_sha256": null,
         "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
         "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
         "language": "cpp",
@@ -3491,10 +3687,20 @@
       ],
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+        "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
         "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-        "executable_sha256": null,
+        "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
         "language": "java",
-        "profile": [],
+        "profile": [
+          "platform=Darwin/arm64",
+          "distribution=Homebrew-openjdk@21",
+          "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+          "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+          "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+          "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+          "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+        ],
         "version": "21.0.11"
       }
     },
@@ -3554,10 +3760,20 @@
       ],
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+        "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
         "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-        "executable_sha256": null,
+        "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
         "language": "java",
-        "profile": [],
+        "profile": [
+          "platform=Darwin/arm64",
+          "distribution=Homebrew-openjdk@21",
+          "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+          "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+          "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+          "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+          "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+        ],
         "version": "21.0.11"
       }
     },
@@ -3624,10 +3840,20 @@
       ],
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+        "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
         "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-        "executable_sha256": null,
+        "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
         "language": "java",
-        "profile": [],
+        "profile": [
+          "platform=Darwin/arm64",
+          "distribution=Homebrew-openjdk@21",
+          "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+          "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+          "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+          "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+          "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+        ],
         "version": "21.0.11"
       }
     },
@@ -3694,10 +3920,20 @@
       ],
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+        "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
         "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-        "executable_sha256": null,
+        "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
         "language": "java",
-        "profile": [],
+        "profile": [
+          "platform=Darwin/arm64",
+          "distribution=Homebrew-openjdk@21",
+          "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+          "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+          "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+          "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+          "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+        ],
         "version": "21.0.11"
       }
     },
@@ -3757,10 +3993,20 @@
       ],
       "status": "PASSED",
       "toolchain": {
+        "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+        "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
         "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-        "executable_sha256": null,
+        "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
         "language": "java",
-        "profile": [],
+        "profile": [
+          "platform=Darwin/arm64",
+          "distribution=Homebrew-openjdk@21",
+          "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+          "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+          "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+          "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+          "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+        ],
         "version": "21.0.11"
       }
     }
@@ -3772,5 +4018,716 @@
     "async-and-concurrency",
     "io-network-database-and-framework-effects",
     "reflection-dynamic-loading-and-native-interop"
-  ]
+  ],
+  "whole_file_closure": {
+    "blocked_declarations": {
+      "source": [],
+      "target": []
+    },
+    "kind": "elmos.typed-pure-module-whole-file-closure",
+    "manifest_symbols": [
+      "both",
+      "calculate",
+      "clamp",
+      "clampNumber",
+      "difference"
+    ],
+    "profile": "typed-pure-module-v1",
+    "route": {
+      "source_language": "cpp",
+      "target_language": "java"
+    },
+    "schema_version": "1.0.0",
+    "source_inventory_bytes": 2903,
+    "source_inventory_sha256": "sha256:68f2b4ca55c3c77cdbf6e57aa054c63093c9604274656890ab604420852ba86c",
+    "source_profile_symbols": [
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "boolean"
+            },
+            {
+              "name": "right",
+              "type": "boolean"
+            }
+          ],
+          "return_type": "boolean"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "both",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "bool"
+            },
+            {
+              "name": "right",
+              "source_type": "bool"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "bool (bool, bool)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 741,
+          "file": "equivalence_module.cpp",
+          "start_byte": 679
+        },
+        "symbol": "both"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "type": "integer"
+            },
+            {
+              "name": "tax",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "calculate",
+        "raw_parameter_names": [
+          "subtotal",
+          "tax"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "source_type": "std::int64_t"
+            },
+            {
+              "name": "tax",
+              "source_type": "std::int64_t"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "std::int64_t (std::int64_t, std::int64_t)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 162,
+          "file": "equivalence_module.cpp",
+          "start_byte": 20
+        },
+        "symbol": "calculate"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer"
+            },
+            {
+              "name": "minimum",
+              "type": "integer"
+            },
+            {
+              "name": "maximum",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "clamp",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "std::int64_t"
+            },
+            {
+              "name": "minimum",
+              "source_type": "std::int64_t"
+            },
+            {
+              "name": "maximum",
+              "source_type": "std::int64_t"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "std::int64_t (std::int64_t, std::int64_t, std::int64_t)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 382,
+          "file": "equivalence_module.cpp",
+          "start_byte": 164
+        },
+        "symbol": "clamp"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number"
+            },
+            {
+              "name": "minimum",
+              "type": "number"
+            },
+            {
+              "name": "maximum",
+              "type": "number"
+            }
+          ],
+          "return_type": "number"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "clampNumber",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "double"
+            },
+            {
+              "name": "minimum",
+              "source_type": "double"
+            },
+            {
+              "name": "maximum",
+              "source_type": "double"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "double (double, double, double)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 677,
+          "file": "equivalence_module.cpp",
+          "start_byte": 477
+        },
+        "symbol": "clampNumber"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "FunctionDecl",
+        "occurrence": 1,
+        "qualified_name": "difference",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "std::int64_t"
+            },
+            {
+              "name": "right",
+              "source_type": "std::int64_t"
+            }
+          ],
+          "semantic_markers": [],
+          "source_type": "std::int64_t (std::int64_t, std::int64_t)",
+          "storage": "none",
+          "visibility": "external"
+        },
+        "source_span": {
+          "end_byte": 475,
+          "file": "equivalence_module.cpp",
+          "start_byte": 384
+        },
+        "symbol": "difference"
+      }
+    ],
+    "source_user_call_graph": {
+      "edges": [],
+      "status": "EMPTY_AND_CLOSED"
+    },
+    "status": "PASSED",
+    "target_builtin_normalizations": [
+      "java.integer.+.call:Math.addExact",
+      "java.integer.-.call:Math.subtractExact"
+    ],
+    "target_call_graph": {
+      "edges": [
+        {
+          "callee": "Math.addExact",
+          "callee_kind": "pinned-target-builtin",
+          "caller": "calculate",
+          "canonical_domain": "integer",
+          "canonical_operator": "+",
+          "normalization_rule": "java.integer.+.call:Math.addExact"
+        },
+        {
+          "callee": "Math.subtractExact",
+          "callee_kind": "pinned-target-builtin",
+          "caller": "difference",
+          "canonical_domain": "integer",
+          "canonical_operator": "-",
+          "normalization_rule": "java.integer.-.call:Math.subtractExact"
+        }
+      ],
+      "helper_internal_calls": {
+        "binding": "verified_generated_helpers-exact-bytes-and-digests",
+        "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED"
+      },
+      "scope": "profile-functions-to-emitted-callees",
+      "status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+    },
+    "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+    "target_helper_symbols": [],
+    "target_inventory_bytes": 3478,
+    "target_inventory_sha256": "sha256:36bc41eb9e6db4548e096bdc5375da8f7a8e33b096e30983d1560567d86a14c0",
+    "target_profile_symbols": [
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "boolean"
+            },
+            {
+              "name": "right",
+              "type": "boolean"
+            }
+          ],
+          "return_type": "boolean"
+        },
+        "declaration_kind": "method",
+        "occurrence": 1,
+        "qualified_name": "Migrated.both",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "annotations": [],
+          "default_value": false,
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "boolean"
+            },
+            {
+              "name": "right",
+              "source_type": "boolean"
+            }
+          ],
+          "receiver_parameter": false,
+          "source_return_type": "boolean",
+          "static": true,
+          "storage": "static",
+          "throws": [],
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 129,
+          "file": "Migrated.java",
+          "start_byte": 34
+        },
+        "symbol": "both"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "subtotal",
+              "type": "integer"
+            },
+            {
+              "name": "tax",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "method",
+        "occurrence": 1,
+        "qualified_name": "Migrated.calculate",
+        "raw_parameter_names": [
+          "subtotal",
+          "tax"
+        ],
+        "raw_signature": {
+          "annotations": [],
+          "default_value": false,
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "subtotal",
+              "source_type": "long"
+            },
+            {
+              "name": "tax",
+              "source_type": "long"
+            }
+          ],
+          "receiver_parameter": false,
+          "source_return_type": "long",
+          "static": true,
+          "storage": "static",
+          "throws": [],
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 303,
+          "file": "Migrated.java",
+          "start_byte": 135
+        },
+        "symbol": "calculate"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "integer"
+            },
+            {
+              "name": "minimum",
+              "type": "integer"
+            },
+            {
+              "name": "maximum",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "method",
+        "occurrence": 1,
+        "qualified_name": "Migrated.clamp",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "annotations": [],
+          "default_value": false,
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "long"
+            },
+            {
+              "name": "minimum",
+              "source_type": "long"
+            },
+            {
+              "name": "maximum",
+              "source_type": "long"
+            }
+          ],
+          "receiver_parameter": false,
+          "source_return_type": "long",
+          "static": true,
+          "storage": "static",
+          "throws": [],
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 545,
+          "file": "Migrated.java",
+          "start_byte": 309
+        },
+        "symbol": "clamp"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "value",
+              "type": "number"
+            },
+            {
+              "name": "minimum",
+              "type": "number"
+            },
+            {
+              "name": "maximum",
+              "type": "number"
+            }
+          ],
+          "return_type": "number"
+        },
+        "declaration_kind": "method",
+        "occurrence": 1,
+        "qualified_name": "Migrated.clampNumber",
+        "raw_parameter_names": [
+          "value",
+          "minimum",
+          "maximum"
+        ],
+        "raw_signature": {
+          "annotations": [],
+          "default_value": false,
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "value",
+              "source_type": "double"
+            },
+            {
+              "name": "minimum",
+              "source_type": "double"
+            },
+            {
+              "name": "maximum",
+              "source_type": "double"
+            }
+          ],
+          "receiver_parameter": false,
+          "source_return_type": "double",
+          "static": true,
+          "storage": "static",
+          "throws": [],
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 801,
+          "file": "Migrated.java",
+          "start_byte": 551
+        },
+        "symbol": "clampNumber"
+      },
+      {
+        "canonical_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "declaration_kind": "method",
+        "occurrence": 1,
+        "qualified_name": "Migrated.difference",
+        "raw_parameter_names": [
+          "left",
+          "right"
+        ],
+        "raw_signature": {
+          "annotations": [],
+          "default_value": false,
+          "modifiers": [
+            "public",
+            "static"
+          ],
+          "parameters": [
+            {
+              "name": "left",
+              "source_type": "long"
+            },
+            {
+              "name": "right",
+              "source_type": "long"
+            }
+          ],
+          "receiver_parameter": false,
+          "source_return_type": "long",
+          "static": true,
+          "storage": "static",
+          "throws": [],
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 915,
+          "file": "Migrated.java",
+          "start_byte": 807
+        },
+        "symbol": "difference"
+      }
+    ],
+    "verified_generated_helpers": [],
+    "verified_language_prelude": {
+      "source": {
+        "directives": [
+          {
+            "kind": "include",
+            "order": 0,
+            "sha256": "sha256:fe556a0d2f95219e790635abe6863f154b3655e873e9fba231881c1f76103a6c",
+            "source_span": {
+              "end_byte": 18,
+              "file": "equivalence_module.cpp",
+              "start_byte": 0
+            },
+            "value": "<cstdint>"
+          }
+        ],
+        "language": "cpp",
+        "role": "source",
+        "status": "EXACT_AND_CLOSED"
+      },
+      "target": {
+        "directives": [],
+        "language": "java",
+        "role": "target",
+        "status": "EXACT_AND_CLOSED"
+      }
+    },
+    "verified_language_wrapper": {
+      "source": {
+        "file": "equivalence_module.cpp",
+        "language": "cpp",
+        "role": "source",
+        "status": "NOT_APPLICABLE"
+      },
+      "target": {
+        "analyzable": false,
+        "declaration_kind": "top-level-class-wrapper",
+        "file": "Migrated.java",
+        "language": "java",
+        "member_span_status": "ALL_CONTAINED",
+        "member_subjects": [
+          {
+            "declaration_kind": "method",
+            "name": "both",
+            "occurrence": 1,
+            "qualified_name": "Migrated.both",
+            "source_span": {
+              "end_byte": 129,
+              "file": "Migrated.java",
+              "start_byte": 34
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "calculate",
+            "occurrence": 1,
+            "qualified_name": "Migrated.calculate",
+            "source_span": {
+              "end_byte": 303,
+              "file": "Migrated.java",
+              "start_byte": 135
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "clamp",
+            "occurrence": 1,
+            "qualified_name": "Migrated.clamp",
+            "source_span": {
+              "end_byte": 545,
+              "file": "Migrated.java",
+              "start_byte": 309
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "clampNumber",
+            "occurrence": 1,
+            "qualified_name": "Migrated.clampNumber",
+            "source_span": {
+              "end_byte": 801,
+              "file": "Migrated.java",
+              "start_byte": 551
+            }
+          },
+          {
+            "declaration_kind": "method",
+            "name": "difference",
+            "occurrence": 1,
+            "qualified_name": "Migrated.difference",
+            "source_span": {
+              "end_byte": 915,
+              "file": "Migrated.java",
+              "start_byte": 807
+            }
+          }
+        ],
+        "name": "Migrated",
+        "occurrence": 1,
+        "qualified_name": "Migrated",
+        "role": "target",
+        "signature": {
+          "abstract": false,
+          "annotations": [],
+          "extends": "",
+          "final": true,
+          "implements": [],
+          "modifiers": [
+            "final",
+            "public"
+          ],
+          "permits": [],
+          "storage": "top-level",
+          "type_kind": "CLASS",
+          "type_parameters": [],
+          "visibility": "public"
+        },
+        "source_span": {
+          "end_byte": 917,
+          "file": "Migrated.java",
+          "start_byte": 0
+        },
+        "status": "EXACT_AND_CLOSED"
+      }
+    }
+  }
 }

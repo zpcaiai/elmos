@@ -65,77 +65,77 @@
     {
       "bytes": 1365,
       "path": "formal-function-000-input.json",
-      "sha256": "sha256:6026de1c24bef4a73c4ee0dc8b100fcc1ded03262fd0cecae306875d9e5c4da9"
+      "sha256": "sha256:6100d7d7731eeb2cbe07e3a5e6766044cd0e8d3be5cd0e1853f75f132d25c0a7"
     },
     {
       "bytes": 2418,
       "path": "formal-function-000-result.json",
-      "sha256": "sha256:fa219d9feb1b977d151fd60ea377d6e50257334722d1a95a11905325f2aa877a"
+      "sha256": "sha256:d2a902f50d59f1b1070858f8f43c41828d039069bda389fd8f6de1eb95365fc3"
     },
     {
       "bytes": 1291,
       "path": "formal-function-000.smt2",
-      "sha256": "sha256:7cb4a2429d0a1d8e06430065f397ff0619011e55caabac24d6397ba3b3a89b4a"
+      "sha256": "sha256:44e407df34a53671677c55efcd42fc8f37e0cef224a31f0c5a6cc15584d4d95e"
     },
     {
       "bytes": 1822,
       "path": "formal-function-001-input.json",
-      "sha256": "sha256:1880cfc6809089df4160b17b66ea5cd44fd36df10142c3c6faa5a174018577e4"
+      "sha256": "sha256:5bd72ced1d17d2cdd189c78eb2ab776db1e3857d581c444558f4035043d31e39"
     },
     {
       "bytes": 2427,
       "path": "formal-function-001-result.json",
-      "sha256": "sha256:39a3e7c6288942c1d6810f089175345f3ddd2c57f3bb4509c569167b2a28398b"
+      "sha256": "sha256:45561049ffbfd1b03fb8b88c2e4bb68c655b0b4a46298860047a9fa44daf84a9"
     },
     {
       "bytes": 2025,
       "path": "formal-function-001.smt2",
-      "sha256": "sha256:ea864665352ae7cd6f421ae1971e39c5300cc8a0aaf72f504314f103621536c2"
+      "sha256": "sha256:fdfa2c6720cdf70c8061e55db65ea247e51513a84f0f320ab22e31c41fdd2ffb"
     },
     {
       "bytes": 2221,
       "path": "formal-function-002-input.json",
-      "sha256": "sha256:f30cb931f08b1c77b16419da34a582b97c4c6e9b8fb926afb6c76a5cd98922c5"
+      "sha256": "sha256:56d651704fd998ca39f3d7f7e4b727edc52355d0232d3e2f0480217e035724d0"
     },
     {
       "bytes": 2454,
       "path": "formal-function-002-result.json",
-      "sha256": "sha256:162e23c5ec0ac2f806122fe9dec5f599bfe8ecaaaac2e9d660dabf69e8ca47ce"
+      "sha256": "sha256:381e993c6c0d1cc8ed05e374c7433a8681b73d750ffe0640a9d86e9144811fcb"
     },
     {
       "bytes": 1907,
       "path": "formal-function-002.smt2",
-      "sha256": "sha256:12b0b3ba0e74c61d0480ef6d8e9ffce8060efbbae776da5dd14e277598dfe45e"
+      "sha256": "sha256:aa7ab596d97ddcd72291d26c0e5904cead9a74a9c20e9c843e5ae2c6a4f7d4c3"
     },
     {
       "bytes": 2227,
       "path": "formal-function-003-input.json",
-      "sha256": "sha256:3438ab85984418d529d84b1871623c01d5dc7669790840cd06fe0c570dccfa0d"
+      "sha256": "sha256:5f186b2db6a461763679c9d4bc96fd0b1a2f871997c773447c6143a59eed8244"
     },
     {
       "bytes": 2738,
       "path": "formal-function-003-result.json",
-      "sha256": "sha256:dbed9af4e284ec503f12b92d242f2771b15da3c83ffcf300611f8adcb9986d0a"
+      "sha256": "sha256:8789e4ab31a1a56873d15ec0bc9ffbd5f1746bdb3db2c6006375b32bb6777ad8"
     },
     {
       "bytes": 2593,
       "path": "formal-function-003.smt2",
-      "sha256": "sha256:1df21cb39149e9fa7a549f31bbd3cb17d44387eae93036a7c686e4ba8c152fee"
+      "sha256": "sha256:22954799cf9daa5cafd80cca4b82397b8181f3199a6c46f67ae65bc676e48d05"
     },
     {
       "bytes": 1381,
       "path": "formal-function-004-input.json",
-      "sha256": "sha256:169683a4ca9c0fb30e6e27dbca601b77ca5574047a44e8985ce42f885ad6e977"
+      "sha256": "sha256:4f68c7ce8013dc9dffe49ae8067092c362c0c5acb2e91133ef04d81baf0be545"
     },
     {
       "bytes": 2424,
       "path": "formal-function-004-result.json",
-      "sha256": "sha256:82934eaf781ab46c881d347ea009e5a61fe39cacb438788cc2ab406c74878637"
+      "sha256": "sha256:eff2b53debe8a2629deb663f01cb36a28656b318726b922a37430acaffa233f0"
     },
     {
       "bytes": 1807,
       "path": "formal-function-004.smt2",
-      "sha256": "sha256:9b00a0d2b801e3f235ce3bd789fe4bac2a57187cc9240697feb0d5fffcb84d52"
+      "sha256": "sha256:cba21bc90d611ab8763c95da11cdef2aff5514a8da7ea4aad5c1c7890f04c605"
     },
     {
       "bytes": 1299,
@@ -148,9 +148,9 @@
       "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
     },
     {
-      "bytes": 1264,
+      "bytes": 1265,
       "path": "module-formal-input.json",
-      "sha256": "sha256:c67d4aa68989cb35bb12fd2315f94adf19ce2f120d74d575abc12bfc29a226fe"
+      "sha256": "sha256:2a5701dbc774a0f51f032e6afacb36f43c06383035b07bd9256ec28cd14f50a1"
     },
     {
       "bytes": 708,
@@ -158,9 +158,9 @@
       "sha256": "sha256:8991250762f6dee4777473cf5a5b6f5a4512194377d286d7b5aa1eb8f2fcbbac"
     },
     {
-      "bytes": 5151,
+      "bytes": 42830,
       "path": "source-module-inventory.json",
-      "sha256": "sha256:08cd27b6577c4843fef87e29fa7d115671d699fd8812721e5c275f9ca4e8434f"
+      "sha256": "sha256:75d50b888a7a522d5cc0f71b1d9cbc3db5332aabd1fba88baa335b8c6c6013c9"
     },
     {
       "bytes": 1881,
@@ -168,9 +168,9 @@
       "sha256": "sha256:6f90b2f74870d3e8cd17f56bac60609064aaf8fe7bb79d12419cde4dbe3e00fd"
     },
     {
-      "bytes": 8007,
+      "bytes": 8431,
       "path": "source-module-semantic-ir.json",
-      "sha256": "sha256:cc834730c6618cd52677f09df07c74b4ddba61bac2773a082f415420b81bd257"
+      "sha256": "sha256:fd4ddddbb720b2740d03d5e9d3efef26a8db654391525a9c0f167e0c59a04533"
     },
     {
       "bytes": 9548,
@@ -298,18 +298,18 @@
       "sha256": "sha256:02cf94157f191c78329c76eaa03ddbcd06476c784d36ff642cadd5d2a88ed0bc"
     },
     {
-      "bytes": 195406,
+      "bytes": 195409,
       "path": "typed-pure-module-equivalence.json",
-      "sha256": "sha256:13e2fa742b90f33f75d61c552ce86a04548df57df2dc0924f7e83427f207cb52"
+      "sha256": "sha256:8cf63508ea1491a675912836fa04fc8545ba05128c4f0f730bee4d11e960bd61"
     },
     {
-      "bytes": 10746,
+      "bytes": 10747,
       "path": "whole-file-module-closure.json",
-      "sha256": "sha256:9591f340077971d61fc39d334afd9688dba036135152c3e9c1b7d9ae050cfed0"
+      "sha256": "sha256:a90566dd1a62327ae00631c210f1d5090b59250352839c609b8b3d26e0ef4d73"
     }
   ],
   "note": "Only files listed here belong to this generated run; unlisted files are not evidence.",
   "route_key": "swift-to-objc",
   "schema_version": 1,
-  "total_bytes": 315052
+  "total_bytes": 353160
 }

@@ -31,10 +31,14 @@ TRANSLATION_STUDIO = ROOT / "apps" / "web-console" / "app" / "translation" / "Tr
 sys.path.insert(0, str(ROOT / "scripts" / "batch29"))
 
 from route_sets import (  # noqa: E402
+    COMPLETE_ROUTE_KEYS,
+    COMPLETION_ROUTE_KEYS,
     CORE_LANGUAGES,
     CORE_ROUTE_KEYS,
     EVIDENCED_ROUTE_KEYS,
+    SPECIALIZED_LANGUAGES,
     SPECIALIZED_ROUTE_KEYS,
+    provenance_route_set,
 )
 
 LOCAL_STATUSES = {"PASSED_LOCAL", "NOT_RUN", "FAILED"}
@@ -143,34 +147,83 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
     require(
         policy
         == {
-            "mode": "explicit-route-sets",
-            "cartesian_expansion": "FORBIDDEN",
-            "complete_route_set": "legacy-complete-30",
+            "mode": "complete-directed-matrix",
+            "cartesian_expansion": "EXPLICIT_NINE_LANGUAGE_MATRIX",
+            "complete_route_set": "nine-language-complete-72",
+            "legacy_route_set": "legacy-complete-30",
             "specialized_route_set": "cpp-objc-swift-java-exact-8",
+            "completion_route_set": "nine-language-completion-34",
         },
         "ROUTE_POLICY_DRIFT",
     )
     route_sets = inventory.get("route_sets")
     require(isinstance(route_sets, dict), "ROUTE_SETS_INVALID")
     assert isinstance(route_sets, dict)
-    require(set(route_sets) == {"legacy-complete-30", "cpp-objc-swift-java-exact-8"}, "ROUTE_SET_KEYS_DRIFT")
+    require(
+        set(route_sets)
+        == {
+            "legacy-complete-30",
+            "cpp-objc-swift-java-exact-8",
+            "nine-language-completion-34",
+            "nine-language-complete-72",
+        },
+        "ROUTE_SET_KEYS_DRIFT",
+    )
     core_set = route_sets.get("legacy-complete-30")
     specialized_set = route_sets.get("cpp-objc-swift-java-exact-8")
+    completion_set = route_sets.get("nine-language-completion-34")
+    complete_set = route_sets.get("nine-language-complete-72")
     require(isinstance(core_set, dict), "CORE_ROUTE_SET_INVALID")
     require(isinstance(specialized_set, dict), "SPECIALIZED_ROUTE_SET_INVALID")
-    assert isinstance(core_set, dict) and isinstance(specialized_set, dict)
+    require(isinstance(completion_set, dict), "COMPLETION_ROUTE_SET_INVALID")
+    require(isinstance(complete_set, dict), "COMPLETE_ROUTE_SET_INVALID")
+    assert (
+        isinstance(core_set, dict)
+        and isinstance(specialized_set, dict)
+        and isinstance(completion_set, dict)
+        and isinstance(complete_set, dict)
+    )
     require(core_set.get("policy") == "complete-directed-permutation", "CORE_ROUTE_POLICY_DRIFT")
     require(core_set.get("languages") == list(CORE_LANGUAGES), "CORE_ROUTE_LANGUAGE_ORDER_DRIFT")
     require(core_set.get("route_count") == 30, "CORE_ROUTE_COUNT_DRIFT")
     require(core_set.get("route_keys") == list(CORE_ROUTE_KEYS), "CORE_ROUTE_KEYS_DRIFT")
     require(specialized_set.get("policy") == "exact-explicit-set", "SPECIALIZED_ROUTE_POLICY_DRIFT")
-    require(specialized_set.get("languages") == ["cpp", "objc", "swift", "java"], "SPECIALIZED_ROUTE_LANGUAGE_ORDER_DRIFT")
+    require(
+        specialized_set.get("languages") == ["cpp", "objc", "swift", "java"], "SPECIALIZED_ROUTE_LANGUAGE_ORDER_DRIFT"
+    )
     require(specialized_set.get("route_count") == 8, "SPECIALIZED_ROUTE_COUNT_DRIFT")
     require(specialized_set.get("route_keys") == list(SPECIALIZED_ROUTE_KEYS), "SPECIALIZED_ROUTE_KEYS_DRIFT")
     require(specialized_set.get("module_profile") == "typed-pure-module-v1", "SPECIALIZED_MODULE_PROFILE_DRIFT")
+    all_languages = [*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES]
+    require(
+        completion_set.get("policy") == "exact-matrix-completion-set",
+        "COMPLETION_ROUTE_POLICY_DRIFT",
+    )
+    require(
+        completion_set.get("languages") == all_languages,
+        "COMPLETION_ROUTE_LANGUAGE_ORDER_DRIFT",
+    )
+    require(completion_set.get("route_count") == 34, "COMPLETION_ROUTE_COUNT_DRIFT")
+    require(
+        completion_set.get("route_keys") == list(COMPLETION_ROUTE_KEYS),
+        "COMPLETION_ROUTE_KEYS_DRIFT",
+    )
+    require(
+        complete_set.get("policy") == "complete-directed-permutation",
+        "COMPLETE_ROUTE_POLICY_DRIFT",
+    )
+    require(
+        complete_set.get("languages") == all_languages,
+        "COMPLETE_ROUTE_LANGUAGE_ORDER_DRIFT",
+    )
+    require(complete_set.get("route_count") == 72, "COMPLETE_ROUTE_COUNT_DRIFT")
+    require(
+        complete_set.get("route_keys") == list(COMPLETE_ROUTE_KEYS),
+        "COMPLETE_ROUTE_KEYS_DRIFT",
+    )
 
     require(inventory.get("route_count") == len(routes), "ROUTE_COUNT_DRIFT")
-    require(inventory.get("route_count") == 38, "ROUTE_EXPLICIT_COUNT_DRIFT")
+    require(inventory.get("route_count") == 72, "ROUTE_EXPLICIT_COUNT_DRIFT")
     require(isinstance(inventory.get("semantic_profile"), str), "SEMANTIC_PROFILE_MISSING")
     for field, allowed in (
         ("local_execution_evidence", LOCAL_STATUSES),
@@ -199,11 +252,7 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         for field in ("independent_verification_status", "external_certification_status"):
             require(entry.get(field) in VERIFICATION_STATUSES, f"{field.upper()}_INVALID:{key}")
         require(source in languages and target in languages, f"ROUTE_LANGUAGE_UNKNOWN:{key}")
-        expected_route_set = (
-            "cpp-objc-swift-java-exact-8"
-            if key in SPECIALIZED_ROUTE_KEYS
-            else "legacy-complete-30"
-        )
+        expected_route_set = provenance_route_set(key)
         require(entry.get("route_set") == expected_route_set, f"ROUTE_SET_BINDING_DRIFT:{key}")
         module_status = entry.get("module_execution_status")
         if key in SPECIALIZED_ROUTE_KEYS:
@@ -308,22 +357,18 @@ def check_route_packs(routes: list[dict[str, str]], semantic_profile: str) -> No
         )
         if key in SPECIALIZED_ROUTE_KEYS:
             require(
-                pack.get("profiles", {}).get("input_domain")
-                == "canonical-finite-no-error-input-domain",
+                pack.get("profiles", {}).get("input_domain") == "canonical-finite-no-error-input-domain",
                 f"SPECIALIZED_INPUT_DOMAIN_DRIFT:{key}",
             )
             require(
-                pack.get("profiles", {}).get("module_profile")
-                == "typed-pure-module-v1",
+                pack.get("profiles", {}).get("module_profile") == "typed-pure-module-v1",
                 f"SPECIALIZED_MODULE_PROFILE_DRIFT:{key}",
             )
             require(
                 pack.get("gates", {}).get("concrete_spans_required") is True,
                 f"SPECIALIZED_SPAN_POLICY_DRIFT:{key}",
             )
-            types = json.loads(
-                (pack_dir / "mappings" / "types.json").read_text(encoding="utf-8")
-            )
+            types = json.loads((pack_dir / "mappings" / "types.json").read_text(encoding="utf-8"))
             require(
                 types.get("types") == ["integer", "number", "boolean"],
                 f"SPECIALIZED_TYPE_SET_DRIFT:{key}",
@@ -335,9 +380,13 @@ def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) ->
     assert isinstance(languages, dict)
     console = console_languages()
     exposed = inventory.get("console_exposed_languages")
-    require(exposed == list(CORE_LANGUAGES), "CONSOLE_EXPOSED_LANGUAGE_POLICY_DRIFT")
+    expected_console_languages = (*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES)
     require(
-        console_exposed_languages() == CORE_LANGUAGES,
+        exposed == list(expected_console_languages),
+        "CONSOLE_EXPOSED_LANGUAGE_POLICY_DRIFT",
+    )
+    require(
+        console_exposed_languages() == expected_console_languages,
         "CONSOLE_EXPOSED_LANGUAGE_SET_DRIFT",
     )
     require(set(console) == set(engine_languages()), "CONSOLE_LANGUAGE_SET_DRIFT")
@@ -360,7 +409,7 @@ def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) ->
 
     engine = set(engine_languages())
     require(set(languages) == engine, "ENGINE_LANGUAGE_COVERAGE_DRIFT")
-    require(set(routed_languages()) == set(CORE_LANGUAGES), "ENGINE_CORE_LANGUAGE_DRIFT")
+    require(set(routed_languages()) == engine, "ENGINE_ROUTED_LANGUAGE_DRIFT")
     models = ENGINE_MODELS.read_text(encoding="utf-8")
     specialized_block = re.search(
         r"SPECIALIZED_DIRECTED_PAIRS[^=]*=\s*\((.*?)\n\)",
@@ -371,9 +420,7 @@ def check_console(inventory: dict[str, object], routes: list[dict[str, str]]) ->
     assert specialized_block is not None
     engine_specialized = {
         f"{source}-to-{target}"
-        for source, target in re.findall(
-            r'\("([a-z]+)",\s*"([a-z]+)"\)', specialized_block.group(1)
-        )
+        for source, target in re.findall(r'\("([a-z]+)",\s*"([a-z]+)"\)', specialized_block.group(1))
     }
     require(
         engine_specialized == set(SPECIALIZED_ROUTE_KEYS),

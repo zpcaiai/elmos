@@ -25,10 +25,9 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
 #: callers that enumerate sources should say so explicitly.
 ANALYZABLE_LANGUAGES: tuple[Language, ...] = SUPPORTED_LANGUAGES
 
-#: The original complete route matrix.  Keeping this set separate is
-#: important: adding the three specialised languages to it would silently
-#: manufacture a 9-language/72-route claim that neither the route inventory
-#: nor the evidence supports.
+#: The explicit complete route matrix.  Route-pack presence does not imply a
+#: local pass, repository pass, independent verification, or certification;
+#: those remain separate evidence-bound states for every direction.
 COMPLETE_MATRIX_LANGUAGES: tuple[Language, ...] = (
     "java",
     "python",
@@ -36,15 +35,16 @@ COMPLETE_MATRIX_LANGUAGES: tuple[Language, ...] = (
     "typescript",
     "go",
     "rust",
+    "cpp",
+    "objc",
+    "swift",
 )
 
-#: Backwards-compatible name used by the original Batch 29 inventory and
-#: native relifters.  It denotes the complete six-language matrix, not every
-#: language that participates in any route.
+#: Backwards-compatible name used by the Batch 29 inventory and relifters.
 ROUTED_LANGUAGES: tuple[Language, ...] = COMPLETE_MATRIX_LANGUAGES
 
-#: Exact additional directed routes.  This is intentionally an allow-list,
-#: not a Cartesian product over Java/C++/Objective-C/Swift.
+#: Exact routes that retain the stricter native module profile.  They are a
+#: subset of the complete matrix, not the only routes for these languages.
 SPECIALIZED_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = (
     ("cpp", "objc"),
     ("objc", "cpp"),
@@ -60,10 +60,7 @@ COMPLETE_MATRIX_DIRECTED_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
     (source, target) for source in COMPLETE_MATRIX_LANGUAGES for target in COMPLETE_MATRIX_LANGUAGES if source != target
 )
 
-ROUTED_PAIRS: tuple[tuple[Language, Language], ...] = (
-    *COMPLETE_MATRIX_DIRECTED_PAIRS,
-    *SPECIALIZED_DIRECTED_PAIRS,
-)
+ROUTED_PAIRS: tuple[tuple[Language, Language], ...] = COMPLETE_MATRIX_DIRECTED_PAIRS
 
 TYPED_PURE_FUNCTION_PROFILE = "typed-pure-function-v1"
 TYPED_PURE_MODULE_PROFILE = "typed-pure-module-v1"
@@ -99,19 +96,13 @@ def requires_concrete_source_spans(source: str, target: str, profile: str) -> bo
     return True
 
 
-#: Languages outside the original complete matrix.  The historical name is
-#: retained for compatibility, but these languages now participate only in
-#: the exact specialised pairs above; they still must not be treated as a
-#: complete submatrix.
-#:
-#: The distinction was previously implicit: `SUPPORTED_LANGUAGES` listed nine,
-#: `routes/` held thirty pairs over six, and nothing reconciled the two. Read
-#: from the engine the platform appeared to support seventy-two directed pairs;
-#: read from `routes/` it supported thirty. Naming the gap is not the same as
-#: closing it -- these three remain engine-only until they carry the same
-#: evidence the other six do -- but a boundary that is written down can be
-#: checked, and `tests/test_language_set.py` checks it.
-ENGINE_ONLY_LANGUAGES: tuple[Language, ...] = ("cpp", "objc", "swift")
+#: Backwards-compatible inventory field.  The repository orchestration surface
+#: now has an explicit route entry for every supported directed pair, so no
+#: supported language remains engine-only.  Evidence strength is still
+#: route-specific: the eight native/JVM pairs above use the specialised formal
+#: profile, while every route keeps its own local, independent and certification
+#: states.  An empty tuple must therefore not be read as a certification claim.
+ENGINE_ONLY_LANGUAGES: tuple[Language, ...] = ()
 
 
 class RouteError(ValueError):

@@ -965,18 +965,28 @@ def service_image_audit(repository: dict[str, Any], source: Path) -> list[dict[s
                     inspected = json.loads(inspect["output"])[0]
                     pinned_id = inspected["Id"]
                     repo_digests = inspected.get("RepoDigests", [])
+                    observed_platform = (
+                        f"{inspected.get('Os', '')}/{inspected.get('Architecture', '')}"
+                    )
                 except (IndexError, KeyError, TypeError, json.JSONDecodeError):
                     pinned_id = None
                     repo_digests = []
+                    observed_platform = None
                 result["pinned_image_id"] = pinned_id
                 result["repo_digests"] = repo_digests
+                result["observed_platform"] = observed_platform
                 if (
                     pinned_id is not None
                     and image["execution_reference"] in repo_digests
+                    and observed_platform == image["platform"]
                 ):
                     result["status"] = "AVAILABLE_RESOLVED_DIGEST_LOCAL"
                 else:
-                    result["reason"] = "RESOLVED_DIGEST_REFERENCE_NOT_BOUND_LOCALLY"
+                    result["reason"] = (
+                        "RESOLVED_DIGEST_PLATFORM_MISMATCH"
+                        if observed_platform != image["platform"]
+                        else "RESOLVED_DIGEST_REFERENCE_NOT_BOUND_LOCALLY"
+                    )
             else:
                 result["reason"] = "PINNED_IMAGE_NOT_PRESENT_NO_PULL_PERFORMED"
         results.append(result)
@@ -1600,37 +1610,51 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cmake-executable", type=Path, required=True)
     parser.add_argument("--cxx-executable", type=Path, required=True)
     parser.add_argument("--make-executable", type=Path, required=True)
+    parser.add_argument(
+        "--local-engineering-non-certifying",
+        action="store_true",
+        help=(
+            "Explicitly execute the fixed public source on the current host as "
+            "LOCAL_NON_CERTIFYING evidence. This never satisfies the protected "
+            "Rootless, customer, independent, or certification gates."
+        ),
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     try:
-        evidence = qualification(
-            manifest_path=args.manifest.resolve(),
-            repository_id=args.repository_id,
-            archive_input=args.archive.resolve() if args.archive else None,
-            workspace=args.workspace.resolve(),
-            output=args.output.resolve(),
-            java_home=args.java_home.resolve(),
-            maven=args.maven_executable.resolve(),
-            cmake=args.cmake_executable.resolve(),
-            cxx=args.cxx_executable.resolve(),
-            make=args.make_executable.resolve(),
-            target_java_home=(
+        arguments = {
+            "manifest_path": args.manifest.resolve(),
+            "repository_id": args.repository_id,
+            "archive_input": args.archive.resolve() if args.archive else None,
+            "workspace": args.workspace.resolve(),
+            "output": args.output.resolve(),
+            "java_home": args.java_home.resolve(),
+            "maven": args.maven_executable.resolve(),
+            "cmake": args.cmake_executable.resolve(),
+            "cxx": args.cxx_executable.resolve(),
+            "make": args.make_executable.resolve(),
+            "target_java_home": (
                 args.target_java_home.resolve() if args.target_java_home else None
             ),
-        )
+        }
+        if args.local_engineering_non_certifying:
+            from replay_spring_public_repository_local import replay
+
+            evidence = replay(**arguments)
+        else:
+            evidence = qualification(**arguments)
     except (QualificationError, OSError, ValueError, ET.ParseError, json.JSONDecodeError) as exc:
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1
     print(f"{evidence['overall_status']}: {args.repository_id}")
-    return (
-        0
-        if evidence["overall_status"]
-        == "PASSED_LOCAL_SOURCE_AND_TARGET_TEST_ORACLE"
-        else 2
-    )
+    successful = {
+        "PASSED_LOCAL_SOURCE_AND_TARGET_TEST_ORACLE",
+        "PASSED_LOCAL_NON_CERTIFYING_SOURCE_AND_TARGET_22_TEST_ORACLE",
+    }
+    return 0 if evidence["overall_status"] in successful else 2
 
 
 if __name__ == "__main__":

@@ -460,7 +460,7 @@ public final class Analyzer {
             case "float" -> throw new IllegalArgumentException(
                     "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
             case "int" -> throw new CertifiedSubsetDomainException(
-                    "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int");
+                    CertifiedSubsetDomainError.INTEGER_WIDTH_INT);
             case "byte", "short", "char" -> throw new IllegalArgumentException(
                     "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:" + sourceType);
             case "CharSequence" -> throw new IllegalArgumentException(
@@ -474,9 +474,20 @@ public final class Analyzer {
         };
     }
 
+    private enum CertifiedSubsetDomainError {
+        INTEGER_WIDTH_INT("JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"),
+        STRING_REFERENCE_EQUALITY("JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET");
+
+        private final String reason;
+
+        CertifiedSubsetDomainError(String reason) {
+            this.reason = reason;
+        }
+    }
+
     private static final class CertifiedSubsetDomainException extends RuntimeException {
-        private CertifiedSubsetDomainException(String reason) {
-            super(reason, null, false, false);
+        private CertifiedSubsetDomainException(CertifiedSubsetDomainError error) {
+            super(error.reason, null, false, false);
         }
     }
 
@@ -567,8 +578,8 @@ public final class Analyzer {
             if ((symbol.equals("==") || symbol.equals("!="))
                     && (isStringExpression(binary.getLeftOperand(), environment)
                             || isStringExpression(binary.getRightOperand(), environment))) {
-                throw new IllegalArgumentException(
-                        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET");
+                throw new CertifiedSubsetDomainException(
+                        CertifiedSubsetDomainError.STRING_REFERENCE_EQUALITY);
             }
             return withSpan(
                     tree,

@@ -28,31 +28,31 @@
   "external_certification_status": "NOT_RUN",
   "formal_composition": {
     "artifact_path": "formal-composition.json",
-    "artifact_sha256": "sha256:2b10e82f1e2d54daab149f4e5c088d2704cf39f75189b477f8f944ed950929ae",
+    "artifact_sha256": "sha256:972dde41e80f25171f4ae7f321f365cbc25b8fc5d75b47c810a8f87b1c34fd9f",
     "assumption_boundary": "typed-pure-function-v1 / L0 / canonical-finite-no-error-input-domain",
-    "formal_input_digest": "sha256:c74c9010c95178633bde1c157b7a8679d8e9e14db5ddace1b806de24b0e38f20",
+    "formal_input_digest": "sha256:5d936a283af7384080a9224db779c9b614c6e72ccf27517f18cb855b64784343",
     "formal_input_path": "formal-input.json",
-    "formal_input_sha256": "sha256:c74c9010c95178633bde1c157b7a8679d8e9e14db5ddace1b806de24b0e38f20",
+    "formal_input_sha256": "sha256:5d936a283af7384080a9224db779c9b614c6e72ccf27517f18cb855b64784343",
     "proof_artifact_digests": [
       {
-        "formal_input_sha256": "sha256:c74c9010c95178633bde1c157b7a8679d8e9e14db5ddace1b806de24b0e38f20",
+        "formal_input_sha256": "sha256:5d936a283af7384080a9224db779c9b614c6e72ccf27517f18cb855b64784343",
         "path": "formal-equivalence.smt2",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:c004483bcff1e6d889648ed33fba753b37c27442f5dcc9f5312809ec5659a7a9",
+        "sha256": "sha256:1e3ecdd5609a8f072be56ec7d9b12dc78d2ccedd7c0cb4deac6450563a7c00ee",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       },
       {
-        "formal_input_sha256": "sha256:c74c9010c95178633bde1c157b7a8679d8e9e14db5ddace1b806de24b0e38f20",
+        "formal_input_sha256": "sha256:5d936a283af7384080a9224db779c9b614c6e72ccf27517f18cb855b64784343",
         "path": "formal-proof-result.json",
         "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
-        "sha256": "sha256:2cc0dcc6e48543aec88c4e6377a82fca4220c204ba171b85a341d18a35a661de",
+        "sha256": "sha256:aceec2e321cd8e173a88e5dfabae96d2bee774503f1978f74a76501cb23b971f",
         "status": "PROVED",
         "strength": "THEOREM_UNDER_ASSUMPTIONS"
       }
     ],
     "property_status": "PROVED",
-    "solver_input_digest": "sha256:c004483bcff1e6d889648ed33fba753b37c27442f5dcc9f5312809ec5659a7a9",
+    "solver_input_digest": "sha256:1e3ecdd5609a8f072be56ec7d9b12dc78d2ccedd7c0cb4deac6450563a7c00ee",
     "status": "PROVED_UNDER_ASSUMPTIONS",
     "unsupported_semantics": [
       "heap-and-object-identity",
@@ -66,7 +66,7 @@
   "independent_verifier": "NOT_RUN",
   "layered_equivalence": {
     "artifact_path": "layered-equivalence.json",
-    "artifact_sha256": "sha256:297fcdea1d894944a595d2052a69ae170c54732faed4b5827e1d6fa8facc2ebc",
+    "artifact_sha256": "sha256:eaaf6c5f310f54b86e96cc0e0c5b0f372690fb5dafb00ac1d488c720c6dcfc93",
     "status": "PASSED"
   },
   "limitations": [
@@ -157,10 +157,20 @@
     "role": "source",
     "status": "PASSED",
     "toolchain": {
+      "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+      "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
       "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
-      "executable_sha256": null,
+      "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
       "language": "java",
-      "profile": [],
+      "profile": [
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-openjdk@21",
+        "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+        "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+        "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+        "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+        "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+      ],
       "version": "21.0.11"
     }
   },
@@ -230,6 +240,8 @@
     ],
     "status": "PASSED",
     "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
       "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
       "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
       "language": "cpp",

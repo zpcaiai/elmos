@@ -4,12 +4,21 @@ import base64
 import hashlib
 import json
 import math
+import os
 import platform
+import stat
+import tempfile
 from pathlib import Path
 from typing import Any
 
 from . import canonical, types
-from .emitter import EmittedFile, emit
+from .emitter import (
+    _CHECKED_INTEGER_CALL,
+    _FLOAT_NON_ZERO_GUARD,
+    _HELPERS,
+    EmittedFile,
+    emit,
+)
 from .equivalence import (
     L1_PLUS_UNSUPPORTED,
     SPECIALIZED_INPUT_DOMAIN,
@@ -44,12 +53,55 @@ from .models import (
     is_specialized_pair,
     requires_concrete_source_spans,
 )
-from .native import analyze
+from .native import (
+    _SANDBOX_NETWORK_PROBE_BINARY_BYTES,
+    _SANDBOX_NETWORK_PROBE_BINARY_NAME,
+    _SANDBOX_NETWORK_PROBE_BINARY_SHA256,
+    _SANDBOX_NETWORK_PROBE_BUILD_ARGV,
+    _SANDBOX_NETWORK_PROBE_BUILD_ENVIRONMENT,
+    _SANDBOX_NETWORK_PROBE_CDHASH_FULL,
+    _SANDBOX_NETWORK_PROBE_LINKED_LIBRARIES,
+    _SANDBOX_NETWORK_PROBE_SOURCE,
+    _SANDBOX_NETWORK_PROBE_SOURCE_BYTES,
+    _SANDBOX_NETWORK_PROBE_SOURCE_SHA256,
+    _SANDBOX_NETWORK_PROBE_UUID,
+    _canonical_digest,
+    _canonical_swift_analyzer_receipt,
+    _canonical_swift_toolchain_identity,
+    _swift_toolchain_receipt,
+    analyze,
+    inventory_module,
+)
+from .toolchains import exact_toolchain
 from .validation import safe_output, validate, validate_source
 
 
 def _digest(value: bytes) -> str:
     return "sha256:" + hashlib.sha256(value).hexdigest()
+
+
+def _private_input_snapshot(
+    root: Path,
+    role: str,
+    logical_name: str,
+    content: bytes,
+) -> Path:
+    role_root = root / role
+    role_root.mkdir(mode=0o700)
+    path = role_root / logical_name
+    path.write_bytes(content)
+    path.chmod(0o600)
+    metadata = path.lstat()
+    if (
+        path.is_symlink()
+        or not stat.S_ISREG(metadata.st_mode)
+        or metadata.st_uid != os.getuid()
+        or stat.S_IMODE(metadata.st_mode) != 0o600
+        or metadata.st_size != len(content)
+        or path.read_bytes() != content
+    ):
+        raise RouteError(f"PRIVATE_INPUT_SNAPSHOT_INVALID:{role}")
+    return path
 
 
 def _file_identity(path: Path) -> dict[str, Any]:
@@ -213,17 +265,12 @@ def _load_cases(path: Path, parameter_count: int) -> list[dict[str, Any]]:
 def _expression_uses_string(expression: Expression) -> bool:
     if expression.kind == "literal" and isinstance(expression.value, str):
         return True
-    return any(
-        nested is not None and _expression_uses_string(nested)
-        for nested in (expression.left, expression.right)
-    )
+    return any(nested is not None and _expression_uses_string(nested) for nested in (expression.left, expression.right))
 
 
 def _expression_uses_non_finite_number(expression: Expression) -> bool:
     return (
-        expression.kind == "literal"
-        and isinstance(expression.value, float)
-        and not math.isfinite(expression.value)
+        expression.kind == "literal" and isinstance(expression.value, float) and not math.isfinite(expression.value)
     ) or any(
         nested is not None and _expression_uses_non_finite_number(nested)
         for nested in (expression.left, expression.right)
@@ -250,20 +297,14 @@ def _statement_uses_string(statement: Statement) -> bool:
     return any(
         expression is not None and _expression_uses_string(expression)
         for expression in (statement.expression, statement.condition)
-    ) or any(
-        _statement_uses_string(nested)
-        for nested in (*statement.then_body, *statement.else_body)
-    )
+    ) or any(_statement_uses_string(nested) for nested in (*statement.then_body, *statement.else_body))
 
 
 def _statement_uses_non_finite_number(statement: Statement) -> bool:
     return any(
         expression is not None and _expression_uses_non_finite_number(expression)
         for expression in (statement.expression, statement.condition)
-    ) or any(
-        _statement_uses_non_finite_number(nested)
-        for nested in (*statement.then_body, *statement.else_body)
-    )
+    ) or any(_statement_uses_non_finite_number(nested) for nested in (*statement.then_body, *statement.else_body))
 
 
 def _statement_uses_number_arithmetic(
@@ -271,8 +312,7 @@ def _statement_uses_number_arithmetic(
     environment: dict[str, str],
 ) -> bool:
     return any(
-        expression is not None
-        and _expression_uses_number_arithmetic(expression, environment)
+        expression is not None and _expression_uses_number_arithmetic(expression, environment)
         for expression in (statement.expression, statement.condition)
     ) or any(
         _statement_uses_number_arithmetic(nested, environment)
@@ -306,24 +346,15 @@ def _enforce_specialized_semantic_domain(
             or any(_statement_uses_string(statement) for statement in function.body)
         ):
             raise RouteError(
-                "SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:"
-                f"{source_language}-to-{target_language}:{function.name}"
+                f"SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:{source_language}-to-{target_language}:{function.name}"
             )
-        if any(
-            _statement_uses_non_finite_number(statement)
-            for statement in function.body
-        ):
+        if any(_statement_uses_non_finite_number(statement) for statement in function.body):
             raise RouteError(
-                "SPECIALIZED_NON_FINITE_NUMBER_UNSUPPORTED:"
-                f"{source_language}-to-{target_language}:{function.name}"
+                f"SPECIALIZED_NON_FINITE_NUMBER_UNSUPPORTED:{source_language}-to-{target_language}:{function.name}"
             )
-        if any(
-            _statement_uses_number_arithmetic(statement, environment)
-            for statement in function.body
-        ):
+        if any(_statement_uses_number_arithmetic(statement, environment) for statement in function.body):
             raise RouteError(
-                "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:"
-                f"{source_language}-to-{target_language}:{function.name}"
+                f"SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:{source_language}-to-{target_language}:{function.name}"
             )
 
 
@@ -396,6 +427,9 @@ def verify_pure_module(
     source_artifact_bytes: bytes,
     source_logical_file: str,
     case_manifest_bytes: bytes,
+    source_inventory: dict[str, Any],
+    target_inventory: dict[str, Any],
+    whole_file_closure: dict[str, Any],
     output: Path,
 ) -> dict[str, Any]:
     """Persist a content-bound typed-pure-module equivalence composition.
@@ -415,9 +449,7 @@ def verify_pure_module(
     source_functions = {function.name: function for function in source_ir.functions}
     cases_by_symbol = normalize_pure_module_case_manifest(case_manifest, source_functions)
     for symbol, cases in cases_by_symbol.items():
-        _enforce_specialized_case_domain(
-            source_functions[symbol], cases, source_language, target_language
-        )
+        _enforce_specialized_case_domain(source_functions[symbol], cases, source_language, target_language)
     for label, digest in (
         ("source_artifact", source_artifact_sha256),
         ("target_artifact", target_artifact_sha256),
@@ -432,12 +464,22 @@ def verify_pure_module(
     if _digest(emitted_bytes) != target_artifact_sha256:
         raise RouteError("TARGET_MODULE_ARTIFACT_DIGEST_MISMATCH")
     # Reuse the span path contract before constructing a destination path.
-    SourceSpan.from_mapping(
-        {"file": source_logical_file, "start_byte": 0, "end_byte": 1}
-    )
+    SourceSpan.from_mapping({"file": source_logical_file, "start_byte": 0, "end_byte": 1})
 
     output = safe_output(output)
     output.mkdir(parents=True, exist_ok=True)
+    source_inventory_path = output / "source-module-inventory.json"
+    target_inventory_path = output / "target-module-inventory.json"
+    whole_file_closure_path = output / "whole-file-module-closure.json"
+    source_inventory_sha256 = write_json(source_inventory_path, source_inventory)
+    target_inventory_sha256 = write_json(target_inventory_path, target_inventory)
+    whole_file_closure_sha256 = write_json(whole_file_closure_path, whole_file_closure)
+    if whole_file_closure.get("source_inventory_sha256") != source_inventory_sha256:
+        raise RouteError("PURE_MODULE_SOURCE_INVENTORY_BACKLINK_MISMATCH")
+    if whole_file_closure.get("target_inventory_sha256") != target_inventory_sha256:
+        raise RouteError("PURE_MODULE_TARGET_INVENTORY_BACKLINK_MISMATCH")
+    if whole_file_closure.get("status") != "PASSED":
+        raise RouteError("PURE_MODULE_WHOLE_FILE_CLOSURE_NOT_PASSED")
     source_ir_path = output / "source-module-semantic-ir.json"
     target_ir_path = output / "target-module-semantic-ir.json"
     source_observations_path = output / "source-module-observations.json"
@@ -466,6 +508,11 @@ def verify_pure_module(
         emitted=emitted,
         source_artifact_bytes=source_artifact_bytes,
         source_logical_file=source_logical_file,
+        source_inventory_sha256=source_inventory_sha256,
+        source_inventory_byte_count=source_inventory_path.stat().st_size,
+        target_inventory_sha256=target_inventory_sha256,
+        target_inventory_byte_count=target_inventory_path.stat().st_size,
+        whole_file_closure=whole_file_closure,
     )
     formal_input_path = output / "module-formal-input.json"
     formal_input_sha256 = write_json(formal_input_path, report["module_input"])
@@ -481,7 +528,13 @@ def verify_pure_module(
         _artifact_ref(output, target_artifact_path, "emitted-target-module-artifact"),
         _artifact_ref(output, case_manifest_path, "module-case-manifest"),
         _artifact_ref(output, formal_input_path, "module-formal-input"),
+        _artifact_ref(output, source_inventory_path, "source-module-inventory"),
+        _artifact_ref(output, target_inventory_path, "target-module-inventory"),
+        _artifact_ref(output, whole_file_closure_path, "whole-file-module-closure"),
     ]
+    if artifact_refs[-1]["sha256"] != whole_file_closure_sha256:
+        raise RouteError("PURE_MODULE_WHOLE_FILE_CLOSURE_DIGEST_MISMATCH")
+    report["whole_file_closure"] = whole_file_closure
     for function_report in report["functions"]:
         symbol = function_report["symbol"]
         closure = proof_closures_by_symbol[symbol]
@@ -527,13 +580,9 @@ def verify_pure_module(
             or persisted_result.get("proof_strength") != "THEOREM_UNDER_ASSUMPTIONS"
             or not persisted_result.get("assumptions")
             or persisted_result.get("countermodel") is not None
-            or persisted_result.get("external_soundness_boundary", {}).get(
-                "source_compiler_runtime_soundness"
-            )
+            or persisted_result.get("external_soundness_boundary", {}).get("source_compiler_runtime_soundness")
             != "NOT_RUN"
-            or persisted_result.get("external_soundness_boundary", {}).get(
-                "target_compiler_runtime_soundness"
-            )
+            or persisted_result.get("external_soundness_boundary", {}).get("target_compiler_runtime_soundness")
             != "NOT_RUN"
         ):
             raise RouteError(f"PURE_MODULE_FUNCTION_FORMAL_RESULT_NOT_CLOSED:{symbol}")
@@ -546,9 +595,7 @@ def verify_pure_module(
             "expected_stdout": "unsat",
         }:
             raise RouteError(f"PURE_MODULE_FUNCTION_REPLAY_CONTRACT_INVALID:{symbol}")
-        artifact_refs.extend(
-            [formal_input_reference, solver_reference, formal_result_reference]
-        )
+        artifact_refs.extend([formal_input_reference, solver_reference, formal_result_reference])
     report["artifact_refs"] = artifact_refs
     write_json(output / "typed-pure-module-equivalence.json", report)
     return report
@@ -624,7 +671,1226 @@ def _combine_function_irs(
     )
 
 
+def _module_manifest_signatures(manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    entries = manifest.get("functions")
+    if not isinstance(entries, list):
+        raise RouteError("PURE_MODULE_CASE_MANIFEST_FUNCTIONS_REQUIRED")
+    contracts: dict[str, dict[str, Any]] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise RouteError("PURE_MODULE_CASE_MANIFEST_ENTRY_INVALID")
+        symbol = entry.get("symbol")
+        signature = entry.get("signature")
+        if not isinstance(symbol, str) or not symbol or not isinstance(signature, dict):
+            raise RouteError("PURE_MODULE_CASE_MANIFEST_ENTRY_INVALID")
+        if symbol in contracts:
+            raise RouteError(f"PURE_MODULE_CASE_MANIFEST_DUPLICATE_SYMBOL:{symbol}")
+        contracts[symbol] = signature
+    return contracts
+
+
+def _inventory_span(subject: dict[str, Any], role: str) -> tuple[int, int]:
+    span = subject.get("source_span")
+    qualified_name = str(subject.get("qualified_name", subject.get("name", "unknown")))
+    if not isinstance(span, dict):
+        raise RouteError(f"PURE_MODULE_INVENTORY_SPAN_REQUIRED:{role}:{qualified_name}")
+    start = span.get("start_byte")
+    end = span.get("end_byte")
+    if not isinstance(start, int) or not isinstance(end, int) or start < 0 or end <= start:
+        raise RouteError(f"PURE_MODULE_INVENTORY_SPAN_REQUIRED:{role}:{qualified_name}")
+    return start, end
+
+
+def _verify_inventory_analyzer_build_receipt(
+    inventory: dict[str, Any],
+    *,
+    role: str,
+    language: Language,
+) -> None:
+    """Fail closed around the private Swift analyzer build provenance.
+
+    The complete receipt remains in the inventory object.  Consequently its
+    exact bytes are covered by the inventory digest, whole-file-closure digest,
+    and canonical module input below.  A fresh verifier compares only the
+    receipt's canonical, path-independent build projection and independently
+    recomputes its digest. The full observed receipt remains byte-bound too.
+    """
+
+    receipt = inventory.get("analyzer_build_receipt")
+    if language != "swift":
+        if "analyzer_build_receipt" in inventory:
+            raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_UNEXPECTED:{role}:{language}")
+        return
+    if not isinstance(receipt, dict) or set(receipt) != {
+        "schema_version",
+        "kind",
+        "source_inputs",
+        "dependency",
+        "toolchain",
+        "network_isolation",
+        "build",
+        "binary",
+        "execution_seal",
+        "canonical_identity",
+    }:
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+    if receipt.get("schema_version") != "1.0.0" or receipt.get("kind") != "elmos.swift-analyzer-build-receipt":
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+
+    source_inputs = receipt.get("source_inputs")
+    dependency = receipt.get("dependency")
+    toolchain = receipt.get("toolchain")
+    build = receipt.get("build")
+    binary = receipt.get("binary")
+    network_isolation = receipt.get("network_isolation")
+    execution_seal = receipt.get("execution_seal")
+    canonical_identity = receipt.get("canonical_identity")
+    if (
+        not isinstance(source_inputs, dict)
+        or set(source_inputs) != {"sha256", "files"}
+        or not isinstance(dependency, dict)
+        or set(dependency)
+        != {
+            "identity",
+            "version",
+            "revision",
+            "sha256",
+            "file_count",
+            "bytes",
+            "mirror",
+        }
+        or not isinstance(toolchain, dict)
+        or set(toolchain)
+        != {
+            "swiftc",
+            "swiftc_sha256",
+            "swift_driver",
+            "swift_driver_sha256",
+            "version",
+            "profile",
+            "build_closure",
+        }
+        or not isinstance(build, dict)
+        or set(build)
+        != {
+            "configuration",
+            "automatic_resolution",
+            "manifest_cache",
+            "environment_policy",
+            "deterministic_environment",
+            "mtime_normalization",
+            "reproducible_path_policy",
+            "argv",
+        }
+        or not isinstance(binary, dict)
+        or set(binary) != {"name", "path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "device", "inode"}
+        or not isinstance(network_isolation, dict)
+        or not isinstance(execution_seal, dict)
+        or not isinstance(canonical_identity, dict)
+        or set(canonical_identity) != {"sha256", "receipt"}
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+
+    files = source_inputs.get("files")
+    if not isinstance(files, list) or not files:
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+    file_paths: list[str] = []
+    for item in files:
+        if (
+            not isinstance(item, dict)
+            or set(item) != {"path", "sha256", "bytes"}
+            or not isinstance(item.get("path"), str)
+            or not item["path"]
+            or Path(item["path"]).is_absolute()
+            or ".." in Path(item["path"]).parts
+            or not isinstance(item.get("bytes"), int)
+            or item["bytes"] <= 0
+        ):
+            raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+        file_paths.append(item["path"])
+        _require_sha256(str(item.get("sha256")), f"{role}_swift_analyzer_input")
+    if (
+        len(set(file_paths)) != len(file_paths)
+        or file_paths[:2] != ["Package.swift", "Package.resolved"]
+        or file_paths[2:] != sorted(file_paths[2:])
+        or not all(path.startswith("Sources/") and path.endswith(".swift") for path in file_paths[2:])
+        or source_inputs.get("sha256")
+        != _digest(
+            json.dumps(
+                {"files": files},
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        )
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INPUT_CLOSURE_MISMATCH:{role}:swift")
+
+    mirror = dependency.get("mirror")
+    if (
+        dependency.get("identity") != "swift-syntax"
+        or dependency.get("version") != "600.0.1"
+        or dependency.get("revision") != "0687f71944021d616d34d922343dcef086855920"
+        or dependency.get("sha256") != "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+        or dependency.get("file_count") != 753
+        or dependency.get("bytes") != 8_866_479
+        or not isinstance(mirror, dict)
+        or set(mirror)
+        != {
+            "seed",
+            "cache",
+            "git",
+            "identity",
+            "version",
+            "revision",
+            "sha256",
+            "file_count",
+            "bytes",
+        }
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+    _require_sha256(str(source_inputs.get("sha256")), f"{role}_swift_analyzer_inputs")
+    _require_sha256(str(dependency.get("sha256")), f"{role}_swift_analyzer_dependency")
+    _require_sha256(str(mirror.get("sha256")), f"{role}_swift_analyzer_mirror")
+    git = mirror.get("git")
+    cache = mirror.get("cache")
+    if (
+        mirror.get("seed") != "verified-content-addressed-cache"
+        or mirror.get("identity") != dependency.get("identity")
+        or mirror.get("version") != dependency.get("version")
+        or mirror.get("revision") != dependency.get("revision")
+        or mirror.get("sha256") != dependency.get("sha256")
+        or mirror.get("file_count") != dependency.get("file_count")
+        or mirror.get("bytes") != dependency.get("bytes")
+        or not isinstance(git, dict)
+        or set(git) != {"path", "sha256", "version"}
+        or git.get("path") != "/Applications/Xcode.app/Contents/Developer/usr/bin/git"
+        or git.get("sha256") != "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
+        or git.get("version") != "git version 2.50.1 (Apple Git-155)"
+        or not isinstance(cache, dict)
+        or set(cache)
+        != {
+            "cache_key",
+            "cache_schema",
+            "identity",
+            "version",
+            "revision",
+            "seed",
+            "sha256",
+            "file_count",
+            "bytes",
+        }
+        or cache.get("cache_key")
+        != (
+            "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-"
+            "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+        )
+        or cache.get("cache_schema") != "swift-dependencies-v1"
+        or cache.get("seed") != "verified-content-addressed-cache"
+        or cache.get("identity") != dependency.get("identity")
+        or cache.get("version") != dependency.get("version")
+        or cache.get("revision") != dependency.get("revision")
+        or cache.get("sha256") != dependency.get("sha256")
+        or cache.get("file_count") != dependency.get("file_count")
+        or cache.get("bytes") != dependency.get("bytes")
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+    _require_sha256(str(git.get("sha256")), f"{role}_swift_analyzer_git")
+    if (
+        dependency["sha256"] != mirror["sha256"]
+        or dependency["file_count"] != mirror["file_count"]
+        or dependency["bytes"] != mirror["bytes"]
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_DEPENDENCY_MISMATCH:{role}:swift")
+
+    expected_build = {
+        "configuration": "release",
+        "automatic_resolution": False,
+        "manifest_cache": "none",
+        "environment_policy": "minimal-empty-home-deterministic-v1",
+        "deterministic_environment": {
+            "SOURCE_DATE_EPOCH": "0",
+            "SWIFT_DETERMINISTIC_HASHING": "1",
+            "ZERO_AR_DATE": "1",
+        },
+        "mtime_normalization": {
+            "epoch_nanoseconds": 0,
+            "scope": ["source-snapshot", "dependency-mirror"],
+        },
+        "reproducible_path_policy": "debug-file-macro-prefix-map-no-uuid-v1",
+        "argv": [
+            "<sandbox-exec>",
+            "-p",
+            "<deny-network-policy>",
+            "<swift-driver>",
+            "build",
+            "--package-path",
+            "<source-snapshot>",
+            "--cache-path",
+            "<isolated-cache>",
+            "--config-path",
+            "<isolated-config>",
+            "--security-path",
+            "<isolated-security>",
+            "--scratch-path",
+            "<isolated-build>",
+            "--manifest-cache",
+            "none",
+            "--disable-sandbox",
+            "--disable-automatic-resolution",
+            "-c",
+            "release",
+            "-Xswiftc",
+            "-debug-prefix-map",
+            "-Xswiftc",
+            "<build-root>=/elmos/swift-analyzer",
+            "-Xswiftc",
+            "-file-prefix-map",
+            "-Xswiftc",
+            "<build-root>=/elmos/swift-analyzer",
+            "-Xswiftc",
+            "-file-compilation-dir",
+            "-Xswiftc",
+            "<canonical-compilation-dir>",
+            "-Xswiftc",
+            "-gnone",
+            "-Xswiftc",
+            "-no-serialize-debugging-options",
+            "-Xcc",
+            "-fdebug-prefix-map=<build-root>=/elmos/swift-analyzer",
+            "-Xcc",
+            "-ffile-prefix-map=<build-root>=/elmos/swift-analyzer",
+            "-Xcc",
+            "-fmacro-prefix-map=<build-root>=/elmos/swift-analyzer",
+            "-Xcc",
+            "-frandom-seed=elmos-swift-analyzer",
+            "-Xlinker",
+            "-no_uuid",
+        ],
+    }
+    binary_path = Path(str(binary.get("path", "")))
+    if (
+        toolchain != _swift_toolchain_receipt(exact_toolchain("swift"))
+        or build != expected_build
+        or binary.get("name") != "ElmosSwiftAnalyzer"
+        or not binary_path.is_absolute()
+        or binary_path.name != "ElmosSwiftAnalyzer"
+        or not binary_path.parent.name.startswith("elmos-swift-analyzer-")
+        or not isinstance(binary.get("bytes"), int)
+        or not 0 < binary["bytes"] <= 100_000_000
+        or binary.get("mode") != "0500"
+        or binary.get("uid") != os.getuid()
+        or binary.get("gid") != os.getgid()
+        or binary.get("nlink") != 1
+        or not isinstance(binary.get("device"), int)
+        or binary["device"] <= 0
+        or not isinstance(binary.get("inode"), int)
+        or binary["inode"] <= 0
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:{role}:swift")
+    _require_sha256(str(toolchain.get("swiftc_sha256")), f"{role}_swiftc")
+    _require_sha256(str(toolchain.get("swift_driver_sha256")), f"{role}_swift_driver")
+    _require_sha256(str(binary.get("sha256")), f"{role}_swift_analyzer_binary")
+
+    policy_text = "(version 1)\n(allow default)\n(deny network*)\n"
+    expected_network_prefix = {
+        "status": "PASSED",
+        "scope": "swift-build-process-tree",
+        "sandbox": {
+            "path": "/usr/bin/sandbox-exec",
+            "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f",
+            "bytes": 102_368,
+            "mode": "0755",
+            "uid": 0,
+            "gid": 0,
+            "nlink": 1,
+            "cdhash_full": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5",
+        },
+        "verifier": {
+            "path": "/usr/bin/codesign",
+            "sha256": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40",
+            "bytes": 458_576,
+            "mode": "0755",
+            "uid": 0,
+            "gid": 0,
+            "nlink": 1,
+        },
+        "policy": {
+            "text": policy_text,
+            "sha256": "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08",
+            "bytes": 44,
+        },
+    }
+    if (
+        set(network_isolation) != {"status", "scope", "sandbox", "verifier", "policy", "probe"}
+        or any(network_isolation.get(key) != value for key, value in expected_network_prefix.items())
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_NETWORK_ISOLATION_INVALID:{role}:swift")
+    probe = network_isolation.get("probe")
+    if not isinstance(probe, dict) or set(probe) != {
+        "result",
+        "source",
+        "build",
+        "binary",
+        "execution_seal",
+        "mach_o",
+    }:
+        raise RouteError(f"PURE_MODULE_ANALYZER_NETWORK_ISOLATION_INVALID:{role}:swift")
+    probe_source = probe.get("source")
+    probe_build = probe.get("build")
+    probe_binary = probe.get("binary")
+    probe_execution_seal = probe.get("execution_seal")
+    probe_mach_o = probe.get("mach_o")
+    closure_components = toolchain["build_closure"].get("components")
+    probe_compilers = (
+        [item for item in closure_components if isinstance(item, dict) and item.get("role") == "clang"]
+        if isinstance(closure_components, list)
+        else []
+    )
+    if len(probe_compilers) != 1:
+        raise RouteError(f"PURE_MODULE_ANALYZER_NETWORK_ISOLATION_INVALID:{role}:swift")
+    expected_probe_source = {
+        "text": _SANDBOX_NETWORK_PROBE_SOURCE,
+        "sha256": "sha256:" + _SANDBOX_NETWORK_PROBE_SOURCE_SHA256,
+        "bytes": _SANDBOX_NETWORK_PROBE_SOURCE_BYTES,
+    }
+    expected_probe_build = {
+        "environment_policy": "sanitized-swift-build-deterministic-v1",
+        "argv": list(_SANDBOX_NETWORK_PROBE_BUILD_ARGV),
+        "environment": dict(_SANDBOX_NETWORK_PROBE_BUILD_ENVIRONMENT),
+        "compiler": probe_compilers[0],
+    }
+    if (
+        probe.get("result") != "NETWORK_DENIED:1"
+        or probe_source != expected_probe_source
+        or not isinstance(probe_build, dict)
+        or set(probe_build) != {"environment_policy", "argv", "environment", "compiler"}
+        or probe_build != expected_probe_build
+        or not isinstance(probe_binary, dict)
+        or set(probe_binary)
+        != {"name", "path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "device", "inode"}
+        or not isinstance(probe_execution_seal, dict)
+        or set(probe_execution_seal)
+        != {"policy", "root", "mode", "uid", "gid", "device", "inode", "binary"}
+        or not isinstance(probe_mach_o, dict)
+        or set(probe_mach_o) != {"architecture", "file_type", "uuid", "cdhash_full", "linked_libraries"}
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_NETWORK_ISOLATION_INVALID:{role}:swift")
+    probe_binary_path = Path(str(probe_binary.get("path", "")))
+    probe_seal_root = Path(str(probe_execution_seal.get("root", "")))
+    if (
+        probe_binary.get("name") != _SANDBOX_NETWORK_PROBE_BINARY_NAME
+        or probe_binary.get("sha256") != "sha256:" + _SANDBOX_NETWORK_PROBE_BINARY_SHA256
+        or probe_binary.get("bytes") != _SANDBOX_NETWORK_PROBE_BINARY_BYTES
+        or probe_binary.get("mode") != "0500"
+        or probe_binary.get("uid") != os.getuid()
+        or not isinstance(probe_binary.get("gid"), int)
+        or probe_binary.get("nlink") != 1
+        or not isinstance(probe_binary.get("device"), int)
+        or probe_binary["device"] <= 0
+        or not isinstance(probe_binary.get("inode"), int)
+        or probe_binary["inode"] <= 0
+        or not probe_binary_path.is_absolute()
+        or probe_binary_path.name != _SANDBOX_NETWORK_PROBE_BINARY_NAME
+        or probe_binary_path.parent.name != "network-probe-execution"
+        or probe_binary_path.parent.parent != binary_path.parent
+        or probe_execution_seal.get("policy") != "private-nonwritable-execution-root-v1"
+        or probe_execution_seal.get("mode") != "0500"
+        or probe_execution_seal.get("uid") != probe_binary.get("uid")
+        or probe_execution_seal.get("gid") != probe_binary.get("gid")
+        or probe_execution_seal.get("device") != probe_binary.get("device")
+        or not isinstance(probe_execution_seal.get("inode"), int)
+        or probe_execution_seal["inode"] <= 0
+        or probe_execution_seal.get("binary") != probe_binary
+        or probe_seal_root != probe_binary_path.parent
+        or probe_mach_o
+        != {
+            "architecture": "arm64",
+            "file_type": "MH_EXECUTE",
+            "uuid": _SANDBOX_NETWORK_PROBE_UUID,
+            "cdhash_full": _SANDBOX_NETWORK_PROBE_CDHASH_FULL,
+            "linked_libraries": list(_SANDBOX_NETWORK_PROBE_LINKED_LIBRARIES),
+        }
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_NETWORK_ISOLATION_INVALID:{role}:swift")
+    _require_sha256(str(probe_source.get("sha256")), f"{role}_swift_network_probe_source")
+    _require_sha256(str(probe_binary.get("sha256")), f"{role}_swift_network_probe_binary")
+    if (
+        set(execution_seal) != {"policy", "root", "mode", "uid", "gid", "device", "inode", "binary"}
+        or execution_seal.get("policy") != "private-nonwritable-execution-root-v1"
+        or execution_seal.get("mode") != "0500"
+        or execution_seal.get("uid") != binary.get("uid")
+        or execution_seal.get("gid") != binary.get("gid")
+        or execution_seal.get("device") != binary.get("device")
+        or not isinstance(execution_seal.get("inode"), int)
+        or execution_seal["inode"] <= 0
+        or Path(str(execution_seal.get("root", ""))) != binary_path.parent
+        or execution_seal.get("binary") != binary
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_EXECUTION_SEAL_INVALID:{role}:swift")
+    canonical_receipt = _canonical_swift_analyzer_receipt(receipt)
+    canonical_digest = _canonical_digest(canonical_receipt)
+
+    def contains_absolute_path(value: object) -> bool:
+        if isinstance(value, dict):
+            return any(contains_absolute_path(item) for item in value.values())
+        if isinstance(value, list):
+            return any(contains_absolute_path(item) for item in value)
+        return isinstance(value, str) and Path(value).is_absolute()
+
+    if (
+        contains_absolute_path(canonical_receipt)
+        or canonical_identity.get("receipt") != canonical_receipt
+        or canonical_identity.get("sha256") != canonical_digest
+    ):
+        raise RouteError(f"PURE_MODULE_ANALYZER_CANONICAL_IDENTITY_INVALID:{role}:swift")
+
+    analyzer_version = inventory.get("analyzer_version")
+    canonical_toolchain = _canonical_swift_toolchain_identity(toolchain)
+    expected_suffix = (
+        f";source-inputs={source_inputs['sha256']};"
+        f"swift-driver={toolchain['swift_driver_sha256']};"
+        f"swift-syntax-tree={dependency['sha256']};"
+        f"canonical-receipt={canonical_digest};binary={binary['sha256']};"
+        f"toolchain={_canonical_digest(canonical_toolchain)};"
+        f"build-closure={_canonical_digest(canonical_toolchain['build_closure'])};"
+        f"network-policy={network_isolation['policy']['sha256']}"
+    )
+    if not isinstance(analyzer_version, str) or not analyzer_version.endswith(expected_suffix):
+        raise RouteError(f"PURE_MODULE_ANALYZER_BUILD_RECEIPT_BINDING_MISMATCH:{role}:swift")
+
+
+def _verify_inventory_artifact(
+    inventory: dict[str, Any],
+    *,
+    role: str,
+    language: Language,
+    logical_file: str,
+    artifact_bytes: bytes,
+) -> None:
+    expected_keys = {
+        "schema_version",
+        "kind",
+        "profile",
+        "source_language",
+        "source_file",
+        "analyzer",
+        "analyzer_version",
+        "enumeration_status",
+        "subjects",
+        "diagnostics",
+        "source_artifact_sha256",
+        "source_artifact_bytes",
+        "directives",
+    }
+    if language == "swift":
+        expected_keys.add("analyzer_build_receipt")
+    if set(inventory) != expected_keys:
+        raise RouteError(f"PURE_MODULE_INVENTORY_KEYS_INVALID:{role}:{language}")
+    if inventory.get("enumeration_status") != "PASSED":
+        raise RouteError(f"PURE_MODULE_INVENTORY_STATUS_NOT_PASSED:{role}")
+    if inventory.get("diagnostics") != []:
+        raise RouteError(f"PURE_MODULE_INVENTORY_DIAGNOSTICS_PRESENT:{role}")
+    if (
+        inventory.get("source_language") != language
+        or inventory.get("source_file") != logical_file
+        or inventory.get("source_artifact_sha256") != _digest(artifact_bytes)
+        or inventory.get("source_artifact_bytes") != len(artifact_bytes)
+    ):
+        raise RouteError(f"PURE_MODULE_INVENTORY_ARTIFACT_MISMATCH:{role}")
+    _verify_inventory_analyzer_build_receipt(inventory, role=role, language=language)
+
+
+def _verify_language_prelude(
+    inventory: dict[str, Any],
+    *,
+    role: str,
+    language: Language,
+    artifact_bytes: bytes,
+) -> dict[str, Any]:
+    expected_raw = {
+        ("cpp", "source"): [b"#include <cstdint>"],
+        ("cpp", "target"): [
+            b"#include <cstdint>",
+            b"#include <stdexcept>",
+            b"#include <string>",
+        ],
+        ("objc", "source"): [b"#import <Foundation/Foundation.h>"],
+        ("objc", "target"): [b"#import <Foundation/Foundation.h>"],
+    }.get((language, role), [])
+    directives = inventory.get("directives")
+    if not isinstance(directives, list):
+        raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_INVENTORY_INVALID:{role}")
+    if len(directives) != len(expected_raw):
+        raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_MISMATCH:{role}:{language}")
+    for order, (directive, expected) in enumerate(zip(directives, expected_raw, strict=True)):
+        if not isinstance(directive, dict) or set(directive) != {
+            "order",
+            "kind",
+            "value",
+            "source_span",
+            "sha256",
+        }:
+            raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_INVENTORY_INVALID:{role}")
+        source_span = directive.get("source_span")
+        if not isinstance(source_span, dict):
+            raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_INVENTORY_INVALID:{role}")
+        start = source_span.get("start_byte")
+        end = source_span.get("end_byte")
+        observed = artifact_bytes[start:end] if isinstance(start, int) and isinstance(end, int) else b""
+        expected_kind, expected_value = expected[1:].split(maxsplit=1)
+        if (
+            directive.get("order") != order
+            or directive.get("kind") != expected_kind.decode("ascii")
+            or directive.get("value") != expected_value.decode("utf-8")
+            or source_span.get("file") != inventory.get("source_file")
+            or observed != expected
+            or directive.get("sha256") != _digest(expected)
+        ):
+            raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_MISMATCH:{role}:{language}")
+    return {
+        "status": "EXACT_AND_CLOSED",
+        "role": role,
+        "language": language,
+        "directives": directives,
+    }
+
+
+def _separate_verified_language_wrapper(
+    inventory: dict[str, Any],
+    *,
+    role: str,
+    language: Language,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    subjects = inventory.get("subjects")
+    if not isinstance(subjects, list):
+        raise RouteError(f"PURE_MODULE_INVENTORY_SUBJECTS_INVALID:{role}")
+    wrappers = [
+        subject
+        for subject in subjects
+        if isinstance(subject, dict) and subject.get("declaration_kind") == "top-level-class-wrapper"
+    ]
+    if language != "java":
+        if wrappers:
+            raise RouteError(f"PURE_MODULE_LANGUAGE_WRAPPER_UNEXPECTED:{role}:{language}")
+        return inventory, {
+            "status": "NOT_APPLICABLE",
+            "role": role,
+            "language": language,
+            "file": inventory.get("source_file"),
+        }
+    if len(wrappers) != 1:
+        raise RouteError(f"PURE_MODULE_LANGUAGE_WRAPPER_COUNT_MISMATCH:{role}:{len(wrappers)}")
+    wrapper = wrappers[0]
+    expected_name = Path(str(inventory.get("source_file"))).stem
+    if (
+        wrapper.get("name") != expected_name
+        or wrapper.get("qualified_name") != expected_name
+        or wrapper.get("analyzable") is not False
+        or wrapper.get("occurrence") != 1
+    ):
+        raise RouteError(f"PURE_MODULE_LANGUAGE_WRAPPER_IDENTITY_MISMATCH:{role}")
+    expected_signature = {
+        "type_kind": "CLASS",
+        "visibility": "public",
+        "storage": "top-level",
+        "modifiers": ["final", "public"],
+        "final": True,
+        "abstract": False,
+        "extends": "",
+        "implements": [],
+        "type_parameters": [],
+        "annotations": [],
+        "permits": [],
+    }
+    if wrapper.get("signature") != expected_signature:
+        raise RouteError(f"PURE_MODULE_LANGUAGE_WRAPPER_SIGNATURE_MISMATCH:{role}")
+    wrapper_start, wrapper_end = _inventory_span(wrapper, role)
+    members: list[dict[str, Any]] = []
+    member_kinds = {
+        "constructor",
+        "field",
+        "instance-initializer",
+        "method",
+        "nested-type",
+        "static-initializer",
+    }
+    for subject in subjects:
+        if subject is wrapper or not isinstance(subject, dict):
+            continue
+        if subject.get("declaration_kind") not in member_kinds:
+            continue
+        start, end = _inventory_span(subject, role)
+        if not (wrapper_start <= start and end <= wrapper_end):
+            raise RouteError(
+                f"PURE_MODULE_LANGUAGE_WRAPPER_SPAN_CONTAINMENT_MISMATCH:{role}:{subject.get('qualified_name')}"
+            )
+        members.append(
+            {
+                "name": subject["name"],
+                "qualified_name": subject["qualified_name"],
+                "declaration_kind": subject["declaration_kind"],
+                "occurrence": subject["occurrence"],
+                "source_span": subject["source_span"],
+            }
+        )
+    filtered_inventory = {
+        **inventory,
+        "subjects": [subject for subject in subjects if subject is not wrapper],
+    }
+    return filtered_inventory, {
+        "status": "EXACT_AND_CLOSED",
+        "role": role,
+        "language": language,
+        "file": inventory["source_file"],
+        "name": wrapper["name"],
+        "qualified_name": wrapper["qualified_name"],
+        "declaration_kind": wrapper["declaration_kind"],
+        "analyzable": wrapper["analyzable"],
+        "occurrence": wrapper["occurrence"],
+        "source_span": wrapper["source_span"],
+        "signature": wrapper["signature"],
+        "member_span_status": "ALL_CONTAINED",
+        "member_subjects": sorted(
+            members,
+            key=lambda item: (
+                int(item["source_span"]["start_byte"]),
+                str(item["qualified_name"]),
+            ),
+        ),
+    }
+
+
+def _verify_profile_subject_contract(
+    language: Language,
+    subject: dict[str, Any],
+    *,
+    role: str,
+    symbol: str,
+) -> None:
+    expected = {
+        "cpp": ("FunctionDecl", "external", "none"),
+        "objc": ("FunctionDecl", "external", "none"),
+        "swift": ("FunctionDeclSyntax", "internal", "file-scope"),
+        "java": ("method", "public", "static"),
+    }.get(language)
+    if expected is None:
+        return
+    signature = subject.get("signature")
+    if not isinstance(signature, dict):
+        raise RouteError(f"PURE_MODULE_PROFILE_SIGNATURE_MISMATCH:{role}:{symbol}")
+    declaration_kind, visibility, storage = expected
+    if (
+        subject.get("declaration_kind") != declaration_kind
+        or signature.get("visibility") != visibility
+        or signature.get("storage") != storage
+    ):
+        raise RouteError(f"PURE_MODULE_PROFILE_DECLARATION_CONTRACT_MISMATCH:{role}:{symbol}")
+    if language == "java" and signature.get("modifiers") != ["public", "static"]:
+        raise RouteError(f"PURE_MODULE_PROFILE_DECLARATION_CONTRACT_MISMATCH:{role}:{symbol}")
+
+
+def _profile_symbol_record(
+    subject: dict[str, Any],
+    function: Function,
+    *,
+    role: str,
+) -> dict[str, Any]:
+    signature = subject.get("signature")
+    assert isinstance(signature, dict)
+    raw_parameters = signature.get("parameters")
+    if not isinstance(raw_parameters, list):
+        raw_parameters = []
+    if function.source_span is None or function.source_span.to_mapping() != subject.get("source_span"):
+        raise RouteError(f"PURE_MODULE_PROFILE_SPAN_MISMATCH:{role}:{function.name}")
+    return {
+        "symbol": function.name,
+        "qualified_name": subject["qualified_name"],
+        "declaration_kind": subject["declaration_kind"],
+        "occurrence": subject["occurrence"],
+        "source_span": subject["source_span"],
+        "raw_signature": signature,
+        "raw_parameter_names": [parameter.get("name") for parameter in raw_parameters if isinstance(parameter, dict)],
+        "canonical_signature": function.signature_mapping(),
+    }
+
+
+def _close_profile_inventory(
+    inventory: dict[str, Any],
+    ir: SemanticIR,
+    manifest_signatures: dict[str, dict[str, Any]],
+    *,
+    role: str,
+    helper_regions: list[dict[str, Any]] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    functions = {function.name: function for function in ir.functions}
+    if set(functions) != set(manifest_signatures):
+        raise RouteError(f"PURE_MODULE_PROFILE_SYMBOL_SET_MISMATCH:{role}")
+    for symbol, function in functions.items():
+        if function.signature_mapping() != manifest_signatures[symbol]:
+            raise RouteError(f"PURE_MODULE_PROFILE_SIGNATURE_MISMATCH:{role}:{symbol}")
+
+    profile_subjects: dict[str, dict[str, Any]] = {}
+    helper_subjects: list[dict[str, Any]] = []
+    subjects = inventory.get("subjects")
+    if not isinstance(subjects, list):
+        raise RouteError(f"PURE_MODULE_INVENTORY_SUBJECTS_INVALID:{role}")
+    for subject in subjects:
+        if not isinstance(subject, dict):
+            raise RouteError(f"PURE_MODULE_INVENTORY_SUBJECTS_INVALID:{role}")
+        start, end = _inventory_span(subject, role)
+        matched_helpers = [
+            region for region in helper_regions or [] if region["start_byte"] <= start and end <= region["end_byte"]
+        ]
+        if len(matched_helpers) > 1:
+            raise RouteError("PURE_MODULE_TARGET_HELPER_REGION_OVERLAP")
+        if matched_helpers:
+            helper_subjects.append({**subject, "helper_id": matched_helpers[0]["helper_id"]})
+            continue
+
+        raw_symbol = subject.get("name")
+        qualified_name = str(subject.get("qualified_name", raw_symbol or "unknown"))
+        declaration_kind = str(subject.get("declaration_kind", "unknown"))
+        if not isinstance(raw_symbol, str) or raw_symbol not in manifest_signatures:
+            raise RouteError(
+                f"PURE_MODULE_WHOLE_FILE_DECLARATION_NOT_ALLOWED:{role}:{declaration_kind}:{qualified_name}"
+            )
+        symbol = raw_symbol
+        if subject.get("analyzable") is not True:
+            raise RouteError(f"PURE_MODULE_PROFILE_SYMBOL_NOT_ANALYZABLE:{role}:{qualified_name}")
+        if symbol in profile_subjects:
+            raise RouteError(f"PURE_MODULE_PROFILE_SYMBOL_DUPLICATED:{role}:{symbol}")
+        _verify_profile_subject_contract(
+            ir.source_language,
+            subject,
+            role=role,
+            symbol=symbol,
+        )
+        profile_subjects[symbol] = subject
+
+    if set(profile_subjects) != set(manifest_signatures):
+        raise RouteError(f"PURE_MODULE_PROFILE_SYMBOL_SET_MISMATCH:{role}")
+
+    records: list[dict[str, Any]] = []
+    for symbol in sorted(manifest_signatures):
+        function = functions[symbol]
+        subject = profile_subjects[symbol]
+        record = _profile_symbol_record(subject, function, role=role)
+        expected_parameter_names = [parameter.name for parameter in function.parameters]
+        if record["raw_parameter_names"] != expected_parameter_names:
+            raise RouteError(f"PURE_MODULE_PROFILE_SIGNATURE_MISMATCH:{role}:{symbol}")
+        records.append(record)
+    return records, helper_subjects
+
+
+def _emitted_helper_regions(emitted: EmittedFile, target_language: Language) -> list[dict[str, Any]]:
+    registry = _HELPERS.get(target_language, {})
+    emitted_bytes = emitted.content.encode("utf-8")
+    regions: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for helper_id, claimed_digest in emitted.helper_digests:
+        if helper_id in seen:
+            raise RouteError(f"PURE_MODULE_TARGET_HELPER_DUPLICATED:{helper_id}")
+        seen.add(helper_id)
+        helper_source = registry.get(helper_id)
+        if helper_source is None:
+            raise RouteError(f"PURE_MODULE_TARGET_HELPER_UNREGISTERED:{helper_id}")
+        helper_bytes = helper_source.encode("utf-8")
+        observed_digest = _digest(helper_bytes)
+        if claimed_digest != observed_digest:
+            raise RouteError(f"PURE_MODULE_TARGET_HELPER_DIGEST_MISMATCH:{helper_id}")
+        if emitted_bytes.count(helper_bytes) != 1:
+            raise RouteError(f"PURE_MODULE_TARGET_HELPER_SOURCE_COUNT_INVALID:{helper_id}")
+        start = emitted_bytes.index(helper_bytes)
+        regions.append(
+            {
+                "helper_id": helper_id,
+                "sha256": observed_digest,
+                "bytes": len(helper_bytes),
+                "start_byte": start,
+                "end_byte": start + len(helper_bytes),
+            }
+        )
+    return sorted(regions, key=lambda item: (item["start_byte"], item["helper_id"]))
+
+
+def _verify_helper_visibility(language: Language, subject: dict[str, Any]) -> tuple[str, str]:
+    signature = subject.get("signature")
+    if not isinstance(signature, dict):
+        raise RouteError("PURE_MODULE_TARGET_HELPER_SIGNATURE_INVALID")
+    visibility = signature.get("visibility")
+    storage = signature.get("storage")
+    allowed = {
+        "cpp": {("internal", "static")},
+        "objc": {("internal", "static")},
+        "java": {("private", "static")},
+        "swift": {("private", "file-scope"), ("fileprivate", "file-scope")},
+    }.get(language, set())
+    if (visibility, storage) not in allowed:
+        raise RouteError(
+            f"PURE_MODULE_TARGET_HELPER_VISIBILITY_INVALID:{subject.get('helper_id')}:{subject.get('qualified_name')}"
+        )
+    return str(visibility), str(storage)
+
+
+def _specialized_helper_contract(
+    language: Language,
+    helper_id: str,
+) -> tuple[str, str, int]:
+    candidates: set[tuple[str, int]] = set()
+    for callee, helper_ids in _CHECKED_INTEGER_CALL.get(language, {}).values():
+        if helper_id in helper_ids:
+            candidates.add((callee, 2))
+    float_guard = _FLOAT_NON_ZERO_GUARD.get(language)
+    if float_guard is not None and helper_id == float_guard[1]:
+        candidates.add((float_guard[0], 1))
+    if len(candidates) != 1:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_CONTRACT_MISSING:{helper_id}")
+    qualified_name, arity = candidates.pop()
+    return qualified_name.rsplit(".", 1)[-1], qualified_name, arity
+
+
+def _verify_specialized_helper_subject(
+    *,
+    language: Language,
+    region: dict[str, Any],
+    symbols: list[dict[str, Any]],
+    target_bytes: bytes,
+) -> None:
+    helper_id = str(region["helper_id"])
+    if len(symbols) != 1:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_SUBJECT_SET_MISMATCH:{helper_id}")
+    symbol = symbols[0]
+    if symbol.get("analyzable") is not True:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_NOT_ANALYZABLE:{helper_id}")
+    expected_kinds = {
+        "cpp": "FunctionDecl",
+        "objc": "FunctionDecl",
+        "java": "method",
+        "swift": "FunctionDeclSyntax",
+    }
+    if symbol.get("declaration_kind") != expected_kinds[language]:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_DECLARATION_KIND_INVALID:{helper_id}")
+    expected_name, expected_qualified_name, expected_arity = _specialized_helper_contract(language, helper_id)
+    if symbol.get("name") != expected_name or symbol.get("qualified_name") not in {
+        expected_name,
+        expected_qualified_name,
+    }:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_NAME_MISMATCH:{helper_id}")
+    signature = symbol.get("raw_signature")
+    parameters = signature.get("parameters") if isinstance(signature, dict) else None
+    if not isinstance(parameters, list) or len(parameters) != expected_arity:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_SIGNATURE_MISMATCH:{helper_id}")
+    if symbol.get("occurrence") != 1:
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_OCCURRENCE_INVALID:{helper_id}")
+    source_span = symbol.get("source_span")
+    if not isinstance(source_span, dict):
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_SPAN_COVERAGE_INVALID:{helper_id}")
+    start = source_span.get("start_byte")
+    end = source_span.get("end_byte")
+    if not isinstance(start, int) or not isinstance(end, int):
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_SPAN_COVERAGE_INVALID:{helper_id}")
+    prefix = target_bytes[int(region["start_byte"]) : start]
+    suffix = target_bytes[end : int(region["end_byte"])]
+    if prefix.strip() or suffix.strip():
+        raise RouteError(f"PURE_MODULE_TARGET_HELPER_SPAN_COVERAGE_INVALID:{helper_id}")
+
+
+def _function_operator_uses(function: Function) -> set[tuple[str, str]]:
+    environment = types.check_function(function)
+    uses: set[tuple[str, str]] = set()
+
+    def expression_uses(expression: Expression) -> None:
+        if expression.kind != "binary" or expression.left is None or expression.right is None:
+            return
+        left_type = types.infer(expression.left, environment)
+        right_type = types.infer(expression.right, environment)
+        domain = "integer" if left_type == right_type == "integer" else "number"
+        uses.add((domain, str(expression.operator)))
+        expression_uses(expression.left)
+        expression_uses(expression.right)
+
+    def statement_uses(statement: Statement) -> None:
+        if statement.expression is not None:
+            expression_uses(statement.expression)
+        if statement.condition is not None:
+            expression_uses(statement.condition)
+        for nested in (*statement.then_body, *statement.else_body):
+            statement_uses(nested)
+
+    for statement in function.body:
+        statement_uses(statement)
+    return uses
+
+
+def _target_call_graph(
+    target_ir: SemanticIR,
+    emitted: EmittedFile,
+    target_helper_symbols: list[dict[str, Any]],
+) -> dict[str, Any]:
+    helper_identifiers = {
+        str(identifier) for symbol in target_helper_symbols for identifier in (symbol["name"], symbol["qualified_name"])
+    }
+    helper_ids = {str(symbol["helper_id"]) for symbol in target_helper_symbols}
+    registered_rules: dict[str, tuple[str, str, str, tuple[str, ...]]] = {}
+    for operator, (callee, required_helpers) in _CHECKED_INTEGER_CALL.get(target_ir.source_language, {}).items():
+        rule = f"{target_ir.source_language}.integer.{operator}.call:{callee}"
+        registered_rules[rule] = ("integer", operator, callee, required_helpers)
+    float_guard = _FLOAT_NON_ZERO_GUARD.get(target_ir.source_language)
+    if float_guard is not None:
+        callee, helper_id = float_guard
+        for operator in ("/", "%"):
+            rule = f"{target_ir.source_language}.number.{operator}.non-zero:{callee}"
+            registered_rules[rule] = ("number", operator, callee, (helper_id,))
+
+    call_rules = {rule for rule in emitted.normalization_rules if ".call:" in rule or ".non-zero:" in rule}
+    if not call_rules <= set(registered_rules):
+        raise RouteError("PURE_MODULE_TARGET_CALL_NORMALIZATION_INVALID")
+
+    edges: list[dict[str, Any]] = []
+    matched_rules: set[str] = set()
+    for rule in sorted(call_rules):
+        domain, operator, callee, required_helpers = registered_rules[rule]
+        if required_helpers:
+            if not set(required_helpers) <= helper_ids or callee not in helper_identifiers:
+                raise RouteError(f"PURE_MODULE_TARGET_CALL_GRAPH_HELPER_MISMATCH:{rule}")
+            callee_kind = "exact-generated-helper"
+        else:
+            if callee in helper_identifiers:
+                raise RouteError(f"PURE_MODULE_TARGET_CALL_GRAPH_BUILTIN_MISMATCH:{rule}")
+            callee_kind = "pinned-target-builtin"
+        for function in target_ir.functions:
+            if (domain, operator) not in _function_operator_uses(function):
+                continue
+            matched_rules.add(rule)
+            edges.append(
+                {
+                    "caller": function.name,
+                    "callee": callee,
+                    "callee_kind": callee_kind,
+                    "canonical_domain": domain,
+                    "canonical_operator": operator,
+                    "normalization_rule": rule,
+                }
+            )
+    if matched_rules != call_rules:
+        raise RouteError("PURE_MODULE_TARGET_CALL_GRAPH_NOT_CLOSED")
+    return {
+        "status": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS",
+        "scope": "profile-functions-to-emitted-callees",
+        "edges": sorted(
+            edges,
+            key=lambda edge: (
+                edge["caller"],
+                edge["callee"],
+                edge["canonical_domain"],
+                edge["canonical_operator"],
+            ),
+        ),
+        "helper_internal_calls": {
+            "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+            "binding": "verified_generated_helpers-exact-bytes-and-digests",
+        },
+    }
+
+
+def _build_whole_file_closure(
+    *,
+    source_inventory: dict[str, Any],
+    target_inventory: dict[str, Any],
+    source_ir: SemanticIR,
+    target_ir: SemanticIR,
+    manifest: dict[str, Any],
+    source_bytes: bytes,
+    emitted: EmittedFile,
+) -> dict[str, Any]:
+    manifest_signatures = _module_manifest_signatures(manifest)
+    target_bytes = emitted.content.encode("utf-8")
+    _verify_inventory_artifact(
+        source_inventory,
+        role="source",
+        language=source_ir.source_language,
+        logical_file=source_ir.source_file,
+        artifact_bytes=source_bytes,
+    )
+    _verify_inventory_artifact(
+        target_inventory,
+        role="target",
+        language=target_ir.source_language,
+        logical_file=target_ir.source_file,
+        artifact_bytes=target_bytes,
+    )
+    source_prelude = _verify_language_prelude(
+        source_inventory,
+        role="source",
+        language=source_ir.source_language,
+        artifact_bytes=source_bytes,
+    )
+    target_prelude = _verify_language_prelude(
+        target_inventory,
+        role="target",
+        language=target_ir.source_language,
+        artifact_bytes=target_bytes,
+    )
+    source_profile_inventory, source_wrapper = _separate_verified_language_wrapper(
+        source_inventory,
+        role="source",
+        language=source_ir.source_language,
+    )
+    target_profile_inventory, target_wrapper = _separate_verified_language_wrapper(
+        target_inventory,
+        role="target",
+        language=target_ir.source_language,
+    )
+    source_profile_symbols, source_helpers = _close_profile_inventory(
+        source_profile_inventory,
+        source_ir,
+        manifest_signatures,
+        role="source",
+    )
+    if source_helpers:
+        raise RouteError("PURE_MODULE_SOURCE_HELPER_EXCEPTION_FORBIDDEN")
+
+    helper_regions = _emitted_helper_regions(emitted, target_ir.source_language)
+    target_profile_symbols, raw_helper_subjects = _close_profile_inventory(
+        target_profile_inventory,
+        target_ir,
+        manifest_signatures,
+        role="target",
+        helper_regions=helper_regions,
+    )
+    helpers_by_id: dict[str, list[dict[str, Any]]] = {str(region["helper_id"]): [] for region in helper_regions}
+    target_helper_symbols: list[dict[str, Any]] = []
+    for subject in raw_helper_subjects:
+        helper_id = str(subject["helper_id"])
+        visibility, storage = _verify_helper_visibility(target_ir.source_language, subject)
+        signature = subject["signature"]
+        parameters = signature.get("parameters")
+        arity = len(parameters) if isinstance(parameters, list) else 0
+        symbol = {
+            "helper_id": helper_id,
+            "name": subject["name"],
+            "qualified_name": subject["qualified_name"],
+            "declaration_kind": subject["declaration_kind"],
+            "analyzable": subject["analyzable"],
+            "occurrence": subject["occurrence"],
+            "arity": arity,
+            "visibility": visibility,
+            "storage": storage,
+            "source_span": subject["source_span"],
+            "raw_signature": signature,
+        }
+        helpers_by_id[helper_id].append(symbol)
+        target_helper_symbols.append(symbol)
+
+    verified_helpers: list[dict[str, Any]] = []
+    for region in helper_regions:
+        helper_id = str(region["helper_id"])
+        symbols = sorted(helpers_by_id[helper_id], key=lambda item: item["qualified_name"])
+        if not symbols:
+            raise RouteError(f"PURE_MODULE_TARGET_HELPER_INVENTORY_MISSING:{helper_id}")
+        if is_specialized_pair(source_ir.source_language, target_ir.source_language):
+            _verify_specialized_helper_subject(
+                language=target_ir.source_language,
+                region=region,
+                symbols=symbols,
+                target_bytes=target_bytes,
+            )
+        verified_helpers.append(
+            {
+                **region,
+                "source_span": {
+                    "file": emitted.relative_path,
+                    "start_byte": region["start_byte"],
+                    "end_byte": region["end_byte"],
+                },
+                "symbols": symbols,
+            }
+        )
+
+    source_inventory_bytes = canonical_json_bytes(source_inventory)
+    target_inventory_bytes = canonical_json_bytes(target_inventory)
+    target_call_graph = _target_call_graph(target_ir, emitted, target_helper_symbols)
+    return {
+        "schema_version": "1.0.0",
+        "kind": "elmos.typed-pure-module-whole-file-closure",
+        "profile": "typed-pure-module-v1",
+        "route": {
+            "source_language": source_ir.source_language,
+            "target_language": target_ir.source_language,
+        },
+        "status": "PASSED",
+        "source_inventory_sha256": _digest(source_inventory_bytes),
+        "source_inventory_bytes": len(source_inventory_bytes),
+        "target_inventory_sha256": _digest(target_inventory_bytes),
+        "target_inventory_bytes": len(target_inventory_bytes),
+        "manifest_symbols": sorted(manifest_signatures),
+        "source_profile_symbols": source_profile_symbols,
+        "target_profile_symbols": target_profile_symbols,
+        "target_helper_symbols": sorted(
+            target_helper_symbols, key=lambda item: (item["helper_id"], item["qualified_name"])
+        ),
+        "verified_generated_helpers": verified_helpers,
+        "verified_language_prelude": {
+            "source": source_prelude,
+            "target": target_prelude,
+        },
+        "verified_language_wrapper": {
+            "source": source_wrapper,
+            "target": target_wrapper,
+        },
+        "blocked_declarations": {"source": [], "target": []},
+        "source_user_call_graph": {"edges": [], "status": "EMPTY_AND_CLOSED"},
+        "target_call_graph_policy": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
+        "target_call_graph": target_call_graph,
+        "target_builtin_normalizations": list(emitted.normalization_rules),
+    }
+
+
 def migrate_module(
+    source: Path,
+    source_language: Language,
+    target_language: Language,
+    manifest_path: Path,
+    output: Path,
+) -> dict[str, Any]:
+    """Snapshot immutable module inputs, then run the closed migration."""
+
+    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+        raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
+    if source_language == target_language:
+        raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
+    if not is_routed_pair(source_language, target_language):
+        raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    resolved_source = source.resolve()
+    resolved_manifest = manifest_path.resolve()
+    source_bytes = resolved_source.read_bytes()
+    manifest_bytes = resolved_manifest.read_bytes()
+    with tempfile.TemporaryDirectory(prefix="elmos-module-input-snapshot-") as temporary:
+        snapshot_root = Path(temporary)
+        snapshot_root.chmod(0o700)
+        source_snapshot = _private_input_snapshot(
+            snapshot_root,
+            "source",
+            resolved_source.name,
+            source_bytes,
+        )
+        manifest_snapshot = _private_input_snapshot(
+            snapshot_root,
+            "manifest",
+            resolved_manifest.name,
+            manifest_bytes,
+        )
+        return _migrate_module_snapshot(
+            source_snapshot,
+            source_language,
+            target_language,
+            manifest_snapshot,
+            output,
+        )
+
+
+def _migrate_module_snapshot(
     source: Path,
     source_language: Language,
     target_language: Language,
@@ -639,11 +1905,17 @@ def migrate_module(
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
     if not is_routed_pair(source_language, target_language):
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    source = source.resolve()
+    manifest_path = manifest_path.resolve()
+    source_bytes = source.read_bytes()
+    manifest_bytes = manifest_path.read_bytes()
     manifest = _load_module_manifest(manifest_path)
     symbols = _manifest_symbols(manifest)
-    output = safe_output(output)
-    output.mkdir(parents=True, exist_ok=True)
 
+    # Whole-file closure is a precondition, not evidence appended after the
+    # conversion has already emitted output. The real compiler inventory runs
+    # before any caller-owned output directory is created.
+    source_inventory = inventory_module(source, source_language)
     source_analyses = [analyze(source, source_language, symbol) for symbol in symbols]
     source_ir = _combine_function_irs(source_analyses, symbols, source_language, "source")
     _enforce_specialized_semantic_domain(source_ir, source_language, target_language)
@@ -658,6 +1930,30 @@ def migrate_module(
             source_language,
             target_language,
         )
+    emitted = emit(source_ir, target_language)
+    with tempfile.TemporaryDirectory(prefix="elmos-module-closure-") as temporary:
+        target_path = Path(temporary) / emitted.relative_path
+        target_path.write_text(emitted.content, encoding="utf-8")
+        target_inventory = inventory_module(target_path, target_language)
+        target_analyses = [analyze(target_path, target_language, symbol, emitted_target=True) for symbol in symbols]
+    target_ir = _combine_function_irs(target_analyses, symbols, target_language, "target")
+    _enforce_specialized_semantic_domain(target_ir, source_language, target_language)
+    whole_file_closure = _build_whole_file_closure(
+        source_inventory=source_inventory,
+        target_inventory=target_inventory,
+        source_ir=source_ir,
+        target_ir=target_ir,
+        manifest=manifest,
+        source_bytes=source_bytes,
+        emitted=emitted,
+    )
+    if source.read_bytes() != source_bytes:
+        raise RouteError("PURE_MODULE_SOURCE_CHANGED_DURING_CLOSURE")
+    if manifest_path.read_bytes() != manifest_bytes:
+        raise RouteError("PURE_MODULE_CASE_MANIFEST_CHANGED_DURING_CLOSURE")
+
+    output = safe_output(output)
+    output.mkdir(parents=True, exist_ok=True)
     source_validation: dict[str, Any] = {}
     source_observations: dict[str, list[dict[str, Any]]] = {}
     for index, symbol in enumerate(symbols):
@@ -672,14 +1968,6 @@ def migrate_module(
         source_validation[symbol] = validation
         source_observations[symbol] = list(validation.get("observations", []))
 
-    emitted = emit(source_ir, target_language)
-    target_path = output / emitted.relative_path
-    target_path.write_text(emitted.content, encoding="utf-8")
-    target_analyses = [
-        analyze(target_path, target_language, symbol, emitted_target=True) for symbol in symbols
-    ]
-    target_ir = _combine_function_irs(target_analyses, symbols, target_language, "target")
-    _enforce_specialized_semantic_domain(target_ir, source_language, target_language)
     target_validation: dict[str, Any] = {}
     target_observations: dict[str, list[dict[str, Any]]] = {}
     for index, symbol in enumerate(symbols):
@@ -700,13 +1988,16 @@ def migrate_module(
         case_manifest=manifest,
         source_observations=source_observations,
         target_observations=target_observations,
-        source_artifact_sha256=_digest(source.read_bytes()),
+        source_artifact_sha256=_digest(source_bytes),
         target_artifact_sha256=_digest(emitted.content.encode("utf-8")),
-        corpus_sha256=_digest(manifest_path.read_bytes()),
+        corpus_sha256=_digest(manifest_bytes),
         emitted=emitted,
-        source_artifact_bytes=source.read_bytes(),
+        source_artifact_bytes=source_bytes,
         source_logical_file=source.name,
-        case_manifest_bytes=manifest_path.read_bytes(),
+        case_manifest_bytes=manifest_bytes,
+        source_inventory=source_inventory,
+        target_inventory=target_inventory,
+        whole_file_closure=whole_file_closure,
         output=output,
     )
     source_validation_path = output / "source-module-validation.json"
@@ -728,6 +2019,55 @@ def migrate_module(
 
 
 def migrate(
+    source: Path,
+    source_language: Language,
+    target_language: Language,
+    function_name: str,
+    cases_path: Path,
+    output: Path,
+    *,
+    repository_execution_mode: bool = False,
+) -> dict[str, Any]:
+    """Snapshot immutable single-function inputs before any compiler phase."""
+
+    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+        raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
+    if source_language == target_language:
+        raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
+    routed_pair = is_routed_pair(source_language, target_language)
+    if not routed_pair and not repository_execution_mode:
+        raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    resolved_source = source.resolve()
+    resolved_cases = cases_path.resolve()
+    source_bytes = resolved_source.read_bytes()
+    cases_bytes = resolved_cases.read_bytes()
+    with tempfile.TemporaryDirectory(prefix="elmos-function-input-snapshot-") as temporary:
+        snapshot_root = Path(temporary)
+        snapshot_root.chmod(0o700)
+        source_snapshot = _private_input_snapshot(
+            snapshot_root,
+            "source",
+            resolved_source.name,
+            source_bytes,
+        )
+        cases_snapshot = _private_input_snapshot(
+            snapshot_root,
+            "cases",
+            resolved_cases.name,
+            cases_bytes,
+        )
+        return _migrate_from_snapshot(
+            source_snapshot,
+            source_language,
+            target_language,
+            function_name,
+            cases_snapshot,
+            output,
+            repository_execution_mode=repository_execution_mode,
+        )
+
+
+def _migrate_from_snapshot(
     source: Path,
     source_language: Language,
     target_language: Language,
@@ -760,9 +2100,7 @@ def migrate(
     _enforce_specialized_semantic_domain(ir, source_language, target_language)
     function = ir.functions[0]
     cases = _load_cases(cases_path, len(function.parameters))
-    _enforce_specialized_case_domain(
-        function, cases, source_language, target_language
-    )
+    _enforce_specialized_case_domain(function, cases, source_language, target_language)
     source_runtime_evidence: dict[str, Any] | None = None
     if routed_pair or repository_execution_mode:
         source_runtime_evidence = validate_source(

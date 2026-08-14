@@ -6,6 +6,7 @@ from typing import Any, Literal
 EvidenceState = Literal["PASSED", "FAILED", "NOT_RUN"]
 CertificationState = Literal["NOT_CERTIFIED"]
 TranspilationState = Literal["SYNTAX_READY", "BLOCKED"]
+CommercialAssessmentState = Literal["BLOCKED"]
 
 
 @dataclass(frozen=True)
@@ -181,3 +182,96 @@ class TranspileResult:
         if include_sql:
             result["targetSql"] = self.target_sql
         return result
+
+
+@dataclass(frozen=True)
+class CommercialAssessRequest:
+    schema_version: str
+    query_id: str
+    source_profile: str
+    target_id: str
+    target_version: str
+    target_edition: str
+    compatibility_mode: str
+    target_driver: str
+    target_charset: str
+    target_collation: str
+    target_time_zone: str
+    capability_snapshot_digest: str
+    sql: str
+    parameters: tuple[ParameterContract, ...] = ()
+
+
+@dataclass(frozen=True)
+class CommercialStatement:
+    index: int
+    kind: str
+    source_ast: dict[str, Any] | list[Any]
+    obligations: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "index": self.index,
+            "kind": self.kind,
+            "sourceAst": self.source_ast,
+            "obligations": list(self.obligations),
+        }
+
+
+@dataclass(frozen=True)
+class CommercialBlocker:
+    code: str
+    severity: Literal["ERROR", "WARNING"]
+    statement_index: int | None
+    message: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "code": self.code,
+            "severity": self.severity,
+            "statementIndex": self.statement_index,
+            "message": self.message,
+        }
+
+
+@dataclass(frozen=True)
+class CommercialAssessmentResult:
+    schema_version: str
+    query_id: str
+    source_profile: str
+    target: dict[str, Any]
+    route_id: str
+    state: CommercialAssessmentState
+    source_digest: str
+    capability_snapshot_digest: str
+    statements: tuple[CommercialStatement, ...]
+    blockers: tuple[CommercialBlocker, ...]
+    target_sql: None = None
+    source_parse: EvidenceState = "NOT_RUN"
+    certification: CertificationState = "NOT_CERTIFIED"
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schemaVersion": self.schema_version,
+            "queryId": self.query_id,
+            "sourceProfile": self.source_profile,
+            "target": self.target,
+            "routeId": self.route_id,
+            "state": self.state,
+            "sourceDigest": self.source_digest,
+            "capabilitySnapshotDigest": self.capability_snapshot_digest,
+            "statements": [statement.to_dict() for statement in self.statements],
+            "blockers": [blocker.to_dict() for blocker in self.blockers],
+            "targetSql": self.target_sql,
+            "verification": {
+                "sourceParse": self.source_parse,
+                "targetAdapter": "NOT_RUN",
+                "targetEmit": "NOT_RUN",
+                "targetReparse": "NOT_RUN",
+                "sourceExecution": "NOT_RUN",
+                "targetExecution": "NOT_RUN",
+                "resultEquivalence": "NOT_RUN",
+                "externalExecution": "NOT_RUN",
+            },
+            "certification": self.certification,
+        }

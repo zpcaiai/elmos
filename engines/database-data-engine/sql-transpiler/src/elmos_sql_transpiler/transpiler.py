@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import json
 from hashlib import sha256
 from importlib.metadata import version
+from typing import Any
 
 import sqlglot
 from sqlglot import exp
-from sqlglot.errors import ErrorLevel, ParseError, UnsupportedError
+from sqlglot.errors import ErrorLevel, ParseError, TokenError, UnsupportedError
 
 from . import placeholders
+from .adapters import target_adapter_for_profile
 from .models import (
     Diagnostic,
     EvidenceState,
@@ -70,6 +73,36 @@ _OBLIGATION_BY_NODE = {
 
 def _digest(value: str) -> str:
     return f"sha256:{sha256(value.encode('utf-8')).hexdigest()}"
+
+
+def _canonical_digest(value: Any) -> str:
+    return _digest(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+
+
+def _transformation_trace(
+    *,
+    statement_index: int,
+    rule_id: str,
+    action: str,
+    before: exp.Expression,
+    after: exp.Expression,
+) -> dict[str, Any]:
+    rule_version = "1.0.0"
+    return {
+        "statementIndex": statement_index,
+        "ruleId": rule_id,
+        "ruleVersion": rule_version,
+        "action": action,
+        "inputDigest": _canonical_digest(before.dump()),
+        "outputDigest": _canonical_digest(after.dump()),
+        "ruleDigest": _canonical_digest(
+            {
+                "ruleId": rule_id,
+                "ruleVersion": rule_version,
+                "action": action,
+            }
+        ),
+    }
 
 
 def _require_pinned_parser() -> None:
@@ -319,6 +352,12 @@ def transpile(request: TranspileRequest) -> TranspileResult:
     target = profile_by_id(request.target_profile)
     route = directed_route(source.id, target.id)
     source_digest = _digest(request.sql)
+    target_adapter = target_adapter_for_profile(target.id)
+    if (
+        target_adapter.target_profile_id != target.id
+        or target_adapter.target_dialect != target.dialect
+    ):
+        raise RuntimeError("target adapter registration does not match the exact target profile")
 
     try:
         parsed_source_statements = sqlglot.parse(
@@ -326,7 +365,7 @@ def transpile(request: TranspileRequest) -> TranspileResult:
             read=source.dialect,
             error_level=ErrorLevel.RAISE,
         )
-    except ParseError:
+    except (ParseError, TokenError):
         return _blocked_result(
             request,
             diagnostic=Diagnostic(
@@ -362,6 +401,7 @@ def transpile(request: TranspileRequest) -> TranspileResult:
     target_sql_parts: list[str] = []
     statement_irs: list[StatementIr] = []
     diagnostics: list[Diagnostic] = []
+    rule_trace: list[dict[str, Any]] = []
     try:
         for index, source_statement in enumerate(source_statements):
             if isinstance(source_statement, exp.Command):
@@ -370,13 +410,40 @@ def transpile(request: TranspileRequest) -> TranspileResult:
             canonical_statement, positional_rewrite = _normalize_positional_references(
                 source_statement
             )
+            if positional_rewrite:
+                rule_trace.append(
+                    _transformation_trace(
+                        statement_index=index,
+                        rule_id="core.normalize-positional-reference",
+                        action="NORMALIZE_TYPED_AST",
+                        before=source_statement,
+                        after=canonical_statement,
+                    )
+                )
+            before_placeholder_rewrite = canonical_statement
             canonical_statement, placeholder_mapping = placeholders.rewrite(
-                canonical_statement, source.dialect, target.dialect
+                before_placeholder_rewrite, source.dialect, target.dialect
             )
-            generated = canonical_statement.sql(
-                dialect=target.dialect,
-                pretty=True,
-                unsupported_level=ErrorLevel.RAISE,
+            if placeholder_mapping:
+                rule_trace.append(
+                    _transformation_trace(
+                        statement_index=index,
+                        rule_id="core.rewrite-parameter-binding",
+                        action="REWRITE_TYPED_PARAMETER_NODES",
+                        before=before_placeholder_rewrite,
+                        after=canonical_statement,
+                    )
+                )
+            emission = target_adapter.emit(canonical_statement)
+            if (
+                emission.adapter_id != target_adapter.adapter_id
+                or emission.adapter_digest != target_adapter.adapter_digest
+                or emission.protocol_version != target_adapter.protocol_version
+            ):
+                raise RuntimeError("target adapter returned an inconsistent emission identity")
+            generated = emission.sql
+            rule_trace.extend(
+                {"statementIndex": index, **trace.to_dict()} for trace in emission.rules
             )
             parsed_target_statements = sqlglot.parse(
                 generated,
@@ -416,8 +483,12 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 )
             )
             target_sql_parts.append(generated.rstrip(";"))
-    except (ParseError, UnsupportedError) as error:
-        code = "TARGET_REPARSE_FAILED" if isinstance(error, ParseError) else "UNSUPPORTED_SEMANTICS"
+    except (ParseError, TokenError, UnsupportedError) as error:
+        code = (
+            "TARGET_REPARSE_FAILED"
+            if isinstance(error, (ParseError, TokenError))
+            else "UNSUPPORTED_SEMANTICS"
+        )
         return _blocked_result(
             request,
             diagnostic=Diagnostic(
@@ -503,6 +574,16 @@ def transpile(request: TranspileRequest) -> TranspileResult:
             "parserVersion": _SQLGLOT_VERSION,
             "statementCount": len(statement_irs),
             "semanticObligations": all_obligations,
+            "targetAdapter": {
+                "adapterId": target_adapter.adapter_id,
+                "adapterVersion": target_adapter.adapter_version,
+                "protocolVersion": target_adapter.protocol_version,
+                "targetProfileId": target_adapter.target_profile_id,
+                "targetDialect": target_adapter.target_dialect,
+                "adapterDigest": target_adapter.adapter_digest,
+            },
+            "ruleTrace": rule_trace,
+            "ruleTraceDigest": _canonical_digest(rule_trace),
             "rawSourceSqlPersisted": False,
             "sourceAstPersisted": True,
             "silentFallbackUsed": False,

@@ -12,24 +12,44 @@
     "local_verification_status": {"enum": ["PASSED", "BLOCKED", "FAILED", "NOT_RUN"]},
     "route": {"$ref": "#/$defs/exact_specialized_route"},
     "module_input_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
-    "module_input": {"type": "object", "minProperties": 1},
+    "module_input": {"$ref": "#/$defs/module_input"},
     "module_contract": {
       "type": "object",
-      "required": ["source_symbols", "target_symbols", "manifest_symbols", "exact_symbol_set", "exact_signature_set", "independence"],
+      "required": ["source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_language_prelude", "verified_language_wrapper", "manifest_symbols", "exact_profile_symbol_set", "exact_generated_helper_symbol_set", "exact_profile_signature_set", "whole_file_closure_sha256", "independence"],
       "properties": {
-        "source_symbols": {"$ref": "#/$defs/symbols"},
-        "target_symbols": {"$ref": "#/$defs/symbols"},
+        "source_profile_symbols": {"$ref": "#/$defs/symbols"},
+        "target_profile_symbols": {"$ref": "#/$defs/symbols"},
+        "target_helper_symbols": {"type": "array", "items": {"$ref": "#/$defs/helper_symbol"}},
+        "verified_language_prelude": {
+          "oneOf": [
+            {"$ref": "#/$defs/verified_language_prelude"},
+            {"const": {"status": "NOT_RUN"}}
+          ]
+        },
+        "verified_language_wrapper": {
+          "oneOf": [
+            {"$ref": "#/$defs/verified_language_wrapper"},
+            {"const": {"status": "NOT_RUN"}}
+          ]
+        },
         "manifest_symbols": {"$ref": "#/$defs/symbols"},
-        "exact_symbol_set": {"type": "boolean"},
-        "exact_signature_set": {"type": "boolean"},
-        "independence": {"type": "object", "minProperties": 1, "additionalProperties": {"type": ["array", "boolean", "string"]}}
+        "exact_profile_symbol_set": {"type": "boolean"},
+        "exact_generated_helper_symbol_set": {"type": "boolean"},
+        "exact_profile_signature_set": {"type": "boolean"},
+        "whole_file_closure_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "independence": {
+          "oneOf": [
+            {"$ref": "#/$defs/module_independence"},
+            {"const": {"status": "NOT_RUN"}}
+          ]
+        }
       },
       "additionalProperties": false
     },
     "functions": {"type": "array", "items": {"$ref": "#/$defs/function"}},
     "composition": {
       "type": "object",
-      "required": ["rule", "input_domain", "out_of_domain_arithmetic_behavior", "function_count", "passed_function_count", "status", "proof_strength", "original_source_bytes_theorem", "source_compiler_runtime_soundness", "target_compiler_runtime_soundness"],
+      "required": ["rule", "input_domain", "out_of_domain_arithmetic_behavior", "function_count", "passed_function_count", "status", "proof_strength", "original_source_bytes_theorem", "source_compiler_runtime_soundness", "target_compiler_runtime_soundness", "analyzer_and_emitter_soundness", "source_user_call_graph", "target_call_graph", "target_profile_to_emitted_call_graph_status", "target_profile_to_emitted_call_graph_scope"],
       "properties": {
         "rule": {"type": "string", "minLength": 1},
         "input_domain": {"const": "canonical-finite-no-error-input-domain"},
@@ -41,7 +61,11 @@
         "original_source_bytes_theorem": {"type": "boolean"},
         "source_compiler_runtime_soundness": {"enum": ["PROVED", "NOT_RUN"]},
         "target_compiler_runtime_soundness": {"enum": ["PROVED", "NOT_RUN"]},
-        "analyzer_and_emitter_soundness": {"enum": ["PROVED", "ASSUMPTION", "NOT_RUN"]}
+        "analyzer_and_emitter_soundness": {"enum": ["PROVED", "ASSUMPTION", "NOT_RUN"]},
+        "source_user_call_graph": {"enum": ["EMPTY_AND_CLOSED", "NOT_RUN"]},
+        "target_call_graph": {"enum": ["UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS", "NOT_RUN"]},
+        "target_profile_to_emitted_call_graph_status": {"enum": ["EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS", "NOT_RUN"]},
+        "target_profile_to_emitted_call_graph_scope": {"enum": ["profile-functions-to-emitted-callees", "NOT_RUN"]}
       },
       "additionalProperties": false
     },
@@ -49,6 +73,7 @@
     "source_validation": {"type": "object"},
     "target_validation": {"type": "object"},
     "unsupported_semantics": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "whole_file_closure": {"$ref": "#/$defs/whole_file_closure"},
     "certification_status": {"const": "NOT_CERTIFIED"},
     "external_verification_status": {"const": "NOT_RUN"},
     "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
@@ -57,12 +82,12 @@
     {
       "if": {"properties": {"status": {"const": "PASSED"}}, "required": ["status"]},
       "then": {
-        "required": ["module_input", "source_validation", "target_validation", "unsupported_semantics"],
+        "required": ["module_input", "source_validation", "target_validation", "unsupported_semantics", "whole_file_closure"],
         "properties": {
           "local_verification_status": {"const": "PASSED"},
           "module_input_sha256": {"$ref": "#/$defs/sha256"},
           "functions": {"minItems": 3},
-          "artifact_refs": {"minItems": 19},
+          "artifact_refs": {"minItems": 22},
           "composition": {"properties": {"function_count": {"minimum": 3}, "passed_function_count": {"minimum": 3}, "status": {"const": "PASSED"}}}
         }
       }
@@ -79,10 +104,1223 @@
           "composition": {"properties": {"function_count": {"const": 0}, "passed_function_count": {"const": 0}, "status": {"const": "NOT_RUN"}, "proof_strength": {"const": "NONE"}}}
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"const": "PASSED"},
+          "route": {
+            "properties": {
+              "route_key": {"enum": ["cpp-to-swift", "swift-to-cpp", "objc-to-swift", "swift-to-objc"]}
+            },
+            "required": ["route_key"]
+          }
+        },
+        "required": ["status", "route"]
+      },
+      "then": {
+        "properties": {
+          "artifact_refs": {
+            "contains": {"properties": {"role": {"const": "swift-analyzer-build-receipt"}}, "required": ["role"]},
+            "minContains": 1,
+            "maxContains": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "artifact_refs": {
+            "not": {"contains": {"properties": {"role": {"const": "swift-analyzer-build-receipt"}}, "required": ["role"]}}
+          }
+        }
+      }
     }
   ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "swift_dependency_cache_receipt": {
+      "type": "object",
+      "required": ["cache_key", "cache_schema", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
+      "properties": {
+        "cache_key": {"const": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "cache_schema": {"const": "swift-dependencies-v1"},
+        "identity": {"const": "swift-syntax"},
+        "version": {"const": "600.0.1"},
+        "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
+        "seed": {"const": "verified-content-addressed-cache"},
+        "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "file_count": {"const": 753},
+        "bytes": {"const": 8866479}
+      },
+      "additionalProperties": false
+    },
+    "swift_dependency_mirror_receipt": {
+      "type": "object",
+      "required": ["seed", "cache", "git", "identity", "version", "revision", "sha256", "file_count", "bytes"],
+      "properties": {
+        "seed": {"const": "verified-content-addressed-cache"},
+        "cache": {"$ref": "#/$defs/swift_dependency_cache_receipt"},
+        "git": {
+          "const": {
+            "path": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
+            "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+            "version": "git version 2.50.1 (Apple Git-155)"
+          }
+        },
+        "identity": {"const": "swift-syntax"},
+        "version": {"const": "600.0.1"},
+        "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
+        "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "file_count": {"const": 753},
+        "bytes": {"const": 8866479}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_dependency_mirror_receipt": {
+      "type": "object",
+      "required": ["seed", "identity", "version", "revision", "sha256", "file_count", "bytes", "git", "cache"],
+      "properties": {
+        "seed": {"const": "verified-content-addressed-cache"},
+        "identity": {"const": "swift-syntax"},
+        "version": {"const": "600.0.1"},
+        "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
+        "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "file_count": {"const": 753},
+        "bytes": {"const": 8866479},
+        "git": {
+          "type": "object",
+          "required": ["sha256", "version"],
+          "properties": {
+            "sha256": {"const": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"},
+            "version": {"const": "git version 2.50.1 (Apple Git-155)"}
+          },
+          "additionalProperties": false
+        },
+        "cache": {"$ref": "#/$defs/swift_dependency_cache_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_source_inputs_receipt": {
+      "type": "object",
+      "required": ["sha256", "files"],
+      "properties": {
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "files": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["path", "sha256", "bytes"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._/-]+$"
+              },
+              "sha256": {"$ref": "#/$defs/sha256"},
+              "bytes": {"type": "integer", "minimum": 1, "maximum": 2000000}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "swift_dependency_receipt": {
+      "type": "object",
+      "required": ["identity", "version", "revision", "sha256", "file_count", "bytes", "mirror"],
+      "properties": {
+        "identity": {"const": "swift-syntax"},
+        "version": {"const": "600.0.1"},
+        "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
+        "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "file_count": {"const": 753},
+        "bytes": {"const": 8866479},
+        "mirror": {"$ref": "#/$defs/swift_dependency_mirror_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_dependency_receipt": {
+      "type": "object",
+      "required": ["identity", "version", "revision", "sha256", "file_count", "bytes", "mirror"],
+      "properties": {
+        "identity": {"const": "swift-syntax"},
+        "version": {"const": "600.0.1"},
+        "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
+        "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "file_count": {"const": 753},
+        "bytes": {"const": 8866479},
+        "mirror": {"$ref": "#/$defs/swift_portable_dependency_mirror_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_build_closure_component_receipt": {
+      "type": "object",
+      "required": ["role", "path", "resolved_path", "link_target", "sha256", "bytes", "mode", "uid", "gid", "nlink"],
+      "properties": {
+        "role": {
+          "enum": [
+            "swift-dispatcher", "swiftc-dispatcher", "swift-build-dispatcher", "swift-package",
+            "swift-driver", "swift-frontend", "clang", "clangxx-dispatcher", "linker", "archiver",
+            "libtool", "platform-swift-plugin-server", "in-process-plugin-server", "swift-driver-library",
+            "swift-tools-support-library", "build-server-protocol", "language-server-protocol",
+            "language-server-protocol-transport", "swb-build-service", "swb-project-model", "swb-util",
+            "swift-build-framework", "tools-protocols-swift-extensions", "llbuild-framework",
+            "sdk-settings-json", "sdk-settings-plist", "sdk-foundation-tbd", "sdk-libswift-foundation-tbd"
+          ]
+        },
+        "path": {"type": "string", "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._+/-]+$"},
+        "resolved_path": {"type": "string", "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._+/-]+$"},
+        "link_target": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._+/-]+$"}
+          ]
+        },
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1, "maximum": 250000000},
+        "mode": {"enum": ["0644", "0755"]},
+        "uid": {"const": 0},
+        "gid": {"const": 0},
+        "nlink": {"const": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_build_closure_tree_receipt": {
+      "type": "object",
+      "required": ["role", "root", "sha256", "file_count", "bytes"],
+      "properties": {
+        "role": {
+          "enum": [
+            "manifest-api", "plugin-api", "toolchain-host-plugins", "platform-host-plugins",
+            "sdk-foundation-module", "sdk-corefoundation-module", "sdk-objectivec-module",
+            "sdk-darwin-foundation1-module", "sdk-darwin-foundation2-module",
+            "sdk-darwin-foundation3-module", "toolchain-foundation-prebuilt-module",
+            "sdk-foundation-headers", "sdk-objc-headers"
+          ]
+        },
+        "root": {"type": "string", "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._+/-]+$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "file_count": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_build_closure_receipt": {
+      "type": "object",
+      "required": ["schema", "scope", "compiler_runtime_soundness", "certification", "components", "trees"],
+      "properties": {
+        "schema": {"const": "swiftpm-build-execution-closure-v1"},
+        "scope": {"const": "pinned-local-xcode-swiftpm-direct-components-and-critical-sdk-projection-v1"},
+        "compiler_runtime_soundness": {"const": "NOT_RUN"},
+        "certification": {"const": "NOT_CERTIFIED"},
+        "components": {
+          "type": "array",
+          "minItems": 28,
+          "maxItems": 28,
+          "prefixItems": [
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swiftc-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-build-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-package"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-driver"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-frontend"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "clang"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "clangxx-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "linker"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "archiver"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "libtool"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "platform-swift-plugin-server"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "in-process-plugin-server"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-driver-library"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-tools-support-library"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "build-server-protocol"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "language-server-protocol"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "language-server-protocol-transport"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swb-build-service"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swb-project-model"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swb-util"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-build-framework"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "tools-protocols-swift-extensions"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "llbuild-framework"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-settings-json"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-settings-plist"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-foundation-tbd"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-libswift-foundation-tbd"}}}]}
+          ],
+          "items": false
+        },
+        "trees": {
+          "type": "array",
+          "minItems": 13,
+          "maxItems": 13,
+          "prefixItems": [
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "manifest-api"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "plugin-api"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "toolchain-host-plugins"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "platform-host-plugins"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-foundation-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-corefoundation-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-objectivec-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-darwin-foundation1-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-darwin-foundation2-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-darwin-foundation3-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "toolchain-foundation-prebuilt-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-foundation-headers"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-objc-headers"}}}]}
+          ],
+          "items": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_build_closure_component_receipt": {
+      "type": "object",
+      "required": ["role", "link_target", "sha256", "bytes", "mode", "nlink"],
+      "properties": {
+        "role": {"$ref": "#/$defs/swift_build_closure_component_receipt/properties/role"},
+        "link_target": {"$ref": "#/$defs/swift_build_closure_component_receipt/properties/link_target"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1, "maximum": 250000000},
+        "mode": {"enum": ["0644", "0755"]},
+        "nlink": {"const": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_build_closure_tree_receipt": {
+      "type": "object",
+      "required": ["role", "sha256", "file_count", "bytes"],
+      "properties": {
+        "role": {"$ref": "#/$defs/swift_build_closure_tree_receipt/properties/role"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "file_count": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_build_closure_receipt": {
+      "type": "object",
+      "required": ["schema", "scope", "compiler_runtime_soundness", "certification", "components", "trees"],
+      "properties": {
+        "schema": {"const": "swiftpm-build-execution-closure-v1"},
+        "scope": {"const": "pinned-local-xcode-swiftpm-direct-components-and-critical-sdk-projection-v1"},
+        "compiler_runtime_soundness": {"const": "NOT_RUN"},
+        "certification": {"const": "NOT_CERTIFIED"},
+        "components": {
+          "type": "array",
+          "minItems": 28,
+          "maxItems": 28,
+          "prefixItems": [
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swiftc-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-build-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-package"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-driver"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-frontend"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "clang"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "clangxx-dispatcher"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "linker"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "archiver"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "libtool"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "platform-swift-plugin-server"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "in-process-plugin-server"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-driver-library"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-tools-support-library"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "build-server-protocol"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "language-server-protocol"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "language-server-protocol-transport"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swb-build-service"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swb-project-model"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swb-util"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "swift-build-framework"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "tools-protocols-swift-extensions"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "llbuild-framework"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-settings-json"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-settings-plist"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-foundation-tbd"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_component_receipt"}, {"properties": {"role": {"const": "sdk-libswift-foundation-tbd"}}}]}
+          ],
+          "items": false
+        },
+        "trees": {
+          "type": "array",
+          "minItems": 13,
+          "maxItems": 13,
+          "prefixItems": [
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "manifest-api"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "plugin-api"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "toolchain-host-plugins"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "platform-host-plugins"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-foundation-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-corefoundation-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-objectivec-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-darwin-foundation1-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-darwin-foundation2-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-darwin-foundation3-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "toolchain-foundation-prebuilt-module"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-foundation-headers"}}}]},
+            {"allOf": [{"$ref": "#/$defs/swift_portable_build_closure_tree_receipt"}, {"properties": {"role": {"const": "sdk-objc-headers"}}}]}
+          ],
+          "items": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "swift_toolchain_receipt": {
+      "type": "object",
+      "required": ["swiftc", "swiftc_sha256", "swift_driver", "swift_driver_sha256", "version", "profile", "build_closure"],
+      "properties": {
+        "swiftc": {"const": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"},
+        "swiftc_sha256": {"const": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"},
+        "swift_driver": {"const": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift"},
+        "swift_driver_sha256": {"const": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"},
+        "version": {"const": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"},
+        "profile": {
+          "const": [
+            "platform=Darwin/arm64",
+            "xcode=26.6/17F113",
+            "macosx-sdk=26.5",
+            "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+            "swift-language-mode=6",
+            "integer=Int64"
+          ]
+        },
+        "build_closure": {"$ref": "#/$defs/swift_build_closure_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_toolchain_receipt": {
+      "type": "object",
+      "required": ["swiftc_sha256", "swift_driver_sha256", "version", "profile", "build_closure"],
+      "properties": {
+        "swiftc_sha256": {"const": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"},
+        "swift_driver_sha256": {"const": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"},
+        "version": {"const": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"},
+        "profile": {
+          "const": [
+            "platform=Darwin/arm64",
+            "xcode=26.6/17F113",
+            "macosx-sdk=26.5",
+            "swift-language-mode=6",
+            "integer=Int64"
+          ]
+        },
+        "build_closure": {"$ref": "#/$defs/swift_portable_build_closure_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_build_receipt": {
+      "type": "object",
+      "required": ["configuration", "automatic_resolution", "manifest_cache", "environment_policy", "deterministic_environment", "mtime_normalization", "reproducible_path_policy", "argv"],
+      "properties": {
+        "configuration": {"const": "release"},
+        "automatic_resolution": {"const": false},
+        "manifest_cache": {"const": "none"},
+        "environment_policy": {"const": "minimal-empty-home-deterministic-v1"},
+        "deterministic_environment": {
+          "type": "object",
+          "required": ["SOURCE_DATE_EPOCH", "SWIFT_DETERMINISTIC_HASHING", "ZERO_AR_DATE"],
+          "properties": {
+            "SOURCE_DATE_EPOCH": {"const": "0"},
+            "SWIFT_DETERMINISTIC_HASHING": {"const": "1"},
+            "ZERO_AR_DATE": {"const": "1"}
+          },
+          "additionalProperties": false
+        },
+        "mtime_normalization": {
+          "type": "object",
+          "required": ["epoch_nanoseconds", "scope"],
+          "properties": {
+            "epoch_nanoseconds": {"const": 0},
+            "scope": {"const": ["source-snapshot", "dependency-mirror"]}
+          },
+          "additionalProperties": false
+        },
+        "reproducible_path_policy": {"const": "debug-file-macro-prefix-map-no-uuid-v1"},
+        "argv": {
+          "const": [
+            "<sandbox-exec>",
+            "-p",
+            "<deny-network-policy>",
+            "<swift-driver>",
+            "build",
+            "--package-path",
+            "<source-snapshot>",
+            "--cache-path",
+            "<isolated-cache>",
+            "--config-path",
+            "<isolated-config>",
+            "--security-path",
+            "<isolated-security>",
+            "--scratch-path",
+            "<isolated-build>",
+            "--manifest-cache",
+            "none",
+            "--disable-sandbox",
+            "--disable-automatic-resolution",
+            "-c",
+            "release",
+            "-Xswiftc",
+            "-debug-prefix-map",
+            "-Xswiftc",
+            "<build-root>=/elmos/swift-analyzer",
+            "-Xswiftc",
+            "-file-prefix-map",
+            "-Xswiftc",
+            "<build-root>=/elmos/swift-analyzer",
+            "-Xswiftc",
+            "-file-compilation-dir",
+            "-Xswiftc",
+              "<canonical-compilation-dir>",
+            "-Xswiftc",
+            "-gnone",
+            "-Xswiftc",
+            "-no-serialize-debugging-options",
+            "-Xcc",
+            "-fdebug-prefix-map=<build-root>=/elmos/swift-analyzer",
+            "-Xcc",
+            "-ffile-prefix-map=<build-root>=/elmos/swift-analyzer",
+            "-Xcc",
+            "-fmacro-prefix-map=<build-root>=/elmos/swift-analyzer",
+            "-Xcc",
+            "-frandom-seed=elmos-swift-analyzer",
+            "-Xlinker",
+            "-no_uuid"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "swift_network_sandbox_receipt": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "cdhash_full"],
+      "properties": {
+        "path": {"const": "/usr/bin/sandbox-exec"},
+        "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+        "bytes": {"const": 102368},
+        "mode": {"const": "0755"},
+        "uid": {"const": 0},
+        "gid": {"const": 0},
+        "nlink": {"const": 1},
+        "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_verifier_receipt": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink"],
+      "properties": {
+        "path": {"const": "/usr/bin/codesign"},
+        "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+        "bytes": {"const": 458576},
+        "mode": {"const": "0755"},
+        "uid": {"const": 0},
+        "gid": {"const": 0},
+        "nlink": {"const": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_policy_receipt": {
+      "type": "object",
+      "required": ["text", "sha256", "bytes"],
+      "properties": {
+        "text": {"const": "(version 1)\n(allow default)\n(deny network*)\n"},
+        "sha256": {"const": "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08"},
+        "bytes": {"const": 44}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_probe_source_receipt": {
+      "type": "object",
+      "required": ["text", "sha256", "bytes"],
+      "properties": {
+        "text": {"const": "#include <arpa/inet.h>\n#include <errno.h>\n#include <stdint.h>\n#include <sys/socket.h>\n#include <unistd.h>\n\nint main(void) {\n    const int descriptor = socket(AF_INET, SOCK_STREAM, 0);\n    if (descriptor < 0) {\n        return 2;\n    }\n    struct sockaddr_in address = {0};\n    address.sin_family = AF_INET;\n    address.sin_port = htons(9);\n    address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);\n    errno = 0;\n    const int status = connect(\n        descriptor,\n        (const struct sockaddr *)&address,\n        (socklen_t)sizeof(address)\n    );\n    const int error = errno;\n    if (close(descriptor) != 0) {\n        return 3;\n    }\n    if (status != -1 || error != EPERM) {\n        return 4;\n    }\n    static const char result[] = \"NETWORK_DENIED:1\\n\";\n    const ssize_t written = write(STDOUT_FILENO, result, sizeof(result) - 1);\n    if (written != (ssize_t)(sizeof(result) - 1)) {\n        return 5;\n    }\n    return 0;\n}\n"},
+        "sha256": {"const": "sha256:8a82a5f438ec38c0e733881eb868d91a4fb82c3ce95c3d8f27507a720dee7c19"},
+        "bytes": {"const": 923}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_probe_build_receipt": {
+      "type": "object",
+      "required": ["environment_policy", "argv", "environment", "compiler"],
+      "properties": {
+        "environment_policy": {"const": "sanitized-swift-build-deterministic-v1"},
+        "argv": {
+          "const": [
+            "<sandbox-exec>", "-p", "<deny-network-policy>", "<clang>", "-x", "c", "-std=c17",
+            "-target", "arm64-apple-macosx26.0", "-Os", "-fno-ident", "-isysroot", "<swift-sdk>",
+            "-Wl,-dead_strip", "-o", "<probe-output>", "-"
+          ]
+        },
+        "environment": {
+          "type": "object",
+          "required": [
+            "PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", "NO_COLOR", "CLICOLOR",
+            "SOURCE_DATE_EPOCH", "ZERO_AR_DATE", "GIT_CONFIG_NOSYSTEM", "GIT_CONFIG_GLOBAL",
+            "GIT_TERMINAL_PROMPT", "XDG_CACHE_HOME", "PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE",
+            "PYTHONNOUSERSITE", "SWIFT_DETERMINISTIC_HASHING"
+          ],
+          "properties": {
+            "PATH": {"const": "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>"},
+            "HOME": {"const": "<isolated-home>"},
+            "TMPDIR": {"const": "<isolated-tmp>"},
+            "LANG": {"const": "C"},
+            "LC_ALL": {"const": "C"},
+            "TZ": {"const": "UTC"},
+            "NO_COLOR": {"const": "1"},
+            "CLICOLOR": {"const": "0"},
+            "SOURCE_DATE_EPOCH": {"const": "0"},
+            "ZERO_AR_DATE": {"const": "1"},
+            "GIT_CONFIG_NOSYSTEM": {"const": "1"},
+            "GIT_CONFIG_GLOBAL": {"const": "<null-device>"},
+            "GIT_TERMINAL_PROMPT": {"const": "0"},
+            "XDG_CACHE_HOME": {"const": "<isolated-home>/.cache"},
+            "PYTHONHASHSEED": {"const": "0"},
+            "PYTHONDONTWRITEBYTECODE": {"const": "1"},
+            "PYTHONNOUSERSITE": {"const": "1"},
+            "SWIFT_DETERMINISTIC_HASHING": {"const": "1"}
+          },
+          "additionalProperties": false
+        },
+        "compiler": {
+          "allOf": [
+            {"$ref": "#/$defs/swift_build_closure_component_receipt"},
+            {"properties": {"role": {"const": "clang"}}}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "swift_network_probe_binary_receipt": {
+      "type": "object",
+      "required": ["name", "path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "device", "inode"],
+      "properties": {
+        "name": {"const": "ElmosNetworkDenyProbe"},
+        "path": {"type": "string", "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._+/-]+/ElmosNetworkDenyProbe$"},
+        "sha256": {"const": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7"},
+        "bytes": {"const": 33784},
+        "mode": {"const": "0500"},
+        "uid": {"type": "integer", "minimum": 0},
+        "gid": {"type": "integer", "minimum": 0},
+        "nlink": {"const": 1},
+        "device": {"type": "integer", "minimum": 1},
+        "inode": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_probe_execution_seal_receipt": {
+      "type": "object",
+      "required": ["policy", "root", "mode", "uid", "gid", "device", "inode", "binary"],
+      "properties": {
+        "policy": {"const": "private-nonwritable-execution-root-v1"},
+        "root": {"type": "string", "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._+/-]+$"},
+        "mode": {"const": "0500"},
+        "uid": {"type": "integer", "minimum": 0},
+        "gid": {"type": "integer", "minimum": 0},
+        "device": {"type": "integer", "minimum": 1},
+        "inode": {"type": "integer", "minimum": 1},
+        "binary": {"$ref": "#/$defs/swift_network_probe_binary_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_probe_mach_o_receipt": {
+      "type": "object",
+      "required": ["architecture", "file_type", "uuid", "cdhash_full", "linked_libraries"],
+      "properties": {
+        "architecture": {"const": "arm64"},
+        "file_type": {"const": "MH_EXECUTE"},
+        "uuid": {"const": "3C8F074C-FA7E-3977-B467-A98D3FC2BE00"},
+        "cdhash_full": {"const": "5e87ec802f0589e8d88db8eed94de7f41f5c855110c202ec3959cb8cfb9d7dc4"},
+        "linked_libraries": {"const": ["/usr/lib/libSystem.B.dylib"]}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_probe_receipt": {
+      "type": "object",
+      "required": ["result", "source", "build", "binary", "execution_seal", "mach_o"],
+      "properties": {
+        "result": {"const": "NETWORK_DENIED:1"},
+        "source": {"$ref": "#/$defs/swift_network_probe_source_receipt"},
+        "build": {"$ref": "#/$defs/swift_network_probe_build_receipt"},
+        "binary": {"$ref": "#/$defs/swift_network_probe_binary_receipt"},
+        "execution_seal": {"$ref": "#/$defs/swift_network_probe_execution_seal_receipt"},
+        "mach_o": {"$ref": "#/$defs/swift_network_probe_mach_o_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_network_probe_build_receipt": {
+      "type": "object",
+      "required": ["environment_policy", "argv", "environment", "compiler"],
+      "properties": {
+        "environment_policy": {"const": "sanitized-swift-build-deterministic-v1"},
+        "argv": {
+          "const": [
+            "<sandbox-exec>", "-p", "<deny-network-policy>", "<clang>", "-x", "c", "-std=c17",
+            "-target", "arm64-apple-macosx26.0", "-Os", "-fno-ident", "-isysroot", "<swift-sdk>",
+            "-Wl,-dead_strip", "-o", "<probe-output>", "-"
+          ]
+        },
+        "environment": {
+          "type": "object",
+          "required": [
+            "PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", "NO_COLOR", "CLICOLOR",
+            "SOURCE_DATE_EPOCH", "ZERO_AR_DATE", "GIT_CONFIG_NOSYSTEM", "GIT_CONFIG_GLOBAL",
+            "GIT_TERMINAL_PROMPT", "XDG_CACHE_HOME", "PYTHONHASHSEED", "PYTHONDONTWRITEBYTECODE",
+            "PYTHONNOUSERSITE", "SWIFT_DETERMINISTIC_HASHING"
+          ],
+          "properties": {
+            "PATH": {"const": "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:<system-usr-sbin>:<system-sbin>"},
+            "HOME": {"const": "<isolated-home>"},
+            "TMPDIR": {"const": "<isolated-tmp>"},
+            "LANG": {"const": "C"},
+            "LC_ALL": {"const": "C"},
+            "TZ": {"const": "UTC"},
+            "NO_COLOR": {"const": "1"},
+            "CLICOLOR": {"const": "0"},
+            "SOURCE_DATE_EPOCH": {"const": "0"},
+            "ZERO_AR_DATE": {"const": "1"},
+            "GIT_CONFIG_NOSYSTEM": {"const": "1"},
+            "GIT_CONFIG_GLOBAL": {"const": "<null-device>"},
+            "GIT_TERMINAL_PROMPT": {"const": "0"},
+            "XDG_CACHE_HOME": {"const": "<isolated-home>/.cache"},
+            "PYTHONHASHSEED": {"const": "0"},
+            "PYTHONDONTWRITEBYTECODE": {"const": "1"},
+            "PYTHONNOUSERSITE": {"const": "1"},
+            "SWIFT_DETERMINISTIC_HASHING": {"const": "1"}
+          },
+          "additionalProperties": false
+        },
+        "compiler": {
+          "allOf": [
+            {"$ref": "#/$defs/swift_portable_build_closure_component_receipt"},
+            {"properties": {"role": {"const": "clang"}}}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_network_probe_binary_receipt": {
+      "type": "object",
+      "required": ["name", "sha256", "bytes", "mode", "nlink"],
+      "properties": {
+        "name": {"const": "ElmosNetworkDenyProbe"},
+        "sha256": {"const": "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7"},
+        "bytes": {"const": 33784},
+        "mode": {"const": "0500"},
+        "nlink": {"const": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_network_probe_execution_seal_receipt": {
+      "type": "object",
+      "required": ["policy", "mode", "binary"],
+      "properties": {
+        "policy": {"const": "private-nonwritable-execution-root-v1"},
+        "mode": {"const": "0500"},
+        "binary": {"$ref": "#/$defs/swift_portable_network_probe_binary_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_network_probe_mach_o_receipt": {
+      "type": "object",
+      "required": ["architecture", "file_type", "uuid", "cdhash_full", "linked_libraries"],
+      "properties": {
+        "architecture": {"const": "arm64"},
+        "file_type": {"const": "MH_EXECUTE"},
+        "uuid": {"const": "3C8F074C-FA7E-3977-B467-A98D3FC2BE00"},
+        "cdhash_full": {"const": "5e87ec802f0589e8d88db8eed94de7f41f5c855110c202ec3959cb8cfb9d7dc4"},
+        "linked_libraries": {"const": ["system-libSystem"]}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_network_probe_receipt": {
+      "type": "object",
+      "required": ["result", "source", "build", "binary", "execution_seal", "mach_o"],
+      "properties": {
+        "result": {"const": "NETWORK_DENIED:1"},
+        "source": {"$ref": "#/$defs/swift_network_probe_source_receipt"},
+        "build": {"$ref": "#/$defs/swift_portable_network_probe_build_receipt"},
+        "binary": {"$ref": "#/$defs/swift_portable_network_probe_binary_receipt"},
+        "execution_seal": {"$ref": "#/$defs/swift_portable_network_probe_execution_seal_receipt"},
+        "mach_o": {"$ref": "#/$defs/swift_portable_network_probe_mach_o_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_network_isolation_receipt": {
+      "type": "object",
+      "required": ["status", "scope", "sandbox", "verifier", "policy", "probe"],
+      "properties": {
+        "status": {"const": "PASSED"},
+        "scope": {"const": "swift-build-process-tree"},
+        "sandbox": {"$ref": "#/$defs/swift_network_sandbox_receipt"},
+        "verifier": {"$ref": "#/$defs/swift_network_verifier_receipt"},
+        "policy": {"$ref": "#/$defs/swift_network_policy_receipt"},
+        "probe": {"$ref": "#/$defs/swift_network_probe_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_network_isolation_receipt": {
+      "type": "object",
+      "required": ["status", "scope", "sandbox", "verifier", "policy", "probe"],
+      "properties": {
+        "status": {"const": "PASSED"},
+        "scope": {"const": "swift-build-process-tree"},
+        "sandbox": {
+          "type": "object",
+          "required": ["sha256", "bytes", "mode", "nlink", "cdhash_full"],
+          "properties": {
+            "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+            "bytes": {"const": 102368},
+            "mode": {"const": "0755"},
+            "nlink": {"const": 1},
+            "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+          },
+          "additionalProperties": false
+        },
+        "verifier": {
+          "type": "object",
+          "required": ["sha256", "bytes", "mode", "nlink"],
+          "properties": {
+            "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+            "bytes": {"const": 458576},
+            "mode": {"const": "0755"},
+            "nlink": {"const": 1}
+          },
+          "additionalProperties": false
+        },
+        "policy": {"$ref": "#/$defs/swift_network_policy_receipt"},
+        "probe": {"$ref": "#/$defs/swift_portable_network_probe_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_binary_receipt": {
+      "type": "object",
+      "required": ["name", "path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "device", "inode"],
+      "properties": {
+        "name": {"const": "ElmosSwiftAnalyzer"},
+        "path": {
+          "type": "string",
+          "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._/-]+/ElmosSwiftAnalyzer$"
+        },
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1, "maximum": 100000000},
+        "mode": {"const": "0500"},
+        "uid": {"type": "integer", "minimum": 0},
+        "gid": {"type": "integer", "minimum": 0},
+        "nlink": {"const": 1},
+        "device": {"type": "integer", "minimum": 1},
+        "inode": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_binary_receipt": {
+      "type": "object",
+      "required": ["name", "sha256", "bytes", "mode", "nlink"],
+      "properties": {
+        "name": {"const": "ElmosSwiftAnalyzer"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1, "maximum": 100000000},
+        "mode": {"const": "0500"},
+        "nlink": {"const": 1}
+      },
+      "additionalProperties": false
+    },
+    "swift_execution_seal_receipt": {
+      "type": "object",
+      "required": ["policy", "root", "mode", "uid", "gid", "device", "inode", "binary"],
+      "properties": {
+        "policy": {"const": "private-nonwritable-execution-root-v1"},
+        "root": {
+          "type": "string",
+          "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9._/-]+$"
+        },
+        "mode": {"const": "0500"},
+        "uid": {"type": "integer", "minimum": 0},
+        "gid": {"type": "integer", "minimum": 0},
+        "device": {"type": "integer", "minimum": 1},
+        "inode": {"type": "integer", "minimum": 1},
+        "binary": {"$ref": "#/$defs/swift_binary_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_execution_seal_receipt": {
+      "type": "object",
+      "required": ["policy", "mode", "binary"],
+      "properties": {
+        "policy": {"const": "private-nonwritable-execution-root-v1"},
+        "mode": {"const": "0500"},
+        "binary": {"$ref": "#/$defs/swift_portable_binary_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_portable_canonical_receipt": {
+      "type": "object",
+      "required": ["schema_version", "kind", "source_inputs", "dependency", "toolchain", "build", "network_isolation", "binary", "execution_seal"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.swift-analyzer-build-receipt"},
+        "source_inputs": {"$ref": "#/$defs/swift_source_inputs_receipt"},
+        "dependency": {"$ref": "#/$defs/swift_portable_dependency_receipt"},
+        "toolchain": {"$ref": "#/$defs/swift_portable_toolchain_receipt"},
+        "build": {"$ref": "#/$defs/swift_build_receipt"},
+        "network_isolation": {"$ref": "#/$defs/swift_portable_network_isolation_receipt"},
+        "binary": {"$ref": "#/$defs/swift_portable_binary_receipt"},
+        "execution_seal": {"$ref": "#/$defs/swift_portable_execution_seal_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_canonical_identity_receipt": {
+      "type": "object",
+      "required": ["sha256", "receipt"],
+      "properties": {
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "receipt": {"$ref": "#/$defs/swift_portable_canonical_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "swift_analyzer_build_receipt": {
+      "type": "object",
+      "required": ["schema_version", "kind", "source_inputs", "dependency", "toolchain", "network_isolation", "build", "binary", "execution_seal", "canonical_identity"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.swift-analyzer-build-receipt"},
+        "source_inputs": {"$ref": "#/$defs/swift_source_inputs_receipt"},
+        "dependency": {"$ref": "#/$defs/swift_dependency_receipt"},
+        "toolchain": {"$ref": "#/$defs/swift_toolchain_receipt"},
+        "network_isolation": {"$ref": "#/$defs/swift_network_isolation_receipt"},
+        "build": {"$ref": "#/$defs/swift_build_receipt"},
+        "binary": {"$ref": "#/$defs/swift_binary_receipt"},
+        "execution_seal": {"$ref": "#/$defs/swift_execution_seal_receipt"},
+        "canonical_identity": {"$ref": "#/$defs/swift_canonical_identity_receipt"}
+      },
+      "additionalProperties": false
+    },
+    "module_route": {
+      "oneOf": [
+        {"const": {"source_language": "cpp", "target_language": "objc"}},
+        {"const": {"source_language": "objc", "target_language": "cpp"}},
+        {"const": {"source_language": "cpp", "target_language": "swift"}},
+        {"const": {"source_language": "swift", "target_language": "cpp"}},
+        {"const": {"source_language": "objc", "target_language": "swift"}},
+        {"const": {"source_language": "swift", "target_language": "objc"}},
+        {"const": {"source_language": "cpp", "target_language": "java"}},
+        {"const": {"source_language": "java", "target_language": "cpp"}}
+      ]
+    },
+    "module_input": {
+      "type": "object",
+      "required": ["profile", "route", "input_domain", "source_artifact_sha256", "target_artifact_sha256", "source_artifact_byte_count", "target_artifact_byte_count", "source_logical_file", "target_logical_file", "corpus_sha256", "source_semantic_ir_sha256", "target_semantic_ir_sha256", "case_manifest_sha256", "source_inventory_sha256", "source_inventory_byte_count", "target_inventory_sha256", "target_inventory_byte_count", "whole_file_closure_sha256"],
+      "properties": {
+        "profile": {"const": "typed-pure-module-v1"},
+        "route": {"$ref": "#/$defs/module_route"},
+        "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+        "source_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "target_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "source_artifact_byte_count": {"type": "integer", "minimum": 1},
+        "target_artifact_byte_count": {"type": "integer", "minimum": 1},
+        "source_logical_file": {"type": "string", "minLength": 1},
+        "target_logical_file": {"type": "string", "minLength": 1},
+        "corpus_sha256": {"$ref": "#/$defs/sha256"},
+        "source_semantic_ir_sha256": {"$ref": "#/$defs/sha256"},
+        "target_semantic_ir_sha256": {"$ref": "#/$defs/sha256"},
+        "case_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "source_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "source_inventory_byte_count": {"type": "integer", "minimum": 1},
+        "target_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "target_inventory_byte_count": {"type": "integer", "minimum": 1},
+        "whole_file_closure_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "source_span": {
+      "type": "object",
+      "required": ["file", "start_byte", "end_byte"],
+      "properties": {
+        "file": {"type": "string", "minLength": 1},
+        "start_byte": {"type": "integer", "minimum": 0},
+        "end_byte": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "raw_signature": {
+      "type": "object",
+      "required": ["visibility", "storage"],
+      "properties": {
+        "visibility": {"type": "string", "minLength": 1},
+        "storage": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    },
+    "inventory_subject": {
+      "type": "object",
+      "required": ["name", "qualified_name", "declaration_kind", "analyzable", "source_span", "signature", "occurrence"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "analyzable": {"type": "boolean"},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "signature": {"$ref": "#/$defs/raw_signature"},
+        "occurrence": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "language_directive": {
+      "type": "object",
+      "required": ["order", "kind", "value", "source_span", "sha256"],
+      "properties": {
+        "order": {"type": "integer", "minimum": 0},
+        "kind": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "verified_language_prelude_side": {
+      "type": "object",
+      "required": ["status", "role", "language", "directives"],
+      "properties": {
+        "status": {"const": "EXACT_AND_CLOSED"},
+        "role": {"enum": ["source", "target"]},
+        "language": {"enum": ["cpp", "objc", "swift", "java"]},
+        "directives": {"type": "array", "items": {"$ref": "#/$defs/language_directive"}}
+      },
+      "additionalProperties": false
+    },
+    "verified_language_prelude": {
+      "type": "object",
+      "required": ["source", "target"],
+      "properties": {
+        "source": {"$ref": "#/$defs/verified_language_prelude_side"},
+        "target": {"$ref": "#/$defs/verified_language_prelude_side"}
+      },
+      "additionalProperties": false
+    },
+    "language_wrapper_signature": {
+      "type": "object",
+      "required": ["type_kind", "visibility", "storage", "modifiers", "final", "abstract", "extends", "implements", "type_parameters", "annotations", "permits"],
+      "properties": {
+        "type_kind": {"const": "CLASS"},
+        "visibility": {"const": "public"},
+        "storage": {"const": "top-level"},
+        "modifiers": {"const": ["final", "public"]},
+        "final": {"const": true},
+        "abstract": {"const": false},
+        "extends": {"const": ""},
+        "implements": {"const": []},
+        "type_parameters": {"const": []},
+        "annotations": {"const": []},
+        "permits": {"const": []}
+      },
+      "additionalProperties": false
+    },
+    "language_wrapper_member": {
+      "type": "object",
+      "required": ["name", "qualified_name", "declaration_kind", "occurrence", "source_span"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "source_span": {"$ref": "#/$defs/source_span"}
+      },
+      "additionalProperties": false
+    },
+    "verified_java_wrapper": {
+      "type": "object",
+      "required": ["status", "role", "language", "file", "name", "qualified_name", "declaration_kind", "analyzable", "occurrence", "source_span", "signature", "member_span_status", "member_subjects"],
+      "properties": {
+        "status": {"const": "EXACT_AND_CLOSED"},
+        "role": {"enum": ["source", "target"]},
+        "language": {"const": "java"},
+        "file": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"const": "top-level-class-wrapper"},
+        "analyzable": {"const": false},
+        "occurrence": {"const": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "signature": {"$ref": "#/$defs/language_wrapper_signature"},
+        "member_span_status": {"const": "ALL_CONTAINED"},
+        "member_subjects": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/language_wrapper_member"}}
+      },
+      "additionalProperties": false
+    },
+    "verified_non_java_wrapper": {
+      "type": "object",
+      "required": ["status", "role", "language", "file"],
+      "properties": {
+        "status": {"const": "NOT_APPLICABLE"},
+        "role": {"enum": ["source", "target"]},
+        "language": {"enum": ["cpp", "objc", "swift"]},
+        "file": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "verified_language_wrapper_side": {
+      "oneOf": [
+        {"$ref": "#/$defs/verified_java_wrapper"},
+        {"$ref": "#/$defs/verified_non_java_wrapper"}
+      ]
+    },
+    "verified_language_wrapper": {
+      "type": "object",
+      "required": ["source", "target"],
+      "properties": {
+        "source": {"$ref": "#/$defs/verified_language_wrapper_side"},
+        "target": {"$ref": "#/$defs/verified_language_wrapper_side"}
+      },
+      "additionalProperties": false
+    },
+    "module_inventory": {
+      "type": "object",
+      "required": ["schema_version", "kind", "profile", "source_language", "source_file", "analyzer", "analyzer_version", "enumeration_status", "subjects", "diagnostics", "source_artifact_sha256", "source_artifact_bytes", "directives"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.typed-pure-module-inventory"},
+        "profile": {"const": "typed-pure-module-v1"},
+        "source_language": {"enum": ["cpp", "objc", "swift", "java"]},
+        "source_file": {"type": "string", "minLength": 1},
+        "analyzer": {"type": "string", "minLength": 1},
+        "analyzer_version": {"type": "string", "minLength": 1},
+        "enumeration_status": {"const": "PASSED"},
+        "subjects": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/inventory_subject"}},
+        "diagnostics": {"const": []},
+        "source_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "source_artifact_bytes": {"type": "integer", "minimum": 1},
+        "directives": {"type": "array", "items": {"$ref": "#/$defs/language_directive"}},
+        "analyzer_build_receipt": {"$ref": "#/$defs/swift_analyzer_build_receipt"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"source_language": {"const": "swift"}}, "required": ["source_language"]},
+          "then": {"required": ["analyzer_build_receipt"]},
+          "else": {"not": {"required": ["analyzer_build_receipt"]}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "profile_symbol": {
+      "type": "object",
+      "required": ["symbol", "qualified_name", "declaration_kind", "occurrence", "source_span", "raw_signature", "raw_parameter_names", "canonical_signature"],
+      "properties": {
+        "symbol": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "raw_signature": {"$ref": "#/$defs/raw_signature"},
+        "raw_parameter_names": {"type": "array", "items": {"type": "string"}},
+        "canonical_signature": {"type": "object", "minProperties": 1}
+      },
+      "additionalProperties": false
+    },
+    "helper_symbol": {
+      "type": "object",
+      "required": ["helper_id", "name", "qualified_name", "declaration_kind", "analyzable", "occurrence", "arity", "visibility", "storage", "source_span", "raw_signature"],
+      "properties": {
+        "helper_id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "qualified_name": {"type": "string", "minLength": 1},
+        "declaration_kind": {"type": "string", "minLength": 1},
+        "analyzable": {"const": true},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "arity": {"type": "integer", "minimum": 0},
+        "visibility": {"enum": ["internal", "private", "fileprivate"]},
+        "storage": {"enum": ["static", "file-scope"]},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "raw_signature": {"$ref": "#/$defs/raw_signature"}
+      },
+      "additionalProperties": false
+    },
+    "verified_helper": {
+      "type": "object",
+      "required": ["helper_id", "sha256", "bytes", "start_byte", "end_byte", "source_span", "symbols"],
+      "properties": {
+        "helper_id": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "start_byte": {"type": "integer", "minimum": 0},
+        "end_byte": {"type": "integer", "minimum": 1},
+        "source_span": {"$ref": "#/$defs/source_span"},
+        "symbols": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/helper_symbol"}}
+      },
+      "additionalProperties": false
+    },
+    "whole_file_closure": {
+      "type": "object",
+      "required": ["schema_version", "kind", "profile", "route", "status", "source_inventory_sha256", "source_inventory_bytes", "target_inventory_sha256", "target_inventory_bytes", "manifest_symbols", "source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_generated_helpers", "verified_language_prelude", "verified_language_wrapper", "blocked_declarations", "source_user_call_graph", "target_call_graph_policy", "target_call_graph", "target_builtin_normalizations"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.typed-pure-module-whole-file-closure"},
+        "profile": {"const": "typed-pure-module-v1"},
+        "route": {"$ref": "#/$defs/module_route"},
+        "status": {"const": "PASSED"},
+        "source_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "source_inventory_bytes": {"type": "integer", "minimum": 1},
+        "target_inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "target_inventory_bytes": {"type": "integer", "minimum": 1},
+        "manifest_symbols": {"$ref": "#/$defs/symbols"},
+        "source_profile_symbols": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/profile_symbol"}},
+        "target_profile_symbols": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/profile_symbol"}},
+        "target_helper_symbols": {"type": "array", "items": {"$ref": "#/$defs/helper_symbol"}},
+        "verified_generated_helpers": {"type": "array", "items": {"$ref": "#/$defs/verified_helper"}},
+        "verified_language_prelude": {"$ref": "#/$defs/verified_language_prelude"},
+        "verified_language_wrapper": {"$ref": "#/$defs/verified_language_wrapper"},
+        "blocked_declarations": {"const": {"source": [], "target": []}},
+        "source_user_call_graph": {"const": {"edges": [], "status": "EMPTY_AND_CLOSED"}},
+        "target_call_graph_policy": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
+        "target_call_graph": {"$ref": "#/$defs/target_call_graph"},
+        "target_builtin_normalizations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "target_call_graph_edge": {
+      "type": "object",
+      "required": ["caller", "callee", "callee_kind", "canonical_domain", "canonical_operator", "normalization_rule"],
+      "properties": {
+        "caller": {"type": "string", "minLength": 1},
+        "callee": {"type": "string", "minLength": 1},
+        "callee_kind": {"enum": ["exact-generated-helper", "pinned-target-builtin"]},
+        "canonical_domain": {"enum": ["integer", "number"]},
+        "canonical_operator": {"enum": ["+", "-", "*", "/", "%"]},
+        "normalization_rule": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "target_call_graph": {
+      "type": "object",
+      "required": ["status", "scope", "edges", "helper_internal_calls"],
+      "properties": {
+        "status": {"const": "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"},
+        "scope": {"const": "profile-functions-to-emitted-callees"},
+        "edges": {"type": "array", "items": {"$ref": "#/$defs/target_call_graph_edge"}},
+        "helper_internal_calls": {
+          "const": {
+            "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+            "binding": "verified_generated_helpers-exact-bytes-and-digests"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "module_independence": {
+      "type": "object",
+      "required": ["source_user_call_graph_edges", "source_user_call_graph_closure", "target_call_graph_policy", "target_call_graph", "target_generated_helper_symbols", "target_builtin_normalizations", "function_calls", "mutable_state", "shared_state"],
+      "properties": {
+        "source_user_call_graph_edges": {"const": []},
+        "source_user_call_graph_closure": {"const": "EMPTY_AND_CLOSED"},
+        "target_call_graph_policy": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
+        "target_call_graph": {"$ref": "#/$defs/target_call_graph"},
+        "target_generated_helper_symbols": {"type": "array", "items": {"$ref": "#/$defs/helper_symbol"}},
+        "target_builtin_normalizations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "function_calls": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
+        "mutable_state": {"const": "UNSUPPORTED"},
+        "shared_state": {"const": "ABSENT_BY_IR_CONSTRUCTION"}
+      },
+      "additionalProperties": false
+    },
     "exact_specialized_route": {
       "oneOf": [
         {"const": {"route_key": "cpp-to-objc", "source_language": "cpp", "target_language": "objc"}},
@@ -100,7 +1338,7 @@
       "type": "object",
       "required": ["role", "path", "sha256", "bytes"],
       "properties": {
-        "role": {"enum": ["source-module-semantic-ir", "target-module-semantic-ir", "source-module-observations", "target-module-observations", "original-source-module-artifact", "emitted-target-module-artifact", "module-formal-input", "formal-function-input", "formal-function-smt2", "formal-function-result", "source-module-validation", "target-module-validation", "module-case-manifest"]},
+        "role": {"enum": ["source-module-semantic-ir", "target-module-semantic-ir", "source-module-observations", "target-module-observations", "original-source-module-artifact", "emitted-target-module-artifact", "module-formal-input", "formal-function-input", "formal-function-smt2", "formal-function-result", "source-module-validation", "target-module-validation", "module-case-manifest", "source-module-inventory", "target-module-inventory", "whole-file-module-closure", "swift-analyzer-build-receipt"]},
         "path": {"type": "string", "minLength": 1},
         "sha256": {"$ref": "#/$defs/sha256"},
         "bytes": {"type": "integer", "minimum": 1}

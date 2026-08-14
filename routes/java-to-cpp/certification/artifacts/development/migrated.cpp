@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 
-std::int64_t elmos_checked_add(std::int64_t left, std::int64_t right) {
+static std::int64_t elmos_checked_add(std::int64_t left, std::int64_t right) {
     std::int64_t result = 0;
     if (__builtin_add_overflow(left, right, &result)) {
         throw std::overflow_error("ELMOS_INTEGER_OVERFLOW");

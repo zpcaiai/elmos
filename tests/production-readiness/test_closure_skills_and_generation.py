@@ -83,7 +83,15 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIsNotNone(target)
         prerequisites = set(target.group(1).split())
         self.assertTrue(
-            {"batch45-check", "project-synthesis", "batch97-104-skills", "product-closure-convergence-skills", "web"}
+            {
+                "batch45-check",
+                "project-synthesis",
+                "chinadb-commercial-migration-skills",
+                "sql-transpiler",
+                "batch97-104-skills",
+                "product-closure-convergence-skills",
+                "web",
+            }
             .issubset(prerequisites)
         )
         self.assertIn("UV ?= uv", makefile)

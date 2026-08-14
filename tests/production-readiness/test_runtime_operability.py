@@ -76,7 +76,7 @@ class RuntimeOperabilityTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn('build: "Maven 3.9.11"', source)
-        self.assertIn("仅 Boot 2.7.18 / Java 17 / Maven 3.9.11 有 PASSED_LOCAL", source)
+        self.assertIn("Spring Framework MVC 5.3.39 / Java 11 / Maven 3.9.11 精确夹具已 PASSED_LOCAL", source)
         self.assertIn("Gradle 为 NOT_IMPLEMENTED", source)
         self.assertNotIn("Maven 3.9+ / Gradle exact wrapper", source)
         self.assertNotIn('spring-framework-xml", label: "Spring Framework XML", detail: "web.xml', source)

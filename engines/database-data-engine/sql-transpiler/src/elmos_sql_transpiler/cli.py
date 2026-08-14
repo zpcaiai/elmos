@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from .commercial import assess_commercial, commercial_capabilities
+from .commercial_request import parse_commercial_request_json
 from .materialize import materialize
 from .models import ParameterContract, TranspileRequest
 from .profiles import capabilities
@@ -44,12 +46,31 @@ def _request(path: Path, source: str, target: str, query_id: str | None) -> Tran
     )
 
 
+def _create_only_output(path: Path | None, rendered: str, *, label: str) -> None:
+    if path is None:
+        sys.stdout.write(rendered)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with path.open("x", encoding="utf-8") as handle:
+            handle.write(rendered)
+    except FileExistsError as error:
+        raise FileExistsError(f"{label} output already exists") from error
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-sql-transpiler")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     capability_parser = subparsers.add_parser("capabilities")
     capability_parser.add_argument("--output", type=Path)
+
+    commercial_capability_parser = subparsers.add_parser("commercial-capabilities")
+    commercial_capability_parser.add_argument("--output", type=Path)
+
+    commercial_assess_parser = subparsers.add_parser("commercial-assess")
+    commercial_assess_parser.add_argument("request", type=Path)
+    commercial_assess_parser.add_argument("--output", type=Path)
 
     runner_capability_parser = subparsers.add_parser("runner-capabilities")
     runner_capability_parser.add_argument("--output", type=Path)
@@ -89,6 +110,15 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 sys.stdout.write(rendered)
             return 0
+        if args.command == "commercial-capabilities":
+            rendered = _json(commercial_capabilities()) + "\n"
+            _create_only_output(args.output, rendered, label="commercial capability")
+            return 0
+        if args.command == "commercial-assess":
+            assessment = assess_commercial(parse_commercial_request_json(args.request.read_bytes()))
+            rendered = _json(assessment.to_dict()) + "\n"
+            _create_only_output(args.output, rendered, label="commercial assessment")
+            return 3
         if args.command == "runner-capabilities":
             value = runner_capabilities()
             rendered = _json(value) + "\n"

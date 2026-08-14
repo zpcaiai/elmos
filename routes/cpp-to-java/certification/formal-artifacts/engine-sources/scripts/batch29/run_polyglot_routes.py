@@ -21,24 +21,110 @@ sys.path.insert(
     str(DEFAULT_REPOSITORY_ROOT / "engines" / "polyglot-route-engine" / "src"),
 )
 
+if __name__ == "__main__":
+    from fresh_route_runtime import run_in_fresh_locked_runtime
+
+    fresh_runtime_exit = run_in_fresh_locked_runtime(
+        Path(__file__), sys.argv[1:]
+    )
+    if fresh_runtime_exit is not None:
+        raise SystemExit(fresh_runtime_exit)
+
 from route_sets import (  # noqa: E402
+    COMPLETE_ROUTE_KEYS,
+    COMPLETION_ROUTE_KEYS,
     CORE_LANGUAGES,
     CORE_ROUTE_KEYS,
     EVIDENCED_ROUTE_KEYS,
     EXACT_ROUTE_SETS,
     SPECIALIZED_LANGUAGES,
     SPECIALIZED_ROUTE_KEYS,
+    provenance_route_set,
     split_route_key,
 )
 
 from elmos_polyglot_route.emitter import _SWIFT_HELPERS  # noqa: E402
 from elmos_polyglot_route.engine import migrate, migrate_module  # noqa: E402
 from elmos_polyglot_route.models import Language, RouteError, SemanticIR  # noqa: E402
-from elmos_polyglot_route.native import analyze  # noqa: E402
+from elmos_polyglot_route.native import (  # noqa: E402
+    analyze,
+    swift_analyzer_build_receipt,
+)
 
 B16_LANGUAGES: tuple[Language, ...] = CORE_LANGUAGES  # type: ignore[assignment]
 SPECIALIZED_INPUT_DOMAIN = "canonical-finite-no-error-input-domain"
 SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC = "BLOCKED_NOT_EQUIVALENTLY_MODELED"
+NOT_RUN_PREPARED_AT = "2026-08-09T00:00:00+00:00"
+MODULE_SINGLE_ARTIFACT_ROLES = frozenset(
+    {
+        "source-module-semantic-ir",
+        "target-module-semantic-ir",
+        "source-module-observations",
+        "target-module-observations",
+        "original-source-module-artifact",
+        "emitted-target-module-artifact",
+        "module-formal-input",
+        "source-module-validation",
+        "target-module-validation",
+        "module-case-manifest",
+        "source-module-inventory",
+        "target-module-inventory",
+        "whole-file-module-closure",
+    }
+)
+MODULE_PER_FUNCTION_ARTIFACT_ROLES = frozenset(
+    {"formal-function-input", "formal-function-smt2", "formal-function-result"}
+)
+SWIFT_DEPENDENCY_TREE = {
+    "identity": "swift-syntax",
+    "version": "600.0.1",
+    "revision": "0687f71944021d616d34d922343dcef086855920",
+    "sha256": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d",
+    "file_count": 753,
+    "bytes": 8_866_479,
+}
+SWIFT_DEPENDENCY_CACHE_KEYS = {
+    "cache_key",
+    "cache_schema",
+    "identity",
+    "version",
+    "revision",
+    "seed",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_DEPENDENCY_MIRROR_KEYS = {
+    "seed",
+    "cache",
+    "git",
+    "identity",
+    "version",
+    "revision",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_DEPENDENCY_SEED = "verified-content-addressed-cache"
+SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
+SWIFT_DEPENDENCY_CACHE_KEY = (
+    "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-"
+    "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+)
+SWIFT_GIT_IDENTITY = {
+    "path": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
+    "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+    "version": "git version 2.50.1 (Apple Git-155)",
+}
+
+
+def declared_input_domain(route_key: str) -> str:
+    if route_key in SPECIALIZED_ROUTE_KEYS:
+        return SPECIALIZED_INPUT_DOMAIN
+    if route_key in CORE_ROUTE_KEYS:
+        return "legacy-profile-defined-domain"
+    return "typed-pure-function-v1-declared-domain"
+
 
 VERSIONS = {
     "java": ["Java 21.0.11", "JDK Compiler Tree API"],
@@ -319,6 +405,29 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     )
 
 
+def validate_portable_swift_analyzer_receipt(receipt: dict[str, Any]) -> None:
+    """Validate the complete receipt before any route artifact is written."""
+
+    from validate_route import _validate_swift_analyzer_receipt_document
+
+    binary = receipt.get("binary")
+    live_binary = (
+        Path(binary["path"])
+        if isinstance(binary, dict) and isinstance(binary.get("path"), str)
+        else None
+    )
+    failures: list[str] = []
+    validated = _validate_swift_analyzer_receipt_document(
+        receipt,
+        label="generated Swift analyzer build receipt",
+        failures=failures,
+        live_binary=live_binary,
+    )
+    if validated is None or failures:
+        detail = " | ".join(failures) if failures else "unknown receipt failure"
+        raise RuntimeError(f"SWIFT_ANALYZER_BUILD_RECEIPT_INVALID:{detail}")
+
+
 def sha256_file(path: Path) -> str:
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -337,6 +446,18 @@ def artifact_ref(evidence_root: Path, path: Path) -> dict[str, str | int]:
         "sha256": sha256_file(resolved),
         "bytes": resolved.stat().st_size,
     }
+
+
+def negative_input_ref(
+    evidence_root: Path,
+    path: Path,
+    role: str,
+) -> dict[str, str | int]:
+    """Bind one negative replay input to an exact, unique semantic role."""
+
+    if role not in {"source", "cases", "source-module", "case-manifest"}:
+        raise RuntimeError(f"NEGATIVE_INPUT_ROLE_UNDECLARED:{role}")
+    return {"role": role, **artifact_ref(evidence_root, path)}
 
 
 def formal_artifact_id(route: Path, path: Path) -> str:
@@ -552,6 +673,7 @@ def _capture_engine_sources(repo: Path, route: Path) -> tuple[Path, list[Path]]:
             repo / "schemas" / "batch29" / "module-equivalence-evidence.schema.json",
             repo / "schemas" / "batch29" / "route-certification.schema.json",
             repo / "scripts" / "batch29" / "run_polyglot_routes.py",
+            repo / "scripts" / "batch29" / "fresh_route_runtime.py",
             repo / "scripts" / "batch29" / "route_sets.py",
             repo / "scripts" / "batch29" / "run_route_gate.py",
             repo / "scripts" / "batch29" / "validate_route.py",
@@ -622,6 +744,7 @@ def build_formal_equivalence_evidence(
     source: Language,
     target: Language,
     reports: dict[str, dict[str, Any]],
+    swift_analyzer_receipt_path: Path | None,
 ) -> dict[str, str | int]:
     """Compose strict, byte-bound route evidence from three successful runs.
 
@@ -848,6 +971,13 @@ def build_formal_equivalence_evidence(
         bind(proof_result_path, "solver-result")
         solver_result_artifact_ids.append(formal_artifact_id(route, proof_result_path))
 
+    if "swift" in {source, target}:
+        if swift_analyzer_receipt_path is None:
+            raise RuntimeError(f"SWIFT_ANALYZER_BUILD_RECEIPT_MISSING:{route_key}")
+        bind(swift_analyzer_receipt_path, "swift-analyzer-build-receipt")
+    elif swift_analyzer_receipt_path is not None:
+        raise RuntimeError(f"SWIFT_ANALYZER_BUILD_RECEIPT_UNEXPECTED:{route_key}")
+
     normalized_bundle = {
         "schema_version": 1,
         "semantic_profile": "typed-pure-function-v1",
@@ -926,7 +1056,7 @@ def build_formal_equivalence_evidence(
     environment_artifact_id = formal_artifact_id(route, environment_path)
     source_ir_artifact_id = formal_artifact_id(route, source_bundle)
     target_ir_artifact_id = formal_artifact_id(route, target_bundle)
-    evidence = {
+    evidence: dict[str, Any] = {
         "schema_version": 2,
         "route_key": route_key,
         "route_manifest_sha256": sha256_file(route / "route.json"),
@@ -1030,11 +1160,16 @@ def write_module_not_run_evidence(route: Path, source: Language, target: Languag
             },
             "module_input_sha256": None,
             "module_contract": {
-                "source_symbols": [],
-                "target_symbols": [],
+                "source_profile_symbols": [],
+                "target_profile_symbols": [],
+                "target_helper_symbols": [],
+                "verified_language_prelude": {"status": "NOT_RUN"},
+                "verified_language_wrapper": {"status": "NOT_RUN"},
                 "manifest_symbols": [],
-                "exact_symbol_set": False,
-                "exact_signature_set": False,
+                "exact_profile_symbol_set": False,
+                "exact_generated_helper_symbol_set": False,
+                "exact_profile_signature_set": False,
+                "whole_file_closure_sha256": None,
                 "independence": {"status": "NOT_RUN"},
             },
             "functions": [],
@@ -1049,6 +1184,11 @@ def write_module_not_run_evidence(route: Path, source: Language, target: Languag
                 "original_source_bytes_theorem": False,
                 "source_compiler_runtime_soundness": "NOT_RUN",
                 "target_compiler_runtime_soundness": "NOT_RUN",
+                "analyzer_and_emitter_soundness": "NOT_RUN",
+                "source_user_call_graph": "NOT_RUN",
+                "target_call_graph": "NOT_RUN",
+                "target_profile_to_emitted_call_graph_status": "NOT_RUN",
+                "target_profile_to_emitted_call_graph_scope": "NOT_RUN",
             },
             "artifact_refs": [],
             "certification_status": "NOT_CERTIFIED",
@@ -1095,7 +1235,7 @@ SPECIALIZED_NEGATIVE_SOURCES: dict[str, tuple[Language, str, str, str, tuple[str
         "cpp_unsigned_domain.cpp",
         "unsigned_value",
         "unsigned long long unsigned_value(unsigned long long value) { return value; }\n",
-        ("CPP_UNSUPPORTED_TYPE:unsigned long long", "CPP_UNSIGNED"),
+        ("CPP_UNSUPPORTED_TYPE:unsigned long long",),
     ),
     "objc-nsinteger-width": (
         "objc",
@@ -1129,6 +1269,7 @@ def write_not_run_route_scaffold(route: Path, source: Language, target: Language
     """Create a complete, non-passing route record before native execution."""
 
     route_key = f"{source}-to-{target}"
+    specialized = route_key in SPECIALIZED_ROUTE_KEYS
     run_refs: list[str] = []
     for corpus, filename in (
         ("development", "local-development-evidence.json"),
@@ -1153,12 +1294,18 @@ def write_not_run_route_scaffold(route: Path, source: Language, target: Language
         )
     negative_ids = sorted(
         {
-            *SPECIALIZED_NEGATIVE_CASES.get(source, ()),
-            *SPECIALIZED_NEGATIVE_CASES.get(target, ()),
-            "specialized-non-finite-case-unsupported",
-            "specialized-number-arithmetic-unsupported",
-            "specialized-overflow-outside-no-error-domain",
-            "specialized-string-semantics-unsupported",
+            *(
+                {
+                    *SPECIALIZED_NEGATIVE_CASES.get(source, ()),
+                    *SPECIALIZED_NEGATIVE_CASES.get(target, ()),
+                    "specialized-non-finite-case-unsupported",
+                    "specialized-number-arithmetic-unsupported",
+                    "specialized-overflow-outside-no-error-domain",
+                    "specialized-string-semantics-unsupported",
+                }
+                if specialized
+                else set()
+            ),
             "undeclared-directed-route-fails-closed",
             "missing-symbol-fails-closed",
         }
@@ -1185,12 +1332,6 @@ def write_not_run_route_scaffold(route: Path, source: Language, target: Language
             "external_certification": "NOT_RUN",
         },
     )
-    module_ref = write_module_not_run_evidence(
-        route,
-        source,
-        target,
-        "Native three-function module verification has not run.",
-    )
     evidence = {
         "schema_version": 1,
         "route_key": route_key,
@@ -1210,33 +1351,46 @@ def write_not_run_route_scaffold(route: Path, source: Language, target: Language
         "test_integrity_violations": 0,
         "runs": run_refs,
         "negative_runs": [negative_relative],
-        "module_execution_status": "NOT_RUN",
-        "module_equivalence": module_ref,
         "notes": [
             "No local route or module behavior is claimed before native execution.",
             "Independent, external, customer, and production evidence remain NOT_RUN.",
         ],
     }
+    module_ref: dict[str, object] | None = None
+    if specialized:
+        module_ref = write_module_not_run_evidence(
+            route,
+            source,
+            target,
+            "Native three-function module verification has not run.",
+        )
+        evidence["module_execution_status"] = "NOT_RUN"
+        evidence["module_equivalence"] = module_ref
     write_json(route / "certification" / "evidence.json", evidence)
-    certification = {
+    evidence_refs: list[Any] = [*run_refs, negative_relative]
+    gate_results: dict[str, str] = {
+        "local_execution": "NOT_RUN",
+        "external_execution": "NOT_RUN",
+        "independent_verification": "NOT_RUN",
+    }
+    if specialized and module_ref is not None:
+        evidence_refs.append(str(module_ref["path"]))
+        gate_results["module_execution"] = "NOT_RUN"
+    certification: dict[str, Any] = {
         "schema_version": 1,
         "route_key": route_key,
         "route_version": "1.0.0",
         "status": "limited",
         "certification_decision": "NOT_CERTIFIED",
-        "declared_scope": "typed-pure-function-v1+typed-pure-module-v1",
-        "issued_at": datetime.now(UTC).isoformat(),
+        "declared_scope": ("typed-pure-function-v1+typed-pure-module-v1" if specialized else "typed-pure-function-v1"),
+        "issued_at": NOT_RUN_PREPARED_AT,
         "next_review_at": "2026-11-09T00:00:00+00:00",
         "metrics": evidence["metrics"],
-        "evidence_refs": [*run_refs, negative_relative, str(module_ref["path"])],
-        "gate_results": {
-            "local_execution": "NOT_RUN",
-            "module_execution": "NOT_RUN",
-            "external_execution": "NOT_RUN",
-            "independent_verification": "NOT_RUN",
-        },
-        "module_equivalence": module_ref,
+        "evidence_refs": evidence_refs,
+        "gate_results": gate_results,
     }
+    if specialized and module_ref is not None:
+        certification["module_equivalence"] = module_ref
     write_json(route / "certification" / "certification.json", certification)
 
 
@@ -1262,6 +1416,7 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
     if route_key not in EVIDENCED_ROUTE_KEYS:
         raise RuntimeError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
+    input_domain = declared_input_domain(route_key)
     route = repo / "routes" / route_key
     if not route.is_dir():
         raise RuntimeError(f"MISSING_ROUTE:{route_key}")
@@ -1287,7 +1442,7 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
             "semantic_profile": "typed-pure-function-v1",
             "module_profile": "typed-pure-module-v1" if specialized else "NOT_APPLICABLE",
             "target_profile": f"{target}-native-compiler",
-            "input_domain": (SPECIALIZED_INPUT_DOMAIN if specialized else "legacy-profile-defined-domain"),
+            "input_domain": input_domain,
         },
         "framework_profiles": [],
         "paths": {
@@ -1473,7 +1628,7 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
                 if specialized
                 else {"status": "legacy-profile-defined"}
             ),
-            "input_domain": (SPECIALIZED_INPUT_DOMAIN if specialized else "legacy-profile-defined-domain"),
+            "input_domain": input_domain,
             "out_of_domain_arithmetic_behavior": (
                 SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC if specialized else "profile-specific"
             ),
@@ -1498,7 +1653,7 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
                 if specialized
                 else {}
             ),
-            "input_domain": (SPECIALIZED_INPUT_DOMAIN if specialized else "legacy-profile-defined-domain"),
+            "input_domain": input_domain,
             "string_semantics": "BLOCK" if specialized else "PROFILE_DEFINED",
             "out_of_domain_arithmetic_behavior": (
                 SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC if specialized else "profile-specific"
@@ -1574,6 +1729,7 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
 
 def populate_corpus(route: Path, fixtures: Path, source: Language) -> None:
     specialized = route.name in SPECIALIZED_ROUTE_KEYS
+    input_domain = declared_input_domain(route.name)
     for corpus in CORPORA:
         destination = route / "corpus" / corpus
         destination.mkdir(parents=True, exist_ok=True)
@@ -1595,7 +1751,7 @@ def populate_corpus(route: Path, fixtures: Path, source: Language) -> None:
             shutil.copy2(fixture_source, source_file)
             cases_path = destination / "cases.json"
             shutil.copy2(cases, cases_path)
-            type_coverage = ["legacy-profile-defined"]
+            type_coverage = ["legacy-profile-defined" if route.name in CORE_ROUTE_KEYS else "typed-pure-function-v1"]
         write_json(
             destination / "manifest.json",
             {
@@ -1606,7 +1762,7 @@ def populate_corpus(route: Path, fixtures: Path, source: Language) -> None:
                 "cases_file": "cases.json",
                 "function_name": function_name,
                 "type_coverage": type_coverage,
-                "input_domain": (SPECIALIZED_INPUT_DOMAIN if specialized else "legacy-profile-defined-domain"),
+                "input_domain": input_domain,
                 "rule_authoring_input": corpus == "development",
                 "independent": corpus != "development",
                 "evidence_class": (
@@ -1664,6 +1820,7 @@ def execute_module_route(
     fixtures: Path,
     source: Language,
     target: Language,
+    swift_analyzer_receipt_path: Path | None,
 ) -> tuple[dict[str, str | int], dict[str, str | int]]:
     """Run and persist the real three-function module verification campaign."""
 
@@ -1688,6 +1845,74 @@ def execute_module_route(
             or report.get("external_verification_status") != "NOT_RUN"
         ):
             raise RuntimeError(f"MODULE_EQUIVALENCE_NON_PASSING:{route.name}")
+        raw_references = report.get("artifact_refs")
+        functions = report.get("functions")
+        if not isinstance(raw_references, list) or not isinstance(functions, list):
+            raise RuntimeError(f"MODULE_EQUIVALENCE_ARTIFACTS_INVALID:{route.name}")
+        role_counts: dict[str, int] = {}
+        seen_paths: set[str] = set()
+        for index, reference in enumerate(raw_references):
+            if not isinstance(reference, dict) or set(reference) != {
+                "role",
+                "path",
+                "sha256",
+                "bytes",
+            }:
+                raise RuntimeError(
+                    f"MODULE_EQUIVALENCE_ARTIFACT_REF_INVALID:{route.name}:{index}"
+                )
+            role = reference.get("role")
+            relative = reference.get("path")
+            if not isinstance(role, str) or not isinstance(relative, str):
+                raise RuntimeError(
+                    f"MODULE_EQUIVALENCE_ARTIFACT_REF_INVALID:{route.name}:{index}"
+                )
+            candidate = (generated / relative).resolve(strict=True)
+            try:
+                candidate.relative_to(generated.resolve(strict=True))
+            except ValueError as exc:
+                raise RuntimeError(
+                    f"MODULE_EQUIVALENCE_ARTIFACT_PATH_ESCAPE:{route.name}:{relative}"
+                ) from exc
+            if (
+                relative in seen_paths
+                or not candidate.is_file()
+                or candidate.is_symlink()
+                or reference.get("sha256") != sha256_file(candidate)
+                or reference.get("bytes") != candidate.stat().st_size
+            ):
+                raise RuntimeError(
+                    f"MODULE_EQUIVALENCE_ARTIFACT_BINDING_INVALID:{route.name}:{relative}"
+                )
+            seen_paths.add(relative)
+            role_counts[role] = role_counts.get(role, 0) + 1
+        for role in MODULE_SINGLE_ARTIFACT_ROLES:
+            if role_counts.get(role) != 1:
+                raise RuntimeError(
+                    f"MODULE_EQUIVALENCE_ARTIFACT_ROLE_COUNT:{route.name}:{role}"
+                )
+        for role in MODULE_PER_FUNCTION_ARTIFACT_ROLES:
+            if role_counts.get(role) != len(functions):
+                raise RuntimeError(
+                    f"MODULE_EQUIVALENCE_ARTIFACT_ROLE_COUNT:{route.name}:{role}"
+                )
+        if set(role_counts) != (
+            MODULE_SINGLE_ARTIFACT_ROLES | MODULE_PER_FUNCTION_ARTIFACT_ROLES
+        ):
+            raise RuntimeError(
+                f"MODULE_EQUIVALENCE_ARTIFACT_ROLE_UNDECLARED:{route.name}"
+            )
+        closure_reference = next(
+            reference
+            for reference in raw_references
+            if reference["role"] == "whole-file-module-closure"
+        )
+        if json.loads(
+            (generated / str(closure_reference["path"])).read_text(encoding="utf-8")
+        ) != report.get("whole_file_closure"):
+            raise RuntimeError(
+                f"MODULE_EQUIVALENCE_WHOLE_FILE_CLOSURE_DETACHED:{route.name}"
+            )
         write_json(generated / "typed-pure-module-equivalence.json", report)
         manifest_ref = persist_artifact_directory(repo, route, "module", generated)
 
@@ -1695,6 +1920,21 @@ def execute_module_route(
     route_report = json.loads(json.dumps(report))
     for reference in route_report["artifact_refs"]:
         reference["path"] = artifact_prefix + str(reference["path"])
+    if "swift" in {source, target}:
+        if swift_analyzer_receipt_path is None:
+            raise RuntimeError(
+                f"MODULE_SWIFT_ANALYZER_BUILD_RECEIPT_MISSING:{route.name}"
+            )
+        route_report["artifact_refs"].append(
+            {
+                "role": "swift-analyzer-build-receipt",
+                **artifact_ref(route, swift_analyzer_receipt_path),
+            }
+        )
+    elif swift_analyzer_receipt_path is not None:
+        raise RuntimeError(
+            f"MODULE_SWIFT_ANALYZER_BUILD_RECEIPT_UNEXPECTED:{route.name}"
+        )
     for function in route_report["functions"]:
         formal = function["layers"]["formal"]
         for field in (
@@ -1709,6 +1949,10 @@ def execute_module_route(
 
 
 def execute_route(repo: Path, fixtures: Path, source: Language, target: Language) -> None:
+    swift_receipt: dict[str, Any] | None = None
+    if "swift" in {source, target}:
+        swift_receipt = swift_analyzer_build_receipt()
+        validate_portable_swift_analyzer_receipt(swift_receipt)
     route = configure_route(repo, source, target)
     populate_corpus(route, fixtures, source)
     reports: dict[str, dict[str, Any]] = {}
@@ -1746,6 +1990,17 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             }[corpus]
             write_json(route / "certification" / evidence_name, report)
     negative_ref = execute_negative(route, fixtures, source, target)
+    swift_analyzer_receipt_path: Path | None = None
+    if "swift" in {source, target}:
+        swift_analyzer_receipt_path = (
+            route
+            / "certification"
+            / "formal-artifacts"
+            / "swift-analyzer-build-receipt.json"
+        )
+        if swift_receipt is None:
+            raise RuntimeError("SWIFT_ANALYZER_BUILD_RECEIPT_PREFLIGHT_MISSING")
+        write_json(swift_analyzer_receipt_path, swift_receipt)
     evidence = {
         "schema_version": 1,
         "route_key": f"{source}-to-{target}",
@@ -1814,6 +2069,7 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
         source,
         target,
         reports,
+        swift_analyzer_receipt_path,
     )
     certification["evidence_format"] = 2
     certification["formal_equivalence"] = formal_ref
@@ -1828,6 +2084,7 @@ def execute_route(repo: Path, fixtures: Path, source: Language, target: Language
             fixtures,
             source,
             target,
+            swift_analyzer_receipt_path,
         )
         certification["module_equivalence"] = module_ref
         certification["declared_scope"] = "typed-pure-function-v1+typed-pure-module-v1"
@@ -1975,8 +2232,8 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                     raise RuntimeError("SPECIALIZED_NUMBER_ARITHMETIC_CREATED_ARTIFACTS")
             expected_fragments = (f"SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:{route_key}:addNumber",)
             input_refs = [
-                artifact_ref(route, number_source),
-                artifact_ref(route, number_cases),
+                negative_input_ref(route, number_source, "source"),
+                negative_input_ref(route, number_cases, "cases"),
             ]
         elif case_id == "specialized-non-finite-case-unsupported":
             holdout_manifest = json.loads((route / "corpus" / "holdout" / "manifest.json").read_text(encoding="utf-8"))
@@ -2003,8 +2260,8 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                     raise RuntimeError("SPECIALIZED_NON_FINITE_CREATED_ARTIFACTS")
             expected_fragments = (f"SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:{route_key}:{function_name}:0",)
             input_refs = [
-                artifact_ref(route, non_finite_source),
-                artifact_ref(route, non_finite_cases),
+                negative_input_ref(route, non_finite_source, "source"),
+                negative_input_ref(route, non_finite_cases, "cases"),
             ]
         elif case_id == "specialized-overflow-outside-no-error-domain":
             development_manifest = json.loads(
@@ -2048,8 +2305,8 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                 f"SPECIALIZED_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN:{route_key}:{function_name}:0:IntegerOverflow",
             )
             input_refs = [
-                artifact_ref(route, overflow_source),
-                artifact_ref(route, overflow_cases),
+                negative_input_ref(route, overflow_source, "source"),
+                negative_input_ref(route, overflow_cases, "cases"),
             ]
         elif case_id == "specialized-string-semantics-unsupported":
             string_sources = {
@@ -2057,7 +2314,7 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                     "CanonicalStringEquality.java",
                     "public final class CanonicalStringEquality {\n"
                     "    public static boolean same(String left, String right) { "
-                    "return left.equals(right); }\n"
+                    "return true; }\n"
                     "}\n",
                 ),
                 "cpp": (
@@ -2112,10 +2369,12 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                     raise RuntimeError("SPECIALIZED_STRING_UNEXPECTEDLY_PASSED")
                 if output.exists():
                     raise RuntimeError("SPECIALIZED_STRING_CREATED_ARTIFACTS")
-            expected_fragments = (f"SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:{route_key}",)
+            expected_fragments = (
+                f"SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:{route_key}:same",
+            )
             input_refs = [
-                artifact_ref(route, string_source),
-                artifact_ref(route, string_cases),
+                negative_input_ref(route, string_source, "source"),
+                negative_input_ref(route, string_cases, "cases"),
             ]
         elif case_id == "missing-symbol-fails-closed":
             development_manifest = json.loads(
@@ -2124,6 +2383,7 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
             missing_source = route / "corpus" / "development" / str(development_manifest["source_file"])
             missing_cases = route / "corpus" / "development" / "cases.json"
             with tempfile.TemporaryDirectory(prefix=f"elmos-missing-symbol-{route_key}-") as temporary:
+                output = Path(temporary) / "must-not-exist"
                 try:
                     migrate(
                         missing_source,
@@ -2131,22 +2391,28 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                         target,
                         "__elmos_missing_function__",
                         missing_cases,
-                        Path(temporary) / "output",
+                        output,
                     )
                 except RouteError as exc:
                     reason = str(exc)
                 else:
                     raise RuntimeError("MISSING_SYMBOL_UNEXPECTEDLY_PASSED")
-            expected_fragments = ("FUNCTION_NOT_FOUND", "NO_SUPPORTED_FUNCTIONS")
+                if output.exists():
+                    raise RuntimeError("MISSING_SYMBOL_CREATED_ARTIFACTS")
+            expected_fragments = (
+                ("NO_SUPPORTED_FUNCTIONS",)
+                if source in {"java", "swift"}
+                else ("FUNCTION_NOT_FOUND:__elmos_missing_function__",)
+            )
             input_refs = [
-                artifact_ref(route, missing_source),
-                artifact_ref(route, missing_cases),
+                negative_input_ref(route, missing_source, "source"),
+                negative_input_ref(route, missing_cases, "cases"),
             ]
         elif case_id == "undeclared-directed-route-fails-closed":
             module_source = fixtures / "module" / "java" / MODULE_FIXTURE_FILES["java"]
             module_cases = fixtures / "module" / "cases.json"
-            undeclared_source = negative_root / "undeclared_java_to_swift.java"
-            undeclared_cases = negative_root / "undeclared_java_to_swift_cases.json"
+            undeclared_source = negative_root / "undeclared_java_to_java.java"
+            undeclared_cases = negative_root / "undeclared_java_to_java_cases.json"
             shutil.copy2(module_source, undeclared_source)
             shutil.copy2(module_cases, undeclared_cases)
             with tempfile.TemporaryDirectory(prefix=f"elmos-undeclared-{route_key}-") as temporary:
@@ -2155,7 +2421,7 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                     migrate_module(
                         undeclared_source,
                         "java",
-                        "swift",
+                        "java",
                         undeclared_cases,
                         output,
                     )
@@ -2165,10 +2431,10 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                     raise RuntimeError("UNDECLARED_DIRECTED_ROUTE_UNEXPECTEDLY_PASSED")
                 if output.exists():
                     raise RuntimeError("UNDECLARED_DIRECTED_ROUTE_CREATED_ARTIFACTS")
-            expected_fragments = ("UNSUPPORTED_DIRECTED_ROUTE:java-to-swift",)
+            expected_fragments = ("SOURCE_AND_TARGET_MUST_DIFFER",)
             input_refs = [
-                artifact_ref(route, undeclared_source),
-                artifact_ref(route, undeclared_cases),
+                negative_input_ref(route, undeclared_source, "source-module"),
+                negative_input_ref(route, undeclared_cases, "case-manifest"),
             ]
         elif case_id == "swift-helper-tamper":
             expected_helper = _SWIFT_HELPERS["non_zero_double"]
@@ -2187,8 +2453,10 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                 reason = str(exc)
             else:
                 raise RuntimeError("SWIFT_HELPER_TAMPER_UNEXPECTEDLY_PASSED")
-            expected_fragments = ("EMITTED_HELPER_SOURCE_MISMATCH:swift",)
-            input_refs = [artifact_ref(route, source_path)]
+            expected_fragments = (
+                "EMITTED_HELPER_SOURCE_MISMATCH:swift:non_zero_double:elmosNonZero",
+            )
+            input_refs = [negative_input_ref(route, source_path, "source")]
         else:
             specification = SPECIALIZED_NEGATIVE_SOURCES.get(case_id)
             if specification is None:
@@ -2202,16 +2470,15 @@ def execute_specialized_negative(route: Path, fixtures: Path, source: Language, 
                 reason = str(exc)
             else:
                 raise RuntimeError(f"SPECIALIZED_NEGATIVE_UNEXPECTEDLY_PASSED:{case_id}")
-            input_refs = [artifact_ref(route, source_path)]
-        matched_reason_code = next((fragment for fragment in expected_fragments if fragment in reason), None)
-        if matched_reason_code is None:
+            input_refs = [negative_input_ref(route, source_path, "source")]
+        if reason not in expected_fragments:
             raise RuntimeError(f"SPECIALIZED_NEGATIVE_WRONG_FAILURE:{case_id}:{reason}")
         results.append(
             {
                 "case_id": case_id,
                 "status": "PASSED",
                 "expected_result": "BLOCKED",
-                "observed_reason": matched_reason_code,
+                "observed_reason": reason,
                 "input_refs": input_refs,
                 "native_analysis": "EXECUTED",
                 "target_execution": "NOT_REACHED_BY_DESIGN",
@@ -2373,7 +2640,7 @@ def write_inventory(repo: Path) -> None:
         routes.append(
             {
                 "route_key": route_key,
-                "route_set": ("cpp-objc-swift-java-exact-8" if specialized else "legacy-complete-30"),
+                "route_set": provenance_route_set(route_key),
                 "source": source_value,
                 "source_version": SHORT_VERSIONS[source_value],
                 "target": target_value,
@@ -2408,10 +2675,12 @@ def write_inventory(repo: Path) -> None:
         {
             "schema_version": "1.3.0",
             "route_policy": {
-                "mode": "explicit-route-sets",
-                "cartesian_expansion": "FORBIDDEN",
-                "complete_route_set": "legacy-complete-30",
+                "mode": "complete-directed-matrix",
+                "cartesian_expansion": "EXPLICIT_NINE_LANGUAGE_MATRIX",
+                "complete_route_set": "nine-language-complete-72",
+                "legacy_route_set": "legacy-complete-30",
                 "specialized_route_set": "cpp-objc-swift-java-exact-8",
+                "completion_route_set": "nine-language-completion-34",
             },
             "route_sets": {
                 "legacy-complete-30": {
@@ -2427,6 +2696,18 @@ def write_inventory(repo: Path) -> None:
                     "route_keys": list(SPECIALIZED_ROUTE_KEYS),
                     "module_profile": "typed-pure-module-v1",
                 },
+                "nine-language-completion-34": {
+                    "policy": "exact-matrix-completion-set",
+                    "languages": [*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES],
+                    "route_count": len(COMPLETION_ROUTE_KEYS),
+                    "route_keys": list(COMPLETION_ROUTE_KEYS),
+                },
+                "nine-language-complete-72": {
+                    "policy": "complete-directed-permutation",
+                    "languages": [*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES],
+                    "route_count": len(COMPLETE_ROUTE_KEYS),
+                    "route_keys": list(COMPLETE_ROUTE_KEYS),
+                },
             },
             "route_count": len(routes),
             "research_route_count": status_counts["research"],
@@ -2439,7 +2720,7 @@ def write_inventory(repo: Path) -> None:
             "external_certification_evidence": "NOT_RUN",
             "semantic_profile": "typed-pure-function-v1",
             "module_profile": "typed-pure-module-v1",
-            "console_exposed_languages": list(CORE_LANGUAGES),
+            "console_exposed_languages": [*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES],
             "languages": {
                 language: {
                     "version": SHORT_VERSIONS[language],
@@ -2453,15 +2734,21 @@ def write_inventory(repo: Path) -> None:
 
 
 def run_route_checks(repo: Path, route: Path) -> int:
-    for script in ("validate_route.py", "run_route_gate.py"):
-        completed = subprocess.run(
-            [sys.executable, str(repo / "scripts" / "batch29" / script), str(route)],
-            cwd=repo,
-            check=False,
-        )
-        if completed.returncode != 0:
-            return completed.returncode
-    return 0
+    # The conservative gate invokes validate_route.main in its own fresh
+    # locked runtime before evaluating any gate policy.  Running the validator
+    # as a separate process here would duplicate the complete native replay
+    # and, for Swift routes, a second isolated analyzer build without adding an
+    # independent authority boundary.
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(repo / "scripts" / "batch29" / "run_route_gate.py"),
+            str(route),
+        ],
+        cwd=repo,
+        check=False,
+    )
+    return completed.returncode
 
 
 def main() -> int:
@@ -2502,6 +2789,8 @@ def main() -> int:
             populate_corpus(route, fixtures, source)
             if route_key in SPECIALIZED_ROUTE_KEYS:
                 populate_module_corpus(route, fixtures, source)
+            else:
+                (route / "certification" / "module-equivalence.json").unlink(missing_ok=True)
             write_not_run_route_scaffold(route, source, target)
         print(f"PASS: prepared exact route set {args.prepare_route_set} as NOT_RUN / NOT_CERTIFIED")
         return 0

@@ -405,7 +405,7 @@
       "bytes": 11973,
       "path": "certification/formal-artifacts/engine-source-manifest.json",
       "role": "engine-source-manifest",
-      "sha256": "sha256:fb8add46e6365a9ac9d4c5eace81c4173848ee752af49280169ff389760536c9"
+      "sha256": "sha256:a3a3de05551380d8b2779bf7a7354faffe7c9f5e758600ff071ac28eb621f398"
     },
     {
       "artifact_id": "artifact-ccdf47235cc871273de16e1171ff376ac09a919c689a80c0a642f0eb0e337675",
@@ -430,10 +430,10 @@
     },
     {
       "artifact_id": "artifact-43fef68ce7d365480929633a9e8d2f14bfd2b5d5f661fc1cd0466efaf77f5bea",
-      "bytes": 33578,
+      "bytes": 33959,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/java/Analyzer.java",
       "role": "engine-source",
-      "sha256": "sha256:89f61e8b59988ae8e9bf32c422d0016609ccd8943413df7bb1c1c47f75555f0a"
+      "sha256": "sha256:34eb488c84bf96323fe50f44c7208e42dcf5f26d14167602a990bdb2d5cdc025"
     },
     {
       "artifact_id": "artifact-bcd6686599511fdb71b8bc39e2341f5e57a04c3754f1b7709cc9829e99f40501",
@@ -542,10 +542,10 @@
     },
     {
       "artifact_id": "artifact-cfca6b4bc5de6de40263acf287452c6539ee4c7b502c49cdf268461cb5f896a0",
-      "bytes": 169272,
+      "bytes": 169339,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/native.py",
       "role": "engine-source",
-      "sha256": "sha256:a0b02cb63b975907148b4fa0740a37734942f50dcfc3872c839187691c9bae11"
+      "sha256": "sha256:d30a7b024f4033cea960de52d8617d2f6db3b3cd004508f8462f0bb927529872"
     },
     {
       "artifact_id": "artifact-23ceceec93d84491068656399f92e4180894fd0de825b7b6df1cbd212e8ad61c",
@@ -657,7 +657,7 @@
       "bytes": 1025,
       "path": "certification/formal-artifacts/environment.json",
       "role": "environment",
-      "sha256": "sha256:9d41bc786fbc4e60bdfdd6017cc39d0f13a2abf263f8520ee6b691dcdd862c5c"
+      "sha256": "sha256:49765c131af725b43eea912c33e55c81588dfb6f1c1fd3a8195a326ffc8ef07f"
     },
     {
       "artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
@@ -714,7 +714,7 @@
     "total_cases": 12
   },
   "environment_artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
-  "environment_sha256": "sha256:9d41bc786fbc4e60bdfdd6017cc39d0f13a2abf263f8520ee6b691dcdd862c5c",
+  "environment_sha256": "sha256:49765c131af725b43eea912c33e55c81588dfb6f1c1fd3a8195a326ffc8ef07f",
   "formal_proof": {
     "assumptions": [
       "canonical-finite-input-domain:source:value",

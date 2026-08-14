@@ -10,11 +10,14 @@ import os
 import pwd
 import re
 import shutil
+import signal
 import stat
 import struct
 import subprocess
+import sys
 import tempfile
 import threading
+import time
 from pathlib import Path
 from typing import Any, cast
 
@@ -93,6 +96,20 @@ _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES = 100_000
 _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES = 512 * 1024 * 1024
 _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES = 64 * 1024 * 1024
 _SWIFT_ANALYZER_BINARY_MAX_BYTES = 100_000_000
+_SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS = 3_600
+_SWIFT_BUILD_TERMINATION_GRACE_SECONDS = 1.0
+_SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS = 5.0
+_SWIFT_BUILD_REAP_RESERVE_SECONDS = 0.5
+_SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS = 0.25
+_SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS = 0.5
+_SWIFT_BUILD_SESSION_POLL_SECONDS = 0.05
+_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
+_SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 2.0
+_SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
+_SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
+_SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS = 3
+_PROCESS_LIST = Path("/bin/ps")
+_LIBPROC = Path("/usr/lib/libproc.dylib")
 _APPLE_GIT = Path("/Applications/Xcode.app/Contents/Developer/usr/bin/git")
 _APPLE_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
 _APPLE_GIT_SHA256 = "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
@@ -2031,7 +2048,11 @@ def _swift_object_store_manifest(objects: Path) -> tuple[tuple[object, ...], ...
             metadata.st_ctime_ns,
         )
         metadata_before[relative] = identity
-        if stat.S_ISLNK(metadata.st_mode) or metadata.st_uid != os.getuid() or stat.S_IMODE(metadata.st_mode) & 0o022:
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or metadata.st_uid != os.getuid()
+            or stat.S_IMODE(metadata.st_mode) & 0o022
+        ):
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_REPOSITORY_UNSAFE")
         if stat.S_ISDIR(metadata.st_mode):
             manifest.append(
@@ -2205,7 +2226,11 @@ def _swift_standalone_object_store_identity(
         or manifest_after != manifest_before
     ):
         raise RouteError("SWIFT_ANALYZER_DEPENDENCY_OBJECT_STORE_CHANGED")
-    identities = frozenset((cast(int, entry[2]), cast(int, entry[3])) for entry in manifest_after if entry[1] == "file")
+    identities = frozenset(
+        (cast(int, entry[2]), cast(int, entry[3]))
+        for entry in manifest_after
+        if entry[1] == "file"
+    )
     return manifest_after, identities
 
 
@@ -2507,6 +2532,27 @@ def _clone_verified_swift_dependency(
     return dependency
 
 
+def _open_swift_dependency_cache_lock(lock_path: Path) -> int:
+    common_flags = getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    for _attempt in range(3):
+        try:
+            return os.open(lock_path, os.O_RDONLY | common_flags)
+        except FileNotFoundError:
+            try:
+                return os.open(
+                    lock_path,
+                    os.O_RDWR | os.O_CREAT | os.O_EXCL | common_flags,
+                    0o600,
+                )
+            except FileExistsError:
+                continue
+            except OSError as error:
+                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE") from error
+        except OSError as error:
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE") from error
+    raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_CHANGED")
+
+
 def _ensure_swift_dependency_cache(
     package: Path,
     root: Path,
@@ -2526,14 +2572,7 @@ def _ensure_swift_dependency_cache(
         raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_ROOT_UNAVAILABLE") from error
     base_identity = _verify_secure_directory_chain(cache_base, "SWIFT_ANALYZER_DEPENDENCY_CACHE_ROOT_UNSAFE")
     lock_path = cache_base / ".seed.lock"
-    try:
-        descriptor = os.open(
-            lock_path,
-            os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
-            0o600,
-        )
-    except OSError as error:
-        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE") from error
+    descriptor = _open_swift_dependency_cache_lock(lock_path)
     candidate_root: Path | None = None
     try:
         lock_metadata = os.fstat(descriptor)
@@ -2771,22 +2810,644 @@ def _run_swift_build_step(
     input_text: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     try:
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
             cwd=cwd,
-            check=False,
-            capture_output=True,
+            stdin=subprocess.PIPE if input_text is not None else None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout,
             env=environment,
-            input=input_text,
+            start_new_session=True,
         )
-    except (OSError, subprocess.TimeoutExpired) as error:
+    except OSError as error:
         raise RouteError(failure + ":process") from error
+    try:
+        stdout, stderr = process.communicate(input=input_text, timeout=timeout)
+    except BaseException as error:
+        cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(error, cleanup_error, cleanup_diagnostics)
+        if isinstance(error, KeyboardInterrupt | SystemExit):
+            raise
+        if isinstance(cleanup_error, KeyboardInterrupt | SystemExit):
+            raise cleanup_error from error
+        if isinstance(error, OSError | subprocess.TimeoutExpired):
+            converted = RouteError(failure + ":process")
+            if cleanup_error is not None or cleanup_diagnostics:
+                _add_swift_build_cleanup_notes(
+                    converted,
+                    cleanup_error,
+                    cleanup_diagnostics,
+                )
+            raise converted from error
+        raise
+    known_members: dict[int, int] = {}
+    # communicate() reaps an ordinarily completed leader before this
+    # defense-in-depth residual-session scan. Darwin cannot atomically pin that
+    # now-free numeric PID/SID; a reuse collision remains a platform boundary.
+    try:
+        session_empty = _wait_for_swift_build_session_exit(
+            process.pid,
+            deadline=time.monotonic() + _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS,
+            known_members=known_members,
+        )
+    except BaseException as error:
+        cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(
+            process,
+            known_members=known_members,
+        )
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(error, cleanup_error, cleanup_diagnostics)
+        if isinstance(error, KeyboardInterrupt | SystemExit):
+            raise
+        if isinstance(cleanup_error, KeyboardInterrupt | SystemExit):
+            raise cleanup_error from error
+        if not isinstance(error, Exception):
+            raise
+        converted = RouteError(failure + ":process")
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(
+                converted,
+                cleanup_error,
+                cleanup_diagnostics,
+            )
+        raise converted from error
+    if not session_empty:
+        cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(
+            process,
+            known_members=known_members,
+        )
+        if isinstance(cleanup_error, KeyboardInterrupt | SystemExit):
+            raise cleanup_error
+        converted = RouteError(failure + ":process")
+        if cleanup_error is not None or cleanup_diagnostics:
+            _add_swift_build_cleanup_notes(
+                converted,
+                cleanup_error,
+                cleanup_diagnostics,
+            )
+        raise converted
+    completed = subprocess.CompletedProcess(command, cast(int, process.returncode), stdout, stderr)
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2_000:]
         raise RouteError(failure + ":" + detail)
     return completed
+
+
+def _swift_build_process_ids_from_ps(deadline: float) -> tuple[int, ...]:
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise RuntimeError("swift build process-list deadline expired")
+    try:
+        completed = subprocess.run(
+            [str(_PROCESS_LIST), "-axo", "pid="],
+            check=False,
+            capture_output=True,
+            timeout=min(_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS, remaining),
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RuntimeError("swift build process-list command failed") from error
+    if completed.returncode != 0 or completed.stderr.strip():
+        raise RuntimeError("swift build process-list command failed")
+    if len(completed.stdout) > _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES:
+        raise RuntimeError("swift build process-list output exceeded its bound")
+    lines = completed.stdout.splitlines()
+    if len(lines) > _SWIFT_BUILD_MAXIMUM_PROCESS_IDS:
+        raise RuntimeError("swift build process-list count exceeded its bound")
+    process_ids: set[int] = set()
+    for line in lines:
+        if time.monotonic() >= deadline:
+            raise RuntimeError("swift build process-list deadline expired")
+        fields = line.split()
+        if len(fields) != 1:
+            raise RuntimeError("swift build process-list output was malformed")
+        try:
+            pid = int(fields[0])
+        except ValueError as error:
+            raise RuntimeError("swift build process-list output was malformed") from error
+        if pid > 0:
+            process_ids.add(pid)
+    if time.monotonic() >= deadline:
+        raise RuntimeError("swift build process-list deadline expired")
+    if len(process_ids) > _SWIFT_BUILD_MAXIMUM_PROCESS_IDS:
+        raise RuntimeError("swift build process-list count exceeded its bound")
+    return tuple(sorted(process_ids))
+
+
+def _swift_build_process_ids_from_libproc(deadline: float) -> tuple[int, ...]:
+    """Use Darwin's fixed-cap process API without spawning another process."""
+
+    if deadline - time.monotonic() <= 0:
+        raise RuntimeError("swift build process-list deadline expired")
+    import ctypes
+
+    try:
+        library = ctypes.CDLL(str(_LIBPROC), use_errno=True)
+        proc_listallpids = cast(Any, library.proc_listallpids)
+        proc_listallpids.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        proc_listallpids.restype = ctypes.c_int
+        buffer_type = ctypes.c_int32 * (_SWIFT_BUILD_MAXIMUM_PROCESS_IDS + 1)
+        buffer = buffer_type()
+        count = cast(
+            int,
+            proc_listallpids(
+                ctypes.cast(buffer, ctypes.c_void_p),
+                ctypes.sizeof(buffer),
+            ),
+        )
+    except (AttributeError, OSError, ValueError) as error:
+        raise RuntimeError("swift build libproc enumeration failed") from error
+    if time.monotonic() > deadline:
+        raise RuntimeError("swift build process-list deadline expired")
+    if count < 0 or count >= len(buffer):
+        raise RuntimeError("swift build libproc process count exceeded its bound")
+    process_ids: set[int] = set()
+    for index in range(count):
+        if time.monotonic() >= deadline:
+            raise RuntimeError("swift build process-list deadline expired")
+        if buffer[index] > 0:
+            process_ids.add(int(buffer[index]))
+    if len(process_ids) > _SWIFT_BUILD_MAXIMUM_PROCESS_IDS:
+        raise RuntimeError("swift build libproc process count exceeded its bound")
+    return tuple(sorted(process_ids))
+
+
+def _swift_build_process_ids(deadline: float) -> tuple[int, ...]:
+    if sys.platform == "darwin":
+        try:
+            return _swift_build_process_ids_from_libproc(deadline)
+        except Exception as primary_error:
+            try:
+                return _swift_build_process_ids_from_ps(deadline)
+            except Exception as fallback_error:
+                failure = RuntimeError("swift build process enumeration failed")
+                failure.add_note(f"ps fallback: {fallback_error}")
+                raise failure from primary_error
+    return _swift_build_process_ids_from_ps(deadline)
+
+
+def _swift_build_session_members(
+    session_id: int,
+    *,
+    deadline: float | None = None,
+) -> dict[int, int]:
+    """Return exact live PID/PGID members of one isolated build session."""
+
+    enumeration_deadline = deadline or (
+        time.monotonic() + _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS
+    )
+    members: dict[int, int] = {}
+    for pid in _swift_build_process_ids(enumeration_deadline):
+        if time.monotonic() >= enumeration_deadline:
+            raise RuntimeError("swift build session identity deadline expired")
+        if pid <= 1 or pid == os.getpid():
+            continue
+        try:
+            observed_session = os.getsid(pid)
+        except ProcessLookupError:
+            continue
+        except PermissionError as error:
+            raise RuntimeError("swift build session identity was inaccessible") from error
+        if time.monotonic() >= enumeration_deadline:
+            raise RuntimeError("swift build session identity deadline expired")
+        if observed_session != session_id:
+            continue
+        try:
+            process_group = os.getpgid(pid)
+        except ProcessLookupError:
+            continue
+        except PermissionError as error:
+            raise RuntimeError("swift build process-group identity was inaccessible") from error
+        if time.monotonic() >= enumeration_deadline:
+            raise RuntimeError("swift build session identity deadline expired")
+        if process_group <= 1 or process_group == os.getpgrp():
+            raise RuntimeError("swift build session escaped its isolation boundary")
+        members[pid] = process_group
+    return members
+
+
+def _record_swift_build_cleanup_error(
+    errors: list[str],
+    context: str,
+    error: BaseException,
+) -> None:
+    detail = f"{context}: {type(error).__name__}: {error}"
+    if detail not in errors and len(errors) < 16:
+        errors.append(detail)
+
+
+def _signal_swift_build_member(
+    session_id: int,
+    pid: int,
+    signal_number: int,
+    known_members: dict[int, int],
+    errors: list[str],
+    *,
+    deadline: float,
+) -> bool | None:
+    """Signal one member after identity checks, or return None at deadline.
+
+    Darwin has no pidfd-equivalent that makes the last getsid-to-kill step
+    atomic. The repeated identity checks narrow and detect PID reuse but cannot
+    eliminate that final platform race for a moved-PGID descendant.
+    """
+
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        first_session = os.getsid(pid)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"getsid({pid})", error)
+        return True
+    if first_session != session_id:
+        known_members.pop(pid, None)
+        return False
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        process_group = os.getpgid(pid)
+        if time.monotonic() >= deadline:
+            return None
+        second_session = os.getsid(pid)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"identity({pid})", error)
+        return True
+    if second_session != session_id:
+        known_members.pop(pid, None)
+        return False
+    if process_group <= 1 or process_group == os.getpgrp():
+        _record_swift_build_cleanup_error(
+            errors,
+            f"identity({pid})",
+            RuntimeError("unsafe process-group identity"),
+        )
+        return True
+    known_members[pid] = process_group
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        os.kill(pid, signal_number)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"signal({pid})", error)
+        return True
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        after_session = os.getsid(pid)
+    except ProcessLookupError:
+        known_members.pop(pid, None)
+        return False
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"post-signal getsid({pid})", error)
+        return True
+    if after_session != session_id:
+        known_members.pop(pid, None)
+        return False
+    return True
+
+
+def _signal_swift_build_session(
+    session_id: int,
+    signal_number: int,
+    *,
+    deadline: float,
+    known_members: dict[int, int],
+    errors: list[str],
+) -> dict[int, int] | None:
+    """Signal the original PGID and exact members that moved to other PGIDs."""
+
+    if session_id <= 1 or session_id == os.getpid() or session_id == os.getpgrp():
+        raise RuntimeError("unsafe swift build session identity")
+    if time.monotonic() >= deadline:
+        return None
+    try:
+        os.killpg(session_id, signal_number)
+    except ProcessLookupError:
+        pass
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"killpg({session_id})", error)
+    if deadline - time.monotonic() <= 0:
+        return None
+    members: dict[int, int] | None
+    try:
+        members = _swift_build_session_members(session_id, deadline=deadline)
+    except Exception as error:
+        _record_swift_build_cleanup_error(errors, "session enumeration", error)
+        members = None
+    if members is not None:
+        known_members.update(members)
+    live_members: dict[int, int] = {}
+    for pid in sorted(known_members, reverse=True):
+        live = _signal_swift_build_member(
+            session_id,
+            pid,
+            signal_number,
+            known_members,
+            errors,
+            deadline=deadline,
+        )
+        if live is None:
+            return None
+        if live:
+            live_members[pid] = known_members[pid]
+    if members is None:
+        return None
+    return {**members, **live_members}
+
+
+def _signal_known_swift_build_members(
+    session_id: int,
+    signal_number: int,
+    known_members: dict[int, int],
+    errors: list[str],
+    *,
+    deadline: float,
+) -> bool:
+    if time.monotonic() >= deadline:
+        return False
+    try:
+        os.killpg(session_id, signal_number)
+    except ProcessLookupError:
+        pass
+    except OSError as error:
+        _record_swift_build_cleanup_error(errors, f"killpg({session_id})", error)
+    for pid in sorted(known_members, reverse=True):
+        live = _signal_swift_build_member(
+            session_id,
+            pid,
+            signal_number,
+            known_members,
+            errors,
+            deadline=deadline,
+        )
+        if live is None:
+            return False
+    return True
+
+
+def _wait_for_swift_build_session_exit(
+    session_id: int,
+    *,
+    deadline: float,
+    known_members: dict[int, int],
+) -> bool:
+    """Require repeated empty snapshots; never reap the pinned leader here."""
+
+    empty_snapshots = 0
+    while time.monotonic() < deadline:
+        try:
+            members = _swift_build_session_members(session_id, deadline=deadline)
+        except Exception:
+            raise
+        if members:
+            known_members.update(members)
+            return False
+        else:
+            empty_snapshots += 1
+            if empty_snapshots >= _SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS:
+                return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(_SWIFT_BUILD_SESSION_POLL_SECONDS, remaining))
+    return False
+
+
+def _quiesce_swift_build_session(
+    session_id: int,
+    signal_number: int,
+    *,
+    deadline: float,
+    known_members: dict[int, int],
+    errors: list[str],
+) -> bool:
+    empty_snapshots = 0
+    while time.monotonic() < deadline:
+        members = _signal_swift_build_session(
+            session_id,
+            signal_number,
+            deadline=deadline,
+            known_members=known_members,
+            errors=errors,
+        )
+        if members is None or members:
+            empty_snapshots = 0
+        else:
+            empty_snapshots += 1
+            if empty_snapshots >= _SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS:
+                return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(_SWIFT_BUILD_SESSION_POLL_SECONDS, remaining))
+    return False
+
+
+def _terminate_swift_build_session(
+    process: subprocess.Popen[str],
+    *,
+    known_members: dict[int, int] | None = None,
+) -> tuple[str, ...]:
+    """Boundedly terminate and reap one verified command's POSIX session.
+
+    Swift/system descendants may create their own process groups, so cleanup
+    enumerates the isolated session. A descendant deliberately calling setsid()
+    is outside POSIX session containment and is not treated as contained here.
+    If both bounded enumerators fail before the first snapshot, an already
+    moved-PGID member is unknowable: cleanup kills the original PGID and every
+    last-known member, then fails closed without claiming absolute no-leak.
+    """
+
+    session_id = process.pid
+    if session_id <= 1 or session_id == os.getpid() or session_id == os.getpgrp():
+        raise RuntimeError("unsafe swift build session identity")
+    members = dict(known_members or {})
+    members.setdefault(session_id, session_id)
+    errors: list[str] = []
+    fatal_errors: list[str] = []
+    started = time.monotonic()
+    cleanup_deadline = started + _SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS
+    session_deadline = cleanup_deadline - _SWIFT_BUILD_REAP_RESERVE_SECONDS
+    final_signal_deadline = (
+        session_deadline - _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS
+    )
+    kill_deadline = final_signal_deadline - _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS
+    termination_deadline = min(
+        started + _SWIFT_BUILD_TERMINATION_GRACE_SECONDS,
+        kill_deadline,
+    )
+    interrupted: BaseException | None = None
+    session_clean = False
+    try:
+        session_clean = _quiesce_swift_build_session(
+            session_id,
+            signal.SIGTERM,
+            deadline=termination_deadline,
+            known_members=members,
+            errors=errors,
+        )
+        if not session_clean:
+            session_clean = _quiesce_swift_build_session(
+                session_id,
+                signal.SIGKILL,
+                deadline=kill_deadline,
+                known_members=members,
+                errors=errors,
+            )
+    except BaseException as error:
+        interrupted = _capture_swift_build_cleanup_exception(
+            interrupted,
+            errors,
+            "initial session cleanup",
+            error,
+        )
+    finally:
+        if not session_clean:
+            try:
+                final_signals_complete = _signal_known_swift_build_members(
+                    session_id,
+                    signal.SIGKILL,
+                    members,
+                    errors,
+                    deadline=final_signal_deadline,
+                )
+                if not final_signals_complete:
+                    _record_swift_build_cleanup_error(
+                        errors,
+                        "final known-member signal",
+                        RuntimeError("cleanup deadline expired"),
+                    )
+            except BaseException as error:
+                interrupted = _capture_swift_build_cleanup_exception(
+                    interrupted,
+                    errors,
+                    "final known-member signal",
+                    error,
+                )
+            if process.returncode is None and time.monotonic() < final_signal_deadline:
+                try:
+                    process.kill()
+                except ProcessLookupError:
+                    pass
+                except BaseException as error:
+                    interrupted = _capture_swift_build_cleanup_exception(
+                        interrupted,
+                        errors,
+                        "direct process kill",
+                        error,
+                    )
+            elif process.returncode is None:
+                _record_swift_build_cleanup_error(
+                    errors,
+                    "direct process kill",
+                    RuntimeError("cleanup deadline expired"),
+                )
+            try:
+                session_clean = _quiesce_swift_build_session(
+                    session_id,
+                    signal.SIGKILL,
+                    deadline=session_deadline,
+                    known_members=members,
+                    errors=errors,
+                )
+            except BaseException as error:
+                interrupted = _capture_swift_build_cleanup_exception(
+                    interrupted,
+                    errors,
+                    "final session verification",
+                    error,
+                )
+        for stream in (process.stdin, process.stdout, process.stderr):
+            if stream is not None:
+                try:
+                    stream.close()
+                except BaseException as error:
+                    interrupted = _capture_swift_build_cleanup_exception(
+                        interrupted,
+                        errors,
+                        "process stream close",
+                        error,
+                    )
+                    fatal_errors.append("process stream close failed")
+        process_reaped = False
+        attempts = 0
+        while attempts < 2 and time.monotonic() <= cleanup_deadline:
+            attempts += 1
+            try:
+                process.wait(timeout=max(0.0, cleanup_deadline - time.monotonic()))
+                process_reaped = True
+                break
+            except BaseException as error:
+                interrupted = _capture_swift_build_cleanup_exception(
+                    interrupted,
+                    errors,
+                    "direct process reap",
+                    error,
+                )
+        if not process_reaped:
+            fatal_errors.append("direct process was not reaped")
+    if not session_clean:
+        fatal_errors.append("session was not proven empty before cleanup deadline")
+    if interrupted is not None:
+        for detail in (*errors, *fatal_errors):
+            interrupted.add_note(detail)
+        raise interrupted
+    if fatal_errors:
+        failure = RuntimeError("swift build process-tree cleanup failed")
+        for detail in (*errors, *fatal_errors):
+            failure.add_note(detail)
+        raise failure
+    return tuple(errors)
+
+
+def _capture_swift_build_cleanup_exception(
+    interrupted: BaseException | None,
+    errors: list[str],
+    context: str,
+    error: BaseException,
+) -> BaseException | None:
+    if isinstance(error, Exception):
+        _record_swift_build_cleanup_error(errors, context, error)
+        return interrupted
+    if interrupted is None:
+        return error
+    interrupted.add_note(f"{context}: {type(error).__name__}: {error}")
+    return interrupted
+
+
+def _attempt_swift_build_session_cleanup(
+    process: subprocess.Popen[str],
+    *,
+    known_members: dict[int, int] | None = None,
+) -> tuple[BaseException | None, tuple[str, ...]]:
+    try:
+        diagnostics = _terminate_swift_build_session(process, known_members=known_members)
+    except BaseException as error:
+        return error, ()
+    return None, diagnostics
+
+
+def _add_swift_build_cleanup_notes(
+    target: BaseException,
+    cleanup_error: BaseException | None,
+    cleanup_diagnostics: tuple[str, ...],
+) -> None:
+    if cleanup_error is not None:
+        target.add_note(f"Swift build cleanup: {cleanup_error}")
+        for detail in getattr(cleanup_error, "__notes__", ()):
+            target.add_note(f"Swift build cleanup detail: {detail}")
+    for detail in cleanup_diagnostics:
+        target.add_note(f"Swift build cleanup diagnostic: {detail}")
 
 
 def _prepare_swift_dependency_mirror(
@@ -3375,7 +4036,7 @@ def _build_swift_analyzer(toolchain: ExactToolchain, package: Path) -> tuple[Pat
             command,
             cwd=snapshot,
             environment=environment,
-            timeout=1_800,
+            timeout=_SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS,
             failure="SWIFT_ANALYZER_BUILD_FAILED",
         )
     except RouteError as error:
@@ -4474,7 +5135,10 @@ def _normalize_private_analyzer_root_group(root: Path, *, failure: str) -> None:
         before.st_ctime_ns,
     )
     descriptor_flags = (
-        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
     )
     try:
         descriptor = os.open(root, descriptor_flags)
@@ -4483,16 +5147,19 @@ def _normalize_private_analyzer_root_group(root: Path, *, failure: str) -> None:
     try:
         opened_before = os.fstat(descriptor)
         if (
-            opened_before.st_dev,
-            opened_before.st_ino,
-            opened_before.st_mode,
-            opened_before.st_nlink,
-            opened_before.st_uid,
-            opened_before.st_gid,
-            opened_before.st_size,
-            opened_before.st_mtime_ns,
-            opened_before.st_ctime_ns,
-        ) != exact_before:
+            (
+                opened_before.st_dev,
+                opened_before.st_ino,
+                opened_before.st_mode,
+                opened_before.st_nlink,
+                opened_before.st_uid,
+                opened_before.st_gid,
+                opened_before.st_size,
+                opened_before.st_mtime_ns,
+                opened_before.st_ctime_ns,
+            )
+            != exact_before
+        ):
             raise RouteError(failure)
         os.fchown(descriptor, -1, os.getgid())
         opened_after = os.fstat(descriptor)

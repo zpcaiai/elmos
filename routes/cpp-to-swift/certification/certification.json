@@ -13,7 +13,7 @@
   "formal_equivalence": {
     "bytes": 58933,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:aded3725932d7c2b143921cbbbd78a187695941822a764fceb930a4df90ec2a4"
+    "sha256": "sha256:0b5ade6d0986e4a123007725e3d95876986d315e70a029fd07dfa10f8960bf09"
   },
   "gate_results": {
     "external_execution": "NOT_RUN",
@@ -21,7 +21,7 @@
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-08-09T22:47:39.221504+00:00",
+  "issued_at": "2026-08-09T23:41:26.934105+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -33,7 +33,7 @@
   "module_equivalence": {
     "bytes": 184087,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:6fc62d0b4d81e31e0d4ba0f382f85f10a5f6c9156dc51895acbaa4fbe56bebdc"
+    "sha256": "sha256:c5d611bef27400560be2cc4e6449746f5da1f45c0fda0e8632ce54a134d21ded"
   },
   "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "cpp-to-swift",

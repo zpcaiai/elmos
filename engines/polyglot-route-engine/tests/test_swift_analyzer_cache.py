@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import copy
+import ctypes
+import errno
 import hashlib
+import json
 import os
+import signal
 import stat
 import subprocess
+import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -63,6 +69,23 @@ def _swift_toolchain() -> ExactToolchain:
     )
 
 
+def _pid_exists(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def _wait_for_pid_exit(pid: int, *, timeout: float = 2.0) -> bool:
+    deadline = time.monotonic() + timeout
+    while _pid_exists(pid):
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(0.01)
+    return True
+
+
 def _swift_probe_environment(root: Path) -> dict[str, str]:
     return {
         "PATH": os.pathsep.join(
@@ -116,7 +139,9 @@ def _install_mocked_swift_network_probe_runtime(
         "gid": 0,
         "nlink": 1,
     }
-    compiler_receipts = iter((copy.deepcopy(compiler), copy.deepcopy(compiler_after or compiler)))
+    compiler_receipts = iter(
+        (copy.deepcopy(compiler), copy.deepcopy(compiler_after or compiler))
+    )
     sdk_identity = ("sdk", "stable")
     sdk_identities = iter((sdk_identity, sdk_after or sdk_identity))
     sandbox = {
@@ -361,7 +386,9 @@ def test_swift_build_revalidates_toolchain_before_and_after_driver_execution() -
     end = source.index("\ndef _swift_toolchain_identity(", start)
     build_source = source[start:end]
     first = build_source.index("_require_current_swift_toolchain(toolchain)")
-    network_before = build_source.index("_require_current_swift_network_execution_identity(", first)
+    network_before = build_source.index(
+        "_require_current_swift_network_execution_identity(", first
+    )
     driver = build_source.index("_run_swift_build_step(", network_before)
     network_after = build_source.index(
         "_require_current_swift_network_execution_identity(",
@@ -378,6 +405,681 @@ def test_swift_build_revalidates_toolchain_before_and_after_driver_execution() -
     assert network_after < build_error_raise < second < receipt
     assert build_source.count("_require_current_swift_network_execution_identity(") == 2
     assert build_source.count("_require_current_swift_toolchain(") == 2
+    assert "timeout=_SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS" in build_source
+    assert native._SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS == 3_600
+
+
+def test_swift_build_step_preserves_process_io_environment_and_cwd(tmp_path: Path) -> None:
+    script = (
+        "import json, os, sys; "
+        "value = {'cwd': os.getcwd(), 'environment': os.environ['ELMOS_SWIFT_TEST'], "
+        "'input': sys.stdin.read(), 'pid': os.getpid(), 'pgid': os.getpgrp(), "
+        "'sid': os.getsid(0)}; "
+        "print(json.dumps(value, sort_keys=True)); "
+        "print('swift-build-stderr', file=sys.stderr)"
+    )
+    environment = {**os.environ, "ELMOS_SWIFT_TEST": "isolated-value"}
+
+    completed = native._run_swift_build_step(
+        [sys.executable, "-c", script],
+        cwd=tmp_path,
+        environment=environment,
+        timeout=10,
+        failure="SWIFT_BUILD_TEST_FAILED",
+        input_text="swift-build-stdin",
+    )
+
+    value = json.loads(completed.stdout)
+    assert completed.returncode == 0
+    assert completed.stderr == "swift-build-stderr\n"
+    assert value == {
+        "cwd": str(tmp_path),
+        "environment": "isolated-value",
+        "input": "swift-build-stdin",
+        "pgid": value["pid"],
+        "pid": value["pid"],
+        "sid": value["pid"],
+    }
+
+
+def test_swift_build_libproc_process_count_is_bounded(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class ProcessListFunction:
+        argtypes: object = None
+        restype: object = None
+
+        def __call__(self, _buffer: object, _size: int) -> int:
+            return native._SWIFT_BUILD_MAXIMUM_PROCESS_IDS + 1
+
+    class Library:
+        proc_listallpids = ProcessListFunction()
+
+    monkeypatch.setattr(ctypes, "CDLL", lambda *_args, **_kwargs: Library())
+    monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_IDS", 2)
+
+    with pytest.raises(
+        RuntimeError,
+        match="^swift build libproc process count exceeded its bound$",
+    ):
+        native._swift_build_process_ids_from_libproc(time.monotonic() + 1)
+
+
+@pytest.mark.parametrize(
+    ("stdout", "maximum_ids", "maximum_bytes", "message"),
+    (
+        (b"1\n2\n", 10, 3, "swift build process-list output exceeded its bound"),
+        (b"1\n2\n3\n", 2, 100, "swift build process-list count exceeded its bound"),
+        (b"1 extra\n", 10, 100, "swift build process-list output was malformed"),
+    ),
+    ids=("byte-bound", "count-bound", "malformed"),
+)
+def test_swift_build_ps_process_list_is_bounded_and_exact(
+    monkeypatch: pytest.MonkeyPatch,
+    stdout: bytes,
+    maximum_ids: int,
+    maximum_bytes: int,
+    message: str,
+) -> None:
+    def run(
+        command: list[str],
+        **_kwargs: object,
+    ) -> subprocess.CompletedProcess[bytes]:
+        assert command == ["/bin/ps", "-axo", "pid="]
+        return subprocess.CompletedProcess(command, 0, stdout, b"")
+
+    monkeypatch.setattr(native.subprocess, "run", run)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_IDS", maximum_ids)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES", maximum_bytes)
+
+    with pytest.raises(RuntimeError, match=f"^{message}$"):
+        native._swift_build_process_ids_from_ps(time.monotonic() + 1)
+
+
+def test_swift_build_process_fallback_respects_expired_deadline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_primary(_deadline: float) -> tuple[int, ...]:
+        raise RuntimeError("forced primary failure")
+
+    monkeypatch.setattr(native.sys, "platform", "darwin")
+    monkeypatch.setattr(native, "_swift_build_process_ids_from_libproc", fail_primary)
+
+    with pytest.raises(RuntimeError) as captured:
+        native._swift_build_process_ids(time.monotonic() - 1)
+
+    assert captured.value.args == ("swift build process enumeration failed",)
+    assert isinstance(captured.value.__cause__, RuntimeError)
+    assert captured.value.__cause__.args == ("forced primary failure",)
+    assert tuple(getattr(captured.value, "__notes__", ())) == (
+        "ps fallback: swift build process-list deadline expired",
+    )
+
+
+def test_swift_build_session_member_filter_respects_deadline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    process_ids = tuple(range(1_000_000, 1_000_200))
+
+    def slow_getsid(_pid: int) -> int:
+        time.sleep(0.01)
+        raise ProcessLookupError
+
+    monkeypatch.setattr(native, "_swift_build_process_ids", lambda _deadline: process_ids)
+    monkeypatch.setattr(native.os, "getsid", slow_getsid)
+    started = time.monotonic()
+
+    with pytest.raises(
+        RuntimeError,
+        match="^swift build session identity deadline expired$",
+    ):
+        native._swift_build_session_members(
+            41_200,
+            deadline=started + 0.05,
+        )
+
+    assert time.monotonic() - started < 0.15
+
+
+@pytest.mark.parametrize(
+    ("enumeration_mode", "leader_exits"),
+    (
+        ("normal", False),
+        ("primary-fallback", False),
+        ("lost-after-first", False),
+        ("dual-failure-first", False),
+        ("normal", True),
+    ),
+    ids=(
+        "live-leader",
+        "ps-fallback",
+        "last-known-members",
+        "dual-enumerator-failure-before-discovery",
+        "exited-leader-held-pipes",
+    ),
+)
+def test_swift_build_step_timeout_reaps_same_session_moved_process_group(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    enumeration_mode: str,
+    leader_exits: bool,
+) -> None:
+    parent_record = tmp_path / "parent.json"
+    child_record = tmp_path / "child.json"
+    child_script = """
+import json
+import os
+import signal
+import sys
+import time
+from pathlib import Path
+
+os.setpgrp()
+signal.signal(signal.SIGTERM, signal.SIG_IGN)
+record = Path(sys.argv[1])
+temporary = record.with_suffix(".tmp")
+temporary.write_text(json.dumps({
+    "pid": os.getpid(),
+    "pgid": os.getpgrp(),
+    "sid": os.getsid(0),
+}), encoding="utf-8")
+os.replace(temporary, record)
+while True:
+    time.sleep(0.1)
+"""
+    parent_script = """
+import json
+import os
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+parent_record = Path(sys.argv[1])
+child_record = Path(sys.argv[2])
+child_script = sys.argv[3]
+leader_mode = sys.argv[4]
+signal.signal(signal.SIGTERM, signal.SIG_IGN)
+child = subprocess.Popen(
+    [sys.executable, "-c", child_script, str(child_record)],
+    stdin=subprocess.DEVNULL,
+)
+deadline = time.monotonic() + 5
+while not child_record.exists():
+    if time.monotonic() >= deadline:
+        raise RuntimeError("child did not become ready")
+    time.sleep(0.01)
+temporary = parent_record.with_suffix(".tmp")
+temporary.write_text(json.dumps({
+    "pid": os.getpid(),
+    "pgid": os.getpgrp(),
+    "sid": os.getsid(0),
+    "child_pid": child.pid,
+}), encoding="utf-8")
+os.replace(temporary, parent_record)
+if leader_mode == "exit":
+    raise SystemExit(0)
+while True:
+    time.sleep(0.1)
+"""
+    monkeypatch.setattr(native, "_SWIFT_BUILD_TERMINATION_GRACE_SECONDS", 0.5)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS", 5.0)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_REAP_RESERVE_SECONDS", 0.5)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_SESSION_POLL_SECONDS", 0.01)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS", 0.3)
+    real_session_members = native._swift_build_session_members
+    if enumeration_mode == "primary-fallback":
+        real_libproc_enumeration = native._swift_build_process_ids_from_libproc
+
+        def fail_primary_enumeration(_deadline: float) -> tuple[int, ...]:
+            raise RuntimeError("forced libproc enumeration failure")
+
+        monkeypatch.setattr(native, "_swift_build_process_ids_from_libproc", fail_primary_enumeration)
+        # The fallback selector is the behavior under test here.  Keep the
+        # process source deterministic because managed macOS sandboxes may
+        # independently deny executing /bin/ps; ps parsing/bounds have their
+        # own subprocess-mocked tests above.
+        monkeypatch.setattr(native, "_swift_build_process_ids_from_ps", real_libproc_enumeration)
+    elif enumeration_mode == "lost-after-first":
+        enumeration_calls = 0
+
+        def lose_enumeration(
+            session_id: int,
+            *,
+            deadline: float | None = None,
+        ) -> dict[int, int]:
+            nonlocal enumeration_calls
+            enumeration_calls += 1
+            if enumeration_calls == 1:
+                return real_session_members(session_id, deadline=deadline)
+            raise RuntimeError("forced total enumeration failure")
+
+        monkeypatch.setattr(native, "_swift_build_session_members", lose_enumeration)
+    elif enumeration_mode == "dual-failure-first":
+
+        def fail_enumeration(_deadline: float) -> tuple[int, ...]:
+            raise RuntimeError("forced enumeration failure before discovery")
+
+        monkeypatch.setattr(native, "_swift_build_process_ids_from_libproc", fail_enumeration)
+        monkeypatch.setattr(native, "_swift_build_process_ids_from_ps", fail_enumeration)
+    parent: dict[str, int] = {}
+    child: dict[str, int] = {}
+    recorded_pids: list[int] = []
+
+    try:
+        with pytest.raises(RouteError) as captured:
+            native._run_swift_build_step(
+                [
+                    sys.executable,
+                    "-c",
+                    parent_script,
+                    str(parent_record),
+                    str(child_record),
+                    child_script,
+                    "exit" if leader_exits else "loop",
+                ],
+                cwd=tmp_path,
+                environment=dict(os.environ),
+                timeout=1 if leader_exits else 2,
+                failure="SWIFT_BUILD_TEST_TIMEOUT",
+            )
+        assert captured.value.args == ("SWIFT_BUILD_TEST_TIMEOUT:process",)
+        assert isinstance(captured.value.__cause__, subprocess.TimeoutExpired)
+        if enumeration_mode in {"lost-after-first", "dual-failure-first"}:
+            assert any(
+                note.startswith("Swift build cleanup:")
+                for note in getattr(captured.value, "__notes__", ())
+            )
+        else:
+            cleanup_notes = getattr(captured.value, "__notes__", ())
+            assert all(
+                note.startswith("Swift build cleanup diagnostic:")
+                for note in cleanup_notes
+            ), cleanup_notes
+        parent = json.loads(parent_record.read_text(encoding="utf-8"))
+        child = json.loads(child_record.read_text(encoding="utf-8"))
+        assert parent["pid"] == parent["pgid"] == parent["sid"]
+        assert parent["child_pid"] == child["pid"]
+        assert child["pgid"] == child["pid"]
+        assert child["sid"] == parent["sid"]
+        assert child["pgid"] != parent["pgid"]
+        if enumeration_mode not in {"lost-after-first", "dual-failure-first"}:
+            assert native._swift_build_session_members(parent["sid"]) == {}
+        assert _wait_for_pid_exit(parent["pid"])
+        if enumeration_mode == "dual-failure-first":
+            # With both bounded enumerators unavailable before discovery, a
+            # moved-PGID child is unknowable. The operation fails closed, but
+            # POSIX offers no SID broadcast; test-owned PID evidence cleans it.
+            assert _pid_exists(child["pid"])
+        else:
+            assert _wait_for_pid_exit(child["pid"])
+    finally:
+        session_id = parent.get("sid")
+        if session_id is None and parent_record.exists():
+            session_id = json.loads(parent_record.read_text(encoding="utf-8"))["sid"]
+        if session_id is None and child_record.exists():
+            session_id = json.loads(child_record.read_text(encoding="utf-8"))["sid"]
+        if session_id is not None:
+            for record in (parent_record, child_record):
+                if not record.exists():
+                    continue
+                pid = json.loads(record.read_text(encoding="utf-8"))["pid"]
+                recorded_pids.append(pid)
+                try:
+                    if os.getsid(pid) == session_id:
+                        os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        for pid in recorded_pids:
+            assert _wait_for_pid_exit(pid)
+
+
+def test_swift_build_session_exit_requires_three_consecutive_empty_snapshots(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    snapshots = iter(({}, {}, {41_001: 41_001}))
+    calls = 0
+
+    def session_members(
+        _session_id: int,
+        *,
+        deadline: float | None = None,
+    ) -> dict[int, int]:
+        nonlocal calls
+        assert deadline is not None
+        calls += 1
+        return next(snapshots)
+
+    monkeypatch.setattr(native, "_swift_build_session_members", session_members)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_SESSION_POLL_SECONDS", 0.001)
+    known_members: dict[int, int] = {}
+
+    assert not native._wait_for_swift_build_session_exit(
+        41_000,
+        deadline=time.monotonic() + 1,
+        known_members=known_members,
+    )
+    assert calls == 3
+    assert known_members == {41_001: 41_001}
+
+    monkeypatch.setattr(
+        native,
+        "_swift_build_session_members",
+        lambda *_args, **_kwargs: {},
+    )
+    assert native._wait_for_swift_build_session_exit(
+        41_000,
+        deadline=time.monotonic() + 1,
+        known_members={},
+    )
+
+
+@pytest.mark.parametrize("interrupt_phase", ("communicate", "enumeration"))
+def test_swift_build_step_preserves_keyboard_interrupt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    interrupt_phase: str,
+) -> None:
+    cleaned: list[int] = []
+
+    class InterruptingProcess:
+        pid = 41_100
+        returncode = 0
+
+        def communicate(self, **_kwargs: object) -> tuple[str, str]:
+            if interrupt_phase == "communicate":
+                raise KeyboardInterrupt
+            return "", ""
+
+    process = InterruptingProcess()
+    monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(
+        native,
+        "_attempt_swift_build_session_cleanup",
+        lambda candidate, **_kwargs: (cleaned.append(candidate.pid), ()),
+    )
+    if interrupt_phase == "enumeration":
+        monkeypatch.setattr(
+            native,
+            "_wait_for_swift_build_session_exit",
+            lambda *_args, **_kwargs: (_ for _ in ()).throw(KeyboardInterrupt),
+        )
+
+    with pytest.raises(KeyboardInterrupt):
+        native._run_swift_build_step(
+            [sys.executable, "-c", "pass"],
+            cwd=tmp_path,
+            environment=dict(os.environ),
+            timeout=1,
+            failure="SWIFT_BUILD_INTERRUPT",
+        )
+
+    assert cleaned == [process.pid]
+
+
+@pytest.mark.parametrize("cleanup_interrupt", (False, True), ids=("origin", "cleanup"))
+def test_swift_build_step_preserves_system_exit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    cleanup_interrupt: bool,
+) -> None:
+    trigger: BaseException
+    cleanup_error: BaseException | None
+    expected_code: int
+    if cleanup_interrupt:
+        trigger = subprocess.TimeoutExpired([sys.executable], 1)
+        cleanup_error = SystemExit(23)
+        expected_code = 23
+    else:
+        trigger = SystemExit(17)
+        cleanup_error = None
+        expected_code = 17
+    cleaned: list[int] = []
+
+    class InterruptingProcess:
+        pid = 41_101
+
+        def communicate(self, **_kwargs: object) -> tuple[str, str]:
+            raise trigger
+
+    process = InterruptingProcess()
+    monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+
+    def cleanup(candidate: InterruptingProcess) -> tuple[BaseException | None, tuple[str, ...]]:
+        cleaned.append(candidate.pid)
+        return cleanup_error, ()
+
+    monkeypatch.setattr(native, "_attempt_swift_build_session_cleanup", cleanup)
+
+    with pytest.raises(SystemExit) as captured:
+        native._run_swift_build_step(
+            [sys.executable, "-c", "pass"],
+            cwd=tmp_path,
+            environment=dict(os.environ),
+            timeout=1,
+            failure="SWIFT_BUILD_EXIT",
+        )
+
+    assert captured.value.code == expected_code
+    assert cleaned == [process.pid]
+    if cleanup_interrupt:
+        assert captured.value.__cause__ is trigger
+
+
+def test_swift_build_step_fails_closed_on_normal_completion_enumeration_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    cleaned: list[int] = []
+    enumeration_error = RuntimeError("forced normal-completion enumeration failure")
+
+    class CompletedProcess:
+        pid = 41_102
+        returncode = 0
+
+        def communicate(self, **_kwargs: object) -> tuple[str, str]:
+            return "stdout", "stderr"
+
+    process = CompletedProcess()
+    monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(
+        native,
+        "_wait_for_swift_build_session_exit",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(enumeration_error),
+    )
+
+    def cleanup(candidate: CompletedProcess, **_kwargs: object) -> tuple[None, tuple[()]]:
+        cleaned.append(candidate.pid)
+        return None, ()
+
+    monkeypatch.setattr(native, "_attempt_swift_build_session_cleanup", cleanup)
+
+    with pytest.raises(RouteError) as captured:
+        native._run_swift_build_step(
+            [sys.executable, "-c", "pass"],
+            cwd=tmp_path,
+            environment=dict(os.environ),
+            timeout=1,
+            failure="SWIFT_BUILD_ENUMERATION",
+        )
+
+    assert captured.value.args == ("SWIFT_BUILD_ENUMERATION:process",)
+    assert captured.value.__cause__ is enumeration_error
+    assert cleaned == [process.pid]
+
+
+def test_swift_build_cleanup_obeys_absolute_wall_clock_deadline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    script = (
+        "import signal, time; "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        "time.sleep(30)"
+    )
+    process = subprocess.Popen(
+        [sys.executable, "-c", script],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        start_new_session=True,
+    )
+    fake_pids = tuple(range(1_000_000, 1_000_200))
+    known_members = {pid: pid for pid in fake_pids}
+    real_getsid = os.getsid
+
+    def slow_getsid(pid: int) -> int:
+        if pid in known_members:
+            time.sleep(0.01)
+            raise ProcessLookupError
+        return real_getsid(pid)
+
+    monkeypatch.setattr(native.os, "getsid", slow_getsid)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS", 0.4)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_REAP_RESERVE_SECONDS", 0.1)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS", 0.05)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS", 0.08)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_TERMINATION_GRACE_SECONDS", 0.05)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_SESSION_POLL_SECONDS", 0.005)
+    started = time.monotonic()
+
+    try:
+        with pytest.raises(RuntimeError) as captured:
+            native._terminate_swift_build_session(
+                process,
+                known_members=known_members,
+            )
+    finally:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait(timeout=1)
+
+    assert captured.value.args == ("swift build process-tree cleanup failed",)
+    assert time.monotonic() - started < 0.8
+    assert process.returncode is not None
+
+
+def test_swift_build_step_reaps_daemon_after_leader_exits_normally(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parent_record = tmp_path / "normal-parent.json"
+    child_record = tmp_path / "normal-child.json"
+    child_script = """
+import json
+import os
+import signal
+import sys
+import time
+from pathlib import Path
+
+os.setpgrp()
+signal.signal(signal.SIGTERM, signal.SIG_IGN)
+record = Path(sys.argv[1])
+temporary = record.with_suffix(".tmp")
+temporary.write_text(json.dumps({
+    "pid": os.getpid(),
+    "pgid": os.getpgrp(),
+    "sid": os.getsid(0),
+}), encoding="utf-8")
+os.replace(temporary, record)
+os.close(1)
+os.close(2)
+while True:
+    time.sleep(0.1)
+"""
+    parent_script = """
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+parent_record = Path(sys.argv[1])
+child_record = Path(sys.argv[2])
+child_script = sys.argv[3]
+child = subprocess.Popen(
+    [sys.executable, "-c", child_script, str(child_record)],
+    stdin=subprocess.DEVNULL,
+)
+deadline = time.monotonic() + 5
+while not child_record.exists():
+    if time.monotonic() >= deadline:
+        raise RuntimeError("child did not become ready")
+    time.sleep(0.01)
+temporary = parent_record.with_suffix(".tmp")
+temporary.write_text(json.dumps({
+    "pid": os.getpid(),
+    "pgid": os.getpgrp(),
+    "sid": os.getsid(0),
+    "child_pid": child.pid,
+}), encoding="utf-8")
+os.replace(temporary, parent_record)
+"""
+    monkeypatch.setattr(native, "_SWIFT_BUILD_TERMINATION_GRACE_SECONDS", 0.5)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS", 3.0)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_REAP_RESERVE_SECONDS", 0.5)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_SESSION_POLL_SECONDS", 0.01)
+    monkeypatch.setattr(native, "_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS", 0.3)
+    parent: dict[str, int] = {}
+    child: dict[str, int] = {}
+    recorded_pids: list[int] = []
+
+    try:
+        with pytest.raises(RouteError) as captured:
+            native._run_swift_build_step(
+                [
+                    sys.executable,
+                    "-c",
+                    parent_script,
+                    str(parent_record),
+                    str(child_record),
+                    child_script,
+                ],
+                cwd=tmp_path,
+                environment=dict(os.environ),
+                timeout=10,
+                failure="SWIFT_BUILD_DAEMON",
+            )
+        assert captured.value.args == ("SWIFT_BUILD_DAEMON:process",)
+        assert all(
+            note.startswith("Swift build cleanup diagnostic:")
+            for note in getattr(captured.value, "__notes__", ())
+        )
+        assert captured.value.__cause__ is None
+        parent = json.loads(parent_record.read_text(encoding="utf-8"))
+        child = json.loads(child_record.read_text(encoding="utf-8"))
+        assert parent["pid"] == parent["pgid"] == parent["sid"]
+        assert parent["child_pid"] == child["pid"]
+        assert child["pgid"] == child["pid"]
+        assert child["sid"] == parent["sid"]
+        assert child["pgid"] != parent["pgid"]
+        assert native._swift_build_session_members(parent["sid"]) == {}
+        assert _wait_for_pid_exit(parent["pid"])
+        assert _wait_for_pid_exit(child["pid"])
+    finally:
+        session_id = parent.get("sid")
+        if session_id is None and parent_record.exists():
+            session_id = json.loads(parent_record.read_text(encoding="utf-8"))["sid"]
+        if session_id is None and child_record.exists():
+            session_id = json.loads(child_record.read_text(encoding="utf-8"))["sid"]
+        if session_id is not None:
+            for record in (parent_record, child_record):
+                if not record.exists():
+                    continue
+                pid = json.loads(record.read_text(encoding="utf-8"))["pid"]
+                recorded_pids.append(pid)
+                try:
+                    if os.getsid(pid) == session_id:
+                        os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        for pid in recorded_pids:
+            assert _wait_for_pid_exit(pid)
 
 
 def test_swift_toolchain_revalidation_rejects_build_closure_drift(
@@ -477,7 +1179,10 @@ def test_swift_dependency_clone_is_local_without_hardlinks_or_network(
     ) == {"verified": True}
     clone = commands[0]
     assert all(command[0] == str(native._APPLE_GIT) for command in commands)
-    assert all(command[0] not in {"/usr/bin/xcrun", "/usr/bin/git", "/usr/bin/python3"} for command in commands)
+    assert all(
+        command[0] not in {"/usr/bin/xcrun", "/usr/bin/git", "/usr/bin/python3"}
+        for command in commands
+    )
     assert clone[1:5] == ["clone", "--no-local", "--no-hardlinks", "--no-checkout"]
     assert "https://" not in " ".join(part.lower() for part in clone)
     assert "http://" not in " ".join(part.lower() for part in clone)
@@ -842,6 +1547,162 @@ def test_swift_dependency_cache_without_verified_offline_seed_is_not_run(
     monkeypatch.setattr(native, "_swift_dependency_cache_home", lambda: tmp_path)
 
     with pytest.raises(RouteError, match="SWIFT_ANALYZER_DEPENDENCY_OFFLINE_SEED_NOT_RUN"):
+        native._ensure_swift_dependency_cache(package, root, {})
+
+
+def test_verified_swift_dependency_cache_reuses_existing_cache_with_read_only_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    package = tmp_path / "package"
+    root = tmp_path / "root"
+    cache_base = tmp_path / "cache"
+    cache = cache_base / native._swift_dependency_cache_key()
+    for directory in (package, root, cache):
+        directory.mkdir(parents=True, exist_ok=True)
+    lock_path = cache_base / ".seed.lock"
+    lock_path.write_bytes(b"")
+    lock_path.chmod(0o400)
+    dependency = {
+        "sha256": "sha256:" + native._SWIFT_SYNTAX_TREE_SHA256,
+        "file_count": native._SWIFT_SYNTAX_TREE_FILE_COUNT,
+        "bytes": native._SWIFT_SYNTAX_TREE_BYTES,
+    }
+    monkeypatch.setattr(native, "_swift_dependency_cache_base", lambda: cache_base)
+    monkeypatch.setattr(native, "_swift_dependency_cache_home", lambda: tmp_path)
+    monkeypatch.setattr(native, "_verify_swift_git_repository", lambda *args, **kwargs: dependency)
+    original_open = native.os.open
+    lock_open_flags: list[int] = []
+
+    def guarded_open(path: object, flags: int, mode: int = 0o777) -> int:
+        if Path(path) == lock_path:
+            lock_open_flags.append(flags)
+            if flags & (os.O_WRONLY | os.O_RDWR):
+                raise PermissionError("write access denied")
+        return original_open(path, flags, mode)
+
+    monkeypatch.setattr(native.os, "open", guarded_open)
+
+    observed_cache, receipt = native._ensure_swift_dependency_cache(package, root, {})
+
+    assert observed_cache == cache
+    assert receipt["sha256"] == dependency["sha256"]
+    assert len(lock_open_flags) == 1
+    assert lock_open_flags[0] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT) == 0
+    assert lock_open_flags[0] & getattr(os, "O_NOFOLLOW", 0)
+
+
+def test_swift_dependency_cache_lock_retries_read_after_create_race(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    package = tmp_path / "package"
+    root = tmp_path / "root"
+    cache_base = tmp_path / "cache"
+    cache = cache_base / native._swift_dependency_cache_key()
+    for directory in (package, root, cache):
+        directory.mkdir(parents=True, exist_ok=True)
+    lock_path = cache_base / ".seed.lock"
+    lock_path.write_bytes(b"")
+    lock_path.chmod(0o600)
+    dependency = {
+        "sha256": "sha256:" + native._SWIFT_SYNTAX_TREE_SHA256,
+        "file_count": native._SWIFT_SYNTAX_TREE_FILE_COUNT,
+        "bytes": native._SWIFT_SYNTAX_TREE_BYTES,
+    }
+    monkeypatch.setattr(native, "_swift_dependency_cache_base", lambda: cache_base)
+    monkeypatch.setattr(native, "_swift_dependency_cache_home", lambda: tmp_path)
+    monkeypatch.setattr(native, "_verify_swift_git_repository", lambda *args, **kwargs: dependency)
+    original_open = native.os.open
+    lock_open_flags: list[int] = []
+
+    def racing_open(path: object, flags: int, mode: int = 0o777) -> int:
+        if Path(path) == lock_path:
+            lock_open_flags.append(flags)
+            if len(lock_open_flags) == 1:
+                raise FileNotFoundError("lock not observed")
+            if len(lock_open_flags) == 2:
+                raise FileExistsError("lock raced into existence")
+        return original_open(path, flags, mode)
+
+    monkeypatch.setattr(native.os, "open", racing_open)
+
+    observed_cache, _receipt = native._ensure_swift_dependency_cache(package, root, {})
+
+    assert observed_cache == cache
+    assert len(lock_open_flags) == 3
+    assert lock_open_flags[0] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT) == 0
+    assert lock_open_flags[1] & (os.O_RDWR | os.O_CREAT | os.O_EXCL) == (
+        os.O_RDWR | os.O_CREAT | os.O_EXCL
+    )
+    assert lock_open_flags[2] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT) == 0
+
+
+@pytest.mark.parametrize("error_number", (errno.EACCES, errno.EPERM))
+def test_swift_dependency_cache_lock_permission_failure_does_not_attempt_create(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    error_number: int,
+) -> None:
+    package = tmp_path / "package"
+    root = tmp_path / "root"
+    cache_base = tmp_path / "cache"
+    cache = cache_base / native._swift_dependency_cache_key()
+    for directory in (package, root, cache):
+        directory.mkdir(parents=True, exist_ok=True)
+    lock_path = cache_base / ".seed.lock"
+    lock_path.write_bytes(b"")
+    monkeypatch.setattr(native, "_swift_dependency_cache_base", lambda: cache_base)
+    monkeypatch.setattr(native, "_swift_dependency_cache_home", lambda: tmp_path)
+    lock_open_flags: list[int] = []
+
+    def denied_open(path: object, flags: int, mode: int = 0o777) -> int:
+        assert Path(path) == lock_path
+        lock_open_flags.append(flags)
+        raise PermissionError(error_number, "sandbox denied lock access")
+
+    monkeypatch.setattr(native.os, "open", denied_open)
+
+    with pytest.raises(
+        RouteError,
+        match="^SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_UNAVAILABLE$",
+    ):
+        native._ensure_swift_dependency_cache(package, root, {})
+
+    assert len(lock_open_flags) == 1
+    assert lock_open_flags[0] & (os.O_WRONLY | os.O_RDWR | os.O_CREAT) == 0
+
+
+def test_swift_dependency_cache_lock_rejects_path_inode_replacement(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    package = tmp_path / "package"
+    root = tmp_path / "root"
+    cache_base = tmp_path / "cache"
+    cache = cache_base / native._swift_dependency_cache_key()
+    for directory in (package, root, cache):
+        directory.mkdir(parents=True, exist_ok=True)
+    lock_path = cache_base / ".seed.lock"
+    lock_path.write_bytes(b"")
+    lock_path.chmod(0o600)
+    monkeypatch.setattr(native, "_swift_dependency_cache_base", lambda: cache_base)
+    monkeypatch.setattr(native, "_swift_dependency_cache_home", lambda: tmp_path)
+    original_flock = native.fcntl.flock
+
+    def replace_after_lock(descriptor: int, operation: int) -> None:
+        original_flock(descriptor, operation)
+        if operation == native.fcntl.LOCK_EX:
+            lock_path.unlink()
+            lock_path.write_bytes(b"")
+            lock_path.chmod(0o600)
+
+    monkeypatch.setattr(native.fcntl, "flock", replace_after_lock)
+
+    with pytest.raises(
+        RouteError,
+        match="^SWIFT_ANALYZER_DEPENDENCY_CACHE_LOCK_CHANGED$",
+    ):
         native._ensure_swift_dependency_cache(package, root, {})
 
 

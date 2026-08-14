@@ -4,6 +4,7 @@ import json
 from importlib.resources import files
 from typing import Any
 
+from .adapters import target_adapter_capabilities
 from .models import DialectProfile, DirectedRoute
 
 _FORBIDDEN_VERSION_TOKENS = ("latest", "*", ".x", "current", "unspecified")
@@ -96,6 +97,8 @@ def route_matrix() -> tuple[DirectedRoute, ...]:
 
 
 def capabilities() -> dict[str, Any]:
+    from .commercial import commercial_summary
+
     catalog = _catalog()
     profiles = exact_profiles()
     routes = route_matrix()
@@ -108,6 +111,9 @@ def capabilities() -> dict[str, Any]:
         "capabilities": catalog["capabilities"],
         "knownConditionalPairs": catalog["knownConditionalPairs"],
         "extensions": catalog["extensions"],
+        "targetAdapterProtocolVersion": "1.0",
+        "targetAdapters": list(target_adapter_capabilities()),
+        "commercialExtension": commercial_summary(),
         "syntaxSuccessGoal": 0.995,
         "p0CorrectnessRequired": 1.0,
         "silentDropTolerance": 0,

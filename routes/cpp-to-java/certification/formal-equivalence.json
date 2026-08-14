@@ -20,7 +20,7 @@
       "bytes": 4068,
       "path": "certification/artifacts/development/artifact-manifest.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:b58c2effce7c81c56ab8d780960bf94572b0282d77300ebd0ec6a4c868830040"
+      "sha256": "sha256:9b50055577d19320b025a2a267f9783269025e49e610b0fb1b96a9f8b64451a3"
     },
     {
       "artifact_id": "artifact-7726f1e1ff0c4661ed98cb01f79e8d75e350668ad606685d35570b11938d7e04",
@@ -41,28 +41,28 @@
       "bytes": 3166,
       "path": "certification/artifacts/development/formal-composition.json",
       "role": "formal-composition",
-      "sha256": "sha256:d81fc93272253f8ccc1b313754cd85676d74771eeb76467d603520943b3c515f"
+      "sha256": "sha256:29ea682c734d479e18d621845e62a9fca0bec5c00adefa253b500d73c2236adc"
     },
     {
       "artifact_id": "artifact-63756a1681d6602d7aa13dd840d0fff195b13a6ab4c14aa1bdbad260e1a66d4a",
       "bytes": 2030,
       "path": "certification/artifacts/development/formal-equivalence.smt2",
       "role": "solver-input",
-      "sha256": "sha256:9de1db61ce4e375bacb32fadd9d4fde34d491c8be23bb2e26de65d7b68b95dc8"
+      "sha256": "sha256:f298eb2528bdb5c5c2adb6a5d8b24a6346fbb96744393406cdbe2cc7e2f3c003"
     },
     {
       "artifact_id": "artifact-02c1e341838e3b6faa683d3644b70dd21eff1b4475b6f1efcbcafff7c5a8cf00",
-      "bytes": 8476,
+      "bytes": 8477,
       "path": "certification/artifacts/development/formal-input.json",
       "role": "formal-input",
-      "sha256": "sha256:6eba8f5c0bd731b2e2da6b43a5863bc5229498c84a06560e2a209c580972b7ca"
+      "sha256": "sha256:a5579a9c626dc6e4a2fec0121b80a0d4ba0f56f00ad6bf35665c543c0307d6b3"
     },
     {
       "artifact_id": "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",
       "bytes": 2508,
       "path": "certification/artifacts/development/formal-proof-result.json",
       "role": "solver-result",
-      "sha256": "sha256:9f5ec09836e643d7ef7712d419e4f87e330fc493b996405f2c4dc2a4db696d48"
+      "sha256": "sha256:beae08b03090c6ab944fbb0f0f2a2f06716c739757c2e297bd67e85616ca612b"
     },
     {
       "artifact_id": "artifact-2f015444420080fb519a75708e4754f3385dddb9ce73dd1bdab9f4e6a2242fe6",
@@ -83,14 +83,14 @@
       "bytes": 3619,
       "path": "certification/artifacts/development/layered-equivalence.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:252a7ff49c731482c79a7719987d16ac04c59e64d02a3aaca6453c9fa23cb2d3"
+      "sha256": "sha256:d1c40edfac7f2facd5dd1643d5e0a233db510ba21b309cf5c4ca09952ba2cafa"
     },
     {
       "artifact_id": "artifact-26a5135764d398fe0c518b110e62f568e43bd175fc8bd65a36c79866a53df44d",
-      "bytes": 8050,
+      "bytes": 8914,
       "path": "certification/artifacts/development/route-evidence.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:b19fffb80c20f9a612f7a185520fde779b7176fa7de82a9d9fec8d615a7f0b8d"
+      "sha256": "sha256:1bcb4649d3e549ee82533f4a8fed857764f75e8f7649d4d5586a56b437928317"
     },
     {
       "artifact_id": "artifact-d65b9e6abe5418e061d7bcca381b227ed19556bbd41d81767cb24583259649ba",
@@ -150,10 +150,10 @@
     },
     {
       "artifact_id": "artifact-69531e588fa25d87bf3925cce92591fb9fb01fc87ff3259b029380a863d0d5e2",
-      "bytes": 4063,
+      "bytes": 4064,
       "path": "certification/artifacts/holdout/artifact-manifest.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:651f8df5bcf3346da7bdfdec18cc0df40ab957b59ab0f3bb21e9df5570620c2a"
+      "sha256": "sha256:8f12c6e90dc6609cb127c3e25ae2d7823074cedbd0bc9a9e3018eff2e28f8517"
     },
     {
       "artifact_id": "artifact-4af2d8dd5b6c3b1788098be1867fb61410b8231b131f31d8f9fbdc496141209b",
@@ -174,28 +174,28 @@
       "bytes": 3229,
       "path": "certification/artifacts/holdout/formal-composition.json",
       "role": "formal-composition",
-      "sha256": "sha256:74dfa73a25786842b5911ef312e7f781f7a882b2f334aa4fe347920a1625d4c9"
+      "sha256": "sha256:3e05c3673672b5dc4e35d0fcda146932221f70a67c9f2d349b0698d165c816c9"
     },
     {
       "artifact_id": "artifact-0c7d4010eaa877101d7e3c428b3e71f2370a7cf95da06c5934dceb56c3ef4594",
       "bytes": 1162,
       "path": "certification/artifacts/holdout/formal-equivalence.smt2",
       "role": "solver-input",
-      "sha256": "sha256:bf523a03de77719f22c8f2badfb24e5ece88befbf3d5efaa5437f1ee50b21b88"
+      "sha256": "sha256:075f44ce906e099826400ec2177de42d8986e01884c582470a1bfec5cff20942"
     },
     {
       "artifact_id": "artifact-c3d18527f55cd52b2951277b5e372b94f7c5e161b02313e3443267a1e70ac4d0",
-      "bytes": 5616,
+      "bytes": 5617,
       "path": "certification/artifacts/holdout/formal-input.json",
       "role": "formal-input",
-      "sha256": "sha256:403d04d9af6844e66ff681fb1eb6bb2d355d2f242db7f78de13852bbac78651f"
+      "sha256": "sha256:99caec391709607280f6c4df75850a4b9682260a8f0af7796f031d46947cf3fc"
     },
     {
       "artifact_id": "artifact-b9da1b4c822bf936b92e7801a7dda66c113b7463929b0b4ee34d5c7354d9d2f9",
       "bytes": 2571,
       "path": "certification/artifacts/holdout/formal-proof-result.json",
       "role": "solver-result",
-      "sha256": "sha256:5cf9c470d5b3323648e8536f751dcb30bc48ac96d990ccf5b53bf3cb3098a11b"
+      "sha256": "sha256:310353ef95a9c24b7fee2cb738fd55d40c9d21ffdcef1454ba9c6a68b1edc556"
     },
     {
       "artifact_id": "artifact-12919f3a1cdcd0f14b55f61f7f85681f0a9955979735b98d70f35ceacaa82c25",
@@ -216,14 +216,14 @@
       "bytes": 3680,
       "path": "certification/artifacts/holdout/layered-equivalence.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:2d2005811e8a9b5400774a0d7063573ddfc7f82ee604a15932b6af8d62834039"
+      "sha256": "sha256:aa65b9ad8b57a7bef0b74b2c2c042feccb9d3fac6e7225f431d38261c8b482f8"
     },
     {
       "artifact_id": "artifact-f86d3c2fb3124f294d757c3738ed13104787413597de39d50128ce295dbc4bfe",
-      "bytes": 9196,
+      "bytes": 10060,
       "path": "certification/artifacts/holdout/route-evidence.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:2c0c139108af500ea10a59f84ce3110014e517bf2dbef0779157ad9b07130923"
+      "sha256": "sha256:6d572157b1c6e96f1fe30218ff1c8e6e8105ad80a6ffc84b218f9652009128df"
     },
     {
       "artifact_id": "artifact-29ac964a1b3d91c7501060aaff33cd85b9d71f119a85f923c93064bddb8a7481",
@@ -286,7 +286,7 @@
       "bytes": 4079,
       "path": "certification/artifacts/real-repository/artifact-manifest.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:4071091e8c9e70dbb5ad9b1ef177ac9f369f7f2ab29cca4a5cc003f13cd065f9"
+      "sha256": "sha256:a853717c10e1735829d513761152eab7d63bfa99fc7b499a03a8032f517a9932"
     },
     {
       "artifact_id": "artifact-028b3a4fed5ff0d5c8b1a93c938e4e56ecf69ac1f8e5ec0f7c4849f229f4248b",
@@ -307,28 +307,28 @@
       "bytes": 3193,
       "path": "certification/artifacts/real-repository/formal-composition.json",
       "role": "formal-composition",
-      "sha256": "sha256:b6579da34cb9f9db77a6f7c35cf9e46e4f22584d5a6678cfd856586496bc603c"
+      "sha256": "sha256:5eba766a9b2c18fcc27d5ae308a552aea022b4eaa223c0e54b40271cd915ea06"
     },
     {
       "artifact_id": "artifact-eb7bc413a439d3a2bd38060f344d12e61d98f7f2fc0fe7353a8750b246521abb",
       "bytes": 2000,
       "path": "certification/artifacts/real-repository/formal-equivalence.smt2",
       "role": "solver-input",
-      "sha256": "sha256:455ef90e613e81e2349600d667076d600f357808de06080ce285dea5da71e03f"
+      "sha256": "sha256:f608dd1d2f06aed0b6ba71f6ee10051fafec6fc913b0d027960357beb43c6bdb"
     },
     {
       "artifact_id": "artifact-725bc005723e47aa15553c1360cbc3ff053c394446774493c0b3ec1bfb4c1cd9",
-      "bytes": 8746,
+      "bytes": 8747,
       "path": "certification/artifacts/real-repository/formal-input.json",
       "role": "formal-input",
-      "sha256": "sha256:e3ab01446984ffc22bad5bbb30232a7ed6645ca81d7c88d3ffebd3c9f1d8c5e0"
+      "sha256": "sha256:c2fb0f166745cb810d6d12184dbd5617c48e8c99f7a30a6cc122dfa42b0749da"
     },
     {
       "artifact_id": "artifact-cdde08b8d2b7825eecd97a9c6244499e45d3825bcb79763a8247bc7e2e4b7b19",
       "bytes": 2535,
       "path": "certification/artifacts/real-repository/formal-proof-result.json",
       "role": "solver-result",
-      "sha256": "sha256:f4650511cb4e80466189aa946162b5cbc66b8e2514076ba9f2273162fdaefb3e"
+      "sha256": "sha256:616b6e1bf260b5eb418074da21c73af9d2169e760ca0d324e5553fce2eefc8da"
     },
     {
       "artifact_id": "artifact-80bee35fa24a0f776c05e23a93934cfd89f0aff2ce1ec2ed0c575092ab92b5cf",
@@ -349,14 +349,14 @@
       "bytes": 3646,
       "path": "certification/artifacts/real-repository/layered-equivalence.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:4370b09f2eb3df6df81a26d69724fade82605f05920d6f9657cd8f88d23aa7ce"
+      "sha256": "sha256:ec825537a14d9f53cb75712ee3842c2fbbc44a129ff7fa497f26a3c9202e3d25"
     },
     {
       "artifact_id": "artifact-a54a85ed7addd4d083b6f06ab716a7586bf351c498c6dc75a6fb226537875483",
-      "bytes": 8426,
+      "bytes": 9290,
       "path": "certification/artifacts/real-repository/route-evidence.json",
       "role": "corpus-artifact",
-      "sha256": "sha256:9bd1f286aaf6881e1be158d89ca1b92ffbe5465040d28226d2a7190566bba97e"
+      "sha256": "sha256:0ee52154092d8eeea560fbbcb94f1bcffeea236ce95cbc36008996778e1904e6"
     },
     {
       "artifact_id": "artifact-867bfb61266e439853e4ada0da98f0a1e423dfddb19f716320c7fcf3bba77c1c",
@@ -402,10 +402,10 @@
     },
     {
       "artifact_id": "artifact-056d86f59ef0df0a8ef737f23af9daa959c212c7597723311412bdc6ea3356e2",
-      "bytes": 11665,
+      "bytes": 11973,
       "path": "certification/formal-artifacts/engine-source-manifest.json",
       "role": "engine-source-manifest",
-      "sha256": "sha256:7af3541cc67a1c47d9012e9c97a468232f5886555a04953ac98cc4f92bcc5534"
+      "sha256": "sha256:a3a3de05551380d8b2779bf7a7354faffe7c9f5e758600ff071ac28eb621f398"
     },
     {
       "artifact_id": "artifact-ccdf47235cc871273de16e1171ff376ac09a919c689a80c0a642f0eb0e337675",
@@ -423,17 +423,17 @@
     },
     {
       "artifact_id": "artifact-b3d87f554f2021c7054f30bc384dc8cf277491b73c32cf3a45ea0d90b84d3e62",
-      "bytes": 5758,
+      "bytes": 11691,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/go/analyzer.go",
       "role": "engine-source",
-      "sha256": "sha256:1313df7dc46a16a0696ef59950c31939ac86f6dc3fbe8738d997f31c4152c5d9"
+      "sha256": "sha256:cbc8e98e30f270984e6b2fe9c407ce27f1c01f75528547880fd44428f4c0e6f7"
     },
     {
       "artifact_id": "artifact-43fef68ce7d365480929633a9e8d2f14bfd2b5d5f661fc1cd0466efaf77f5bea",
-      "bytes": 21377,
+      "bytes": 33959,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/java/Analyzer.java",
       "role": "engine-source",
-      "sha256": "sha256:3fffa24e76dc094ad2f312d864c4e5311ec0389a26dc69cee81fcdea991abbbc"
+      "sha256": "sha256:34eb488c84bf96323fe50f44c7208e42dcf5f26d14167602a990bdb2d5cdc025"
     },
     {
       "artifact_id": "artifact-bcd6686599511fdb71b8bc39e2341f5e57a04c3754f1b7709cc9829e99f40501",
@@ -451,10 +451,10 @@
     },
     {
       "artifact_id": "artifact-1d001d763b75e2b72b9152f13248102e6e9bcfcce0064d28600274decd2ab2a8",
-      "bytes": 9960,
+      "bytes": 19346,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/rust/src/main.rs",
       "role": "engine-source",
-      "sha256": "sha256:3bc38352ccd343b9fd6308427146c4767a8e756f8945e8d770c58889e7c05f47"
+      "sha256": "sha256:b22d1fed0e2f751b08257a4c2582f69c5a79a0be57491a33405aeaa62a042459"
     },
     {
       "artifact_id": "artifact-ddd49b3b44dc20e81be2986d1025bc6cf7211edb0af5474694cdfb4977623cdd",
@@ -472,10 +472,10 @@
     },
     {
       "artifact_id": "artifact-8f20f028aff7383a29134884ad3ec57ab72110c402610f9c6470a85ce95e4df6",
-      "bytes": 23036,
+      "bytes": 27300,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift",
       "role": "engine-source",
-      "sha256": "sha256:f58a15e30acd559f03d46392683549f6c1163cf23f6db248d3536b1041411852"
+      "sha256": "sha256:6ba3b995a43c70151e654b33bc6767c944ff0d92757bbcd4663e509048350b33"
     },
     {
       "artifact_id": "artifact-5dc37f54fe0b5d375f62b0a9858c635728800a61a96e052f1dc1b7f0eeb988ad",
@@ -507,45 +507,45 @@
     },
     {
       "artifact_id": "artifact-d342043342001cb5d1e0074b3b07e0bdb6049575992ced79a467fd91c018fb04",
-      "bytes": 27106,
+      "bytes": 36060,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
       "role": "engine-source",
-      "sha256": "sha256:a59e6ebbdf1c045b2fd47d3a40321006c71dda6c753cbd43f8fefdbcac05d4eb"
+      "sha256": "sha256:bc5f23d571910a72495bc53c4a7e3cdcb5904296867e59f85423df4b8d2b85cd"
     },
     {
       "artifact_id": "artifact-80624ce6ec47d2f43ed67a14bac6057448b7f4cc194b5c153b395e551897284c",
-      "bytes": 46034,
+      "bytes": 46128,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
       "role": "engine-source",
-      "sha256": "sha256:c311fd5881b8a4e8bea0fa963cb519a887f05d72dfb98eb19461168f23b60405"
+      "sha256": "sha256:60eb70cfe2e626f232698a3ba0fe7263e9ba9da6c447940173e4d146467a4e95"
     },
     {
       "artifact_id": "artifact-c7b4e269f394a8dce53fb1c9bee212d4aa0a2a5a86f6cd540839262d9cb0c5aa",
-      "bytes": 45523,
+      "bytes": 102042,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/engine.py",
       "role": "engine-source",
-      "sha256": "sha256:0259924a13f06a9252c4825f836288cc4a50745ffcd9d3b29e7a2f0a6cf3da37"
+      "sha256": "sha256:37ed04e73abd0b1d28acf799f4021c3d14f344297b13b2a63e68ead4fa4b39b8"
     },
     {
       "artifact_id": "artifact-7c8f94d9e15903a0e49c17679dcb95a5b1a7c3292407074e0ec5eb3527d27f07",
-      "bytes": 83765,
+      "bytes": 85893,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/equivalence.py",
       "role": "engine-source",
-      "sha256": "sha256:9268897f184901b5bc5ba85efc6595c9ec8defe0ff752bc59f8d0fb74b9e3d36"
+      "sha256": "sha256:a40948d946c27a9d1c4ee3356ffa4feed4f549704af2ef302a7a3c63c7dfa37d"
     },
     {
       "artifact_id": "artifact-cd620c6c333f10d493b9d038a427f51fab560fe552f246c4f56e888c43c5c6c3",
-      "bytes": 16567,
+      "bytes": 16103,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/models.py",
       "role": "engine-source",
-      "sha256": "sha256:654841cc8940ff4618a9c1fcb60bdef1716d9d2b4532ab25b737fcda96d5dd39"
+      "sha256": "sha256:9fbf79a347cb5f34672ad27d000838d405032a1b9b9a1e67e907340035b5e5a4"
     },
     {
       "artifact_id": "artifact-cfca6b4bc5de6de40263acf287452c6539ee4c7b502c49cdf268461cb5f896a0",
-      "bytes": 8517,
+      "bytes": 169339,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/native.py",
       "role": "engine-source",
-      "sha256": "sha256:0e9db8a2bfded4c8c244001afb52dc333b8eafd68efcd79b0f0cc61d0d07e3cf"
+      "sha256": "sha256:d30a7b024f4033cea960de52d8617d2f6db3b3cd004508f8462f0bb927529872"
     },
     {
       "artifact_id": "artifact-23ceceec93d84491068656399f92e4180894fd0de825b7b6df1cbd212e8ad61c",
@@ -556,10 +556,10 @@
     },
     {
       "artifact_id": "artifact-a9dd9f2c307824245d184946e4b75df2625b7f83d624795839aa3f6e78da09f0",
-      "bytes": 10729,
+      "bytes": 35093,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
       "role": "engine-source",
-      "sha256": "sha256:38dd84cefed90a3259e356a493c0624713c2e04ec90ca55ca06a0a1484c01c7f"
+      "sha256": "sha256:3eadca0b4f3eae986f75eca8e91b7c0c362d6eb4850c8b708fa8e1250249d0a4"
     },
     {
       "artifact_id": "artifact-e743fda8b420c842e916b1bd356b92c9aa26b1331e67e042303d8d529520227d",
@@ -570,10 +570,10 @@
     },
     {
       "artifact_id": "artifact-d11cb3693184b99b6e8423041897583660027de4f3c3a5f66e216ec451c5df26",
-      "bytes": 43818,
+      "bytes": 45430,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/validation.py",
       "role": "engine-source",
-      "sha256": "sha256:1612ca7f86b9209f565c4848aba00e42312ffd131988be4626f7539abc7729f1"
+      "sha256": "sha256:0a10f198f939b459860106379c4c5d9e96ed8f59d89843468e9b8cfa37389e25"
     },
     {
       "artifact_id": "artifact-aa19699f7cf7da3950798b6b6980f966cf85f1455cc3898b0b1b7c60c1accb6d",
@@ -584,10 +584,10 @@
     },
     {
       "artifact_id": "artifact-5b2ff6adf59eb6f45087777a29df018461eeecb6e97252ec42cfa5ed490c7609",
-      "bytes": 11670,
+      "bytes": 59131,
       "path": "certification/formal-artifacts/engine-sources/schemas/batch29/formal-equivalence-evidence.schema.json",
       "role": "engine-source",
-      "sha256": "sha256:c4821219c01e037ca86bb749f7790a892b612e2c6d0cfd382eb40c503a0280c7"
+      "sha256": "sha256:c031746bfb012a1c88deed526d91d63ea359772a4ae9de00838592c0ed2f1b9a"
     },
     {
       "artifact_id": "artifact-f368cfb66390af7fa3823c07c673512109298d0169804b28f96c1a70df109ac3",
@@ -598,10 +598,10 @@
     },
     {
       "artifact_id": "artifact-c9279ab67d0d79e926dad5e16cc97a1de7e4a26da40aa6f95fa8599ec69fe4ee",
-      "bytes": 8681,
+      "bytes": 74528,
       "path": "certification/formal-artifacts/engine-sources/schemas/batch29/module-equivalence-evidence.schema.json",
       "role": "engine-source",
-      "sha256": "sha256:03c025beaff2f442a5ed90838637fb5c28ac13d8ef513435e37289130a0b4bb6"
+      "sha256": "sha256:7d9b477a0d6eb6889c5b7a2cb450366dfe48745456c76de91973b0e0385e1d25"
     },
     {
       "artifact_id": "artifact-c50810149a62eb9dc989905ca5892626e8db17bb04a6e1567d313251fe6b93c0",
@@ -611,53 +611,60 @@
       "sha256": "sha256:4a573fa208f5f529d386f1417ba56592fdcf5f8f723d6dc7f0e0d4fc3e0f8b15"
     },
     {
+      "artifact_id": "artifact-7bfd2577620fc52ea7c0317a7e75d27c0aa94981a6a33dea656cf32306845f8d",
+      "bytes": 4075,
+      "path": "certification/formal-artifacts/engine-sources/scripts/batch29/fresh_route_runtime.py",
+      "role": "engine-source",
+      "sha256": "sha256:9ac49328ff5c5f8b5eb6468f1ecd3d2d41e5dfaa58c37a7fee550543fba15930"
+    },
+    {
       "artifact_id": "artifact-cec9e6e0420b1a4b6da8c6ef6a5919e605d136780edfdb927caba202dc4058ef",
-      "bytes": 1834,
+      "bytes": 2703,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/route_sets.py",
       "role": "engine-source",
-      "sha256": "sha256:768408a8e9bca3fd60c502f50d46f25ab9ba934f518c4f5008a5083e242b695e"
+      "sha256": "sha256:868cd65a59ded5d0336becf9e470f6175b1cdb39950b852855306b1f84528caa"
     },
     {
       "artifact_id": "artifact-bec960ebee366a74c0e6ceb09dbe3f9b04b61fc38915af7863cb2793c024baa6",
-      "bytes": 109543,
+      "bytes": 121016,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/run_polyglot_routes.py",
       "role": "engine-source",
-      "sha256": "sha256:b2e3e87b596f78efddc8d3fb196a9669686ddac0417246e68aac68d05ca15333"
+      "sha256": "sha256:8fbaac581f260b1e8515227f6829e59da0b3095b212148405a4f3db23e6ecad0"
     },
     {
       "artifact_id": "artifact-425efbb1c7db3860d3d6d2c097217b04e3436fd393bcbdb13b55884d9f997924",
-      "bytes": 24044,
+      "bytes": 25670,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/run_route_gate.py",
       "role": "engine-source",
-      "sha256": "sha256:7f99fa9ac1b45469738a39f2b444bc9dd5bab9c931aceef8290dddf77e80d74d"
+      "sha256": "sha256:9ad3438f4f2c9b667b666db254dfa9a702f66a662065b61da11f3c57251706ad"
     },
     {
       "artifact_id": "artifact-f43d107e4f666c6dc2f8c1526eb993e502881dcb05e8c2ecac6bbf025f6e8cf6",
-      "bytes": 194937,
+      "bytes": 378052,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/validate_route.py",
       "role": "engine-source",
-      "sha256": "sha256:41c8e19d7b6e07555d72a64475345202abfb8f94ad007d7504599d17d571f227"
+      "sha256": "sha256:b84ae57d2c5e230c1caadf5f35fc435fd4942274ccad2e4fcd141b539389c4c3"
     },
     {
       "artifact_id": "artifact-87818eea13b1223e5c8520a16b1741701fce9248e285442d2f792f6d49b34df3",
-      "bytes": 22114,
+      "bytes": 23838,
       "path": "certification/formal-artifacts/engine-sources/scripts/operations/validate_translation_route_matrix.py",
       "role": "engine-source",
-      "sha256": "sha256:c0b6f55884cc9d0f57ce99322212151d25087c71c5c70e9e326623d361b74f89"
+      "sha256": "sha256:6323b3708fa1aef1236d73a631db6078b8c0905f2f93c361fd345dbf9abdcdc9"
     },
     {
       "artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
-      "bytes": 978,
+      "bytes": 950,
       "path": "certification/formal-artifacts/environment.json",
       "role": "environment",
-      "sha256": "sha256:19941a9785e2b7507eae1e738eaed061a228b86f6279c9d9e04664e2eec8ff1a"
+      "sha256": "sha256:346fca2e289a0bb7776d20bac0ff7b0d18c649ad0db2f215faa6ccc578a508b8"
     },
     {
       "artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
       "bytes": 3181,
       "path": "certification/formal-artifacts/proof-input-bundle.json",
       "role": "proof-input-bundle",
-      "sha256": "sha256:ba283a019ad72f7a76e7bafe82a24f5208668cef91cba606e6c306f7f1acfba3"
+      "sha256": "sha256:5d99adc93f02bad7d65564685746631c2ec0f7a5a5956737bdac29d923ed8553"
     },
     {
       "artifact_id": "artifact-c004e557f61fe6c7c84d9f8ceccd870d427f013c3de8f22bc6b947d7fec0696d",
@@ -707,7 +714,7 @@
     "total_cases": 12
   },
   "environment_artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
-  "environment_sha256": "sha256:19941a9785e2b7507eae1e738eaed061a228b86f6279c9d9e04664e2eec8ff1a",
+  "environment_sha256": "sha256:346fca2e289a0bb7776d20bac0ff7b0d18c649ad0db2f215faa6ccc578a508b8",
   "formal_proof": {
     "assumptions": [
       "canonical-finite-input-domain:source:value",
@@ -729,7 +736,7 @@
       "target-language-primitive-compensation-soundness:java"
     ],
     "input_artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
-    "input_digest": "sha256:ba283a019ad72f7a76e7bafe82a24f5208668cef91cba606e6c306f7f1acfba3",
+    "input_digest": "sha256:5d99adc93f02bad7d65564685746631c2ec0f7a5a5956737bdac29d923ed8553",
     "obligations": [
       {
         "assumptions": [
@@ -747,7 +754,7 @@
         ],
         "detail": "Z3 returned UNSAT for source/target divergence with same-input constraints.",
         "formal_input_artifact_id": "artifact-02c1e341838e3b6faa683d3644b70dd21eff1b4475b6f1efcbcafff7c5a8cf00",
-        "input_digest": "sha256:9de1db61ce4e375bacb32fadd9d4fde34d491c8be23bb2e26de65d7b68b95dc8",
+        "input_digest": "sha256:f298eb2528bdb5c5c2adb6a5d8b24a6346fbb96744393406cdbe2cc7e2f3c003",
         "obligation_id": "cpp-to-java:development:L0-DENOTATIONAL-EQUIVALENCE",
         "scope": "development:typed-pure-function-v1",
         "solver_input_artifact_id": "artifact-63756a1681d6602d7aa13dd840d0fff195b13a6ab4c14aa1bdbad260e1a66d4a",
@@ -771,7 +778,7 @@
         ],
         "detail": "Z3 returned UNSAT for source/target divergence with same-input constraints.",
         "formal_input_artifact_id": "artifact-c3d18527f55cd52b2951277b5e372b94f7c5e161b02313e3443267a1e70ac4d0",
-        "input_digest": "sha256:bf523a03de77719f22c8f2badfb24e5ece88befbf3d5efaa5437f1ee50b21b88",
+        "input_digest": "sha256:075f44ce906e099826400ec2177de42d8986e01884c582470a1bfec5cff20942",
         "obligation_id": "cpp-to-java:holdout:L0-DENOTATIONAL-EQUIVALENCE",
         "scope": "holdout:typed-pure-function-v1",
         "solver_input_artifact_id": "artifact-0c7d4010eaa877101d7e3c428b3e71f2370a7cf95da06c5934dceb56c3ef4594",
@@ -795,7 +802,7 @@
         ],
         "detail": "Z3 returned UNSAT for source/target divergence with same-input constraints.",
         "formal_input_artifact_id": "artifact-725bc005723e47aa15553c1360cbc3ff053c394446774493c0b3ec1bfb4c1cd9",
-        "input_digest": "sha256:455ef90e613e81e2349600d667076d600f357808de06080ce285dea5da71e03f",
+        "input_digest": "sha256:f608dd1d2f06aed0b6ba71f6ee10051fafec6fc913b0d027960357beb43c6bdb",
         "obligation_id": "cpp-to-java:real-repository:L0-DENOTATIONAL-EQUIVALENCE",
         "scope": "real-repository:typed-pure-function-v1",
         "solver_input_artifact_id": "artifact-eb7bc413a439d3a2bd38060f344d12e61d98f7f2fc0fe7353a8750b246521abb",
@@ -820,7 +827,7 @@
       "cwd": ".",
       "expected_exit_code": 0,
       "expected_result_artifact_id": "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",
-      "expected_result_sha256": "sha256:9f5ec09836e643d7ef7712d419e4f87e330fc493b996405f2c4dc2a4db696d48"
+      "expected_result_sha256": "sha256:beae08b03090c6ab944fbb0f0f2a2f06716c739757c2e297bd67e85616ca612b"
     },
     "result_artifact_ids": [
       "artifact-55dc97c979380561947005e254da104c53c4550c5f4aa5413c4939d253c01682",

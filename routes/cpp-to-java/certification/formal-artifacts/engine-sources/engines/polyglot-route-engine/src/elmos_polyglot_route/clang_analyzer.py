@@ -26,12 +26,13 @@ from __future__ import annotations
 
 import json
 import re
-import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Any
 
 from .models import Language, RouteError, SemanticIR
+from .toolchains import sanitized_subprocess_env
 
 #: Nodes that wrap a value without changing it in the certified subset.
 _TRANSPARENT = frozenset(
@@ -127,16 +128,27 @@ def _sdk_path(explicit: str | None) -> str:
     if explicit:
         path = Path(explicit)
     else:
-        xcrun = shutil.which("xcrun")
-        if xcrun is None:
+        xcrun = Path("/usr/bin/xcrun")
+        if not xcrun.is_file():
             raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcrun")
-        completed = subprocess.run(
-            [xcrun, "--sdk", "macosx", "--show-sdk-path"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
+        with tempfile.TemporaryDirectory(prefix="elmos-clang-sdk-env-") as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            scratch = root / "tmp"
+            home.mkdir(mode=0o700)
+            scratch.mkdir(mode=0o700)
+            completed = subprocess.run(
+                [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                env=sanitized_subprocess_env(
+                    home=home,
+                    temp_dir=scratch,
+                    executable_dirs=(xcrun.parent,),
+                ),
+            )
         path = Path(completed.stdout.strip())
         if completed.returncode != 0:
             raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:macosx-sdk")
@@ -170,7 +182,25 @@ def _run_clang(
     ]
     if language == "objc":
         command[4:4] = ["-fobjc-arc", "-framework", "Foundation"]
-    completed = subprocess.run(command, check=False, capture_output=True, text=True, timeout=120)
+    with tempfile.TemporaryDirectory(prefix="elmos-clang-env-") as temporary:
+        root = Path(temporary)
+        home = root / "home"
+        scratch = root / "tmp"
+        home.mkdir(mode=0o700)
+        scratch.mkdir(mode=0o700)
+        completed = subprocess.run(
+            command,
+            cwd=source.parent,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            env=sanitized_subprocess_env(
+                home=home,
+                temp_dir=scratch,
+                executable_dirs=(Path(executable).resolve().parent,),
+            ),
+        )
     errors = [line for line in completed.stderr.splitlines() if ": error:" in line or ": fatal error:" in line]
     if errors:
         raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS:" + "; ".join(errors[:5])[:2_000])
@@ -690,6 +720,12 @@ def analyze_clang(
         raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}")
     if len(candidates) > 1:
         raise RouteError(f"AMBIGUOUS_FUNCTION_DEFINITION:{function_name}")
+    semantic_markers = _function_semantic_markers(candidates[0])
+    if semantic_markers:
+        raise RouteError(
+            f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:"
+            + ",".join(semantic_markers)
+        )
     return SemanticIR.from_mapping(
         {
             "schema_version": "1.0.0",
@@ -701,3 +737,209 @@ def analyze_clang(
             "diagnostics": [],
         }
     )
+
+
+def _inventory_span(
+    node: dict[str, Any],
+    source: Path,
+) -> dict[str, object] | None:
+    try:
+        span = _source_span(node, source.name)
+    except (KeyError, RouteError, TypeError, ValueError):
+        return None
+    end_byte = span.get("end_byte")
+    if not isinstance(end_byte, int) or end_byte > source.stat().st_size:
+        return None
+    locations: list[object] = [node.get("loc")]
+    source_range = node.get("range")
+    if isinstance(source_range, dict):
+        locations.extend((source_range.get("begin"), source_range.get("end")))
+    for raw_location in locations:
+        if not isinstance(raw_location, dict):
+            continue
+        location = raw_location
+        for nested in ("expansionLoc", "spellingLoc"):
+            if isinstance(location.get(nested), dict):
+                location = location[nested]
+                break
+        if isinstance(location.get("includedFrom"), dict):
+            return None
+        explicit_file = location.get("file")
+        if isinstance(explicit_file, str) and Path(explicit_file).name != source.name:
+            return None
+    return span
+
+
+def _function_semantic_markers(node: dict[str, Any]) -> list[str]:
+    markers: list[str] = []
+    for child in _inner(node):
+        kind = str(child.get("kind", ""))
+        if kind == "ParmVarDecl" and (
+            child.get("init") is not None or child.get("hasInheritedDefaultArg") is True
+        ):
+            markers.append("default-argument")
+        elif kind.endswith("Attr"):
+            markers.append(f"attribute:{kind}")
+    for field, marker in (
+        ("storageClass", "storage-class"),
+        ("inline", "inline"),
+        ("constexpr", "constexpr"),
+        ("variadic", "variadic"),
+    ):
+        value = node.get(field)
+        if value not in (None, False, ""):
+            markers.append(f"{marker}:{value}" if not isinstance(value, bool) else marker)
+    return sorted(set(markers))
+
+
+def _inventory_signature(node: dict[str, Any]) -> dict[str, object]:
+    parameters: list[dict[str, object]] = []
+    for child in _inner(node):
+        if child.get("kind") != "ParmVarDecl":
+            continue
+        raw_type = child.get("type")
+        parameters.append(
+            {
+                "name": str(child.get("name", "")),
+                "source_type": (
+                    str(raw_type.get("qualType", "")) if isinstance(raw_type, dict) else ""
+                ),
+            }
+        )
+    raw_type = node.get("type")
+    storage_class = str(node.get("storageClass", "none"))
+    return {
+        "parameters": parameters,
+        "source_type": str(raw_type.get("qualType", "")) if isinstance(raw_type, dict) else "",
+        "storage": storage_class,
+        "visibility": "internal" if storage_class == "static" else "external",
+        "semantic_markers": _function_semantic_markers(node),
+    }
+
+
+def _inventory_node_is_external(node: dict[str, Any], source: Path) -> bool:
+    locations: list[object] = [node.get("loc")]
+    source_range = node.get("range")
+    if isinstance(source_range, dict):
+        locations.extend((source_range.get("begin"), source_range.get("end")))
+
+    def external(location: object) -> bool:
+        if not isinstance(location, dict):
+            return False
+        if isinstance(location.get("includedFrom"), dict):
+            return True
+        explicit_file = location.get("file")
+        if isinstance(explicit_file, str) and Path(explicit_file).name != source.name:
+            return True
+        return any(
+            external(location.get(key))
+            for key in ("expansionLoc", "spellingLoc", "includedFrom")
+        )
+
+    return any(external(location) for location in locations)
+
+
+def inventory_clang_module(
+    source: Path,
+    language: Language,
+    executable: str,
+    version: str,
+    *,
+    sdk_path: str | None = None,
+) -> dict[str, Any]:
+    """Enumerate main-file declarations from clang's type-checked JSON AST."""
+
+    if language not in ("cpp", "objc"):
+        raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{language}")
+    tree = _run_clang(executable, source, language, sdk_path)
+    subjects: list[dict[str, object]] = []
+    diagnostics: list[str] = []
+    scope_kinds = {
+        "CXXRecordDecl",
+        "ClassTemplateDecl",
+        "EnumDecl",
+        "FunctionTemplateDecl",
+        "LinkageSpecDecl",
+        "NamespaceDecl",
+        "ObjCImplementationDecl",
+        "ObjCInterfaceDecl",
+        "RecordDecl",
+        "TypeAliasDecl",
+        "TypedefDecl",
+        "VarDecl",
+    }
+
+    def visit(node: dict[str, Any], scope: tuple[str, ...], *, top_level: bool) -> None:
+        kind = str(node.get("kind", ""))
+        name = str(node.get("name", "")).strip()
+        span = _inventory_span(node, source)
+        explicit_declaration = (
+            kind != "TranslationUnitDecl"
+            and kind.endswith("Decl")
+            and not node.get("isImplicit")
+        )
+        if span is not None and explicit_declaration:
+            if kind == "FunctionDecl" and name:
+                has_body = any(child.get("kind") == "CompoundStmt" for child in _inner(node))
+                semantic_markers = _function_semantic_markers(node)
+                unsupported_markers = [
+                    marker
+                    for marker in semantic_markers
+                    if marker != "storage-class:static"
+                ]
+                qualified_name = "::".join((*scope, name))
+                subjects.append(
+                    {
+                        "name": name,
+                        "qualified_name": qualified_name,
+                        "declaration_kind": kind,
+                        "analyzable": (
+                            kind == "FunctionDecl"
+                            and top_level
+                            and has_body
+                            and not unsupported_markers
+                        ),
+                        "source_span": span,
+                        "signature": _inventory_signature(node),
+                    }
+                )
+            else:
+                obligation_name = name or f"<{kind}>"
+                subjects.append(
+                    {
+                        "name": obligation_name,
+                        "qualified_name": "::".join((*scope, obligation_name)),
+                        "declaration_kind": kind,
+                        "analyzable": False,
+                        "source_span": span,
+                        "signature": _inventory_signature(node),
+                    }
+                )
+        elif (
+            explicit_declaration
+            and top_level
+            and not _inventory_node_is_external(node, source)
+        ):
+            diagnostics.append(
+                f"MAIN_FILE_DECLARATION_SPAN_INVALID:{kind}:{name or '<unnamed>'}"
+            )
+        child_scope = (*scope, name) if name and kind in scope_kinds else scope
+        for child in _inner(node):
+            if kind == "TranslationUnitDecl":
+                visit(child, scope, top_level=True)
+            elif kind in scope_kinds:
+                visit(child, child_scope, top_level=False)
+
+    visit(tree, (), top_level=True)
+    return {
+        "schema_version": "1.0.0",
+        "kind": "elmos.typed-pure-module-inventory",
+        "profile": "typed-pure-module-v1",
+        "source_language": language,
+        "source_file": source.name,
+        "analyzer": "clang AST (JSON)",
+        "analyzer_version": version,
+        "enumeration_status": "PASSED" if not diagnostics else "FAILED",
+        "subjects": subjects,
+        "diagnostics": sorted(set(diagnostics)),
+    }

@@ -340,19 +340,820 @@ SWIFT_ANALYZER_RECEIPT_PATH = (
 )
 SWIFT_ANALYZER_MIRROR_SEEDS = frozenset(
     {
-        "verified-package-source-mirror",
-        "verified-user-git-cache",
-        "network-exact-revision",
+        "verified-content-addressed-cache",
     }
 )
+SWIFT_DEPENDENCY_IDENTITY = "swift-syntax"
+SWIFT_DEPENDENCY_VERSION = "600.0.1"
+SWIFT_DEPENDENCY_REVISION = "0687f71944021d616d34d922343dcef086855920"
+SWIFT_DEPENDENCY_SHA256 = (
+    "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+)
+SWIFT_DEPENDENCY_FILE_COUNT = 753
+SWIFT_DEPENDENCY_BYTES = 8_866_479
+SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
+SWIFT_DEPENDENCY_CACHE_KEY = (
+    "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-"
+    "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
+)
+SWIFT_DEPENDENCY_CACHE_KEYS = {
+    "cache_key",
+    "cache_schema",
+    "identity",
+    "version",
+    "revision",
+    "seed",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_ANALYZER_MIRROR_KEYS = {
+    "seed",
+    "cache",
+    "git",
+    "identity",
+    "version",
+    "revision",
+    "sha256",
+    "file_count",
+    "bytes",
+}
+SWIFT_GIT_PATH = "/Applications/Xcode.app/Contents/Developer/usr/bin/git"
+SWIFT_GIT_SHA256 = (
+    "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
+)
+SWIFT_GIT_BYTES = 3_704_880
+SWIFT_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
 SWIFT_ANALYZER_RECEIPT_KEYS = {
     "schema_version",
     "kind",
     "source_inputs",
     "dependency",
     "toolchain",
+    "network_isolation",
     "build",
     "binary",
+    "execution_seal",
+    "canonical_identity",
+}
+SWIFT_ANALYZER_BINARY_KEYS = {
+    "name",
+    "path",
+    "sha256",
+    "bytes",
+    "mode",
+    "uid",
+    "gid",
+    "nlink",
+    "device",
+    "inode",
+}
+SWIFT_ANALYZER_EXECUTION_SEAL_KEYS = {
+    "policy",
+    "root",
+    "mode",
+    "uid",
+    "gid",
+    "device",
+    "inode",
+    "binary",
+}
+SWIFT_XCODE_ROOT = "/Applications/Xcode.app/Contents"
+SWIFT_TOOLCHAIN_ROOT = (
+    f"{SWIFT_XCODE_ROOT}/Developer/Toolchains/XcodeDefault.xctoolchain"
+)
+SWIFT_PLATFORM_ROOT = (
+    f"{SWIFT_XCODE_ROOT}/Developer/Platforms/MacOSX.platform/Developer"
+)
+SWIFT_SDK_ROOT = f"{SWIFT_PLATFORM_ROOT}/SDKs/MacOSX26.5.sdk"
+SWIFT_SDK_RESOLVED_ROOT = f"{SWIFT_PLATFORM_ROOT}/SDKs/MacOSX.sdk"
+SWIFT_SHARED_FRAMEWORKS = f"{SWIFT_XCODE_ROOT}/SharedFrameworks"
+SWIFT_BUILD_CLOSURE_SCHEMA = "swiftpm-build-execution-closure-v1"
+SWIFT_BUILD_CLOSURE_SCOPE = (
+    "pinned-local-xcode-swiftpm-direct-components-and-critical-sdk-projection-v1"
+)
+SWIFT_BUILD_CLOSURE_COMPONENT_SPECS = (
+    (
+        "swift-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        "swift-frontend",
+        "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        171_036_592,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swiftc-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swiftc",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        "swift-frontend",
+        "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        171_036_592,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-build-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-build",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-package",
+        "swift-package",
+        "dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753",
+        23_293_616,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-package",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-package",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-package",
+        None,
+        "dc1a5f5bd4f05be81b8cc4a4bc6e0fd8846210e4cb829062d0fed3d03f79b753",
+        23_293_616,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-driver",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-driver",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-driver",
+        None,
+        "fead52ebe00ec6ec700ecbb4be30f0b6204dd0506cb271dda72ac257261bd64b",
+        3_011_968,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-frontend",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/swift-frontend",
+        None,
+        "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb",
+        171_036_592,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "clang",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang",
+        None,
+        "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        141_373_024,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "clangxx-dispatcher",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang++",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/clang",
+        "clang",
+        "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+        141_373_024,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "linker",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ld",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ld",
+        None,
+        "5897b275efd93b201b6df5832dd541262b3f20f290859ba78f2200a6a66ef38b",
+        2_331_792,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "archiver",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ar",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/ar",
+        None,
+        "e49ffad64ad1cee722540fc5ecb00a230fd8071680682c60d9c851029d20e814",
+        73_520,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "libtool",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/libtool",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/bin/libtool",
+        None,
+        "229eb9d8027953d2aee0590f983eed587d52bdd1ebc21114a62ce693f77b03f1",
+        210_800,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "platform-swift-plugin-server",
+        f"{SWIFT_PLATFORM_ROOT}/usr/bin/swift-plugin-server",
+        f"{SWIFT_PLATFORM_ROOT}/usr/bin/swift-plugin-server",
+        None,
+        "438b8b9027176baed23c149a51250a94dc6a6360116aa818523168d1c4df68c8",
+        71_520,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "in-process-plugin-server",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/libSwiftInProcPluginServer.dylib",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/libSwiftInProcPluginServer.dylib",
+        None,
+        "55385f1fbf98dd8e9a73cd0e87c0d93fbc778c6abe04c6fb744bff9278ef5811",
+        91_424,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-driver-library",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftDriver.dylib",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftDriver.dylib",
+        None,
+        "38ea28895a054a7d72da72042a786722884b62cdefdf0362d18f84a174ef87fb",
+        3_031_376,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-tools-support-library",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftToolsSupport.dylib",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/libSwiftToolsSupport.dylib",
+        None,
+        "066f824adc6dffbfb4b88aeec2bce96bc2634b4cda4922ee2e999b4c9df431c1",
+        1_190_496,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "build-server-protocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/BuildServerProtocol.framework/Versions/A/BuildServerProtocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/BuildServerProtocol.framework/Versions/A/BuildServerProtocol",
+        None,
+        "05be7dcb9f19802d036a5caa5cc5530c63ed0f2b3133185910200a5ee48dcec3",
+        488_112,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "language-server-protocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocol.framework/Versions/A/LanguageServerProtocol",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocol.framework/Versions/A/LanguageServerProtocol",
+        None,
+        "7c4f0641f2d7533c2432bd0234e285bbd464274b8928b335bf2861cda19f5e00",
+        2_689_424,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "language-server-protocol-transport",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocolTransport.framework/Versions/A/LanguageServerProtocolTransport",
+        f"{SWIFT_SHARED_FRAMEWORKS}/LanguageServerProtocolTransport.framework/Versions/A/LanguageServerProtocolTransport",
+        None,
+        "3ef1a0607d060769cdae18edbae5f622d974d2f2b157385d6cb03c6d6e6f8069",
+        254_480,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swb-build-service",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBBuildService.framework/Versions/A/SWBBuildService",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBBuildService.framework/Versions/A/SWBBuildService",
+        None,
+        "9e8908fcb0d74d0348b31641c0d3ec0fc97bd6467f82a574b1756432a73433de",
+        1_395_264,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swb-project-model",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBProjectModel.framework/Versions/A/SWBProjectModel",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBProjectModel.framework/Versions/A/SWBProjectModel",
+        None,
+        "46c09eeff03bf97d179e6b6385fe6a58fea28245d6125ac61943a7615cc2acf9",
+        540_144,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swb-util",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBUtil.framework/Versions/A/SWBUtil",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/PlugIns/SWBBuildService.bundle/Contents/Frameworks/SWBUtil.framework/Versions/A/SWBUtil",
+        None,
+        "165998df0e1326f5b254f40e0efe57e501f03c93bbe8ce306c82e8a77f14646c",
+        3_196_784,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "swift-build-framework",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/SwiftBuild",
+        f"{SWIFT_SHARED_FRAMEWORKS}/SwiftBuild.framework/Versions/A/SwiftBuild",
+        None,
+        "3ae14a15416d3641949cb4eedecd972eec863eb058e753f1f564e5f35fe01973",
+        3_413_216,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "tools-protocols-swift-extensions",
+        f"{SWIFT_SHARED_FRAMEWORKS}/ToolsProtocolsSwiftExtensions.framework/Versions/A/ToolsProtocolsSwiftExtensions",
+        f"{SWIFT_SHARED_FRAMEWORKS}/ToolsProtocolsSwiftExtensions.framework/Versions/A/ToolsProtocolsSwiftExtensions",
+        None,
+        "cf57590d1be3819fbbb7ebc51435423804e9b34723b068a1b5f83e11abe603bd",
+        199_824,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "llbuild-framework",
+        f"{SWIFT_SHARED_FRAMEWORKS}/llbuild.framework/Versions/A/llbuild",
+        f"{SWIFT_SHARED_FRAMEWORKS}/llbuild.framework/Versions/A/llbuild",
+        None,
+        "25bfb2c3d42c28cc5b01bd303268f63e26ee017c54c626d98bddbe135ed28f36",
+        1_432_608,
+        "0755",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-settings-json",
+        f"{SWIFT_SDK_ROOT}/SDKSettings.json",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/SDKSettings.json",
+        None,
+        "f8d005f09381389167f9e0aeaa169bc9e7dff162ef22ca2fd8e98df7ff1acafe",
+        7_774,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-settings-plist",
+        f"{SWIFT_SDK_ROOT}/SDKSettings.plist",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/SDKSettings.plist",
+        None,
+        "e5c7c40b8c5dc1a9f99f8b9fa51870f8fe180421225b8201d0c4c826aad11bdc",
+        5_388,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-foundation-tbd",
+        f"{SWIFT_SDK_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation.tbd",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation.tbd",
+        None,
+        "f425b7c55986e46ab62fd8d8a457ee3fb1ddbe4af46b41abe1e63110ef7fba44",
+        5_602_567,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+    (
+        "sdk-libswift-foundation-tbd",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/libswiftFoundation.tbd",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/libswiftFoundation.tbd",
+        None,
+        "c9a08100fa08663ed70835c177b05ce9ff4a0f81bfb6b7d32114cdc0e0371539",
+        420,
+        "0644",
+        0,
+        0,
+        1,
+    ),
+)
+SWIFT_BUILD_CLOSURE_TREE_SPECS = (
+    (
+        "manifest-api",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/ManifestAPI",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/ManifestAPI",
+        "aaf47697e4ada643c682431426648cc1a915416afd2caf5beec096f8fa36417a",
+        9,
+        3_659_442,
+    ),
+    (
+        "plugin-api",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/PluginAPI",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/pm/PluginAPI",
+        "1a3dd060b6803d6873648832cea0b52635f9ae1a261e34bfeb133f7178ca645a",
+        5,
+        3_386_557,
+    ),
+    (
+        "toolchain-host-plugins",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/plugins",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/host/plugins",
+        "912a7dbdbe6735e08ce84b0c7f313d18e4bb0ebf850c36f199cc1b46e35357ed",
+        4,
+        1_617_344,
+    ),
+    (
+        "platform-host-plugins",
+        f"{SWIFT_PLATFORM_ROOT}/usr/lib/swift/host/plugins",
+        f"{SWIFT_PLATFORM_ROOT}/usr/lib/swift/host/plugins",
+        "6408d05c19f22daf7918307aa95077d8f2849fce8c85b722c90d5d9b1fa6d417",
+        15,
+        5_125_484,
+    ),
+    (
+        "sdk-foundation-module",
+        f"{SWIFT_SDK_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Modules",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Modules",
+        "7165c4716fa827f8803998ea3e436e4458539900c0511cd61d3327293890d1f9",
+        9,
+        7_727_385,
+    ),
+    (
+        "sdk-corefoundation-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/CoreFoundation.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/CoreFoundation.swiftmodule",
+        "a0405db90f83fb73a3fa7c63d4aa5f23c801d9fe07c24e690fb309837569710d",
+        8,
+        104_510,
+    ),
+    (
+        "sdk-objectivec-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/ObjectiveC.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/ObjectiveC.swiftmodule",
+        "09c0b3b5ccc32bf959edf60385077623eda7e9f3b8a03f229fd655a08376845c",
+        8,
+        52_177,
+    ),
+    (
+        "sdk-darwin-foundation1-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/_DarwinFoundation1.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/_DarwinFoundation1.swiftmodule",
+        "afd2771e20e7908556e4093be833fc27a989610d1a67adcf3d2192fc0bed20a1",
+        8,
+        162_910,
+    ),
+    (
+        "sdk-darwin-foundation2-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/_DarwinFoundation2.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/_DarwinFoundation2.swiftmodule",
+        "7cb0327244e386b14d8464ed2bcabcbd307ac72e303786d590a0dc90b9535b72",
+        8,
+        12_270,
+    ),
+    (
+        "sdk-darwin-foundation3-module",
+        f"{SWIFT_SDK_ROOT}/usr/lib/swift/_DarwinFoundation3.swiftmodule",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/lib/swift/_DarwinFoundation3.swiftmodule",
+        "8662a95e3ab622e93e92ce13177a31d6831760e49906357c457e7aa811ece40a",
+        8,
+        7_854,
+    ),
+    (
+        "toolchain-foundation-prebuilt-module",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/macosx/prebuilt-modules/26.5/Foundation.swiftmodule",
+        f"{SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/macosx/prebuilt-modules/26.5/Foundation.swiftmodule",
+        "cc03cfb24425d6842fe72ed89c2f2b2e26ae641cb35cd3211e3f2d93d5bd9b93",
+        4,
+        15_112_272,
+    ),
+    (
+        "sdk-foundation-headers",
+        f"{SWIFT_SDK_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Headers",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/System/Library/Frameworks/Foundation.framework/Versions/C/Headers",
+        "7c6b6a8f06f51aeaa26411b9fb79cb28800461f939eac310c2be9a4f5edcec91",
+        174,
+        1_707_906,
+    ),
+    (
+        "sdk-objc-headers",
+        f"{SWIFT_SDK_ROOT}/usr/include/objc",
+        f"{SWIFT_SDK_RESOLVED_ROOT}/usr/include/objc",
+        "798fa35ace9193dc45fceb26954f025f04b67116e329596673319d851485517a",
+        17,
+        136_132,
+    ),
+)
+
+
+def _expected_swift_build_closure() -> dict[str, Any]:
+    return {
+        "schema": SWIFT_BUILD_CLOSURE_SCHEMA,
+        "scope": SWIFT_BUILD_CLOSURE_SCOPE,
+        "compiler_runtime_soundness": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "components": [
+            {
+                "role": role,
+                "path": path,
+                "resolved_path": resolved,
+                "link_target": link_target,
+                "sha256": "sha256:" + sha256,
+                "bytes": byte_count,
+                "mode": mode,
+                "uid": uid,
+                "gid": gid,
+                "nlink": nlink,
+            }
+            for (
+                role,
+                path,
+                resolved,
+                link_target,
+                sha256,
+                byte_count,
+                mode,
+                uid,
+                gid,
+                nlink,
+            ) in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
+        ],
+        "trees": [
+            {
+                "role": role,
+                "root": root,
+                "sha256": "sha256:" + sha256,
+                "file_count": file_count,
+                "bytes": byte_count,
+            }
+            for role, root, _resolved, sha256, file_count, byte_count in SWIFT_BUILD_CLOSURE_TREE_SPECS
+        ],
+    }
+
+
+SWIFT_ANALYZER_BUILD_CLOSURE = _expected_swift_build_closure()
+SWIFT_ANALYZER_TOOLCHAIN = {
+    "swiftc": (
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/"
+        "XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ),
+    "swiftc_sha256": (
+        "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+    ),
+    "swift_driver": (
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/"
+        "XcodeDefault.xctoolchain/usr/bin/swift"
+    ),
+    "swift_driver_sha256": (
+        "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+    ),
+    "version": (
+        "Apple Swift version 6.3.3 "
+        "(swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
+    ),
+    "profile": [
+        "platform=Darwin/arm64",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        (
+            "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
+            "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk"
+        ),
+        "swift-language-mode=6",
+        "integer=Int64",
+    ],
+    "build_closure": SWIFT_ANALYZER_BUILD_CLOSURE,
+}
+SWIFT_ANALYZER_BUILD = {
+    "configuration": "release",
+    "automatic_resolution": False,
+    "manifest_cache": "none",
+    "environment_policy": "minimal-empty-home-deterministic-v1",
+    "deterministic_environment": {
+        "SOURCE_DATE_EPOCH": "0",
+        "SWIFT_DETERMINISTIC_HASHING": "1",
+        "ZERO_AR_DATE": "1",
+    },
+    "mtime_normalization": {
+        "epoch_nanoseconds": 0,
+        "scope": ["source-snapshot", "dependency-mirror"],
+    },
+    "reproducible_path_policy": "debug-file-macro-prefix-map-no-uuid-v1",
+    "argv": [
+        "<sandbox-exec>",
+        "-p",
+        "<deny-network-policy>",
+        "<swift-driver>",
+        "build",
+        "--package-path",
+        "<source-snapshot>",
+        "--cache-path",
+        "<isolated-cache>",
+        "--config-path",
+        "<isolated-config>",
+        "--security-path",
+        "<isolated-security>",
+        "--scratch-path",
+        "<isolated-build>",
+        "--manifest-cache",
+        "none",
+        "--disable-sandbox",
+        "--disable-automatic-resolution",
+        "-c",
+        "release",
+        "-Xswiftc",
+        "-debug-prefix-map",
+        "-Xswiftc",
+        "<build-root>=/elmos/swift-analyzer",
+        "-Xswiftc",
+        "-file-prefix-map",
+        "-Xswiftc",
+        "<build-root>=/elmos/swift-analyzer",
+        "-Xswiftc",
+        "-file-compilation-dir",
+        "-Xswiftc",
+        "<canonical-compilation-dir>",
+        "-Xswiftc",
+        "-gnone",
+        "-Xswiftc",
+        "-no-serialize-debugging-options",
+        "-Xcc",
+        "-fdebug-prefix-map=<build-root>=/elmos/swift-analyzer",
+        "-Xcc",
+        "-ffile-prefix-map=<build-root>=/elmos/swift-analyzer",
+        "-Xcc",
+        "-fmacro-prefix-map=<build-root>=/elmos/swift-analyzer",
+        "-Xcc",
+        "-frandom-seed=elmos-swift-analyzer",
+        "-Xlinker",
+        "-no_uuid",
+    ],
+}
+SWIFT_NETWORK_PROBE_COMPILER = next(
+    component
+    for component in SWIFT_ANALYZER_BUILD_CLOSURE["components"]
+    if component["role"] == "clang"
+)
+SWIFT_NETWORK_POLICY_TEXT = "(version 1)\n(allow default)\n(deny network*)\n"
+SWIFT_NETWORK_POLICY_SHA256 = (
+    "sha256:5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08"
+)
+SWIFT_NETWORK_PROBE_SOURCE = r"""#include <arpa/inet.h>
+#include <errno.h>
+#include <stdint.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+int main(void) {
+    const int descriptor = socket(AF_INET, SOCK_STREAM, 0);
+    if (descriptor < 0) {
+        return 2;
+    }
+    struct sockaddr_in address = {0};
+    address.sin_family = AF_INET;
+    address.sin_port = htons(9);
+    address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    errno = 0;
+    const int status = connect(
+        descriptor,
+        (const struct sockaddr *)&address,
+        (socklen_t)sizeof(address)
+    );
+    const int error = errno;
+    if (close(descriptor) != 0) {
+        return 3;
+    }
+    if (status != -1 || error != EPERM) {
+        return 4;
+    }
+    static const char result[] = "NETWORK_DENIED:1\n";
+    const ssize_t written = write(STDOUT_FILENO, result, sizeof(result) - 1);
+    if (written != (ssize_t)(sizeof(result) - 1)) {
+        return 5;
+    }
+    return 0;
+}
+"""
+SWIFT_NETWORK_PROBE_SOURCE_SHA256 = (
+    "sha256:8a82a5f438ec38c0e733881eb868d91a4fb82c3ce95c3d8f27507a720dee7c19"
+)
+SWIFT_NETWORK_PROBE_SOURCE_BYTES = 923
+SWIFT_NETWORK_PROBE_BINARY_NAME = "ElmosNetworkDenyProbe"
+SWIFT_NETWORK_PROBE_BINARY_SHA256 = (
+    "sha256:446fc22c935c695feeea983fe3dba5705b399d32c93c285d797b7d90d0bdcbb7"
+)
+SWIFT_NETWORK_PROBE_BINARY_BYTES = 33_784
+SWIFT_NETWORK_PROBE_UUID = "3C8F074C-FA7E-3977-B467-A98D3FC2BE00"
+SWIFT_NETWORK_PROBE_CDHASH_FULL = (
+    "5e87ec802f0589e8d88db8eed94de7f41f5c855110c202ec3959cb8cfb9d7dc4"
+)
+SWIFT_NETWORK_PROBE_LINKED_LIBRARIES = ["/usr/lib/libSystem.B.dylib"]
+SWIFT_NETWORK_PROBE_BUILD_ARGV = [
+    "<sandbox-exec>",
+    "-p",
+    "<deny-network-policy>",
+    "<clang>",
+    "-x",
+    "c",
+    "-std=c17",
+    "-target",
+    "arm64-apple-macosx26.0",
+    "-Os",
+    "-fno-ident",
+    "-isysroot",
+    "<swift-sdk>",
+    "-Wl,-dead_strip",
+    "-o",
+    "<probe-output>",
+    "-",
+]
+SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT = {
+    "PATH": (
+        "<swift-toolchain-bin>:<system-usr-bin>:<system-bin>:"
+        "<system-usr-sbin>:<system-sbin>"
+    ),
+    "HOME": "<isolated-home>",
+    "TMPDIR": "<isolated-tmp>",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TZ": "UTC",
+    "NO_COLOR": "1",
+    "CLICOLOR": "0",
+    "SOURCE_DATE_EPOCH": "0",
+    "ZERO_AR_DATE": "1",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "<null-device>",
+    "GIT_TERMINAL_PROMPT": "0",
+    "XDG_CACHE_HOME": "<isolated-home>/.cache",
+    "PYTHONHASHSEED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "SWIFT_DETERMINISTIC_HASHING": "1",
+}
+SWIFT_NETWORK_SANDBOX = {
+    "path": "/usr/bin/sandbox-exec",
+    "sha256": (
+        "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+    ),
+    "bytes": 102_368,
+    "mode": "0755",
+    "uid": 0,
+    "gid": 0,
+    "nlink": 1,
+    "cdhash_full": (
+        "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"
+    ),
+}
+SWIFT_NETWORK_VERIFIER = {
+    "path": "/usr/bin/codesign",
+    "sha256": (
+        "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+    ),
+    "bytes": 458_576,
+    "mode": "0755",
+    "uid": 0,
+    "gid": 0,
+    "nlink": 1,
+}
+SWIFT_NETWORK_PROBE_KEYS = {
+    "result",
+    "source",
+    "build",
+    "binary",
+    "execution_seal",
+    "mach_o",
 }
 MODULE_INVENTORY_SUBJECT_KEYS = {
     "name",
@@ -829,19 +1630,878 @@ def _receipt_payload_sha256(value: object) -> str:
     return sha256_bytes(encoded)
 
 
-def _swift_receipt_stable_projection(receipt: dict[str, Any]) -> dict[str, Any]:
-    """Return only fields the locked contract says are cross-build stable."""
+def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...], ...]:
+    xcode_root = Path(SWIFT_XCODE_ROOT)
+    if not directory.is_absolute() or not directory.is_relative_to(xcode_root):
+        raise ValueError("path is outside pinned Xcode root")
+    cursor = Path("/")
+    identities: list[tuple[object, ...]] = []
+    for part in directory.parts[1:]:
+        cursor = cursor / part
+        metadata = cursor.lstat()
+        applications_exception = cursor == Path("/Applications") and (
+            stat.S_IMODE(metadata.st_mode) == 0o775
+            and metadata.st_uid == 0
+            and metadata.st_gid == 80
+        )
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != 0
+            or (stat.S_IMODE(metadata.st_mode) & 0o022 and not applications_exception)
+        ):
+            raise ValueError(f"unsafe Xcode directory: {cursor}")
+        identities.append(
+            (
+                str(cursor),
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_mtime_ns,
+            )
+        )
+    if directory.resolve(strict=True) != directory:
+        raise ValueError("Xcode directory chain resolves elsewhere")
+    return tuple(identities)
 
-    projected = json.loads(
-        json.dumps(receipt, ensure_ascii=False, allow_nan=False),
-        parse_constant=_reject_json_constant,
+
+def _stable_read_swift_closure_file(file_path: Path) -> tuple[bytes, os.stat_result]:
+    before = file_path.lstat()
+    descriptor = os.open(
+        file_path,
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
     )
-    projected.pop("binary", None)
-    dependency = projected.get("dependency")
-    mirror = dependency.get("mirror") if isinstance(dependency, dict) else None
-    if isinstance(mirror, dict):
-        mirror.pop("seed", None)
-    return projected
+    try:
+        opened_before = os.fstat(descriptor)
+        chunks: list[bytes] = []
+        total = 0
+        while chunk := os.read(descriptor, 1024 * 1024):
+            total += len(chunk)
+            if total > 250_000_000:
+                raise ValueError("Swift closure component exceeds maximum size")
+            chunks.append(chunk)
+        opened_after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    after = file_path.lstat()
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    for observed in (opened_before, opened_after, after):
+        if identity != (
+            observed.st_dev,
+            observed.st_ino,
+            observed.st_mode,
+            observed.st_nlink,
+            observed.st_uid,
+            observed.st_gid,
+            observed.st_size,
+            observed.st_mtime_ns,
+            observed.st_ctime_ns,
+        ):
+            raise ValueError("Swift closure component changed while read")
+    content = b"".join(chunks)
+    if (
+        not stat.S_ISREG(after.st_mode)
+        or after.st_uid != 0
+        or after.st_gid != 0
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or len(content) != after.st_size
+    ):
+        raise ValueError("Swift closure component metadata is unsafe")
+    return content, after
+
+
+def _stable_read_exact_file(
+    file_path: Path,
+    *,
+    maximum_bytes: int,
+    allowed_uids: frozenset[int],
+) -> tuple[bytes, os.stat_result, tuple[object, ...]]:
+    before = file_path.lstat()
+    descriptor = os.open(
+        file_path,
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    try:
+        opened_before = os.fstat(descriptor)
+        chunks: list[bytes] = []
+        total = 0
+        while chunk := os.read(descriptor, 1024 * 1024):
+            total += len(chunk)
+            if total > maximum_bytes:
+                raise ValueError("file exceeds maximum size")
+            chunks.append(chunk)
+        opened_after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    after = file_path.lstat()
+    identity = (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_uid,
+        before.st_gid,
+        before.st_size,
+        before.st_mtime_ns,
+        before.st_ctime_ns,
+    )
+    for observed in (opened_before, opened_after, after):
+        if identity != (
+            observed.st_dev,
+            observed.st_ino,
+            observed.st_mode,
+            observed.st_nlink,
+            observed.st_uid,
+            observed.st_gid,
+            observed.st_size,
+            observed.st_mtime_ns,
+            observed.st_ctime_ns,
+        ):
+            raise ValueError("file changed while read")
+    content = b"".join(chunks)
+    if (
+        not stat.S_ISREG(after.st_mode)
+        or after.st_uid not in allowed_uids
+        or stat.S_IMODE(after.st_mode) & 0o022
+        or after.st_nlink != 1
+        or len(content) != after.st_size
+        or file_path.resolve(strict=True) != file_path
+    ):
+        raise ValueError("file metadata is unsafe")
+    return content, after, identity
+
+
+def _system_directory_chain(directory: Path) -> tuple[tuple[object, ...], ...]:
+    if directory != Path("/usr/bin"):
+        raise ValueError("system tool directory is not pinned")
+    cursor = Path("/")
+    identities: list[tuple[object, ...]] = []
+    for part in directory.parts[1:]:
+        cursor = cursor / part
+        metadata = cursor.lstat()
+        if (
+            stat.S_ISLNK(metadata.st_mode)
+            or not stat.S_ISDIR(metadata.st_mode)
+            or metadata.st_uid != 0
+            or stat.S_IMODE(metadata.st_mode) & 0o022
+        ):
+            raise ValueError(f"unsafe system directory: {cursor}")
+        identities.append(
+            (
+                str(cursor),
+                metadata.st_dev,
+                metadata.st_ino,
+                metadata.st_mode,
+                metadata.st_uid,
+                metadata.st_gid,
+                metadata.st_mtime_ns,
+                metadata.st_ctime_ns,
+            )
+        )
+    if directory.resolve(strict=True) != directory:
+        raise ValueError("system tool directory resolves elsewhere")
+    return tuple(identities)
+
+
+def _observe_swift_network_system_tool(
+    expected: dict[str, Any],
+) -> tuple[dict[str, Any], tuple[object, ...]]:
+    path = Path(expected["path"])
+    chain_before = _system_directory_chain(path.parent)
+    content, metadata, identity = _stable_read_exact_file(
+        path,
+        maximum_bytes=int(expected["bytes"]),
+        allowed_uids=frozenset({0}),
+    )
+    chain_after = _system_directory_chain(path.parent)
+    observed = {
+        "path": str(path),
+        "sha256": sha256_bytes(content),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+    }
+    expected_file = {
+        key: expected[key] for key in ("path", "sha256", "bytes", "mode", "uid", "gid", "nlink")
+    }
+    if chain_before != chain_after or observed != expected_file:
+        raise ValueError("network system tool identity differs")
+    return observed, (chain_after, identity)
+
+
+def _verify_swift_network_sandbox_signature(
+    *,
+    environment: dict[str, str],
+    cwd: Path,
+) -> None:
+    verify = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", SWIFT_NETWORK_SANDBOX["path"]],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    details = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", SWIFT_NETWORK_SANDBOX["path"]],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    lines = set((details.stdout + details.stderr).splitlines())
+    if verify.returncode != 0 or details.returncode != 0 or not {
+        "Identifier=com.apple.sandbox-exec",
+        "Authority=Apple Root CA",
+        "TeamIdentifier=not set",
+        f"CandidateCDHashFull sha256={SWIFT_NETWORK_SANDBOX['cdhash_full']}",
+    }.issubset(lines):
+        raise ValueError("sandbox-exec code-signature identity differs")
+
+
+def _observe_swift_git_identity() -> dict[str, str]:
+    path = Path(SWIFT_GIT_PATH)
+    chain_before = _swift_closure_directory_chain(path.parent)
+    content_before, _metadata_before, identity_before = _stable_read_exact_file(
+        path,
+        maximum_bytes=SWIFT_GIT_BYTES,
+        allowed_uids=frozenset({0}),
+    )
+    version = subprocess.run(
+        [str(path), "--version"],
+        cwd=path.parent,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env={"LANG": "C", "LC_ALL": "C", "PATH": str(path.parent)},
+    )
+    content_after, _metadata_after, identity_after = _stable_read_exact_file(
+        path,
+        maximum_bytes=SWIFT_GIT_BYTES,
+        allowed_uids=frozenset({0}),
+    )
+    chain_after = _swift_closure_directory_chain(path.parent)
+    if (
+        version.returncode != 0
+        or version.stdout.strip() != SWIFT_GIT_VERSION
+        or version.stderr != ""
+        or chain_before != chain_after
+        or identity_before != identity_after
+        or content_before != content_after
+        or len(content_after) != SWIFT_GIT_BYTES
+        or sha256_bytes(content_after) != SWIFT_GIT_SHA256
+    ):
+        raise ValueError("direct Xcode Git identity differs")
+    return {
+        "path": SWIFT_GIT_PATH,
+        "sha256": SWIFT_GIT_SHA256,
+        "version": SWIFT_GIT_VERSION,
+    }
+
+
+def _inspect_swift_network_probe_macho(content: bytes) -> dict[str, Any]:
+    if len(content) < 32:
+        raise ValueError("probe Mach-O header is truncated")
+    magic, cpu_type, _cpu_subtype, file_type, command_count, command_bytes, _flags, _reserved = struct.unpack_from(
+        "<IiiIIIII", content, 0
+    )
+    if magic != 0xFEEDFACF or cpu_type != 0x0100000C or file_type != 2:
+        raise ValueError("probe Mach-O identity differs")
+    command_end = 32 + command_bytes
+    if command_end > len(content):
+        raise ValueError("probe Mach-O commands are truncated")
+    offset = 32
+    uuids: list[bytes] = []
+    linked_libraries: list[str] = []
+    signature_commands: list[tuple[int, int]] = []
+    dylib_commands = frozenset(
+        {0xC, 0x18 | 0x80000000, 0x1F | 0x80000000, 0x23 | 0x80000000, 0x20}
+    )
+    for _index in range(command_count):
+        if offset + 8 > command_end:
+            raise ValueError("probe Mach-O command header is truncated")
+        command, size = struct.unpack_from("<II", content, offset)
+        if size < 8 or size % 8 != 0 or offset + size > command_end:
+            raise ValueError("probe Mach-O command size is invalid")
+        if command == 0x1B:
+            if size != 24:
+                raise ValueError("probe LC_UUID is invalid")
+            uuids.append(content[offset + 8 : offset + 24])
+        elif command in dylib_commands:
+            if size < 24:
+                raise ValueError("probe dylib command is invalid")
+            name_offset = struct.unpack_from("<I", content, offset + 8)[0]
+            if name_offset < 24 or name_offset >= size:
+                raise ValueError("probe dylib name offset is invalid")
+            name = content[offset + name_offset : offset + size].split(b"\0", 1)[0]
+            linked_libraries.append(name.decode("utf-8"))
+        elif command == 0x1D:
+            if size != 16:
+                raise ValueError("probe code-signature command is invalid")
+            signature_commands.append(struct.unpack_from("<II", content, offset + 8))
+        offset += size
+    if offset != command_end or len(uuids) != 1 or len(signature_commands) != 1:
+        raise ValueError("probe Mach-O command inventory is invalid")
+    signature_offset, signature_size = signature_commands[0]
+    if signature_size == 0 or signature_offset + signature_size != len(content):
+        raise ValueError("probe code-signature range is invalid")
+    uuid_hex = uuids[0].hex().upper()
+    uuid_value = (
+        f"{uuid_hex[:8]}-{uuid_hex[8:12]}-{uuid_hex[12:16]}-"
+        f"{uuid_hex[16:20]}-{uuid_hex[20:]}"
+    )
+    return {
+        "architecture": "arm64",
+        "file_type": "MH_EXECUTE",
+        "uuid": uuid_value,
+        "cdhash_full": SWIFT_NETWORK_PROBE_CDHASH_FULL,
+        "linked_libraries": linked_libraries,
+    }
+
+
+def _verify_swift_network_probe_signature(
+    binary: Path,
+    *,
+    environment: dict[str, str],
+    cwd: Path,
+) -> None:
+    verify = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", str(binary)],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    if verify.returncode != 0:
+        raise ValueError("probe code signature did not verify")
+    details = subprocess.run(
+        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", str(binary)],
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=environment,
+    )
+    lines = set((details.stdout + details.stderr).splitlines())
+    if details.returncode != 0 or not {
+        f"Identifier={SWIFT_NETWORK_PROBE_BINARY_NAME}",
+        "Signature=adhoc",
+        "TeamIdentifier=not set",
+        f"CandidateCDHashFull sha256={SWIFT_NETWORK_PROBE_CDHASH_FULL}",
+    }.issubset(lines):
+        raise ValueError("probe code-signature identity differs")
+
+
+def _probe_validation_environment(root: Path) -> dict[str, str]:
+    home = root / "home"
+    temporary = root / "tmp"
+    home.mkdir(mode=0o700)
+    temporary.mkdir(mode=0o700)
+    return {
+        "HOME": str(home),
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": os.pathsep.join(
+            (
+                str(Path(SWIFT_NETWORK_PROBE_COMPILER["path"]).parent),
+                "/usr/bin",
+                "/bin",
+                "/usr/sbin",
+                "/sbin",
+            )
+        ),
+        "SOURCE_DATE_EPOCH": "0",
+        "SWIFT_DETERMINISTIC_HASHING": "1",
+        "TMPDIR": str(temporary),
+        "ZERO_AR_DATE": "1",
+        "TZ": "UTC",
+        "NO_COLOR": "1",
+        "CLICOLOR": "0",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_TERMINAL_PROMPT": "0",
+        "XDG_CACHE_HOME": str(home / ".cache"),
+        "PYTHONHASHSEED": "0",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+    }
+
+
+def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
+    compiler = Path(SWIFT_NETWORK_PROBE_COMPILER["path"])
+    chain_before = _swift_closure_directory_chain(compiler.parent)
+    content, metadata, identity = _stable_read_exact_file(
+        compiler,
+        maximum_bytes=int(SWIFT_NETWORK_PROBE_COMPILER["bytes"]),
+        allowed_uids=frozenset({0}),
+    )
+    chain_after = _swift_closure_directory_chain(compiler.parent)
+    observed_compiler = {
+        **SWIFT_NETWORK_PROBE_COMPILER,
+        "sha256": sha256_bytes(content),
+        "bytes": len(content),
+        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        "uid": metadata.st_uid,
+        "gid": metadata.st_gid,
+        "nlink": metadata.st_nlink,
+    }
+    sdk = Path(SWIFT_SDK_ROOT)
+    sdk_metadata = sdk.lstat()
+    sdk_target = os.readlink(sdk)
+    sdk_resolved = sdk.resolve(strict=True)
+    if (
+        chain_before != chain_after
+        or observed_compiler != SWIFT_NETWORK_PROBE_COMPILER
+        or stat.S_ISLNK(compiler.lstat().st_mode)
+        or compiler.resolve(strict=True)
+        != Path(SWIFT_NETWORK_PROBE_COMPILER["resolved_path"])
+        or SWIFT_NETWORK_PROBE_COMPILER["link_target"] is not None
+        or not stat.S_ISLNK(sdk_metadata.st_mode)
+        or sdk_metadata.st_uid != 0
+        or sdk_metadata.st_gid != 0
+        or sdk_target != "MacOSX.sdk"
+        or sdk_resolved != Path(SWIFT_SDK_RESOLVED_ROOT)
+    ):
+        raise ValueError("probe compiler or SDK identity differs")
+    return (
+        chain_after,
+        identity,
+        _swift_closure_directory_chain(sdk_resolved),
+        sdk_metadata.st_dev,
+        sdk_metadata.st_ino,
+        sdk_metadata.st_mode,
+        sdk_metadata.st_uid,
+        sdk_metadata.st_gid,
+        sdk_metadata.st_mtime_ns,
+        sdk_target,
+    )
+
+
+def _independently_rebuild_swift_network_probe() -> None:
+    with tempfile.TemporaryDirectory(
+        prefix="elmos-swift-network-probe-validator-"
+    ) as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        environment = _probe_validation_environment(root)
+        sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+        verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+        toolchain_before = _observe_swift_network_probe_toolchain()
+        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        output = root / SWIFT_NETWORK_PROBE_BINARY_NAME
+        command = [
+            SWIFT_NETWORK_SANDBOX["path"],
+            "-p",
+            SWIFT_NETWORK_POLICY_TEXT,
+            SWIFT_NETWORK_PROBE_COMPILER["path"],
+            "-x",
+            "c",
+            "-std=c17",
+            "-target",
+            "arm64-apple-macosx26.0",
+            "-Os",
+            "-fno-ident",
+            "-isysroot",
+            SWIFT_SDK_ROOT,
+            "-Wl,-dead_strip",
+            "-o",
+            str(output),
+            "-",
+        ]
+        build = subprocess.run(
+            command,
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+            input=SWIFT_NETWORK_PROBE_SOURCE,
+            timeout=120,
+            env=environment,
+        )
+        if build.returncode != 0:
+            raise ValueError(f"independent probe compile failed: {build.stderr[-500:]}")
+        content, metadata, _identity = _stable_read_exact_file(
+            output,
+            maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
+            allowed_uids=frozenset({os.getuid()}),
+        )
+        if (
+            sha256_bytes(content) != SWIFT_NETWORK_PROBE_BINARY_SHA256
+            or len(content) != SWIFT_NETWORK_PROBE_BINARY_BYTES
+            or f"{stat.S_IMODE(metadata.st_mode):04o}" != "0755"
+            or _inspect_swift_network_probe_macho(content)
+            != {
+                "architecture": "arm64",
+                "file_type": "MH_EXECUTE",
+                "uuid": SWIFT_NETWORK_PROBE_UUID,
+                "cdhash_full": SWIFT_NETWORK_PROBE_CDHASH_FULL,
+                "linked_libraries": SWIFT_NETWORK_PROBE_LINKED_LIBRARIES,
+            }
+        ):
+            raise ValueError("independently rebuilt probe identity differs")
+        _verify_swift_network_probe_signature(
+            output,
+            environment=environment,
+            cwd=root,
+        )
+        execution = subprocess.run(
+            [
+                SWIFT_NETWORK_SANDBOX["path"],
+                "-p",
+                SWIFT_NETWORK_POLICY_TEXT,
+                str(output),
+            ],
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=environment,
+        )
+        if (
+            execution.returncode != 0
+            or execution.stdout != "NETWORK_DENIED:1\n"
+            or execution.stderr != ""
+        ):
+            raise ValueError("independently rebuilt probe did not observe exact EPERM")
+        sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+        verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+        toolchain_after = _observe_swift_network_probe_toolchain()
+        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        if (
+            sandbox_before != sandbox_after
+            or verifier_before != verifier_after
+            or toolchain_before != toolchain_after
+        ):
+            raise ValueError("probe build/execution closure changed during replay")
+
+
+def _observe_swift_build_closure() -> dict[str, Any]:
+    sdk_root = Path(SWIFT_SDK_ROOT)
+    sdk_link = sdk_root.lstat()
+    if (
+        not stat.S_ISLNK(sdk_link.st_mode)
+        or sdk_link.st_uid != 0
+        or sdk_link.st_gid != 0
+        or os.readlink(sdk_root) != "MacOSX.sdk"
+        or sdk_root.resolve(strict=True) != Path(SWIFT_SDK_RESOLVED_ROOT)
+    ):
+        raise ValueError("pinned Swift SDK root link is invalid")
+
+    content_cache: dict[Path, tuple[bytes, os.stat_result]] = {}
+    components: list[dict[str, Any]] = []
+    for role, path_text, resolved_text, link_target, *_expected in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS:
+        lexical = Path(path_text)
+        lexical_metadata = lexical.lstat()
+        if link_target is None:
+            if stat.S_ISLNK(lexical_metadata.st_mode):
+                raise ValueError(f"unexpected component symlink: {role}")
+        elif (
+            not stat.S_ISLNK(lexical_metadata.st_mode)
+            or lexical_metadata.st_uid != 0
+            or lexical_metadata.st_gid != 0
+            or os.readlink(lexical) != link_target
+            or Path(link_target).is_absolute()
+            or ".." in Path(link_target).parts
+        ):
+            raise ValueError(f"component symlink differs: {role}")
+        resolved = lexical.resolve(strict=True)
+        if resolved != Path(resolved_text):
+            raise ValueError(f"component resolution differs: {role}")
+        _swift_closure_directory_chain(resolved.parent)
+        if resolved not in content_cache:
+            content_cache[resolved] = _stable_read_swift_closure_file(resolved)
+        content, metadata = content_cache[resolved]
+        components.append(
+            {
+                "role": role,
+                "path": str(lexical),
+                "resolved_path": str(resolved),
+                "link_target": link_target,
+                "sha256": sha256_bytes(content),
+                "bytes": len(content),
+                "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+                "uid": metadata.st_uid,
+                "gid": metadata.st_gid,
+                "nlink": metadata.st_nlink,
+            }
+        )
+
+    trees: list[dict[str, Any]] = []
+    for role, root_text, resolved_text, *_expected in SWIFT_BUILD_CLOSURE_TREE_SPECS:
+        root = Path(root_text)
+        resolved = root.resolve(strict=True)
+        if resolved != Path(resolved_text):
+            raise ValueError(f"tree resolution differs: {role}")
+        root_identity = _swift_closure_directory_chain(resolved)
+
+        def discover(tree_root: Path, tree_role: str) -> list[Path]:
+            files: list[Path] = []
+            candidates = sorted(
+                tree_root.rglob("*"),
+                key=lambda item: item.relative_to(tree_root).as_posix(),
+            )
+            if len(candidates) > 10_000:
+                raise ValueError(f"tree is unexpectedly large: {tree_role}")
+            for item in candidates:
+                metadata = item.lstat()
+                if (
+                    stat.S_ISLNK(metadata.st_mode)
+                    or metadata.st_uid != 0
+                    or metadata.st_gid != 0
+                    or stat.S_IMODE(metadata.st_mode) & 0o022
+                    or not (stat.S_ISDIR(metadata.st_mode) or stat.S_ISREG(metadata.st_mode))
+                ):
+                    raise ValueError(f"tree entry is unsafe: {tree_role}")
+                if stat.S_ISREG(metadata.st_mode):
+                    files.append(item)
+            return files
+
+        paths = discover(resolved, role)
+        file_records: list[dict[str, Any]] = []
+        total = 0
+        for item in paths:
+            content, _metadata = _stable_read_swift_closure_file(item)
+            total += len(content)
+            file_records.append(
+                {
+                    "path": item.relative_to(resolved).as_posix(),
+                    "sha256": sha256_bytes(content),
+                    "bytes": len(content),
+                }
+            )
+        if [
+            item.relative_to(resolved).as_posix()
+            for item in discover(resolved, role)
+        ] != [
+            item["path"] for item in file_records
+        ] or _swift_closure_directory_chain(resolved) != root_identity:
+            raise ValueError(f"tree changed while read: {role}")
+        trees.append(
+            {
+                "role": role,
+                "root": str(root),
+                "sha256": _receipt_payload_sha256({"files": file_records}),
+                "file_count": len(file_records),
+                "bytes": total,
+            }
+        )
+    return {
+        "schema": SWIFT_BUILD_CLOSURE_SCHEMA,
+        "scope": SWIFT_BUILD_CLOSURE_SCOPE,
+        "compiler_runtime_soundness": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "components": components,
+        "trees": trees,
+    }
+
+
+def _canonical_swift_build_closure_identity(closure: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schema": closure.get("schema"),
+        "scope": closure.get("scope"),
+        "compiler_runtime_soundness": closure.get("compiler_runtime_soundness"),
+        "certification": closure.get("certification"),
+        "components": [
+            {key: item.get(key) for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")}
+            for item in closure.get("components", [])
+            if isinstance(item, dict)
+        ],
+        "trees": [
+            {key: item.get(key) for key in ("role", "sha256", "file_count", "bytes")}
+            for item in closure.get("trees", [])
+            if isinstance(item, dict)
+        ],
+    }
+
+
+def _canonical_swift_toolchain_identity(
+    toolchain: dict[str, Any],
+) -> dict[str, Any]:
+    """Rebuild the portable Swift toolchain identity from exact raw fields."""
+
+    profile = toolchain.get("profile")
+    profile_items = profile if isinstance(profile, list) else []
+    return {
+        "swiftc_sha256": toolchain.get("swiftc_sha256"),
+        "swift_driver_sha256": toolchain.get("swift_driver_sha256"),
+        "version": toolchain.get("version"),
+        "profile": [
+            item
+            for item in profile_items
+            if isinstance(item, str) and not item.startswith("sdk-path=")
+        ],
+        "build_closure": _canonical_swift_build_closure_identity(
+            toolchain.get("build_closure")
+            if isinstance(toolchain.get("build_closure"), dict)
+            else {}
+        ),
+    }
+
+
+def _rebuild_portable_swift_receipt_identity(
+    receipt: dict[str, Any],
+) -> dict[str, Any]:
+    """Independently construct the host-path-free canonical receipt.
+
+    This deliberately does not read ``receipt.canonical_identity`` and only
+    selects exact portable fields from the raw, independently validated
+    receipt.  Scratch roots, executable paths, device/inode and ownership are
+    therefore incapable of entering persisted stable comparisons.
+    """
+
+    dependency = receipt["dependency"]
+    mirror = dependency["mirror"]
+    cache = mirror["cache"]
+    network = receipt["network_isolation"]
+    network_probe = network["probe"]
+    probe_compiler = network_probe["build"]["compiler"]
+    binary = receipt["binary"]
+    seal = receipt["execution_seal"]
+    return {
+        "schema_version": receipt["schema_version"],
+        "kind": receipt["kind"],
+        "source_inputs": receipt["source_inputs"],
+        "dependency": {
+            "identity": dependency["identity"],
+            "version": dependency["version"],
+            "revision": dependency["revision"],
+            "sha256": dependency["sha256"],
+            "file_count": dependency["file_count"],
+            "bytes": dependency["bytes"],
+            "mirror": {
+                "seed": mirror["seed"],
+                "identity": mirror["identity"],
+                "version": mirror["version"],
+                "revision": mirror["revision"],
+                "sha256": mirror["sha256"],
+                "file_count": mirror["file_count"],
+                "bytes": mirror["bytes"],
+                "git": {
+                    "sha256": mirror["git"]["sha256"],
+                    "version": mirror["git"]["version"],
+                },
+                "cache": {
+                    key: cache[key]
+                    for key in (
+                        "cache_key",
+                        "cache_schema",
+                        "identity",
+                        "version",
+                        "revision",
+                        "seed",
+                        "sha256",
+                        "file_count",
+                        "bytes",
+                    )
+                },
+            },
+        },
+        "toolchain": _canonical_swift_toolchain_identity(receipt["toolchain"]),
+        "build": receipt["build"],
+        "network_isolation": {
+            "status": network["status"],
+            "scope": network["scope"],
+            "sandbox": {
+                key: network["sandbox"][key]
+                for key in ("sha256", "bytes", "mode", "nlink", "cdhash_full")
+            },
+            "verifier": {
+                key: network["verifier"][key]
+                for key in ("sha256", "bytes", "mode", "nlink")
+            },
+            "policy": network["policy"],
+            "probe": {
+                "result": network_probe["result"],
+                "source": network_probe["source"],
+                "build": {
+                    "environment_policy": network_probe["build"][
+                        "environment_policy"
+                    ],
+                    "argv": network_probe["build"]["argv"],
+                    "environment": network_probe["build"]["environment"],
+                    "compiler": {
+                        key: probe_compiler[key]
+                        for key in (
+                            "role",
+                            "link_target",
+                            "sha256",
+                            "bytes",
+                            "mode",
+                            "nlink",
+                        )
+                    },
+                },
+                "binary": {
+                    key: network_probe["binary"][key]
+                    for key in ("name", "sha256", "bytes", "mode", "nlink")
+                },
+                "execution_seal": {
+                    "policy": network_probe["execution_seal"]["policy"],
+                    "mode": network_probe["execution_seal"]["mode"],
+                    "binary": {
+                        key: network_probe["execution_seal"]["binary"][key]
+                        for key in ("name", "sha256", "bytes", "mode", "nlink")
+                    },
+                },
+                "mach_o": {
+                    **{
+                        key: network_probe["mach_o"][key]
+                        for key in (
+                            "architecture",
+                            "file_type",
+                            "uuid",
+                            "cdhash_full",
+                        )
+                    },
+                    "linked_libraries": ["system-libSystem"],
+                },
+            },
+        },
+        "binary": {
+            key: binary[key]
+            for key in ("name", "sha256", "bytes", "mode", "nlink")
+        },
+        "execution_seal": {
+            "policy": seal["policy"],
+            "mode": seal["mode"],
+            "binary": {
+                key: seal["binary"][key]
+                for key in ("name", "sha256", "bytes", "mode", "nlink")
+            },
+        },
+    }
+
+
+def _swift_receipt_stable_projection(receipt: dict[str, Any]) -> dict[str, Any]:
+    """Return an independently rebuilt content-addressed stable identity."""
+
+    canonical = _rebuild_portable_swift_receipt_identity(receipt)
+    return {
+        "sha256": _receipt_payload_sha256(canonical),
+        "receipt": canonical,
+    }
 
 
 def _module_inventory_stable_projection(
@@ -913,6 +2573,7 @@ def _validate_swift_analyzer_receipt_document(
     if not isinstance(receipt, dict):
         failures.append(f"{label} must be an object")
         return None
+    starting_failure_count = len(failures)
     if set(receipt) != SWIFT_ANALYZER_RECEIPT_KEYS:
         failures.append(f"{label} top-level keys are not exact")
     if (
@@ -1011,180 +2672,477 @@ def _validate_swift_analyzer_receipt_document(
     if not isinstance(dependency, dict) or set(dependency) != dependency_keys:
         failures.append(f"{label}.dependency keys are not exact")
         dependency = {}
-    if any(
-        not isinstance(dependency.get(field), str) or not dependency.get(field)
+    if {
+        field: dependency.get(field)
         for field in ("identity", "version", "revision")
-    ):
+    } != {
+        "identity": SWIFT_DEPENDENCY_IDENTITY,
+        "version": SWIFT_DEPENDENCY_VERSION,
+        "revision": SWIFT_DEPENDENCY_REVISION,
+    }:
         failures.append(f"{label}.dependency identity is invalid")
     _require_digest(failures, dependency.get("sha256"), f"{label}.dependency.sha256")
+    if dependency.get("sha256") != SWIFT_DEPENDENCY_SHA256:
+        failures.append(f"{label}.dependency.sha256 is not the pinned tree")
     for field in ("file_count", "bytes"):
         if not _is_int(dependency.get(field), minimum=1):
             failures.append(f"{label}.dependency.{field} is invalid")
+    if dependency.get("file_count") != SWIFT_DEPENDENCY_FILE_COUNT:
+        failures.append(f"{label}.dependency.file_count is not the pinned tree")
+    if dependency.get("bytes") != SWIFT_DEPENDENCY_BYTES:
+        failures.append(f"{label}.dependency.bytes is not the pinned tree")
+
     mirror = dependency.get("mirror")
-    if not isinstance(mirror, dict) or set(mirror) != {
-        "seed",
-        "git",
-        "sha256",
-        "file_count",
-        "bytes",
-    }:
+    if not isinstance(mirror, dict) or set(mirror) != SWIFT_ANALYZER_MIRROR_KEYS:
         failures.append(f"{label}.dependency.mirror keys are not exact")
         mirror = {}
     if mirror.get("seed") not in SWIFT_ANALYZER_MIRROR_SEEDS:
         failures.append(f"{label}.dependency.mirror.seed is invalid")
+    if {
+        field: mirror.get(field)
+        for field in ("identity", "version", "revision")
+    } != {
+        "identity": SWIFT_DEPENDENCY_IDENTITY,
+        "version": SWIFT_DEPENDENCY_VERSION,
+        "revision": SWIFT_DEPENDENCY_REVISION,
+    }:
+        failures.append(f"{label}.dependency.mirror identity is invalid")
     for field in ("sha256", "file_count", "bytes"):
         if mirror.get(field) != dependency.get(field):
             failures.append(f"{label}.dependency.mirror.{field} differs from dependency tree")
+
+    cache = mirror.get("cache")
+    if not isinstance(cache, dict) or set(cache) != SWIFT_DEPENDENCY_CACHE_KEYS:
+        failures.append(f"{label}.dependency.mirror.cache keys are not exact")
+        cache = {}
+    if cache.get("cache_key") != SWIFT_DEPENDENCY_CACHE_KEY:
+        failures.append(f"{label}.dependency.mirror.cache.cache_key is invalid")
+    if cache.get("cache_schema") != SWIFT_DEPENDENCY_CACHE_SCHEMA:
+        failures.append(f"{label}.dependency.mirror.cache.cache_schema is invalid")
+    if cache.get("seed") not in SWIFT_ANALYZER_MIRROR_SEEDS:
+        failures.append(f"{label}.dependency.mirror.cache.seed is invalid")
+    if {
+        field: cache.get(field)
+        for field in ("identity", "version", "revision")
+    } != {
+        "identity": SWIFT_DEPENDENCY_IDENTITY,
+        "version": SWIFT_DEPENDENCY_VERSION,
+        "revision": SWIFT_DEPENDENCY_REVISION,
+    }:
+        failures.append(f"{label}.dependency.mirror.cache identity is invalid")
+    for field in ("sha256", "file_count", "bytes"):
+        if cache.get(field) != dependency.get(field):
+            failures.append(
+                f"{label}.dependency.mirror.cache.{field} differs from dependency tree"
+            )
+
     git = mirror.get("git")
     if not isinstance(git, dict) or set(git) != {"path", "sha256", "version"}:
         failures.append(f"{label}.dependency.mirror.git keys are not exact")
         git = {}
-    if any(not isinstance(git.get(field), str) or not git.get(field) for field in ("path", "version")):
+    if git != {
+        "path": SWIFT_GIT_PATH,
+        "sha256": SWIFT_GIT_SHA256,
+        "version": SWIFT_GIT_VERSION,
+    }:
         failures.append(f"{label}.dependency.mirror.git identity is invalid")
     _require_digest(failures, git.get("sha256"), f"{label}.dependency.mirror.git.sha256")
-    git_path = Path(str(git.get("path", "")))
     try:
-        if not git_path.is_absolute() or not git_path.is_file():
-            raise ValueError("git path is not an absolute regular file")
-        if sha256_file(git_path) != git.get("sha256"):
-            raise ValueError("git digest differs")
+        if _observe_swift_git_identity() != git:
+            raise ValueError("direct Xcode Git receipt differs")
     except (OSError, ValueError) as exc:
         failures.append(f"{label}.dependency.mirror.git provenance invalid: {exc}")
 
     toolchain = receipt.get("toolchain")
-    if not isinstance(toolchain, dict) or set(toolchain) != {
-        "swiftc",
-        "swiftc_sha256",
-        "swift_driver",
-        "swift_driver_sha256",
-        "version",
-        "profile",
-    }:
+    if not isinstance(toolchain, dict) or set(toolchain) != set(
+        SWIFT_ANALYZER_TOOLCHAIN
+    ):
         failures.append(f"{label}.toolchain keys are not exact")
         toolchain = {}
+    if toolchain != SWIFT_ANALYZER_TOOLCHAIN:
+        failures.append(f"{label}.toolchain exact identity is invalid")
+    build_closure = toolchain.get("build_closure")
+    if not isinstance(build_closure, dict) or set(build_closure) != {
+        "schema",
+        "scope",
+        "compiler_runtime_soundness",
+        "certification",
+        "components",
+        "trees",
+    }:
+        failures.append(f"{label}.toolchain.build_closure keys are not exact")
+    try:
+        observed_build_closure = _observe_swift_build_closure()
+    except (OSError, ValueError) as exc:
+        failures.append(f"{label}.toolchain.build_closure live provenance invalid: {exc}")
+    else:
+        if observed_build_closure != SWIFT_ANALYZER_BUILD_CLOSURE:
+            failures.append(f"{label}.toolchain.build_closure pinned identity differs")
+        if build_closure != observed_build_closure:
+            failures.append(f"{label}.toolchain.build_closure receipt mismatch")
     for path_field, digest_field in (
         ("swiftc", "swiftc_sha256"),
         ("swift_driver", "swift_driver_sha256"),
     ):
-        _require_digest(failures, toolchain.get(digest_field), f"{label}.toolchain.{digest_field}")
+        _require_digest(
+            failures,
+            toolchain.get(digest_field),
+            f"{label}.toolchain.{digest_field}",
+        )
         tool_path = Path(str(toolchain.get(path_field, "")))
         try:
-            if not tool_path.is_absolute() or not tool_path.is_file():
-                raise ValueError(f"{path_field} is not an absolute regular file")
-            if sha256_file(tool_path) != toolchain.get(digest_field):
-                raise ValueError(f"{path_field} digest differs")
+            link_metadata = tool_path.lstat()
+            resolved_tool = tool_path.resolve(strict=True)
+            metadata = resolved_tool.lstat()
+            if (
+                not tool_path.is_absolute()
+                or not stat.S_ISREG(metadata.st_mode)
+                or resolved_tool.parent != tool_path.parent
+                or resolved_tool.name != "swift-frontend"
+                or not stat.S_ISLNK(link_metadata.st_mode)
+                or link_metadata.st_uid != 0
+                or os.readlink(tool_path) != "swift-frontend"
+                or metadata.st_uid != 0
+                or stat.S_IMODE(metadata.st_mode) & 0o022
+                or sha256_file(tool_path) != toolchain.get(digest_field)
+            ):
+                raise ValueError(f"{path_field} identity differs")
         except (OSError, ValueError) as exc:
-            failures.append(f"{label}.toolchain.{path_field} provenance invalid: {exc}")
-    if not isinstance(toolchain.get("version"), str) or not toolchain.get("version"):
-        failures.append(f"{label}.toolchain.version is invalid")
-    profile = toolchain.get("profile")
-    if (
-        not isinstance(profile, list)
-        or not profile
-        or any(not isinstance(item, str) or not item for item in profile)
-    ):
-        failures.append(f"{label}.toolchain.profile is invalid")
+            failures.append(
+                f"{label}.toolchain.{path_field} provenance invalid: {exc}"
+            )
 
-    expected_argv = [
-        "<swift-driver>",
-        "build",
-        "--package-path",
-        "<source-snapshot>",
-        "--cache-path",
-        "<isolated-cache>",
-        "--config-path",
-        "<isolated-config>",
-        "--security-path",
-        "<isolated-security>",
-        "--scratch-path",
-        "<isolated-build>",
-        "--manifest-cache",
-        "none",
-        "--disable-automatic-resolution",
-        "-c",
-        "release",
-    ]
     build = receipt.get("build")
-    if not isinstance(build, dict) or set(build) != {
-        "configuration",
-        "automatic_resolution",
-        "manifest_cache",
-        "environment_policy",
-        "argv",
-    }:
+    if not isinstance(build, dict) or set(build) != set(SWIFT_ANALYZER_BUILD):
         failures.append(f"{label}.build keys are not exact")
         build = {}
-    if build != {
-        "configuration": "release",
-        "automatic_resolution": False,
-        "manifest_cache": "none",
-        "environment_policy": "minimal-empty-home-v1",
-        "argv": expected_argv,
-    }:
+    if build != SWIFT_ANALYZER_BUILD:
         failures.append(f"{label}.build policy is invalid")
 
+    network = receipt.get("network_isolation")
+    if not isinstance(network, dict) or set(network) != {
+        "status",
+        "scope",
+        "sandbox",
+        "verifier",
+        "policy",
+        "probe",
+    }:
+        failures.append(f"{label}.network_isolation keys are not exact")
+        network = {}
+    sandbox = network.get("sandbox")
+    verifier = network.get("verifier")
+    policy = network.get("policy")
+    probe = network.get("probe")
+    if not isinstance(probe, dict) or set(probe) != SWIFT_NETWORK_PROBE_KEYS:
+        failures.append(f"{label}.network_isolation.probe keys are not exact")
+        probe = {}
+    expected_policy = {
+        "text": SWIFT_NETWORK_POLICY_TEXT,
+        "sha256": SWIFT_NETWORK_POLICY_SHA256,
+        "bytes": len(SWIFT_NETWORK_POLICY_TEXT.encode("utf-8")),
+    }
+    if (
+        network.get("status") != "PASSED"
+        or network.get("scope") != "swift-build-process-tree"
+        or sandbox != SWIFT_NETWORK_SANDBOX
+        or verifier != SWIFT_NETWORK_VERIFIER
+        or policy != expected_policy
+    ):
+        failures.append(f"{label}.network_isolation policy/provenance is invalid")
+    source = probe.get("source")
+    expected_source = {
+        "text": SWIFT_NETWORK_PROBE_SOURCE,
+        "sha256": SWIFT_NETWORK_PROBE_SOURCE_SHA256,
+        "bytes": SWIFT_NETWORK_PROBE_SOURCE_BYTES,
+    }
+    if source != expected_source or (
+        sha256_bytes(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8"))
+        != SWIFT_NETWORK_PROBE_SOURCE_SHA256
+    ) or len(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8")) != SWIFT_NETWORK_PROBE_SOURCE_BYTES:
+        failures.append(f"{label}.network_isolation.probe.source is invalid")
+    probe_build = probe.get("build")
+    expected_probe_build = {
+        "environment_policy": "sanitized-swift-build-deterministic-v1",
+        "argv": SWIFT_NETWORK_PROBE_BUILD_ARGV,
+        "environment": SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT,
+        "compiler": SWIFT_NETWORK_PROBE_COMPILER,
+    }
+    if (
+        not isinstance(probe_build, dict)
+        or set(probe_build) != {"environment_policy", "argv", "environment", "compiler"}
+        or probe_build != expected_probe_build
+    ):
+        failures.append(f"{label}.network_isolation.probe.build is invalid")
+    probe_binary = probe.get("binary")
+    if not isinstance(probe_binary, dict) or set(probe_binary) != SWIFT_ANALYZER_BINARY_KEYS:
+        failures.append(f"{label}.network_isolation.probe.binary keys are not exact")
+        probe_binary = {}
+    probe_binary_path = Path(str(probe_binary.get("path", "")))
+    if (
+        probe.get("result") != "NETWORK_DENIED:1"
+        or probe_binary.get("name") != SWIFT_NETWORK_PROBE_BINARY_NAME
+        or probe_binary.get("sha256") != SWIFT_NETWORK_PROBE_BINARY_SHA256
+        or probe_binary.get("bytes") != SWIFT_NETWORK_PROBE_BINARY_BYTES
+        or probe_binary.get("mode") != "0500"
+        or probe_binary.get("uid") != os.getuid()
+        or not _is_int(probe_binary.get("gid"), minimum=0)
+        or probe_binary.get("nlink") != 1
+        or not _is_int(probe_binary.get("device"), minimum=1)
+        or not _is_int(probe_binary.get("inode"), minimum=1)
+        or not probe_binary_path.is_absolute()
+        or probe_binary_path.name != SWIFT_NETWORK_PROBE_BINARY_NAME
+        or probe_binary_path.parent.name != "network-probe-execution"
+        or not probe_binary_path.parent.parent.name.startswith("elmos-swift-analyzer-")
+        or ".." in probe_binary_path.parts
+    ):
+        failures.append(f"{label}.network_isolation.probe.binary identity is invalid")
+    probe_seal = probe.get("execution_seal")
+    if (
+        not isinstance(probe_seal, dict)
+        or set(probe_seal) != SWIFT_ANALYZER_EXECUTION_SEAL_KEYS
+    ):
+        failures.append(f"{label}.network_isolation.probe.execution_seal keys are not exact")
+        probe_seal = {}
+    probe_seal_root = Path(str(probe_seal.get("root", "")))
+    if (
+        probe_seal.get("policy") != "private-nonwritable-execution-root-v1"
+        or probe_seal.get("mode") != "0500"
+        or probe_seal.get("uid") != probe_binary.get("uid")
+        or probe_seal.get("gid") != probe_binary.get("gid")
+        or probe_seal.get("device") != probe_binary.get("device")
+        or not _is_int(probe_seal.get("inode"), minimum=1)
+        or probe_seal.get("binary") != probe_binary
+        or probe_seal_root != probe_binary_path.parent
+        or not probe_seal_root.is_absolute()
+        or ".." in probe_seal_root.parts
+    ):
+        failures.append(f"{label}.network_isolation.probe.execution_seal is invalid")
+    expected_mach_o = {
+        "architecture": "arm64",
+        "file_type": "MH_EXECUTE",
+        "uuid": SWIFT_NETWORK_PROBE_UUID,
+        "cdhash_full": SWIFT_NETWORK_PROBE_CDHASH_FULL,
+        "linked_libraries": SWIFT_NETWORK_PROBE_LINKED_LIBRARIES,
+    }
+    mach_o = probe.get("mach_o")
+    if not isinstance(mach_o, dict) or set(mach_o) != set(expected_mach_o) or mach_o != expected_mach_o:
+        failures.append(f"{label}.network_isolation.probe.mach_o is invalid")
+
+    validation_environment = {"LANG": "C", "LC_ALL": "C", "PATH": "/usr/bin"}
+    try:
+        sandbox_observed = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)[0]
+        verifier_observed = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)[0]
+        _verify_swift_network_sandbox_signature(
+            environment=validation_environment,
+            cwd=Path.cwd(),
+        )
+        if (
+            sandbox_observed
+            != {key: SWIFT_NETWORK_SANDBOX[key] for key in sandbox_observed}
+            or verifier_observed != SWIFT_NETWORK_VERIFIER
+        ):
+            raise ValueError("system tool receipt differs")
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        failures.append(f"{label}.network_isolation live system provenance invalid: {exc}")
+
+    if live_binary is not None:
+        try:
+            analyzer_root = live_binary.resolve(strict=True).parent
+            if probe_binary_path.parent.parent != analyzer_root:
+                raise ValueError("probe is outside the fresh analyzer execution root")
+            sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+            verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+            content_before, metadata_before, identity_before = _stable_read_exact_file(
+                probe_binary_path,
+                maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
+                allowed_uids=frozenset({os.getuid()}),
+            )
+            observed_binary = {
+                "name": SWIFT_NETWORK_PROBE_BINARY_NAME,
+                "path": str(probe_binary_path),
+                "sha256": sha256_bytes(content_before),
+                "bytes": len(content_before),
+                "mode": f"{stat.S_IMODE(metadata_before.st_mode):04o}",
+                "uid": metadata_before.st_uid,
+                "gid": metadata_before.st_gid,
+                "nlink": metadata_before.st_nlink,
+                "device": metadata_before.st_dev,
+                "inode": metadata_before.st_ino,
+            }
+            seal_metadata = probe_seal_root.lstat()
+            observed_seal_root = {
+                "policy": "private-nonwritable-execution-root-v1",
+                "root": str(probe_seal_root),
+                "mode": f"{stat.S_IMODE(seal_metadata.st_mode):04o}",
+                "uid": seal_metadata.st_uid,
+                "gid": seal_metadata.st_gid,
+                "device": seal_metadata.st_dev,
+                "inode": seal_metadata.st_ino,
+            }
+            if (
+                observed_binary != probe_binary
+                or observed_seal_root
+                != {key: probe_seal[key] for key in observed_seal_root}
+                or _inspect_swift_network_probe_macho(content_before) != expected_mach_o
+            ):
+                raise ValueError("fresh probe receipt differs from live sealed bytes")
+            _verify_swift_network_probe_signature(
+                probe_binary_path,
+                environment=validation_environment,
+                cwd=analyzer_root,
+            )
+            execution = subprocess.run(
+                [
+                    SWIFT_NETWORK_SANDBOX["path"],
+                    "-p",
+                    SWIFT_NETWORK_POLICY_TEXT,
+                    str(probe_binary_path),
+                ],
+                cwd=analyzer_root,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                env=validation_environment,
+            )
+            content_after, metadata_after, identity_after = _stable_read_exact_file(
+                probe_binary_path,
+                maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
+                allowed_uids=frozenset({os.getuid()}),
+            )
+            sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
+            verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+            if (
+                execution.returncode != 0
+                or execution.stdout != "NETWORK_DENIED:1\n"
+                or execution.stderr != ""
+                or content_before != content_after
+                or identity_before != identity_after
+                or metadata_before.st_dev != metadata_after.st_dev
+                or sandbox_before != sandbox_after
+                or verifier_before != verifier_after
+            ):
+                raise ValueError("fresh sealed probe changed or did not observe exact EPERM")
+            _independently_rebuild_swift_network_probe()
+        except (OSError, subprocess.SubprocessError, ValueError) as exc:
+            failures.append(f"{label}.network_isolation live probe provenance invalid: {exc}")
+
     binary = receipt.get("binary")
-    if not isinstance(binary, dict) or set(binary) != {"name", "sha256", "bytes", "mode"}:
+    if not isinstance(binary, dict) or set(binary) != SWIFT_ANALYZER_BINARY_KEYS:
         failures.append(f"{label}.binary keys are not exact")
         binary = {}
-    if binary.get("name") != "ElmosSwiftAnalyzer":
-        failures.append(f"{label}.binary.name is invalid")
-    _require_digest(failures, binary.get("sha256"), f"{label}.binary.sha256")
-    if not _is_int(binary.get("bytes"), minimum=1) or int(binary.get("bytes", 0)) > 100_000_000:
-        failures.append(f"{label}.binary.bytes is invalid")
-    mode_value = binary.get("mode")
-    try:
-        parsed_mode = int(mode_value, 8) if isinstance(mode_value, str) else -1
-    except ValueError:
-        parsed_mode = -1
+    binary_path = Path(str(binary.get("path", "")))
     if (
-        not isinstance(mode_value, str)
-        or not re.fullmatch(r"[0-7]{4}", mode_value)
-        or parsed_mode & 0o111 == 0
-        or parsed_mode & 0o022 != 0
+        binary.get("name") != "ElmosSwiftAnalyzer"
+        or not binary_path.is_absolute()
+        or binary_path.name != "ElmosSwiftAnalyzer"
+        or not binary_path.parent.name.startswith("elmos-swift-analyzer-")
+        or ".." in binary_path.parts
+        or not _is_int(binary.get("bytes"), minimum=1)
+        or int(binary.get("bytes", 0)) > 100_000_000
+        or binary.get("mode") != "0500"
+        or binary.get("uid") != os.getuid()
+        or binary.get("gid") != os.getgid()
+        or binary.get("nlink") != 1
+        or not _is_int(binary.get("device"), minimum=1)
+        or not _is_int(binary.get("inode"), minimum=1)
     ):
-        failures.append(f"{label}.binary.mode is unsafe")
+        failures.append(f"{label}.binary identity/seal metadata is invalid")
+    _require_digest(failures, binary.get("sha256"), f"{label}.binary.sha256")
+
+    execution_seal = receipt.get("execution_seal")
+    if (
+        not isinstance(execution_seal, dict)
+        or set(execution_seal) != SWIFT_ANALYZER_EXECUTION_SEAL_KEYS
+    ):
+        failures.append(f"{label}.execution_seal keys are not exact")
+        execution_seal = {}
+    seal_root = Path(str(execution_seal.get("root", "")))
+    if (
+        execution_seal.get("policy")
+        != "private-nonwritable-execution-root-v1"
+        or not seal_root.is_absolute()
+        or not seal_root.name.startswith("elmos-swift-analyzer-")
+        or ".." in seal_root.parts
+        or execution_seal.get("mode") != "0500"
+        or execution_seal.get("uid") != binary.get("uid")
+        or execution_seal.get("gid") != binary.get("gid")
+        or execution_seal.get("device") != binary.get("device")
+        or not _is_int(execution_seal.get("inode"), minimum=1)
+        or binary_path.parent != seal_root
+        or execution_seal.get("binary") != binary
+    ):
+        failures.append(f"{label}.execution_seal identity is invalid")
+
+    canonical_identity = receipt.get("canonical_identity")
+    if not isinstance(canonical_identity, dict) or set(canonical_identity) != {
+        "sha256",
+        "receipt",
+    }:
+        failures.append(f"{label}.canonical_identity keys are not exact")
+        canonical_identity = {}
+    try:
+        rebuilt_canonical = _rebuild_portable_swift_receipt_identity(receipt)
+    except (KeyError, TypeError) as exc:
+        failures.append(f"{label}.canonical_identity cannot be rebuilt: {exc}")
+        rebuilt_canonical = None
+    if rebuilt_canonical is not None:
+        rebuilt_digest = _receipt_payload_sha256(rebuilt_canonical)
+
+        def contains_host_path(value: object) -> bool:
+            if isinstance(value, dict):
+                return any(contains_host_path(item) for item in value.values())
+            if isinstance(value, list):
+                return any(contains_host_path(item) for item in value)
+            return isinstance(value, str) and Path(value).is_absolute()
+
+        if contains_host_path(rebuilt_canonical):
+            failures.append(f"{label}.canonical_identity contains a host path")
+        if (
+            canonical_identity.get("receipt") != rebuilt_canonical
+            or canonical_identity.get("sha256") != rebuilt_digest
+        ):
+            failures.append(f"{label}.canonical_identity mismatch")
 
     if live_binary is not None:
         try:
             if live_binary.is_symlink():
                 raise ValueError("binary is a symlink")
             resolved_binary = live_binary.resolve(strict=True)
+            if str(resolved_binary) != binary.get("path"):
+                raise ValueError("binary path differs from receipt")
             metadata = resolved_binary.lstat()
-            if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != os.getuid():
-                raise ValueError("binary is not an owner-controlled regular file")
             if (
-                resolved_binary.name != binary.get("name")
+                not stat.S_ISREG(metadata.st_mode)
                 or metadata.st_size != binary.get("bytes")
                 or f"{stat.S_IMODE(metadata.st_mode):04o}" != binary.get("mode")
+                or metadata.st_uid != binary.get("uid")
+                or metadata.st_gid != binary.get("gid")
+                or metadata.st_nlink != binary.get("nlink")
+                or metadata.st_dev != binary.get("device")
+                or metadata.st_ino != binary.get("inode")
                 or sha256_file(resolved_binary) != binary.get("sha256")
             ):
-                raise ValueError("binary bytes/mode/digest differ from receipt")
-            private_root = next(
-                (
-                    parent
-                    for parent in resolved_binary.parents
-                    if parent.name.startswith("elmos-swift-analyzer-")
-                ),
-                None,
-            )
-            if private_root is None:
-                raise ValueError("binary is not inside a private analyzer build root")
-            relative_binary = resolved_binary.relative_to(private_root)
-            root_metadata = private_root.lstat()
+                raise ValueError("binary bytes/identity differ from receipt")
+            root_metadata = seal_root.lstat()
             if (
-                relative_binary.parts[0] != "build"
-                or not stat.S_ISDIR(root_metadata.st_mode)
-                or root_metadata.st_uid != os.getuid()
-                or stat.S_IMODE(root_metadata.st_mode) != 0o700
+                not stat.S_ISDIR(root_metadata.st_mode)
+                or f"{stat.S_IMODE(root_metadata.st_mode):04o}"
+                != execution_seal.get("mode")
+                or root_metadata.st_uid != execution_seal.get("uid")
+                or root_metadata.st_gid != execution_seal.get("gid")
+                or root_metadata.st_dev != execution_seal.get("device")
+                or root_metadata.st_ino != execution_seal.get("inode")
+                or resolved_binary.parent != seal_root
             ):
-                raise ValueError("binary escaped the owner-only isolated build tree")
+                raise ValueError("execution root identity differs from receipt")
             if layout is not None and resolved_binary.is_relative_to(layout[0].parent):
                 raise ValueError("repository build cache was used as analyzer binary")
         except (OSError, ValueError) as exc:
             failures.append(f"{label}.binary live provenance invalid: {exc}")
 
-    return receipt
+    return receipt if len(failures) == starting_failure_count else None
 
 
 def _validate_swift_receipt_binding(
@@ -1261,13 +3219,36 @@ def _validate_swift_analyzer_version_binding(
     source_inputs = receipt.get("source_inputs")
     toolchain = receipt.get("toolchain")
     dependency = receipt.get("dependency")
-    if not all(isinstance(item, dict) for item in (source_inputs, toolchain, dependency)):
+    binary = receipt.get("binary")
+    network = receipt.get("network_isolation")
+    canonical = receipt.get("canonical_identity")
+    if not all(
+        isinstance(item, dict)
+        for item in (
+            source_inputs,
+            toolchain,
+            dependency,
+            binary,
+            network,
+            canonical,
+        )
+    ):
         failures.append(f"{label} Swift analyzer receipt projection is invalid")
         return True
+    canonical_toolchain = _canonical_swift_toolchain_identity(toolchain)
+    network_policy = network.get("policy")
+    policy_digest = (
+        network_policy.get("sha256") if isinstance(network_policy, dict) else None
+    )
     expected_suffix = (
         f";source-inputs={source_inputs.get('sha256')};"
         f"swift-driver={toolchain.get('swift_driver_sha256')};"
-        f"swift-syntax-tree={dependency.get('sha256')}"
+        f"swift-syntax-tree={dependency.get('sha256')};"
+        f"canonical-receipt={canonical.get('sha256')};"
+        f"binary={binary.get('sha256')};"
+        f"toolchain={_receipt_payload_sha256(canonical_toolchain)};"
+        f"build-closure={_receipt_payload_sha256(canonical_toolchain['build_closure'])};"
+        f"network-policy={policy_digest}"
     )
     analyzer_version = semantic_document.get("analyzer_version")
     if not isinstance(analyzer_version, str) or not analyzer_version.endswith(
@@ -1378,7 +3359,18 @@ result, smt = formal_equivalence(
     formal_input_reference=p["formal_input_reference"],
     input_domain=p["input_domain"],
 )
-print(json.dumps({"result": result, "smt_base64": base64.b64encode(smt.encode("utf-8")).decode("ascii"), "provenance": provenance}, sort_keys=True, separators=(",", ":"), allow_nan=False))
+print(
+    json.dumps(
+        {
+            "result": result,
+            "smt_base64": base64.b64encode(smt.encode("utf-8")).decode("ascii"),
+            "provenance": provenance,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+)
 """
     try:
         completed = subprocess.run(
@@ -4464,18 +6456,12 @@ def _validate_module_inventory_document(
             failures.append(
                 f"{label}.analyzer_build_receipt differs from the route receipt artifact"
             )
-        analyzer_version = document.get("analyzer_version")
-        if isinstance(embedded_receipt, dict) and isinstance(analyzer_version, str):
-            source_inputs = embedded_receipt.get("source_inputs", {})
-            toolchain = embedded_receipt.get("toolchain", {})
-            dependency = embedded_receipt.get("dependency", {})
-            expected_suffix = (
-                f";source-inputs={source_inputs.get('sha256')};"
-                f"swift-driver={toolchain.get('swift_driver_sha256')};"
-                f"swift-syntax-tree={dependency.get('sha256')}"
-            )
-            if not analyzer_version.endswith(expected_suffix):
-                failures.append(f"{label}.analyzer_version receipt binding drift")
+        _validate_swift_analyzer_version_binding(
+            semantic_document=document,
+            receipt=(embedded_receipt if isinstance(embedded_receipt, dict) else None),
+            label=label,
+            failures=failures,
+        )
     elif "analyzer_build_receipt" in document:
         failures.append(f"{label} contains an unexpected Swift analyzer receipt")
     if artifact_record is not None:

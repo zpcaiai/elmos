@@ -13,6 +13,16 @@ from typing import Any
 SHA256 = re.compile(r"[0-9a-f]{64}")
 SIGNED_EXTERNAL_CERTIFICATION_INTAKE_IMPLEMENTED = True
 EXTERNAL_CERTIFICATION_PROMOTION_ENABLED = False
+REQUIRED_EXTERNAL_CERTIFICATION_GATES = (
+    "authorized_customer_repository",
+    "customer_holdout",
+    "customer_acceptance",
+    "rootless_runner",
+    "rootless_transformer",
+    "rootless_verifier",
+    "independent_review",
+    "external_certification",
+)
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -309,7 +319,7 @@ def main() -> int:
         if not SIGNED_EXTERNAL_CERTIFICATION_INTAKE_IMPLEMENTED:
             failures.append(
                 "certified status is disabled until signed, content-addressed external "
-                "customer/rootless/independent evidence intake is implemented"
+                "customer/rootless/independent/certifier evidence intake is implemented"
             )
         if not EXTERNAL_CERTIFICATION_PROMOTION_ENABLED:
             failures.append(
@@ -318,14 +328,7 @@ def main() -> int:
             )
         if evidence.get("external_execution_status") != "PASSED":
             failures.append("certified pack requires external execution PASSED")
-        for field in (
-            "authorized_customer_repository",
-            "customer_holdout",
-            "rootless_runner",
-            "rootless_transformer",
-            "rootless_verifier",
-            "independent_review",
-        ):
+        for field in REQUIRED_EXTERNAL_CERTIFICATION_GATES:
             if gate_results.get(field) != "PASSED":
                 failures.append(f"certified pack requires {field} PASSED")
 

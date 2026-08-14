@@ -28,6 +28,7 @@ packages = ["src/elmos_polyglot_route"]
 [tool.pytest.ini_options]
 addopts = "-q --strict-markers"
 testpaths = ["tests"]
+tmp_path_retention_policy = "failed"
 
 [tool.ruff]
 target-version = "py312"

@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import shutil
+import stat
 import signal
 import socket
 import subprocess
@@ -554,11 +555,11 @@ LOCKED_INTERACTION_ENGINE_NODE_SHA256 = (
 )
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_FILE_COUNT = 42
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_SHA256 = (
-    "sha256:35a36e6e914a557238594c37128d075cb77508b3ce1578230b09c6b94f872b60"
+    "sha256:f3f66c0bc7b1f78887127c12b12b767f409e8ee3fa1958d997110033b696b270"
 )
 LOCKED_INTERACTION_ENGINE_DIST_TREE_FILE_COUNT = 132
 LOCKED_INTERACTION_ENGINE_DIST_TREE_SHA256 = (
-    "sha256:fa169619fc4ffb75a12e0f1825fefe195e624aa9dac1958b898d5888107ecb62"
+    "sha256:ac0562ebdfff61df73934221499ed4723d021ba54feacfc2d04063ec94e3224c"
 )
 LOCKED_INTERACTION_ENGINE_FILE_SHA256 = {
     "cli_source": "sha256:695527da9f1470c4cdf17d9bd1e3f74502382a2945400ca82a770d97a6739c60",
@@ -617,6 +618,17 @@ EXPECTED_PROFILES: dict[str, dict[str, Any]] = {
     "vue2": {"framework_version": "2.7.16", "platforms": ["WEB"], "kind": "node"},
     "vue3": {"framework_version": "3.5.40", "platforms": ["WEB"], "kind": "node"},
 }
+
+OPENHARMONY_SDK_API_VERSION = "20"
+OPENHARMONY_SDK_PACKAGE_VERSION = "6.0.0.47"
+OPENHARMONY_SDK_COMPONENTS = {
+    "ets": "Ets",
+    "js": "Js",
+    "native": "Native",
+    "previewer": "Previewer",
+    "toolchains": "Toolchains",
+}
+OPENHARMONY_SDK_METADATA_MAX_BYTES = 64 * 1024
 
 
 def required_runtime_channels(profile_id: str) -> tuple[str, ...]:
@@ -7928,6 +7940,7 @@ class RunnerPolicy:
     chrome_path: str = DEFAULT_CHROME_PATH
     firefox_path: str = DEFAULT_FIREFOX_PATH
     harmony_tool: str | None = None
+    harmony_sdk_root: Path | None = None
     android_device_id: str | None = None
     ios_simulator_udid: str | None = None
     harmony_device_id: str | None = None
@@ -7953,6 +7966,8 @@ class RunnerPolicy:
             self.flutter_cft_acquisition_record = (
                 self.flutter_cft_acquisition_record.resolve()
             )
+        if self.harmony_sdk_root is not None:
+            self.harmony_sdk_root = self.harmony_sdk_root.expanduser()
 
 
 def node_tool_versions(
@@ -10788,9 +10803,163 @@ def execute_flutter_profile(
     )
 
 
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def discover_openharmony_sdk_metadata(
+    configured_root: Path | None,
+) -> tuple[list[dict[str, Any]], Path | None]:
+    """Validate the exact installed API-20 SDK from vendor package metadata.
+
+    `hvigorw --version` identifies hvigor itself (for example, `6.24.4`); it
+    does not identify the OpenHarmony SDK used by an ArkUI build.  The SDK
+    manager's component-level `oh-uni-package.json` files are the authoritative
+    local identity.  Require the complete five-component API-20 set, bind every
+    metadata file by digest, and reject symlinks, malformed metadata, extra
+    fields, partial installs, and version drift.
+    """
+
+    source = (
+        "CLI_CONFIGURED" if configured_root is not None else "STANDARD_USER_LOCATION"
+    )
+    root = (
+        configured_root
+        if configured_root is not None
+        else Path.home()
+        / "Library"
+        / "OpenHarmony"
+        / "Sdk"
+        / OPENHARMONY_SDK_API_VERSION
+    ).expanduser()
+    root_is_directory = root.is_dir()
+    root_is_symlink = root.is_symlink()
+    try:
+        resolved_root = root.resolve(strict=True) if root_is_directory else None
+    except (OSError, RuntimeError):
+        resolved_root = None
+
+    rows: list[dict[str, Any]] = []
+    all_valid = root_is_directory and not root_is_symlink and resolved_root is not None
+    for component, display_name in OPENHARMONY_SDK_COMPONENTS.items():
+        component_path = root / component
+        metadata_path = component_path / "oh-uni-package.json"
+        component_directory_symlink = component_path.is_symlink()
+        exists = False
+        regular_file = False
+        symlink = False
+        realpath: str | None = None
+        digest: str | None = None
+        byte_count: int | None = None
+        api_version: str | None = None
+        sdk_version: str | None = None
+        valid = False
+        try:
+            metadata_stat = metadata_path.lstat()
+            exists = True
+            regular_file = stat.S_ISREG(metadata_stat.st_mode)
+            symlink = stat.S_ISLNK(metadata_stat.st_mode)
+            resolved_metadata = metadata_path.resolve(strict=True)
+            realpath = str(resolved_metadata)
+            if resolved_root is None:
+                raise ValueError("SDK root is unavailable")
+            resolved_metadata.relative_to(resolved_root)
+            if (
+                root_is_symlink
+                or component_directory_symlink
+                or not regular_file
+                or symlink
+                or metadata_stat.st_size < 1
+                or metadata_stat.st_size > OPENHARMONY_SDK_METADATA_MAX_BYTES
+            ):
+                raise ValueError("SDK metadata file type or size is invalid")
+            data = metadata_path.read_bytes()
+            byte_count = len(data)
+            digest = sha256_bytes(data)
+            if byte_count != metadata_stat.st_size:
+                raise ValueError("SDK metadata changed while it was read")
+            metadata = json.loads(
+                data.decode("utf-8"), object_pairs_hook=_unique_json_object
+            )
+            if isinstance(metadata, dict):
+                raw_api_version = metadata.get("apiVersion")
+                raw_sdk_version = metadata.get("version")
+                api_version = (
+                    raw_api_version if isinstance(raw_api_version, str) else None
+                )
+                sdk_version = (
+                    raw_sdk_version if isinstance(raw_sdk_version, str) else None
+                )
+            expected_metadata = {
+                "apiVersion": OPENHARMONY_SDK_API_VERSION,
+                "displayName": display_name,
+                "meta": {"metaVersion": "3.0.0"},
+                "path": component,
+                "releaseType": "Release",
+                "version": OPENHARMONY_SDK_PACKAGE_VERSION,
+            }
+            valid = metadata == expected_metadata
+        except (
+            json.JSONDecodeError,
+            OSError,
+            RuntimeError,
+            UnicodeDecodeError,
+            ValueError,
+        ):
+            valid = False
+        rows.append(
+            {
+                "kind": "OPENHARMONY_SDK_COMPONENT_METADATA",
+                "source": source,
+                "component": component,
+                "candidate_path": str(metadata_path),
+                "exists": exists,
+                "component_directory_symlink": component_directory_symlink,
+                "regular_file": regular_file,
+                "symlink": symlink,
+                "selected": valid,
+                "realpath": realpath,
+                "sha256": digest,
+                "byte_count": byte_count,
+                "api_version": api_version,
+                "sdk_version": sdk_version,
+                "validation": "PASSED" if valid else "FAILED",
+            }
+        )
+        all_valid = all_valid and valid
+    if not all_valid:
+        for row in rows:
+            row["selected"] = False
+    return rows, resolved_root if all_valid else None
+
+
 def execute_harmony_profile(
     profile: ProfileArtifact, workspace: Path, policy: RunnerPolicy
 ) -> dict[str, Any]:
+    harmony_home = workspace.parent / "home"
+    try:
+        harmony_home.mkdir(mode=0o700)
+        harmony_home_metadata = harmony_home.lstat()
+    except OSError as error:
+        raise ValidationError("private Harmony tool home is unavailable") from error
+    if (
+        not stat.S_ISDIR(harmony_home_metadata.st_mode)
+        or stat.S_IMODE(harmony_home_metadata.st_mode) != 0o700
+        or harmony_home_metadata.st_uid != os.getuid()
+        or harmony_home.is_symlink()
+        or harmony_home.resolve(strict=True).parent != workspace.parent.resolve(strict=True)
+    ):
+        raise ValidationError("private Harmony tool home is unsafe")
+    base_environment = {
+        "CI": "1",
+        "HOME": str(harmony_home.resolve(strict=True)),
+        "NO_COLOR": "1",
+    }
     discovery, selected_tool = discover_hvigor_candidates(
         workspace, policy.harmony_tool
     )
@@ -10827,7 +10996,7 @@ def execute_harmony_profile(
         cwd=workspace,
         timeout_seconds=policy.timeout_seconds,
         no_network=policy.no_network,
-        explicit_env={"CI": "1", "NO_COLOR": "1"},
+        explicit_env=base_environment,
     )
     if version["status"] == "TOOL_UNAVAILABLE":
         return profile_result(
@@ -10851,14 +11020,13 @@ def execute_harmony_profile(
             policy,
             tool_discovery=discovery,
         )
-    version_text = f"{version['stdout']['text']}\n{version['stderr']['text']}"
-    if not any(
-        marker in version_text for marker in ("harmonyos-6.0.0-api20", "6.0.0(20)")
-    ):
+    sdk_discovery, sdk_root = discover_openharmony_sdk_metadata(policy.harmony_sdk_root)
+    discovery.extend(sdk_discovery)
+    if sdk_root is None:
         return profile_result(
             profile,
             "FAILED",
-            "HVIGOR_SDK_VERSION_DRIFT",
+            "OPENHARMONY_SDK_METADATA_DRIFT",
             [version],
             [],
             workspace,
@@ -10866,6 +11034,10 @@ def execute_harmony_profile(
             tool_discovery=discovery,
         )
     commands: list[dict[str, Any]] = []
+    harmony_environment = {
+        **base_environment,
+        "OHOS_BASE_SDK_HOME": str(sdk_root.parent),
+    }
     for args, reason in (
         (["clean", "--no-daemon"], "HVIGOR_CLEAN_FAILED"),
         (
@@ -10887,7 +11059,7 @@ def execute_harmony_profile(
             cwd=workspace,
             timeout_seconds=policy.timeout_seconds,
             no_network=policy.no_network,
-            explicit_env={"CI": "1", "NO_COLOR": "1"},
+            explicit_env=harmony_environment,
         )
         commands.append(record)
         if record["status"] != "PASSED":
@@ -10942,20 +11114,21 @@ def discover_hvigor_candidates(
     raw_candidates: list[tuple[str, Path]] = []
     if configured:
         raw_candidates.append(("CLI_CONFIGURED", Path(configured)))
-    raw_candidates.append(("PROJECT_WRAPPER", workspace / "hvigorw"))
-    for command in ("hvigorw", "hvigor"):
-        resolved = shutil.which(command)
-        if resolved:
-            raw_candidates.append(("PATH", Path(resolved)))
-    for application in ("DevEco-Studio.app", "DevEco Studio.app"):
-        raw_candidates.append(
-            (
-                "DEVECO_STANDARD_LOCATION",
-                Path("/Applications")
-                / application
-                / "Contents/tools/hvigor/bin/hvigorw",
+    else:
+        raw_candidates.append(("PROJECT_WRAPPER", workspace / "hvigorw"))
+        for command in ("hvigorw", "hvigor"):
+            resolved = shutil.which(command)
+            if resolved:
+                raw_candidates.append(("PATH", Path(resolved)))
+        for application in ("DevEco-Studio.app", "DevEco Studio.app"):
+            raw_candidates.append(
+                (
+                    "DEVECO_STANDARD_LOCATION",
+                    Path("/Applications")
+                    / application
+                    / "Contents/tools/hvigor/bin/hvigorw",
+                )
             )
-        )
     rows: list[dict[str, Any]] = []
     seen: set[str] = set()
     selected: str | None = None
@@ -11122,6 +11295,31 @@ def profile_result(
     }
 
 
+def _make_staged_workspace_writable(workspace: Path) -> None:
+    """Restore owner-write on the staged copy of a frozen profile project.
+
+    Campaign profile trees are published read-only (mode 0555) so the evidence
+    they carry cannot be edited in place, and `shutil.copytree` preserves those
+    modes -- so the *staged copy* is read-only too.  Every build tool writes
+    inside its own project directory: `hvigorw` unconditionally creates
+    `.hvigor/outputs/build-logs`, gets EACCES, and because its wrapper's
+    recursive `mkdir` has no failure branch the error surfaces as
+    `RangeError: Maximum call stack size exceeded`.  The runner then records
+    `HVIGOR_VERSION_COMMAND_FAILED` and every Harmony route fails before a
+    single build runs.
+
+    Only this disposable temporary is relaxed; `profile.project_path` and the
+    published campaign remain read-only, so nothing that carries evidence
+    becomes writable.
+    """
+
+    for directory, _, files in os.walk(workspace):
+        os.chmod(directory, os.stat(directory).st_mode | stat.S_IWUSR)
+        for name in files:
+            path = os.path.join(directory, name)
+            os.chmod(path, os.stat(path).st_mode | stat.S_IWUSR)
+
+
 def execute_campaign(campaign: LoadedCampaign, policy: RunnerPolicy) -> dict[str, Any]:
     producer_bytes = RUNNER_PATH.read_bytes()
     actual_producer_digest = sha256_bytes(producer_bytes)
@@ -11219,6 +11417,7 @@ def execute_campaign(campaign: LoadedCampaign, policy: RunnerPolicy) -> dict[str
             ) as profile_temporary:
                 workspace = Path(profile_temporary) / "project"
                 shutil.copytree(profile.project_path, workspace, symlinks=False)
+                _make_staged_workspace_writable(workspace)
                 kind = EXPECTED_PROFILES[profile_id]["kind"]
                 if kind == "node":
                     result = execute_node_profile(profile, workspace, policy)
@@ -11373,6 +11572,17 @@ def execute_campaign(campaign: LoadedCampaign, policy: RunnerPolicy) -> dict[str
             "android_device_id": policy.android_device_id,
             "ios_simulator_udid": policy.ios_simulator_udid,
             "harmony_device_id": policy.harmony_device_id,
+            "harmony_sdk_root": (
+                str(policy.harmony_sdk_root)
+                if policy.harmony_sdk_root is not None
+                else str(
+                    Path.home()
+                    / "Library"
+                    / "OpenHarmony"
+                    / "Sdk"
+                    / OPENHARMONY_SDK_API_VERSION
+                )
+            ),
             "selected_profiles": sorted(policy.selected_profiles),
             "fail_on_unavailable": policy.fail_on_unavailable,
             "profile_build_deduplication": "project-content-digest",
@@ -11747,6 +11957,7 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--flutter-chromedriver-path")
     value.add_argument("--flutter-cft-acquisition-record", type=Path)
     value.add_argument("--harmony-tool")
+    value.add_argument("--harmony-sdk-root", type=Path)
     value.add_argument("--android-device-id")
     value.add_argument("--ios-simulator-udid")
     value.add_argument("--harmony-device-id")
@@ -11782,6 +11993,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             flutter_chromedriver_path=arguments.flutter_chromedriver_path,
             flutter_cft_acquisition_record=arguments.flutter_cft_acquisition_record,
             harmony_tool=arguments.harmony_tool,
+            harmony_sdk_root=arguments.harmony_sdk_root,
             android_device_id=arguments.android_device_id,
             ios_simulator_udid=arguments.ios_simulator_udid,
             harmony_device_id=arguments.harmony_device_id,
@@ -11830,6 +12042,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             *(["--fail-on-unavailable"] if policy.fail_on_unavailable else []),
             *(["--harmony-tool", policy.harmony_tool] if policy.harmony_tool else []),
+            *(
+                ["--harmony-sdk-root", str(policy.harmony_sdk_root)]
+                if policy.harmony_sdk_root is not None
+                else []
+            ),
             *(
                 ["--android-device-id", policy.android_device_id]
                 if policy.android_device_id

@@ -542,8 +542,14 @@ def execute(repo: Path) -> Path:
         "synthetic_holdout_execution": "PASSED_LOCAL",
         "synthetic_representative_execution": "PASSED_LOCAL",
         "authorized_customer_repository": "NOT_RUN",
+        "customer_holdout": "NOT_RUN",
+        "customer_acceptance": "NOT_RUN",
         "rootless_runner": "NOT_RUN",
+        "rootless_transformer": "NOT_RUN",
+        "rootless_verifier": "NOT_RUN",
         "independent_verification": "NOT_RUN",
+        "independent_review": "NOT_RUN",
+        "external_certification": "NOT_RUN",
     }
     write_json(local_evidence / "local-reference-evidence.json", evidence)
     metrics = {
@@ -599,10 +605,12 @@ def execute(repo: Path) -> Path:
         "github_app_private_repository": "NOT_RUN",
         "authorized_customer_repository": "NOT_RUN",
         "customer_holdout": "NOT_RUN",
+        "customer_acceptance": "NOT_RUN",
         "rootless_transformer": "NOT_RUN",
         "rootless_verifier": "NOT_RUN",
         "rootless_runner": "NOT_RUN",
         "independent_review": "NOT_RUN",
+        "external_certification": "NOT_RUN",
     }
     write_json(
         local_evidence / "certification.json",

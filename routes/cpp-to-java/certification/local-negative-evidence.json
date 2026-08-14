@@ -7,6 +7,7 @@
         {
           "bytes": 41,
           "path": "corpus/negative/cpp_long_width.cpp",
+          "role": "source",
           "sha256": "sha256:7786438be7a70c9750e9ee05bf7b6be213d1d1948e3974f02c0c4c53a5042086"
         }
       ],
@@ -22,6 +23,7 @@
         {
           "bytes": 78,
           "path": "corpus/negative/cpp_unsigned_domain.cpp",
+          "role": "source",
           "sha256": "sha256:43072a2d2e51ddf460e29fdf06e122923b510916d86ca9ba412730afdfcc5a7c"
         }
       ],
@@ -37,6 +39,7 @@
         {
           "bytes": 93,
           "path": "corpus/negative/JavaIntWidth.java",
+          "role": "source",
           "sha256": "sha256:f6aef03d647cb80cf77631221095a6abc06be15f51e7c52d8e7728b12b97de17"
         }
       ],
@@ -52,6 +55,7 @@
         {
           "bytes": 126,
           "path": "corpus/negative/JavaStringIdentity.java",
+          "role": "source",
           "sha256": "sha256:bb61fecbd978d47907a8b5ed25aef40f49f6be930fcbbbb71e142a83d38651a4"
         }
       ],
@@ -67,16 +71,18 @@
         {
           "bytes": 150,
           "path": "corpus/development/pricing.cpp",
+          "role": "source",
           "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
         },
         {
           "bytes": 205,
           "path": "corpus/development/cases.json",
+          "role": "cases",
           "sha256": "sha256:609a504b37cb7cc2c442714cb114447c7d979c16b172f99773790f952007d517"
         }
       ],
       "native_analysis": "EXECUTED",
-      "observed_reason": "FUNCTION_NOT_FOUND",
+      "observed_reason": "FUNCTION_NOT_FOUND:__elmos_missing_function__",
       "status": "PASSED",
       "target_execution": "NOT_REACHED_BY_DESIGN"
     },
@@ -87,11 +93,13 @@
         {
           "bytes": 50,
           "path": "corpus/holdout/echo_number.cpp",
+          "role": "source",
           "sha256": "sha256:0c81943e3ce45f1df9df4c45dab0c8e5fccb1f9a4a10c4268305c964e867afc5"
         },
         {
           "bytes": 34,
           "path": "corpus/negative/non_finite_number_cases.json",
+          "role": "cases",
           "sha256": "sha256:9f3d71e43aeb4837030e6822cd00d5911d7c72f1cfc3e39890c9b01469d07bf3"
         }
       ],
@@ -107,11 +115,13 @@
         {
           "bytes": 69,
           "path": "corpus/negative/number_arithmetic.cpp",
+          "role": "source",
           "sha256": "sha256:08d82442539c74e1ded804614885e2bb4e4f5a1f047dd886f25e36ae11ce356f"
         },
         {
           "bytes": 76,
           "path": "corpus/negative/number_arithmetic_cases.json",
+          "role": "cases",
           "sha256": "sha256:00b7757f97d39f8086ee0acd468d4bc6b4414a6d4b2ea13920a12afce65d97bb"
         }
       ],
@@ -127,11 +137,13 @@
         {
           "bytes": 150,
           "path": "corpus/development/pricing.cpp",
+          "role": "source",
           "sha256": "sha256:630a822817dd4b598f279c1cc1906c50c80f2254ce60b71fcc2f222062a9bb87"
         },
         {
           "bytes": 105,
           "path": "corpus/negative/canonical_overflow_cases.json",
+          "role": "cases",
           "sha256": "sha256:6dd10f31cb2b35dafc946829946524222c3b0ebdf64c8f69ec89ccb9391c2dd5"
         }
       ],
@@ -147,16 +159,18 @@
         {
           "bytes": 105,
           "path": "corpus/negative/canonical_string_equality.cpp",
+          "role": "source",
           "sha256": "sha256:0939cca5352a8dd1004348af7e52040606b93e86339abb3f41b97e6ce6fb2978"
         },
         {
           "bytes": 237,
           "path": "corpus/negative/canonical_string_cases.json",
+          "role": "cases",
           "sha256": "sha256:93ac4c8504a0448730f4d38494782dc2eec43a8f26e3f32870809fd233062731"
         }
       ],
       "native_analysis": "EXECUTED",
-      "observed_reason": "SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:cpp-to-java",
+      "observed_reason": "SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:cpp-to-java:same",
       "status": "PASSED",
       "target_execution": "NOT_REACHED_BY_DESIGN"
     },
@@ -165,18 +179,20 @@
       "expected_result": "BLOCKED",
       "input_refs": [
         {
-          "bytes": 920,
-          "path": "corpus/negative/undeclared_java_to_swift.java",
-          "sha256": "sha256:b54faf7057e987b6e02b2c26825d7fe8bff5e86560f99acd608d79debf29e211"
+          "bytes": 884,
+          "path": "corpus/negative/undeclared_java_to_java.java",
+          "role": "source-module",
+          "sha256": "sha256:5334a7a6c9bc252b66e3cedd3dc66f70b97071c71932376c68c43f767a863163"
         },
         {
           "bytes": 2794,
-          "path": "corpus/negative/undeclared_java_to_swift_cases.json",
+          "path": "corpus/negative/undeclared_java_to_java_cases.json",
+          "role": "case-manifest",
           "sha256": "sha256:1ee07c7b0cffbc1919fa0749026741081e2b972fcc65a439c349fd698f299112"
         }
       ],
       "native_analysis": "EXECUTED",
-      "observed_reason": "UNSUPPORTED_DIRECTED_ROUTE:java-to-swift",
+      "observed_reason": "SOURCE_AND_TARGET_MUST_DIFFER",
       "status": "PASSED",
       "target_execution": "NOT_REACHED_BY_DESIGN"
     }

@@ -4,7 +4,6 @@ import base64
 import hashlib
 import json
 import math
-import os
 import re
 import struct
 import subprocess
@@ -14,23 +13,42 @@ from typing import Any
 
 from .emitter import EmittedFile
 from .models import Function, Language, RouteError
-from .toolchains import ExactToolchain, exact_toolchain
+from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 
 
-def _run(command: list[str], cwd: Path, *, timeout: int = 180) -> subprocess.CompletedProcess[str]:
-    environment = os.environ.copy()
-    environment["NO_COLOR"] = "1"
-    completed = subprocess.run(
-        command,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=environment,
-    )
+def _run(
+    command: list[str],
+    cwd: Path,
+    *,
+    timeout: int = 180,
+    executable_dirs: tuple[Path, ...] = (),
+) -> subprocess.CompletedProcess[str]:
+    executable = Path(command[0])
+    executable = executable if executable.is_absolute() else (cwd / executable)
+    try:
+        with tempfile.TemporaryDirectory(prefix="elmos-validation-process-") as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            scratch = root / "tmp"
+            home.mkdir(mode=0o700)
+            scratch.mkdir(mode=0o700)
+            completed = subprocess.run(
+                command,
+                cwd=cwd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                env=sanitized_subprocess_env(
+                    home=home,
+                    temp_dir=scratch,
+                    executable_dirs=(executable.resolve().parent, *executable_dirs),
+                ),
+            )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RouteError(f"TARGET_VALIDATION_FAILED:{command[0]}:process") from error
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-4_000:]
         raise RouteError(f"TARGET_VALIDATION_FAILED:{command[0]}:{detail}")
@@ -54,8 +72,22 @@ def _toolchain_evidence(toolchain: ExactToolchain) -> dict[str, Any]:
         "version": toolchain.version,
         "executable": toolchain.executable,
         "executable_sha256": toolchain.executable_sha256,
+        "auxiliary": toolchain.auxiliary,
+        "auxiliary_sha256": toolchain.auxiliary_sha256,
         "profile": list(toolchain.profile),
     }
+
+
+def _toolchain_executable_dirs(toolchain: ExactToolchain) -> tuple[Path, ...]:
+    """Return only directories belonging to the exact selected toolchain.
+
+    Some pinned compiler launchers (notably pnpm's ``tsc`` wrapper) dispatch
+    to another pinned executable.  Validation still uses a minimal subprocess
+    environment, but both exact launchers must be reachable there.
+    """
+
+    paths = (toolchain.executable, toolchain.auxiliary)
+    return tuple(Path(path).resolve().parent for path in paths if path is not None)
 
 
 def _argument(value: object, language: Language) -> str:
@@ -919,8 +951,9 @@ def validate_source(
         raise RouteError(f"SOURCE_RUNTIME_UNSUPPORTED:{language}")
     logs: list[dict[str, Any]] = []
     runtime_stdout = ""
+    executable_dirs = _toolchain_executable_dirs(toolchain)
     for index, command in enumerate(commands):
-        completed = _run(command, output)
+        completed = _run(command, output, executable_dirs=executable_dirs)
         logs.append(
             {
                 "command": command,
@@ -1088,8 +1121,9 @@ def validate(
         ]
     logs = []
     runtime_stdout = ""
+    executable_dirs = _toolchain_executable_dirs(toolchain)
     for index, command in enumerate(commands):
-        completed = _run(command, output)
+        completed = _run(command, output, executable_dirs=executable_dirs)
         logs.append({"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]})
         if index == len(commands) - 1:
             runtime_stdout = completed.stdout

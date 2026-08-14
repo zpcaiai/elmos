@@ -107,6 +107,54 @@ test("every core target generates deterministic project and configuration files"
   }
 });
 
+test("ArkUI generation emits a complete API-20 OpenHarmony hvigor project", () => {
+  const profile = uiTargetProfiles().find(value => value.id === "harmony-arkui");
+  assert.ok(profile);
+  assert.ok(profile.requiredProjectFiles.includes("hvigor/hvigor-config.json5"));
+  const files = generateUiProject(request("harmony-arkui")).files;
+  assert.deepEqual(JSON.parse(files["hvigor/hvigor-config.json5"]!), {
+    modelVersion: "5.0.0",
+    dependencies: {},
+    execution: {},
+    logging: {},
+    debugging: {},
+    nodeOptions: {},
+  });
+  assert.equal(JSON.parse(files["oh-package.json5"]!).modelVersion, "5.0.0");
+  const product = JSON.parse(files["build-profile.json5"]!).app.products[0];
+  assert.deepEqual(
+    {
+      compileSdkVersion: product.compileSdkVersion,
+      compatibleSdkVersion: product.compatibleSdkVersion,
+      targetSdkVersion: product.targetSdkVersion,
+      runtimeOS: product.runtimeOS,
+    },
+    {
+      compileSdkVersion: 20,
+      compatibleSdkVersion: 20,
+      targetSdkVersion: 20,
+      runtimeOS: "OpenHarmony",
+    },
+  );
+  const module = JSON.parse(files["entry/src/main/module.json5"]!).module;
+  assert.deepEqual(module.deviceTypes, ["default"]);
+  assert.equal(module.abilities[0].startWindowIcon, "$media:app_icon");
+  assert.equal(
+    module.abilities[0].startWindowBackground,
+    "$color:start_window_background",
+  );
+  assert.deepEqual(
+    JSON.parse(files["entry/src/main/resources/base/element/color.json"]!),
+    { color: [{ name: "start_window_background", value: "#15223D" }] },
+  );
+  assert.ok("entry/src/main/ets/elmos-bounded-navigation.ts" in files);
+  assert.ok(!("entry/src/main/ets/elmos-bounded-navigation.ets" in files));
+  assert.match(
+    files["entry/src/main/ets/pages/Index.ets"]!,
+    /ForEach\(GENERATED_ROUTES\.slice\(\)/,
+  );
+});
+
 test("Flutter widget test uses the unique bounded route contract without an unused app import", () => {
   const files = generateUiProject(request("flutter")).files;
   const widgetTest = files["test/widget_test.dart"]!;

@@ -3,59 +3,30 @@ from __future__ import annotations
 
 import argparse
 import json
-import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
+if __name__ == "__main__":
+    from fresh_route_runtime import run_in_fresh_locked_runtime
+
+    fresh_runtime_exit = run_in_fresh_locked_runtime(
+        Path(__file__), sys.argv[1:]
+    )
+    if fresh_runtime_exit is not None:
+        raise SystemExit(fresh_runtime_exit)
+
 from validate_route import (
-    sha256_file,
+    SWIFT_ANALYZER_RECEIPT_PATH,
+    _validate_specialized_native_runtime_replay,
+    main as validate_route_main,
     strict_evidence_requested,
     validate_formal_equivalence,
     validate_module_equivalence,
+    validate_specialized_negative_evidence,
 )
 from route_sets import EVIDENCED_ROUTE_KEYS, SPECIALIZED_ROUTE_KEYS, split_route_key
-
-
-SPECIALIZED_NEGATIVE_CASES = {
-    "java": {"java-int-width", "java-string-raw-reference-equality"},
-    "cpp": {"cpp-long-width", "cpp-unsigned-domain"},
-    "objc": {"objc-nsinteger-width", "objc-nsstring-pointer-identity"},
-    "swift": {"swift-int-requires-int64", "swift-helper-tamper"},
-}
-SPECIALIZED_COMMON_NEGATIVE_CASES = {
-    "specialized-string-semantics-unsupported",
-    "specialized-number-arithmetic-unsupported",
-    "specialized-non-finite-case-unsupported",
-    "specialized-overflow-outside-no-error-domain",
-    "undeclared-directed-route-fails-closed",
-    "missing-symbol-fails-closed",
-}
-SPECIALIZED_NEGATIVE_REASON_CODES = {
-    "java-int-width": {"JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"},
-    "java-string-raw-reference-equality": {
-        "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"
-    },
-    "cpp-long-width": {"CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:long"},
-    "cpp-unsigned-domain": {
-        "CPP_UNSUPPORTED_TYPE:unsigned long long",
-        "CPP_UNSIGNED",
-    },
-    "objc-nsinteger-width": {
-        "OBJC_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:NSInteger"
-    },
-    "objc-nsstring-pointer-identity": {
-        "OBJC_STRING_POINTER_COMPARISON_OUTSIDE_CERTIFIED_SUBSET"
-    },
-    "swift-int-requires-int64": {
-        "SWIFT_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:Int"
-    },
-    "swift-helper-tamper": {"EMITTED_HELPER_SOURCE_MISMATCH:swift"},
-    "undeclared-directed-route-fails-closed": {
-        "UNSUPPORTED_DIRECTED_ROUTE:java-to-swift"
-    },
-    "missing-symbol-fails-closed": {"FUNCTION_NOT_FOUND", "NO_SUPPORTED_FUNCTIONS"},
-}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -138,8 +109,27 @@ def validate_evidence_refs(
 
 
 def validate_negative_refs(
-    failures: list[str], route: Path, evidence: dict[str, Any]
+    failures: list[str],
+    route: Path,
+    evidence: dict[str, Any],
+    *,
+    replay_specialized: bool = True,
 ) -> None:
+    if route.name in SPECIALIZED_ROUTE_KEYS:
+        if replay_specialized:
+            try:
+                manifest = load(route / "route.json")
+            except Exception as exc:
+                failures.append(f"specialized negative route manifest is unreadable: {exc}")
+                return
+            validate_specialized_negative_evidence(
+                route,
+                manifest,
+                evidence,
+                failures,
+            )
+        return
+
     references = evidence.get("negative_runs")
     if not isinstance(references, list) or not references:
         failures.append("negative evidence runs are empty")
@@ -156,95 +146,10 @@ def validate_negative_refs(
             failures.append(f"negative evidence did not fail closed: {reference}")
         if result.get("test_integrity") != "PRESERVED":
             failures.append(f"negative test integrity is invalid: {reference}")
-        if route.name not in SPECIALIZED_ROUTE_KEYS:
-            continue
-        source, target = split_route_key(route.name)
-        expected_case_ids = {
-            *SPECIALIZED_NEGATIVE_CASES[source],
-            *SPECIALIZED_NEGATIVE_CASES[target],
-            *SPECIALIZED_COMMON_NEGATIVE_CASES,
-        }
-        cases = result.get("cases")
-        if not isinstance(cases, list):
-            failures.append(f"specialized negative cases are missing: {reference}")
-            continue
-        observed_case_ids = {
-            item.get("case_id") for item in cases if isinstance(item, dict)
-        }
-        if len(cases) != len(expected_case_ids) or observed_case_ids != expected_case_ids:
-            failures.append(f"specialized negative case set is not exact: {reference}")
-        for index, item in enumerate(cases):
-            if not isinstance(item, dict):
-                failures.append(f"specialized negative case is invalid: {reference}:{index}")
-                continue
-            if (
-                item.get("status") != "PASSED"
-                or item.get("expected_result") != "BLOCKED"
-                or not isinstance(item.get("observed_reason"), str)
-                or not item.get("observed_reason")
-            ):
-                failures.append(
-                    f"specialized negative case did not fail closed: {reference}:{index}"
-                )
-            case_id = item.get("case_id")
-            route_specific_codes = {
-                "specialized-string-semantics-unsupported": {
-                    f"SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:{route.name}"
-                },
-                "specialized-number-arithmetic-unsupported": {
-                    f"SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:{route.name}:addNumber"
-                },
-                "specialized-non-finite-case-unsupported": {
-                    "SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:"
-                    f"{route.name}:echoNumber:0"
-                },
-                "specialized-overflow-outside-no-error-domain": {
-                    "SPECIALIZED_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN:"
-                    f"{route.name}:calculate:0:IntegerOverflow"
-                },
-            }
-            expected_codes = route_specific_codes.get(
-                case_id, SPECIALIZED_NEGATIVE_REASON_CODES.get(case_id, set())
-            )
-            if item.get("observed_reason") not in expected_codes:
-                failures.append(
-                    f"specialized negative reason code is not exact: {reference}:{index}"
-                )
-            input_refs = item.get("input_refs")
-            if not isinstance(input_refs, list) or not input_refs:
-                failures.append(
-                    f"specialized negative case has no byte-bound input: {reference}:{index}"
-                )
-                continue
-            for input_index, input_ref in enumerate(input_refs):
-                if not isinstance(input_ref, dict):
-                    failures.append(
-                        f"specialized negative input is invalid: {reference}:{index}:{input_index}"
-                    )
-                    continue
-                relative = input_ref.get("path")
-                if (
-                    not isinstance(relative, str)
-                    or Path(relative).is_absolute()
-                    or ".." in Path(relative).parts
-                ):
-                    failures.append(
-                        f"specialized negative input path is unsafe: {reference}:{index}:{input_index}"
-                    )
-                    continue
-                path = route / relative
-                if (
-                    not path.is_file()
-                    or path.is_symlink()
-                    or input_ref.get("sha256") != sha256_file(path)
-                    or input_ref.get("bytes") != path.stat().st_size
-                ):
-                    failures.append(
-                        f"specialized negative input digest drift: {reference}:{index}:{input_index}"
-                    )
 
 
 def main() -> int:
+    started = time.monotonic()
     parser = argparse.ArgumentParser()
     parser.add_argument("route_dir")
     args = parser.parse_args()
@@ -262,6 +167,7 @@ def main() -> int:
         print("GATE FAIL: route_key is outside the explicit allowlist", file=sys.stderr)
         return 2
     source, target = split_route_key(str(route_key))
+    specialized = route_key in SPECIALIZED_ROUTE_KEYS
     if (
         manifest.get("source", {}).get("language") != source
         or manifest.get("target", {}).get("language") != target
@@ -269,9 +175,14 @@ def main() -> int:
         print("GATE FAIL: route source/target tuple does not match route_key", file=sys.stderr)
         return 2
     validator = Path(__file__).with_name("validate_route.py")
-    if subprocess.run(
-        [sys.executable, str(validator), str(route)], check=False
-    ).returncode:
+    original_argv = sys.argv[:]
+    try:
+        sys.argv = [str(validator), str(route)]
+        validator_status = validate_route_main()
+    finally:
+        sys.argv = original_argv
+    if validator_status:
+        print(f"GATE WALL: {time.monotonic() - started:.3f}s", file=sys.stderr)
         return 1
 
     evidence = load(route / "certification" / "evidence.json")
@@ -281,7 +192,7 @@ def main() -> int:
     certification_status = str(certification.get("status", "")).lower()
     failures: list[str] = []
 
-    if route_key in SPECIALIZED_ROUTE_KEYS:
+    if specialized:
         profiles = manifest.get("profiles", {})
         gates = manifest.get("gates", {})
         if profiles.get("input_domain") != "canonical-finite-no-error-input-domain":
@@ -383,7 +294,12 @@ def main() -> int:
         validate_independent_corpus(failures, route, "holdout")
         validate_independent_corpus(failures, route, "real-repository")
         validate_evidence_refs(failures, route, evidence)
-        validate_negative_refs(failures, route, evidence)
+        validate_negative_refs(
+            failures,
+            route,
+            evidence,
+            replay_specialized=False,
+        )
 
     strict_requested = strict_evidence_requested(certification)
     if strict_requested:
@@ -391,6 +307,12 @@ def main() -> int:
             route, manifest, certification
         )
         failures.extend(strict_failures)
+        if specialized:
+            _validate_specialized_native_runtime_replay(
+                route,
+                manifest,
+                failures,
+            )
         if formal_equivalence is None:
             failures.append("strict formal-equivalence evidence is missing")
         else:
@@ -490,6 +412,127 @@ def main() -> int:
                 failures.append(
                     "certified module route requires unconditional PROVED evidence for every function"
                 )
+            contract = module_equivalence.get("module_contract")
+            if not isinstance(contract, dict):
+                failures.append("module whole-file contract is missing")
+            else:
+                for field in (
+                    "exact_profile_symbol_set",
+                    "exact_generated_helper_symbol_set",
+                    "exact_profile_signature_set",
+                ):
+                    if contract.get(field) is not True:
+                        failures.append(f"module contract {field} is not true")
+                if not isinstance(
+                    contract.get("whole_file_closure_sha256"), str
+                ):
+                    failures.append("module whole-file closure digest is missing")
+            whole_file = module_equivalence.get("whole_file_closure")
+            if not isinstance(whole_file, dict):
+                failures.append("module whole-file closure is missing")
+            else:
+                if whole_file.get("status") != "PASSED":
+                    failures.append("module whole-file closure did not pass")
+                if whole_file.get("blocked_declarations") != {
+                    "source": [],
+                    "target": [],
+                }:
+                    failures.append("module whole-file closure has blocked declarations")
+                if whole_file.get("source_user_call_graph") != {
+                    "edges": [],
+                    "status": "EMPTY_AND_CLOSED",
+                }:
+                    failures.append("module source call graph is not empty and closed")
+                target_graph = whole_file.get("target_call_graph")
+                if not isinstance(target_graph, dict) or (
+                    target_graph.get("status")
+                    != "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+                    or target_graph.get("scope")
+                    != "profile-functions-to-emitted-callees"
+                    or target_graph.get("helper_internal_calls")
+                    != {
+                        "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+                        "binding": (
+                            "verified_generated_helpers-exact-bytes-and-digests"
+                        ),
+                    }
+                ):
+                    failures.append("module target call graph closure is invalid")
+                for field in (
+                    "verified_language_prelude",
+                    "verified_language_wrapper",
+                ):
+                    boundary = whole_file.get(field)
+                    if (
+                        not isinstance(boundary, dict)
+                        or set(boundary) != {"source", "target"}
+                        or contract.get(field) != boundary
+                    ):
+                        failures.append(
+                            f"module {field} is missing or detached from module contract"
+                        )
+                independence = (
+                    contract.get("independence")
+                    if isinstance(contract, dict)
+                    else None
+                )
+                if not isinstance(independence, dict) or independence.get(
+                    "target_call_graph"
+                ) != target_graph:
+                    failures.append(
+                        "module target call graph is detached from module contract"
+                    )
+                composition = module_equivalence.get("composition")
+                if not isinstance(composition, dict) or (
+                    composition.get(
+                        "target_profile_to_emitted_call_graph_status"
+                    )
+                    != "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+                    or composition.get(
+                        "target_profile_to_emitted_call_graph_scope"
+                    )
+                    != "profile-functions-to-emitted-callees"
+                ):
+                    failures.append("module target profile call graph claim drift")
+
+    if specialized and formal_equivalence is not None and module_equivalence is not None:
+        formal_receipts = [
+            item
+            for item in formal_equivalence.get("artifact_refs", [])
+            if isinstance(item, dict)
+            and item.get("role") == "swift-analyzer-build-receipt"
+        ]
+        module_receipts = [
+            item
+            for item in module_equivalence.get("artifact_refs", [])
+            if isinstance(item, dict)
+            and item.get("role") == "swift-analyzer-build-receipt"
+        ]
+        swift_required = "swift" in {
+            manifest.get("source", {}).get("language"),
+            manifest.get("target", {}).get("language"),
+        }
+        if swift_required:
+            if len(formal_receipts) != 1 or len(module_receipts) != 1:
+                failures.append(
+                    "Swift route must bind exactly one shared analyzer build receipt in function and module evidence"
+                )
+            elif (
+                formal_receipts[0].get("path") != SWIFT_ANALYZER_RECEIPT_PATH
+                or {
+                    key: formal_receipts[0].get(key)
+                    for key in ("path", "sha256", "bytes")
+                }
+                != {
+                    key: module_receipts[0].get(key)
+                    for key in ("path", "sha256", "bytes")
+                }
+            ):
+                failures.append(
+                    "Swift function/module analyzer build receipt binding differs"
+                )
+        elif formal_receipts or module_receipts:
+            failures.append("non-Swift specialized route cannot bind a Swift analyzer receipt")
 
     gate_results = certification.get("gate_results", {})
     if status == "limited":
@@ -525,9 +568,13 @@ def main() -> int:
             "\n".join(f"GATE FAIL: {failure}" for failure in failures),
             file=sys.stderr,
         )
+        print(f"GATE WALL: {time.monotonic() - started:.3f}s", file=sys.stderr)
         return 2
     decision = "NOT_CERTIFIED" if status != "certified" else "CERTIFIED"
-    print(f"GATE PASS: {manifest.get('route_key')} status={status} decision={decision}")
+    print(
+        f"GATE PASS: {manifest.get('route_key')} status={status} "
+        f"decision={decision} wall_seconds={time.monotonic() - started:.3f}"
+    )
     return 0
 
 

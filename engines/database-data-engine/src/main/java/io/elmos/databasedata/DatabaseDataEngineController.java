@@ -1,8 +1,12 @@
 package io.elmos.databasedata;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.elmos.engine.api.EngineApi;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +23,14 @@ import java.util.Map;
 @RequestMapping("/engine/v1")
 public final class DatabaseDataEngineController {
     private final DatabaseDataEngineService engine;
+    private final ChinaDbSqlPreflightGateway sqlPreflight;
 
-    public DatabaseDataEngineController(DatabaseDataEngineService engine) {
+    public DatabaseDataEngineController(
+            DatabaseDataEngineService engine,
+            ChinaDbSqlPreflightGateway sqlPreflight
+    ) {
         this.engine = engine;
+        this.sqlPreflight = sqlPreflight;
     }
 
     @GetMapping("/capabilities")
@@ -61,6 +70,33 @@ public final class DatabaseDataEngineController {
     @PostMapping("/jobs/{jobId}/cancel")
     public EngineApi.JobResponse cancel(@RequestParam String organizationId, @PathVariable String jobId) {
         return engine.cancel(organizationId, jobId);
+    }
+
+    @GetMapping(value = "/sql-preflight/capabilities", produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonNode sqlPreflightCapabilities() {
+        return sqlPreflight.capabilities();
+    }
+
+    @PostMapping(
+            value = "/sql-preflight/assess",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public JsonNode assessSql(
+            @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
+            @RequestHeader("X-ELMOS-Actor-ID") String actorId,
+            @RequestBody byte[] request
+    ) {
+        return sqlPreflight.assess(request, organizationId, actorId);
+    }
+
+    @ExceptionHandler(ChinaDbSqlPreflightFailure.class)
+    ResponseEntity<Map<String, Object>> sqlPreflightFailure(ChinaDbSqlPreflightFailure error) {
+        return ResponseEntity.status(error.status()).body(Map.of(
+                "status", "BLOCKED",
+                "errorCode", error.errorCode(),
+                "message", error.safeMessage(),
+                "retryable", error.retryable(),
+                "certification", "NOT_CERTIFIED"));
     }
 
     @ExceptionHandler(EngineApi.JobNotFoundException.class)

@@ -11,9 +11,9 @@
     "certification/artifacts/module/artifact-manifest.json"
   ],
   "formal_equivalence": {
-    "bytes": 58216,
+    "bytes": 58578,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:bb21763a63d01220465e04d6dfc95424e9f50b78e77c18e994625d1dc4b0ca52"
+    "sha256": "sha256:a067ad440464140f3a3c446a329293c0515ead83ac887aaa6482a6d891126892"
   },
   "gate_results": {
     "external_execution": "NOT_RUN",
@@ -21,7 +21,7 @@
     "local_execution": "PASSED",
     "module_execution": "PASSED"
   },
-  "issued_at": "2026-08-09T09:19:59.032367+00:00",
+  "issued_at": "2026-08-10T00:07:06.174155+00:00",
   "metrics": {
     "build_green_rate": 1.0,
     "cost_per_verified_workload": 0,
@@ -31,9 +31,9 @@
     "source_map_coverage": 1.0
   },
   "module_equivalence": {
-    "bytes": 162710,
+    "bytes": 192115,
     "path": "certification/module-equivalence.json",
-    "sha256": "sha256:33bfa2f5033ac8e3d6c2d8a0660a68b1fd18922fab8c869326a2cf5e8f154d68"
+    "sha256": "sha256:50c0d19b26396bba355b23bfacf09d6d4ff31999b40fc7235d88470c4729d52d"
   },
   "next_review_at": "2026-10-26T00:00:00+00:00",
   "route_key": "cpp-to-java",

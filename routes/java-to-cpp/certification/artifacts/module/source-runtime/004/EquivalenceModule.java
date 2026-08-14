@@ -1,6 +1,4 @@
 public final class EquivalenceModule {
-    private EquivalenceModule() {}
-
     public static long calculate(long subtotal, long tax) {
         if (subtotal < 0L) {
             return 0L;

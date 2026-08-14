@@ -49,6 +49,19 @@ def test_typed_transpilation_parses_emits_and_reparses_without_runtime_claims() 
     assert result.statements[0].source_ast
     assert result.statements[0].target_ast
     assert result.metadata["silentFallbackUsed"] is False
+    adapter = result.metadata["targetAdapter"]
+    assert adapter["adapterId"] == "core.mysql-8.4.10-lts.sqlglot-target-adapter"
+    assert adapter["protocolVersion"] == "1.0"
+    assert adapter["targetProfileId"] == "mysql-8.4.10-lts"
+    assert adapter["adapterDigest"].startswith("sha256:")
+    assert result.metadata["ruleTrace"]
+    assert result.metadata["ruleTraceDigest"].startswith("sha256:")
+    assert any(
+        trace["ruleId"] == "core.sqlglot-target-emitter"
+        and trace["outputDigest"].startswith("sha256:")
+        and trace["ruleDigest"].startswith("sha256:")
+        for trace in result.metadata["ruleTrace"]
+    )
 
 
 def test_positional_group_and_order_references_are_normalized_in_typed_ast() -> None:
@@ -74,6 +87,7 @@ def test_positional_group_and_order_references_are_normalized_in_typed_ast() -> 
     ("source", "target", "sql"),
     [
         ("postgresql-18.4", "mysql-8.4.10-lts", "SELECT * FROM"),
+        ("postgresql-18.4", "mysql-8.4.10-lts", "SELECT 'unterminated"),
         (
             "mysql-8.4.10-lts",
             "sqlite-3.53.3",
