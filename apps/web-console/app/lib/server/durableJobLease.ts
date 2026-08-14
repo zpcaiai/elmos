@@ -83,6 +83,15 @@ export type DurableLeaseConfiguration = {
   leaseTtlMs: number;
 };
 
+export type DurableJobLeaseObservation = {
+  active: boolean;
+  ownerId?: string;
+  acquiredAt?: string;
+  heartbeatAt?: string;
+  expiresAt?: string;
+  inputDigestMatches?: boolean;
+};
+
 function assertConfiguration(configuration: DurableLeaseConfiguration) {
   if (!path.isAbsolute(configuration.root)
     || path.resolve(configuration.root) === path.parse(configuration.root).root
@@ -539,6 +548,34 @@ export class DurableJobLease implements AsyncDisposable {
     return new DurableJobLease(
       configuration, tenantDigest, input.jobId, input.inputDigest, ownerId,
     );
+  }
+
+  static async observe(input: {
+    configuration: DurableLeaseConfiguration;
+    tenantId: string;
+    jobId: string;
+    inputDigest: string;
+  }): Promise<DurableJobLeaseObservation> {
+    const configuration = { ...input.configuration, root: path.resolve(input.configuration.root) };
+    assertConfiguration(configuration);
+    if (!jobIdPattern.test(input.jobId) || !digestPattern.test(input.inputDigest)) {
+      throw new Error("DURABLE_QUEUE_JOB_IDENTITY_INVALID");
+    }
+    const tenantDigest = digest(input.tenantId);
+    return withDurableQueueControlLock(configuration, async () => {
+      const lease = (await activeLeases(configuration)).find((candidate) => (
+        candidate.jobId === input.jobId && candidate.tenantDigest === tenantDigest
+      ));
+      if (!lease) return { active: false };
+      return {
+        active: true,
+        ownerId: lease.ownerId,
+        acquiredAt: lease.acquiredAt,
+        heartbeatAt: lease.heartbeatAt,
+        expiresAt: lease.expiresAt,
+        inputDigestMatches: lease.inputDigest === input.inputDigest,
+      };
+    });
   }
 
   get heartbeatIntervalMs(): number {

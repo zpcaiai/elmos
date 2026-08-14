@@ -13,9 +13,7 @@ from elmos_polyglot_route.models import RouteError
         "go version go1.25.0 linux/amd64",
     ],
 )
-def test_go_accepts_only_declared_exact_ci_platform_tuples(
-    monkeypatch: pytest.MonkeyPatch, observed: str
-) -> None:
+def test_go_accepts_only_declared_exact_ci_platform_tuples(monkeypatch: pytest.MonkeyPatch, observed: str) -> None:
     monkeypatch.setattr(toolchains.shutil, "which", lambda name: "/usr/local/bin/go")
     monkeypatch.setattr(toolchains, "_output", lambda command: observed)
 
@@ -33,11 +31,32 @@ def test_go_accepts_only_declared_exact_ci_platform_tuples(
         "go1.25.0",
     ],
 )
-def test_go_rejects_version_platform_and_output_drift(
-    monkeypatch: pytest.MonkeyPatch, observed: str
-) -> None:
+def test_go_rejects_version_platform_and_output_drift(monkeypatch: pytest.MonkeyPatch, observed: str) -> None:
     monkeypatch.setattr(toolchains.shutil, "which", lambda name: "/usr/local/bin/go")
     monkeypatch.setattr(toolchains, "_output", lambda command: observed)
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_MISMATCH:go"):
         toolchains._go()
+
+
+def test_exact_toolchain_probes_once_per_environment_and_binary_fingerprint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    toolchains.clear_exact_toolchain_cache()
+    calls = 0
+
+    def selected() -> toolchains.ExactToolchain:
+        nonlocal calls
+        calls += 1
+        return toolchains.ExactToolchain("typescript", "test", "/bin/node", "/bin/tsc")
+
+    monkeypatch.setattr(toolchains, "_typescript", selected)
+    first = toolchains.exact_toolchain("typescript")
+    second = toolchains.exact_toolchain("typescript")
+
+    assert first is second
+    assert calls == 1
+    monkeypatch.setenv("PATH", f"{toolchains.os.environ.get('PATH', '')}:/new-fingerprint")
+    toolchains.exact_toolchain("typescript")
+    assert calls == 2
+    toolchains.clear_exact_toolchain_cache()

@@ -56,8 +56,12 @@ The Web Console now provides a governed end-to-end path:
    provenance, SBOM, and generation/verification manifests.
 
 Project Generation imports selected files as untrusted requirements text.
-Translation materializes only digest-verified source, documentation,
-configuration, and test text below the configured read-only source root.
+Translation materializes only digest-verified, explicitly readable source,
+documentation, configuration, and test text below the configured read-only
+source root. Readability and writability are separate API facts: readable
+read-only source remains in the functional inventory, secret-shaped content is
+never fetched, and an unreadable SOURCE entry blocks translation instead of
+silently shrinking the success-rate denominator.
 Spring materialization copies an immutable, exact-HEAD handoff into the shared
 Snapshot root while excluding protected secret-shaped paths and recording the
 exclusion list and manifest digest. Scripts,

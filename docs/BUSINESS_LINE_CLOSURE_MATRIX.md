@@ -16,7 +16,7 @@ GA、生产就绪和外部认证仍为 `EXTERNAL_GATE_REQUIRED`。** 后一类�
 | 业务线 | 用户入口与核心实现 | 仓库内闭环与验证 | 当前状态 | 尚需外部证据 |
 | --- | --- | --- | --- | --- |
 | Spring 老项目翻新 M30 | `/spring`、Spring 指纹探测器、受控代理、Java Worker、`spring-boot-2-7-18-to-3-5-3` Pack | 区分经典 Spring 与 Boot，识别 XML/注解、Jakarta 和 MVC/WebFlux 阻断；浏览器代理操作绑定最长 24 小时短期令牌、唯一租户与 Actor；真实任务、Run UUID 身份恢复、取消/重试、日志、独立摘要验证、产物与运行态形成闭环；下载响应绑定长度、ETag 与 SHA-256，浏览器复算字节摘要后才交付；Gradle 2.x 区间精确声明为 `[2.0.0,3.0.0)` 且保持 `NOT_IMPLEMENTED` | `REPOSITORY_CLOSED` | 客户源仓真实基线、目标启动/数据/安全等价、独立 holdout 与外部认证保持 `NOT_RUN` |
-| 全库跨语言转换 M29 | `/translation`、12 个方向 Route Pack、polyglot-route engine、持久受控 Runner | 四种语言形成 12 条方向独立路线；`typed-pure-function-v1` 已完成开发、holdout、代表性编译与行为回放；`repository-pipeline` 合并确定性只读清单、编译器发现、逐单元行为回放、绑定快照/源码/语料摘要且验证目标字节的断点检查点、命名空间隔离装配、真实整库构建与内容寻址 ZIP；UI 以租户/Actor/短期令牌启动、恢复、取消任务并在下载时复算 SHA-256；缺少行为用例、漂移、跳过或失败只能得到 `PARTIAL`/阻断，不会扩张为整库成功 | `REPOSITORY_CLOSED` | 对象图、异常、异步、I/O、框架、数据库、并发、真实客户整库逐单元执行、独立验证与外部认证保持 `NOT_RUN` |
+| 全库跨语言转换 M29 | `/translation`、30 个方向 Route Pack、polyglot-route engine、持久受控 Runner | 六种语言形成 30 条方向独立路线；`typed-pure-function-v1` 已完成开发、holdout、代表性编译与行为回放；`repository-pipeline` 合并确定性只读清单、编译器发现、逐功能行为回放、绑定快照/源码/语料摘要且验证目标字节的断点检查点、命名空间隔离装配、真实整库构建与内容寻址 ZIP；每个正常终结任务生成内容寻址 JSON 与 Markdown 功能报告，按功能义务给出已验证成功率、失败描述、原/目标代码块（或明确未生成/安全预算省略）、失败原因和提高方法；不完整清单只显示 `INDETERMINATE` 项目区间，已报告子集比例仅作诊断；UI 以租户/Actor/短期令牌启动、恢复、取消任务并在下载时复算 SHA-256；缺少行为用例、漂移、跳过或失败只能得到 `PARTIAL`/阻断，不会扩张为整库成功 | `REPOSITORY_CLOSED` | 对象图、异常、异步、I/O、框架、数据库、并发、真实客户整库逐功能执行、独立验证与外部认证保持 `NOT_RUN` |
 | 多语言项目生成 B46-B95 | `/generation`、生成 API、本地 Runner、project-synthesis engine、Batch 66-95 Skills | 8 个精确目标；草稿、结构化分析、开放问题、一次性审阅摘要、显式批准、生成/验证、文件摘要复算、归档下载、启动健康探针与停止形成闭环；刷新后可用完整 UUID、租户、Actor 和重新输入的短期令牌恢复原子持久化任务；生成 CI Action 与基础镜像均固定到不可变摘要；全部八种语言已完成真实生成、精确工具链构建、测试、启动探针和清理；`run_production_matrix.py` 对 8 × JWT/OIDC 共 16 个 PostgreSQL 17.5 Profile 执行迁移、鉴权负向路径、CRUD 与 RLS 跨租户隔离；Java/Python 多实体和其余六目标单实体的生产边界成为前后端共同契约，需求分析后立即阻断不兼容批准 | `REPOSITORY_CLOSED` | 外部托管 PostgreSQL、真实 IdP、完整传递依赖 SBOM/签名、真实 rootless 生产 Runner、设备/集群/云部署、恢复/DR、独立用户验收、外部验证及生产交付保持 `NOT_RUN` |
 | Git 仓库接入与修改 | `/repositories`、Web BFF、repository-workspace control-plane API、JGit 工作区 | GitHub、Gitee 与通用 HTTPS Git 统一接入；远端引用先解析为 advertised 精确提交，浅拉取后再次比对提交；源码、测试、说明、配置、本地和云部署文件分类、读取、新建、修改与删除闭环；租户/Actor、短期用户门禁、内部密钥、owner-only 私库凭据引用、显式路径批准、旧 SHA-256 并发保护、CODEOWNERS 审批、密钥/二进制/符号链接保护及操作日志闭环；子模块/LFS 未独立授权时保持只读 | `REPOSITORY_CLOSED` | 私有 GitHub/Gitee/自建实例实仓 E2E、子模块逐仓授权、LFS 对象完整水合、远端分支保护/PR/推送和部署均保持 `NOT_RUN`，必须另行授权 |
 | 工作区与 Private Runner | workspace-service、workspace manager、egress proxy、Compose 服务拓扑 | 工作区和秘密租约请求在提供者访问前完成身份、类型与 TTL 校验；策略/依赖故障返回稳定响应；默认拒绝出口 | `REPOSITORY_CLOSED` | 真实 rootless Runner 隔离、工作负载身份、远端证明、秘密租约与撤销演练保持 `NOT_RUN` |
@@ -68,7 +68,11 @@ Spring 代理、整库转换 Runner 和项目生成 Runner 都默认关闭。启
 - `ELMOS_LOCAL_RUNNER_EXECUTOR=ROOTLESS_CONTAINER`：生产模式唯一允许的执行器；必须配置绝对 rootless Podman/Docker 路径。`HOST_DEVELOPMENT` 仅用于显式本地开发并在 `NODE_ENV=production` 下拒绝。
 
 整库转换额外要求 `ELMOS_TRANSLATION_SOURCE_ROOT` 与
-`ELMOS_TRANSLATION_CASES_ROOT` 两个管理员材料化的绝对只读目录。生产
+`ELMOS_TRANSLATION_CASES_ROOT` 两个管理员材料化的绝对只读目录。生产请求
+必须提交经 control plane 按租户授权的 `repositoryWorkspaceId`，裸
+`workspaceId` 仅允许显式本地开发；独立行为用例必须存放在
+`ELMOS_TRANSLATION_CASES_ROOT/<tenantId>/<bundleId>`，不得使用可由其他租户
+猜测的全局 bundle 目录。生产
 Rootless 执行还要求 `ELMOS_TRANSLATION_RUNNER_IMAGE` 为
 `name@sha256:<64 hex>` 不可变镜像；容器以只读根文件系统、只读源码/语料挂载、
 默认拒绝网络、删除全部 capability、`no-new-privileges` 及 CPU/内存/PID 限额运行。

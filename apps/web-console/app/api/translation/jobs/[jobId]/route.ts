@@ -14,10 +14,18 @@ export async function GET(
   try {
     const authorized = authorizeTranslation(request);
     const { jobId } = await context.params;
-    return NextResponse.json(await getTranslationJob(authorized, jobId));
+    return NextResponse.json(
+      await getTranslationJob(authorized, jobId),
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
   } catch (error) {
     const status = error instanceof GenerationRunnerError ? error.status : 500;
-    const reason = error instanceof Error ? error.message : "TRANSLATION_RUNNER_ERROR";
-    return NextResponse.json({ status: "BLOCKED", reason }, { status });
+    const reason = error instanceof GenerationRunnerError
+      ? error.message
+      : "TRANSLATION_RUNNER_ERROR";
+    return NextResponse.json(
+      { status: "BLOCKED", reason },
+      { status, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 }
