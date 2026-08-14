@@ -1,0 +1,7 @@
+ifndef ELMOS_EXTERNAL_GATE_MAKEFILE_INCLUDED
+ELMOS_EXTERNAL_GATE_MAKEFILE_INCLUDED := 1
+EXTERNAL_GATE_PYTHON ?= /opt/homebrew/bin/uv run --quiet --with jsonschema python
+.PHONY: external-gate-intake-test
+external-gate-intake-test:
+	$(EXTERNAL_GATE_PYTHON) -m unittest discover -s tests/external_gate -p 'test_*.py'
+endif
