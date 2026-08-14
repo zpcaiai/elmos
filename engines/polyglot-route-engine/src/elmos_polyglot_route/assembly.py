@@ -27,6 +27,7 @@ that escapes its unit directory, or a failed compiler invocation raises
 `RouteError` rather than producing a project that looks assembled but is not
 actually attributable to proven work.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -80,16 +81,28 @@ def _read_verified_unit_source(batch_output: Path, unit: dict[str, Any]) -> str:
     target_path = str(unit.get("target_path", ""))
     if not target_path or "/" in target_path or "\\" in target_path:
         raise RouteError(f"ASSEMBLY_UNIT_TARGET_PATH_INVALID:{unit_id}")
-    unit_directory = (batch_output / "units" / unit_id).resolve()
-    source_file = (unit_directory / target_path).resolve()
+    units_directory = batch_output / "units"
+    unit_directory = units_directory / unit_id
+    source_file = unit_directory / target_path
     if (
-        unit_directory.is_symlink()
+        units_directory.is_symlink()
+        or unit_directory.is_symlink()
         or source_file.is_symlink()
-        or source_file.parent != unit_directory
+        or not unit_directory.is_dir()
         or not source_file.is_file()
     ):
         raise RouteError(f"ASSEMBLY_UNIT_SOURCE_MISSING:{unit_id}")
-    content = source_file.read_text(encoding="utf-8")
+    resolved_batch = batch_output.resolve(strict=True)
+    resolved_units = units_directory.resolve(strict=True)
+    resolved_unit = unit_directory.resolve(strict=True)
+    resolved_source = source_file.resolve(strict=True)
+    if (
+        resolved_units.parent != resolved_batch
+        or resolved_unit.parent != resolved_units
+        or resolved_source.parent != resolved_unit
+    ):
+        raise RouteError(f"ASSEMBLY_UNIT_SOURCE_MISSING:{unit_id}")
+    content = resolved_source.read_text(encoding="utf-8")
     expected = unit.get("target_sha256")
     if expected:
         observed = "sha256:" + hashlib.sha256(content.encode("utf-8")).hexdigest()
@@ -335,15 +348,18 @@ def _write_manifest(destination: Path, manifest: dict[str, Any]) -> None:
 def _run(command: list[str], cwd: Path, *, timeout: int = 300) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     environment["NO_COLOR"] = "1"
-    completed = subprocess.run(
-        command,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=environment,
-    )
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=environment,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise RouteError(f"ASSEMBLY_BUILD_TIMEOUT:{command[0]}") from error
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-4_000:]
         raise RouteError(f"ASSEMBLY_BUILD_VERIFICATION_FAILED:{command[0]}:{detail}")

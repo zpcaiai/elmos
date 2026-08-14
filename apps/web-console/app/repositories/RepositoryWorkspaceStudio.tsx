@@ -20,6 +20,7 @@ type FileEntry = {
   bytes: number;
   sha256: string;
   category: FileCategory;
+  readable: boolean;
   writable: boolean;
 };
 
@@ -572,9 +573,9 @@ export function RepositoryWorkspaceStudio() {
             <div className={styles.fileList}>
               {files.map((file) => <button type="button" key={file.path}
                 className={selected?.path === file.path ? styles.activeFile : ""}
-                onClick={() => openFile(file)} disabled={busy}>
+                onClick={() => openFile(file)} disabled={busy || !file.readable}>
                 <span><strong>{file.path}</strong><small>{categoryLabels[file.category]} · {file.bytes} B</small></span>
-                <em>{file.writable ? "可修改" : "只读"}</em>
+                <em>{!file.readable ? "受保护" : file.writable ? "可修改" : "只读"}</em>
               </button>)}
             </div>
           </div>
@@ -586,6 +587,7 @@ export function RepositoryWorkspaceStudio() {
               <textarea aria-label="文件内容" spellCheck={false} value={editor}
                 onChange={(event) => setEditor(event.target.value)} disabled={
                   workspace.completeness !== "COMPLETE"
+                  || workspace.files.find((file) => file.path === selected.path)?.readable === false
                   || workspace.files.find((file) => file.path === selected.path)?.writable === false
                 } />
               <label className={styles.intent}>变更意图

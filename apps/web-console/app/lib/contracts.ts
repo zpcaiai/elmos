@@ -475,6 +475,83 @@ export type TranslationJobLog = {
   message: string;
 };
 
+export type TranslationConversionReportFile = {
+  path:
+    | "functional-conversion-report.json"
+    | "FUNCTION_CONVERSION_REPORT.md"
+    | "FUNCTION_CONVERSION_REPORT_BUNDLE.zip";
+  bytes: number;
+  sha256: string;
+};
+
+/**
+ * Polling responses deliberately contain no customer source or generated code.
+ * Exact source/target blocks live only in the separately authorized,
+ * content-addressed conversion report download.
+ */
+export type TranslationConversionFailureSummary = {
+  obligationId: string;
+  workUnitId: string;
+  functionDescription: string;
+  sourcePath: string;
+  targetPath?: string;
+  status: string;
+  failureCode: string;
+  failureReason: string;
+  improvementActions: string[];
+};
+
+export type TranslationConversionSummary = {
+  reportId: string;
+  definitionId: string;
+  measurementUnit: "FUNCTIONAL_OBLIGATION";
+  comparisonBasis: "DECLARED_BEHAVIOR_ORACLE";
+  storageMode: "SINGLE" | "SHARDED";
+  shardCount: number;
+  totalShardBytes: number;
+  casesManifestSha256: string;
+  numerator: number;
+  denominator: number;
+  reportedObligationCount: number;
+  unknownScopeCount: number;
+  unreportedObligationCount: number;
+  unsuccessfulCount: number;
+  exactFraction: string;
+  successRateBasisPoints: number;
+  displayPercent: string;
+  projectSuccessRateLowerBoundBasisPoints: number;
+  projectSuccessRateUpperBoundBasisPoints: number;
+  projectSuccessRateDisplay: string;
+  measurementStatus: "MEASURED" | "INDETERMINATE";
+  denominatorComplete: boolean;
+  verifiedCount: number;
+  failedCount: number;
+  codeArtifactReady: boolean;
+  statusCounts: Record<string, number>;
+  failureSummaries: TranslationConversionFailureSummary[];
+  failureSummariesTruncated: boolean;
+};
+
+export type TranslationExecutionRuntimeReceipt = {
+  schemaVersion: "1.0";
+  executionId: string;
+  phase: "preflight" | "pipeline";
+  executor: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
+  state: "STARTING" | "RUNNING" | "EXITED" | "CLEANUP_VERIFIED" | "CLEANUP_UNVERIFIED";
+  processGroupId: number;
+  containerName?: string;
+  cidFile?: string;
+  containerId?: string;
+  labels?: {
+    jobId: string;
+    executionId: string;
+    phase: "preflight" | "pipeline";
+  };
+  startedAt: string;
+  updatedAt: string;
+  cleanupVerifiedAt?: string;
+};
+
 export type TranslationJob = {
   id: string;
   tenantId: string;
@@ -487,14 +564,24 @@ export type TranslationJob = {
   casesBundleId: string;
   sourceLanguage: TranslationLanguageId;
   targetLanguage: TranslationLanguageId;
-  status: "QUEUED" | "RUNNING" | "COMPLETE" | "PARTIAL" | "BLOCKED" | "CANCELLED";
-  stage: "queued" | "pipeline" | "metering" | "complete" | "blocked" | "cancelled" | "restart-recovery";
+  status: "QUEUED" | "PRECHECK" | "RUNNING" | "COMPLETE" | "PARTIAL" | "BLOCKED" | "CANCELLED";
+  stage: "queued" | "preflight" | "pipeline" | "metering" | "complete" | "blocked" | "cancelled" | "restart-recovery";
   progress: number;
   executor: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
+  executionId?: string;
+  executionLeaseOwnerId?: string;
+  cancelRequestedAt?: string;
+  cancelRequestedBy?: string;
+  runtimeReceipt?: TranslationExecutionRuntimeReceipt;
   recoveryAttempts: number;
   artifactReady: boolean;
   artifactSha256?: string;
   artifactSize?: number;
+  reportReady: boolean;
+  reportJson?: TranslationConversionReportFile;
+  reportMarkdown?: TranslationConversionReportFile;
+  reportBundle?: TranslationConversionReportFile;
+  conversionSummary?: TranslationConversionSummary;
   snapshotSha256?: string;
   readyCount?: number;
   workUnitCount?: number;

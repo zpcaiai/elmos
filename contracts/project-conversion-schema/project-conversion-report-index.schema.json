@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/contracts/project-conversion-report-index.schema.json",
+  "title": "ELMOS sharded project language conversion report index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "report_id", "status", "repository", "route", "metric",
+    "status_counts", "code_artifact_ready", "storage_mode", "shard_count", "total_shard_bytes", "shards",
+    "exclusions", "blockers", "build_verification", "evidence_boundary",
+    "markdown_renderer_version", "markdown_sha256", "certification_status"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "kind": { "const": "elmos.project-language-conversion-report-index" },
+    "report_id": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "status": { "enum": ["COMPLETE", "PARTIAL", "BLOCKED"] },
+    "repository": { "$ref": "project-conversion-report.schema.json#/properties/repository" },
+    "route": { "$ref": "project-conversion-report.schema.json#/properties/route" },
+    "metric": { "$ref": "project-conversion-report.schema.json#/properties/metric" },
+    "status_counts": { "$ref": "project-conversion-report.schema.json#/properties/status_counts" },
+    "code_artifact_ready": { "type": "boolean" },
+    "storage_mode": { "const": "SHARDED" },
+    "shard_count": { "type": "integer", "minimum": 2, "maximum": 5 },
+    "total_shard_bytes": { "type": "integer", "minimum": 1, "maximum": 268435456 },
+    "shards": { "type": "array", "minItems": 2, "maxItems": 5, "items": { "$ref": "#/$defs/shard_descriptor" } },
+    "exclusions": { "type": "array", "maxItems": 0 },
+    "blockers": { "type": "array", "maxItems": 10000, "items": { "type": "string", "maxLength": 120 } },
+    "build_verification": { "$ref": "project-conversion-report.schema.json#/properties/build_verification" },
+    "evidence_boundary": { "$ref": "project-conversion-report.schema.json#/properties/evidence_boundary" },
+    "markdown_renderer_version": { "const": "elmos-functional-conversion-markdown/v1" },
+    "markdown_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "certification_status": { "const": "NOT_CERTIFIED" }
+  },
+  "$defs": {
+    "file": {
+      "type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*[\\u0000-\\u001F\\u007F]).+$" },
+        "bytes": { "type": "integer", "minimum": 1, "maximum": 67108864 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "shard_descriptor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "function_count", "status_counts", "first_obligation_id", "last_obligation_id", "obligation_ids_sha256", "json", "markdown"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "function_count": { "type": "integer", "minimum": 1, "maximum": 2000 },
+        "status_counts": { "$ref": "project-conversion-report.schema.json#/properties/status_counts" },
+        "first_obligation_id": { "type": "string", "pattern": "^WU-[0-9]{5}:FO-[0-9]{3,6}$" },
+        "last_obligation_id": { "type": "string", "pattern": "^WU-[0-9]{5}:FO-[0-9]{3,6}$" },
+        "obligation_ids_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "json": { "$ref": "#/$defs/file" },
+        "markdown": { "$ref": "#/$defs/file" }
+      }
+    }
+  }
+}

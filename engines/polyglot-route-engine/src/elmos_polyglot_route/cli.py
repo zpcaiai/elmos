@@ -12,10 +12,20 @@ from .discovery import discover_repository, write_report
 from .engine import migrate
 from .models import SUPPORTED_LANGUAGES, RouteError
 from .pipeline import run_repository_pipeline
+from .preflight import repository_preflight
 from .repository import plan_repository
 from .single_unit import check_only, emit_only
 
-SUBCOMMANDS = ("inventory", "discover", "batch", "assemble", "repository-pipeline", "emit", "check")
+SUBCOMMANDS = (
+    "inventory",
+    "repository-preflight",
+    "discover",
+    "batch",
+    "assemble",
+    "repository-pipeline",
+    "emit",
+    "check",
+)
 
 
 def _migration_parser() -> argparse.ArgumentParser:
@@ -50,6 +60,16 @@ def _discover_parser() -> argparse.ArgumentParser:
         default=None,
         help="Classify only the first N work units; the remainder stays undiscovered.",
     )
+    return parser
+
+
+def _repository_preflight_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route repository-preflight")
+    parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--repository-ref", required=True)
+    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -155,6 +175,27 @@ def main(argv: list[str] | None = None) -> int:
                 limit=discover_args.limit,
             )
             write_report(report, discover_args.output)
+            return _emit(report)
+
+        if subcommand == "repository-preflight":
+            preflight_args = _repository_preflight_parser().parse_args(remainder)
+            if preflight_args.output.exists() or preflight_args.output.is_symlink():
+                raise RouteError("PREFLIGHT_OUTPUT_ALREADY_EXISTS_OR_UNSAFE")
+            report = repository_preflight(
+                preflight_args.repository,
+                preflight_args.repository_ref,
+                preflight_args.source_language,
+                preflight_args.target_language,
+            )
+            preflight_args.output.parent.mkdir(parents=True, exist_ok=True)
+            temporary = preflight_args.output.with_suffix(preflight_args.output.suffix + ".tmp")
+            if temporary.exists() or temporary.is_symlink():
+                raise RouteError("PREFLIGHT_OUTPUT_TEMPORARY_UNSAFE")
+            temporary.write_text(
+                json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            temporary.replace(preflight_args.output)
             return _emit(report)
 
         if subcommand == "batch":

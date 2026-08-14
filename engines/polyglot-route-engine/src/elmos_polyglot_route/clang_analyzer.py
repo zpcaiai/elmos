@@ -85,7 +85,10 @@ def _run_clang(executable: str, source: Path, language: Language) -> dict[str, A
         "-fsyntax-only",
         str(source),
     ]
-    completed = subprocess.run(command, check=False, capture_output=True, text=True, timeout=120)
+    try:
+        completed = subprocess.run(command, check=False, capture_output=True, text=True, timeout=120)
+    except subprocess.TimeoutExpired as error:
+        raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
     errors = [
         line
         for line in completed.stderr.splitlines()

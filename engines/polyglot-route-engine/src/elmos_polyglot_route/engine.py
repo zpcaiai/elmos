@@ -8,7 +8,7 @@ from typing import Any
 from .emitter import emit
 from .models import SUPPORTED_LANGUAGES, Language, RouteError
 from .native import analyze
-from .validation import safe_output, validate
+from .validation import safe_output, validate, validate_source
 
 
 def _digest(value: bytes) -> str:
@@ -47,6 +47,13 @@ def migrate(
         raise RouteError("EXACTLY_ONE_FUNCTION_REQUIRED")
     function = ir.functions[0]
     cases = _load_cases(cases_path, len(function.parameters))
+    source_evidence = validate_source(
+        source,
+        source_language,
+        function,
+        cases,
+        output / "source-validation",
+    )
     emitted = emit(ir, target_language)
     evidence = validate(emitted, target_language, function, cases, output)
     ir_path = output / "semantic-ir.json"
@@ -77,6 +84,8 @@ def migrate(
         "source_map_coverage": 1.0,
         "behavior_case_count": len(cases),
         "behavior_pass_rate": 1.0,
+        "source_behavior_pass_rate": 1.0,
+        "source_target_declared_case_equivalence": "PASSED",
         "critical_unknown_semantics": 0,
         "limitations": [
             "Only typed, side-effect-free functions using return, if, literals, names, "
@@ -85,6 +94,7 @@ def migrate(
             "and concurrency semantics remain outside this route profile.",
         ],
         "validation": evidence,
+        "source_validation": source_evidence,
         "certification_status": "EXPERIMENTAL",
         "external_certification_status": "NOT_RUN",
     }
