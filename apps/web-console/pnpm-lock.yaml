@@ -23,8 +23,8 @@ importers:
         specifier: 6.1.2
         version: 6.1.2
       mammoth:
-        specifier: 1.12.0
-        version: 1.12.0
+        specifier: 1.12.1
+        version: 1.12.1
       next:
         specifier: 16.3.0
         version: 16.3.0(@playwright/test@1.61.1)(@types/node@24.3.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -364,8 +364,8 @@ packages:
   '@types/react@19.1.10':
     resolution: {integrity: sha512-EhBeSYX0Y6ye8pNebpKrwFJq7BoQ8J5SO6NlvNwwHjSj6adXJViPQrKlsyPw7hLBLvckEMO1yxeGdR82YBBlDg==}
 
-  '@xmldom/xmldom@0.8.13':
-    resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
+  '@xmldom/xmldom@0.8.14':
+    resolution: {integrity: sha512-T4EDRUBVZYRldYApjEJiU0e1stYWaRAX7CuSnKzrpwdZKo53zGV8/pqfzV6FfwNl9YThD2OumQYvqtvjvgG7aQ==}
     engines: {node: '>=10.0.0'}
 
   argparse@1.0.10:
@@ -472,8 +472,8 @@ packages:
   lop@0.4.2:
     resolution: {integrity: sha512-RefILVDQ4DKoRZsJ4Pj22TxE3omDO47yFpkIBoDKzkqPRISs5U1cnAdg/5583YPkWPaLIYHOKRMQSvjFsO26cw==}
 
-  mammoth@1.12.0:
-    resolution: {integrity: sha512-cwnK1RIcRdDMi2HRx2EXGYlxqIEh0Oo3bLhorgnsVJi2UkbX1+jKxuBNR9PC5+JaX7EkmJxFPmo6mjLpqShI2w==}
+  mammoth@1.12.1:
+    resolution: {integrity: sha512-nCH9KKjWi3jQ+i8bUKs7k1yrXtSEGpWgF8IYkzsFMcbn+5S6l4bZEBbyx2hOQErFiXPuAs9RPa6qjXVxhyx/8g==}
     engines: {node: '>=12.0.0'}
     hasBin: true
 
@@ -846,7 +846,7 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@xmldom/xmldom@0.8.13': {}
+  '@xmldom/xmldom@0.8.14': {}
 
   argparse@1.0.10:
     dependencies:
@@ -948,9 +948,9 @@ snapshots:
       option: 0.2.4
       underscore: 1.13.8
 
-  mammoth@1.12.0:
+  mammoth@1.12.1:
     dependencies:
-      '@xmldom/xmldom': 0.8.13
+      '@xmldom/xmldom': 0.8.14
       argparse: 1.0.10
       base64-js: 1.5.1
       bluebird: 3.4.7
