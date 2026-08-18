@@ -12,11 +12,11 @@
     "skill_interfaces": 52,
     "cases": 408,
     "result_placeholders": 408,
-    "schemas": 9,
+    "schemas": 11,
     "templates": 9,
-    "scripts": 20,
+    "scripts": 21,
     "toolkit_tests": 50,
-    "files": 581
+    "files": 584
   },
   "files": [
     {
@@ -635,6 +635,11 @@
       "bytes": 1955
     },
     {
+      "path": "schemas/test-suite/certification-request.schema.json",
+      "sha256": "3fe1e36bda203781646a6527b68399bff902dae59dbf18908ee9deb35cff5427",
+      "bytes": 2867
+    },
+    {
       "path": "schemas/test-suite/coverage-matrix.schema.json",
       "sha256": "42150a284504c64eabcbf1236ba41539a4d108c1fcd46a77717880b279630b70",
       "bytes": 1578
@@ -675,6 +680,11 @@
       "bytes": 1456
     },
     {
+      "path": "schemas/test-suite/trust-store.schema.json",
+      "sha256": "43fd42669cdfdf2b1717ea6669d5e933109fb71448b15ddfb07ae1c295adb427",
+      "bytes": 2217
+    },
+    {
       "path": "schemas/test-suite/waiver.schema.json",
       "sha256": "effda289f0506e895c32b6d501df10d7974dbcb7359d06af2f0fa2cfbb1c452a",
       "bytes": 1311
@@ -698,6 +708,11 @@
       "path": "scripts/test-suite/generate_integration_manifest.py",
       "sha256": "e3ff7e4cef6fc860cddb3406d0f4a79a5da55d0509a18ee75e751772492f2b8d",
       "bytes": 4951
+    },
+    {
+      "path": "scripts/test-suite/rehearse_certification_path.py",
+      "sha256": "077cd3d1807d9617421245c0735128172ab1ca020bf9951d7d10fd52152e1b83",
+      "bytes": 10623
     },
     {
       "path": "scripts/test-suite/run_batch1_55_slightly_strict_gate.py",
@@ -766,8 +781,8 @@
     },
     {
       "path": "scripts/test-suite/validate_schema_bundle.py",
-      "sha256": "0fe7326bc8689433ee99dc87df55e4b08f42328a0614b0667dc5654f2ed202c5",
-      "bytes": 4018
+      "sha256": "6dc06fe90235154eac8e4850b12064839812e670120caf7c203d21141b15c99e",
+      "bytes": 4599
     },
     {
       "path": "scripts/test-suite/validate_skill_bundle.py",
@@ -836,8 +851,8 @@
     },
     {
       "path": "test-suites/batch1-37-strict/cases/manifest.json",
-      "sha256": "aa5d654367250f44a731365be0a4d55b0c764de0aae897e8d4ba3d754201e9f1",
-      "bytes": 7758
+      "sha256": "9bc99e2895a2e199dee57513c0bf7e0edf4dace32a13af95e40f19297f37abac",
+      "bytes": 7980
     },
     {
       "path": "test-suites/batch1-37-strict/coverage-matrix.json",
@@ -2906,18 +2921,18 @@
     },
     {
       "path": "tests/test-suite/test_batch1_65_supplemental.py",
-      "sha256": "473c17490554af2b58b7e09c29767d67af2b98eb0871e821e6dd1ee1544fbdf3",
-      "bytes": 5140
+      "sha256": "ea8ee75436c500b665d62029c54a3d507506e74c28af0d5d38e43c2e7ccee426",
+      "bytes": 5872
     },
     {
       "path": "tests/test-suite/test_batch66_80_supplemental.py",
-      "sha256": "45c3310477d5c6e9df52ad07b4a9f128199d122acbbf12174e2e9e9f7fe8d568",
-      "bytes": 7352
+      "sha256": "6f2a214897e78497aab6c8c6aa24127a524cb51e8ed6aef6f68c68c40ef134c5",
+      "bytes": 8138
     },
     {
       "path": "tests/test-suite/test_batch81_95_language_packs.py",
-      "sha256": "ae08f24a443b2bee6e271132b86e011f3a3b510fab269db6e487dcad40c94e41",
-      "bytes": 9215
+      "sha256": "42df6495232661de31add0afa0c63941a79668e840248acf59977a55c334b94b",
+      "bytes": 9921
     },
     {
       "path": "tests/test-suite/test_toolkit.py",
@@ -2925,5 +2940,5 @@
       "bytes": 24217
     }
   ],
-  "payload_digest": "sha256:d951497f105b2b9c6e8ea3e89b17473476e2152402e9e0b633452257d45c80c0"
+  "payload_digest": "sha256:056f94a2169d4f6093d026d648b133866d88459bce90ea2ee93872344a423fd2"
 }

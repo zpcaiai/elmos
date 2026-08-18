@@ -75,6 +75,7 @@ public final class GitRepositoryWorkspaceService {
             long bytes,
             String sha256,
             FileCategory category,
+            boolean readable,
             boolean writable
     ) {}
 
@@ -436,6 +437,7 @@ public final class GitRepositoryWorkspaceService {
                         file.bytes(),
                         file.sha256(),
                         category(file.path()),
+                        !protectedPath(file.path()),
                         writable && !protectedPath(file.path())
                 ))
                 .toList();

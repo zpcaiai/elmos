@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/test-suite/certification-request.schema.json",
+  "title": "Batch 1-37 strict suite certification request",
+  "description": "Submission an independent verifier signs to move the Batch 1-37 strict suite from BLOCKED to CERTIFIED. Enforced by scripts/test-suite/run_strict_test_gate.py (validate_request_shape and verify_certification_request); this schema mirrors those checks so a verifier can validate a submission before presenting it to the gate. Exercise the end-to-end path with `make test-suite-certification-rehearsal`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_version", "suite_id", "requested_at", "expires_at", "signer_id", "authorization_refs", "control_digests", "case_bindings"],
+  "properties": {
+    "request_version": {"const": 1},
+    "suite_id": {"const": "batch1-37-strict"},
+    "requested_at": {"type": "string", "format": "date-time", "description": "Must not be more than five minutes in the future relative to gate execution."},
+    "expires_at": {"type": "string", "format": "date-time", "description": "Must be strictly after requested_at and still in the future when the gate runs."},
+    "signer_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Must equal the verifier id recorded on every passed case, and must match exactly one non-revoked trust anchor. A signer who executed the suite is not independent and must not appear here."
+    },
+    "authorization_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1},
+      "description": "References to the authorization under which the independent verification was performed."
+    },
+    "control_digests": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+      "description": "Must equal the control digests the gate computes from the suite; any drift is rejected."
+    },
+    "case_bindings": {
+      "type": "array",
+      "minItems": 408,
+      "maxItems": 408,
+      "description": "Must bind the exact 408 result and evidence sets the gate computes, in the same order. A subset or reordering is rejected.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "result_digest", "evidence_manifest_digests"],
+        "properties": {
+          "case_id": {"type": "string", "minLength": 1},
+          "result_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "evidence_manifest_digests": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+          }
+        }
+      }
+    }
+  }
+}

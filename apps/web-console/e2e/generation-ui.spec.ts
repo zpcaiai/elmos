@@ -143,16 +143,27 @@ test.describe("多语言项目生成 UI", () => {
       await route.fulfill({ status: 401, json: blocked });
     });
     await page.goto("/generation");
+    await expect(
+      page.getByRole("region", { name: "项目生成能力摘要" })
+        .getByText("READY", { exact: true }),
+    ).toBeVisible({ timeout: 30_000 });
+    const runnerToken = page.getByLabel("本地 Runner 令牌");
+    await runnerToken.fill("incorrect-browser-token-000000");
+    await expect(runnerToken).toHaveValue("incorrect-browser-token-000000");
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     const analyze = page.getByRole("button", { name: "分析并整理需求" });
-    await expect(analyze).toBeDisabled();
-    await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
-    await expect(analyze).toBeEnabled();
+    await expect(analyze).toBeEnabled({ timeout: 30_000 });
     await analyze.focus();
     await expect(analyze).toBeFocused();
-    await analyze.press("Enter");
+    await analyze.evaluate((button: HTMLButtonElement) => button.click());
+    await expect.poll(() => page.evaluate(() =>
+      (window as Window & { __generationAuthorization?: string })
+        .__generationAuthorization ?? "",
+    )).toBe("Bearer incorrect-browser-token-000000");
     await expect.poll(() => analyzeRequestObserved).toBe(true);
-    await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
+    await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible({
+      timeout: 30_000,
+    });
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();

@@ -7,21 +7,25 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit && next build",
+    "check": "pnpm test:durable-lease && pnpm test:translation-report && pnpm test:translation-cancellation && pnpm test:repository-translation && tsc --noEmit && next build",
     "test:qr-code": "uv run --with qrcode==8.2 --with numpy==2.5.1 --with opencv-python-headless==4.13.0.92 node --experimental-strip-types app/lib/qrCode.verify.mjs",
-    "test:ordered-persistence": "node --experimental-strip-types --test app/lib/server/orderedSnapshotPersistence.test.mjs",
     "check:telemetry": "node ../../telemetry/validate.mjs",
+    "test:durable-lease": "node --experimental-strip-types --test test/durableJobLease.test.mjs",
+    "test:translation-report": "node --experimental-strip-types --test test/translationConversionReport.test.mjs",
+    "test:translation-cancellation": "node --loader ./test/ts-extension-loader.mjs --test test/translationRunnerCancellation.test.mjs",
+    "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",
     "test:e2e": "playwright test",
     "test:frt-external-quality": "playwright test --config=playwright.external-quality.config.ts",
     "capture:frt-visual-candidates": "playwright test e2e/frt-visual-candidate.spec.ts",
     "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },
   "dependencies": {
+    "fflate": "0.8.3",
     "html-to-text": "10.0.0",
     "jose": "6.1.2",
     "mammoth": "1.12.0",
     "next": "16.3.0",
-    "pdfjs-dist": "6.1.200",
+    "pdfjs-dist": "6.2.108",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
@@ -32,7 +36,6 @@
     "@types/node": "24.3.0",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
-    "fflate": "0.8.3",
     "typescript": "5.9.2"
   }
 }

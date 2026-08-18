@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "NEG-001",
+      "patch": {
+        "image": "asia-east1-docker.pkg.dev/approved-project-1/apps/api:latest"
+      },
+      "expected_error": "image must"
+    },
+    {
+      "id": "NEG-002",
+      "patch": {
+        "ingress": "all"
+      },
+      "expected_error": "ingress must remain private"
+    },
+    {
+      "id": "NEG-003",
+      "patch": {
+        "runtime_service_account": "1-compute@developer.gserviceaccount.com"
+      },
+      "expected_error": "service account"
+    },
+    {
+      "id": "NEG-004",
+      "patch": {
+        "secrets": [
+          {
+            "mount_path": "/run/secrets/database-url",
+            "name": "database-url",
+            "version": "latest"
+          }
+        ]
+      },
+      "expected_error": "immutable numeric version"
+    }
+  ]
+}

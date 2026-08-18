@@ -5,3 +5,4 @@
 - `NOT_RUN`: provider plan/apply, immutable remote image digest, authenticated health/negative journeys.
 - `NOT_RUN`: revision rollback, full destroy/orphan review, drift, billing reconciliation, and production-representative workload.
 - Local Docker build/start/health/cleanup passed; it is not Cloud Run certification evidence.
+- Local deployment-control generation and policy tests passed; they are not provider execution evidence.

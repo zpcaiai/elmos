@@ -33,6 +33,7 @@ function workspace(input: {
         bytes: 9,
         sha256: hash,
         category: "DOCUMENTATION",
+        readable: true,
         writable: true,
       },
       {
@@ -40,6 +41,7 @@ function workspace(input: {
         bytes: 12,
         sha256: "c".repeat(64),
         category: "CLOUD_DEPLOYMENT",
+        readable: true,
         writable: true,
       },
     ],

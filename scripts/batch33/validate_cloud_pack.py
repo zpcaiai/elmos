@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json, sys
+import argparse, json, subprocess, sys
 from pathlib import Path
 import jsonschema
 
@@ -26,6 +26,22 @@ PROHIBITED_COMMAND_PATTERNS = {
 
 def load(path: Path):
     return json.loads(path.read_text())
+
+
+def declared_evidence_refs(pack: Path, data: dict[str, object]) -> set[str]:
+    refs: set[str] = set()
+    for rel in ('certification/evidence.json', 'certification/certification.json', 'source-fingerprint/fingerprint.json'):
+        path = pack / rel
+        if path.is_file():
+            refs.update(load(path).get('evidence_refs', []))
+    support = data.get('support-matrix.json', {})
+    if isinstance(support, dict):
+        for capability in support.get('capabilities', []):
+            refs.update(capability.get('evidence_refs', []))
+    validation = data.get('validation/validation-profile.json', {})
+    if isinstance(validation, dict):
+        refs.update(validation.get('evidence_refs', []))
+    return refs
 
 def main() -> int:
     p = argparse.ArgumentParser(); p.add_argument('pack_dir'); args = p.parse_args()
@@ -90,6 +106,33 @@ def main() -> int:
     cert = data.get('certification/certification.json', {})
     if isinstance(cert, dict) and cert.get('owner') in PLACEHOLDERS:
         errors.append('certification owner unset')
+    evidence_path = pack / 'certification' / 'evidence.json'
+    if evidence_path.is_file():
+        evidence = load(evidence_path)
+        integrity_ref = evidence.get('integrity_manifest')
+        if integrity_ref:
+            integrity_path = pack / integrity_ref
+            verifier = Path(__file__).resolve().parents[1] / 'verify_evidence_manifest.py'
+            command = [sys.executable, str(verifier), str(pack), str(integrity_path.resolve())]
+            binding_records = [
+                str((pack / ref).resolve())
+                for ref in evidence.get('repository_binding_records', [])
+            ]
+            if binding_records:
+                command.extend(['--repository-root', str(Path(__file__).resolve().parents[2])])
+                for record in binding_records:
+                    command.extend(['--binding-record', record])
+            if subprocess.run(command).returncode:
+                errors.append('evidence integrity validation failed')
+            elif integrity_path.is_file():
+                bound = {
+                    entry.get('path')
+                    for entry in load(integrity_path).get('entries', [])
+                    if isinstance(entry, dict)
+                }
+                for ref in declared_evidence_refs(pack, data):
+                    if not ref.startswith(('http://', 'https://')) and ref not in bound:
+                        errors.append(f'evidence ref is not content-bound: {ref}')
     if errors:
         print('\n'.join('ERROR: ' + e for e in errors), file=sys.stderr); return 1
     print(f"OK: {manifest.get('pack_key')}")

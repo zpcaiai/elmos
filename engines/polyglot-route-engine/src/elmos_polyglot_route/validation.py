@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -14,21 +15,31 @@ from .toolchains import exact_toolchain
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 
 
-def _run(command: list[str], cwd: Path, *, timeout: int = 180) -> subprocess.CompletedProcess[str]:
+def _run(
+    command: list[str],
+    cwd: Path,
+    *,
+    timeout: int = 180,
+    failure_code: str = "TARGET_VALIDATION_FAILED",
+) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     environment["NO_COLOR"] = "1"
-    completed = subprocess.run(
-        command,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=environment,
-    )
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=environment,
+        )
+    except subprocess.TimeoutExpired as error:
+        code = "SOURCE_VALIDATION_TIMEOUT" if failure_code.startswith("SOURCE_") else "TARGET_VALIDATION_TIMEOUT"
+        raise RouteError(f"{code}:{command[0]}") from error
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-4_000:]
-        raise RouteError(f"TARGET_VALIDATION_FAILED:{command[0]}:{detail}")
+        raise RouteError(f"{failure_code}:{command[0]}:{detail}")
     return completed
 
 
@@ -102,9 +113,7 @@ def _typescript_harness(function: Function, cases: list[dict[str, Any]]) -> str:
         # the literal name `calculate` and then string-replaced it, which also
         # rewrote any occurrence of "calculate" inside a string argument or
         # expected value -- silently changing what the behaviour case asserts.
-        checks.append(
-            f'if ({function.name}({args}) !== {expected}) throw new Error("case {index}");'
-        )
+        checks.append(f'if ({function.name}({args}) !== {expected}) throw new Error("case {index}");')
     return "import { " + function.name + ' } from "./migrated.js";\n' + "\n".join(checks) + "\n"
 
 
@@ -113,13 +122,8 @@ def _cpp_harness(function: Function, cases: list[dict[str, Any]]) -> str:
     for index, case in enumerate(cases):
         args = ", ".join(_argument(value, "cpp") for value in case["args"])
         expected = _expected(case["expected"], "cpp")
-        checks.append(
-            f"    if ({function.name}({args}) != {expected}) return {index + 1};"
-        )
-    return (
-        '#include "migrated.cpp"\n\n'
-        "int main() {\n" + "\n".join(checks) + "\n    return 0;\n}\n"
-    )
+        checks.append(f"    if ({function.name}({args}) != {expected}) return {index + 1};")
+    return '#include "migrated.cpp"\n\nint main() {\n' + "\n".join(checks) + "\n    return 0;\n}\n"
 
 
 def _objc_harness(function: Function, cases: list[dict[str, Any]]) -> str:
@@ -181,6 +185,117 @@ def _rust_harness(function: Function, cases: list[dict[str, Any]]) -> str:
         )
         checks.append(f'    assert!({function.name}({args}) == {expected}, "case {index}");')
     return 'include!("migrated.rs");\n\nfn main() {\n' + "\n".join(checks) + "\n}\n"
+
+
+def _extract_python_function(source: str, function_name: str) -> str:
+    import ast
+
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as error:
+        raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED") from error
+    lines = source.splitlines(keepends=True)
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == function_name:
+            start = min([node.lineno, *(item.lineno for item in node.decorator_list)]) - 1
+            end = node.end_lineno or node.lineno
+            return "".join(lines[start:end])
+    raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+
+
+def _extract_braced_function(source: str, function_name: str) -> str:
+    matches = list(re.finditer(rf"(?<![A-Za-z0-9_$]){re.escape(function_name)}\s*\(", source))
+    if not matches:
+        raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+    match = matches[0]
+    start = source.rfind("\n", 0, match.start()) + 1
+    opening = source.find("{", match.end())
+    if opening < 0:
+        raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+    depth = 0
+    quote: str | None = None
+    escaped = False
+    line_comment = False
+    block_comment = False
+    index = opening
+    while index < len(source):
+        character = source[index]
+        following = source[index + 1] if index + 1 < len(source) else ""
+        if line_comment:
+            if character == "\n":
+                line_comment = False
+        elif block_comment:
+            if character == "*" and following == "/":
+                block_comment = False
+                index += 1
+        elif quote is not None:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == quote:
+                quote = None
+        elif character == "/" and following == "/":
+            line_comment = True
+            index += 1
+        elif character == "/" and following == "*":
+            block_comment = True
+            index += 1
+        elif character in {'"', "'"}:
+            quote = character
+        elif character == "{":
+            depth += 1
+        elif character == "}":
+            depth -= 1
+            if depth == 0:
+                return source[start : index + 1]
+        index += 1
+    raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+
+
+def _source_subject(source: Path, language: Language, function: Function) -> EmittedFile:
+    content = source.read_text(encoding="utf-8")
+    extracted = (
+        _extract_python_function(content, function.name)
+        if language == "python"
+        else _extract_braced_function(content, function.name)
+    )
+    if language == "python":
+        return EmittedFile("migrated.py", extracted.rstrip() + "\n")
+    if language == "java":
+        return EmittedFile("Migrated.java", f"public final class Migrated {{\n{extracted}\n}}\n")
+    if language == "csharp":
+        return EmittedFile("Migrated.cs", f"public static class Migrated\n{{\n{extracted}\n}}\n")
+    if language == "typescript":
+        return EmittedFile("migrated.ts", extracted.rstrip() + "\n")
+    if language == "go":
+        return EmittedFile("migrated.go", "package main\n\n" + extracted.rstrip() + "\n")
+    if language == "rust":
+        return EmittedFile("migrated.rs", extracted.rstrip() + "\n")
+    if language == "cpp":
+        return EmittedFile("migrated.cpp", "#include <cstdint>\n#include <string>\n\n" + extracted.rstrip() + "\n")
+    if language == "objc":
+        return EmittedFile("migrated.m", "#import <Foundation/Foundation.h>\n\n" + extracted.rstrip() + "\n")
+    return EmittedFile("migrated.swift", extracted.rstrip() + "\n")
+
+
+def validate_source(
+    source: Path,
+    language: Language,
+    function: Function,
+    cases: list[dict[str, Any]],
+    output: Path,
+) -> dict[str, Any]:
+    """Execute only the compiler-accepted pure function, not customer top-level code."""
+    subject = _source_subject(source, language, function)
+    try:
+        evidence = validate(subject, language, function, cases, output)
+    except RouteError as error:
+        reason = str(error)
+        if reason.startswith("TARGET_VALIDATION_FAILED:"):
+            raise RouteError("SOURCE_VALIDATION_FAILED:" + reason.split(":", 1)[1]) from error
+        raise
+    return {**evidence, "subject": "SOURCE_DECLARATION_EXTRACT", "status": "PASSED"}
 
 
 def validate(
@@ -323,12 +438,16 @@ def validate(
 
 
 def safe_output(path: Path) -> Path:
-    resolved = path.expanduser().resolve()
+    lexical = Path(os.path.abspath(path.expanduser()))
+    current = Path(lexical.anchor)
+    for component in lexical.parts[1:]:
+        current /= component
+        if current.is_symlink():
+            raise RouteError("OUTPUT_SYMLINK_REJECTED")
+    resolved = lexical.resolve(strict=False)
     if resolved == Path.home() or resolved == REPOSITORY_ROOT or len(resolved.parts) < 4:
         raise RouteError("OUTPUT_PATH_TOO_BROAD")
-    if resolved.exists() and resolved.is_symlink():
-        raise RouteError("OUTPUT_SYMLINK_REJECTED")
-    return resolved
+    return lexical
 
 
 def temporary_output() -> Path:

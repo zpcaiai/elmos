@@ -120,14 +120,28 @@ public interface ProcessRunner {
                 public void terminate() {
                     // destroy() maps to SIGTERM. Descendants are signalled too so a
                     // shell wrapper cannot leave the real workload running.
-                    process.descendants().forEach(ProcessHandle::destroy);
-                    process.destroy();
+                    try {
+                        process.descendants().forEach(ProcessHandle::destroy);
+                    } catch (RuntimeException ignored) {
+                        // Some hardened hosts deny the process-tree query. Always
+                        // signal the direct engine process anyway; ContainerRuntime
+                        // follows this with engine-level kill/rm, which remains the
+                        // authoritative container cleanup path.
+                    } finally {
+                        process.destroy();
+                    }
                 }
 
                 @Override
                 public void kill() {
-                    process.descendants().forEach(ProcessHandle::destroyForcibly);
-                    process.destroyForcibly();
+                    try {
+                        process.descendants().forEach(ProcessHandle::destroyForcibly);
+                    } catch (RuntimeException ignored) {
+                        // See terminate(): inability to enumerate descendants must
+                        // not prevent direct SIGKILL and engine-level cleanup.
+                    } finally {
+                        process.destroyForcibly();
+                    }
                 }
 
                 @Override

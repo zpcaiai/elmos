@@ -39,7 +39,12 @@ async function cancel(
     return NextResponse.json(await cancelTranslationJob(authorized, jobId));
   } catch (error) {
     const status = error instanceof GenerationRunnerError ? error.status : 500;
-    const reason = error instanceof Error ? error.message : "TRANSLATION_RUNNER_ERROR";
-    return NextResponse.json({ status: "BLOCKED", reason }, { status });
+    const reason = error instanceof GenerationRunnerError
+      ? error.message
+      : "TRANSLATION_RUNNER_ERROR";
+    return NextResponse.json(
+      { status: "BLOCKED", reason },
+      { status, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 }

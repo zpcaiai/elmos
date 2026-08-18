@@ -1,19 +1,34 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
-NODE_EXECUTABLE ?= $(shell command -v node 2>/dev/null || printf '%s' '/Users/stephen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node')
-NODE_RUNTIME_BIN := $(dir $(NODE_EXECUTABLE))
+DOTNET ?= dotnet
+# Homebrew installs the .NET SDK outside the default PATH on macOS. Prepending a
+# directory that does not exist is harmless everywhere else, and both this and
+# DOTNET stay overridable so no machine-specific layout is baked in.
+DOTNET_PATH_PREFIX ?= /opt/homebrew/bin
+# Resolve node from PATH. Set NODE_EXECUTABLE explicitly to pin a specific
+# runtime; the previous default hard-coded one developer's home directory, which
+# resolved to nothing on every other machine and silently prefixed PATH with a
+# non-existent directory instead of reporting the missing toolchain.
+NODE_EXECUTABLE ?= $(shell command -v node 2>/dev/null)
+# Never expands to the empty string: an empty PATH element means the current
+# directory, which would let a checked-out repository shadow real tools. When
+# node is absent this stays a path that cannot exist, PATH resolution falls
+# through, and the recipe fails with a plain "node: command not found".
+NODE_RUNTIME_BIN := $(if $(NODE_EXECUTABLE),$(dir $(NODE_EXECUTABLE)),/nonexistent/node-runtime-not-found/)
 PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' apps/web-console/package.json)
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
-.PHONY: verify business-line-contracts model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-certification-rehearsal test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
 verify: business-line-contracts backend dotnet python frontend sql-dialect component-dialect web
-business-line-contracts: model-catalog-check
+business-line-contracts: model-catalog-check makefile-portability-check
 	python3 scripts/operations/validate_spring_route_contract.py
 	python3 scripts/operations/validate_translation_route_matrix.py
+makefile-portability-check:
+	python3 scripts/operations/validate_makefile_portability.py
 model-catalog-check:
 	python3 scripts/operations/validate_model_catalog.py
 production-readiness-check: business-line-contracts batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
@@ -21,6 +36,23 @@ production-readiness-check: business-line-contracts batch45-check project-synthe
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
+# Seven modules form a closed cluster that no `apps/` component references:
+# intake -> semantic -> uir -> skeleton -> lowering -> dependency-migration ->
+# framework-migration. docs/BUSINESS_LINE_CLOSURE_MATRIX.md records five of them;
+# the two migration modules belong to the same dead chain. They are still built
+# and tested on every `make backend`, so they cost build time on a path no
+# product request reaches.
+#
+# They cannot simply be dropped from <modules>: ArchitectureRulesTest asserts
+# ArchUnit boundary rules over `io.elmos.intake..` through
+# `io.elmos.frameworkmigration..`, and those rules would silently analyse an
+# empty class set. Removing the cluster therefore has to retire the matching
+# rules in the same change, and that has to be verified by a real `make backend`.
+# Until then this target skips the cluster for local iteration only; `verify`
+# and CI keep building everything.
+LEGACY_LOWERING_CHAIN := !modules/intake,!modules/semantic,!modules/uir,!modules/skeleton,!modules/lowering,!modules/dependency-migration,!modules/framework-migration,!modules/architecture-tests
+backend-fast:
+	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl '$(LEGACY_LOWERING_CHAIN)' verify
 database-data:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl engines/database-data-engine -am verify
 infrastructure:
@@ -85,31 +117,69 @@ frt-g01-g30-skills:
 frt-g01-g30-check: frt-g01-g30-skills frontend
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console install --frozen-lockfile
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console check
+# Optional canonical Skill import bundles.
+#
+# A normal source checkout intentionally does not contain them; the rule is
+# stated in tooling/validate_batch97_104_installed.py.  Their byte identities
+# live in the tracked installed manifests under docs/*/installed-manifest.json,
+# so a checkout validates the installed distribution, not the absent bundle.
+#
+# Every guarded step below therefore runs only when its bundle is present.  When
+# it is absent, tooling/source_package_guard.py prints one loud, greppable
+# SOURCE_PACKAGE_ABSENT= line and the target continues with whatever real gate
+# does not need the bundle.  A skipped bundle-integrity check must never be
+# readable as a passed one, which is why the marker is printed rather than
+# swallowed.  Use `make <target> REQUIRE_SOURCE_PACKAGES=1` to demand the
+# bundles instead (release and bundle-publishing runs should).
+SOURCE_PACKAGE_GUARD := python3 tooling/source_package_guard.py
+REQUIRE_SOURCE_PACKAGES ?=
+ifeq ($(REQUIRE_SOURCE_PACKAGES),)
+PROJECT_SYNTHESIS_INTEGRATION_FLAGS :=
+else
+PROJECT_SYNTHESIS_INTEGRATION_FLAGS := --require-packages
+endif
+
+# $(call guarded,<package dir>,<manifest file>,<shell command run when present>)
+ifeq ($(REQUIRE_SOURCE_PACKAGES),)
+guarded = @if $(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2); then set -e; $(3); fi
+else
+guarded = @$(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2) && set -e && $(3)
+endif
+
 batch1-55-skills:
-	$(UV) run --quiet --with pyyaml python tooling/validate_batch1_55_skill_pack.py
+	$(call guarded,elmos-codex-skills-batch1-55-complete,manifest.json,\
+		$(UV) run --quiet --with pyyaml python tooling/validate_batch1_55_skill_pack.py)
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root .agents/skills
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root agent-skills/runtime
 batch66-80-skills:
-	python3 tooling/import_batch66_80_assets.py --check
-	cd elmos-codex-skills-batch66-80-complete && ./validate.sh
-	python3 tooling/validate_project_synthesis_integration.py
+	$(call guarded,elmos-codex-skills-batch66-80-complete,manifest.json,\
+		python3 tooling/import_batch66_80_assets.py --check; \
+		cd elmos-codex-skills-batch66-80-complete && ./validate.sh)
+	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch66-80-test-skills:
-	python3 tooling/import_batch66_80_strict_test_assets.py --check
-	cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh
+	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
+		python3 tooling/import_batch66_80_strict_test_assets.py --check; \
+		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh)
 language-packs-batch81-95:
-	python3 tooling/import_batch81_95_language_packs.py --check
-	cd elmos-language-packs-batch81-95-complete && ./validate.sh
-	python3 tooling/validate_project_synthesis_integration.py
+	$(call guarded,elmos-language-packs-batch81-95-complete,package-manifest.json,\
+		python3 tooling/import_batch81_95_language_packs.py --check; \
+		cd elmos-language-packs-batch81-95-complete && ./validate.sh)
+	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch81-95-test-skills:
-	python3 tooling/import_batch81_95_strict_test_assets.py --check
-	cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh
+	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,manifest.json,\
+		python3 tooling/import_batch81_95_strict_test_assets.py --check; \
+		cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh)
 batch97-104-skills:
-	python3 tooling/import_batch97_104_assets.py --check
-	cd elmos-codex-skills-batch97-104-complete && ./validate.sh
-	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py'
+	$(call guarded,elmos-codex-skills-batch97-104-complete,manifest.json,\
+		python3 tooling/import_batch97_104_assets.py --check; \
+		cd elmos-codex-skills-batch97-104-complete && ./validate.sh; \
+		cd .. && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py')
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_batch97_104_installed.py
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_batch97_104_installed
 product-batch56-skills:
-	cd elmos-codex-skills-batch56-product-closure && ./validate.sh
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_batch56_closure.py
+	$(call guarded,elmos-codex-skills-batch56-product-closure,manifest.json,\
+		cd elmos-codex-skills-batch56-product-closure && ./validate.sh; \
+		cd .. && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_batch56_closure.py)
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/product-closure-batch56 -p 'test_*.py'
 product-closure-convergence-skills:
 	@if test -f elmos-codex-skills-batch56a-product-closure/manifest.json && test -f elmos-product-convergence-reference-skills/manifest.json; then \
@@ -152,35 +222,47 @@ test-suite-validate:
 	$(UV) run --quiet --with 'jsonschema>=4.23' python scripts/test-suite/validate_schema_bundle.py
 	python3 scripts/test-suite/generate_integration_manifest.py --check
 	python3 scripts/test-suite/validate_batch1_55_slightly_strict.py
-	python3 scripts/test-suite/validate_batch1_65_slightly_strict.py
-	python3 tooling/import_batch66_80_strict_test_assets.py --check
-	cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh
-	python3 scripts/test-suite/validate_batch66_80_slightly_strict.py
-	python3 tooling/import_batch81_95_strict_test_assets.py --check
-	cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh
-	python3 scripts/test-suite/validate_batch81_95_language_packs.py
+	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
+		python3 scripts/test-suite/validate_batch1_65_slightly_strict.py)
+	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
+		python3 tooling/import_batch66_80_strict_test_assets.py --check; \
+		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh; \
+		cd .. && python3 scripts/test-suite/validate_batch66_80_slightly_strict.py)
+	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,package-manifest.json,\
+		python3 tooling/import_batch81_95_strict_test_assets.py --check; \
+		cd elmos-batch81-95-slightly-strict-test-skills && ./validate.sh; \
+		cd .. && python3 scripts/test-suite/validate_batch81_95_language_packs.py)
 test-suite-test:
 	python3 -m unittest discover -s tests/test-suite -p 'test_*.py'
-test-suite-check: test-suite-validate test-suite-test test-suite-b38-45-check
+test-suite-check: test-suite-validate test-suite-test test-suite-b38-45-check test-suite-certification-rehearsal
 test-suite-gate:
 	python3 scripts/test-suite/run_strict_test_gate.py test-suites/batch1-37-strict
+# Covers the trust-anchor validity branches of verify_certification_request --
+# revoked, wrong role, wrong algorithm, outside validity window, key digest
+# mismatch, missing anchor -- which tests/test-suite/test_toolkit.py does not
+# reach. Uses a throwaway key in a temporary directory and grants nothing.
+test-suite-certification-rehearsal:
+	python3 scripts/test-suite/rehearse_certification_path.py
 test-suite-1-55-check:
 	python3 scripts/test-suite/validate_batch1_55_slightly_strict.py
 	python3 -m unittest tests/test-suite/test_batch1_55_supplemental.py
 test-suite-1-55-gate:
 	python3 scripts/test-suite/run_batch1_55_slightly_strict_gate.py test-suites/batch1-55-slightly-strict
 test-suite-1-65-check:
-	python3 scripts/test-suite/validate_batch1_65_slightly_strict.py
+	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
+		python3 scripts/test-suite/validate_batch1_65_slightly_strict.py)
 	python3 -m unittest tests/test-suite/test_batch1_65_supplemental.py
 test-suite-1-65-gate:
 	python3 scripts/test-suite/run_batch1_65_slightly_strict_gate.py test-suites/batch1-65-slightly-strict
 test-suite-66-80-check: batch66-80-test-skills
-	python3 scripts/test-suite/validate_batch66_80_slightly_strict.py
+	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
+		python3 scripts/test-suite/validate_batch66_80_slightly_strict.py)
 	python3 -m unittest tests/test-suite/test_batch66_80_supplemental.py
 test-suite-66-80-gate:
 	python3 scripts/test-suite/run_batch66_80_slightly_strict_gate.py test-suites/batch66-80-slightly-strict
 test-suite-81-95-check: batch81-95-test-skills
-	python3 scripts/test-suite/validate_batch81_95_language_packs.py
+	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,package-manifest.json,\
+		python3 scripts/test-suite/validate_batch81_95_language_packs.py)
 	python3 -m unittest tests/test-suite/test_batch81_95_language_packs.py
 test-suite-81-95-gate: batch81-95-test-skills
 	python3 scripts/test-suite/run_batch81_95_language_pack_gate.py test-suites/batch81-95-language-packs-slightly-strict
@@ -199,15 +281,16 @@ test-suite-local-qualification:
 	test -n "$(TEST_SUITE_EVIDENCE_DIR)" || { echo 'Set TEST_SUITE_EVIDENCE_DIR to a new immutable output directory'; exit 2; }
 	python3 scripts/test-suite/run_repository_qualification.py --output "$(TEST_SUITE_EVIDENCE_DIR)"
 dotnet:
-	PATH="/opt/homebrew/bin:$$PATH" dotnet test engines/dotnet-engine/Elmos.Dotnet.slnx
+	PATH="$(DOTNET_PATH_PREFIX):$$PATH" $(DOTNET) test engines/dotnet-engine/Elmos.Dotnet.slnx
 python:
 	$(UV) --directory engines/python-engine run --locked pytest
 	$(UV) --directory engines/python-engine run --locked ruff check src tests
 	$(UV) --directory engines/python-engine run --locked mypy src
 project-synthesis:
-	python3 tooling/validate_project_synthesis_integration.py
+	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 	$(UV) --directory engines/project-synthesis-engine run --locked python ../../scripts/operations/validate_generation_support_matrix.py
-	$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py
+	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
+		$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py)
 	$(UV) --directory engines/project-synthesis-engine run --locked pytest
 	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src

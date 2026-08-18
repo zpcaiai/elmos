@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json, subprocess, sys, tempfile, unittest
+from shutil import copytree
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -94,6 +95,15 @@ class ToolkitTests(unittest.TestCase):
             source.write_text(json.dumps({'weights':{'customer_demand':2,'migration_value':2,'representative_workloads':1.5,'engineering_reuse':1,'source_complexity':-.5,'security_risk':-1,'provider_lock_in':-.5},'candidates':[{'pack_key':'cf-to-tf','customer_demand':4,'migration_value':4,'representative_workloads':3,'engineering_reuse':4,'source_complexity':2,'security_risk':1,'provider_lock_in':1,'evidence_notes':['design partner']}] }))
             subprocess.run([sys.executable,str(SCRIPTS/'score_cloud_candidates.py'),str(source),'--output',str(out)],check=True)
             self.assertEqual(json.loads(out.read_text())['results'][0]['decision'],'approve')
+
+    def test_content_addressed_evidence_rejects_tampering(self):
+        source=ROOT/'cloud-packs/elmos-project-generation-cloud-run-handoff'
+        with tempfile.TemporaryDirectory() as d:
+            pack=Path(d)/source.name; copytree(source,pack)
+            result=pack/'certification/local-container-evidence.json'
+            result.write_text(result.read_text()+'tampered\n')
+            completed=subprocess.run([sys.executable,str(SCRIPTS/'validate_cloud_pack.py'),str(pack)])
+            self.assertEqual(completed.returncode,1)
 
     def test_conservative_gate_rejects_fake_certification(self):
         with tempfile.TemporaryDirectory() as d:

@@ -13,6 +13,18 @@
       ]
     },
     {
+      "key": "cloud-run-deployment-control-generation",
+      "status": "supported",
+      "scope": "Generated plan-first controller for private, digest-pinned Cloud Run deploy, health-gated promotion, rollback, and destroy",
+      "owner": "elmos-cloud-platform-engineering",
+      "evidence_refs": [
+        "certification/local-control-evidence.json"
+      ],
+      "limitations": [
+        "Code generation and local policy tests only; provider execution remains NOT_RUN."
+      ]
+    },
+    {
       "key": "google-cloud-run-deployment",
       "status": "blocked",
       "scope": "Google Cloud Run v2 in asia-east1",
