@@ -295,6 +295,23 @@ _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
             "func subtract(_ left: Int64, _ right: Int64) -> Int64 {\n    return left - right\n}\n",
         ),
     ),
+    "php": (
+        (
+            "add.php",
+            "<?php\n\ndeclare(strict_types=1);\n\n"
+            "function add(int $left, int $right): int { return $left + $right; }\n",
+        ),
+        (
+            "multiply.php",
+            "<?php\n\ndeclare(strict_types=1);\n\n"
+            "function multiply(int $left, int $right): int { return $left * $right; }\n",
+        ),
+        (
+            "subtract.php",
+            "<?php\n\ndeclare(strict_types=1);\n\n"
+            "function subtract(int $left, int $right): int { return $left - $right; }\n",
+        ),
+    ),
 }
 
 _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
@@ -467,6 +484,24 @@ _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
             "func minimum(_ left: Int64, _ right: Int64) -> Int64 {\n"
             "    if left < right { return left }\n"
             "    return right\n"
+            "}\n",
+        ),
+    ),
+    "php": (
+        (
+            "maximum.php",
+            "<?php\n\ndeclare(strict_types=1);\n\n"
+            "function maximum(int $left, int $right): int {\n"
+            "    if ($left > $right) { return $left; }\n"
+            "    return $right;\n"
+            "}\n",
+        ),
+        (
+            "minimum.php",
+            "<?php\n\ndeclare(strict_types=1);\n\n"
+            "function minimum(int $left, int $right): int {\n"
+            "    if ($left < $right) { return $left; }\n"
+            "    return $right;\n"
             "}\n",
         ),
     ),
@@ -1080,9 +1115,9 @@ def _assert_artifact_closure(
 
 
 def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> None:
-    assert len(SUPPORTED_LANGUAGES) == 10
-    assert len(DIRECTED_LANGUAGE_PAIRS) == 90
-    assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 90
+    assert len(SUPPORTED_LANGUAGES) == 11
+    assert len(DIRECTED_LANGUAGE_PAIRS) == 110
+    assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 110
     assert set(DIRECTED_LANGUAGE_PAIRS) == {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
     }
@@ -1090,8 +1125,8 @@ def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> Non
 
 
 def test_medium_language_ring_covers_every_source_and_target_once() -> None:
-    assert len(MEDIUM_LANGUAGE_RING) == 10
-    assert len(set(MEDIUM_LANGUAGE_RING)) == 10
+    assert len(MEDIUM_LANGUAGE_RING) == 11
+    assert len(set(MEDIUM_LANGUAGE_RING)) == 11
     assert all(source != target for source, target in MEDIUM_LANGUAGE_RING)
     assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
     assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)

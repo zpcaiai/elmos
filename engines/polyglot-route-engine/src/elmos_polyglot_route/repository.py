@@ -27,6 +27,7 @@ _EXTENSIONS: dict[str, Language] = {
     ".hxx": "cpp",
     ".m": "objc",
     ".swift": "swift",
+    ".php": "php",
 }
 _IGNORED_DIRECTORIES = {
     ".git",

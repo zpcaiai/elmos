@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Final, cast
 
 from .clang_analyzer import analyze_clang, inventory_clang_module
-from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _SWIFT_HELPERS
+from .emitter import _CPP_HELPERS, _OBJC_HELPERS, _PHP_HELPERS, _SWIFT_HELPERS
 from .models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
 from .python_analyzer import analyze_python
 from .repository import javascript_esm_descriptor
@@ -41,7 +41,7 @@ REPOSITORY_ROOT = ENGINE_ROOT.parents[1]
 # These native frontends can re-lift emitted target source even though they
 # are not part of the older ROUTED_LANGUAGES evidence inventory.  Relift
 # capability is deliberately named separately from route certification.
-NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift"})
+NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift", "php"})
 MODULE_INVENTORY_KIND = "elmos.typed-pure-module-inventory"
 MODULE_INVENTORY_PROFILE = "typed-pure-module-v1"
 _JAVASCRIPT_ANALYZER = ENGINE_ROOT / "native" / "javascript" / "analyzer.mjs"
@@ -81,6 +81,26 @@ _TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
 _TYPESCRIPT_ANALYZER_SHA256 = "482d2875c625f21fa13e02741ea4350e5ad43f0a168257a7425a3df87dc7d1d2"
 _TYPESCRIPT_ANALYZER_BYTES = 31_436
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
+_PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
+_PHP_ANALYZER_SHA256 = "8419309ee77f60b881bcad26da1f3ea139dac934cd76d4305d17b353bcf9a7ff"
+_PHP_ANALYZER_BYTES = 44089
+_PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
+#: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
+#: behaviour is the build's, not the machine's, and the four `-d` overrides pin
+#: the settings that could otherwise change an *observed value* rather than a
+#: diagnostic. Kept as one constant so the analyzer and the behaviour harness
+#: cannot drift apart in how they configure the interpreter.
+_PHP_INTERPRETER_FLAGS = (
+    "-n",
+    "-d",
+    "error_reporting=E_ALL",
+    "-d",
+    "precision=17",
+    "-d",
+    "serialize_precision=-1",
+    "-d",
+    "opcache.enable_cli=0",
+)
 _SWIFT_ANALYZER_KIND = "elmos.swift-analyzer-build-receipt"
 _SWIFT_SYNTAX_VERSION = "600.0.1"
 _SWIFT_SYNTAX_REVISION = "0687f71944021d616d34d922343dcef086855920"
@@ -776,6 +796,12 @@ def _verify_emitted_helper_sources(source: Path, language: Language) -> None:
         "cpp": _CPP_HELPERS,
         "objc": _OBJC_HELPERS,
         "swift": _SWIFT_HELPERS,
+        # The PHP frontend deliberately *skips* the helper bodies when it
+        # relifts (see native/php/analyzer.php, skipBalancedBlock). That is only
+        # sound because this check has already asserted each helper's source
+        # appears byte-for-byte exactly once, so the bytes are pinned here
+        # rather than re-parsed there.
+        "php": _PHP_HELPERS,
     }
     registry = registries.get(language)
     if registry is None:
@@ -5152,22 +5178,6 @@ def _cargo_build_cache(package: Path, executable: Path) -> tuple[Path, Path, dic
 _ANALYZER_BUILD_RECEIPT = "build-receipt.json"
 
 
-#: The Swift analyzer cannot use this cache, and the reason is not a missing
-#: toolchain -- it is deliberate, in `_verify_swift_execution_seal`.
-#:
-#: That seal pins `st_dev` and `st_ino` of the directory holding the binary,
-#: alongside mode 0500 and `binary.parent == root`.  Copying a sealed analyzer
-#: into a cache directory reproduces the bytes and the mode but necessarily
-#: changes the inode, so the stored receipt stops verifying and the load fails
-#: with SWIFT_ANALYZER_EXECUTION_SEAL_CHANGED.  Measured on two identical
-#: copies on the same device: inode 966663 against 966679.
-#:
-#: That is the seal doing its job, not an obstacle to route around.  Making
-#: Swift cacheable means either re-deriving the seal at load time -- which is
-#: exactly the check that would be skipped -- or redesigning it to be
-#: location-independent.  Both change what the seal promises, so neither is a
-#: performance decision and neither belongs here.
-#:
 #: Reusing a *built analyzer binary* across processes is opt-in, unlike reusing
 #: a compiler's own build directory.
 #:
@@ -5439,6 +5449,72 @@ def _javascript_bound_content(
     ):
         raise RouteError(failure)
     return content
+
+
+def _run_trusted_php_analyzer(
+    toolchain: ExactToolchain,
+    source: Path,
+    function_name: str,
+    *,
+    emitted_target: bool,
+) -> dict[str, Any]:
+    """Run the PHP frontend against a content-pinned copy of its own script.
+
+    The analyzer is a *script*, not a built binary, so the thing that has to be
+    pinned is the file the interpreter is about to read. It is read through the
+    same triple-read the JavaScript analyzer uses -- guarded read, stable read
+    with an fd-level stat, guarded read again -- and compared against the
+    recorded digest and length before the interpreter is ever invoked, so a
+    swap between the check and the run is what the two outer reads exist to
+    catch.
+
+    The analyzer's own reported version is then rewritten into an identity chain
+    the same way the Swift and TypeScript paths rewrite theirs, so a persisted
+    IR names the exact script and interpreter that produced it rather than just
+    "php".
+    """
+    raw_source = source.expanduser()
+    if raw_source.is_symlink():
+        raise RouteError("PHP_ANALYZER_SOURCE_UNSAFE")
+    resolved = raw_source.resolve()
+    if not resolved.is_file() or resolved.stat().st_size > _PHP_ANALYZER_MAX_SOURCE_BYTES:
+        raise RouteError("PHP_ANALYZER_SOURCE_UNSAFE")
+
+    analyzer_before = _javascript_bound_content(
+        _PHP_ANALYZER,
+        ENGINE_ROOT,
+        expected_sha256=_PHP_ANALYZER_SHA256,
+        expected_bytes=_PHP_ANALYZER_BYTES,
+        failure="PHP_ANALYZER_ASSET_UNSAFE",
+    )
+    arguments = [str(resolved), function_name]
+    if emitted_target:
+        arguments.append("--emitted-target")
+    value = _run(
+        [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
+        cwd=ENGINE_ROOT,
+    )
+    analyzer_after = _javascript_bound_content(
+        _PHP_ANALYZER,
+        ENGINE_ROOT,
+        expected_sha256=_PHP_ANALYZER_SHA256,
+        expected_bytes=_PHP_ANALYZER_BYTES,
+        failure="PHP_ANALYZER_ASSET_UNSAFE",
+    )
+    if analyzer_before != analyzer_after:
+        raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+    if type(value) is not dict:
+        raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
+    reported = value.get("analyzer_version")
+    if type(reported) is not str or not reported:
+        raise RouteError("PHP_ANALYZER_VERSION_REQUIRED")
+    bound = dict(value)
+    bound["analyzer_version"] = (
+        f"{reported};analyzer-sha256={_PHP_ANALYZER_SHA256};"
+        f"interpreter-sha256={toolchain.executable_sha256};"
+        f"interpreter-version={toolchain.version}"
+    )
+    return bound
 
 
 def _javascript_metadata_identity(metadata: os.stat_result) -> tuple[int, ...]:
@@ -7472,6 +7548,13 @@ def analyze(
         )
     elif language == "typescript":
         value = _run_trusted_typescript_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=emitted_target,
+        )
+    elif language == "php":
+        value = _run_trusted_php_analyzer(
             toolchain,
             source,
             function_name,

@@ -1,0 +1,11 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "real-repository",
+  "customer_repository": false,
+  "evidence_class": "representative-bounded-fixture",
+  "independent": true,
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "difference.php",
+  "source_language": "php"
+}

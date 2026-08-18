@@ -165,6 +165,37 @@ _SWIFT_RESERVED = _words(
 )
 
 
+#: PHP's keyword set is *case-insensitive* (`IF`, `If` and `if` are the same
+#: token), and so is its function-name namespace. The exact-match `reserved`
+#: check below is therefore not sufficient on its own; `_RESERVED_PATTERNS`
+#: carries the case-folded form and is what actually enforces the rule. Both are
+#: kept: the word list is the readable statement of intent, the pattern is the
+#: enforcement. The list is PHP 8.4's reserved words plus the reserved
+#: non-keyword type names and the magic constants, which cannot be used as a
+#: function name either.
+_PHP_RESERVED = _words(
+    """
+    abstract and array as break callable case catch class clone const continue
+    declare default do echo else elseif empty enddeclare endfor endforeach endif
+    endswitch endwhile enum extends final finally fn for foreach function global
+    goto if implements include include_once instanceof insteadof interface isset
+    list match namespace new or print private protected public readonly require
+    require_once return static switch throw trait try unset use var while xor
+    yield
+    int float bool string void iterable object mixed never null false true self
+    parent
+    __CLASS__ __DIR__ __FILE__ __FUNCTION__ __LINE__ __METHOD__ __NAMESPACE__
+    __TRAIT__ __PROPERTY__ __halt_compiler
+    """
+)
+
+
+#: Pinned PHP dialect. This string is part of the identifier-policy digest, so
+#: it must agree with the version `toolchains._php()` accepts -- changing the
+#: pinned interpreter without changing this constant would let two different
+#: dialects share one recorded policy digest.
+_PHP_DIALECT = "php-8.5.9-strict-types"
+
 _FORBIDDEN: dict[Language, frozenset[str]] = {
     "java": _words(
         """
@@ -238,6 +269,16 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         elmosHarnessHexUTF8 actual0
         """
     ),
+    "php": _words(
+        """
+        migrated fmod intdiv is_int is_nan is_float pack bin2hex printf sprintf
+        ArithmeticError DivisionByZeroError TypeError Error Throwable
+        PHP_INT_MIN PHP_INT_MAX PHP_INT_SIZE NAN INF
+        elmos_checked_add elmos_checked_sub elmos_checked_mul
+        elmos_checked_div elmos_checked_mod elmos_non_zero_float
+        elmos_harness_fp64 elmos_harness_hex_utf8 elmos_harness_subject actual_0
+        """
+    ),
 }
 
 _RESERVED: dict[Language, frozenset[str]] = {
@@ -251,6 +292,7 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "cpp": _CPP_RESERVED,
     "objc": _OBJC_RESERVED,
     "swift": _SWIFT_RESERVED,
+    "php": _PHP_RESERVED,
 }
 
 _DIALECT: dict[Language, str] = {
@@ -264,11 +306,18 @@ _DIALECT: dict[Language, str] = {
     "cpp": "cpp-20-apple-clang-21.0.0",
     "objc": "objective-c-c17-apple-clang-21.0.0",
     "swift": "swift-6.3.3",
+    "php": _PHP_DIALECT,
 }
 
 _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
     "cpp": (r"^__", r"^_[A-Z]"),
     "objc": (r"^__", r"^_[A-Z]"),
+    # The case-folded enforcement of _PHP_RESERVED, plus PHP's reserved
+    # `__`-prefixed magic-method namespace.
+    "php": (
+        r"(?i)\A(?:" + "|".join(sorted(_PHP_RESERVED)) + r")\Z",
+        r"^__",
+    ),
 }
 
 
@@ -848,6 +897,18 @@ def _allocate_binding(
             )
         )
         reasons = list(_candidate_reasons(candidate, policy, occupied))
+        if role == "function" and policy.target_language == "php":
+            # PHP resolves function names case-insensitively, so `Total` and
+            # `total` are one symbol even though `$Total` and `$total` are two
+            # distinct variables. Only the function role folds; folding the
+            # parameter role too would rename identifiers PHP keeps distinct.
+            folded = candidate.lower()
+            collision = next(
+                (owner for name, owner in occupied.items() if name != candidate and name.lower() == folded),
+                None,
+            )
+            if collision is not None:
+                reasons.append(f"TARGET_CASE_INSENSITIVE_SCOPE_COLLISION:{collision}")
         if candidate_index == 0:
             if role == "function" and policy.target_language in {"cpp", "objc"}:
                 reasons.append("TARGET_OPEN_GLOBAL_SYMBOL_NAMESPACE")

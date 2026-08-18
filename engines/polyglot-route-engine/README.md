@@ -1,12 +1,12 @@
 # ELMOS Polyglot Route Engine
 
 This engine implements a compiler-backed, fail-closed vertical slice across Java,
-Python, C#, TypeScript, Go, Rust, C++, Objective-C and Swift. Every attempted
+Python, C#, TypeScript, Go, Rust, C++, Objective-C, Swift and PHP. Every attempted
 direction is evaluated independently; no reverse or Cartesian route is inferred.
 
-All nine have source inventory, candidate discovery and target-project assembly
-plumbing. The repository capability inventory explicitly lists all 72 ordered
-language pairs; it never infers an unlisted direction and a route record is not
+All eleven have source inventory, candidate discovery and target-project
+assembly plumbing. The repository capability inventory explicitly lists all 110
+ordered language pairs; it never infers an unlisted direction and a route record is not
 a certification claim. Evidence provenance remains split between the original
 six-language complete 30, the C++/Objective-C/Swift/Java specialised exact
 eight, and the remaining 34 local capability routes. Only the exact eight carry
@@ -61,12 +61,17 @@ The IR has four canonical types. `integer` is a **64-bit signed integer** and
 `number` is **IEEE-754 binary64**; those two definitions are what every route
 is checked against.
 
-| Canonical | java | python | csharp | typescript | go | rust | cpp | objc | swift |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `integer` | `long` | `int` | `long` | guarded `number` | `int64` | `i64` | `std::int64_t` | `long long` | `Int64` |
-| `number` | `double` | `float` | `double` | `number` | `float64` | `f64` | `double` | `double` | `Double` |
-| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `bool` | `bool` | `BOOL` | `Bool` |
-| `string` | `String` | `str` | `string` | `string` | `string` | `String` | `std::string` | `NSString *` | `String` |
+| Canonical | java | python | csharp | typescript | go | rust | cpp | objc | swift | php |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `integer` | `long` | `int` | `long` | guarded `number` | `int64` | `i64` | `std::int64_t` | `long long` | `Int64` | `int` |
+| `number` | `double` | `float` | `double` | `number` | `float64` | `f64` | `double` | `double` | `Double` | `float` |
+| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `bool` | `bool` | `BOOL` | `Bool` | `bool` |
+| `string` | `String` | `str` | `string` | `string` | `string` | `String` | `std::string` | `NSString *` | `String` | `string` |
+
+PHP's `int` is platform-width rather than fixed at 64 bits, so it is admitted
+only on a build whose `PHP_INT_SIZE` the toolchain probe has observed to be 8;
+a 32-bit build is refused with `EXACT_TOOLCHAIN_PHP_INT_WIDTH_UNSUPPORTED`
+rather than silently reinterpreting every `integer` at the wrong width.
 
 Lifting *into* those types is deliberately narrower than each language's own
 type system, because the difference is not observable in the emitted code:
@@ -171,6 +176,152 @@ A mismatched declared pin, SDK, platform, executable digest, or compiler
 version is a hard block. An unset environment variable uses the immutable
 repository pin; "whatever is installed" is never accepted as equivalent
 evidence.
+
+
+## PHP
+
+PHP is the one target in the matrix whose integer does not fail loudly on
+overflow and does not wrap either: `PHP_INT_MAX + 1` silently becomes a
+`float`. That promotion is exact -- `int op int` is an `int` unless the
+mathematical result left the 64-bit range -- so it is not a hazard to be
+worked around but the signal R1 is built on. Each of `elmos_checked_add`,
+`_sub` and `_mul` performs the operation and then asks `is_int` of the result,
+which is a sound check rather than a heuristic.
+
+R2 splits. `intdiv` already throws `DivisionByZeroError` on a zero divisor and
+`ArithmeticError` on `PHP_INT_MIN / -1`, so the division helper only re-labels
+those with the canonical messages. `%` throws on a zero divisor but answers
+**0** for `PHP_INT_MIN % -1` rather than failing, so that arm is a real guard.
+
+Four more places where the obvious emission would be wrong, all reproduced
+against a real interpreter before the corresponding arm was written, and
+re-checkable at any time with `php tools/verify_php_semantics.php`, which
+restates all 44 of them as executable assertions naming the arm each one
+supports (44/44 on 8.4.21 and on the pinned 8.5.9):
+
+* `/` on two integers is **not** truncating division. `7 / 2` is `3.5`, and the
+  result is not even an `int`. Integer division is `intdiv`.
+* `%` is an **integer** operator that casts float operands to int, so `7.5 % 2`
+  is `1`. The float remainder is `fmod`, which truncates and matches Java, C#
+  and TypeScript exactly.
+* `==` type-juggles. `'1' == '01'` and `'10' == '1e1'` are both true. The
+  canonical value comparison is `===` -- which also compares types, so
+  `1 === 1.0` is false, and the one mixed case the lattice admits
+  (integer against number) has the integer side widened explicitly first.
+* A double-quoted string interpolates `$name` and does not understand JSON's
+  `\uXXXX`. Emitted string literals are single-quoted, where the only two
+  escapes are `\\` and `\'`.
+
+`+` on two strings is a `TypeError` in PHP 8, so string concatenation emits `.`.
+A bare `-9223372036854775808` is a float, so the minimum integer literal emits
+`PHP_INT_MIN`. Function names resolve case-insensitively while variables do
+not, so the identifier policy folds case for the function role only.
+
+### One namespace per assembled unit
+
+Every other target is isolated by where its file lands: a Go package, a Rust
+module, a C++ translation unit, a Java package. PHP gets nothing from directory
+placement, because a `function` at file scope is unconditionally global. Two
+assembled units that both need `elmos_checked_add` are therefore a fatal
+"Cannot redeclare function" the moment Composer autoloads the second -- which
+is to say a repository-level PHP assembly with two units and any integer
+arithmetic would not load at all.
+
+`assembly._place_php` gives each unit its own `namespace Elmos\Generated\<Unit>;`,
+the same division of labour Java and C# already use, where the emitted file
+carries no package and the placer adds the one that matches where the file
+lands. The namespace goes *after* `declare(strict_types=1);`, which must stay
+the first statement.
+
+That relocation has one consequence worth stating on its own, because it fails
+only on the path the guards exist for. Inside a namespace PHP falls back to the
+global namespace for an unqualified *function* or *constant*, but **not** for a
+class: `new ArithmeticError` inside `namespace Elmos\Generated\Wu00001`
+resolves to `Elmos\Generated\Wu00001\ArithmeticError` and dies with "Class not
+found". Every class reference in the emitted helpers is therefore written fully
+qualified, `\ArithmeticError` and `\DivisionByZeroError`, so the R1/R2 guards
+raise the canonical error rather than a class-resolution error.
+
+### The PHP frontend
+
+`native/php/analyzer.php` lifts source PHP through `token_get_all()` --
+`ext/tokenizer` is a thin wrapper over the Zend scanner itself, so the token
+stream is the compiler's own lexical analysis rather than a re-lex. PHP ships
+no first-party tree comparable to the JDK Compiler Tree API or clang's AST
+dump: `ext/ast` exposes the real Zend AST but is a PECL extension, and
+nikic/PHP-Parser is a faithful but independent reimplementation in userland.
+
+Three layers therefore have to agree before an IR is produced. `php -l` -- the
+real compiler -- accepts the file. The lift asserts that concatenating every
+token reproduces the source byte-for-byte, which is what makes the byte spans
+it reports incapable of drifting from the file the caller hashed. And when the
+`ast` extension happens to be loaded, the lifted shape is compared against
+Zend's own AST and any disagreement is fatal. That third layer can only ever
+*refuse* a route, so an analysis is no weaker on a host without the extension,
+but it is better witnessed on a host with it. A mutation campaign against the
+lift confirms it is load-bearing rather than decorative: seeding a wrong
+canonical type for any of the four parameter spellings, a dropped trailing
+statement, a renamed subject, or a reordered parameter list all survive the lift
+and are all refused by the witness.
+
+Two details of that layer are deliberate. The AST version is pinned rather than
+"newest supported", because the node shapes the comparison reads are
+version-dependent; an extension that is loaded but cannot supply the pinned
+version is a configuration error and fails closed, while an absent extension is
+the documented weaker mode. And the witness only fires when `ast` is compiled
+into the pinned build: the engine invokes PHP with `-n`, which drops every
+php.ini, so a PECL install activated through an ini file is invisible on
+purpose -- an analysis result must not depend on configuration the toolchain
+pin does not cover.
+
+The subset the frontend admits is narrower than the language in ways worth
+stating, because each refusal is a place where a plausible lift would have been
+wrong rather than merely unsupported: a missing `declare(strict_types=1)`
+(without it the emitted types are coercive), `==`/`!=` (type juggling), `and`/
+`or` (a precedence no other target has), a raw `/` on two integers, a raw `%`
+with a float operand, a non-decimal integer literal, an integer literal outside
+the 64-bit range (PHP's lexer has already turned it into a float), string
+interpolation, and every by-reference, variadic, nullable, union or defaulted
+parameter.
+
+### Toolchain pinning
+
+`toolchains._php` pins the install the way Go's is pinned -- whole-tree
+manifest, executable file record, before/after sandwich around the one
+subprocess -- plus a runtime identity document, because two PHP builds that
+report the same `php --version` can still disagree semantically. The document
+covers `PHP_INT_SIZE`, the float model, the ini settings that change an
+observed value rather than a diagnostic, and the loaded extension set.
+
+The digests are machine-specific. Run `tools/pin_php_toolchain.py` on the
+pinning host and paste its output over the `_EXPECTED_PHP_*` block. Until they
+are pinned the probe fails closed with `EXACT_TOOLCHAIN_PHP_NOT_PINNED` rather
+than accepting whatever `php` is on PATH.
+
+Two properties of the tree contract are PHP-specific and worth stating, because
+in both cases the obvious rule is the wrong one.
+
+The tree is **not** required to be symlink-free, unlike Go's and Rust's. That
+contract fits an extracted tarball of plain files and fits nothing a package
+manager laid down: a stock Homebrew PHP ships `bin/phar -> bin/phar.phar` and
+`pecl -> /opt/homebrew/lib/php/pecl`, so a symlink-free rule refuses every
+Homebrew PHP that will ever exist, and a rule no real install can satisfy is
+not strict but unusable. Links are instead *recorded* as part of the pinned
+identity, exactly as the Python probe already does, so repointing one is drift
+even when no file's content changed. Links resolving outside the root are kept
+in a separate map and named as unbound in the profile, because their content
+genuinely is not covered and folding them in would imply otherwise. The one
+thing still refused outright is an escaping link to a loadable object: anything
+the interpreter could `dlopen` has to live inside the tree the pin binds.
+
+And `ext/tokenizer` is pinned as either `builtin` or a path inside the root.
+The engine runs PHP with `-n`, which drops every php.ini; on a build that ships
+the tokenizer as a shared module activated through conf.d — Debian and Ubuntu
+do — that removes `token_get_all` and the frontend cannot run at all. The
+extension is re-added by absolute path from inside the pinned root, never by
+bare name, so the object being loaded is the one the tree digest covers rather
+than whatever sits on the extension search path. The probe cross-checks the
+build against the pinned value and refuses a mismatch.
 
 ## Formal arithmetic evidence boundary
 

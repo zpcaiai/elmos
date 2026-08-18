@@ -8,7 +8,7 @@ import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 from .models import Language, RouteError
@@ -3112,6 +3112,439 @@ def _swift() -> ExactToolchain:
     )
 
 
+# ---------------------------------------------------------------------------
+# PHP
+#
+# The install is pinned the same way Go's is: a fixed root under the user-local
+# anchor, a whole-tree manifest of that root, an executable file record, and a
+# before/after sandwich around the one subprocess the probe runs. PHP adds one
+# obligation the compiled targets do not have, because two PHP builds that
+# report the same `php --version` can still disagree semantically:
+#
+#   * `PHP_INT_SIZE` decides whether `int` is the canonical 64-bit signed
+#     integer at all. A 32-bit build would silently make every emitted `int`
+#     a 32-bit value and turn R1's overflow-to-float check into a check at the
+#     wrong boundary. The probe refuses anything but 8.
+#   * The loaded extension set is part of the language. `php -n` is not enough:
+#     an extension can be compiled in, and a compiled-in `bcmath` or `gmp` does
+#     not change arithmetic but a compiled-in userland override could. The
+#     manifest of the extension directory is folded into the tree digest and
+#     the runtime-reported list is folded into the profile.
+#   * A thread-safe (ZTS) build has a different `php.ini` search order and a
+#     different binary; it is recorded rather than refused, so a route's
+#     evidence names which one produced it.
+#
+# The four `_EXPECTED_PHP_*` digest constants below are machine-specific, the
+# same way `_EXPECTED_GO_TREE_SHA256` and `_EXPECTED_SWIFTC_SHA256` are. Run
+# `tools/pin_php_toolchain.py` on the pinning host and paste its output here;
+# the script emits exactly this block. Until they are pinned the probe fails
+# closed with EXACT_TOOLCHAIN_PHP_NOT_PINNED rather than accepting whatever
+# `php` happens to be on PATH.
+_PHP_VERSION_VARIABLE = "ELMOS_PHP_VERSION"
+_EXPECTED_PHP_VERSION = 'PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)'
+_EXPECTED_PHP_ROOT = Path('/opt/homebrew/Cellar/php/8.5.9')
+_EXPECTED_PHP_ANCHOR = Path('/opt/homebrew/Cellar/php')
+_EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
+_EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
+_EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
+_EXPECTED_PHP_TREE_SHA256 = '4d1c6db642797e84f37e736da203423f013807abf5a334f7ba59ae99e4badefb'
+_EXPECTED_PHP_TREE_RECORD_COUNT = 643
+_EXPECTED_PHP_TREE_FILE_COUNT = 532
+_EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
+_EXPECTED_PHP_TREE_BYTES = 129955913
+#: Symlinks whose target resolves *inside* the install root. Pinned as
+#: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
+#: part of the tree's identity, and a link that starts pointing somewhere else
+#: is drift even when every file's content is unchanged.
+_EXPECTED_PHP_TREE_SYMLINKS: dict[str, str] = {
+    'bin/phar': 'phar.phar',
+}
+#: Symlinks whose target resolves *outside* the install root. Their content is
+#: NOT bound by this pin -- that is the whole point of recording them separately
+#: rather than folding them in and implying otherwise. A stock Homebrew PHP has
+#: `pecl` and `pear` pointing at `/opt/homebrew/lib/php/...`, a deliberately
+#: mutable location holding user-installed PECL state. Those two are installer
+#: scripts the engine never invokes; what it does invoke, `bin/php`, and
+#: everything that lives under the root, is bound. Pinning the exact set is what
+#: keeps that true: if a future formula adds an escaping link to something
+#: load-bearing, the set changes and the probe fails.
+_EXPECTED_PHP_TREE_UNBOUND_SYMLINKS: dict[str, str] = {
+    'pecl': '/opt/homebrew/lib/php/pecl',
+}
+#: sha256 over the canonical JSON the identity script prints. Pinning the digest
+#: rather than the document keeps this block readable while still failing closed
+#: on any drift in the extension set, the int width or the float model.
+_EXPECTED_PHP_RUNTIME_IDENTITY_SHA256 = '4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e'
+#: How this build provides `ext/tokenizer`, which the PHP frontend is entirely
+#: built on. Either the string "builtin" -- the extension is compiled into the
+#: interpreter and is present with no php.ini at all -- or a path relative to
+#: the install root naming the shared object to load.
+#:
+#: This has to be pinned rather than discovered because the engine runs PHP with
+#: `-n`, which drops every php.ini. On a build that ships tokenizer as a shared
+#: module activated through conf.d (Debian and Ubuntu do), `-n` removes
+#: `token_get_all` and the analyzer cannot run at all. Loading it explicitly
+#: restores it *without* restoring the rest of the machine's configuration,
+#: and requiring the object to live inside the pinned root is what keeps the
+#: thing being dlopen'd bound by the tree digest.
+_EXPECTED_PHP_TOKENIZER = 'builtin'
+
+#: Printed as one canonical JSON object on stdout. `-n` suppresses every php.ini
+#: so the answer describes the *build*, not the machine's configuration; the
+#: configuration that will actually be used at emit time is captured separately
+#: through the tree manifest, which covers the ini files under the root.
+_PHP_RUNTIME_IDENTITY_SCRIPT = (
+    "$d=["
+    "'php_version'=>PHP_VERSION,"
+    "'php_version_id'=>PHP_VERSION_ID,"
+    "'zts'=>PHP_ZTS,"
+    "'debug'=>PHP_DEBUG,"
+    "'int_size'=>PHP_INT_SIZE,"
+    "'int_max'=>(string)PHP_INT_MAX,"
+    "'int_min'=>(string)PHP_INT_MIN,"
+    "'float_dig'=>PHP_FLOAT_DIG,"
+    "'float_epsilon'=>bin2hex(pack('E',PHP_FLOAT_EPSILON)),"
+    "'float_max'=>bin2hex(pack('E',PHP_FLOAT_MAX)),"
+    "'float_min'=>bin2hex(pack('E',PHP_FLOAT_MIN)),"
+    "'os_family'=>PHP_OS_FAMILY,"
+    "'extension_dir'=>ini_get('extension_dir'),"
+    "'precision'=>ini_get('precision'),"
+    "'serialize_precision'=>ini_get('serialize_precision'),"
+    "'zend_assertions'=>ini_get('zend.assertions'),"
+    "'extensions'=>get_loaded_extensions(),"
+    "];"
+    "sort($d['extensions']);"
+    "echo json_encode($d,JSON_UNESCAPED_SLASHES|JSON_PRESERVE_ZERO_FRACTION);"
+)
+
+
+def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+    """Content identity of one PHP install tree, symlinks included.
+
+    Deliberately *not* `_qualified_tree_manifest`, which requires a symlink-free
+    tree. That contract fits Go and Rust, whose installs are extracted tarballs
+    of plain files, and it fits nothing that a package manager laid down: a
+    stock Homebrew PHP ships `bin/phar -> bin/phar.phar` and
+    `pecl -> /opt/homebrew/lib/php/pecl`, so the symlink-free rule refuses every
+    Homebrew PHP that will ever exist. A rule no real install can satisfy is not
+    a strict rule, it is an unusable one.
+
+    The Python probe already resolved this the right way and this follows it:
+    symlinks are *recorded* rather than refused, so the link itself becomes part
+    of the pinned identity and repointing one is drift even when no file's
+    content changed.
+
+    Where this goes further than the Python probe is escaping links. Python
+    refuses any link resolving outside its root; PHP cannot, because `pecl` and
+    `pear` point into Homebrew's shared, mutable `lib/php`. Those are recorded
+    in a separate `unbound_symlinks` map and named as unbound in the toolchain
+    profile, because saying "this pin does not cover these two names" is honest
+    and folding them in silently would not be. One thing is still refused
+    outright: an escaping link to a loadable object. Anything the interpreter
+    could `dlopen` has to be inside the tree the pin actually binds.
+
+    Exported without an underscore because `tools/pin_php_toolchain.py` has to
+    compute exactly this, and a pin generator that reimplements the rule it is
+    generating a pin for is a rule with two definitions.
+    """
+    _qualified_directory_chain(root, anchor, failure)
+    try:
+        root_metadata = root.lstat()
+    except OSError as error:
+        raise RouteError(failure) from error
+    if (
+        not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(root_metadata.st_mode) & 0o022
+    ):
+        raise RouteError(failure)
+
+    def discover() -> list[Path]:
+        try:
+            return sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix())
+        except OSError as error:
+            raise RouteError(failure) from error
+
+    paths = discover()
+    records: list[dict[str, object]] = []
+    symlinks: dict[str, str] = {}
+    unbound: dict[str, str] = {}
+    file_count = 0
+    directory_count = 0
+    total_bytes = 0
+    for path in paths:
+        relative = path.relative_to(root).as_posix()
+        try:
+            metadata = path.lstat()
+        except OSError as error:
+            raise RouteError(failure) from error
+        # Homebrew lays its Cellar down 0755/0644 owned by the installing user,
+        # so the fixed 0555/0444 the Python probe asserts is not applicable. The
+        # property that matters is unchanged: nobody but the owner can write it.
+        #
+        # The mode is checked for files and directories only. A symlink's own
+        # mode is not a permission on POSIX -- the target's mode governs access,
+        # and replacing a link needs write on its *directory*, which the parent
+        # entry already covers. The value is also not portable: macOS reports
+        # 0755 for a link and Linux reports 0777, so testing it here would make
+        # the rule accept or reject the same tree depending on the host.
+        if metadata.st_uid != os.getuid():
+            raise RouteError(failure)
+        if not stat.S_ISLNK(metadata.st_mode) and stat.S_IMODE(metadata.st_mode) & 0o022:
+            raise RouteError(failure)
+        if stat.S_ISLNK(metadata.st_mode):
+            try:
+                target = os.readlink(path)
+                resolved = path.resolve(strict=True)
+            except OSError as error:
+                raise RouteError(failure) from error
+            if resolved.is_relative_to(root):
+                symlinks[relative] = target
+                records.append({"path": relative, "kind": "symlink", "target": target})
+            else:
+                if resolved.suffix in {".so", ".dylib", ".bundle"}:
+                    raise RouteError(f"{failure}:ESCAPING_LOADABLE_OBJECT:{relative}")
+                unbound[relative] = target
+                records.append({"path": relative, "kind": "unbound-symlink", "target": target})
+            continue
+        if stat.S_ISDIR(metadata.st_mode):
+            directory_count += 1
+            records.append({"path": relative, "kind": "directory"})
+            continue
+        if not stat.S_ISREG(metadata.st_mode):
+            raise RouteError(failure)
+        record = _qualified_file_record(path, root, failure)
+        file_count += 1
+        total_bytes += cast(int, record["bytes"])
+        records.append(
+            {
+                "path": relative,
+                "kind": "file",
+                "mode": record["mode"],
+                "bytes": record["bytes"],
+                "sha256": record["sha256"],
+            }
+        )
+    if [item.relative_to(root).as_posix() for item in discover()] != [
+        item.relative_to(root).as_posix() for item in paths
+    ]:
+        raise RouteError(f"{failure}:TREE_CHANGED")
+    digest = hashlib.sha256(
+        json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return {
+        "root": str(root),
+        "sha256": digest,
+        "record_count": len(records),
+        "file_count": file_count,
+        "directory_count": directory_count,
+        "bytes": total_bytes,
+        "symlinks": symlinks,
+        "unbound_symlinks": unbound,
+    }
+
+
+def _php_tree_identity() -> dict[str, object]:
+    identity = php_tree_identity(
+        _EXPECTED_PHP_ROOT,
+        _EXPECTED_PHP_ANCHOR,
+        "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
+    )
+    expected = {
+        "root": str(_EXPECTED_PHP_ROOT),
+        "sha256": _EXPECTED_PHP_TREE_SHA256,
+        "record_count": _EXPECTED_PHP_TREE_RECORD_COUNT,
+        "file_count": _EXPECTED_PHP_TREE_FILE_COUNT,
+        "directory_count": _EXPECTED_PHP_TREE_DIRECTORY_COUNT,
+        "bytes": _EXPECTED_PHP_TREE_BYTES,
+        "symlinks": _EXPECTED_PHP_TREE_SYMLINKS,
+        "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
+    }
+    if identity != expected:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_TREE_MISMATCH")
+    return identity
+
+
+def _php_runtime_identity() -> dict[str, object]:
+    raw = _output([str(_EXPECTED_PHP_EXECUTABLE), "-n", "-r", _PHP_RUNTIME_IDENTITY_SCRIPT])
+    try:
+        document = json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_RUNTIME_IDENTITY_INVALID") from error
+    if type(document) is not dict:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_RUNTIME_IDENTITY_INVALID")
+    canonical = json.dumps(document, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    digest = hashlib.sha256(canonical).hexdigest()
+    # These four are checked by value as well as by digest. The digest alone
+    # would already fail on a mismatch, but it would fail with "something
+    # changed"; naming the semantic preconditions makes the failure legible and
+    # keeps them true even if the digest is ever re-pinned carelessly.
+    if document.get("int_size") != 8:
+        raise RouteError(f"EXACT_TOOLCHAIN_PHP_INT_WIDTH_UNSUPPORTED:{document.get('int_size')}")
+    if document.get("int_max") != "9223372036854775807" or document.get("int_min") != "-9223372036854775808":
+        raise RouteError("EXACT_TOOLCHAIN_PHP_INT_RANGE_UNSUPPORTED")
+    if document.get("float_dig") != 15:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_FLOAT_MODEL_UNSUPPORTED")
+    extensions = document.get("extensions")
+    if type(extensions) is not list:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_RUNTIME_IDENTITY_INVALID")
+    # Recorded under `-n`, so this is the set the build carries with no php.ini
+    # at all -- which is also the set that decides whether `php-tokenizer` has
+    # to name a shared object.
+    if ("tokenizer" in extensions) != (_EXPECTED_PHP_TOKENIZER == "builtin"):
+        raise RouteError(
+            "EXACT_TOOLCHAIN_PHP_TOKENIZER_BINDING_MISMATCH:"
+            f"builtin={'tokenizer' in extensions}:pinned={_EXPECTED_PHP_TOKENIZER}"
+        )
+    if digest != _EXPECTED_PHP_RUNTIME_IDENTITY_SHA256:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_PHP_RUNTIME_IDENTITY_MISMATCH:"
+            f"expected={_EXPECTED_PHP_RUNTIME_IDENTITY_SHA256}:observed={digest}"
+        )
+    return {"digest": digest, "document": document}
+
+
+def php_command(toolchain: ExactToolchain, *arguments: str) -> list[str]:
+    """One PHP invocation with this machine's ambient configuration removed.
+
+    `-n` drops every php.ini, so the interpreter behaves as the pinned build
+    rather than as this host has configured it, and `sanitized_subprocess_env`
+    has already dropped PHPRC and PHP_INI_SCAN_DIR. The three `-d` overrides pin
+    the settings that can change an observed *value* rather than only a
+    diagnostic: `precision` and `serialize_precision` govern float-to-string,
+    and OPcache is disabled so a stale cached compilation can never be executed
+    in place of the file just written.
+
+    `-n` has one consequence that has to be undone deliberately. A build that
+    ships `ext/tokenizer` as a shared module loses it along with the ini, and
+    the PHP frontend is nothing without `token_get_all`. The extension is
+    therefore re-added by absolute path from inside the pinned install root --
+    never by bare name, which would search an extension_dir the pin does not
+    bind.
+
+    Single definition on purpose: the analyzer runner, the behaviour harness and
+    the assembly build check must not be able to drift into configuring the
+    interpreter three different ways.
+    """
+    command = [
+        toolchain.executable,
+        "-n",
+        "-d",
+        "error_reporting=E_ALL",
+        "-d",
+        "precision=17",
+        "-d",
+        "serialize_precision=-1",
+        "-d",
+        "opcache.enable_cli=0",
+    ]
+    prefix = "php-tokenizer="
+    tokenizer = next(
+        (entry[len(prefix):] for entry in toolchain.profile if entry.startswith(prefix)),
+        None,
+    )
+    if tokenizer is None:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_TOKENIZER_BINDING_MISSING")
+    if tokenizer != "builtin":
+        # Absolute, and resolved from the install root rather than from an
+        # extension_dir, so what gets dlopen'd is the object the tree digest
+        # covers and not whatever happens to sit on the search path.
+        root = Path(toolchain.executable).parent.parent
+        command.extend(("-d", f"extension={root / tokenizer}"))
+    return [*command, *arguments]
+
+
+def _php_tokenizer_binding(root: Path) -> str:
+    """Resolve, and validate, how this build provides ext/tokenizer."""
+    if _EXPECTED_PHP_TOKENIZER == "builtin":
+        return "builtin"
+    if not _EXPECTED_PHP_TOKENIZER:
+        raise RouteError("EXACT_TOOLCHAIN_PHP_NOT_PINNED:_EXPECTED_PHP_TOKENIZER")
+    relative = PurePosixPath(_EXPECTED_PHP_TOKENIZER)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise RouteError(f"EXACT_TOOLCHAIN_PHP_TOKENIZER_UNBINDABLE:{_EXPECTED_PHP_TOKENIZER}")
+    resolved = (root / relative).resolve()
+    if not resolved.is_relative_to(root) or not resolved.is_file():
+        # Loading a shared object the tree manifest does not cover would put the
+        # frontend's own parser outside the pin, which is the one component that
+        # must not be.
+        raise RouteError(f"EXACT_TOOLCHAIN_PHP_TOKENIZER_UNBINDABLE:{_EXPECTED_PHP_TOKENIZER}")
+    return _EXPECTED_PHP_TOKENIZER
+
+
+def _php() -> ExactToolchain:
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:php:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    if not (
+        _EXPECTED_PHP_EXECUTABLE_SHA256
+        and _EXPECTED_PHP_TREE_SHA256
+        and _EXPECTED_PHP_RUNTIME_IDENTITY_SHA256
+    ):
+        # An unpinned digest must never degrade to "trust whatever is there".
+        raise RouteError("EXACT_TOOLCHAIN_PHP_NOT_PINNED:run tools/pin_php_toolchain.py on the pinning host")
+    expected_version = _pinned(_PHP_VERSION_VARIABLE, "php", _EXPECTED_PHP_VERSION)
+    tokenizer = _php_tokenizer_binding(_EXPECTED_PHP_ROOT)
+    tree_before = _php_tree_identity()
+    executable_before = _qualified_file_record(
+        _EXPECTED_PHP_EXECUTABLE,
+        _EXPECTED_PHP_ROOT,
+        "EXACT_TOOLCHAIN_PHP_EXECUTABLE_UNSAFE",
+    )
+    version_lines = _output([str(_EXPECTED_PHP_EXECUTABLE), "-n", "--version"]).splitlines()
+    observed = version_lines[0].strip() if version_lines else ""
+    runtime = _php_runtime_identity()
+    executable_after = _qualified_file_record(
+        _EXPECTED_PHP_EXECUTABLE,
+        _EXPECTED_PHP_ROOT,
+        "EXACT_TOOLCHAIN_PHP_EXECUTABLE_UNSAFE",
+    )
+    tree_after = _php_tree_identity()
+    if (
+        observed != expected_version
+        or executable_before != executable_after
+        or executable_after.get("sha256") != _EXPECTED_PHP_EXECUTABLE_SHA256
+        or executable_after.get("bytes") != _EXPECTED_PHP_EXECUTABLE_BYTES
+        or tree_before != tree_after
+    ):
+        raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:php:expected={expected_version}:observed={observed}")
+    document = runtime["document"]
+    assert type(document) is dict
+    return ExactToolchain(
+        "php",
+        observed,
+        str(_EXPECTED_PHP_EXECUTABLE),
+        profile=(
+            "php-toolchain-closure-schema=v1",
+            "platform=Darwin/arm64",
+            f"php-root={_EXPECTED_PHP_ROOT}",
+            f"php-tree-sha256={tree_after['sha256']}",
+            f"php-tree-record-count={tree_after['record_count']}",
+            f"php-tree-file-count={tree_after['file_count']}",
+            f"php-tree-directory-count={tree_after['directory_count']}",
+            f"php-tree-bytes={tree_after['bytes']}",
+            f"php-tree-symlink-count={len(_EXPECTED_PHP_TREE_SYMLINKS)}",
+            f"php-tree-unbound-symlink-count={len(_EXPECTED_PHP_TREE_UNBOUND_SYMLINKS)}",
+            *(
+                f"php-tree-unbound-symlink={name}->{target}"
+                for name, target in sorted(_EXPECTED_PHP_TREE_UNBOUND_SYMLINKS.items())
+            ),
+            f"php-runtime-identity-sha256={runtime['digest']}",
+            "integer=int64",
+            "number=binary64",
+            "strict-types=1",
+            f"php-zts={document['zts']}",
+            f"php-debug={document['debug']}",
+            f"php-extensions={','.join(document['extensions'])}",
+            f"php-tokenizer={tokenizer}",
+            "php-runtime-semantic-soundness=NOT_RUN",
+        ),
+        executable_sha256=_EXPECTED_PHP_EXECUTABLE_SHA256,
+    )
+
+
 def exact_toolchain(language: Language) -> ExactToolchain:
     return {
         "java": _java,
@@ -3124,4 +3557,5 @@ def exact_toolchain(language: Language) -> ExactToolchain:
         "cpp": _cpp,
         "objc": _objc,
         "swift": _swift,
+        "php": _php,
     }[language]()

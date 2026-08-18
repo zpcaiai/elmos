@@ -232,7 +232,7 @@ def test_plan_policy_and_candidate_output_is_deterministic_and_round_trips() -> 
     policy_digests = {
         policy_for_language(language).digest for language in cast(tuple[Language, ...], tuple(hygiene._DIALECT))
     }
-    assert len(policy_digests) == 10
+    assert len(policy_digests) == 11
 
     decoded = json.loads(json.dumps(first.to_mapping(), ensure_ascii=False))
     restored = IdentifierPlan.from_mapping(decoded)

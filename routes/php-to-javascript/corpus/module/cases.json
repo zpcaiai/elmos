@@ -1,0 +1,106 @@
+{
+  "composition": {
+    "call_graph": [],
+    "effects": "none",
+    "exceptions": "domain-guards-fail-closed-before-execution",
+    "global_state": "none",
+    "input_domain": "nodejs-es2022-esm-safe-integer-finite-v1"
+  },
+  "functions": [
+    {
+      "cases": [],
+      "signature": {
+        "parameters": [
+          {
+            "name": "subtotal",
+            "type": "integer"
+          },
+          {
+            "name": "tax",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "symbol": "calculate"
+    },
+    {
+      "cases": [],
+      "signature": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "integer"
+          },
+          {
+            "name": "minimum",
+            "type": "integer"
+          },
+          {
+            "name": "maximum",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "symbol": "clamp"
+    },
+    {
+      "cases": [],
+      "signature": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "integer"
+          },
+          {
+            "name": "right",
+            "type": "integer"
+          }
+        ],
+        "return_type": "integer"
+      },
+      "symbol": "difference"
+    },
+    {
+      "cases": [],
+      "signature": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "number"
+          },
+          {
+            "name": "minimum",
+            "type": "number"
+          },
+          {
+            "name": "maximum",
+            "type": "number"
+          }
+        ],
+        "return_type": "number"
+      },
+      "symbol": "clampNumber"
+    },
+    {
+      "cases": [],
+      "signature": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "boolean"
+          },
+          {
+            "name": "right",
+            "type": "boolean"
+          }
+        ],
+        "return_type": "boolean"
+      },
+      "symbol": "both"
+    }
+  ],
+  "profile": "typed-pure-module-v1",
+  "schema_version": "1.0.0"
+}

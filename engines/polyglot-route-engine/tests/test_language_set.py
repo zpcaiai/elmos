@@ -56,7 +56,7 @@ def test_the_routed_set_is_not_empty_and_engine_only_is_not_everything() -> None
     assert len(ENGINE_ONLY_LANGUAGES) < len(SUPPORTED_LANGUAGES)
 
 
-def test_repository_orchestration_has_a_complete_ten_language_surface() -> None:
+def test_repository_orchestration_has_a_complete_eleven_language_surface() -> None:
     source_inventory_languages = set(_EXTENSIONS.values())
     discovery_languages = {"python", *_DECLARATION_PATTERNS}
     target_project_languages = set(_PLACERS)
@@ -70,19 +70,23 @@ def test_repository_orchestration_has_a_complete_ten_language_surface() -> None:
     directed_pairs = {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
     }
-    assert len(directed_pairs) == 90
+    assert len(directed_pairs) == 110
 
 
-def test_route_contract_is_complete_ten_language_matrix_with_exact_subsets() -> None:
+def test_route_contract_is_complete_eleven_language_matrix_with_exact_subsets() -> None:
     assert ROUTED_LANGUAGES == COMPLETE_MATRIX_LANGUAGES
-    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 90
+    assert len(COMPLETE_MATRIX_DIRECTED_PAIRS) == 110
     assert len(SPECIALIZED_DIRECTED_PAIRS) == 8
-    assert len(NODEJS_DIRECTED_PAIRS) == 18
-    assert len(COMPLETE_MATRIX_LANGUAGES) == 10
-    assert len(ROUTED_PAIRS) == 90
-    assert len(set(ROUTED_PAIRS)) == 90
+    assert len(NODEJS_DIRECTED_PAIRS) == 20
+    assert len(COMPLETE_MATRIX_LANGUAGES) == 11
+    assert len(ROUTED_PAIRS) == 110
+    assert len(set(ROUTED_PAIRS)) == 110
     assert all(is_routed_pair(source, target) for source, target in ROUTED_PAIRS)
 
+    assert is_routed_pair("php", "java")
+    assert is_routed_pair("java", "php")
+    assert is_routed_pair("php", "swift")
+    assert not is_routed_pair("php", "php")
     assert is_routed_pair("java", "swift")
     assert is_routed_pair("swift", "java")
     assert is_routed_pair("java", "objc")
@@ -292,7 +296,7 @@ def test_specialized_routes_reject_non_finite_number_cases() -> None:
 def test_every_declared_routed_pair_has_a_pack_and_nothing_else_does() -> None:
     present = {path.name for path in ROUTES.iterdir() if path.is_dir()}
     expected = {f"{source}-to-{target}" for source, target in ROUTED_PAIRS}
-    assert len(expected) == 90
+    assert len(expected) == 110
     missing = sorted(expected - present)
     assert not missing, f"routed pairs with no pack: {missing}"
     unexpected = sorted(present - expected)
@@ -304,19 +308,21 @@ def test_no_supported_language_remains_engine_only_after_explicit_matrix() -> No
 
 
 @pytest.mark.skipif(not (ROUTES / "inventory.json").is_file(), reason="routes/inventory.json is not present")
-def test_inventory_declares_the_complete_90_with_preserved_provenance_sets() -> None:
+def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() -> None:
     inventory = json.loads((ROUTES / "inventory.json").read_text(encoding="utf-8"))
     assert set(inventory["languages"]) == set(SUPPORTED_LANGUAGES)
-    assert inventory["route_count"] == 90
-    assert len(inventory["routes"]) == 90
+    assert inventory["route_count"] == 110
+    assert len(inventory["routes"]) == 110
     assert inventory["route_policy"] == {
-        "cartesian_expansion": "EXPLICIT_TEN_LANGUAGE_MATRIX",
-        "complete_route_set": "ten-language-complete-90",
+        "cartesian_expansion": "EXPLICIT_ELEVEN_LANGUAGE_MATRIX",
+        "complete_route_set": "eleven-language-complete-110",
         "completion_route_set": "nine-language-completion-34",
         "legacy_route_set": "legacy-complete-30",
         "mode": "complete-directed-matrix",
         "nodejs_route_set": "javascript-node26-completion-18",
+        "php_route_set": "php-php84-completion-20",
         "preserved_nine_language_route_set": "nine-language-complete-72",
+        "preserved_ten_language_route_set": "ten-language-complete-90",
         "specialized_route_set": "cpp-objc-swift-java-exact-8",
     }
     route_sets = inventory["route_sets"]
@@ -326,11 +332,13 @@ def test_inventory_declares_the_complete_90_with_preserved_provenance_sets() -> 
     }
     complete_keys = {f"{source}-to-{target}" for source, target in COMPLETE_MATRIX_DIRECTED_PAIRS}
     specialized_keys = {f"{source}-to-{target}" for source, target in SPECIALIZED_DIRECTED_PAIRS}
+    ten_language_keys = {key for key in complete_keys if "php" not in key.split("-to-")}
     nine_language_keys = {
-        key for key in complete_keys if "javascript" not in key.split("-to-")
+        key for key in ten_language_keys if "javascript" not in key.split("-to-")
     }
+    php_keys = complete_keys - ten_language_keys
     completion_keys = nine_language_keys - core_keys - specialized_keys
-    nodejs_keys = complete_keys - nine_language_keys
+    nodejs_keys = ten_language_keys - nine_language_keys
     assert set(route_sets) == {
         "legacy-complete-30",
         "cpp-objc-swift-java-exact-8",
@@ -338,6 +346,8 @@ def test_inventory_declares_the_complete_90_with_preserved_provenance_sets() -> 
         "nine-language-complete-72",
         "javascript-node26-completion-18",
         "ten-language-complete-90",
+        "php-php84-completion-20",
+        "eleven-language-complete-110",
     }
     assert route_sets["legacy-complete-30"]["policy"] == "complete-directed-permutation"
     assert set(route_sets["legacy-complete-30"]["route_keys"]) == core_keys
@@ -346,5 +356,7 @@ def test_inventory_declares_the_complete_90_with_preserved_provenance_sets() -> 
     assert set(route_sets["nine-language-completion-34"]["route_keys"]) == completion_keys
     assert set(route_sets["nine-language-complete-72"]["route_keys"]) == nine_language_keys
     assert set(route_sets["javascript-node26-completion-18"]["route_keys"]) == nodejs_keys
-    assert set(route_sets["ten-language-complete-90"]["route_keys"]) == complete_keys
+    assert set(route_sets["ten-language-complete-90"]["route_keys"]) == ten_language_keys
+    assert set(route_sets["php-php84-completion-20"]["route_keys"]) == php_keys
+    assert set(route_sets["eleven-language-complete-110"]["route_keys"]) == complete_keys
     assert {route["route_key"] for route in inventory["routes"]} == complete_keys

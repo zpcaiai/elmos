@@ -1,0 +1,15 @@
+{
+  "budget": {
+    "max_components": 0,
+    "max_wrapped_callable_ratio": 0.0,
+    "prohibited_domains": [
+      "authentication",
+      "authorization",
+      "transaction-core",
+      "money-calculation"
+    ]
+  },
+  "components": [],
+  "route_key": "php-to-go",
+  "schema_version": 1
+}

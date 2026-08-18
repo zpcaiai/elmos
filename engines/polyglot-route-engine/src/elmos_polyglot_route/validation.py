@@ -801,6 +801,131 @@ def _swift_harness(function: Function, cases: list[dict[str, Any]]) -> str:
     )
 
 
+def _php_command(toolchain: ExactToolchain, *arguments: str) -> list[str]:
+    """One PHP invocation with the interpreter's ambient configuration removed.
+
+    `-n` drops every php.ini, and the three `-d` overrides pin the settings that
+    can change an *observed value* rather than just a diagnostic: `precision`
+    and `serialize_precision` govern float-to-string, and OPcache is disabled so
+    a stale cached compilation of a previous route's file can never be executed
+    in place of the file this harness just wrote. `sanitized_subprocess_env`
+    already drops PHPRC and PHP_INI_SCAN_DIR, so this closes the remaining path.
+    """
+    return [
+        toolchain.executable,
+        "-n",
+        "-d",
+        "error_reporting=E_ALL",
+        "-d",
+        "precision=17",
+        "-d",
+        "serialize_precision=-1",
+        "-d",
+        "opcache.enable_cli=0",
+        *arguments,
+    ]
+
+
+def _php_literal(value: object, value_type: str) -> str:
+    """Render one behaviour-case value as a PHP literal of the canonical type.
+
+    Kept separate from `_native_literal` for the same reason `_python_literal`
+    is: PHP's spellings for the non-finite doubles and for `PHP_INT_MIN` have no
+    overlap with the clang/Swift family, and folding them into that function
+    would make its language dispatch a three-way switch on every arm.
+
+    Strings are built from their UTF-8 bytes rather than quoted, so the case
+    value cannot depend on how this file's own encoding survived transport, and
+    so a byte sequence that is not valid UTF-8 source can still be expressed.
+    """
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**63) <= value <= 2**63 - 1:
+            raise RouteError("PHP_CASE_INTEGER_OUTSIDE_INT64")
+        # A bare -9223372036854775808 is a float in PHP; see emitter._integer_literal.
+        return "PHP_INT_MIN" if value == -(2**63) else str(value)
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise RouteError("PHP_CASE_NUMBER_REQUIRED")
+        number = float(value)
+        if math.isnan(number):
+            return "NAN"
+        if math.isinf(number):
+            return "-INF" if number < 0 else "INF"
+        if number == 0.0 and math.copysign(1.0, number) < 0:
+            return "-0.0"
+        rendered = repr(number)
+        return rendered if "." in rendered or "e" in rendered.lower() else rendered + ".0"
+    if value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("PHP_CASE_BOOLEAN_REQUIRED")
+        return "true" if value else "false"
+    if value_type == "string":
+        if not isinstance(value, str):
+            raise RouteError("PHP_CASE_STRING_REQUIRED")
+        data = value.encode("utf-8")
+        return "''" if not data else f"hex2bin('{data.hex()}')"
+    raise RouteError(f"PHP_CASE_TYPE_UNSUPPORTED:{value_type}")
+
+
+def _php_arguments(function: Function, case: dict[str, Any]) -> str:
+    values = case.get("args")
+    if not isinstance(values, list) or len(values) != len(function.parameters):
+        raise RouteError("PHP_CASE_ARGUMENT_COUNT_INVALID")
+    return ", ".join(
+        _php_literal(value, parameter.type)
+        for value, parameter in zip(values, function.parameters, strict=True)
+    )
+
+
+def _php_harness(function: Function, cases: list[dict[str, Any]], subject_relative_path: str) -> str:
+    """A standalone PHP harness that `require`s the subject and replays cases.
+
+    The comparison is bit-exact for `number`: `pack('E', ...)` is the big-endian
+    binary64 image, so -0.0 and 0.0 differ and every NaN payload is visible,
+    which `==` in PHP would hide. NaN is compared as a pair of `is_nan` calls
+    for the same reason the Java and Swift harnesses do: no NaN equals itself.
+    """
+    checks: list[str] = []
+    for index, case in enumerate(cases):
+        args = _php_arguments(function, case)
+        expected = _php_literal(_returned_case_value(case), function.return_type)
+        actual = f"$actual_{index}"
+        expected_name = f"$expected_{index}"
+        condition = (
+            f"!elmos_harness_same_fp64({actual}, {expected_name})"
+            if function.return_type == "number"
+            else f"{actual} !== {expected_name}"
+        )
+        encoding, rendered = {
+            "integer": ("i64-dec", f"(string){actual}"),
+            "number": ("fp64-hex", f"elmos_harness_fp64({actual})"),
+            "boolean": ("bool", f"({actual} ? 'true' : 'false')"),
+            "string": ("hex-utf8", f"bin2hex({actual})"),
+        }[function.return_type]
+        checks.extend(
+            [
+                f"{actual} = {function.name}({args});",
+                f"{expected_name} = {expected};",
+                f"if ({condition}) {{ fwrite(STDERR, 'case {index}' . PHP_EOL); exit(1); }}",
+                f"echo \"ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t\", {rendered}, PHP_EOL;",
+            ]
+        )
+    return (
+        "<?php\n\n"
+        "declare(strict_types=1);\n\n"
+        f"require __DIR__ . '/{subject_relative_path}';\n\n"
+        "function elmos_harness_same_fp64(float $left, float $right): bool {\n"
+        "    if (is_nan($left) && is_nan($right)) {\n"
+        "        return true;\n"
+        "    }\n"
+        "    return pack('E', $left) === pack('E', $right);\n"
+        "}\n\n"
+        "function elmos_harness_fp64(float $value): string {\n"
+        "    return bin2hex(pack('E', $value));\n"
+        "}\n\n" + "\n".join(checks) + "\n"
+    )
+
+
 def _go_case_literal(value: object, value_type: str, *, math_alias: str = "math") -> str:
     if value_type == "number":
         if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(float(value)):
@@ -1346,6 +1471,16 @@ def validate_source(
             ],
             ["./source_harness"],
         ]
+    elif language == "php":
+        (output / "source_harness.php").write_text(
+            _php_harness(function, cases, source.name),
+            encoding="utf-8",
+        )
+        commands = [
+            _php_command(toolchain, "-l", source.name),
+            _php_command(toolchain, "-l", "source_harness.php"),
+            _php_command(toolchain, "source_harness.php"),
+        ]
     else:
         raise RouteError(f"SOURCE_RUNTIME_UNSUPPORTED:{language}")
     logs: list[dict[str, Any]] = []
@@ -1518,6 +1653,16 @@ def validate(
             [toolchain.executable, "--check", emitted.relative_path],
             [toolchain.executable, "--check", "route_harness.mjs"],
             [toolchain.executable, "route_harness.mjs"],
+        ]
+    elif language == "php":
+        (output / "route_harness.php").write_text(
+            _php_harness(function, cases, emitted.relative_path),
+            encoding="utf-8",
+        )
+        commands = [
+            _php_command(toolchain, "-l", emitted.relative_path),
+            _php_command(toolchain, "-l", "route_harness.php"),
+            _php_command(toolchain, "route_harness.php"),
         ]
     else:
         (output / "route_harness.ts").write_text(_typescript_harness(function, cases), encoding="utf-8")

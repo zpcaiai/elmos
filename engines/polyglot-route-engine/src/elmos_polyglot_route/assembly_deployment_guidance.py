@@ -35,6 +35,7 @@ _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "cpp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
     "objc": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
     "swift": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
+    "php": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
 }
 
 _TOOLCHAIN_TEXT: dict[Language, str] = {
@@ -48,6 +49,7 @@ _TOOLCHAIN_TEXT: dict[Language, str] = {
     "cpp": "pinned Apple clang++ + CMake",
     "objc": "pinned Apple clang + Foundation SDK + CMake",
     "swift": "pinned Swift 6 toolchain + Swift Package Manager",
+    "php": "PHP 8.5.9 CLI (NTS, PHP_INT_SIZE=8) + Composer",
 }
 
 _BUILD_COMMANDS: dict[Language, list[str]] = {
@@ -61,6 +63,8 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     "cpp": ["cmake -S . -B build", "cmake --build build --config Release"],
     "objc": ["cmake -S . -B build", "cmake --build build --config Release"],
     "swift": ["swift build -c release --disable-sandbox"],
+    "php": ["composer install --no-dev --optimize-autoloader",
+            "find src -name '*.php' -type f -exec php -l {} \\;"],
 }
 
 _PACKAGE_FORMAT: dict[Language, str] = {
@@ -74,6 +78,7 @@ _PACKAGE_FORMAT: dict[Language, str] = {
     "cpp": "CMake static libraries",
     "objc": "CMake static libraries",
     "swift": "Swift Package",
+    "php": "Composer package (Packagist layout)",
 }
 
 _CODEARTIFACT_NATIVE_LANGUAGES: frozenset[Language] = frozenset(

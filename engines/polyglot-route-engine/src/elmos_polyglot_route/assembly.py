@@ -183,6 +183,7 @@ _BUILD_FILES: dict[Language, tuple[str, ...]] = {
     "cpp": ("CMakeLists.txt",),
     "objc": ("CMakeLists.txt",),
     "swift": ("Package.swift",),
+    "php": ("composer.json",),
 }
 
 _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
@@ -196,6 +197,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
     "cpp": ("src", ".cpp", frozenset()),
     "objc": ("src", ".m", frozenset()),
     "swift": ("Sources", ".swift", frozenset()),
+    "php": ("src", ".php", frozenset()),
 }
 
 # These generated source files participate in the whole-project compiler input
@@ -1083,6 +1085,38 @@ def _place_objc(destination: Path, namespace: str, content: str) -> str:
     return relative
 
 
+def _place_php(destination: Path, namespace: str, content: str) -> str:
+    """Place one emitted PHP unit, giving it its own namespace.
+
+    This is the same division of labour Java and C# already use: the emitted
+    file carries no package or namespace, and the placer adds the one that
+    matches where the file lands. For PHP it is not a style choice but the only
+    thing that makes a multi-unit project loadable at all -- a `function` at
+    file scope is unconditionally global, so two units that both need
+    `elmos_checked_add` would otherwise be a fatal "Cannot redeclare function"
+    the moment Composer autoloads the second one. Directory placement, which
+    isolates every other target (a Go package, a Rust module, a C++ translation
+    unit, a Java package), buys PHP nothing on its own.
+
+    The namespace has to go *after* `declare(strict_types=1);`: the declare must
+    be the first statement in the file, and the namespace must be the first
+    statement except for a declare. Unqualified calls inside the namespace still
+    fall back to the global namespace, so `fmod` and `intdiv` keep resolving.
+    """
+    relative = f"src/{namespace}/migrated.php"
+    target = destination / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    declaration = "declare(strict_types=1);\n"
+    if declaration not in content:
+        raise RouteError("ASSEMBLY_PHP_STRICT_TYPES_DECLARATION_MISSING")
+    prefix, _, suffix = content.partition(declaration)
+    namespaced = (
+        f"{prefix}{declaration}\nnamespace Elmos\\Generated\\{namespace.capitalize()};\n{suffix}"
+    )
+    target.write_text(namespaced, encoding="utf-8")
+    return relative
+
+
 def _place_swift(destination: Path, namespace: str, content: str) -> str:
     module = namespace.capitalize()
     relative = f"Sources/{module}/migrated.swift"
@@ -1103,6 +1137,7 @@ _PLACERS = {
     "cpp": _place_cpp,
     "objc": _place_objc,
     "swift": _place_swift,
+    "php": _place_php,
 }
 
 
@@ -1118,6 +1153,7 @@ def _expected_assembled_path(target_language: Language, namespace: str) -> str:
         "cpp": f"src/{namespace}/migrated.cpp",
         "objc": f"src/{namespace}/migrated.m",
         "swift": f"Sources/{namespace.capitalize()}/migrated.swift",
+        "php": f"src/{namespace}/migrated.php",
     }
     return paths[target_language]
 
@@ -2000,6 +2036,35 @@ def _write_build_files(
             f"{targets}\n"
             "    ]\n"
             ")\n",
+            encoding="utf-8",
+        )
+    elif target_language == "php":
+        # Classmap over the whole generated tree rather than PSR-4: the emitted
+        # unit is a file of plain functions with no class and no namespace, and
+        # PSR-4 only ever autoloads classes. `files` is the one autoload mode
+        # that loads function declarations, so every unit is listed explicitly
+        # and the order is the manifest order, which is already deterministic.
+        files = ",\n".join(
+            f'            "src/{unit["namespace"]}/migrated.php"' for unit in included_units
+        )
+        (destination / "composer.json").write_text(
+            "{\n"
+            '    "name": "elmos/polyglot-migrated-library",\n'
+            '    "description": "ELMOS polyglot route engine assembled target project",\n'
+            '    "type": "library",\n'
+            '    "license": "proprietary",\n'
+            '    "require": {\n'
+            '        "php": ">=8.4"\n'
+            "    },\n"
+            '    "autoload": {\n'
+            '        "files": [\n'
+            f"{files}\n"
+            "        ]\n"
+            "    },\n"
+            '    "config": {\n'
+            '        "optimize-autoloader": true\n'
+            "    }\n"
+            "}\n",
             encoding="utf-8",
         )
     else:
@@ -2927,6 +2992,33 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
         command = [swift, "build", "-c", "release", "--disable-sandbox"]
         completed = _run(command, destination, timeout=900, executable_dirs=toolchain_dirs)
         commands.append({"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]})
+    elif target_language == "php":
+        # PHP has no build step. `php -l` is the closest thing the runtime
+        # offers to "this compilation unit is well formed", and it is run over
+        # every assembled unit rather than once over the descriptor, because a
+        # composer autoload entry never parses the file it names.
+        sources = sorted(str(path.relative_to(destination)) for path in destination.glob("src/**/*.php"))
+        if not sources:
+            raise RouteError("ASSEMBLY_NO_PHP_SOURCES_FOUND")
+        for relative in sources:
+            command = [
+                toolchain.executable,
+                "-n",
+                "-d",
+                "error_reporting=E_ALL",
+                "-d",
+                "opcache.enable_cli=0",
+                "-l",
+                relative,
+            ]
+            completed = _run(command, destination, timeout=120, executable_dirs=toolchain_dirs)
+            commands.append(
+                {
+                    "command": command,
+                    "stdout": completed.stdout[-2_000:],
+                    "stderr": completed.stderr[-2_000:],
+                }
+            )
     else:
         raise RouteError(f"ASSEMBLY_UNSUPPORTED_TARGET_LANGUAGE:{target_language}")
 

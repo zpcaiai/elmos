@@ -1,0 +1,11 @@
+{
+  "cases_file": "cases.json",
+  "corpus": "holdout",
+  "customer_repository": false,
+  "evidence_class": "independent-holdout",
+  "independent": true,
+  "rule_authoring_input": false,
+  "schema_version": 1,
+  "source_file": "clamp.php",
+  "source_language": "php"
+}

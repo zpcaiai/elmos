@@ -15,6 +15,7 @@ Language = Literal[
     "cpp",
     "objc",
     "swift",
+    "php",
 ]
 SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "java",
@@ -27,6 +28,7 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
     "cpp",
     "objc",
     "swift",
+    "php",
 )
 
 #: Languages this engine can lift *from*. Every supported language is also a
@@ -51,6 +53,7 @@ COMPLETE_MATRIX_LANGUAGES: tuple[Language, ...] = (
     "cpp",
     "objc",
     "swift",
+    "php",
 )
 
 #: Backwards-compatible name used by the Batch 29 inventory and relifters.

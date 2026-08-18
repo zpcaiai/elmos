@@ -70,12 +70,18 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
         "string": "NSString *",
     },
     "swift": {"integer": "Int64", "number": "Double", "boolean": "Bool", "string": "String"},
+    # PHP's `int` is platform-width; the toolchain probe asserts PHP_INT_SIZE == 8,
+    # so this spelling is the canonical 64-bit signed integer, and `float` is
+    # binary64 on every build the probe accepts.
+    "php": {"integer": "int", "number": "float", "boolean": "bool", "string": "string"},
 }
 
 #: Languages whose emitted source is brace-delimited and statement-terminated
 #: with `;`. Swift is brace-delimited but takes no terminator.
-_BRACE_LANGUAGES = frozenset({"java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift"})
-_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "javascript", "rust", "cpp", "objc"})
+_BRACE_LANGUAGES = frozenset(
+    {"java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "php"}
+)
+_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "javascript", "rust", "cpp", "objc", "php"})
 
 #: Targets that place the function body inside a type declaration, so the
 #: body is indented one extra level.
@@ -529,6 +535,91 @@ _OBJC_HELPERS: dict[str, str] = {
 }
 
 
+#: PHP does not wrap on integer overflow and it does not trap: `PHP_INT_MAX + 1`
+#: silently becomes a `float`. That promotion is the *only* observable signal an
+#: overflow happened, and it is exact -- `int op int` is an `int` unless the
+#: mathematical result left the 64-bit range -- so `is_int` on the result is a
+#: sound R1 check rather than a heuristic. Verified against PHP 8.4.21:
+#: `PHP_INT_MAX + 1`, `PHP_INT_MIN - 1` and `PHP_INT_MAX * 2` all return floats.
+#:
+#: R2 is split. `intdiv` already throws `DivisionByZeroError` on a zero divisor
+#: and `ArithmeticError` on `PHP_INT_MIN / -1`, so the division helper only
+#: re-labels those with the canonical messages. `%` throws on a zero divisor but
+#: answers 0 for `PHP_INT_MIN % -1` instead of failing, so that arm is a real
+#: guard, not a relabelling.
+#: Every class reference is written `\\ClassName`, fully qualified. Inside a
+#: namespace PHP resolves an unqualified *function* or *constant* to the global
+#: one when the namespaced name does not exist, but it does **not** do that for
+#: a class: `new ArithmeticError` inside `namespace Elmos\\Generated\\Wu00001`
+#: resolves to `Elmos\\Generated\\Wu00001\\ArithmeticError` and dies with
+#: "Class not found". `assembly._place_php` puts every assembled unit in its own
+#: namespace, so an unqualified spelling here would replace the canonical
+#: overflow error with a class-resolution error on exactly the path these guards
+#: exist for -- and only on the error path, where it is least likely to be seen.
+_PHP_HELPERS: dict[str, str] = {
+    "checked_add": (
+        "function elmos_checked_add(int $left, int $right): int {\n"
+        "    $result = $left + $right;\n"
+        "    if (!is_int($result)) {\n"
+        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        "    }\n"
+        "    return $result;\n"
+        "}"
+    ),
+    "checked_sub": (
+        "function elmos_checked_sub(int $left, int $right): int {\n"
+        "    $result = $left - $right;\n"
+        "    if (!is_int($result)) {\n"
+        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        "    }\n"
+        "    return $result;\n"
+        "}"
+    ),
+    "checked_mul": (
+        "function elmos_checked_mul(int $left, int $right): int {\n"
+        "    $result = $left * $right;\n"
+        "    if (!is_int($result)) {\n"
+        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        "    }\n"
+        "    return $result;\n"
+        "}"
+    ),
+    "checked_div": (
+        "function elmos_checked_div(int $left, int $right): int {\n"
+        "    if ($right === 0) {\n"
+        f'        throw new \\DivisionByZeroError(\'{_DIVIDE_BY_ZERO_MESSAGE}\');\n'
+        "    }\n"
+        "    if ($left === PHP_INT_MIN && $right === -1) {\n"
+        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        "    }\n"
+        "    return intdiv($left, $right);\n"
+        "}"
+    ),
+    "checked_mod": (
+        "function elmos_checked_mod(int $left, int $right): int {\n"
+        "    if ($right === 0) {\n"
+        f'        throw new \\DivisionByZeroError(\'{_DIVIDE_BY_ZERO_MESSAGE}\');\n'
+        "    }\n"
+        "    if ($left === PHP_INT_MIN && $right === -1) {\n"
+        f'        throw new \\ArithmeticError(\'{_OVERFLOW_MESSAGE}\');\n'
+        "    }\n"
+        "    return $left % $right;\n"
+        "}"
+    ),
+    # PHP 8 throws DivisionByZeroError for `1.0 / 0.0` on its own, but `fmod`
+    # answers NAN for a zero divisor. One guard covers both operators and keeps
+    # the emitted normalization rule set uniform with the other targets.
+    "non_zero_float": (
+        "function elmos_non_zero_float(float $value): float {\n"
+        "    if ($value === 0.0) {\n"
+        f'        throw new \\DivisionByZeroError(\'{_DIVIDE_BY_ZERO_MESSAGE}\');\n'
+        "    }\n"
+        "    return $value;\n"
+        "}"
+    ),
+}
+
+
 _HELPERS: dict[Language, dict[str, str]] = {
     "python": _PYTHON_HELPERS,
     "typescript": _TYPESCRIPT_HELPERS,
@@ -540,6 +631,7 @@ _HELPERS: dict[Language, dict[str, str]] = {
     "swift": _SWIFT_HELPERS,
     "cpp": _CPP_HELPERS,
     "objc": _OBJC_HELPERS,
+    "php": _PHP_HELPERS,
 }
 
 #: Deterministic emission order, so the same IR always produces byte-identical
@@ -624,6 +716,18 @@ def _type(language: Language, value: str) -> str:
         raise RouteError(f"UNSUPPORTED_TYPE_MAPPING:{language}:{value}") from error
 
 
+def _variable(language: Language, name: str) -> str:
+    """The target's spelling of a *variable* reference.
+
+    Only PHP distinguishes a variable from a bare identifier: `$name` is the
+    variable, `name` is an undefined constant, and PHP 8 makes reading one a
+    fatal Error rather than the PHP 7 notice-plus-string fallback. Function
+    names keep no sigil, which is why this is a separate helper from the
+    identifier plan rather than a rename applied to every identifier.
+    """
+    return f"${name}" if language == "php" else name
+
+
 def _integer_literal(language: Language, value: int) -> str:
     if not types.INTEGER_MIN <= value <= types.INTEGER_MAX:
         raise RouteError(f"INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE:{value}")
@@ -649,6 +753,15 @@ def _integer_literal(language: Language, value: int) -> str:
         # suffix makes the 64-bit intent explicit and keeps the literal's type
         # identical on every platform's `int`/`long` sizes.
         return f"{value}LL"
+    if language == "php":
+        # PHP has no negative literal either: `-9223372036854775808` is unary
+        # minus applied to `9223372036854775808`, which overflows the int range
+        # and is therefore parsed as a *float*. `PHP_INT_MIN` is the only
+        # spelling that stays an int, and the toolchain probe has already
+        # asserted PHP_INT_SIZE == 8 so it is exactly -2^63.
+        if value == types.INTEGER_MIN:
+            return "PHP_INT_MIN"
+        return str(value)
     if language == "swift":
         if value == types.INTEGER_MIN:
             return "Int64.min"
@@ -664,6 +777,14 @@ def _string_literal(language: Language, value: str) -> str:
         # NSString literals carry the @ prefix; the escape set inside is the
         # same C set json.dumps produces.
         return f"@{encoded}"
+    if language == "php":
+        # A PHP double-quoted string interpolates `$name` and `{$expr}` and does
+        # not understand JSON's `\uXXXX`, so json.dumps output is unsafe here in
+        # two independent ways. A single-quoted string interpolates nothing and
+        # recognises exactly two escapes, `\\` and `\'`; every other byte --
+        # including a literal newline and raw UTF-8 -- stands for itself.
+        escaped = value.replace("\\", "\\\\").replace("'", "\\'")
+        return f"'{escaped}'"
     if language == "swift":
         # Swift spells a unicode escape `\u{XXXX}`, not JSON's `\uXXXX`.
         # ensure_ascii=False leaves printable non-ASCII raw, so this only
@@ -732,6 +853,13 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         "/": ("elmos_checked_div", ("checked_div",)),
         "%": ("elmos_checked_mod", ("checked_mod",)),
     },
+    "php": {
+        "+": ("elmos_checked_add", ("checked_add",)),
+        "-": ("elmos_checked_sub", ("checked_sub",)),
+        "*": ("elmos_checked_mul", ("checked_mul",)),
+        "/": ("elmos_checked_div", ("checked_div",)),
+        "%": ("elmos_checked_mod", ("checked_mod",)),
+    },
     "objc": {
         "+": ("ElmosCheckedAdd", ("checked_add",)),
         "-": ("ElmosCheckedSub", ("checked_sub",)),
@@ -763,6 +891,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "swift": ("elmosNonZero", "non_zero_double"),
     "cpp": ("elmos_non_zero", "non_zero_double"),
     "objc": ("ElmosNonZero", "non_zero_double"),
+    "php": ("elmos_non_zero_float", "non_zero_float"),
 }
 
 
@@ -874,6 +1003,13 @@ def _binary(
             context.imports.add("math")
             context.normalization_rules.add("python.number.%.math-fmod")
             return f"math.fmod({left}, {right})"
+        if language == "php":
+            # PHP's `%` is an *integer* operator: it casts both operands to int
+            # first, so `7.5 % 2` is 1, not 1.5. `fmod` is the truncating float
+            # remainder and matches Java/C#/TypeScript exactly. Verified on PHP
+            # 8.4.21: `fmod(-7.5, 2.0)` is -1.5, the same answer Java gives.
+            context.normalization_rules.add("php.number.%.fmod")
+            return f"fmod({left}, {right})"
         if language == "rust":
             # Rust has no `%` on f64 through the operator alone in the way the
             # other targets do -- `%` *is* the truncating remainder, so it maps
@@ -902,6 +1038,29 @@ def _binary(
             return f"({equality})" if operator == "==" else f"(!{equality})"
         if operator == "+":
             return f"[{left} stringByAppendingString:{right}]"
+
+    if language == "php":
+        if operator == "+" and left_type == "string" and right_type == "string":
+            # PHP concatenates with `.`; `+` on two strings is a TypeError under
+            # PHP 8, not a concatenation.
+            context.normalization_rules.add("php.string.+.concatenation")
+            return _group(language, f"{left} . {right}", top_level)
+        if operator in types.EQUALITY_OPERATORS:
+            # `==` type-juggles: `'1' == '01'` and `'10' == '1e1'` are both true
+            # on PHP 8.4. `===` is the value comparison every other target
+            # performs -- but it also compares *types*, so `1 === 1.0` is false
+            # where the canonical rule says the widened comparison is true. The
+            # one mixed case the type lattice admits is integer/number, so the
+            # integer side is widened explicitly before the strict compare.
+            context.normalization_rules.add(f"php.equality.{operator}.strict")
+            if left_type != right_type:
+                context.normalization_rules.add("php.equality.integer-to-number")
+                if left_type == "integer":
+                    left = f"(float)({left})"
+                else:
+                    right = f"(float)({right})"
+            rendered = {"==": "===", "!=": "!=="}[operator]
+            return _group(language, f"{left} {rendered} {right}", top_level)
 
     rendered = operator
     if language == "python":
@@ -938,7 +1097,7 @@ def _expression(
         name = str(expression.value)
         if name not in environment:
             raise RouteError(f"UNDECLARED_NAME:{name}")
-        return name
+        return _variable(context.language, name)
     if expression.kind == "literal":
         if context.language == "rust" and isinstance(expression.value, str):
             context.normalization_rules.add("rust.string.literal.to-string")
@@ -1044,6 +1203,11 @@ def _signature(language: Language, function: Function) -> str:
     if language == "rust":
         parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
         return f"fn {function.name}({parameters}) -> {return_type} {{"
+    if language == "php":
+        parameters = ", ".join(
+            f"{_type(language, item.type)} {_variable(language, item.name)}" for item in function.parameters
+        )
+        return f"function {function.name}({parameters}): {return_type} {{"
     if language == "swift":
         # `_` on every parameter keeps call sites positional, which is what
         # every other target and the behaviour harness emit.
@@ -1168,5 +1332,15 @@ def emit(
     if target == "swift":
         body = "\n\n".join([*helpers, functions])
         return _emitted_file(context, "migrated.swift", body + "\n")
-    body = "\n\n".join([*helpers, functions])
-    return _emitted_file(context, "migrated.ts", f"{body}\n")
+    if target == "php":
+        # `declare(strict_types=1)` must be the first statement in the file. It
+        # is what makes the emitted `int`/`float`/`bool`/`string` parameter and
+        # return types enforced rather than coercive: without it PHP would
+        # happily accept the string "3" for an `int` parameter and silently
+        # answer something no other target could have produced.
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(context, "migrated.php", "<?php\n\ndeclare(strict_types=1);\n\n" + body + "\n")
+    if target == "typescript":
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(context, "migrated.ts", f"{body}\n")
+    raise RouteError(f"UNSUPPORTED_EMISSION_TARGET:{target}")

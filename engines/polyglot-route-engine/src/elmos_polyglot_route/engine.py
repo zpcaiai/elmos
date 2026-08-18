@@ -2154,6 +2154,21 @@ def _verify_helper_visibility(language: Language, subject: dict[str, Any]) -> tu
         "java": {("private", "static")},
         "swift": {("private", "file-scope"), ("fileprivate", "file-scope")},
         "typescript": {("internal", "file-scope")},
+        # PHP has no file-private function scope: a `function` at file scope is
+        # unconditionally global, and no `static`/`private` spelling changes
+        # that. This value describes the *emitted* unit, which is what the
+        # analyzer inventories, and for that artifact ("external", "none") is
+        # simply true -- claiming a privacy PHP does not have would be worse
+        # than recording the weaker guarantee.
+        #
+        # Two compensating controls carry what the visibility does not.
+        # `identifier_hygiene._FORBIDDEN["php"]` reserves every helper name, so
+        # a converted identifier can never be allocated one. And
+        # `assembly._place_php` puts each assembled unit in its own namespace,
+        # which is what actually makes a multi-unit project loadable -- without
+        # it two units that both need `elmos_checked_add` are a fatal "Cannot
+        # redeclare function" the moment Composer autoloads the second.
+        "php": {("external", "none")},
     }.get(language, set())
     if (visibility, storage) not in allowed:
         raise RouteError(
@@ -2243,6 +2258,7 @@ def _verify_specialized_helper_subject(
         "objc": "FunctionDecl",
         "java": "method",
         "swift": "FunctionDeclSyntax",
+        "php": "Stmt_Function",
     }
     if symbol.get("declaration_kind") != expected_kinds[language]:
         raise RouteError(f"PURE_MODULE_TARGET_HELPER_DECLARATION_KIND_INVALID:{helper_id}")
