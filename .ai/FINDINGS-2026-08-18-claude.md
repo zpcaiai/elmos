@@ -451,3 +451,106 @@ than the rest of the closure.
   keeping: `run_repository_gate.py` hardcodes `maximum_local_decision:
   READY_FOR_EXTERNAL_GATE`, and it enforces executor/verifier actor separation
   campaign-wide. Its `0/90` is now `0/110`.
+
+---
+
+## 13. CORRECTION — the `uv` failure was NOT transient. It is a real ~50-75% failure rate.
+
+§12 called this transient on the strength of three retries and a small range
+request. That was wrong, and the sampling was the reason: small requests
+succeed, large ones do not. Measured properly with cold, uncached 37 MB wheel
+installs:
+
+| Configuration | Result |
+| --- | --- |
+| Through the Clash proxy | **ok=3 fail=3** |
+| Through the proxy, `UV_HTTP_TIMEOUT=180` | **ok=1 fail=3** |
+| Direct (`no_proxy` set) | **ok=3 fail=0**, and faster |
+| 2 MB range request via proxy ×12 | ok=12 fail=0 ← why the first check was misleading |
+
+It is not a timeout. uv reports `Request failed after 3 retries in 10.2s` and
+`13.3s` — its three retries all fail inside ~13 seconds, and raising the
+timeout made it *worse*, so the proxy is dropping the connection rather than
+stalling it. It fails at the index (`pypi.org/simple/...`) as readily as at the
+wheel.
+
+### Fixed
+
+`~/.zshrc:11-12` unconditionally exported `http_proxy`/`https_proxy` to Clash
+for every shell, with no `no_proxy`. Added directly beneath them:
+
+```sh
+export no_proxy="pypi.org,files.pythonhosted.org,localhost,127.0.0.1"
+export NO_PROXY="$no_proxy"
+```
+
+Backup at `~/.zshrc.bak-claude-2026-08-18`; undo by deleting the two lines.
+Verified in a fresh interactive shell: `no_proxy` is set, `http_proxy` still
+points at Clash for everything else, and a cold uncached `z3-solver` install
+succeeds.
+
+This is the same family as the DevEco licensing failure — Clash silently
+breaking a specific host — and it is worth suspecting first whenever a large
+download fails on this machine.
+
+## 14. PHP pinning — blocked correctly, and now self-diagnosing
+
+`tools/pin_php_toolchain.py` refuses the Homebrew keg:
+
+```
+refusing to pin /opt/homebrew/Cellar/php/8.5.9: PIN_PHP_TREE_UNSAFE
+```
+
+The refusal is **correct**, and the reason is specific. The tree is otherwise
+clean — owned by the user, nothing group- or world-writable, no hard links —
+but it contains two symlinks, and `_qualified_tree_manifest` documents a
+symlink-free contract:
+
+| Path | Target | Verdict |
+| --- | --- | --- |
+| `bin/phar` | `bin/phar.phar` | resolves **inside** the tree — harmless |
+| `pecl` | `/opt/homebrew/lib/php/pecl` | **escapes** the versioned keg |
+
+`pecl` is the one that matters: it points into a shared, mutable Homebrew
+directory that can change without anything under the keg changing — exactly the
+drift the pin exists to catch. Created by Homebrew's post-install link step at
+12:58, alongside the sqlite bump in §11.
+
+So a stock `brew install php` can never be pinned as-is, even though the tool's
+own error text suggests installing one. Resolving that needs a decision, not a
+patch:
+
+1. **Remove the `pecl` shim from the keg** and pin. It is the PECL installer,
+   not needed to execute PHP route conversions. Homebrew recreates it on
+   reinstall, so this must be re-done after any `brew upgrade php`.
+2. **Extend the tree contract** to record in-tree relative symlinks by target
+   text (drift-detecting) while still refusing escaping ones. This changes a
+   contract shared by every toolchain pin — a certification-model change, and
+   deliberately not made here.
+
+**What was fixed:** the diagnostic. The tool printed one opaque code for the
+whole tree, and finding the two offending paths took four shell commands.
+`_explain_unsafe_tree()` now re-walks the tree with the same rules and names
+each offender, its target, and whether the link escapes. It is diagnostic only
+— it relaxes nothing, and `_qualified_tree_manifest` remains the sole authority
+on whether a tree is pinnable.
+
+Note the sqlite ordering caveat from §11 is **withdrawn**: the PHP runtime
+identity records extension *names* via `get_loaded_extensions()`, not versions,
+and the tree manifest covers only the keg, so the PHP pin is independent of the
+sqlite version. Both sqlite builds also report `current version 9.6.0` with the
+same install name, so the §11 symlink flip is ABI-safe for node and php alike
+and can be done in either order.
+
+## 15. K6 — fixed by making the provenance explicit
+
+PHP landed as `a2f6f6577` while this was being written, so both trees are now
+**110 routes / 11 languages** and the two-row banner I had drafted was obsolete
+before it was committed. Each stale doc now carries a dated provenance banner
+stating the single current surface, naming `routes/inventory.json` as the only
+authority, recording that `/72` and `/90` survive **only** as retained
+provenance sets, and warning that 182 is a test-node count rather than a route
+count.
+Added to `.ai/TASK.md`, `.ai/IMPLEMENTATION_STATUS.md` and
+`docs/batch29/ROUTE_MATRIX.md`. `.ai/HANDOFF.md` was skipped on purpose — it is
+uncommitted and being edited by the other thread.

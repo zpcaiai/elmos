@@ -8,6 +8,20 @@ adds Node.js 26 as language identifier `javascript`; its union with the old 72
 is `ten-language-complete-90`. Engine support alone never creates a passing
 route claim.
 
+> ### Route-count provenance — read before quoting any denominator (K6)
+>
+> Verified 2026-08-18, after `a2f6f6577 feat(route-engine): add php as the
+> eleventh language` landed. `routes/inventory.json` is the only authority.
+>
+> **Current surface: 110 directed routes across 11 languages** (11 × 10, no
+> self-routes), committed and matching the working tree.
+>
+> `/72` and `/90` are both dead as denominators. They survive only as retained
+> provenance sets — `nine-language-complete-72`, `ten-language-complete-90` —
+> so historical evidence stays attributable, and neither describes the current
+> surface. The 182-node figure is the *pipeline test suite*; it is not a route
+> count and must never be added to or compared against one.
+
 ## Evidence boundary
 
 - Engine languages: 10 (`java`, `csharp`, `go`, `rust`, `python`,
