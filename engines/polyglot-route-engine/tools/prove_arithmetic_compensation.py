@@ -553,6 +553,16 @@ MODELLED_SOURCES: dict[tuple[str, str], tuple[str, str]] = {
 #: sha256 of each pinned helper at the revision these models were written
 #: against. Refresh with `--refresh-pins` after deliberately changing a helper
 #: *and* re-reading the model that describes it.
+#:
+#: 2026-08: `typescript safe-integer-guard` was refreshed after the guard began
+#: normalising negative zero -- `return value` became
+#: `return Object.is(value, -0) ? 0 : value`. Re-read against the model below:
+#: the abstraction is over `WIDTH`-bit bitvectors, where -0 and 0 are the same
+#: value, so the normalisation is the identity there and the claim is unchanged.
+#: The throw path was not touched. The change itself is a real cross-language
+#: fix: TypeScript numbers are binary64, so without it an integer result of -0
+#: would come back distinguishable by `Object.is` from the 0 every other target
+#: returns.
 TRANSCRIPTION_PINS: dict[str, str] = {
     "go %": "59507207ed70cac383b01ad802786a85dbc126af4604e7dbbaea80ccccaec7c9",
     "go *": "a864744ea2cc8d0a13cc95b87adaa9fe579a3408d3de97144ecc7ffff652eac2",
@@ -565,7 +575,7 @@ TRANSCRIPTION_PINS: dict[str, str] = {
     "python -": "9757259d192830cae6c6bb0addda87e6c02ff59bec207e1ed214374ca4e9228f",
     "python /": "8435959b659dc584f26cd1e5beeb5147714e55535dc6d1240b9502b5341a3051",
     "typescript non-zero-guard": "f6e5d24769f7b8095bdb8024b90b7a93e306c801f2810a882e46c3085781f975",
-    "typescript safe-integer-guard": "d775513b6eb174190bb8793902bb60c0b23474894ea4a1f2840d020c5f004b1c",
+    "typescript safe-integer-guard": "9351765360a6c33269345e82a91178dae93024cc3a81133b46ca22eb5b70413c",
 }
 
 
