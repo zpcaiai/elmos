@@ -231,6 +231,27 @@ jobs:
             python scripts/batch29/run_route_gate.py "$route"
           done
 
+  sql-dialect-engine:
+    name: SQL Dialect Engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Python 3.12
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install locked uv tool
+        run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Verify SQL Dialect Engine
+        working-directory: engines/sql-dialect-engine
+        run: |
+          uv sync --locked
+          uv run pytest
+          uv run ruff check src tests
+          uv run mypy src
+
   project-synthesis:
     name: Project Synthesis and operability
     runs-on: ubuntu-24.04

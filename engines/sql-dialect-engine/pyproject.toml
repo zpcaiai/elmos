@@ -16,10 +16,17 @@ execution = [
     "psycopg2-binary==2.9.12",
     "PyMySQL==1.2.0",
 ]
+
+# Dev tooling lives in a dependency group, not an optional extra, so a plain
+# `uv sync --locked` installs it -- the same invocation CI uses for every other
+# engine here. As an extra it was invisible to that command, which is why this
+# package had no working lint or type gate. Versions match the other engines so
+# "ruff clean" means the same thing across the repository.
+[dependency-groups]
 dev = [
-    "pytest==8.3.5",
-    "ruff==0.9.6",
-    "mypy==1.15.0",
+  "mypy==1.17.0",
+  "pytest==8.4.1",
+  "ruff==0.12.5",
 ]
 
 [build-system]
@@ -31,3 +38,16 @@ packages = ["src/elmos_sql_dialect"]
 
 [project.scripts]
 elmos-sql-dialect = "elmos_sql_dialect.cli:main"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101", "S603"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["elmos_sql_dialect"]

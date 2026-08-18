@@ -13,9 +13,15 @@ PINNED_SQLGLOT_VERSION = "30.14.0"
 
 
 def verify_toolchain() -> None:
-    if sqlglot.__version__ != PINNED_SQLGLOT_VERSION:
+    # sqlglot declares no __all__, so a type checker will not accept
+    # `sqlglot.__version__` as an exported attribute even though it is a stable
+    # part of the package's public surface. The narrow ignore keeps this module
+    # strict-clean without weakening the comparison -- the pin is still exact
+    # and still fails closed.
+    installed: str = sqlglot.__version__  # type: ignore[attr-defined]
+    if installed != PINNED_SQLGLOT_VERSION:
         raise RouteError(
             "TOOLCHAIN_MISMATCH: certified-ddl-v1 was verified against sqlglot "
-            f"{PINNED_SQLGLOT_VERSION}, found {sqlglot.__version__}. Install the exact pinned "
+            f"{PINNED_SQLGLOT_VERSION}, found {installed}. Install the exact pinned "
             "version (see pyproject.toml) before trusting certified-ddl-v1 results."
         )

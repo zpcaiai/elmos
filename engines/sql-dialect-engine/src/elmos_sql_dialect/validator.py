@@ -24,7 +24,7 @@ from dataclasses import dataclass
 
 import sqlglot
 
-from .models import Dialect, EXECUTABLE_DIALECTS
+from .models import EXECUTABLE_DIALECTS, Dialect
 
 
 @dataclass(frozen=True)
@@ -65,9 +65,11 @@ def validate_execution(sql: str, dialect: Dialect, dsn: str | None) -> tuple[str
 
 def _validate_postgres(sql: str, dsn: str) -> tuple[str, tuple[str, ...]]:
     try:
-        import psycopg2
+        import psycopg2  # type: ignore[import-untyped]
     except ImportError:
-        return "FAILED", ("psycopg2-binary is not installed; install the [execution] extra to run real Postgres validation",)
+        return "FAILED", (
+            "psycopg2-binary is not installed; install the [execution] extra to run real Postgres validation",
+        )
     schema_name = f"elmos_sql_dialect_check_{uuid.uuid4().hex[:12]}"
     try:
         conn = psycopg2.connect(dsn)

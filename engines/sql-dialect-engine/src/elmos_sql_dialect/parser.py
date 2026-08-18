@@ -21,6 +21,10 @@ from sqlglot.expressions import DataType
 
 from .dialects import IDENTIFIER_PATTERN
 from .models import (
+    AddColumn,
+    AddConstraint,
+    AlterAction,
+    AlterTable,
     CanonicalType,
     CanonicalTypeRef,
     CheckComparison,
@@ -29,19 +33,15 @@ from .models import (
     CheckOperator,
     Column,
     ColumnDefault,
-    Dialect,
     DefaultKind,
+    Dialect,
     DialectError,
-    AddColumn,
-    AddConstraint,
-    AlterAction,
-    AlterTable,
     DropColumn,
     DropConstraint,
     ForeignKey,
-    RenameColumn,
     Index,
     ReferentialAction,
+    RenameColumn,
     Table,
 )
 
@@ -131,6 +131,7 @@ def _plain_identifier(node: exp.Expression | None, what: str) -> str:
     _require(not ident.args.get("quoted"), "CERTIFIED_DDL_QUOTED_IDENTIFIER",
               f"{what} {ident.this!r} uses a quoted/escaped identifier, which is outside certified-ddl-v1")
     name = ident.this
+    assert isinstance(name, str)  # narrows for mypy; the regex check below enforces it at runtime
     _require(bool(_IDENTIFIER_RE.match(name)), "CERTIFIED_DDL_UNSUPPORTED_IDENTIFIER_SHAPE",
               f"{what} {name!r} is not a plain [A-Za-z_][A-Za-z0-9_]* identifier")
     return name
@@ -140,7 +141,9 @@ def _require_single_statement(sql: str, source_dialect: Dialect) -> exp.Expressi
     try:
         statements = [s for s in sqlglot.parse(sql, read=source_dialect.value) if s is not None]
     except sqlglot.errors.SqlglotError as exc:
-        raise DialectError("CERTIFIED_DDL_PARSE_FAILED", f"{source_dialect.value} parser rejected input: {exc}") from exc
+        raise DialectError(
+            "CERTIFIED_DDL_PARSE_FAILED", f"{source_dialect.value} parser rejected input: {exc}"
+        ) from exc
     _require(len(statements) == 1, "CERTIFIED_DDL_MULTIPLE_STATEMENTS",
               f"certified-ddl-v1 accepts exactly one statement per call, found {len(statements)}")
     return statements[0]  # type: ignore[return-value]  # sqlglot's stub uses an internal "Expr" alias here
@@ -284,9 +287,9 @@ def _parse_check_comparison(node: exp.Expression) -> CheckComparison:
 
 
 def _parse_check(node: exp.Expression) -> tuple[tuple[CheckComparison, ...], CheckConnector | None]:
-    if isinstance(node, (exp.And, exp.Or)):
+    if isinstance(node, exp.And | exp.Or):
         left, right = node.this, node.expression
-        if isinstance(left, (exp.And, exp.Or)) or isinstance(right, (exp.And, exp.Or)):
+        if isinstance(left, exp.And | exp.Or) or isinstance(right, exp.And | exp.Or):
             raise DialectError("CERTIFIED_DDL_MULTI_LEVEL_CHECK",
                                 "certified-ddl-v1 supports only a single flat AND/OR of two plain comparisons, "
                                 "not nested boolean expressions")
@@ -321,7 +324,7 @@ def _column_constraints(
         elif isinstance(kind, exp.PrimaryKeyColumnConstraint):
             primary_key_shorthand = True
             nullable = False
-        elif isinstance(kind, (exp.AutoIncrementColumnConstraint, exp.GeneratedAsIdentityColumnConstraint)):
+        elif isinstance(kind, exp.AutoIncrementColumnConstraint | exp.GeneratedAsIdentityColumnConstraint):
             auto_increment = True
         elif isinstance(kind, exp.DefaultColumnConstraint):
             default = _parse_default(kind.this, type_ref)
@@ -356,7 +359,9 @@ def parse_create_table(sql: str | exp.Expression, source_dialect: Dialect) -> Ta
     schema = statement.this
     _require(isinstance(schema, exp.Schema), "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "malformed CREATE TABLE")
     table_ref = schema.this
-    _require(isinstance(table_ref, exp.Table) and table_ref.args.get("db") is None and table_ref.args.get("catalog") is None,
+    _require(isinstance(table_ref, exp.Table)
+              and table_ref.args.get("db") is None
+              and table_ref.args.get("catalog") is None,
               "CERTIFIED_DDL_QUALIFIED_TABLE_NAME",
               "certified-ddl-v1 requires an unqualified table name (no schema/catalog prefix)")
     table_name = _plain_identifier(table_ref.this, "table name")
@@ -393,7 +398,7 @@ def parse_create_table(sql: str | exp.Expression, source_dialect: Dialect) -> Ta
                       "a named constraint must contain exactly one constraint clause")
             _apply_table_constraint(item.expressions[0], name, primary_key, unique_constraints,
                                      foreign_keys, check_constraints)
-        elif isinstance(item, (exp.UniqueColumnConstraint, exp.ForeignKey, exp.CheckColumnConstraint)):
+        elif isinstance(item, exp.UniqueColumnConstraint | exp.ForeignKey | exp.CheckColumnConstraint):
             # Unnamed table-level UNIQUE(...) / FOREIGN KEY(...) / CHECK(...), i.e. no
             # `CONSTRAINT <name>` prefix -- sqlglot represents these as bare nodes
             # directly in the table body rather than wrapped in exp.Constraint.
@@ -470,7 +475,8 @@ def _apply_table_constraint(inner: exp.Expression, name: str | None, primary_key
 def parse_create_index(sql: str | exp.Expression, source_dialect: Dialect) -> Index:
     statement = _statement(sql, source_dialect)
     _require(isinstance(statement, exp.Create) and statement.args.get("kind") == "INDEX",
-              "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "certified-ddl-v1 only accepts a single CREATE INDEX statement here")
+              "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
+              "certified-ddl-v1 only accepts a single CREATE INDEX statement here")
     for flag in ("replace", "exists", "concurrently"):
         _require(not statement.args.get(flag), "CERTIFIED_DDL_UNSUPPORTED_STATEMENT_MODIFIER",
                   f"CREATE INDEX modifier {flag!r} is outside certified-ddl-v1")
@@ -610,7 +616,7 @@ def parse_alter_table(sql: str | exp.Expression, source_dialect: Dialect) -> Alt
                 # sqlglot wraps the constraint name in a Table node here,
                 # so the identifier has to be unwrapped one level.
                 target = action.this
-                if isinstance(target, (exp.Table, exp.Column)):
+                if isinstance(target, exp.Table | exp.Column):
                     target = target.this
                 actions.append(DropConstraint(name=_plain_identifier(target, "dropped constraint")))
             else:

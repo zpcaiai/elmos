@@ -117,7 +117,10 @@ def test_unsupported_dialect_name_fails_closed_before_parsing() -> None:
         ("qualified_table_name", "CREATE TABLE myschema.t (id INT PRIMARY KEY)"),
         ("quoted_identifier", 'CREATE TABLE "My Table" (id INT PRIMARY KEY)'),
         ("check_with_function_call", "CREATE TABLE t (id INT PRIMARY KEY, name VARCHAR(10) CHECK (LENGTH(name) > 0))"),
-        ("check_with_nested_boolean", "CREATE TABLE t (id INT PRIMARY KEY, a INT, b INT, CHECK ((a > 0 AND b > 0) OR a = b))"),
+        (
+            "check_with_nested_boolean",
+            "CREATE TABLE t (id INT PRIMARY KEY, a INT, b INT, CHECK ((a > 0 AND b > 0) OR a = b))",
+        ),
         ("default_expression_not_literal", "CREATE TABLE t (id INT PRIMARY KEY, x INT DEFAULT (1 + 1))"),
         ("no_columns_impossible_but_defensive", "CREATE TABLE t ()"),
     ],
@@ -130,7 +133,10 @@ def test_out_of_scope_ddl_fails_closed_instead_of_guessing(name: str, ddl: str) 
 
 
 def test_check_constraint_with_string_literal_round_trips_quoted_correctly() -> None:
-    ddl = "CREATE TABLE t (id INT PRIMARY KEY, status VARCHAR(20) NOT NULL, CONSTRAINT chk_status CHECK (status = 'active'))"
+    ddl = (
+        "CREATE TABLE t (id INT PRIMARY KEY, status VARCHAR(20) NOT NULL, "
+        "CONSTRAINT chk_status CHECK (status = 'active'))"
+    )
     report = translate_ddl(ddl, "postgres", "oracle")
     assert report["status"] == "PASSED", report
     assert "CHECK (status = 'active')" in report["emitted"]

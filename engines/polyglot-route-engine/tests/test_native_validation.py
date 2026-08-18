@@ -13,9 +13,11 @@ from elmos_polyglot_route.emitter import (
     _CPP_HELPERS,
     _OBJC_HELPERS,
     _SWIFT_HELPERS,
+    EmittedFile,
     emit,
 )
-from elmos_polyglot_route.models import RouteError, SemanticIR
+from elmos_polyglot_route.identifier_hygiene import plan_identifiers, target_ir_view
+from elmos_polyglot_route.models import Function, Language, RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze, inventory_module
 from elmos_polyglot_route.toolchains import ExactToolchain, exact_toolchain
 from elmos_polyglot_route.validation import (
@@ -567,6 +569,25 @@ def test_clang_inventory_and_analysis_ignore_ambient_header_and_sdk_injection(
     assert semantic.functions[0].name == "calculate"
 
 
+def _emit_for_target(ir: SemanticIR, language: Language) -> tuple[EmittedFile, Function]:
+    """Emit `ir` and return the file together with the function it actually defines.
+
+    `emit()` runs the identifier plan, and several targets refuse the source
+    spelling outright -- cpp and objc because their global symbol namespace is
+    open, java and swift because of the runtime function namespace -- so the
+    emitted symbol is routinely not the one that was analyzed.  A harness built
+    from the *source* `Function` therefore calls a name the emitted file does
+    not define, and the target compiler rejects it ("cannot find 'same' in
+    scope") before a single observation is made.  Production already avoids
+    this by holding on to the plan -- see `single_unit.emit_only` and the
+    `target_function` passed at `engine.py:3359` -- so these tests do the same.
+    Note this is the *target* function only; `validate_source` must still be
+    given the source one, because the source file really does define it.
+    """
+    plan = plan_identifiers(ir, language)
+    return emit(ir, language, identifier_plan=plan), target_ir_view(ir, plan).functions[0]
+
+
 @pytest.mark.parametrize("language", ["cpp", "objc", "swift", "java"])
 def test_native_source_and_target_execute_lossless_string_and_exact_fp64_observations(
     tmp_path: Path,
@@ -591,10 +612,11 @@ def test_native_source_and_target_execute_lossless_string_and_exact_fp64_observa
         string_cases,
         tmp_path / "source-string",
     )
+    emitted_string, emitted_string_function = _emit_for_target(string_ir, language)  # type: ignore[arg-type]
     target_string = validate(
-        emit(string_ir, language),  # type: ignore[arg-type]
+        emitted_string,
         language,  # type: ignore[arg-type]
-        string_function,
+        emitted_string_function,
         string_cases,
         tmp_path / "target-string",
     )
@@ -633,10 +655,11 @@ def test_native_source_and_target_execute_lossless_string_and_exact_fp64_observa
         number_cases,
         tmp_path / "source-number",
     )
+    emitted_number, emitted_number_function = _emit_for_target(number_ir, language)  # type: ignore[arg-type]
     target_number = validate(
-        emit(number_ir, language),  # type: ignore[arg-type]
+        emitted_number,
         language,  # type: ignore[arg-type]
-        number_function,
+        emitted_number_function,
         number_cases,
         tmp_path / "target-number",
     )
@@ -732,19 +755,20 @@ def test_swift_canonical_unicode_equality_diverges_from_java_code_unit_equality(
     _require_native_toolchain("swift")
     _require_native_toolchain("java")
     semantic = _string_equality_ir()
-    function = semantic.functions[0]
     arguments = ["\u00e9", "e\u0301"]
+    swift_emitted, swift_function = _emit_for_target(semantic, "swift")
     swift_report = validate(
-        emit(semantic, "swift"),
+        swift_emitted,
         "swift",
-        function,
+        swift_function,
         [{"args": arguments, "expected": True}],
         tmp_path / "swift",
     )
+    java_emitted, java_function = _emit_for_target(semantic, "java")
     java_report = validate(
-        emit(semantic, "java"),
+        java_emitted,
         "java",
-        function,
+        java_function,
         [{"args": arguments, "expected": False}],
         tmp_path / "java",
     )
@@ -769,12 +793,15 @@ def test_native_emitted_target_relifts_exact_helper_and_rejects_body_tamper(
 ) -> None:
     _require_native_toolchain(language)
     source_ir = _division_ir()
-    emitted = emit(source_ir, language)  # type: ignore[arg-type]
+    emitted, target_function = _emit_for_target(source_ir, language)  # type: ignore[arg-type]
     target = tmp_path / emitted.relative_path
     target.write_text(emitted.content, encoding="utf-8")
 
-    relifted = analyze(target, language, "ratio", emitted_target=True)  # type: ignore[arg-type]
-    assert relifted.functions[0].semantic_mapping() == source_ir.functions[0].semantic_mapping()
+    # Relifting reads the emitted file, so it must be asked for the symbol that
+    # file defines, and compared against the target view rather than the source
+    # IR -- the two differ by exactly the planned rename and nothing else.
+    relifted = analyze(target, language, target_function.name, emitted_target=True)  # type: ignore[arg-type]
+    assert relifted.functions[0].semantic_mapping() == target_function.semantic_mapping()
     _assert_required_spans(relifted.functions[0].to_mapping(), target)
 
     helper = helpers["non_zero_double"]
@@ -783,7 +810,7 @@ def test_native_emitted_target_relifts_exact_helper_and_rejects_body_tamper(
     assert tampered != emitted.content
     target.write_text(tampered, encoding="utf-8")
     with pytest.raises(RouteError, match="EMITTED_HELPER_SOURCE_MISMATCH") as captured:
-        analyze(target, language, "ratio", emitted_target=True)  # type: ignore[arg-type]
+        analyze(target, language, target_function.name, emitted_target=True)  # type: ignore[arg-type]
     if language == "swift":
         assert str(captured.value) == ("EMITTED_HELPER_SOURCE_MISMATCH:swift:non_zero_double:elmosNonZero")
 

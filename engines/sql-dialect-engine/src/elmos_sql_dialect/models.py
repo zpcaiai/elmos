@@ -175,11 +175,15 @@ class Table:
         for unique in self.unique_constraints:
             for unique_col in unique:
                 if unique_col not in names:
-                    raise DialectError("CERTIFIED_DDL_UNKNOWN_COLUMN", f"UNIQUE references unknown column {unique_col!r}")
+                    raise DialectError(
+                        "CERTIFIED_DDL_UNKNOWN_COLUMN", f"UNIQUE references unknown column {unique_col!r}"
+                    )
         for fk in self.foreign_keys:
             for fk_col in fk.columns:
                 if fk_col not in names:
-                    raise DialectError("CERTIFIED_DDL_UNKNOWN_COLUMN", f"FOREIGN KEY references unknown column {fk_col!r}")
+                    raise DialectError(
+                        "CERTIFIED_DDL_UNKNOWN_COLUMN", f"FOREIGN KEY references unknown column {fk_col!r}"
+                    )
         for check in self.check_constraints:
             for comparison in check.comparisons:
                 if comparison.column not in names:

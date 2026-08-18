@@ -30,7 +30,11 @@ from .models import (
 
 
 def _render_check_comparison(comparison: CheckComparison) -> str:
-    literal = f"'{comparison.literal.replace(chr(39), chr(39) * 2)}'" if comparison.literal_is_string else comparison.literal
+    literal = (
+        f"'{comparison.literal.replace(chr(39), chr(39) * 2)}'"
+        if comparison.literal_is_string
+        else comparison.literal
+    )
     return f"{comparison.column} {check_operator_sql(comparison.operator)} {literal}"
 
 

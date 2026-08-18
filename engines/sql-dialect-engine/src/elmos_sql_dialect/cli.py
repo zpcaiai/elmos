@@ -13,7 +13,7 @@ from .toolchains import verify_toolchain
 SUBCOMMANDS = ("translate", "scan")
 
 
-def _translate_parser(subparsers: argparse._SubParsersAction) -> None:
+def _translate_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     p = subparsers.add_parser("translate", help="translate one certified-ddl-v1 statement between dialects")
     p.add_argument("--source-file", required=True, type=Path)
     p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])
@@ -39,7 +39,7 @@ def _run_translate(args: argparse.Namespace) -> int:
     return 0 if report["status"] == "PASSED" else 2
 
 
-def _scan_parser(subparsers: argparse._SubParsersAction) -> None:
+def _scan_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     p = subparsers.add_parser(
         "scan",
         help="parse-only feasibility pre-check: how much of a schema is inside certified-ddl-v1",

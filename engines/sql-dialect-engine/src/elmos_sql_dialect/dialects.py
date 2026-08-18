@@ -19,9 +19,9 @@ from .models import (
     CanonicalType,
     CanonicalTypeRef,
     CheckOperator,
-    Dialect,
-    DefaultKind,
     ColumnDefault,
+    DefaultKind,
+    Dialect,
     DialectError,
     ReferentialAction,
 )
@@ -312,7 +312,9 @@ def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: 
         if dialect in (Dialect.ORACLE, Dialect.TSQL):
             return "1" if default.literal == "true" else "0"
         return "TRUE" if default.literal == "true" else "FALSE"
-    raise DialectError("CERTIFIED_DDL_UNREACHABLE_DEFAULT", f"no renderer registered for {default.kind}")  # pragma: no cover
+    raise DialectError(  # pragma: no cover
+        "CERTIFIED_DDL_UNREACHABLE_DEFAULT", f"no renderer registered for {default.kind}"
+    )
 
 
 IDENTIFIER_PATTERN = r"[A-Za-z_][A-Za-z0-9_]{0,62}"

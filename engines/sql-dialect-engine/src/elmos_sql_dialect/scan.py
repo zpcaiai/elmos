@@ -37,10 +37,11 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable, Literal
+from typing import Literal
 
 import sqlglot
 from sqlglot import exp
@@ -482,7 +483,7 @@ def _build_report(
         profile="certified-ddl-v1 + certified-alter-v1",
         repository=str(root.resolve()),
         source_dialect=source_dialect.value,
-        scanned_at=datetime.now(timezone.utc).isoformat(),
+        scanned_at=datetime.now(UTC).isoformat(),
         totals={
             "discovered": denominator,
             "inSubset": in_subset,
