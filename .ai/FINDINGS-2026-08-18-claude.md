@@ -213,3 +213,141 @@ Editing it would silently break the v1 campaign's provenance chain to fix a
 gate that the superseding v2 campaign already implements correctly. Sealed
 evidence should stay sealed; leaving the stale grep in a retired pack is the
 lesser error. **Do not "tidy" this file.**
+
+---
+
+## 7. K4 scoping — it is not next, and it is not producible here
+
+Scoped K4 (independent client-repository verification) before writing anything.
+Four findings, in order of how much they change the plan.
+
+### 7.1 The matrix is no longer 90. It is 110.
+
+At **12:48:23**, mid-session, the other thread regenerated
+`routes/inventory.json`: **90 → 110 routes**, 10 → **11 languages** (`php`
+added), new route set `eleven-language-complete-110`, and 110 route
+directories now exist on disk. Every `/90` denominator in `HANDOFF.md`,
+`TASK.md` and `IMPLEMENTATION_STATUS.md` is now stale — this is K6 recurring,
+one language later. Report **110 routes** until told otherwise.
+
+### 7.2 K4 is third in the dependency chain, not first
+
+`HANDOFF.md` §7 calls K4 "the single largest unstarted item and the only thing
+between here and a certification attempt … Everything upstream of it is green."
+**That is not correct.** Read straight from `routes/inventory.json`:
+
+| Gate | Status across all 110 |
+| --- | --- |
+| `local_execution_status` | **NOT_RUN ×110** |
+| `repository_execution_status` | **NOT_RUN ×110** |
+| `independent_verification_status` | NOT_RUN ×110 |
+| `external_certification_status` | NOT_RUN ×110 |
+
+Nothing upstream is green. `local_execution` is 0/110, and the top-level
+`local_execution_evidence` field reads `"NOT_RUN"`. The 182/182 matrix result
+is a *pipeline test-suite* pass; it does not write per-route certification
+evidence, and the two must not be conflated.
+
+Split by reason:
+
+| Count | Route set | `local_execution_reason` |
+| --- | --- | --- |
+| 30 | `legacy-complete-30` | `ENGINE_SOURCE_MANIFEST_INVALID` |
+| 8 | `cpp-objc-swift-java-exact-8` | `ENGINE_SOURCE_MANIFEST_INVALID` |
+| 20 | `php-php84-completion-20` | `ENGINE_SOURCE_MANIFEST_INVALID` |
+| 34 | `nine-language-completion-34` | `LOCAL_EXECUTION_NOT_RUN` |
+| 18 | `javascript-node26-completion-18` | `LOCAL_EXECUTION_NOT_RUN` |
+
+### 7.3 Independent verification cannot be produced by this repository
+
+This is by design, and the design is right. Three independent guards:
+
+1. `scripts/batch29/validate_route.py:6289` **fails the route** if the
+   environment artifact reports anything other than `NOT_RUN`:
+   `"environment independent_verification must remain NOT_RUN"`. A locally-run
+   environment is not permitted to call itself independent.
+2. `scripts/batch29/run_route_gate.py` only ever *validates consistency*. For
+   `status == "limited"` it allows `{NOT_RUN, PASSED}`; for
+   `status == "certified"` it *requires* `PASSED`. Nothing in it, or anywhere
+   else in the tree, ever **writes** `PASSED`.
+3. Every corpus manifest records `customer_repository: false` and
+   `authorization: local-engineering-validation`.
+
+Scanned all route certifications: **zero** have ever recorded anything but
+`NOT_RUN` for `independent_verification`.
+
+So K4 is not a coding task. Writing code here to set it `PASSED` would be
+manufacturing a gate result — precisely what the task statement forbids. It
+needs a genuinely separate party re-running a published pack in an environment
+this repository does not control. The engineering work available is to *build
+and document the ingestion path* for such an attestation; producing the
+attestation itself is an organizational act, not a commit.
+
+### 7.4 Legacy and specialized routes are immutable — they cannot just be re-run
+
+Executed `run_polyglot_routes.py --route java-to-python`:
+
+```
+RuntimeError: LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:java-to-python
+```
+
+So the 38 `ENGINE_SOURCE_MANIFEST_INVALID` routes in the legacy-30 and exact-8
+sets cannot be refreshed by replay; restoring them requires a **new pack
+version**, which is a governance decision. That is deliberate — `ROUTE_MATRIX.md`
+states the old pack "and its evidence remain immutable". Only the 52 routes
+marked `LOCAL_EXECUTION_NOT_RUN` are replayable as-is (plus the 20 new PHP ones
+once their engine source settles). The run wrote nothing; it aborted at the
+guard before touching the tree.
+
+## 8. FIXED — route replay was completely blocked (uv cache)
+
+`run_polyglot_routes.py` could not run **at all**, for any route. It builds a
+fresh network-isolated runtime (`UV_OFFLINE=1`, `--locked --offline`), and that
+build died immediately:
+
+```
+× Failed to download `z3-solver==4.16.0.0`
+╰─▶ Network connectivity is disabled, but the requested data wasn't found in
+    the cache for: …/z3_solver-4.16.0.0-py3-none-macosx_15_0_arm64.whl
+```
+
+Cause: the earlier disk reclamation emptied `~/.cache/uv` (this is K9's
+"zero-byte husks … `~/.cache/uv`" landing somewhere nobody looked). The offline
+runtime has no fallback by design, so every route replay failed before doing
+any work.
+
+Note for whoever hits this again: `uv pip install z3-solver==4.16.0.0` **does
+not fix it** — it populates a different cache namespace and the offline locked
+resolution still misses. What works is a locked *project* sync, which is what
+the runtime actually performs:
+
+```
+UV_PROJECT_ENVIRONMENT=/tmp/warm-venv \
+  uv --project engines/polyglot-route-engine sync --locked
+```
+
+Cache went 351M → 631M. Verified by replicating the runtime's exact isolated
+invocation (`env -i`, `UV_OFFLINE=1`, `--locked --offline`):
+
+```
+Installed 17 packages in 19ms
+CHILD OK
+```
+
+and then by the real runner, which now reaches its own argument parsing and
+route logic instead of dying in venv construction. This unblocks local
+execution for whenever the engine source settles.
+
+## 9. Recommended order from here
+
+1. **Let the PHP refactor land and gate.** 26+ files are uncommitted and the
+   route matrix changed size mid-session. Any route evidence generated now is
+   bound to an engine-source digest that is still moving, and would be
+   invalidated exactly the way the existing 38 were.
+2. **Then run local execution** for the 52 replayable routes (+20 PHP), using
+   the now-working replay path from §8.
+3. **Then repository execution.**
+4. **Only then** K4 — and as an ingestion path for an external party's
+   attestation, not as a value this repository writes about itself.
+5. Certification stays `NOT_CERTIFIED` throughout; only the gate script may
+   change it.
