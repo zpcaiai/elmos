@@ -667,3 +667,154 @@ Every defect found this session is closed. What remains is **not** defects:
 local execution 0/110, repository execution 0/110, R10/K4 structurally blocked
 on an external party (§7), the pack-version decision for the 38 invalidated
 routes (§7.4), and K7's retained evidence.
+
+---
+
+## 18. The five remaining items — what was executed, and what was not
+
+### 18.1 Local execution 0/110 — DEFERRED, deliberately, and it is the right call
+
+Current split (110 routes):
+
+| Count | Route set | `local_execution_reason` |
+| --- | --- | --- |
+| 34 | `nine-language-completion-34` | `LOCAL_EXECUTION_NOT_RUN` — replayable |
+| 18 | `javascript-node26-completion-18` | `LOCAL_EXECUTION_NOT_RUN` — replayable |
+| 20 | `php-php85-completion-20` | `LOCAL_EXECUTION_NOT_RUN` — replayable |
+| 30 | `legacy-complete-30` | `ENGINE_SOURCE_MANIFEST_INVALID` — immutable |
+| 8 | `cpp-objc-swift-java-exact-8` | `ENGINE_SOURCE_MANIFEST_INVALID` — immutable |
+
+**72 replayable, 38 blocked on the pack-version decision.**
+
+Measured one route end-to-end (`--route cpp-to-csharp`): **~5.5 minutes**. So
+72 routes is roughly **6.5–7 hours** of serial wall clock.
+
+It was not started, for two independent reasons:
+
+1. **The engine is still moving.** `native.py` was modified at 16:35 and again
+   at **16:55**, with `assembly.py`, `native.py` and `validation.py` uncommitted.
+   Route evidence binds the engine source manifest — that is precisely why 38
+   routes read `ENGINE_SOURCE_MANIFEST_INVALID` today. Generating seven hours of
+   evidence against a source tree that changes an hour later reproduces the
+   exact failure we are trying to clear.
+2. **The one route that was tried failed on a real defect** (§18.2), which would
+   have broken every `*-to-csharp` route in the batch anyway.
+
+Start it when the engine is committed and quiet. Nothing else blocks it — the
+replay path itself works now (§8).
+
+### 18.2 NEW DEFECT — the C# emitted-target analyzer cannot succeed
+
+`run_polyglot_routes.py --route cpp-to-csharp` fails:
+
+```
+NATIVE_ANALYZER_FAILED:/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet:process
+```
+
+dotnet itself is healthy (`--version` → `10.0.301`, exit 0). The cause is a
+timeout, and it is structural. In `native.py`, the `emitted_target=True` branch
+for C# shells out to:
+
+```python
+value = _run([toolchain.executable, "run", "--project", str(project), "--", *arguments], cwd=REPOSITORY_ROOT)
+```
+
+`_run` defaults to `timeout: int = 120`, and it hands every subprocess a
+**fresh empty HOME**, so dotnet redoes first-run setup and builds the analyzer
+from scratch on every call. Measured that cold build directly, with an
+`env -i` fresh HOME:
+
+```
+Build succeeded.  0 Warning(s)  0 Error(s)
+Time Elapsed 00:02:22.52
+```
+
+**142 seconds for the build alone, against a 120-second budget** — and
+`dotnet run` adds restore and execution on top. This path can never pass.
+
+It is also inconsistent with the rest of the file: the `emitted_target=False`
+branch goes through `_run_csharp_semantic_cli`, and the engine already maintains
+persistent analyzer build caches (`_store_persistent_analyzer_build("csharp-analyzer", ...)`,
+`_csharp_package_restore_cache`, `_cargo_build_cache`, the Swift analyzer cache).
+Only this one branch bypasses all of it.
+
+The fix is to route both branches through the cached CLI:
+
+```python
+elif language == "csharp":
+    arguments = [str(source), function_name]
+    if emitted_target:
+        arguments.append("--emitted-target")
+    value, _ = _run_csharp_semantic_cli(toolchain, arguments)
+```
+
+**Not applied.** `native.py` was being edited three minutes before this was
+written, and a five-line change in a file someone else is mid-refactor in is
+how you lose both changes. It needs `_run_csharp_semantic_cli` confirmed to
+accept `--emitted-target` first. Raising the timeout instead would be the wrong
+repair — it would make every C# route pay a 2.5-minute cold build.
+
+Why the 182-node matrix never caught this: the matrix does not exercise the
+C# `emitted_target` branch. Route replay does.
+
+### 18.3 Repository execution 0/110 — blocked behind 18.1
+
+Downstream of local execution by construction. Nothing to do until 18.1 lands.
+
+### 18.4 R10 / K4 — no action possible, and none should be faked
+
+Unchanged from §7 and the other thread's `R10_INDEPENDENT_VERIFICATION.md`.
+Three independent guards prevent this repository from producing the evidence,
+and `run_repository_gate.py` caps the best local outcome at
+`READY_FOR_EXTERNAL_GATE`. The buildable part is the ingestion path; the
+attestation itself requires a second party with executor/verifier separation
+enforced campaign-wide. **No code was written against this** — anything that
+moved the number would have been fabrication.
+
+### 18.5 The 38-route pack-version decision — RECOMMEND: do not bump yet
+
+A bump is *sound* in principle: it supersedes rather than destroys, and old
+evidence stays attributable under its old version. But bumping now buys
+nothing and costs the one property those packs still have.
+
+- The 38 routes are already `NOT_RUN` in the inventory; the bump does not
+  recover evidence, it only makes them *replayable*.
+- Replaying them needs the engine settled (§18.1) and the C# defect fixed
+  (§18.2) — neither is true today.
+- Bumping now, then discovering the engine moved again, means bumping twice and
+  spending the immutability of the exact-8 proof scope for nothing. `models.py`
+  is explicit that `SPECIALIZED_DIRECTED_PAIRS` is "an immutable Batch 29 proof
+  scope."
+
+**Do it as one deliberate act, together with the replay, once the engine is
+committed and quiet.** Bump → replay → gate, in one window. Not before.
+
+### 18.6 K7 — partially executed; the real blocker is not what the handoff says
+
+Reclaimed what was safely reclaimable this session:
+
+| Location | Freed |
+| --- | --- |
+| `$TMPDIR` stale analyzer/process dirs | 2.0 G → 819 M |
+| `/tmp` elmos leftovers (arkui-regenerate, runner-audit, external-closure/gate) | ~4.8 G |
+| my own scratch (venvs, fakehome, uv stress dirs) | ~750 M |
+
+**`df` did not move: still 12 Gi free, 99% full.** The reason is not the
+files — it is **APFS Time Machine local snapshots**, which pin deleted blocks:
+
+```
+6 snapshots, e.g.
+com.apple.TimeMachine.2026-08-17-002527.local
+com.apple.TimeMachine.2026-08-18-122621.local  ... -152725 ... -162814
+```
+
+Four were taken *today*, during this work. This reframes the whole disk story
+that has run through this engagement: deleting files cannot free space while a
+snapshot references them, so every previous "I truncated X GB and nothing
+happened" observation has the same explanation.
+
+**Not executed, deliberately:** `tmutil deletelocalsnapshots` destroys the
+user's local backup safety net. macOS purges these automatically under real
+pressure. That is a decision for the owner, not an agent, and it is the actual
+lever — not the 5.4 GiB of R4b–R4f evidence, which this search could not even
+locate on disk any more.
