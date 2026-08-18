@@ -19,7 +19,7 @@ NODE_RUNTIME_BIN := $(if $(NODE_EXECUTABLE),$(dir $(NODE_EXECUTABLE)),/nonexiste
 PNPM_VERSION ?= $(shell sed -n 's/.*"packageManager": "pnpm@\([^"]*\)".*/\1/p' apps/web-console/package.json)
 PNPM ?= pnpm dlx pnpm@$(PNPM_VERSION)
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-certification-rehearsal test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-packages product-roadmap production-readiness-check operations-scripts-test precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-certification-rehearsal test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification dotnet python project-synthesis project-synthesis-toolchains frontend sql-dialect component-dialect web up down
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 
@@ -31,9 +31,18 @@ makefile-portability-check:
 	python3 scripts/operations/validate_makefile_portability.py
 model-catalog-check:
 	python3 scripts/operations/validate_model_catalog.py
-production-readiness-check: business-line-contracts batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web
+production-readiness-check: business-line-contracts batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills operations-scripts-test web
 	$(UV) run --quiet --with pyyaml python tooling/validate_runtime_operability.py
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
+# The modernization-proof release scripts carry their unit tests next to the code
+# they cover, and nothing ran them: they are under scripts/, so neither the
+# tests/ discovery roots nor any CI job reached them, and ~900 lines of coverage
+# could rot without ever going red. Discovery starts at scripts/operations rather
+# than the repository root because those tests insert their own directory on
+# sys.path and import their subjects by bare module name; scripts/operations is
+# not a package, so `-t .` cannot find it.
+operations-scripts-test:
+	$(UV) run --quiet --with pyyaml python -m unittest discover -s scripts/operations -p 'test_*.py'
 backend:
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B verify
 # Seven modules form a closed cluster that no `apps/` component references:
