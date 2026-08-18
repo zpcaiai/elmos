@@ -27,6 +27,7 @@ the safe-integer range, and it may never answer a different value.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -36,11 +37,42 @@ from typing import Any
 import pytest
 
 from elmos_polyglot_route.emitter import emit
+from elmos_polyglot_route.identifier_hygiene import plan_identifiers, target_ir_view
 from elmos_polyglot_route.models import SemanticIR
 
 INTEGER_MAX = 2**63 - 1
 INTEGER_MIN = -(2**63)
 SAFE_MAX = 2**53 - 1
+
+def _emitted(ir: SemanticIR, language: str) -> tuple[str, Any]:
+    """Emit, and return a rewriter from source spellings to the planned ones.
+
+    Identifier hygiene refuses the source spelling outright for some targets --
+    function names in cpp, objc, java, csharp and swift, parameter names in cpp
+    and objc -- because those namespaces are open to collision. An assertion
+    written against the source names therefore ends up testing that policy
+    instead of the lowering it is named for. Rewriting the expected spelling
+    through the plan keeps each assertion about its own subject, and keeps it
+    true whatever the plan decides, without pinning a digest into the test.
+    """
+    plan = plan_identifiers(ir, language)
+    source_function = ir.functions[0]
+    target_function = target_ir_view(ir, plan).functions[0]
+    renames = {source_function.name: target_function.name}
+    renames.update(
+        {
+            source.name: target.name
+            for source, target in zip(source_function.parameters, target_function.parameters, strict=True)
+        }
+    )
+
+    def planned(spelling: str) -> str:
+        for source, target in renames.items():
+            spelling = re.sub(rf"\b{re.escape(source)}\b", target, spelling)
+        return spelling
+
+    return emit(ir, language, identifier_plan=plan).content, planned
+
 
 ALL_TARGETS = ("java", "csharp", "python", "typescript", "go", "rust", "swift", "cpp", "objc")
 
@@ -157,7 +189,8 @@ _CHECKED_ADD_SPELLING = {
 
 @pytest.mark.parametrize("language", ALL_TARGETS)
 def test_integer_addition_is_checked_in_every_target(language: str) -> None:
-    assert _CHECKED_ADD_SPELLING[language] in emit(_ir(_ADD), language).content
+    content, planned = _emitted(_ir(_ADD), language)
+    assert planned(_CHECKED_ADD_SPELLING[language]) in content
 
 
 def test_python_addition_raises_instead_of_growing_past_the_canonical_range() -> None:
@@ -224,7 +257,8 @@ def test_float_division_guards_the_divisor_everywhere_python_raises(
 ) -> None:
     # Python raises on 1.0 / 0.0; the other eight answer Infinity. The
     # canonical rule makes every supported target agree on "error".
-    assert expected in emit(_ir(_FLOAT_DIVIDE), language).content
+    content, planned = _emitted(_ir(_FLOAT_DIVIDE), language)
+    assert planned(expected) in content
 
 
 def test_python_float_division_needs_no_guard_because_it_already_raises() -> None:
@@ -408,9 +442,9 @@ def test_rust_groups_boolean_connectives() -> None:
 
 @pytest.mark.parametrize("language", ALL_TARGETS)
 def test_every_target_groups_boolean_connectives(language: str) -> None:
-    content = emit(_ir(_OR_THEN_AND), language).content
+    content, planned = _emitted(_ir(_OR_THEN_AND), language)
     spelling = {"python": "(a or b) and c"}.get(language, "(a || b) && c")
-    assert spelling in content
+    assert planned(spelling) in content
 
 
 def test_python_rejects_arguments_outside_the_canonical_range() -> None:

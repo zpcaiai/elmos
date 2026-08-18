@@ -26,8 +26,8 @@ import sys
 import tomllib
 import xml.etree.ElementTree as ET
 from collections import deque
-from concurrent.futures import ProcessPoolExecutor
 from collections.abc import Iterable, Mapping, Sequence
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path, PurePosixPath
@@ -78,6 +78,7 @@ SUPPORTED_LANGUAGES: Final[tuple[str, ...]] = (
     "java",
     "javascript",
     "objc",
+    "php",
     "python",
     "rust",
     "swift",
@@ -99,6 +100,7 @@ _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".mjs": "javascript",
     ".m": "objc",
     ".mm": "objc",
+    ".php": "php",
     ".py": "python",
     ".rs": "rust",
     ".swift": "swift",
@@ -135,6 +137,7 @@ _BUILD_DESCRIPTOR_NAMES: Final[frozenset[str]] = frozenset(
         "cargo.toml",
         "cmakelists.txt",
         "composer.json",
+        "composer.lock",
         "directory.build.props",
         "directory.build.targets",
         "directory.packages.props",
@@ -1417,7 +1420,7 @@ def _import_and_dynamic_records(
     """
     imports: list[tuple[str, ast.AST]] = []
     dynamic: ast.Call | None = None
-    todo = deque([tree])
+    todo: deque[ast.AST] = deque([tree])
     while todo:
         node = todo.popleft()
         todo.extend(ast.iter_child_nodes(node))

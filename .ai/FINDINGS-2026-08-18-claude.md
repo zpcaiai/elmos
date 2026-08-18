@@ -351,3 +351,103 @@ execution for whenever the engine source settles.
    attestation, not as a value this repository writes about itself.
 5. Certification stays `NOT_CERTIFIED` throughout; only the gate script may
    change it.
+
+---
+
+## 10. FIXED — the engine gate was RED on the in-flight tree (7 defects)
+
+Re-ran the polyglot engine gate at 13:06 against the working tree. It failed:
+**6 ruff + 1 mypy**, all in files modified by the in-flight PHP work, all clean
+at HEAD. Two of them were regressions of fixes that were already present at
+12:26 and got overwritten.
+
+| File | Defect | Fix |
+| --- | --- | --- |
+| `discovery.py:28` | `F401` `.native.analyze` imported but unused | removed from the import |
+| `project_graph.py:1426` | mypy: `deque.extend` got `Iterator[AST]`, declared `Iterable[Module]` | `todo: deque[ast.AST] = deque([tree])` |
+| `project_graph.py:18` | `I001` unsorted imports | `ruff --fix --select I001` |
+| `test_layered_equivalence.py:1` | `I001` unsorted imports | same |
+| `test_arithmetic_equivalence.py:65` | `B905` bare `zip()` | `strict=True` |
+| `test_cpp_objc_swift.py:104,106` | `B905` bare `zip()` ×2 | `strict=True` |
+
+On the `zip()` calls: ruff's autofix inserts `strict=False`, which preserves
+the silent-truncation behaviour. These three all zip a source function against
+its target view, which is the same IR with identifiers renamed — equal length
+by construction. `strict=True` asserts that invariant instead of hiding a
+violation, so it is the stronger fix, and it is what was applied. Verified:
+`test_arithmetic_equivalence.py` passes with it.
+
+Result: `ruff check .` → `All checks passed!`, `mypy src` → `Success: 22 source
+files`.
+
+## 11. ROOT CAUSE — `brew install php` broke the JavaScript/TypeScript pin
+
+`test_layered_equivalence.py::test_each_routed_target_relifts_exact_emitter_compensation`
+fails for **typescript**, **javascript** and **php**.
+
+`php` is correct fail-closed behaviour and belongs to the other thread:
+`EXACT_TOOLCHAIN_PHP_NOT_PINNED:run tools/pin_php_toolchain.py on the pinning host`.
+
+**typescript and javascript are collateral damage, and the cause is exact.**
+Both fail `EXACT_TOOLCHAIN_NODE_TOPOLOGY_CACHE_MISMATCH`. The closure *shape*
+is unchanged — observed `comp=25 edge=49 sys=43` matches the pin exactly — but
+the digest differs:
+
+```
+OBSERVED sha = 2b8aab1eefbab5f58a97877fa543a46c15e3e114788e9c2de810ecd70c0be954
+EXPECTED sha = 2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd
+```
+
+Same graph, one different path string. Homebrew timestamps identify it:
+
+```
+/opt/homebrew/Cellar/php      8.5.9    Aug 18 12:59
+/opt/homebrew/Cellar/sqlite   3.53.4   Aug 18 12:58   <-- new
+/opt/homebrew/Cellar/sqlite   3.53.3   Jul  3 15:19   <-- what the pin was captured against
+/opt/homebrew/opt/sqlite -> ../Cellar/sqlite/3.53.4   (symlink retargeted Aug 18 12:58)
+```
+
+`libnode.147.dylib` links `/opt/homebrew/opt/sqlite/lib/libsqlite3.dylib`, and
+the topology records the **resolved** path. So installing PHP upgraded sqlite as
+a dependency, retargeted the keg-only symlink, and silently invalidated the
+Node 26 pin. The gate did its job — this is exactly the cross-contamination
+pinning exists to catch.
+
+### The fix — needs to be run by the user (blocked here)
+
+`3.53.3` is still in the Cellar, so this is a two-symlink flip, fully
+reversible, and it restores the pinned closure without re-pinning anything:
+
+```sh
+ln -sfn ../Cellar/sqlite/3.53.3 /opt/homebrew/opt/sqlite
+ln -sfn ../Cellar/sqlite/3.53.3 /opt/homebrew/opt/sqlite3
+```
+
+To undo, substitute `3.53.4`. After flipping, confirm with `php -v` and
+`node -v`, then re-run the two failing nodes.
+
+**Do NOT "fix" this by re-pinning `_EXPECTED_NODE_TOPOLOGY_SHA256` to the
+observed value.** That would silently accept whatever is installed — the exact
+degradation `toolchains.py` refuses for PHP one function away ("An unpinned
+digest must never degrade to 'trust whatever is there'"). Re-pinning is a
+deliberate act on a pinning host, not a way to make a red test green.
+
+Note this also means **`tools/pin_php_toolchain.py` should be run only after
+the sqlite link is settled**, or PHP gets pinned against a different sqlite
+than the rest of the closure.
+
+## 12. NOT bugs — checked and deliberately left alone
+
+- **K6 (`/90` denominators).** Not yet stale *in HEAD*. `git show
+  HEAD:routes/inventory.json` reports `route_count = 90`, 10 languages; the 110
+  and the PHP route directories are entirely uncommitted working-tree state.
+  Rewriting the docs to 110 now would make committed docs disagree with
+  committed code. Correct once PHP lands, not before.
+- **The `uv` TLS failure.** Transient, not a misconfiguration. `pypi.org` and
+  the exact wheel URL return `200`/`206` both direct and through the Clash Verge
+  proxy, and `uv sync --locked` then succeeded 3 times out of 3. Nothing to fix.
+- **`.ai/R10_INDEPENDENT_VERIFICATION.md`** (written 11:51 by the other thread)
+  independently reaches the same conclusion as §7 here, and adds two facts worth
+  keeping: `run_repository_gate.py` hardcodes `maximum_local_decision:
+  READY_FOR_EXTERNAL_GATE`, and it enforces executor/verifier actor separation
+  campaign-wide. Its `0/90` is now `0/110`.

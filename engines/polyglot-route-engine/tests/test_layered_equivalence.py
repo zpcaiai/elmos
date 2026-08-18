@@ -23,6 +23,11 @@ from elmos_polyglot_route.equivalence import (
     verify_formal_input_closure,
     write_json,
 )
+from elmos_polyglot_route.identifier_hygiene import (
+    alpha_normalize_target,
+    plan_identifiers,
+    target_ir_view,
+)
 from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze
 
@@ -116,10 +121,21 @@ def _target_path(root: Path, target: Language, content: str, relative_path: str)
 @pytest.mark.parametrize("target", ROUTED_LANGUAGES)
 def test_each_routed_target_relifts_exact_emitter_compensation(tmp_path: Path, target: Language) -> None:
     source = _integer_ir()
-    emitted = emit(source, target)
+    # Five of the routed targets refuse the source spelling for a function name
+    # -- cpp and objc because their global symbol namespace is open, java,
+    # csharp and swift because of the runtime function namespace -- so the
+    # emitted file does not declare `calculate`. Relifting has to ask for the
+    # symbol that is there, and the recovered IR has to come back through the
+    # plan's alpha map before it can be compared with the source. This is the
+    # exact pairing `engine.migrate` uses; doing it any other way here would
+    # either fail to find the function or assert that hygiene never happened.
+    plan = plan_identifiers(source, target)
+    symbol = target_ir_view(source, plan).functions[0].name
+    emitted = emit(source, target, identifier_plan=plan)
     path = _target_path(tmp_path, target, emitted.content, emitted.relative_path)
 
-    target_ir = analyze(path, target, "calculate", emitted_target=True)
+    raw_target_ir = analyze(path, target, symbol, emitted_target=True)
+    target_ir = alpha_normalize_target(source, raw_target_ir, plan)
 
     assert target_ir.functions[0].semantic_mapping() == source.functions[0].semantic_mapping()
     assert semantic_equivalence(source, target_ir)["status"] == "PASSED"

@@ -19,6 +19,7 @@ toolchain, so those two are asserted at the emitted-source level.
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -27,6 +28,11 @@ from typing import Any
 import pytest
 
 from elmos_polyglot_route.emitter import emit
+from elmos_polyglot_route.identifier_hygiene import (
+    alpha_normalize_target,
+    plan_identifiers,
+    target_ir_view,
+)
 from elmos_polyglot_route.models import RouteError, SemanticIR
 
 CLANG = shutil.which("clang")
@@ -77,6 +83,41 @@ STRING_CONCAT = _function("join", [("a", "string"), ("b", "string")], "string", 
 # --------------------------------------------------------------------------
 
 
+def _emitted(ir: SemanticIR, language: str) -> tuple[str, Any]:
+    """Emit, and return a rewriter from source spellings to the planned ones.
+
+    Identifier hygiene refuses the source spelling outright for these three
+    targets -- function names in all of cpp, objc and swift, parameter names in
+    cpp and objc -- because a C-family global symbol namespace is open to
+    collision and a preprocessor can rewrite any identifier. An assertion
+    written against the source names therefore ends up testing that policy
+    rather than the lowering it is named for. Rewriting the expected spelling
+    through the plan keeps each assertion about its own subject, and keeps it
+    true whatever the plan decides, without pinning a digest into the test.
+
+    Parameter names are scoped per function, so for an IR carrying more than one
+    function only the last function's parameters survive in the map. Callers
+    passing several functions should rewrite function names only.
+    """
+    plan = plan_identifiers(ir, language)
+    renames: dict[str, str] = {}
+    for source_function, target_function in zip(
+        ir.functions, target_ir_view(ir, plan).functions, strict=True
+    ):
+        renames[source_function.name] = target_function.name
+        for source, target in zip(
+            source_function.parameters, target_function.parameters, strict=True
+        ):
+            renames[source.name] = target.name
+
+    def planned(spelling: str) -> str:
+        for source, target in renames.items():
+            spelling = re.sub(rf"\b{re.escape(source)}\b", target, spelling)
+        return spelling
+
+    return emit(ir, language, identifier_plan=plan).content, planned
+
+
 @pytest.mark.parametrize(
     ("language", "expected"),
     [
@@ -86,7 +127,8 @@ STRING_CONCAT = _function("join", [("a", "string"), ("b", "string")], "string", 
     ],
 )
 def test_integer_signature(language: str, expected: str) -> None:
-    assert expected in emit(_ir(DIVIDE), language).content
+    content, planned = _emitted(_ir(DIVIDE), language)
+    assert planned(expected) in content
 
 
 @pytest.mark.parametrize(
@@ -98,14 +140,19 @@ def test_integer_signature(language: str, expected: str) -> None:
     ],
 )
 def test_string_and_boolean_signature(language: str, expected: str) -> None:
-    assert expected in emit(_ir(STRING_EQUALS), language).content
+    content, planned = _emitted(_ir(STRING_EQUALS), language)
+    assert planned(expected) in content
 
 
 def test_number_maps_to_double_everywhere() -> None:
     function = _function("ratio", [("a", "number"), ("b", "number")], "number", _binary("/", _name("a"), _name("b")))
-    assert "double ratio(double a, double b)" in emit(_ir(function), "cpp").content
-    assert "double ratio(double a, double b)" in emit(_ir(function), "objc").content
-    assert "func ratio(_ a: Double, _ b: Double) -> Double" in emit(_ir(function), "swift").content
+    for language, expected in (
+        ("cpp", "double ratio(double a, double b)"),
+        ("objc", "double ratio(double a, double b)"),
+        ("swift", "func ratio(_ a: Double, _ b: Double) -> Double"),
+    ):
+        content, planned = _emitted(_ir(function), language)
+        assert planned(expected) in content
 
 
 def test_file_names_and_required_headers() -> None:
@@ -130,43 +177,47 @@ def test_integer_division_and_remainder_are_checked(language: str) -> None:
     # All three truncate toward zero like Java/C#/TypeScript, so the *rounding*
     # maps straight through -- but signed overflow and division by zero are
     # undefined behaviour in C and C++, so R1/R2 have to be spelled out.
-    divide = emit(_ir(DIVIDE), language).content
-    remainder = emit(_ir(REMAINDER), language).content
+    divide, divide_planned = _emitted(_ir(DIVIDE), language)
+    remainder, remainder_planned = _emitted(_ir(REMAINDER), language)
     if language == "cpp":
-        assert "return elmos_checked_div(a, b);" in divide
-        assert "return elmos_checked_mod(a, b);" in remainder
+        assert divide_planned("return elmos_checked_div(a, b);") in divide
+        assert remainder_planned("return elmos_checked_mod(a, b);") in remainder
     elif language == "objc":
-        assert "return ElmosCheckedDiv(a, b);" in divide
-        assert "return ElmosCheckedMod(a, b);" in remainder
+        assert divide_planned("return ElmosCheckedDiv(a, b);") in divide
+        assert remainder_planned("return ElmosCheckedMod(a, b);") in remainder
     else:
         # Swift is the one target of the three that traps on both by itself:
         # Int64 division by zero and Int64.min / -1 are runtime errors already.
-        assert "return (a / b)" in divide
-        assert "return (a % b)" in remainder
+        assert divide_planned("return (a / b)") in divide
+        assert remainder_planned("return (a % b)") in remainder
 
 
 def test_objc_string_equality_becomes_a_value_comparison() -> None:
-    content = emit(_ir(STRING_EQUALS), "objc").content
-    assert "[a isEqualToString:b]" in content
-    assert "a == b" not in content
+    content, planned = _emitted(_ir(STRING_EQUALS), "objc")
+    assert planned("[a isEqualToString:b]") in content
+    assert planned("a == b") not in content
 
 
 def test_objc_string_inequality_negates_the_value_comparison() -> None:
     function = _function(
         "differs", [("a", "string"), ("b", "string")], "boolean", _binary("!=", _name("a"), _name("b"))
     )
-    assert "(![a isEqualToString:b])" in emit(_ir(function), "objc").content
+    content, planned = _emitted(_ir(function), "objc")
+    assert planned("(![a isEqualToString:b])") in content
 
 
 def test_objc_string_concatenation_becomes_a_message_send() -> None:
     # NSString has no `+` operator at all.
-    assert "[a stringByAppendingString:b]" in emit(_ir(STRING_CONCAT), "objc").content
+    content, planned = _emitted(_ir(STRING_CONCAT), "objc")
+    assert planned("[a stringByAppendingString:b]") in content
 
 
 @pytest.mark.parametrize("language", ["cpp", "swift"])
 def test_string_equality_and_concatenation_are_native(language: str) -> None:
-    assert "(a == b)" in emit(_ir(STRING_EQUALS), language).content
-    assert "(a + b)" in emit(_ir(STRING_CONCAT), language).content
+    equals, equals_planned = _emitted(_ir(STRING_EQUALS), language)
+    concat, concat_planned = _emitted(_ir(STRING_CONCAT), language)
+    assert equals_planned("(a == b)") in equals
+    assert concat_planned("(a + b)") in concat
 
 
 # --------------------------------------------------------------------------
@@ -281,7 +332,8 @@ def test_cpp_source_lifts_scalars_and_control_flow(tmp_path: Path) -> None:
     ]
     assert function.return_type == "integer"
     assert [statement.kind for statement in function.body] == ["if", "return"]
-    assert "public static long calculate(long subtotal, long tax)" in emit(semantic, "java").content
+    content, planned = _emitted(semantic, "java")
+    assert planned("public static long calculate(long subtotal, long tax)") in content
 
 
 @requires_clang
@@ -297,7 +349,8 @@ def test_cpp_const_reference_string_parameters_lift_as_string(tmp_path: Path) ->
         "same",
     )
     assert [p.type for p in semantic.functions[0].parameters] == ["string", "string"]
-    assert "[a isEqualToString:b]" in emit(semantic, "objc").content
+    content, planned = _emitted(semantic, "objc")
+    assert planned("[a isEqualToString:b]") in content
 
 
 @requires_clang
@@ -406,17 +459,27 @@ def test_emitted_objc_boolean_branch_relifts_true_and_false_and_tamper_fails_clo
     from elmos_polyglot_route.native import analyze
 
     source_ir = _boolean_branch_ir()
-    emitted = emit(source_ir, "objc")
+    # Relifting has to look for the symbol the emitted file declares -- objc
+    # refuses the source spelling for both the function and its parameters --
+    # and the recovered IR has to come back through the plan's alpha map before
+    # it can be compared with the source. This is the same pairing
+    # `engine.migrate` uses to prove emitter compensation.
+    plan = plan_identifiers(source_ir, "objc")
+    target_view = target_ir_view(source_ir, plan)
+    symbol = target_view.functions[0].name
+    emitted = emit(source_ir, "objc", identifier_plan=plan)
     target = tmp_path / emitted.relative_path
     target.write_text(emitted.content, encoding="utf-8")
-    relifted = analyze(target, "objc", "choose", emitted_target=True)
+    relifted = alpha_normalize_target(
+        source_ir, analyze(target, "objc", symbol, emitted_target=True), plan
+    )
     assert relifted.functions[0].semantic_mapping() == source_ir.functions[0].semantic_mapping()
 
     tampered = emitted.content.replace("return NO;", "return 2;", 1)
     assert tampered != emitted.content
     target.write_text(tampered, encoding="utf-8")
     with pytest.raises(RouteError, match="OBJC_BOOLEAN_INTEGER_COERCION_OUTSIDE_CERTIFIED_SUBSET"):
-        analyze(target, "objc", "choose", emitted_target=True)
+        analyze(target, "objc", symbol, emitted_target=True)
 
 
 @requires_clang
@@ -453,12 +516,16 @@ def test_a_source_that_does_not_compile_fails_closed(tmp_path: Path) -> None:
     [(7, 2, 3, 1), (-7, 2, -3, -1), (7, -2, -3, 1), (-7, -2, 3, -1)],
 )
 def test_emitted_cpp_truncates_like_java(tmp_path: Path, a: int, b: int, quotient: int, remainder: int) -> None:
-    source = emit(_ir(DIVIDE, REMAINDER), "cpp").content
+    source, planned = _emitted(_ir(DIVIDE, REMAINDER), "cpp")
+    # cpp gets planned function names, so the harness has to call what the file
+    # declares. The arithmetic under test is unaffected by what they are called.
+    divide_symbol = planned("divide")
+    remainder_symbol = planned("rem")
     harness = (
         f"{source}\n#include <cstdio>\n"
         "int main() {\n"
-        f"    if (divide({a}, {b}) != {quotient}) return 1;\n"
-        f"    if (rem({a}, {b}) != {remainder}) return 2;\n"
+        f"    if ({divide_symbol}({a}, {b}) != {quotient}) return 1;\n"
+        f"    if ({remainder_symbol}({a}, {b}) != {remainder}) return 2;\n"
         "    return 0;\n"
         "}\n"
     )
@@ -511,7 +578,8 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
     assert function.return_type == "integer"
     assert [statement.kind for statement in function.body] == ["if", "return"]
     assert semantic.diagnostics == ()
-    assert "public static long calculate(long subtotal, long tax)" in emit(semantic, "java").content
+    content, planned = _emitted(semantic, "java")
+    assert planned("public static long calculate(long subtotal, long tax)") in content
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")

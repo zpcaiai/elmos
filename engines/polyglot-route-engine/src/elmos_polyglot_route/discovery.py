@@ -25,7 +25,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .models import SUPPORTED_LANGUAGES, Language, RouteError
-from .native import analyze, analyze_many, inventory_module
+from .native import analyze_many, inventory_module
 from .project_graph import (
     PythonCoverageSubject,
     SourceLocation,
@@ -85,6 +85,16 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
     "swift": re.compile(
         r"^\s*(?:(?:public|internal|private|fileprivate|open|static|class|final)\s+)*"
         r"func\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE,
+    ),
+    # PHP identifiers admit bytes 0x80-0xFF, so the class is wider than ASCII.
+    # `function` is matched case-insensitively because PHP keywords are, and a
+    # lone `function` with no name is an anonymous closure, which the name group
+    # refuses. `&` before the name is a by-reference return, still a function
+    # declaration. `static function` at file scope is not legal PHP, so the
+    # prefix set is deliberately narrower than Swift's.
+    "php": re.compile(
+        r"^\s*(?i:function)\s+&?\s*([A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)\s*\(",
         re.MULTILINE,
     ),
 }
@@ -326,6 +336,29 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "SWIFT_UNSUPPORTED_OPERATOR",
             "SWIFT_UNSUPPORTED_STATEMENT",
             "SWIFT_UNSUPPORTED_TYPE",
+        }
+    ),
+    "php": frozenset(
+        {
+            "PHP_BY_REFERENCE_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_CLOSURE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_DEFAULT_ARGUMENT_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_DYNAMIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_EXPLICIT_PARAMETER_TYPE_REQUIRED",
+            "PHP_EXPLICIT_RETURN_TYPE_REQUIRED",
+            "PHP_INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE",
+            "PHP_LOOSE_COMPARISON_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_NULLABLE_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_REFERENCE_RETURN_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_STRICT_TYPES_DECLARATION_REQUIRED",
+            "PHP_STRING_INTERPOLATION_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_UNION_TYPE_OUTSIDE_CERTIFIED_SUBSET",
+            "PHP_UNSUPPORTED_CONDITION",
+            "PHP_UNSUPPORTED_EXPRESSION",
+            "PHP_UNSUPPORTED_OPERATOR",
+            "PHP_UNSUPPORTED_STATEMENT",
+            "PHP_UNSUPPORTED_TYPE",
+            "PHP_VARIADIC_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
         }
     ),
 }
