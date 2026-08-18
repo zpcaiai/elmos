@@ -48,6 +48,37 @@ _EMITTED_AUTH_ENV_NAMES = {
 }
 
 
+#: Durability settings the generated runtime starts PostgreSQL with.
+#:
+#: ``certifying`` is the default and the only tier whose results may back a
+#: production-equivalence claim: it keeps the same fsync and commit guarantees a
+#: real deployment has. That is also what makes it the slowest part of a
+#: verification run, and why it does not scale with concurrency -- every run on a
+#: host competes for the same fsync queue, so latency grows faster than the
+#: number of runs.
+#:
+#: ``fast-feedback`` trades those guarantees for turnaround during development.
+#: A crash mid-run can leave the cluster unrecoverable and its results carry no
+#: durability evidence whatsoever. It is opt-in and never inferred, and the tier
+#: that produced a runtime is recorded beside it either way, so an artifact can
+#: never be mistaken for a certifying one by looking at it.
+#:
+#: The tier is selected when the runtime is *started*, from the environment, not
+#: when the workspace is generated. A generated workspace has to stay a function
+#: of its approved request -- ``generate_workspace`` refuses to reuse an output
+#: whose ``request_sha256`` moved, and the generation manifest digests every
+#: file -- so a generation-time knob would let one request produce two different
+#: workspaces and make the manifest ambiguous about which one it describes.
+#: ``durability`` below only sets the default the emitted script falls back to.
+DURABILITY_PROFILES: dict[str, tuple[str, ...]] = {
+    "certifying": ("fsync=on", "synchronous_commit=on"),
+    "fast-feedback": ("fsync=off", "synchronous_commit=off", "full_page_writes=off"),
+}
+DEFAULT_DURABILITY = "certifying"
+#: Environment variable the emitted runtime reads to pick its durability tier.
+ENV_POSTGRES_DURABILITY = "ELMOS_POSTGRES_DURABILITY"
+
+
 def _command_literal(command: list[str]) -> str:
     return "[" + ", ".join(repr(part) for part in command) + "]"
 
@@ -59,6 +90,7 @@ def render_local_runtime(
     verify_command: list[str],
     migration_relative: str = "../database/migrations/001_initial.sql",
     app_port_argument_index: int | None = None,
+    durability: str = DEFAULT_DURABILITY,
 ) -> str:
     """Render ``scripts/local_runtime.py`` for one language workspace.
 
@@ -67,6 +99,11 @@ def render_local_runtime(
     """
     if auth_mode not in {"jwt", "oidc"}:
         raise ValueError(f"UNSUPPORTED_AUTH_MODE:{auth_mode}")
+    if durability not in DURABILITY_PROFILES:
+        raise ValueError(f"UNSUPPORTED_DURABILITY:{durability}")
+    durability_table = "{" + ", ".join(
+        f"{name!r}: {settings!r}" for name, settings in sorted(DURABILITY_PROFILES.items())
+    ) + "}"
     if app_port_argument_index is not None:
         if (
             isinstance(app_port_argument_index, bool)
@@ -238,10 +275,23 @@ def render_local_runtime(
                 port = free_loopback_port()
                 port_file.write_text(str(port), encoding="utf-8")
                 port_file.chmod(0o600)
+            # Selected here rather than baked in, so one generated workspace
+            # stays one workspace. Unset means the certifying tier: relaxing
+            # durability is something a run asks for, never something it drifts
+            # into. Recorded next to the cluster it describes, because a runtime
+            # directory that cannot say which tier produced it is a result
+            # nobody can safely reuse as evidence.
+            durability_profiles = {durability_table}
+            durability = os.environ.get({ENV_POSTGRES_DURABILITY!r}, {durability!r})
+            if durability not in durability_profiles:
+                raise RuntimeError("UNSUPPORTED_POSTGRES_DURABILITY:" + durability)
+            durability_file = state / "postgres-durability"
+            durability_file.write_text(durability, encoding="utf-8")
+            durability_file.chmod(0o600)
             database = subprocess.Popen([
                 str(postgres), "-D", str(data), "-k", str(socket),
                 "-h", "127.0.0.1", "-p", str(port),
-                "-c", "fsync=on", "-c", "synchronous_commit=on",
+                *[argument for setting in durability_profiles[durability] for argument in ("-c", setting)],
                 "-c", "password_encryption=scram-sha-256",
             ])
             children.append(database)

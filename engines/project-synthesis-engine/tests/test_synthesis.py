@@ -23,6 +23,7 @@ import elmos_project_synthesis.models as models
 import elmos_project_synthesis.verification as verification
 from elmos_project_synthesis.cli import _archive_workspace, main
 from elmos_project_synthesis.intake import approve_request, create_draft
+from elmos_project_synthesis.production_runtime import render_local_runtime
 from elmos_project_synthesis.models import (
     SUPPORTED_LANGUAGES,
     TARGET_PROFILES,
@@ -1427,6 +1428,58 @@ def test_production_plans_record_the_integration_obligation() -> None:
         plans = [plan for plan in runtime_commands(workspace) if plan["language"] == "python"]
     assert plans
     assert all(plan.get("requires_integration") is True for plan in plans)
+
+
+def test_postgres_durability_defaults_to_the_certifying_tier() -> None:
+    """The tier that backs an equivalence claim must not move by accident.
+
+    fsync and synchronous_commit are what make a verification run say anything
+    about a real deployment, and they are also the slowest thing in that run.
+    Relaxing them has to be something a run asks for, never something a default
+    drifts into, so the emitted fallback is pinned here.
+    """
+    runtime = render_local_runtime(
+        auth_mode="jwt",
+        app_command=["go", "run", "."],
+        verify_command=["go", "test", "./..."],
+    )
+    assert "'certifying': ('fsync=on', 'synchronous_commit=on')" in runtime
+    assert "os.environ.get('ELMOS_POSTGRES_DURABILITY', 'certifying')" in runtime
+    assert 'raise RuntimeError("UNSUPPORTED_POSTGRES_DURABILITY:" + durability)' in runtime
+
+
+def test_postgres_durability_is_chosen_at_run_time_and_records_itself() -> None:
+    """The tier is a property of a run, not of the workspace that was generated.
+
+    ``generate_workspace`` refuses to reuse an output whose ``request_sha256``
+    moved and the manifest digests every file, so a generation-time knob would
+    let one approved request produce two different workspaces. Selecting at
+    startup keeps the workspace a function of its request, and writing the tier
+    beside the cluster keeps the result attributable without having to remember
+    how it was launched.
+    """
+    runtime = render_local_runtime(
+        auth_mode="jwt",
+        app_command=["go", "run", "."],
+        verify_command=["go", "test", "./..."],
+    )
+    assert (
+        "'fast-feedback': ('fsync=off', 'synchronous_commit=off', 'full_page_writes=off')"
+        in runtime
+    )
+    assert 'durability_file.write_text(durability, encoding="utf-8")' in runtime
+    assert (
+        '*[argument for setting in durability_profiles[durability] '
+        'for argument in ("-c", setting)]'
+    ) in runtime
+
+    with pytest.raises(ValueError, match="UNSUPPORTED_DURABILITY"):
+        render_local_runtime(
+            auth_mode="jwt",
+            app_command=["go", "run", "."],
+            verify_command=["go", "test", "./..."],
+            durability="relaxed",
+        )
 
 
 def test_php_production_runtime_honors_the_verified_port_override(tmp_path: Path) -> None:
