@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from .emitter import emit
+from .identifier_hygiene import plan_identifiers, target_ir_view
 from .models import Language, RouteError
 from .native import analyze
 from .toolchains import exact_toolchain
@@ -65,8 +66,20 @@ def emit_only(
     ir = analyze(source, source_language, function_name)
     if len(ir.functions) != 1:
         raise RouteError("EXACTLY_ONE_FUNCTION_REQUIRED")
-    function = ir.functions[0]
-    emitted = emit(ir, target_language)
+    # The identifier plan is built here rather than left to `emit` so the report
+    # can describe the file that was actually written. Several targets refuse the
+    # source spelling outright -- a function name is rejected for cpp and objc
+    # because their global symbol namespace is open, and for java, csharp and
+    # swift because of the runtime function namespace -- so the emitted symbol is
+    # frequently not the one that was analyzed. `engine.migrate` already works
+    # this way; this entry point reported the source names instead, which made
+    # the report disagree with the file next to it. Its consumer is a static
+    # validator that resolves symbols by name, so that disagreement was the
+    # difference between a symbol it could find and one it could not.
+    identifier_plan = plan_identifiers(ir, target_language)
+    source_function = ir.functions[0]
+    function = target_ir_view(ir, identifier_plan).functions[0]
+    emitted = emit(ir, target_language, identifier_plan=identifier_plan)
     output.mkdir(parents=True, exist_ok=True)
     target_path = output / emitted.relative_path
     target_path.write_text(emitted.content, encoding="utf-8")
@@ -80,6 +93,7 @@ def emit_only(
             "language": source_language,
             "analyzer": ir.analyzer,
             "analyzer_version": ir.analyzer_version,
+            "function_name": source_function.name,
         },
         "target": {
             "path": emitted.relative_path,

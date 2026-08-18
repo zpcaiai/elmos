@@ -26,6 +26,28 @@ def test_emit_only_rejects_a_same_language_route(tmp_path: Path) -> None:
         emit_only(source, "python", "python", "calculate", tmp_path / "out")
 
 
+def test_emit_only_names_the_symbol_the_emitted_file_actually_declares(tmp_path: Path) -> None:
+    """The report has to describe the file beside it, not the source it came from.
+
+    Swift refuses the source spelling for a function name, so the emitted symbol
+    is a planned one. The consumer of this report is a static validator that
+    resolves symbols by name: a report naming a symbol the file does not declare
+    is the difference between a check that runs and one that cannot start.
+    """
+    source = tmp_path / "calc.py"
+    source.write_text("def calculate(a: int) -> int:\n    return a\n", encoding="utf-8")
+    output = tmp_path / "out"
+
+    report = emit_only(source, "python", "swift", "calculate", output)
+
+    emitted = (output / report["target"]["path"]).read_text(encoding="utf-8")
+    target_name = report["target"]["function_name"]
+    assert target_name != "calculate"
+    assert f"func {target_name}(" in emitted
+    assert report["source"]["function_name"] == "calculate"
+    assert [parameter["name"] for parameter in report["target"]["parameters"]] == ["a"]
+
+
 def test_emit_only_produces_a_target_file_with_no_compilation_or_execution(tmp_path: Path) -> None:
     source = tmp_path / "calc.py"
     source.write_text(
