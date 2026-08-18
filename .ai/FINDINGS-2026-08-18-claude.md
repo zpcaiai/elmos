@@ -619,3 +619,51 @@ accept whatever is installed and must not be done.
 | sql-dialect-engine (pytest/ruff/mypy) | 167 passed, clean, clean |
 | `test_layered_equivalence` php | passes |
 | `test_layered_equivalence` ts/js | **red — blocked on the sqlite flip above** |
+
+---
+
+## 17. RESOLVED — sqlite flip executed by the user; Node pin restored
+
+The two `ln -sfn` commands from §11 were run at **16:30**. Verified:
+
+```
+/opt/homebrew/opt/sqlite  -> ../Cellar/sqlite/3.53.3
+/opt/homebrew/opt/sqlite3 -> ../Cellar/sqlite/3.53.3
+```
+
+No collateral damage — `node -v` → `v26.0.0`, `php -v` → `PHP 8.5.9 (cli)`, and
+the `sqlite3` PHP extension still loads, confirming the two builds are ABI
+interchangeable as §14 predicted.
+
+The Node closure digest is exact again:
+
+```
+OBSERVED sha = 2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd
+EXPECTED sha = 2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd
+MATCH: True          comp=25 edge=49 sys=43
+```
+
+Note this restored the **original pin**, byte for byte. Nothing was re-pinned,
+so every prior claim bound to `2a77ac1d…` remains attributable — which is
+exactly why re-pinning to the drifted value would have been the wrong repair.
+
+**Tests:** `test_layered_equivalence.py` + `test_arithmetic_equivalence.py`
+→ **97 passed, 0 failed**, including the three nodes that were red
+(`typescript`, `javascript`, `php`).
+
+### Nothing is red at this commit
+
+| Gate | Result |
+| --- | --- |
+| polyglot engine ruff | clean |
+| polyglot engine mypy (22 files) | clean |
+| `test_native_validation.py` | 73 passed |
+| `test_layered_equivalence` + `test_arithmetic_equivalence` | 97 passed |
+| sql-dialect-engine (pytest / ruff / mypy) | 167 passed, clean, clean |
+| Node 26 toolchain pin | digest matches |
+| PHP 8.5.9 toolchain pin | populated, php node passes |
+
+Every defect found this session is closed. What remains is **not** defects:
+local execution 0/110, repository execution 0/110, R10/K4 structurally blocked
+on an external party (§7), the pack-version decision for the 38 invalidated
+routes (§7.4), and K7's retained evidence.
