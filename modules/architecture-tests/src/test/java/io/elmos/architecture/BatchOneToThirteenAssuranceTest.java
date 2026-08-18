@@ -101,7 +101,7 @@ class BatchOneToThirteenAssuranceTest {
         assertTrue(Files.isRegularFile(root.resolve(".agents/skills/elmos-project-synthesis/SKILL.md")));
         assertTrue(countSkillsWithPrefix(root.resolve(".agents/skills"), "tst-") >= 52,
                 "strict test Skill count must not fall below the 52-Skill Batch 1-37 baseline; additive suites are allowed");
-        assertEquals(9, countJsonSchemas(root.resolve("schemas/test-suite")));
+        assertEquals(11, countJsonSchemas(root.resolve("schemas/test-suite")));
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/IMPORT_AUDIT.md")));
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/VALIDATION.md")));
         int[] matureSkillCounts = {20, 20, 22, 20, 20, 22, 22, 18, 36, 22, 22, 24, 20, 22, 20, 20, 22};
