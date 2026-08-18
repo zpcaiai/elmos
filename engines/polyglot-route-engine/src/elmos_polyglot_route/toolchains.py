@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 from .models import Language, RouteError
@@ -158,17 +159,13 @@ def _pinned(variable: str, language: Language) -> str:
 
 def _clang(language: Language, executable_name: str) -> ExactToolchain:
     configured = os.environ.get("ELMOS_CLANG_HOME", "").strip()
-    executable = (
-        str(Path(configured) / "bin" / executable_name) if configured else shutil.which(executable_name)
-    )
+    executable = str(Path(configured) / "bin" / executable_name) if configured else shutil.which(executable_name)
     if not executable or not Path(executable).is_file():
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{executable_name}")
     expected = _pinned(_CLANG_VERSION_VARIABLE, language)
     observed = _output([executable, "--version"]).splitlines()[0].strip()
     if observed != expected:
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}:observed={observed}"
-        )
+        raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}:observed={observed}")
     return ExactToolchain(language, observed, executable)
 
 
@@ -189,13 +186,32 @@ def _swift() -> ExactToolchain:
     expected = _pinned(_SWIFT_VERSION_VARIABLE, "swift")
     observed = _output([executable, "--version"]).splitlines()[0].strip()
     if observed != expected:
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_MISMATCH:swift:expected={expected}:observed={observed}"
-        )
+        raise RouteError(f"EXACT_TOOLCHAIN_MISMATCH:swift:expected={expected}:observed={observed}")
     return ExactToolchain("swift", observed, executable)
 
 
-def exact_toolchain(language: Language) -> ExactToolchain:
+def _toolchain_fingerprint() -> tuple[str, ...]:
+    tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
+    try:
+        tsc_stat = tsc.stat(follow_symlinks=True)
+        tsc_identity = f"{tsc_stat.st_dev}:{tsc_stat.st_ino}:{tsc_stat.st_size}:{tsc_stat.st_mtime_ns}"
+    except OSError:
+        tsc_identity = "MISSING"
+    return (
+        os.environ.get("PATH", ""),
+        os.environ.get("ELMOS_JAVA21_HOME", ""),
+        os.environ.get("ELMOS_CLANG_HOME", ""),
+        os.environ.get(_CLANG_VERSION_VARIABLE, ""),
+        os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
+        tsc_identity,
+    )
+
+
+@lru_cache(maxsize=64)
+def _cached_exact_toolchain(
+    language: Language,
+    _fingerprint: tuple[str, ...],
+) -> ExactToolchain:
     return {
         "java": _java,
         "python": _python,
@@ -207,3 +223,11 @@ def exact_toolchain(language: Language) -> ExactToolchain:
         "objc": _objc,
         "swift": _swift,
     }[language]()
+
+
+def clear_exact_toolchain_cache() -> None:
+    _cached_exact_toolchain.cache_clear()
+
+
+def exact_toolchain(language: Language) -> ExactToolchain:
+    return _cached_exact_toolchain(language, _toolchain_fingerprint())

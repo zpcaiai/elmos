@@ -235,9 +235,16 @@ def _run(
     *,
     language: str,
     kind: str = "build-analysis",
-    timeout_seconds: int = 300,
+    timeout_seconds: int | None = None,
     environment: dict[str, str] | None = None,
 ) -> dict[str, Any]:
+    if timeout_seconds is None:
+        configured_timeout = os.getenv(
+            "ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "600"
+        ).strip()
+        if not re.fullmatch(r"[0-9]{2,3}", configured_timeout):
+            raise ValueError("COMMAND_TIMEOUT_INVALID")
+        timeout_seconds = int(configured_timeout)
     if not 30 <= timeout_seconds <= 900:
         raise ValueError("COMMAND_TIMEOUT_OUT_OF_RANGE")
     effective_command = list(command)
@@ -247,45 +254,82 @@ def _run(
         and Path(effective_command[0]).name == "gradle"
     ):
         effective_command[1:1] = _gradle_proxy_system_properties()
-    try:
-        process_environment = os.environ.copy()
-        process_environment.update(environment or {})
-        completed = subprocess.run(  # noqa: S603
-            effective_command,
-            cwd=cwd,
-            env=process_environment,
-            text=True,
-            capture_output=True,
-            check=False,
-            timeout=timeout_seconds,
+    process_environment = os.environ.copy()
+    process_environment.update(environment or {})
+    retry_evidence = ""
+    for attempt in range(2):
+        try:
+            completed = subprocess.run(  # noqa: S603
+                effective_command,
+                cwd=cwd,
+                env=process_environment,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=timeout_seconds,
+            )
+            output = completed.stdout + completed.stderr
+            if (
+                attempt == 0
+                and completed.returncode != 0
+                and _retryable_dependency_fetch(effective_command, output)
+            ):
+                retry_evidence = (
+                    "TRANSIENT_DEPENDENCY_FETCH_RETRY:1/1\n"
+                    f"FIRST_ATTEMPT:{output[-4_000:]}\n"
+                )
+                time.sleep(1)
+                continue
+            return _result(
+                language=language,
+                kind=kind,
+                command=effective_command,
+                status="PASSED" if completed.returncode == 0 else "FAILED",
+                exit_code=completed.returncode,
+                output=f"{retry_evidence}{output}",
+            )
+        except subprocess.TimeoutExpired as error:
+            stdout = (
+                error.stdout.decode("utf-8", errors="replace")
+                if isinstance(error.stdout, bytes)
+                else error.stdout or ""
+            )
+            stderr = (
+                error.stderr.decode("utf-8", errors="replace")
+                if isinstance(error.stderr, bytes)
+                else error.stderr or ""
+            )
+            output = f"COMMAND_TIMEOUT:{timeout_seconds}s\n{stdout}{stderr}"
+            # A hard command timeout has consumed the entire step budget. It
+            # must not be retried for another full budget merely because uv's
+            # partial output also contains a transient network marker; doing
+            # so can exceed the enclosing pipeline deadline and erase the
+            # command-level timeout evidence.
+            return _result(
+                language=language,
+                kind=kind,
+                command=effective_command,
+                status="FAILED",
+                exit_code=None,
+                output=f"{retry_evidence}{output}",
+            )
+    raise AssertionError("DEPENDENCY_FETCH_RETRY_STATE_INVALID")
+
+
+def _retryable_dependency_fetch(command: list[str], output: str) -> bool:
+    if len(command) < 3 or Path(command[0]).name != "uv" or command[1:3] != ["sync", "--locked"]:
+        return False
+    normalized = output.casefold()
+    return any(
+        marker in normalized
+        for marker in (
+            "connection reset",
+            "failed to fetch",
+            "network is unreachable",
+            "operation timed out",
+            "request failed after",
+            "temporary failure in name resolution",
         )
-    except subprocess.TimeoutExpired as error:
-        stdout = (
-            error.stdout.decode("utf-8", errors="replace")
-            if isinstance(error.stdout, bytes)
-            else error.stdout or ""
-        )
-        stderr = (
-            error.stderr.decode("utf-8", errors="replace")
-            if isinstance(error.stderr, bytes)
-            else error.stderr or ""
-        )
-        return _result(
-            language=language,
-            kind=kind,
-            command=effective_command,
-            status="FAILED",
-            exit_code=None,
-            output=f"COMMAND_TIMEOUT:{timeout_seconds}s\n{stdout}{stderr}",
-        )
-    output = completed.stdout + completed.stderr
-    return _result(
-        language=language,
-        kind=kind,
-        command=effective_command,
-        status="PASSED" if completed.returncode == 0 else "FAILED",
-        exit_code=completed.returncode,
-        output=output,
     )
 
 
@@ -490,15 +534,20 @@ def _probe(
 ) -> dict[str, Any]:
     env = os.environ.copy()
     env.update(environment or {})
-    process = subprocess.Popen(  # noqa: S603
-        command,
-        cwd=cwd,
-        env=env,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        start_new_session=True,
-    )
+    process_output = tempfile.TemporaryFile(mode="w+t", encoding="utf-8")
+    try:
+        process = subprocess.Popen(  # noqa: S603
+            command,
+            cwd=cwd,
+            env=env,
+            text=True,
+            stdout=process_output,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    except BaseException:
+        process_output.close()
+        raise
     if not 5 <= startup_timeout_seconds <= 180:
         raise ValueError("STARTUP_TIMEOUT_OUT_OF_RANGE")
     deadline = time.monotonic() + startup_timeout_seconds
@@ -584,9 +633,11 @@ def _probe(
                     os.killpg(process.pid, signal.SIGKILL)
                 else:
                     process.kill()
-        output = process.stdout.read()[-6_000:] if process.stdout is not None else ""
-        if process.stdout is not None:
-            process.stdout.close()
+        process_output.flush()
+        end = process_output.seek(0, os.SEEK_END)
+        process_output.seek(max(0, end - 24_000))
+        output = process_output.read()[-6_000:]
+        process_output.close()
     result = _result(
         language=language,
         kind="startup-probe",

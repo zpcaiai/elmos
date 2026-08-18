@@ -3,7 +3,13 @@
   "status": "passed",
   "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
   "dataset_digest": "sha256:46fe179cba5e995067ffbe35007399a21aaa38464be6b94d7c69f6312e989264",
-  "evidence_refs": ["certification/local-test-result.json"],
+  "evidence_refs": [
+    "certification/local-test-result.json",
+    "corpus/holdout/cases.json"
+  ],
+  "independence": "local-not-independent",
+  "executor": "local-codex-session",
+  "independent_verifier": null,
   "limitations": [
     "Executed after implementation but not independently supplied or verified."
   ]

@@ -246,6 +246,13 @@ class GitRepositoryWorkspaceServiceTest {
         RepositoryFixture source = repository(false, false, false);
         GitRepositoryWorkspaceService service = service();
         var workspace = service.create(request(source, source.branch()), "unused", Optional.empty());
+        var inspected = service.inspect("tenant-a", "actor-a", workspace.workspaceId());
+        assertTrue(inspected.files().stream()
+                .filter(file -> file.path().equals("src/App.java"))
+                .allMatch(GitRepositoryWorkspaceService.FileEntry::readable));
+        assertTrue(inspected.files().stream()
+                .filter(file -> file.path().equals(".env"))
+                .noneMatch(GitRepositoryWorkspaceService.FileEntry::readable));
         Path handoffRoot = temporary.resolve("materialized");
 
         var first = service.materialize(

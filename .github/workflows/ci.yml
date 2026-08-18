@@ -141,6 +141,25 @@ jobs:
           uv --directory engines/python-engine run --locked ruff check src tests
           uv --directory engines/python-engine run --locked mypy src
 
+  external-gate-intake:
+    name: External intake anti-fabrication (pre-gate only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Set up Python 3.12
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install locked uv tool
+        run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Run external intake anti-fabrication tests
+        run: >-
+          uv run --with 'jsonschema>=4.23'
+          python -m unittest discover
+          -s tests/external_gate -p 'test_*.py' -v
+
   frontend-client-engine:
     name: Frontend Client Engine
     runs-on: ubuntu-24.04
@@ -204,6 +223,7 @@ jobs:
           uv python install 3.12.12
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          cargo fetch --locked --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
       - name: Verify compiler-backed route engine
         run: |
           export ELMOS_JAVA21_HOME="$JAVA_HOME"
@@ -480,7 +500,8 @@ jobs:
               --project=mobile-webkit \
               e2e/account-session-ui.spec.ts \
               e2e/generation-source-ingestion.spec.ts \
-              e2e/generation-ui.spec.ts
+              e2e/generation-ui.spec.ts \
+              e2e/runtime-deployment-guide.spec.ts
 
   web-console-runner-e2e:
     name: Isolated browser Runner journeys
@@ -520,6 +541,7 @@ jobs:
         run: |
           ELMOS_UV_PATH="$(command -v uv)" \
             pnpm --dir apps/web-console exec playwright test \
+              --workers=1 \
               --project=chromium \
               e2e/generation-runner.spec.ts \
               e2e/precision-migration-jobs.spec.ts \

@@ -95,7 +95,7 @@ def test_every_approved_task_renders_traceable_markdown_document_pack() -> None:
 
     assert set(DOCUMENT_SOURCE_REFS) <= set(files)
     manifest = json.loads(files[".elmos/generation-manifest.json"])
-    assert manifest["engine_version"] == "1.3.0"
+    assert manifest["engine_version"] == "1.4.0"
     assert manifest["documentation"] == {
         "status": "GENERATED_REVIEW_REQUIRED",
         "external_review_status": "NOT_RUN",
@@ -173,6 +173,6 @@ def test_markdown_document_pack_is_in_the_download_archive(tmp_path: Path) -> No
     with zipfile.ZipFile(archive) as bundle:
         archived = set(bundle.namelist())
     assert {
-        f"generated-task/{path}"
+        f"notes-docs-service/{path}"
         for path in DOCUMENT_SOURCE_REFS
     } <= archived

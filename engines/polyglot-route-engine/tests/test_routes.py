@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ from elmos_polyglot_route.engine import migrate
 from elmos_polyglot_route.models import ANALYZABLE_LANGUAGES, SUPPORTED_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.repository import plan_repository
+from elmos_polyglot_route.validation import validate_source
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTENSIONS = {
@@ -45,14 +47,23 @@ def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language)
     assert semantic.diagnostics == ()
 
 
+@pytest.mark.parametrize("language", ANALYZABLE_LANGUAGES)
+def test_original_source_function_passes_the_same_declared_behavior_cases(
+    tmp_path: Path,
+    language: Language,
+) -> None:
+    source = ROOT / "fixtures" / language / f"{FILES[language]}.{EXTENSIONS[language]}"
+    function = analyze(source, language, "calculate").functions[0]
+    cases = json.loads((ROOT / "fixtures" / "behavior-cases.json").read_text(encoding="utf-8"))
+    evidence = validate_source(source, language, function, cases, tmp_path / language)
+    assert evidence["status"] == "PASSED"
+    assert evidence["subject"] == "SOURCE_DECLARATION_EXTRACT"
+    assert evidence["case_count"] == 3
+
+
 @pytest.mark.parametrize(
     ("source_language", "target_language"),
-    [
-        (source, target)
-        for source in ANALYZABLE_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
-        if source != target
-    ],
+    [(source, target) for source in ANALYZABLE_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target],
 )
 def test_every_directed_route_compiles_and_matches_behavior(
     tmp_path: Path,
@@ -81,12 +92,7 @@ def test_every_directed_route_compiles_and_matches_behavior(
 )
 @pytest.mark.parametrize(
     ("source_language", "target_language"),
-    [
-        (source, target)
-        for source in ANALYZABLE_LANGUAGES
-        for target in SUPPORTED_LANGUAGES
-        if source != target
-    ],
+    [(source, target) for source in ANALYZABLE_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target],
 )
 def test_independent_corpora_compile_and_match_behavior(
     tmp_path: Path,
@@ -139,6 +145,18 @@ def test_repository_inventory_is_content_addressed_and_decomposes_work_units(tmp
         "fn calculate(value: i64) -> i64 { return value }\n",
         encoding="utf-8",
     )
+    (repository / "src" / "pricing.cpp").write_text(
+        "long calculate(long value) { return value; }\n",
+        encoding="utf-8",
+    )
+    (repository / "src" / "pricing.m").write_text(
+        "long long calculate(long long value) { return value; }\n",
+        encoding="utf-8",
+    )
+    (repository / "src" / "pricing.swift").write_text(
+        "func calculate(_ value: Int64) -> Int64 { return value }\n",
+        encoding="utf-8",
+    )
     (repository / "node_modules").mkdir()
     (repository / "node_modules" / "ignored.ts").write_text("export const ignored = true;\n", encoding="utf-8")
 
@@ -146,12 +164,15 @@ def test_repository_inventory_is_content_addressed_and_decomposes_work_units(tmp
 
     assert plan["status"] == "PLANNED"
     assert plan["route_id"] == "java-to-python"
-    assert plan["file_count"] == 4
+    assert plan["file_count"] == 7
     assert plan["source_file_count"] == 1
     assert plan["language_counts"]["java"] == 1
     assert plan["language_counts"]["python"] == 1
     assert plan["language_counts"]["go"] == 1
     assert plan["language_counts"]["rust"] == 1
+    assert plan["language_counts"]["cpp"] == 1
+    assert plan["language_counts"]["objc"] == 1
+    assert plan["language_counts"]["swift"] == 1
     assert plan["work_units"][0]["source_path"] == "src/Price.java"
     assert plan["work_units"][0]["execution_status"] == "NOT_RUN"
     assert plan["certification_status"] == "NOT_CERTIFIED"

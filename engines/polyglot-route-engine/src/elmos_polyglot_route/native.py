@@ -16,18 +16,39 @@ ENGINE_ROOT = Path(__file__).resolve().parents[2]
 REPOSITORY_ROOT = ENGINE_ROOT.parents[1]
 
 
+def _external_semantic_ir(value: dict[str, Any]) -> SemanticIR:
+    functions = value.get("functions")
+    diagnostics = value.get("diagnostics")
+    if not isinstance(functions, list) or not isinstance(diagnostics, list):
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:FUNCTIONS_OR_DIAGNOSTICS")
+    if not functions:
+        if diagnostics and all(isinstance(item, str) and item for item in diagnostics):
+            raise RouteError(str(diagnostics[0]))
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:EMPTY_FUNCTIONS_WITHOUT_DIAGNOSTIC")
+    try:
+        semantic = SemanticIR.from_mapping(value)
+    except RouteError as error:
+        raise RouteError(f"NATIVE_ANALYZER_CONTRACT_INVALID:{error}") from error
+    if not semantic.functions:
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:NO_PARSED_FUNCTIONS")
+    return semantic
+
+
 def _run(command: list[str], *, cwd: Path, timeout: int = 120) -> dict[str, Any]:
     environment = os.environ.copy()
     environment["NO_COLOR"] = "1"
-    completed = subprocess.run(
-        command,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=environment,
-    )
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=environment,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{command[0]}") from error
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2_000:]
         raise RouteError(f"NATIVE_ANALYZER_FAILED:{command[0]}:{detail}")
@@ -55,20 +76,21 @@ def analyze(source: Path, language: Language, function_name: str) -> SemanticIR:
         package = ENGINE_ROOT / "native" / "swift"
         binary = package / ".build" / "release" / "ElmosSwiftAnalyzer"
         if not binary.is_file():
-            built = subprocess.run(
-                [toolchain.executable.replace("swiftc", "swift"), "build", "-c", "release"],
-                cwd=package,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=900,
-            )
-            if built.returncode != 0 or not binary.is_file():
-                raise RouteError(
-                    "SWIFT_ANALYZER_BUILD_FAILED:" + (built.stderr or built.stdout)[-2_000:]
+            try:
+                built = subprocess.run(
+                    [toolchain.executable.replace("swiftc", "swift"), "build", "-c", "release"],
+                    cwd=package,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=900,
                 )
+            except subprocess.TimeoutExpired as error:
+                raise RouteError("SWIFT_ANALYZER_BUILD_TIMEOUT") from error
+            if built.returncode != 0 or not binary.is_file():
+                raise RouteError("SWIFT_ANALYZER_BUILD_FAILED:" + (built.stderr or built.stdout)[-2_000:])
         value = _run([str(binary), str(source), function_name], cwd=package)
-        return SemanticIR.from_mapping(value)
+        return _external_semantic_ir(value)
     if language == "java":
         helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
         value = _run(
@@ -110,15 +132,18 @@ def analyze(source: Path, language: Language, function_name: str) -> SemanticIR:
             pnpm = shutil.which("pnpm")
             if pnpm is None:
                 raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:pnpm")
-            completed = subprocess.run(
-                [pnpm, "run", "build"],
-                cwd=frontend,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
+            try:
+                completed = subprocess.run(
+                    [pnpm, "run", "build"],
+                    cwd=frontend,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+            except subprocess.TimeoutExpired as error:
+                raise RouteError("TYPESCRIPT_ANALYZER_BUILD_TIMEOUT") from error
             if completed.returncode != 0:
                 raise RouteError("TYPESCRIPT_ANALYZER_BUILD_FAILED:" + completed.stderr[-2_000:])
         value = _run([toolchain.executable, str(cli), str(source), function_name], cwd=frontend)
-    return SemanticIR.from_mapping(value)
+    return _external_semantic_ir(value)

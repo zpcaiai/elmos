@@ -1,4 +1,3 @@
-import { createReadStream } from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,6 +17,7 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ jobId: string }> },
 ) {
+  let openArchive: Awaited<ReturnType<typeof artifact>> | undefined;
   try {
     const authorized = authorize(request);
     const { jobId } = await context.params;
@@ -27,7 +27,10 @@ export async function GET(
       });
     }
     const archive = await artifact(authorized, jobId);
-    const stream = Readable.toWeb(createReadStream(archive.path)) as ReadableStream;
+    openArchive = archive;
+    const stream = Readable.toWeb(
+      archive.handle.createReadStream({ start: 0, autoClose: true }),
+    ) as ReadableStream;
     return new NextResponse(stream, {
       headers: {
         "Content-Type": "application/zip",
@@ -39,8 +42,9 @@ export async function GET(
       },
     });
   } catch (error) {
+    await openArchive?.handle.close().catch(() => undefined);
     const status = error instanceof GenerationRunnerError ? error.status : 500;
-    const reason = error instanceof Error ? error.message : "RUNNER_ERROR";
+    const reason = error instanceof GenerationRunnerError ? error.code : "RUNNER_ERROR";
     return NextResponse.json({ status: "BLOCKED", reason }, { status });
   }
 }
