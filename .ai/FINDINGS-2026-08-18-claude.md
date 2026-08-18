@@ -554,3 +554,68 @@ count.
 Added to `.ai/TASK.md`, `.ai/IMPLEMENTATION_STATUS.md` and
 `docs/batch29/ROUTE_MATRIX.md`. `.ai/HANDOFF.md` was skipped on purpose — it is
 uncommitted and being edited by the other thread.
+
+---
+
+## 16. Final state — 2026-08-18, after `a2f6f6577` (php landed)
+
+### PHP pinning: RESOLVED by the other thread, and reviewed here
+
+`_EXPECTED_PHP_*` is now populated and
+`test_each_routed_target_relifts_exact_emitter_compensation[php]` **passes**.
+The `pecl` and `bin/phar` symlinks still exist, so this was not solved by
+deleting them — a new `php_tree_identity()` was added rather than relaxing the
+shared `_qualified_tree_manifest`, which still refuses symlinks for Go/Rust.
+
+Reviewed it specifically for gate-gaming, because "make the strict rule less
+strict" is what that would look like. It is the opposite:
+
+- symlinks are **recorded with their targets inside the digest**, so repointing
+  a link is drift even when no file content changed — strictly more than the
+  old rule, which just refused to look;
+- links escaping the keg go in a separate `unbound_symlinks` map and are named
+  as unbound in the toolchain profile, so the pin states what it does not cover
+  instead of silently absorbing it;
+- an escaping link to a `.so`/`.dylib`/`.bundle` is still refused outright
+  (`ESCAPING_LOADABLE_OBJECT`) — anything the interpreter could `dlopen` must be
+  inside the pinned tree. This is real code, not just the docstring;
+- a post-walk re-scan raises `TREE_CHANGED` if the tree moved underneath.
+
+Its reasoning — "a rule no real install can satisfy is not a strict rule, it is
+an unusable one" — is right, and the replacement is honest about its own
+boundary. No objection.
+
+### The one thing still red
+
+```
+FAILED ...relifts_exact_emitter_compensation[typescript]
+FAILED ...relifts_exact_emitter_compensation[javascript]
+EXACT_TOOLCHAIN_NODE_TOPOLOGY_CACHE_MISMATCH
+```
+
+Still §11: `brew install php` bumped sqlite 3.53.3 → 3.53.4 and retargeted the
+keg-only symlink `libnode` links through. Unchanged as of this writing —
+`/opt/homebrew/opt/sqlite -> ../Cellar/sqlite/3.53.4`.
+
+Requires one host command, which this session is not permitted to run:
+
+```sh
+ln -sfn ../Cellar/sqlite/3.53.3 /opt/homebrew/opt/sqlite
+ln -sfn ../Cellar/sqlite/3.53.3 /opt/homebrew/opt/sqlite3
+```
+
+Both builds report `current version 9.6.0` under the same install name, so this
+is ABI-safe for node and php alike, and the PHP pin does not depend on the
+sqlite version (§14). Re-pinning `_EXPECTED_NODE_TOPOLOGY_SHA256` instead would
+accept whatever is installed and must not be done.
+
+### Gate status at this commit
+
+| Gate | Result |
+| --- | --- |
+| polyglot engine ruff | clean |
+| polyglot engine mypy (22 files) | clean |
+| `test_native_validation.py` | 73 passed, 0 failed |
+| sql-dialect-engine (pytest/ruff/mypy) | 167 passed, clean, clean |
+| `test_layered_equivalence` php | passes |
+| `test_layered_equivalence` ts/js | **red — blocked on the sqlite flip above** |
