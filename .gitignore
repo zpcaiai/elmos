@@ -54,6 +54,34 @@ _to_delete/
 /skills/*.zip
 /skills/batch_01_to_44_complete_skill_system/
 
+# --- 单次运行的痕迹 ---
+# .ai/ 同时装着要留档的 markdown（EVIDENCE / HANDOFF / IMPLEMENTATION_STATUS /
+# TASK / TEST_RESULTS）和一次性运行留下的日志、状态与 pid 文件，所以这里按后缀
+# 逐条排除，不整目录忽略 —— 否则那五份记录会一起消失。
+/.ai/*.log
+/.ai/*.status
+/.ai/*.pid
+/.ai/*.pgid
+/.ai/*.runner-pid
+/.ai/*.basetemp
+/.ai/*.sha256
+/.ai/*.meta
+/.ai/*.command.txt
+/.ai/*.bak-*
+/.ai-tmp/
+
+# pytest --basetemp 取证时的落点。不加前导斜杠：--basetemp 是相对于
+# 当前工作目录的，而这些命令通常在某个 engines/<x>/ 下面跑，不在仓库根。
+_pytest_tmp/
+**/_pytest_tmp/
+
+# --- 工具链与运行时在仓库根部留下的缓存 ---
+/.hvigor/
+/.pnpm-store/
+/__cmake_systeminformation/
+erl_crash.dump
+**/erl_crash.dump
+
 # --- 调试快照与临时探针 ---
 **/_snapshot-*/
 **/probe.tmp.*
