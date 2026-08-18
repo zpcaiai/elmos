@@ -16,6 +16,20 @@ exists and what it would have to prove -- it is not a claim that it proved it.
     python3.12 tools/generate_php_route_packs.py            # dry run, prints a plan
     python3.12 tools/generate_php_route_packs.py --write
 
+SUPERSEDED. `scripts/batch29/run_polyglot_routes.py` is the repository's own
+route-pack factory and it is now php-aware:
+
+    python3 scripts/batch29/run_polyglot_routes.py --prepare-route-set php-php85-completion-20
+    python3 scripts/batch29/run_polyglot_routes.py --inventory-only
+
+That path builds packs through `scaffold_route.py` in the canonical shape and
+writes the inventory from `route_sets.py`, which is the single authority the
+validator and the gate also read. This script predates that wiring -- it existed
+because the php set was not registered there yet -- and it clones an existing
+pack instead of building one. Keeping both means two definitions of what a route
+pack is, which will drift; prefer the batch29 runner and delete this once the
+packs have been regenerated through it.
+
 Run from the engine directory. Re-running is safe: an existing pack is left
 alone unless --overwrite is given.
 """
@@ -389,7 +403,7 @@ def generate(write: bool, overwrite: bool) -> int:
                     "target": target,
                     "source_version": PHP_VERSIONS[0] if source == "php" else existing_version(existing, source),
                     "target_version": PHP_VERSIONS[0] if target == "php" else existing_version(existing, target, False),
-                    "route_set": "php-php84-completion-20",
+                    "route_set": "php-php85-completion-20",
                     "status": "limited",
                 }
             )
@@ -405,11 +419,11 @@ def generate(write: bool, overwrite: bool) -> int:
             {
                 "cartesian_expansion": "EXPLICIT_ELEVEN_LANGUAGE_MATRIX",
                 "complete_route_set": "eleven-language-complete-110",
-                "php_route_set": "php-php84-completion-20",
+                "php_route_set": "php-php85-completion-20",
                 "preserved_ten_language_route_set": "ten-language-complete-90",
             }
         )
-        inventory["route_sets"]["php-php84-completion-20"] = {
+        inventory["route_sets"]["php-php85-completion-20"] = {
             "languages": sorted(COMPLETE_MATRIX_LANGUAGES),
             "module_profile": "NOT_APPLICABLE",
             "policy": "complete-directed-completion",

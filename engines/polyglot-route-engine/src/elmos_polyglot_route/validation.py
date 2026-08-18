@@ -79,8 +79,8 @@ def _run(
 #: campaign and their failures must obey one disclosure rule, not two.  The copy
 #: lives here because ``assembly`` already imports from ``validation`` (see
 #: ``safe_output``), so ``validation`` is the lower module and is where the
-#: shared version belongs; folding ``assembly``'s copy into this one is a
-#: mechanical follow-up left to that module's owner.
+#: shared version belongs.  ``assembly`` imports this one and no longer keeps a
+#: byte-identical copy (K12), so the engine has exactly one sanitiser.
 _PROCESS_DIAGNOSTIC_CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 _PROCESS_DIAGNOSTIC_SECRET_RE = re.compile(
     r"(?im)\b(token|secret|password|passwd|api[_-]?key|cookie|credential)\b"

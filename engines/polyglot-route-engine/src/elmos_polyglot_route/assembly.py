@@ -58,7 +58,7 @@ from .identifier_hygiene import (
 )
 from .models import Language, RouteError, SemanticIR
 from .toolchains import exact_toolchain, sanitized_subprocess_env
-from .validation import safe_output
+from .validation import _bounded_process_diagnostic, safe_output
 
 SCHEMA_VERSION = "1.0.0"
 MANIFEST_NAME = "assembly-manifest.json"
@@ -2305,43 +2305,6 @@ def verify_assembly_closure(target_language: Language, destination: Path) -> dic
         require_build_passed=True,
     )
     return manifest
-
-
-_PROCESS_DIAGNOSTIC_CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
-_PROCESS_DIAGNOSTIC_SECRET_RE = re.compile(
-    r"(?im)\b(token|secret|password|passwd|api[_-]?key|cookie|credential)\b"
-    r"(\s*[:=]\s*)([^\s,;]+)"
-)
-_PROCESS_DIAGNOSTIC_AUTHORIZATION_RE = re.compile(
-    r"(?im)\b(authorization)\b(\s*:\s*)[^\r\n]*"
-)
-_PROCESS_DIAGNOSTIC_PRIVATE_PATH_RE = re.compile(
-    r"(?<![A-Za-z0-9._-])/(?:private|tmp|var/folders)/[^\s\"'<>]+"
-)
-_PROCESS_DIAGNOSTIC_LIMIT = 2_000
-
-
-def _bounded_process_diagnostic(value: str, *, cwd: Path) -> str:
-    """Return a bounded diagnostic with host paths and common secrets removed."""
-
-    cleaned = _PROCESS_DIAGNOSTIC_CONTROL_RE.sub("?", value)
-    for path, replacement in (
-        (str(cwd.resolve()), "<cwd>"),
-        (str(Path.home().resolve()), "<home>"),
-    ):
-        if path:
-            cleaned = cleaned.replace(path, replacement)
-    cleaned = _PROCESS_DIAGNOSTIC_AUTHORIZATION_RE.sub(
-        lambda match: f"{match.group(1)}{match.group(2)}<redacted>",
-        cleaned,
-    )
-    cleaned = _PROCESS_DIAGNOSTIC_SECRET_RE.sub(
-        lambda match: f"{match.group(1)}{match.group(2)}<redacted>",
-        cleaned,
-    )
-    cleaned = _PROCESS_DIAGNOSTIC_PRIVATE_PATH_RE.sub("<path>", cleaned)
-    bounded = cleaned.strip()[-_PROCESS_DIAGNOSTIC_LIMIT:]
-    return bounded or "<empty>"
 
 
 def _run(

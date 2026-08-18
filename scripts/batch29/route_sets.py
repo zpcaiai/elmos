@@ -14,12 +14,25 @@ CORE_LANGUAGES = ("java", "csharp", "go", "rust", "python", "typescript")
 SPECIALIZED_LANGUAGES = ("cpp", "objc", "swift")
 NINE_LANGUAGE_MATRIX_LANGUAGES = (*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES)
 NODEJS_LANGUAGES = ("javascript",)
-SUPPORTED_ROUTE_LANGUAGES = (*NINE_LANGUAGE_MATRIX_LANGUAGES, *NODEJS_LANGUAGES)
+PHP_LANGUAGES = ("php",)
+TEN_LANGUAGE_MATRIX_LANGUAGES = (*NINE_LANGUAGE_MATRIX_LANGUAGES, *NODEJS_LANGUAGES)
+SUPPORTED_ROUTE_LANGUAGES = (*TEN_LANGUAGE_MATRIX_LANGUAGES, *PHP_LANGUAGES)
 
 NINE_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
     for source in NINE_LANGUAGE_MATRIX_LANGUAGES
     for target in NINE_LANGUAGE_MATRIX_LANGUAGES
+    if source != target
+)
+
+#: The 90 the matrix had before php. Kept as its own name rather than recomputed
+#: from SUPPORTED_ROUTE_LANGUAGES because "ten-language-complete-90" is a
+#: recorded set name: letting it silently follow the language tuple would have
+#: renamed the thing 90 routes' evidence was filed under.
+TEN_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
+    f"{source}-to-{target}"
+    for source in TEN_LANGUAGE_MATRIX_LANGUAGES
+    for target in TEN_LANGUAGE_MATRIX_LANGUAGES
     if source != target
 )
 
@@ -54,10 +67,26 @@ COMPLETION_ROUTE_KEYS = tuple(
     if route_key not in {*CORE_ROUTE_KEYS, *SPECIALIZED_ROUTE_KEYS}
 )
 
+#: Exactly the 18 directions javascript added to the nine-language matrix.
+#: Derived from the ten-language set, not from COMPLETE_ROUTE_KEYS: computing it
+#: against the eleven-language set would pull javascript-to-php and
+#: php-to-javascript in here and silently grow an immutable Batch 29 provenance
+#: partition from 18 to 20.
 NODEJS_EXACT_ROUTE_KEYS = tuple(
     route_key
-    for route_key in COMPLETE_ROUTE_KEYS
+    for route_key in TEN_LANGUAGE_COMPLETE_ROUTE_KEYS
     if route_key not in NINE_LANGUAGE_COMPLETE_ROUTE_KEYS
+)
+
+#: The 20 directions php adds, which is every pair naming php -- including
+#: javascript-to-php and php-to-javascript. Those two are Node directions by
+#: runtime, but they are php directions by provenance: no evidence exists for
+#: them, and filing them under the Node partition would attach them to a
+#: campaign that never ran them.
+PHP_EXACT_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in COMPLETE_ROUTE_KEYS
+    if route_key not in TEN_LANGUAGE_COMPLETE_ROUTE_KEYS
 )
 
 # These four provenance sets are the only authority partition for the complete
@@ -70,6 +99,7 @@ ROUTE_PROVENANCE_PARTITIONS = {
     "cpp-objc-swift-java-exact-8": SPECIALIZED_ROUTE_KEYS,
     "nine-language-completion-34": COMPLETION_ROUTE_KEYS,
     "javascript-node26-completion-18": NODEJS_EXACT_ROUTE_KEYS,
+    "php-php85-completion-20": PHP_EXACT_ROUTE_KEYS,
 }
 
 _partition_members = tuple(
@@ -118,7 +148,8 @@ EXACT_ROUTE_SETS = {
     **ROUTE_PROVENANCE_PARTITIONS,
     "nine-language-complete-72": NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
     "javascript-node26-completion-18": NODEJS_EXACT_ROUTE_KEYS,
-    "ten-language-complete-90": COMPLETE_ROUTE_KEYS,
+    "ten-language-complete-90": TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    "eleven-language-complete-110": COMPLETE_ROUTE_KEYS,
 }
 EVIDENCED_ROUTE_KEYS = COMPLETE_ROUTE_KEYS
 
@@ -134,6 +165,8 @@ def provenance_route_set(route_key: str) -> str:
         return "nine-language-completion-34"
     if route_key in NODEJS_EXACT_ROUTE_KEYS:
         return "javascript-node26-completion-18"
+    if route_key in PHP_EXACT_ROUTE_KEYS:
+        return "php-php85-completion-20"
     raise ValueError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
 
 

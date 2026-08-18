@@ -259,9 +259,12 @@ from route_sets import (  # noqa: E402
     NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
     NINE_LANGUAGE_MATRIX_LANGUAGES,
     NODEJS_EXACT_ROUTE_KEYS,
+    PHP_EXACT_ROUTE_KEYS,
     ROUTE_PROVENANCE_PARTITIONS,
     SPECIALIZED_ROUTE_KEYS,
     SUPPORTED_ROUTE_LANGUAGES,
+    TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    TEN_LANGUAGE_MATRIX_LANGUAGES,
     nodejs_negative_case_ids,
     provenance_route_set,
     split_route_key,
@@ -473,6 +476,11 @@ VERSIONS = {
         "arm64-apple-macosx26.0",
         "SwiftSyntax 600.0.1",
     ],
+    "php": [
+        "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+        "ext/tokenizer Zend token stream",
+        "strict_types=1",
+    ],
 }
 ENGINE_PATHS = {
     "java": "engines/polyglot-route-engine/native/java/Analyzer.java",
@@ -485,6 +493,7 @@ ENGINE_PATHS = {
     "cpp": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
     "objc": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
     "swift": "engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift",
+    "php": "engines/polyglot-route-engine/native/php/analyzer.php",
 }
 SHORT_VERSIONS = {
     "java": "21.0.11",
@@ -497,6 +506,7 @@ SHORT_VERSIONS = {
     "cpp": "C++20 / Apple clang 21.0.0 / arm64-apple-darwin25.6.0",
     "objc": "Objective-C / Apple clang 21.0.0 / arm64-apple-darwin25.6.0",
     "swift": "Swift 6.3.3 / arm64-apple-macosx26.0",
+    "php": "PHP 8.5.9 (NTS) / ext/tokenizer",
 }
 EXTENSIONS = {
     "java": "java",
@@ -509,6 +519,7 @@ EXTENSIONS = {
     "cpp": "cpp",
     "objc": "m",
     "swift": "swift",
+    "php": "php",
 }
 CORPORA = {
     "development": ("", "Pricing", "pricing", "calculate", "behavior-cases.json"),
@@ -4966,13 +4977,15 @@ def write_inventory(repo: Path) -> None:
             "schema_version": "1.4.0",
             "route_policy": {
                 "mode": "complete-directed-matrix",
-                "cartesian_expansion": "EXPLICIT_TEN_LANGUAGE_MATRIX",
-                "complete_route_set": "ten-language-complete-90",
+                "cartesian_expansion": "EXPLICIT_ELEVEN_LANGUAGE_MATRIX",
+                "complete_route_set": "eleven-language-complete-110",
                 "legacy_route_set": "legacy-complete-30",
                 "specialized_route_set": "cpp-objc-swift-java-exact-8",
                 "completion_route_set": "nine-language-completion-34",
                 "nodejs_route_set": "javascript-node26-completion-18",
+                "php_route_set": "php-php85-completion-20",
                 "preserved_nine_language_route_set": "nine-language-complete-72",
+                "preserved_ten_language_route_set": "ten-language-complete-90",
             },
             "route_provenance_partition": {
                 "policy": "exact-disjoint-authority-partition",
@@ -4993,6 +5006,10 @@ def write_inventory(repo: Path) -> None:
                     "native_reexecution_status": "NOT_RUN",
                 },
                 "javascript-node26-completion-18": {
+                    "policy": "current-versioned-route-evidence",
+                    "native_reexecution_status": "NOT_RUN",
+                },
+                "php-php85-completion-20": {
                     "policy": "current-versioned-route-evidence",
                     "native_reexecution_status": "NOT_RUN",
                 },
@@ -5026,7 +5043,7 @@ def write_inventory(repo: Path) -> None:
                 },
                 "javascript-node26-completion-18": {
                     "policy": "exact-nodejs-matrix-completion-set",
-                    "languages": list(SUPPORTED_ROUTE_LANGUAGES),
+                    "languages": list(TEN_LANGUAGE_MATRIX_LANGUAGES),
                     "route_count": len(NODEJS_EXACT_ROUTE_KEYS),
                     "route_keys": list(NODEJS_EXACT_ROUTE_KEYS),
                     "runtime_profile": "Node.js 26.0.0 / ES2022 / ESM",
@@ -5034,6 +5051,19 @@ def write_inventory(repo: Path) -> None:
                     "input_domain": NODEJS_INPUT_DOMAIN,
                 },
                 "ten-language-complete-90": {
+                    "policy": "complete-directed-permutation",
+                    "languages": list(TEN_LANGUAGE_MATRIX_LANGUAGES),
+                    "route_count": len(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+                    "route_keys": list(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
+                },
+                "php-php85-completion-20": {
+                    "policy": "exact-matrix-completion-set",
+                    "languages": list(SUPPORTED_ROUTE_LANGUAGES),
+                    "route_count": len(PHP_EXACT_ROUTE_KEYS),
+                    "route_keys": list(PHP_EXACT_ROUTE_KEYS),
+                    "runtime_profile": "PHP 8.5.9 (cli) (NTS) / strict_types=1",
+                },
+                "eleven-language-complete-110": {
                     "policy": "complete-directed-permutation",
                     "languages": list(SUPPORTED_ROUTE_LANGUAGES),
                     "route_count": len(COMPLETE_ROUTE_KEYS),

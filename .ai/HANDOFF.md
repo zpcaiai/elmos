@@ -634,3 +634,62 @@ no `.status`) = `VOID @ 99/182`. Also still void: `matrix182-final-detached.log`
   No commit or push was made in this session.
 - Any source change from here invalidates the `e43733fc…` window. If the matrix
   must be re-run as certification evidence, rebuild the freeze first.
+
+---
+
+## Session 2026-08-18 — concurrent-agent collision; PHP 11th language in flight
+
+### STOP: the polyglot engine is being rewritten right now by another thread
+
+At 2026-08-18 ~12:00 local, `engines/polyglot-route-engine` went from clean to
+**18 files, +989/-58, uncommitted**, adding **PHP as an 11th language**:
+
+```
+assembly.py  discovery.py  project_graph.py  validation.py  emitter.py
+engine.py    models.py     single_unit.py    identifier_hygiene.py
+toolchains.py  repository.py  assembly_deployment_guidance.py  README.md
+tests/{test_identifier_hygiene,test_language_set,test_single_unit}.py
+tests/test_repository_pipeline_language_matrix.py   <-- PHP fixtures added
+```
+
+Consequences that matter more than anything else in this file:
+
+1. **Do not edit the polyglot engine until that thread lands.** This session made
+   K10/K12 edits to `assembly.py`, `discovery.py`, `project_graph.py`,
+   `validation.py`; every one was **silently overwritten** by the other thread
+   within minutes. A `git checkout --` of those four paths then nearly destroyed
+   the PHP work — recovered only because the pre-checkout bytes had been copied
+   to `/tmp/mine/` first. Nothing was lost, but the margin was one command.
+2. **The node count is about to change.** 11 languages → 110 directed routes →
+   **222 nodes**, not 182. Every `/182` and `/90` denominator in this file,
+   `TASK.md` and `IMPLEMENTATION_STATUS.md` becomes stale the moment PHP lands.
+3. **`test_native_validation.py` currently fails 4/4** on
+   `test_native_source_and_target_execute_lossless_string_and_exact_fp64_observations`
+   for cpp/objc/swift/java with `use of undeclared identifier 'echo'` /
+   `cannot find 'echo' in scope`. The generated harness calls a unit function
+   that the half-migrated emitter is not emitting. **This is in-progress work,
+   not a committed defect** — do not "fix" it.
+4. The 182/182 evidence (commit `7d61cf134`, freeze `e43733fc…`) is now two
+   generations stale: the perf branch changed `native.py`/`project_graph.py`/
+   `discovery.py`, and this PHP work changes the matrix itself.
+
+### What this session did land
+
+| Item | Result |
+| --- | --- |
+| K11 `sql-dialect-engine/.venv` | ✅ **FIXED** — rebuilt on uv-managed CPython 3.12.12 (`home` was the deleted `~/Downloads/ENTER/bin`). `sqlglot 30.14.0` imports; **167 tests pass**; the engine's own declared gate (`ruff check src tests` + `mypy --ignore-missing-imports src`) is green |
+| D7 ArkUI SDK gate | ✅ **ALREADY RESOLVED** — the v2 runner (`tooling/run_frontend_formal_toolchains.py`, and the two v2 pack copies, sha `b874544f…`) reads the authoritative `oh-uni-package.json` component metadata against `OPENHARMONY_SDK_API_VERSION`. The unsatisfiable `hvigorw --version` grep survives **only** in the superseded v1 pack (`082ea3aa…`), which is published evidence and must not be rewritten. Remaining ArkUI blocker is hardware: `hdc list targets` `[Empty]` |
+| R10 / D6 | 📄 **Structurally analysed — see `.ai/R10_INDEPENDENT_VERIFICATION.md`.** Not started, and cannot be started by writing files |
+| K10 / K12 | ⛔ **Not landed** — overwritten by the concurrent thread, see above |
+| `.git` hygiene | ✅ 9 `tmp_obj_*` + 47 zero-byte stale `*.lock` removed (incl. `HEAD.lock`, `refs/heads/main.lock`, `packed-refs.lock`, 40+ under `refs/remotes/origin/dependabot/**`); **`git fsck` exit 0, zero errors** |
+| Personal note | Restored `ChatGPT-属灵星球情感成熟度.md` from `10c8ba793^` (deleted in the commit named `addfunction`); currently untracked, 517,697 bytes |
+
+### R10 in one line
+
+The local gate **cannot certify by construction** (`certification_decision` is
+hardcoded `NOT_CERTIFIED`; the ceiling is `READY_FOR_EXTERNAL_GATE`), it enforces
+`executor != verifier` per execution *and* campaign-wide role-set disjointness,
+and the schema requires content-verified artifacts for all 90×2 workloads — so a
+placeholder campaign cannot even validate. R10 is 1,080 real executions on an
+independent corpus that does not exist on disk, plus a second actor. Full detail
+in `.ai/R10_INDEPENDENT_VERIFICATION.md`.

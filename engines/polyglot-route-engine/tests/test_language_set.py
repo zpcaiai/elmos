@@ -320,7 +320,7 @@ def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() ->
         "legacy_route_set": "legacy-complete-30",
         "mode": "complete-directed-matrix",
         "nodejs_route_set": "javascript-node26-completion-18",
-        "php_route_set": "php-php84-completion-20",
+        "php_route_set": "php-php85-completion-20",
         "preserved_nine_language_route_set": "nine-language-complete-72",
         "preserved_ten_language_route_set": "ten-language-complete-90",
         "specialized_route_set": "cpp-objc-swift-java-exact-8",
@@ -346,7 +346,7 @@ def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() ->
         "nine-language-complete-72",
         "javascript-node26-completion-18",
         "ten-language-complete-90",
-        "php-php84-completion-20",
+        "php-php85-completion-20",
         "eleven-language-complete-110",
     }
     assert route_sets["legacy-complete-30"]["policy"] == "complete-directed-permutation"
@@ -357,6 +357,6 @@ def test_inventory_declares_the_complete_110_with_preserved_provenance_sets() ->
     assert set(route_sets["nine-language-complete-72"]["route_keys"]) == nine_language_keys
     assert set(route_sets["javascript-node26-completion-18"]["route_keys"]) == nodejs_keys
     assert set(route_sets["ten-language-complete-90"]["route_keys"]) == ten_language_keys
-    assert set(route_sets["php-php84-completion-20"]["route_keys"]) == php_keys
+    assert set(route_sets["php-php85-completion-20"]["route_keys"]) == php_keys
     assert set(route_sets["eleven-language-complete-110"]["route_keys"]) == complete_keys
     assert {route["route_key"] for route in inventory["routes"]} == complete_keys
