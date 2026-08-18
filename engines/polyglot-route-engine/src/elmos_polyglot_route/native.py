@@ -1906,16 +1906,37 @@ def _require_current_swift_network_execution_identity(
         "probe_binary": binary_after,
         "probe_mach_o": mach_o_after,
     }
-    if (
-        sandbox_before != sandbox_after
-        or sandbox_identity_before != sandbox_identity_after
-        or verifier_before != verifier_after
-        or verifier_identity_before != verifier_identity_after
-        or binary_before != binary_after
-        or mach_o_before != mach_o_after
-        or observed != expected
-    ):
-        raise RouteError("NETWORK_ISOLATION_NOT_RUN:execution-identity-changed")
+    # One opaque code for six before/after pairs and an eleven-key comparison
+    # cannot say what moved, which is the difference between a gate that fails
+    # closed and one that can be acted on. The names are appended to the code;
+    # every condition that used to fail still fails, on exactly the same inputs.
+    unstable = [
+        name
+        for name, before, after in (
+            ("sandbox", sandbox_before, sandbox_after),
+            ("sandbox_identity", sandbox_identity_before, sandbox_identity_after),
+            ("verifier", verifier_before, verifier_after),
+            ("verifier_identity", verifier_identity_before, verifier_identity_after),
+            ("probe_binary", binary_before, binary_after),
+            ("probe_mach_o", mach_o_before, mach_o_after),
+        )
+        if before != after
+    ]
+    mismatched = sorted(
+        key for key in expected_keys if observed.get(key) != expected.get(key)
+    )
+    if unstable or mismatched:
+        detail = ";".join(
+            part
+            for part in (
+                "unstable=" + ",".join(unstable) if unstable else "",
+                "mismatched=" + ",".join(mismatched) if mismatched else "",
+            )
+            if part
+        )
+        raise RouteError(
+            "NETWORK_ISOLATION_NOT_RUN:execution-identity-changed:" + detail
+        )
 
 
 def _stable_secure_directory_chain_identity(
@@ -2374,17 +2395,7 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE") from error
         return files
 
-    def timestamps_only_changed(
-        before: tuple[tuple[object, ...], ...],
-        after: tuple[tuple[object, ...], ...],
-    ) -> bool:
-        return len(before) == len(after) and all(
-            left[:-2] == right[:-2] and left[-2:] != right[-2:]
-            for left, right in zip(before, after, strict=True)
-            if left != right
-        )
-
-    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]] | None:
+    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]:
         root_before = _verify_secure_directory_chain(
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE",
@@ -2422,9 +2433,16 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED",
         )
-        if root_after != root_before:
-            if timestamps_only_changed(root_before, root_after):
-                return None
+        # The chain is walked from / down, so it includes the per-user temporary
+        # directory, whose mtime every other process on the machine moves. Only
+        # the two timestamps are dropped: dev, ino, mode, uid, gid and the path
+        # still have to match, and every capture re-checks that no component is
+        # a symlink, a non-directory or group/world-writable. This is the
+        # comparison _verify_swift_git_repository already makes on the same kind
+        # of chain.
+        if _stable_secure_directory_chain_identity(
+            root_after
+        ) != _stable_secure_directory_chain_identity(root_before):
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
         return (
             {
@@ -2436,23 +2454,19 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             after_identities,
         )
 
-    previous: tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]] | None = None
-    for _attempt in range(3):
-        observed = capture()
-        if observed is None:
-            previous = None
-            continue
-        if previous is not None:
-            previous_receipt, previous_root, previous_files = previous
-            receipt, root_identity, file_identities = observed
-            if receipt != previous_receipt or file_identities != previous_files:
-                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
-            if root_identity == previous_root:
-                return receipt
-            if not timestamps_only_changed(previous_root, root_identity):
-                raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
-        previous = observed
-    raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+    # Two captures that have to agree. The three-attempt budget existed only to
+    # absorb a capture voided by timestamp churn; now that churn cannot void
+    # one, a third attempt could not observe anything the second did not.
+    previous_receipt, previous_root, previous_files = capture()
+    receipt, root_identity, file_identities = capture()
+    if (
+        receipt != previous_receipt
+        or file_identities != previous_files
+        or _stable_secure_directory_chain_identity(root_identity)
+        != _stable_secure_directory_chain_identity(previous_root)
+    ):
+        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+    return receipt
 
 
 def _swift_dependency_tree_identity(value: dict[str, Any]) -> dict[str, Any]:
