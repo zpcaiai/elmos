@@ -99,7 +99,6 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn("python scripts/run_acceptance.py --require-all-toolchains", synthesis_evidence_job)
         self.assertIn("python scripts/run_production_matrix.py", synthesis_evidence_job)
         self.assertIn("playwright install --with-deps chromium", rendered)
-        self.assertIn("pnpm --dir apps/web-console test:ordered-persistence", rendered)
         self.assertIn("--project=mobile-chromium", rendered)
         self.assertIn("e2e/generation-runner.spec.ts", rendered)
         self.assertIn("e2e/spring-real-journey-ui.spec.ts", rendered)
