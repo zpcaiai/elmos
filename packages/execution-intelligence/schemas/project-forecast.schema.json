@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/project-forecast.schema.json",
+  "title": "Project forecast",
+  "type": "object",
+  "required": ["schema_version", "project", "tokens", "task_tokens", "costs", "system_runtime", "human_effort", "comparison"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "project": { "$ref": "project-profile.schema.json" },
+    "tokens": {
+      "type": "object",
+      "required": ["input", "cached_input", "cache_write", "output", "reasoning_output", "total"],
+      "properties": {
+        "input": { "$ref": "envelope.schema.json" },
+        "cached_input": { "$ref": "envelope.schema.json" },
+        "cache_write": { "$ref": "envelope.schema.json" },
+        "output": { "$ref": "envelope.schema.json" },
+        "reasoning_output": { "$ref": "envelope.schema.json" },
+        "total": { "$ref": "envelope.schema.json" },
+        "category_sum_equals_total": { "const": true },
+        "accounting_rule": { "type": "string" }
+      }
+    },
+    "task_tokens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["task_id", "total_tokens", "by_category"],
+        "properties": {
+          "task_id": { "type": "string" },
+          "name": { "type": "string" },
+          "total_tokens": { "$ref": "envelope.schema.json" },
+          "by_category": { "type": "object" }
+        }
+      }
+    },
+    "costs": {
+      "type": "object",
+      "required": ["models", "rankings_by_currency"],
+      "properties": {
+        "cross_currency_comparison": { "const": null }
+      }
+    },
+    "system_runtime": {
+      "type": "object",
+      "required": ["wall_clock_hours", "active_worker_hours", "critical_path_hours", "excludes"],
+      "properties": {
+        "wall_clock_hours": { "$ref": "envelope.schema.json" },
+        "active_worker_hours": { "$ref": "envelope.schema.json" },
+        "critical_path_hours": { "$ref": "envelope.schema.json" },
+        "excludes": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    },
+    "human_effort": {
+      "type": "object",
+      "required": ["person_hours", "person_days", "person_months", "calendar_weeks", "same_definition_of_done"],
+      "properties": {
+        "person_hours": { "$ref": "envelope.schema.json" },
+        "calendar_weeks": { "$ref": "envelope.schema.json" },
+        "same_definition_of_done": { "const": true }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "required": ["definition_of_done", "comparison", "confidence", "assumptions", "exclusions"]
+    },
+    "static_scan": { "$ref": "token-scan.schema.json" }
+  }
+}

@@ -1,0 +1,4 @@
+estimation/**/scratch/
+*.pyc
+__pycache__/
+.pytest_cache/

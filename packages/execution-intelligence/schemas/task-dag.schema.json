@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/task-dag.schema.json",
+  "title": "Task DAG",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tasks"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "dag_id": {
+      "type": "string"
+    },
+    "generated_for": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "system",
+          "human"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "complexity": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "system": {
+            "type": "object",
+            "required": [
+              "optimistic_minutes",
+              "most_likely_minutes",
+              "pessimistic_minutes",
+              "token_profile"
+            ],
+            "properties": {
+              "optimistic_minutes": {
+                "type": "number",
+                "minimum": 0
+              },
+              "most_likely_minutes": {
+                "type": "number",
+                "minimum": 0
+              },
+              "pessimistic_minutes": {
+                "type": "number",
+                "minimum": 0
+              },
+              "worker_units": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "rework_probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "rework_multiplier_min": {
+                "type": "number",
+                "minimum": 0
+              },
+              "rework_multiplier_max": {
+                "type": "number",
+                "minimum": 0
+              },
+              "failure_probability": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "recovery_optimistic_minutes": {
+                "type": "number",
+                "minimum": 0
+              },
+              "recovery_most_likely_minutes": {
+                "type": "number",
+                "minimum": 0
+              },
+              "recovery_pessimistic_minutes": {
+                "type": "number",
+                "minimum": 0
+              },
+              "token_profile": {
+                "type": "object",
+                "description": "Disjoint token categories. Their sum is the task total; never add total back into a category.",
+                "properties": {
+                  "input": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "cached_input": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "cache_write": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "output": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "reasoning_output": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "uncertainty_min": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "uncertainty_mode": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "uncertainty_max": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              },
+              "peak_context_tokens": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "description": "Largest single-call context this task is expected to need. Gates model routing."
+              },
+              "calibration": {
+                "type": "object"
+              }
+            }
+          },
+          "human": {
+            "type": "object",
+            "required": [
+              "hours_by_role"
+            ],
+            "properties": {
+              "hours_by_role": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "uncertainty_min": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "uncertainty_mode": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "uncertainty_max": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

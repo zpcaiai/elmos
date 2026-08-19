@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/model-routing-plan.schema.json",
+  "title": "model-routing-plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "currency",
+    "assignments",
+    "totals",
+    "optimised_within_currency_only",
+    "caveats"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "artifact": {
+      "const": "model-routing-plan"
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 1
+    },
+    "optimised_within_currency_only": {
+      "const": true
+    },
+    "baseline_model": {
+      "type": "string"
+    },
+    "assignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "task_id",
+          "required_tier",
+          "assigned_model",
+          "assigned_tier",
+          "estimated_cost"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "complexity": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "required_tier": {
+            "type": "string"
+          },
+          "assigned_model": {
+            "type": "string"
+          },
+          "assigned_tier": {
+            "type": "string"
+          },
+          "estimated_cost": {
+            "type": "number",
+            "minimum": 0
+          },
+          "frontier_baseline_cost": {
+            "type": "number",
+            "minimum": 0
+          },
+          "saving": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "unroutable_tasks": {
+      "type": "array"
+    },
+    "tier_distribution": {
+      "type": "object"
+    },
+    "totals": {
+      "type": "object",
+      "required": [
+        "optimized",
+        "frontier_baseline",
+        "saving"
+      ],
+      "properties": {
+        "optimized": {
+          "type": "number"
+        },
+        "frontier_baseline": {
+          "type": "number"
+        },
+        "saving": {
+          "type": "number"
+        },
+        "saving_ratio": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "rates_are_illustrative": {
+      "type": "boolean"
+    },
+    "caveats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/evidence-manifest.schema.json",
+  "title": "evidence-manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "decision",
+    "files",
+    "missing_evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "artifact": {
+      "const": "evidence-manifest"
+    },
+    "evidence_dir": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "size_bytes",
+          "supports_gate"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "supports_gate": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "missing_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

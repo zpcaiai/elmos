@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/recovery-eta-update.schema.json",
+  "title": "recovery-eta-update",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "run_id",
+    "wall_clock_hours",
+    "basis",
+    "excludes"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "artifact": {
+      "const": "recovery-eta-update"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "completed_fraction": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "observed_runtime_multiplier": {
+      "type": "number",
+      "minimum": 0
+    },
+    "observed_samples": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "basis": {
+      "enum": [
+        "forecast_only",
+        "forecast_plus_telemetry",
+        "telemetry_dominant"
+      ]
+    },
+    "remaining_tasks": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "remaining_serial_minutes": {
+      "type": "number",
+      "minimum": 0
+    },
+    "wall_clock_hours": {
+      "type": "object",
+      "required": [
+        "p50",
+        "p80",
+        "p90"
+      ],
+      "properties": {
+        "p50": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p80": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p90": {
+          "type": "number",
+          "minimum": 0
+        },
+        "worst_case": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "recovery_hours_included": {
+      "type": "number",
+      "minimum": 0
+    },
+    "excludes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}

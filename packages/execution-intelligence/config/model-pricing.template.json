@@ -1,0 +1,76 @@
+{
+  "registry_version": "TEMPLATE-1.0.0",
+  "base_currency": "USD",
+  "instructions": [
+    "Copy this file to model-pricing.json and fill every null from the provider's official rate card or your account rate card.",
+    "effective_date, verified_at and source_reference are mandatory; validation rejects the registry without them.",
+    "Leaving a null in place is intentional: the CLI refuses to forecast cost from unverified rates."
+  ],
+  "models": [
+    {
+      "id": "codex-model-id",
+      "provider": "openai",
+      "display_name": "Codex model",
+      "currency": "USD",
+      "effective_date": null,
+      "verified_at": null,
+      "source_reference": null,
+      "billing_mode": "api_or_credits",
+      "rates_per_million": {
+        "input": null, "cached_input": null, "cache_write": null, "output": null, "reasoning_output": null
+      }
+    },
+    {
+      "id": "claude-model-id",
+      "provider": "anthropic",
+      "display_name": "Claude Code model",
+      "currency": "USD",
+      "effective_date": null,
+      "verified_at": null,
+      "source_reference": null,
+      "billing_mode": "api_or_subscription_equivalent",
+      "rates_per_million": {
+        "input": null, "cached_input": null, "cache_write": null, "output": null, "reasoning_output": null
+      }
+    },
+    {
+      "id": "deepseek-model-id",
+      "provider": "deepseek",
+      "display_name": "DeepSeek model",
+      "currency": "CNY",
+      "effective_date": null,
+      "verified_at": null,
+      "source_reference": null,
+      "billing_mode": "api",
+      "rates_per_million": {
+        "input": null, "cached_input": null, "cache_write": null, "output": null, "reasoning_output": null
+      }
+    },
+    {
+      "id": "qwen-model-id",
+      "provider": "alibaba-cloud",
+      "display_name": "Qwen model",
+      "currency": "CNY",
+      "effective_date": null,
+      "verified_at": null,
+      "source_reference": null,
+      "billing_mode": "api",
+      "rates_per_million": {
+        "input": null, "cached_input": null, "cache_write": null, "output": null, "reasoning_output": null
+      }
+    },
+    {
+      "id": "kimi-model-id",
+      "provider": "moonshot",
+      "display_name": "Kimi model",
+      "currency": "CNY",
+      "effective_date": null,
+      "verified_at": null,
+      "source_reference": null,
+      "billing_mode": "api",
+      "rates_per_million": {
+        "input": null, "cached_input": null, "cache_write": null, "output": null, "reasoning_output": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# INCIDENT_RECOVERY_REPORT — {{run_id}}
+
+- 场景：{{scenario}}
+- 注入时刻：{{injected_at}}
+- 检测耗时：{{detection_ms}} ms
+- 恢复耗时：{{recovery_ms}} ms
+
+## 发生了什么
+
+{{narrative}}
+
+## 恢复前的四步核对
+
+| 检查 | 结果 | 依据 |
+| --- | --- | --- |
+| 原请求（幂等键） | {{check_idempotency}} | {{evidence_idempotency}} |
+| 原 Commit | {{check_commit}} | {{evidence_commit}} |
+| 原 Artifact | {{check_artifact}} | {{evidence_artifact}} |
+| 失败分类 | {{failure_class}} | {{evidence_failure_class}} |
+
+## 断言结果
+
+{{assertions}}
+
+## 遗留影响
+
+{{residual_impact}}
+
+> 没有执行过的检查记为「未执行」，不记为「通过」。

@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "notes": [
+    "Capability tiers are a routing constraint, not a marketing claim. A task may only be routed to a model whose tier meets the task's floor.",
+    "Tiers are ordinal: economy < mid < frontier. The tier assigned to each model here is an engineering judgement about task difficulty, not a vendor claim.",
+    "A model with an unknown capability profile is never routed to; the optimizer refuses rather than assuming.",
+    "max_context_tokens is not yet enforced by the optimizer; it is recorded so a context-aware constraint can be added without another data-gathering pass."
+  ],
+  "tier_order": [
+    "economy",
+    "mid",
+    "frontier"
+  ],
+  "complexity_floor": {
+    "low": "economy",
+    "medium": "mid",
+    "high": "frontier"
+  },
+  "category_floor": {
+    "discovery": "mid",
+    "engine": "frontier",
+    "generation": "frontier",
+    "performance": "mid",
+    "verification": "mid",
+    "compliance": "mid",
+    "delivery": "economy",
+    "fix": "frontier"
+  },
+  "models": {
+    "anthropic-opus-5": {
+      "tier": "frontier",
+      "max_context_tokens": 200000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "anthropic-sonnet-5": {
+      "tier": "mid",
+      "max_context_tokens": 200000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "anthropic-haiku-4-5": {
+      "tier": "economy",
+      "max_context_tokens": 200000,
+      "tool_use": true,
+      "reasoning": false
+    },
+    "openai-gpt-5-6-sol": {
+      "tier": "frontier",
+      "max_context_tokens": 400000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "openai-gpt-5-6-terra": {
+      "tier": "mid",
+      "max_context_tokens": 400000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "openai-gpt-5-6-luna": {
+      "tier": "economy",
+      "max_context_tokens": 400000,
+      "tool_use": true,
+      "reasoning": false
+    },
+    "deepseek-v4-pro-peak": {
+      "tier": "mid",
+      "max_context_tokens": 128000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "deepseek-v4-flash-peak": {
+      "tier": "economy",
+      "max_context_tokens": 128000,
+      "tool_use": true,
+      "reasoning": false
+    },
+    "frontier-usd-illustrative": {
+      "tier": "frontier",
+      "max_context_tokens": 200000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "mid-usd-illustrative": {
+      "tier": "mid",
+      "max_context_tokens": 200000,
+      "tool_use": true,
+      "reasoning": true
+    },
+    "economy-usd-illustrative": {
+      "tier": "economy",
+      "max_context_tokens": 128000,
+      "tool_use": true,
+      "reasoning": false
+    },
+    "domestic-cny-illustrative": {
+      "tier": "mid",
+      "max_context_tokens": 128000,
+      "tool_use": true,
+      "reasoning": true
+    }
+  }
+}
