@@ -1,0 +1,87 @@
+[project]
+name = "elmos-build-cache"
+version = "1.0.0"
+description = "ELMOS build cache, generated-file staging, checkpoint/recovery and atomic publication subsystem"
+requires-python = ">=3.11"
+dependencies = [
+  "jsonschema==4.25.1",
+  "cryptography==50.0.0",
+  # Pinned exactly: a grammar upgrade can change how a signature is spelled,
+  # which changes ``api_digest``. The version is bound into every digest the
+  # grammars produce (``ModuleInterface.extractor``), so an upgrade is a
+  # deliberate, visible cache invalidation rather than a silent one.
+  "tree-sitter==0.26.0",
+  "tree-sitter-language-pack==1.14.3",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.1"]
+s3 = ["boto3>=1.34"]
+otel = ["opentelemetry-api>=1.25", "opentelemetry-sdk>=1.25"]
+
+[project.scripts]
+elmos-cache = "elmos_build_cache.cli:main"
+
+[dependency-groups]
+dev = [
+  "mypy==1.17.0",
+  "pytest==8.4.1",
+  "ruff==0.12.5",
+  # The certification suites drive live services and real toolchains; they are
+  # part of the dev group so that ``mypy --strict`` sees the same types CI does.
+  "psycopg[binary]>=3.1",
+  "boto3>=1.34",
+  "moto[s3,server]>=5.0",
+]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/elmos_build_cache"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"schemas" = "elmos_build_cache/_data/schemas"
+"migrations" = "elmos_build_cache/_data/migrations"
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+tmp_path_retention_policy = "failed"
+markers = [
+  "toolchain: drives a real external build tool (gradle, cmake+ccache, cargo, go, tsc, pip)",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101", "S603", "S311"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["elmos_build_cache", "conftest"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106", "S108"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["elmos_build_cache"]
+mypy_path = "src"
+
+# boto3 ships no py.typed marker; the S3 backend is the only place it is used
+# and its surface is exercised by contract tests against a live endpoint.
+[[tool.mypy.overrides]]
+module = ["boto3", "boto3.*", "botocore", "botocore.*"]
+ignore_missing_imports = true
+
+# The grammar bundle ships no py.typed marker; every value crossing back out of
+# it is narrowed in ``treesitter_hash`` before use.
+[[tool.mypy.overrides]]
+module = ["tree_sitter", "tree_sitter.*", "tree_sitter_language_pack", "tree_sitter_language_pack.*"]
+ignore_missing_imports = true
