@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "human-baseline-anchor",
+  "scope": "engines/polyglot-route-engine",
+  "commits": 29,
+  "authors": 2,
+  "authors_by_commits": {
+    "Ethan": 24,
+    "giftfuture": 5
+  },
+  "first_commit_date": "2026-07-27",
+  "last_commit_date": "2026-08-18",
+  "calendar_days": 23,
+  "calendar_weeks": 3.29,
+  "distinct_active_days": 10,
+  "author_active_days": 10,
+  "person_hours_bounds": {
+    "lower": 52.0,
+    "upper": 80.0,
+    "basis": "author-active-days (10) x 8.0h, lower bound applies focus_ratio 0.65"
+  },
+  "what_this_is_not": [
+    "Not a person-hour measurement. Git records when someone committed, not how long they worked.",
+    "A day with one commit and a day with forty both count once.",
+    "Work that never landed as a commit is invisible here.",
+    "Calendar span includes weekends, holidays and time on other projects."
+  ],
+  "how_to_use": "Compare the order of magnitude against the human baseline in the forecast. If the forecast sits outside these bounds, one of the two is wrong and it is worth finding out which.",
+  "comparison_to_forecast": {
+    "verdict": "forecast_above_anchor",
+    "detail": "The forecast (6,815 person-hours) is above the anchor's upper bound (80). Either the remaining work is genuinely larger than what has been committed so far, or the forecast is pessimistic.",
+    "forecast_person_hours_p50": 6815.225,
+    "forecast_calendar_weeks_p50": 44.804,
+    "anchor_person_hours_bounds": [
+      52.0,
+      80.0
+    ],
+    "anchor_calendar_weeks": 3.29,
+    "caveat": "Agreement here does not validate the forecast. The anchor is coarse by construction; it can only catch an answer that is wrong by an order of magnitude."
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "aaf3ec68-a0db-4184-a4a3-e6b7fe27a781",
+  "state": "succeeded",
+  "tasks": [
+    {
+      "task_id": "analyzer-cache-batch",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "certification-package",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "flutter-analyzer",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "frozen-rerun-evidence",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "independent-client-repos",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "java-swift-regression",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "kotlin-analyzer",
+      "state": "succeeded",
+      "attempts": 2
+    },
+    {
+      "task_id": "matrix-authority-audit",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "matrix-medium",
+      "state": "succeeded",
+      "attempts": 2
+    },
+    {
+      "task_id": "matrix-small",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "perf-baseline",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "react-analyzer",
+      "state": "succeeded",
+      "attempts": 2
+    },
+    {
+      "task_id": "repo-parallel-singlepass",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "route-packs-66",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "security-license",
+      "state": "succeeded",
+      "attempts": 1
+    },
+    {
+      "task_id": "semantic-divergence",
+      "state": "succeeded",
+      "attempts": 1
+    }
+  ],
+  "events": 96,
+  "simulated": true,
+  "note": "Executed by the simulated executor. Telemetry is synthetic but the durable properties exercised are real."
+}

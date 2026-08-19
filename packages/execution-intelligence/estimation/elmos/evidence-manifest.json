@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "evidence-manifest",
+  "evidence_dir": "estimation/elmos",
+  "decision": "block",
+  "files": [
+    {
+      "path": "project-forecast.json",
+      "sha256": "be8a42e1b7107e9e550eb91b7410f06ce83237b9077b709cae4fa7275c028c61",
+      "size_bytes": 108318,
+      "supports_gate": "forecast-present"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "be8a42e1b7107e9e550eb91b7410f06ce83237b9077b709cae4fa7275c028c61",
+      "size_bytes": 108318,
+      "supports_gate": "confidence-is-supported"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "be8a42e1b7107e9e550eb91b7410f06ce83237b9077b709cae4fa7275c028c61",
+      "size_bytes": 108318,
+      "supports_gate": "forecast-confidence"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "be8a42e1b7107e9e550eb91b7410f06ce83237b9077b709cae4fa7275c028c61",
+      "size_bytes": 108318,
+      "supports_gate": "eta-scope"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "be8a42e1b7107e9e550eb91b7410f06ce83237b9077b709cae4fa7275c028c61",
+      "size_bytes": 108318,
+      "supports_gate": "verified-rates"
+    },
+    {
+      "path": "risk-and-gap-register.json",
+      "sha256": "9087299c76320921d4b07c6eef06d331e62a0717d8da01c64c087027c2c0ab8b",
+      "size_bytes": 4220,
+      "supports_gate": "scope-gaps"
+    },
+    {
+      "path": "calibration.json",
+      "sha256": "ae8a48682948d5793b703c683eb6da515a76ca1117e219f65ecd2d264e702fc3",
+      "size_bytes": 1107,
+      "supports_gate": "calibrated"
+    },
+    {
+      "path": "chaos-test-report.json",
+      "sha256": "ddac4dc743c84c5b01dd7fc758befd5a046a3d68bcd4897a4ac1b0210fed3f37",
+      "size_bytes": 6176,
+      "supports_gate": "chaos-recovery"
+    },
+    {
+      "path": "result-manifest.json",
+      "sha256": "7f4f4bf39f9471c64837af0193c944fa5702c3c4cfcbefb6e4d0a9017fddb883",
+      "size_bytes": 8455,
+      "supports_gate": "artifacts-sealed"
+    },
+    {
+      "path": "token-mix-comparison.json",
+      "sha256": "7579783fd4d5b890f69a8d055814b71f674e7be13d98d8ef4af99b23d1e74413",
+      "size_bytes": 10603,
+      "supports_gate": "token-mix-verified"
+    },
+    {
+      "path": "model-routing-plan.json",
+      "sha256": "9dee8dd133abc528c6efa4c59256e4423f5184eacb5f3aabf66fb56d2fcc555b",
+      "size_bytes": 7613,
+      "supports_gate": "routing-complete"
+    }
+  ],
+  "missing_evidence": []
+}

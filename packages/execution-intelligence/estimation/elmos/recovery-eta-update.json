@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "recovery-eta-update",
+  "run_id": "aaf3ec68-a0db-4184-a4a3-e6b7fe27a781",
+  "completed_fraction": 1.0,
+  "observed_runtime_multiplier": 1.213,
+  "observed_samples": 16,
+  "basis": "telemetry_dominant",
+  "remaining_tasks": 0,
+  "remaining_serial_minutes": 0,
+  "wall_clock_hours": {
+    "p50": 0.0,
+    "p80": 0.0,
+    "p90": 0.0,
+    "worst_case": 0.0
+  },
+  "recovery_hours_included": 0.0,
+  "excludes": [
+    "human approvals",
+    "human acceptance and review effort",
+    "credential and access provisioning waits",
+    "external business or vendor decisions"
+  ],
+  "note": "Quantile spread above P50 is a fixed uncertainty band, not a second Monte Carlo. For a full distribution re-run `forecast` with a calibrated DAG."
+}

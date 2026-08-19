@@ -1,0 +1,386 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "scope-baseline",
+  "root": "/sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos",
+  "corpus": {
+    "files": 45790,
+    "characters": 366736507,
+    "estimated_tokens": 95021753,
+    "counting_method": "cjk-aware-heuristic",
+    "exact_counts": false
+  },
+  "skills": {
+    "files": 9212,
+    "catalog_tokens": 556211,
+    "body_tokens": 13804476
+  },
+  "languages_by_file_count": {
+    "python": 2875,
+    "java": 1294,
+    "typescript": 885,
+    "csharp": 378,
+    "javascript": 300,
+    "go": 259,
+    "rust": 254,
+    "cpp": 178,
+    "swift": 145,
+    "objc": 127,
+    "react": 66,
+    "flutter": 54,
+    "php": 37,
+    "arkts": 10,
+    "kotlin": 9,
+    "c": 1,
+    "ruby": 1
+  },
+  "language_count": 17,
+  "build_systems": [
+    "cargo",
+    "go",
+    "gradle",
+    "make",
+    "maven",
+    "npm",
+    "pub",
+    "python",
+    "swiftpm"
+  ],
+  "largest_groups": [
+    {
+      "group": "verification-packs",
+      "files": 6283,
+      "estimated_tokens": 26560165,
+      "bytes": 106099324
+    },
+    {
+      "group": "client-packs",
+      "files": 4793,
+      "estimated_tokens": 20276057,
+      "bytes": 80979930
+    },
+    {
+      "group": "routes",
+      "files": 4638,
+      "estimated_tokens": 8734313,
+      "bytes": 34918861
+    },
+    {
+      "group": "agent-skills",
+      "files": 8374,
+      "estimated_tokens": 7345257,
+      "bytes": 28995444
+    },
+    {
+      "group": "skills",
+      "files": 7739,
+      "estimated_tokens": 6144810,
+      "bytes": 23317580
+    },
+    {
+      "group": "test-suites",
+      "files": 1991,
+      "estimated_tokens": 4248621,
+      "bytes": 16731822
+    },
+    {
+      "group": "docs",
+      "files": 528,
+      "estimated_tokens": 3477424,
+      "bytes": 13641103
+    },
+    {
+      "group": "engines",
+      "files": 1051,
+      "estimated_tokens": 3382441,
+      "bytes": 13512459
+    },
+    {
+      "group": ".agents",
+      "files": 2595,
+      "estimated_tokens": 2360720,
+      "bytes": 9060514
+    },
+    {
+      "group": "apps",
+      "files": 1801,
+      "estimated_tokens": 2265097,
+      "bytes": 8994120
+    },
+    {
+      "group": "framework-packs",
+      "files": 125,
+      "estimated_tokens": 1978912,
+      "bytes": 7915635
+    },
+    {
+      "group": "elmos-codex-skills-batch66-80-complete",
+      "files": 440,
+      "estimated_tokens": 1380863,
+      "bytes": 5530578
+    },
+    {
+      "group": "scripts",
+      "files": 298,
+      "estimated_tokens": 1144802,
+      "bytes": 4574920
+    },
+    {
+      "group": "modules",
+      "files": 618,
+      "estimated_tokens": 1099861,
+      "bytes": 4397315
+    },
+    {
+      "group": "elmos-language-packs-batch81-95-complete",
+      "files": 250,
+      "estimated_tokens": 699307,
+      "bytes": 2799862
+    }
+  ],
+  "route_matrix": {
+    "declared_route_count": 156,
+    "declared_routes": 156,
+    "languages": [
+      "cpp",
+      "csharp",
+      "flutter",
+      "go",
+      "java",
+      "kotlin",
+      "objc",
+      "php",
+      "python",
+      "react",
+      "rust",
+      "swift",
+      "typescript"
+    ],
+    "language_count": 13,
+    "pending_analyzer_languages": [
+      "flutter",
+      "kotlin",
+      "react"
+    ],
+    "route_set_names": [
+      "cpp-objc-swift-java-exact-8",
+      "eleven-language-complete-110",
+      "javascript-node26-completion-18",
+      "kotlin-react-flutter-completion-66",
+      "legacy-complete-30",
+      "nine-language-complete-72",
+      "nine-language-completion-34",
+      "php-php85-completion-20",
+      "ten-language-complete-90",
+      "thirteen-language-complete-156"
+    ],
+    "route_directories": 176,
+    "directory_surplus_reconciled": "20 retained pack(s) = deprecated_route_keys of 'eleven-language-complete-110'",
+    "authority_path": "routes/inventory.json"
+  },
+  "denominator_claims_in_prose": {
+    ".ai/CODE_LEVEL_BACKLOG.md": [
+      24
+    ],
+    ".ai/EXECUTION_INTELLIGENCE_PROGRESS.md": [
+      66,
+      120,
+      156,
+      1015
+    ],
+    ".ai/FINDINGS-2026-08-18-claude.md": [
+      182
+    ],
+    ".ai/FINDINGS-2026-08-19-elmos-polyglot-skills-assessment.md": [
+      1015
+    ],
+    ".ai/HANDOFF.md": [
+      90,
+      110,
+      156,
+      182
+    ],
+    ".ai/IMPLEMENTATION_STATUS.md": [
+      35,
+      90,
+      156
+    ],
+    ".ai/NODE_TOOLCHAIN_PIN_DRIFT.md": [
+      110
+    ],
+    ".ai/R10_INDEPENDENT_VERIFICATION.md": [
+      90,
+      182
+    ],
+    ".ai/TASK.md": [
+      64,
+      72,
+      90,
+      156
+    ],
+    ".ai/TEST_RESULTS.md": [
+      90,
+      182
+    ],
+    "docs/BUSINESS_LINE_CLOSURE_MATRIX.md": [
+      33,
+      409,
+      1015
+    ],
+    "docs/INDEPENDENT_VERIFICATION.md": [
+      30
+    ],
+    "docs/cross-language-equivalence-gap-plan.md": [
+      30
+    ]
+  },
+  "explicit_denominator_claims": {
+    ".ai/CODE_LEVEL_BACKLOG.md": [
+      24
+    ],
+    ".ai/EXECUTION_INTELLIGENCE_PROGRESS.md": [
+      66,
+      156
+    ],
+    ".ai/HANDOFF.md": [
+      110,
+      156
+    ],
+    ".ai/IMPLEMENTATION_STATUS.md": [
+      90,
+      156
+    ],
+    ".ai/NODE_TOOLCHAIN_PIN_DRIFT.md": [
+      110
+    ],
+    ".ai/R10_INDEPENDENT_VERIFICATION.md": [
+      90
+    ],
+    ".ai/TASK.md": [
+      64,
+      72,
+      90,
+      156
+    ],
+    ".ai/TEST_RESULTS.md": [
+      90
+    ],
+    "docs/INDEPENDENT_VERIFICATION.md": [
+      30
+    ],
+    "docs/cross-language-equivalence-gap-plan.md": [
+      30
+    ]
+  },
+  "denominator_authority_docs": [
+    ".ai/HANDOFF.md",
+    ".ai/IMPLEMENTATION_STATUS.md",
+    ".ai/TASK.md"
+  ],
+  "has_git": true,
+  "risk_and_gap_register": {
+    "schema_version": "1.0.0",
+    "artifact": "risk-and-gap-register",
+    "gaps": [
+      {
+        "id": "route-directory-count-differs",
+        "severity": "low",
+        "kind": "informational",
+        "detail": "176 route directories on disk vs declared route_count=156; surplus reconciled: 20 retained pack(s) = deprecated_route_keys of 'eleven-language-complete-110'",
+        "needs_human_input": false
+      },
+      {
+        "id": "pending-analyzer-flutter",
+        "severity": "high",
+        "kind": "missing-capability",
+        "detail": "language 'flutter' is declared in the matrix but its analyzer is PENDING_ANALYZER",
+        "needs_human_input": false
+      },
+      {
+        "id": "pending-analyzer-kotlin",
+        "severity": "high",
+        "kind": "missing-capability",
+        "detail": "language 'kotlin' is declared in the matrix but its analyzer is PENDING_ANALYZER",
+        "needs_human_input": false
+      },
+      {
+        "id": "pending-analyzer-react",
+        "severity": "high",
+        "kind": "missing-capability",
+        "detail": "language 'react' is declared in the matrix but its analyzer is PENDING_ANALYZER",
+        "needs_human_input": false
+      },
+      {
+        "id": "historical-denominators-in-prose",
+        "severity": "low",
+        "kind": "informational",
+        "detail": "9 non-authoritative document(s) quote an older denominator. That is usually correct as history; it is listed so nobody quotes one by accident.",
+        "evidence": {
+          ".ai/CODE_LEVEL_BACKLOG.md": [
+            24
+          ],
+          ".ai/FINDINGS-2026-08-18-claude.md": [
+            182
+          ],
+          ".ai/FINDINGS-2026-08-19-elmos-polyglot-skills-assessment.md": [
+            1015
+          ],
+          ".ai/NODE_TOOLCHAIN_PIN_DRIFT.md": [
+            110
+          ],
+          ".ai/R10_INDEPENDENT_VERIFICATION.md": [
+            90,
+            182
+          ],
+          ".ai/TEST_RESULTS.md": [
+            90,
+            182
+          ],
+          "docs/BUSINESS_LINE_CLOSURE_MATRIX.md": [
+            33,
+            409,
+            1015
+          ],
+          "docs/INDEPENDENT_VERIFICATION.md": [
+            30
+          ],
+          "docs/cross-language-equivalence-gap-plan.md": [
+            30
+          ]
+        },
+        "needs_human_input": false
+      },
+      {
+        "id": "oversized-skills",
+        "severity": "medium",
+        "kind": "context-pressure",
+        "detail": "40 SKILL.md bodies exceed the activation-cost threshold",
+        "evidence": [
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+          "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+          "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+          "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md"
+        ],
+        "needs_human_input": false
+      },
+      {
+        "id": "unscanned-files",
+        "severity": "low",
+        "kind": "coverage",
+        "detail": "13 files were skipped (too large or not UTF-8) and are not in any total",
+        "needs_human_input": false
+      }
+    ],
+    "counts_by_severity": {
+      "high": 3,
+      "medium": 1,
+      "low": 3
+    },
+    "rule": "A gap with needs_human_input=true blocks a production-grade forecast; the auditor will not invent the answer."
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "evidence-manifest",
+  "evidence_dir": "estimation/elmos-calibrated",
+  "decision": "block",
+  "files": [
+    {
+      "path": "project-forecast.json",
+      "sha256": "50b57a006937318f039067b46252f50f96b453c20b8090be1724ec5fe7828f64",
+      "size_bytes": 58828,
+      "supports_gate": "forecast-present"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "50b57a006937318f039067b46252f50f96b453c20b8090be1724ec5fe7828f64",
+      "size_bytes": 58828,
+      "supports_gate": "confidence-is-supported"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "50b57a006937318f039067b46252f50f96b453c20b8090be1724ec5fe7828f64",
+      "size_bytes": 58828,
+      "supports_gate": "forecast-confidence"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "50b57a006937318f039067b46252f50f96b453c20b8090be1724ec5fe7828f64",
+      "size_bytes": 58828,
+      "supports_gate": "eta-scope"
+    },
+    {
+      "path": "project-forecast.json",
+      "sha256": "50b57a006937318f039067b46252f50f96b453c20b8090be1724ec5fe7828f64",
+      "size_bytes": 58828,
+      "supports_gate": "verified-rates"
+    },
+    {
+      "path": "token-mix-comparison.json",
+      "sha256": "dac6b30b705031c985904518171f18e548fed999e48374149cff0de8636e667e",
+      "size_bytes": 5846,
+      "supports_gate": "token-mix-verified"
+    }
+  ],
+  "missing_evidence": [
+    "scope-gaps",
+    "calibrated",
+    "chaos-recovery",
+    "artifacts-sealed"
+  ]
+}

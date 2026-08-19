@@ -1,0 +1,96 @@
+{
+  "project_id": "elmos",
+  "mode": "verification",
+  "description": "Seeded from a scope audit of /sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos: 45790 files, 17 languages.",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded"
+    ],
+    "exclusions": []
+  },
+  "simulation": {
+    "runs": 5000,
+    "seed": 42
+  },
+  "system": {
+    "workers": 9,
+    "worker_availability": 0.92,
+    "parallel_efficiency": 0.68,
+    "model_concurrency_factor": 0.85,
+    "code_conflict_factor": 0.9,
+    "global_overhead_ratio": 0.08,
+    "worst_case_quantile": 0.99,
+    "workers_raised_for_widest_task": 4.0
+  },
+  "human": {
+    "work_hours_per_day": 8,
+    "work_days_per_week": 5,
+    "focus_ratio": 0.68,
+    "review_overhead_ratio": 0.15,
+    "coordination_overhead_ratio": 0.12,
+    "rework_overhead_ratio": 0.25,
+    "month_working_days": 20,
+    "roles": {
+      "architect": {
+        "headcount": 1
+      },
+      "backend": {
+        "headcount": 3
+      },
+      "frontend": {
+        "headcount": 2
+      },
+      "compiler": {
+        "headcount": 2
+      },
+      "qa": {
+        "headcount": 2
+      },
+      "devops": {
+        "headcount": 1
+      },
+      "security": {
+        "headcount": 1
+      },
+      "product": {
+        "headcount": 1
+      }
+    }
+  },
+  "human_assisted": {
+    "review_person_hours": 0,
+    "approval_wait_hours": 0,
+    "external_wait_hours": 0,
+    "review_parallel_fraction": 0.0
+  },
+  "confidence": 0.6,
+  "assumptions": [
+    "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+    "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+  ],
+  "exclusions": [
+    "Human approval and acceptance time (carried in human_assisted).",
+    "Vendor pricing (supply a verified rate card)."
+  ],
+  "seed_provenance": {
+    "widest_task_worker_units": 4.0,
+    "defaults_version": "1.0.0",
+    "human_baselines_version": "1.0.0",
+    "measured_files": 45790,
+    "blocking_gaps": []
+  },
+  "confidence_basis": [
+    "证据推导出的上限是 0.65（certifier.supported_confidence：底 0.30 + 已获得的证据项）。",
+    "已获得：运行时维度已用真实遥测校准 (+0.15)、无待人工决策的范围缺口 (+0.10)、Chaos 场景全部执行并通过 (+0.05)、费用基于已核验费率 (+0.05)。",
+    "未获得：运行时样本 >= 20 (+0.10)、token 维度已用真实用量校准 (+0.20)、token 样本 >= 20 (+0.10)、token 分类占比已对照实测用量 (+0.05)。",
+    "写在 seed 而不是产物里：0.60 之前是直接改在 project-forecast.json 上的，重跑 forecast 就被冲回 0.35。声明值属于源，不属于产物——改产物正是 confidence-is-supported 门禁要拦的那种动作。",
+    "上限变化时必须重新评估这个数，不要只因为想让门禁过就抬。"
+  ]
+}

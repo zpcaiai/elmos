@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "model-routing-plan",
+  "currency": "USD",
+  "optimised_within_currency_only": true,
+  "baseline_model": "openai-gpt-5-6-sol",
+  "assignments": [
+    {
+      "task_id": "matrix-authority-audit",
+      "name": "路由矩阵权威源审计与口径对齐",
+      "category": "discovery",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 5.324,
+      "frontier_baseline_cost": 14.1,
+      "saving": 8.776
+    },
+    {
+      "task_id": "kotlin-analyzer",
+      "name": "Kotlin 原生 analyzer 补齐（PENDING_ANALYZER）",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 69.25,
+      "frontier_baseline_cost": 69.25,
+      "saving": 0.0
+    },
+    {
+      "task_id": "react-analyzer",
+      "name": "React 方言 analyzer 补齐（PENDING_ANALYZER）",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 64.0,
+      "frontier_baseline_cost": 64.0,
+      "saving": 0.0
+    },
+    {
+      "task_id": "flutter-analyzer",
+      "name": "Flutter/Dart analyzer 补齐（PENDING_ANALYZER）",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 66.7,
+      "frontier_baseline_cost": 66.7,
+      "saving": 0.0
+    },
+    {
+      "task_id": "route-packs-66",
+      "name": "kotlin/react/flutter 相关 66 条路由包生成与登记",
+      "category": "generation",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 106.0,
+      "frontier_baseline_cost": 106.0,
+      "saving": 0.0
+    },
+    {
+      "task_id": "semantic-divergence",
+      "name": "13 语言两两语义分歧表与 IR 归一",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 87.25,
+      "frontier_baseline_cost": 87.25,
+      "saving": 0.0
+    },
+    {
+      "task_id": "analyzer-cache-batch",
+      "name": "Analyzer 缓存与批量化（保住可提升/不可提升拒绝区分）",
+      "category": "performance",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 12.2672,
+      "frontier_baseline_cost": 34.55,
+      "saving": 22.2828
+    },
+    {
+      "task_id": "repo-parallel-singlepass",
+      "name": "仓库级并行与单遍 AST 遍历",
+      "category": "performance",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 13.64,
+      "frontier_baseline_cost": 38.375,
+      "saving": 24.735
+    },
+    {
+      "task_id": "java-swift-regression",
+      "name": "Java 源路线与 Swift 环境回归定向修复",
+      "category": "fix",
+      "complexity": "medium",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 50.5,
+      "frontier_baseline_cost": 50.5,
+      "saving": 0.0
+    },
+    {
+      "task_id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通（156 路线）",
+      "category": "verification",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 43.75,
+      "frontier_baseline_cost": 43.75,
+      "saving": 0.0
+    },
+    {
+      "task_id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通（156 路线）",
+      "category": "verification",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 81.5,
+      "frontier_baseline_cost": 81.5,
+      "saving": 0.0
+    },
+    {
+      "task_id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "category": "verification",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 11.9768,
+      "frontier_baseline_cost": 34.2,
+      "saving": 22.2232
+    },
+    {
+      "task_id": "independent-client-repos",
+      "name": "独立客户仓库验证（当前 0/156）",
+      "category": "verification",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 134.0,
+      "frontier_baseline_cost": 134.0,
+      "saving": 0.0
+    },
+    {
+      "task_id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "category": "compliance",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 7.4096,
+      "frontier_baseline_cost": 20.775,
+      "saving": 13.3654
+    },
+    {
+      "task_id": "perf-baseline",
+      "name": "性能基线与回归门禁",
+      "category": "performance",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 8.8616,
+      "frontier_baseline_cost": 24.9,
+      "saving": 16.0384
+    },
+    {
+      "task_id": "certification-package",
+      "name": "认证材料与交付包",
+      "category": "delivery",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 11.176,
+      "frontier_baseline_cost": 32.75,
+      "saving": 21.574
+    }
+  ],
+  "unroutable_tasks": [],
+  "tier_distribution": {
+    "frontier": 9,
+    "mid": 7
+  },
+  "context_constraint": {
+    "enforced_for": [],
+    "not_declared_for": [
+      "analyzer-cache-batch",
+      "certification-package",
+      "flutter-analyzer",
+      "frozen-rerun-evidence",
+      "independent-client-repos",
+      "java-swift-regression",
+      "kotlin-analyzer",
+      "matrix-authority-audit",
+      "matrix-medium",
+      "matrix-small",
+      "perf-baseline",
+      "react-analyzer",
+      "repo-parallel-singlepass",
+      "route-packs-66",
+      "security-license",
+      "semantic-divergence"
+    ],
+    "rule": "A model is only eligible when its max_context_tokens covers the task's declared peak_context_tokens. Tasks that declare no peak are listed here rather than being assumed to fit."
+  },
+  "totals": {
+    "optimized": 773.6052,
+    "frontier_baseline": 902.6,
+    "saving": 128.9948,
+    "saving_ratio": 0.14291
+  },
+  "rates_are_illustrative": false,
+  "caveats": [
+    "Routing assumes the cheaper tier actually completes the task; if it fails and escalates, the retry cost eats the saving. Verify escalation rate before trusting the number.",
+    "Costs use point token estimates (P50-equivalent), not the full distribution.",
+    "16 task(s) declare no peak_context_tokens, so the context window constraint could not be checked for them."
+  ]
+}

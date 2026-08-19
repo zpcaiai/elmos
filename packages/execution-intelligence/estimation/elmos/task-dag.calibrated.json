@@ -1,0 +1,861 @@
+{
+  "schema_version": "1.0.0",
+  "dag_id": "elmos-156-route-behavioural-equivalence",
+  "generated_for": "packages/execution-intelligence",
+  "provenance": [
+    "Route surface from routes/inventory.json: route_count=156, 13 languages, kotlin/react/flutter analyzer_status=PENDING_ANALYZER.",
+    "Task shape from .ai/TASK.md active task and .ai/IMPLEMENTATION_STATUS.md open rows (R9/R10/R11).",
+    "Durations and token profiles are engineering estimates, not measurements. Replace with calibrate output after the first executed milestone."
+  ],
+  "tasks": [
+    {
+      "id": "matrix-authority-audit",
+      "name": "路由矩阵权威源审计与口径对齐",
+      "depends_on": [],
+      "category": "discovery",
+      "complexity": "medium",
+      "priority": 100,
+      "system": {
+        "optimistic_minutes": 10.52,
+        "most_likely_minutes": 18.41,
+        "pessimistic_minutes": 39.45,
+        "worker_units": 1,
+        "rework_probability": 0.1,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.02,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 2600000,
+          "cached_input": 5200000,
+          "cache_write": 700000,
+          "output": 260000,
+          "reasoning_output": 160000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 14,
+          "backend": 10,
+          "qa": 6,
+          "product": 8
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "对齐 routes/inventory.json、models.py 与 scripts/batch29/route_sets.py 三处声明，确认 156 条有向路线为唯一分母"
+    },
+    {
+      "id": "kotlin-analyzer",
+      "name": "Kotlin 原生 analyzer 补齐（PENDING_ANALYZER）",
+      "depends_on": [
+        "matrix-authority-audit"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 92,
+      "system": {
+        "optimistic_minutes": 78.9,
+        "most_likely_minutes": 163.06,
+        "pessimistic_minutes": 394.5,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.2,
+        "failure_probability": 0.15,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 11000000,
+          "cached_input": 26000000,
+          "cache_write": 3100000,
+          "output": 1450000,
+          "reasoning_output": 900000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 24,
+          "compiler": 150,
+          "backend": 60,
+          "qa": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "inventory 中 kotlin analyzer_status=PENDING_ANALYZER；需要工具链钉版 + 语义分歧表 + 前端 token 化"
+    },
+    {
+      "id": "react-analyzer",
+      "name": "React 方言 analyzer 补齐（PENDING_ANALYZER）",
+      "depends_on": [
+        "matrix-authority-audit"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 90,
+      "system": {
+        "optimistic_minutes": 73.64,
+        "most_likely_minutes": 152.54,
+        "pessimistic_minutes": 368.2,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.2,
+        "failure_probability": 0.15,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 10000000,
+          "cached_input": 24000000,
+          "cache_write": 2900000,
+          "output": 1350000,
+          "reasoning_output": 850000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 20,
+          "frontend": 150,
+          "backend": 40,
+          "qa": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "React 作为组件方言身份，与 typescript 分离；需要 component-dialect-engine 对接"
+    },
+    {
+      "id": "flutter-analyzer",
+      "name": "Flutter/Dart analyzer 补齐（PENDING_ANALYZER）",
+      "depends_on": [
+        "matrix-authority-audit"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 90,
+      "system": {
+        "optimistic_minutes": 78.9,
+        "most_likely_minutes": 157.8,
+        "pessimistic_minutes": 381.35,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.2,
+        "failure_probability": 0.15,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 10500000,
+          "cached_input": 25000000,
+          "cache_write": 3000000,
+          "output": 1400000,
+          "reasoning_output": 880000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 20,
+          "frontend": 140,
+          "compiler": 60,
+          "qa": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "Dart 工具链需 symlink-free 钉版，参照 PHP 接入时的工具链约束"
+    },
+    {
+      "id": "route-packs-66",
+      "name": "kotlin/react/flutter 相关 66 条路由包生成与登记",
+      "depends_on": [
+        "kotlin-analyzer",
+        "react-analyzer",
+        "flutter-analyzer"
+      ],
+      "category": "generation",
+      "complexity": "high",
+      "priority": 85,
+      "system": {
+        "optimistic_minutes": 110.46,
+        "most_likely_minutes": 205.14,
+        "pessimistic_minutes": 473.4,
+        "worker_units": 3,
+        "rework_probability": 0.25,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.1,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 16000000,
+          "cached_input": 42000000,
+          "cache_write": 4600000,
+          "output": 2400000,
+          "reasoning_output": 1300000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 24,
+          "backend": 180,
+          "frontend": 120,
+          "qa": 60
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "route_sets 中 kotlin-react-flutter-completion-66 对应的 66 条有向路线"
+    },
+    {
+      "id": "semantic-divergence",
+      "name": "13 语言两两语义分歧表与 IR 归一",
+      "depends_on": [
+        "route-packs-66"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 80,
+      "system": {
+        "optimistic_minutes": 94.68,
+        "most_likely_minutes": 184.1,
+        "pessimistic_minutes": 420.8,
+        "worker_units": 2,
+        "rework_probability": 0.28,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.08,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 13000000,
+          "cached_input": 33000000,
+          "cache_write": 3800000,
+          "output": 1900000,
+          "reasoning_output": 1200000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 60,
+          "compiler": 140,
+          "backend": 80,
+          "qa": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "空值、整数溢出、字符串编码、异常语义、并发模型五类分歧必须逐对落表"
+    },
+    {
+      "id": "analyzer-cache-batch",
+      "name": "Analyzer 缓存与批量化（保住可提升/不可提升拒绝区分）",
+      "depends_on": [
+        "matrix-authority-audit"
+      ],
+      "category": "performance",
+      "complexity": "medium",
+      "priority": 78,
+      "system": {
+        "optimistic_minutes": 47.34,
+        "most_likely_minutes": 89.42,
+        "pessimistic_minutes": 210.4,
+        "worker_units": 1,
+        "rework_probability": 0.2,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.06,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 5200000,
+          "cached_input": 13000000,
+          "cache_write": 1500000,
+          "output": 760000,
+          "reasoning_output": 460000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "backend": 70,
+          "compiler": 40,
+          "qa": 24
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "已实测 Go 121x / Rust 65x / Java 全栈 18x；批量模式不得把不可提升的拒绝误判为可提升"
+    },
+    {
+      "id": "repo-parallel-singlepass",
+      "name": "仓库级并行与单遍 AST 遍历",
+      "depends_on": [
+        "analyzer-cache-batch"
+      ],
+      "category": "performance",
+      "complexity": "medium",
+      "priority": 76,
+      "system": {
+        "optimistic_minutes": 52.6,
+        "most_likely_minutes": 99.94,
+        "pessimistic_minutes": 236.7,
+        "worker_units": 2,
+        "rework_probability": 0.22,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.08,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 5800000,
+          "cached_input": 14500000,
+          "cache_write": 1700000,
+          "output": 830000,
+          "reasoning_output": 520000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "backend": 80,
+          "compiler": 50,
+          "qa": 24
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "性能评估结论：先做仓库级并行与单遍遍历，Rust 改写端到端只值 1.0–1.5x，本轮不做"
+    },
+    {
+      "id": "java-swift-regression",
+      "name": "Java 源路线与 Swift 环境回归定向修复",
+      "depends_on": [
+        "semantic-divergence"
+      ],
+      "category": "fix",
+      "complexity": "medium",
+      "priority": 74,
+      "system": {
+        "optimistic_minutes": 63.12,
+        "most_likely_minutes": 118.35,
+        "pessimistic_minutes": 289.3,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.12,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 7500000,
+          "cached_input": 19000000,
+          "cache_write": 2200000,
+          "output": 1100000,
+          "reasoning_output": 700000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "backend": 90,
+          "compiler": 50,
+          "qa": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "历史上 8 条 Java 源路线各 1/2；Swift 探针环境不匹配已修但未整矩阵复验"
+    },
+    {
+      "id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通（156 路线）",
+      "depends_on": [
+        "route-packs-66",
+        "semantic-divergence",
+        "repo-parallel-singlepass"
+      ],
+      "category": "verification",
+      "complexity": "high",
+      "priority": 70,
+      "system": {
+        "optimistic_minutes": 78.9,
+        "most_likely_minutes": 147.28,
+        "pessimistic_minutes": 368.2,
+        "worker_units": 4,
+        "rework_probability": 0.25,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.18,
+        "recovery_optimistic_minutes": 10,
+        "recovery_most_likely_minutes": 30,
+        "recovery_pessimistic_minutes": 120,
+        "token_profile": {
+          "input": 6500000,
+          "cached_input": 20000000,
+          "cache_write": 2000000,
+          "output": 900000,
+          "reasoning_output": 600000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 160,
+          "backend": 80,
+          "devops": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "SMALL 全绿是 MEDIUM 的前置；失败三元组必须逐条归因"
+    },
+    {
+      "id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通（156 路线）",
+      "depends_on": [
+        "matrix-small",
+        "java-swift-regression"
+      ],
+      "category": "verification",
+      "complexity": "high",
+      "priority": 68,
+      "system": {
+        "optimistic_minutes": 157.8,
+        "most_likely_minutes": 302.45,
+        "pessimistic_minutes": 736.4,
+        "worker_units": 4,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.22,
+        "recovery_optimistic_minutes": 15,
+        "recovery_most_likely_minutes": 45,
+        "recovery_pessimistic_minutes": 180,
+        "token_profile": {
+          "input": 12000000,
+          "cached_input": 38000000,
+          "cache_write": 3800000,
+          "output": 1700000,
+          "reasoning_output": 1100000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 240,
+          "backend": 120,
+          "devops": 60
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "MEDIUM 是仓库级互转的真实门槛；磁盘余量与工具链钉版是历史阻塞点"
+    },
+    {
+      "id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "depends_on": [
+        "matrix-medium"
+      ],
+      "category": "verification",
+      "complexity": "medium",
+      "priority": 64,
+      "system": {
+        "optimistic_minutes": 94.68,
+        "most_likely_minutes": 184.1,
+        "pessimistic_minutes": 447.1,
+        "worker_units": 3,
+        "rework_probability": 0.18,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.2,
+        "recovery_optimistic_minutes": 15,
+        "recovery_most_likely_minutes": 45,
+        "recovery_pessimistic_minutes": 180,
+        "token_profile": {
+          "input": 5000000,
+          "cached_input": 16000000,
+          "cache_write": 1600000,
+          "output": 700000,
+          "reasoning_output": 480000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 120,
+          "devops": 60,
+          "architect": 24
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "冻结集校验和必须在重跑前后一致；推导式改写冻结集是历史事故来源"
+    },
+    {
+      "id": "independent-client-repos",
+      "name": "独立客户仓库验证（当前 0/156）",
+      "depends_on": [
+        "frozen-rerun-evidence"
+      ],
+      "category": "verification",
+      "complexity": "high",
+      "priority": 60,
+      "system": {
+        "optimistic_minutes": 184.1,
+        "most_likely_minutes": 368.2,
+        "pessimistic_minutes": 894.2,
+        "worker_units": 3,
+        "rework_probability": 0.35,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.3,
+        "failure_probability": 0.25,
+        "recovery_optimistic_minutes": 20,
+        "recovery_most_likely_minutes": 60,
+        "recovery_pessimistic_minutes": 240,
+        "token_profile": {
+          "input": 22000000,
+          "cached_input": 58000000,
+          "cache_write": 6000000,
+          "output": 2600000,
+          "reasoning_output": 1700000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 220,
+          "backend": 160,
+          "architect": 40,
+          "product": 40
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "外部真实仓库，不是自造样例；这是 R10 从 MISSING 转 IMPLEMENTED 的唯一路径"
+    },
+    {
+      "id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "depends_on": [
+        "matrix-medium"
+      ],
+      "category": "compliance",
+      "complexity": "medium",
+      "priority": 56,
+      "system": {
+        "optimistic_minutes": 39.45,
+        "most_likely_minutes": 78.9,
+        "pessimistic_minutes": 184.1,
+        "worker_units": 1,
+        "rework_probability": 0.15,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.05,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 3200000,
+          "cached_input": 8500000,
+          "cache_write": 950000,
+          "output": 430000,
+          "reasoning_output": 280000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "security": 90,
+          "devops": 30,
+          "backend": 20
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "13 条工具链的传递依赖都要过一遍，泄漏样例集已存在于 telemetry/"
+    },
+    {
+      "id": "perf-baseline",
+      "name": "性能基线与回归门禁",
+      "depends_on": [
+        "repo-parallel-singlepass",
+        "matrix-medium"
+      ],
+      "category": "performance",
+      "complexity": "medium",
+      "priority": 54,
+      "system": {
+        "optimistic_minutes": 47.34,
+        "most_likely_minutes": 89.42,
+        "pessimistic_minutes": 215.66,
+        "worker_units": 2,
+        "rework_probability": 0.18,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.08,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 3800000,
+          "cached_input": 10000000,
+          "cache_write": 1100000,
+          "output": 520000,
+          "reasoning_output": 340000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "backend": 60,
+          "qa": 40,
+          "devops": 30
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "基线必须与冻结矩阵同源，否则加速比不可比"
+    },
+    {
+      "id": "certification-package",
+      "name": "认证材料与交付包",
+      "depends_on": [
+        "independent-client-repos",
+        "security-license",
+        "perf-baseline"
+      ],
+      "category": "delivery",
+      "complexity": "medium",
+      "priority": 50,
+      "system": {
+        "optimistic_minutes": 52.6,
+        "most_likely_minutes": 105.2,
+        "pessimistic_minutes": 249.85,
+        "worker_units": 1,
+        "rework_probability": 0.15,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.04,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 4200000,
+          "cached_input": 11000000,
+          "cache_write": 1250000,
+          "output": 900000,
+          "reasoning_output": 400000,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "calibration": {
+          "runtime_multiplier": 0.263,
+          "token_multiplier": null,
+          "runtime_measured": true,
+          "token_measured": false,
+          "basis": "global",
+          "confidence": 0.41
+        }
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 50,
+          "product": 60,
+          "qa": 60,
+          "devops": 30,
+          "security": 20
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "note": "R11 只承认唯一允许的认证门；无合格 campaign 即 NOT_CERTIFIED"
+    }
+  ],
+  "calibrated": true,
+  "calibration_basis_samples": 3
+}

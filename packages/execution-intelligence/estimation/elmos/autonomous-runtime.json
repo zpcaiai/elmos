@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "autonomous-runtime",
+  "project_id": "elmos",
+  "mode": "verification",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded"
+    ],
+    "exclusions": []
+  },
+  "confidence": 0.6,
+  "assumptions": [
+    "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+    "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+  ],
+  "exclusions": [
+    "Human approval and acceptance time (carried in human_assisted).",
+    "Vendor pricing (supply a verified rate card)."
+  ],
+  "runs": 5000,
+  "seed": 42,
+  "configured_workers": 9,
+  "effective_worker_capacity": 4.307,
+  "global_overhead_ratio": 0.08,
+  "wall_clock_hours": {
+    "mean": 57.575,
+    "p50": 56.648,
+    "p80": 64.043,
+    "p90": 68.156,
+    "worst_case": 79.266,
+    "minimum": 36.511,
+    "maximum": 96.456
+  },
+  "active_worker_hours": {
+    "mean": 178.611,
+    "p50": 175.986,
+    "p80": 198.728,
+    "p90": 212.361,
+    "worst_case": 247.099,
+    "minimum": 105.185,
+    "maximum": 284.075
+  },
+  "critical_path_hours": {
+    "mean": 49.55,
+    "p50": 48.724,
+    "p80": 55.742,
+    "p90": 59.828,
+    "worst_case": 70.57,
+    "minimum": 28.48,
+    "maximum": 80.955
+  },
+  "scope": "machine-autonomous execution only",
+  "excludes": [
+    "human approvals",
+    "human acceptance and review effort",
+    "credential and access provisioning waits",
+    "external business or vendor decisions"
+  ]
+}

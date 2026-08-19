@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "time-comparison",
+  "project_id": "elmos",
+  "mode": "verification",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded"
+    ],
+    "exclusions": []
+  },
+  "confidence": 0.6,
+  "assumptions": [
+    "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+    "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+  ],
+  "exclusions": [
+    "Human approval and acceptance time (carried in human_assisted).",
+    "Vendor pricing (supply a verified rate card)."
+  ],
+  "system_autonomous": {
+    "wall_clock_hours": {
+      "mean": 57.575,
+      "p50": 56.648,
+      "p80": 64.043,
+      "p90": 68.156,
+      "worst_case": 79.266,
+      "minimum": 36.511,
+      "maximum": 96.456
+    },
+    "excludes": [
+      "human approvals",
+      "human acceptance and review effort",
+      "credential and access provisioning waits",
+      "external business or vendor decisions"
+    ]
+  },
+  "human_only": {
+    "person_hours": {
+      "mean": 6823.728,
+      "p50": 6815.225,
+      "p80": 7088.551,
+      "p90": 7233.074,
+      "worst_case": 7562.701,
+      "minimum": 5795.952,
+      "maximum": 8137.756
+    },
+    "person_months": {
+      "mean": 42.648,
+      "p50": 42.595,
+      "p80": 44.303,
+      "p90": 45.207,
+      "worst_case": 47.267,
+      "minimum": 36.225,
+      "maximum": 50.861
+    },
+    "calendar_weeks": {
+      "mean": 42.936,
+      "p50": 42.827,
+      "p80": 45.071,
+      "p90": 46.265,
+      "worst_case": 48.901,
+      "minimum": 35.098,
+      "maximum": 52.509
+    }
+  },
+  "human_assisted": {
+    "review_person_hours": 0.0,
+    "review_parallel_fraction": 0.0,
+    "serial_review_hours": 0.0,
+    "approval_wait_hours": 0.0,
+    "external_wait_hours": 0.0,
+    "end_to_end_hours": {
+      "p50": 56.648,
+      "p80": 64.043,
+      "p90": 68.156,
+      "worst_case": 79.266
+    },
+    "definition": "system autonomous wall-clock + non-parallelisable human review + approval/external waits"
+  },
+  "comparison": {
+    "calendar_speedup": {
+      "p50": 127.011,
+      "p80": 118.232,
+      "p90": 114.04,
+      "formula": "human calendar weeks x 7 x 24 / system autonomous wall-clock hours",
+      "caveat": "Human calendar weeks include nights and weekends; the system figure is continuous machine time."
+    },
+    "labor_reduction_ratio": 1.0,
+    "human_hours_saved_p50": 6815.225,
+    "automation_coverage": 1.0
+  },
+  "same_definition_of_done_for_both_baselines": true
+}

@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "human-effort",
+  "project_id": "elmos-156-route-behavioural-equivalence",
+  "mode": "verification",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence-small",
+      "behavioral-equivalence-medium",
+      "frozen-matrix-rerun",
+      "independent-client-repository-verification",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded-in-TEST_RESULTS-and-EVIDENCE"
+    ],
+    "exclusions": [
+      "第三方客户生产环境切流",
+      "外部认证机构的排期与出证时间"
+    ]
+  },
+  "confidence": 0.52,
+  "assumptions": [
+    "路由分母以 routes/inventory.json 为唯一权威：156 条有向路线、13 门语言。",
+    "kotlin / react / flutter 三门语言的 analyzer 仍是 PENDING_ANALYZER，需要从零补齐并钉死工具链。",
+    "工具链沿用 symlink-free 钉版契约，不引入包管理器的全局安装。",
+    "系统 Worker 可 24×7 连续运行，中断后能从 Checkpoint 恢复。",
+    "任务时长与 token 画像是工程估计而非实测，首个里程碑执行完必须用 calibrate 回填。",
+    "code_conflict_factor 取 0.82，反映多个 Agent 在同一棵树上写入的真实冲突代价。",
+    "配置 12 个 Agent Worker，在可用率、并行效率、模型并发与代码冲突系数之后有效并发约 4.8，必须不小于单个任务声明的 worker_units 上限（4）。"
+  ],
+  "exclusions": [
+    "人工审批与验收时间（计入 human_assisted，不计入系统 ETA）",
+    "外部客户提供仓库与授权的等待时间",
+    "认证机构排期",
+    "真实厂商价格（价格来自可配置费率表，本包不写死）"
+  ],
+  "runs": 5000,
+  "seed": 100045,
+  "person_hours": {
+    "mean": 6823.728,
+    "p50": 6815.225,
+    "p80": 7088.551,
+    "p90": 7233.074,
+    "worst_case": 7562.701,
+    "minimum": 5795.952,
+    "maximum": 8137.756
+  },
+  "person_days": {
+    "mean": 852.966,
+    "p50": 851.903,
+    "p80": 886.069,
+    "p90": 904.134,
+    "worst_case": 945.338,
+    "minimum": 724.494,
+    "maximum": 1017.22
+  },
+  "person_months": {
+    "mean": 42.648,
+    "p50": 42.595,
+    "p80": 44.303,
+    "p90": 45.207,
+    "worst_case": 47.267,
+    "minimum": 36.225,
+    "maximum": 50.861
+  },
+  "calendar_weeks": {
+    "mean": 44.918,
+    "p50": 44.804,
+    "p80": 47.151,
+    "p90": 48.4,
+    "worst_case": 51.158,
+    "minimum": 36.718,
+    "maximum": 54.933
+  },
+  "critical_path_work_hours": {
+    "mean": 1796.727,
+    "p50": 1792.148,
+    "p80": 1886.043,
+    "p90": 1936.019,
+    "worst_case": 2046.333,
+    "minimum": 1468.7,
+    "maximum": 2197.312
+  },
+  "role_person_hours": {
+    "architect": {
+      "mean": 489.217,
+      "p50": 488.408,
+      "p80": 514.241,
+      "p90": 528.305,
+      "worst_case": 563.203,
+      "minimum": 391.568,
+      "maximum": 603.161
+    },
+    "backend": {
+      "mean": 1862.407,
+      "p50": 1858.888,
+      "p80": 1947.598,
+      "p90": 1991.247,
+      "worst_case": 2103.966,
+      "minimum": 1538.112,
+      "maximum": 2283.714
+    },
+    "compiler": {
+      "mean": 866.702,
+      "p50": 862.686,
+      "p80": 921.611,
+      "p90": 956.145,
+      "worst_case": 1032.045,
+      "minimum": 665.107,
+      "maximum": 1114.587
+    },
+    "devops": {
+      "mean": 443.654,
+      "p50": 442.218,
+      "p80": 471.046,
+      "p90": 485.863,
+      "worst_case": 520.999,
+      "minimum": 352.372,
+      "maximum": 578.755
+    },
+    "frontend": {
+      "mean": 727.525,
+      "p50": 723.918,
+      "p80": 786.608,
+      "p90": 819.482,
+      "worst_case": 902.355,
+      "minimum": 541.193,
+      "maximum": 996.751
+    },
+    "product": {
+      "mean": 191.91,
+      "p50": 190.55,
+      "p80": 210.726,
+      "p90": 221.018,
+      "worst_case": 242.911,
+      "minimum": 137.013,
+      "maximum": 266.972
+    },
+    "qa": {
+      "mean": 2047.262,
+      "p50": 2042.124,
+      "p80": 2148.781,
+      "p90": 2209.58,
+      "worst_case": 2331.45,
+      "minimum": 1668.458,
+      "maximum": 2537.649
+    },
+    "security": {
+      "mean": 195.051,
+      "p50": 191.358,
+      "p80": 219.847,
+      "p90": 234.142,
+      "worst_case": 259.044,
+      "minimum": 138.718,
+      "maximum": 275.95
+    }
+  },
+  "team": {
+    "architect": 1,
+    "backend": 3,
+    "compiler": 2,
+    "devops": 1,
+    "frontend": 2,
+    "product": 1,
+    "qa": 2,
+    "security": 1
+  },
+  "overhead_multiplier": 1.52,
+  "focus_ratio": 0.65,
+  "same_definition_of_done": true,
+  "baseline_rule": "The human baseline consumes the same task DAG as the system estimate and therefore the same Definition of Done."
+}

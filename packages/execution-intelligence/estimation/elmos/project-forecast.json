@@ -1,0 +1,3396 @@
+{
+  "schema_version": "1.0.0",
+  "project": {
+    "project_id": "elmos",
+    "mode": "verification",
+    "description": "Seeded from a scope audit of /sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos: 45790 files, 17 languages.",
+    "definition_of_done": {
+      "level": "production_verified",
+      "checks": [
+        "source-compiles",
+        "unit-tests",
+        "integration-tests",
+        "behavioral-equivalence",
+        "security-and-license-scan",
+        "performance-baseline",
+        "evidence-recorded"
+      ],
+      "exclusions": []
+    },
+    "simulation": {
+      "runs": 5000,
+      "seed": 42
+    },
+    "system": {
+      "workers": 9,
+      "worker_availability": 0.92,
+      "parallel_efficiency": 0.68,
+      "model_concurrency_factor": 0.85,
+      "code_conflict_factor": 0.9,
+      "global_overhead_ratio": 0.08,
+      "worst_case_quantile": 0.99,
+      "workers_raised_for_widest_task": 4.0
+    },
+    "human": {
+      "work_hours_per_day": 8,
+      "work_days_per_week": 5,
+      "focus_ratio": 0.68,
+      "review_overhead_ratio": 0.15,
+      "coordination_overhead_ratio": 0.12,
+      "rework_overhead_ratio": 0.25,
+      "month_working_days": 20,
+      "roles": {
+        "architect": {
+          "headcount": 1
+        },
+        "backend": {
+          "headcount": 3
+        },
+        "frontend": {
+          "headcount": 2
+        },
+        "compiler": {
+          "headcount": 2
+        },
+        "qa": {
+          "headcount": 2
+        },
+        "devops": {
+          "headcount": 1
+        },
+        "security": {
+          "headcount": 1
+        },
+        "product": {
+          "headcount": 1
+        }
+      }
+    },
+    "human_assisted": {
+      "review_person_hours": 0,
+      "approval_wait_hours": 0,
+      "external_wait_hours": 0,
+      "review_parallel_fraction": 0.0
+    },
+    "confidence": 0.6,
+    "assumptions": [
+      "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+      "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+    ],
+    "exclusions": [
+      "Human approval and acceptance time (carried in human_assisted).",
+      "Vendor pricing (supply a verified rate card)."
+    ],
+    "seed_provenance": {
+      "widest_task_worker_units": 4.0,
+      "defaults_version": "1.0.0",
+      "human_baselines_version": "1.0.0",
+      "measured_files": 45790,
+      "blocking_gaps": []
+    },
+    "confidence_basis": [
+      "证据推导出的上限是 0.65（certifier.supported_confidence：底 0.30 + 已获得的证据项）。",
+      "已获得：运行时维度已用真实遥测校准 (+0.15)、无待人工决策的范围缺口 (+0.10)、Chaos 场景全部执行并通过 (+0.05)、费用基于已核验费率 (+0.05)。",
+      "未获得：运行时样本 >= 20 (+0.10)、token 维度已用真实用量校准 (+0.20)、token 样本 >= 20 (+0.10)、token 分类占比已对照实测用量 (+0.05)。",
+      "写在 seed 而不是产物里：0.60 之前是直接改在 project-forecast.json 上的，重跑 forecast 就被冲回 0.35。声明值属于源，不属于产物——改产物正是 confidence-is-supported 门禁要拦的那种动作。",
+      "上限变化时必须重新评估这个数，不要只因为想让门禁过就抬。"
+    ]
+  },
+  "tokens": {
+    "input": {
+      "mean": 194070388.0,
+      "p50": 192295061.0,
+      "p80": 209789023.0,
+      "p90": 219997925.0,
+      "worst_case": 246969965.0,
+      "minimum": 146502993.0,
+      "maximum": 275383438.0
+    },
+    "cached_input": {
+      "mean": 509236832.0,
+      "p50": 504446552.0,
+      "p80": 550427763.0,
+      "p90": 577503707.0,
+      "worst_case": 649788616.0,
+      "minimum": 385157054.0,
+      "maximum": 725635476.0
+    },
+    "cache_write": {
+      "mean": 56347638.0,
+      "p50": 55880481.0,
+      "p80": 60766012.0,
+      "p90": 63729022.0,
+      "worst_case": 71362418.0,
+      "minimum": 42610833.0,
+      "maximum": 79432823.0
+    },
+    "output": {
+      "mean": 26858357.0,
+      "p50": 26644186.0,
+      "p80": 28903855.0,
+      "p90": 30247803.0,
+      "worst_case": 33844966.0,
+      "minimum": 20354964.0,
+      "maximum": 37149254.0
+    },
+    "reasoning_output": {
+      "mean": 16629648.0,
+      "p50": 16502593.0,
+      "p80": 17910244.0,
+      "p90": 18784843.0,
+      "worst_case": 20955009.0,
+      "minimum": 12529352.0,
+      "maximum": 23239531.0
+    },
+    "total": {
+      "mean": 803142863.0,
+      "p50": 795559011.0,
+      "p80": 867847847.0,
+      "p90": 909753569.0,
+      "worst_case": 1021266536.0,
+      "minimum": 607271618.0,
+      "maximum": 1140840522.0
+    },
+    "category_sum_equals_total": true,
+    "accounting_rule": "input/cached_input/cache_write/output/reasoning_output are disjoint categories; total is their sum and must never be added back to a category."
+  },
+  "task_tokens": [
+    {
+      "task_id": "independent-client-repos",
+      "name": "独立客户仓库验证（当前 0/156）",
+      "total_tokens": {
+        "mean": 135866889.0,
+        "p50": 119201242.0,
+        "p80": 174945510.0,
+        "p90": 216032068.0,
+        "worst_case": 296656338.0,
+        "minimum": 72898370.0,
+        "maximum": 349600597.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 33101568.0,
+          "p50": 29041277.0,
+          "p80": 42622383.0,
+          "p90": 52632398.0,
+          "worst_case": 72275077.0,
+          "minimum": 17760400.0,
+          "maximum": 85174010.0
+        },
+        "cached_input": {
+          "mean": 87267770.0,
+          "p50": 76563367.0,
+          "p80": 112368102.0,
+          "p90": 138758139.0,
+          "worst_case": 190543384.0,
+          "minimum": 46822873.0,
+          "maximum": 224549663.0
+        },
+        "cache_write": {
+          "mean": 9027700.0,
+          "p50": 7920348.0,
+          "p80": 11624286.0,
+          "p90": 14354290.0,
+          "worst_case": 19711385.0,
+          "minimum": 4843746.0,
+          "maximum": 23229276.0
+        },
+        "output": {
+          "mean": 3912003.0,
+          "p50": 3432151.0,
+          "p80": 5037191.0,
+          "p90": 6220192.0,
+          "worst_case": 8541600.0,
+          "minimum": 2098956.0,
+          "maximum": 10066019.0
+        },
+        "reasoning_output": {
+          "mean": 2557848.0,
+          "p50": 2244099.0,
+          "p80": 3293548.0,
+          "p90": 4067049.0,
+          "worst_case": 5584892.0,
+          "minimum": 1372395.0,
+          "maximum": 6581628.0
+        }
+      }
+    },
+    {
+      "task_id": "route-packs-66",
+      "name": "kotlin/react/flutter 相关 66 条路由包生成与登记",
+      "total_tokens": {
+        "mean": 90700521.0,
+        "p50": 84529768.0,
+        "p80": 108068459.0,
+        "p90": 126259940.0,
+        "worst_case": 178790326.0,
+        "minimum": 53540388.0,
+        "maximum": 211177859.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 21888512.0,
+          "p50": 20399341.0,
+          "p80": 26079869.0,
+          "p90": 30469970.0,
+          "worst_case": 43146987.0,
+          "minimum": 12920757.0,
+          "maximum": 50962983.0
+        },
+        "cached_input": {
+          "mean": 57457343.0,
+          "p50": 53548269.0,
+          "p80": 68459657.0,
+          "p90": 79983672.0,
+          "worst_case": 113260840.0,
+          "minimum": 33916988.0,
+          "maximum": 133777829.0
+        },
+        "cache_write": {
+          "mean": 6292947.0,
+          "p50": 5864810.0,
+          "p80": 7497962.0,
+          "p90": 8760116.0,
+          "worst_case": 12404759.0,
+          "minimum": 3714718.0,
+          "maximum": 14651857.0
+        },
+        "output": {
+          "mean": 3283277.0,
+          "p50": 3059901.0,
+          "p80": 3911980.0,
+          "p90": 4570496.0,
+          "worst_case": 6472048.0,
+          "minimum": 1938114.0,
+          "maximum": 7644447.0
+        },
+        "reasoning_output": {
+          "mean": 1778442.0,
+          "p50": 1657446.0,
+          "p80": 2118989.0,
+          "p90": 2475685.0,
+          "worst_case": 3505693.0,
+          "minimum": 1049812.0,
+          "maximum": 4140742.0
+        }
+      }
+    },
+    {
+      "task_id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通（156 路线）",
+      "total_tokens": {
+        "mean": 78399559.0,
+        "p50": 72396360.0,
+        "p80": 94543112.0,
+        "p90": 111743053.0,
+        "worst_case": 153569983.0,
+        "minimum": 45497937.0,
+        "maximum": 186385755.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 16621815.0,
+          "p50": 15349052.0,
+          "p80": 20044476.0,
+          "p90": 23691107.0,
+          "worst_case": 32559007.0,
+          "minimum": 9646206.0,
+          "maximum": 39516414.0
+        },
+        "cached_input": {
+          "mean": 52635746.0,
+          "p50": 48605330.0,
+          "p80": 63474174.0,
+          "p90": 75021838.0,
+          "worst_case": 103103522.0,
+          "minimum": 30546318.0,
+          "maximum": 125135312.0
+        },
+        "cache_write": {
+          "mean": 5263575.0,
+          "p50": 4860533.0,
+          "p80": 6347417.0,
+          "p90": 7502184.0,
+          "worst_case": 10310352.0,
+          "minimum": 3054632.0,
+          "maximum": 12513531.0
+        },
+        "output": {
+          "mean": 2354757.0,
+          "p50": 2174449.0,
+          "p80": 2839634.0,
+          "p90": 3356240.0,
+          "worst_case": 4612526.0,
+          "minimum": 1366546.0,
+          "maximum": 5598159.0
+        },
+        "reasoning_output": {
+          "mean": 1523666.0,
+          "p50": 1406996.0,
+          "p80": 1837410.0,
+          "p90": 2171685.0,
+          "worst_case": 2984576.0,
+          "minimum": 884236.0,
+          "maximum": 3622338.0
+        }
+      }
+    },
+    {
+      "task_id": "semantic-divergence",
+      "name": "13 语言两两语义分歧表与 IR 归一",
+      "total_tokens": {
+        "mean": 73326310.0,
+        "p50": 67788216.0,
+        "p80": 88480887.0,
+        "p90": 104786292.0,
+        "worst_case": 144638158.0,
+        "minimum": 42886868.0,
+        "maximum": 168900167.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 18019698.0,
+          "p50": 16658730.0,
+          "p80": 21743885.0,
+          "p90": 25750885.0,
+          "worst_case": 35544349.0,
+          "minimum": 10539306.0,
+          "maximum": 41506657.0
+        },
+        "cached_input": {
+          "mean": 45742311.0,
+          "p50": 42287545.0,
+          "p80": 55196017.0,
+          "p90": 65367630.0,
+          "worst_case": 90227963.0,
+          "minimum": 26753623.0,
+          "maximum": 105363053.0
+        },
+        "cache_write": {
+          "mean": 5267296.0,
+          "p50": 4869475.0,
+          "p80": 6355905.0,
+          "p90": 7527182.0,
+          "worst_case": 10389887.0,
+          "minimum": 3080720.0,
+          "maximum": 12132715.0
+        },
+        "output": {
+          "mean": 2633648.0,
+          "p50": 2434737.0,
+          "p80": 3177952.0,
+          "p90": 3763591.0,
+          "worst_case": 5194943.0,
+          "minimum": 1540360.0,
+          "maximum": 6066358.0
+        },
+        "reasoning_output": {
+          "mean": 1663357.0,
+          "p50": 1537729.0,
+          "p80": 2007128.0,
+          "p90": 2377005.0,
+          "worst_case": 3281017.0,
+          "minimum": 972859.0,
+          "maximum": 3831384.0
+        }
+      }
+    },
+    {
+      "task_id": "kotlin-analyzer",
+      "name": "Kotlin 原生 analyzer 补齐（PENDING_ANALYZER）",
+      "total_tokens": {
+        "mean": 61687881.0,
+        "p50": 55419356.0,
+        "p80": 75821454.0,
+        "p90": 94407830.0,
+        "worst_case": 131213161.0,
+        "minimum": 34469339.0,
+        "maximum": 161134102.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 15985081.0,
+          "p50": 14360728.0,
+          "p80": 19647491.0,
+          "p90": 24463749.0,
+          "worst_case": 34001055.0,
+          "minimum": 8931984.0,
+          "maximum": 41754420.0
+        },
+        "cached_input": {
+          "mean": 37782919.0,
+          "p50": 33943539.0,
+          "p80": 46439524.0,
+          "p90": 57823406.0,
+          "worst_case": 80366129.0,
+          "minimum": 21111963.0,
+          "maximum": 98692265.0
+        },
+        "cache_write": {
+          "mean": 4504887.0,
+          "p50": 4047114.0,
+          "p80": 5537020.0,
+          "p90": 6894329.0,
+          "worst_case": 9582115.0,
+          "minimum": 2517196.0,
+          "maximum": 11767155.0
+        },
+        "output": {
+          "mean": 2107124.0,
+          "p50": 1893005.0,
+          "p80": 2589897.0,
+          "p90": 3224767.0,
+          "worst_case": 4481957.0,
+          "minimum": 1177398.0,
+          "maximum": 5503992.0
+        },
+        "reasoning_output": {
+          "mean": 1307870.0,
+          "p50": 1174969.0,
+          "p80": 1607522.0,
+          "p90": 2001579.0,
+          "worst_case": 2781904.0,
+          "minimum": 730799.0,
+          "maximum": 3416271.0
+        }
+      }
+    },
+    {
+      "task_id": "flutter-analyzer",
+      "name": "Flutter/Dart analyzer 补齐（PENDING_ANALYZER）",
+      "total_tokens": {
+        "mean": 59224427.0,
+        "p50": 52994081.0,
+        "p80": 72174463.0,
+        "p90": 90612495.0,
+        "worst_case": 127983155.0,
+        "minimum": 32880985.0,
+        "maximum": 156278867.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 15249055.0,
+          "p50": 13644871.0,
+          "p80": 18583420.0,
+          "p90": 23330829.0,
+          "worst_case": 32952995.0,
+          "minimum": 8466168.0,
+          "maximum": 40238551.0
+        },
+        "cached_input": {
+          "mean": 36307275.0,
+          "p50": 32487788.0,
+          "p80": 44246238.0,
+          "p90": 55549592.0,
+          "worst_case": 78459511.0,
+          "minimum": 20157544.0,
+          "maximum": 95806074.0
+        },
+        "cache_write": {
+          "mean": 4356873.0,
+          "p50": 3898535.0,
+          "p80": 5309549.0,
+          "p90": 6665951.0,
+          "worst_case": 9415141.0,
+          "minimum": 2418905.0,
+          "maximum": 11496729.0
+        },
+        "output": {
+          "mean": 2033207.0,
+          "p50": 1819316.0,
+          "p80": 2477789.0,
+          "p90": 3110777.0,
+          "worst_case": 4393733.0,
+          "minimum": 1128822.0,
+          "maximum": 5365140.0
+        },
+        "reasoning_output": {
+          "mean": 1278016.0,
+          "p50": 1143570.0,
+          "p80": 1557468.0,
+          "p90": 1955346.0,
+          "worst_case": 2761775.0,
+          "minimum": 709546.0,
+          "maximum": 3372374.0
+        }
+      }
+    },
+    {
+      "task_id": "react-analyzer",
+      "name": "React 方言 analyzer 补齐（PENDING_ANALYZER）",
+      "total_tokens": {
+        "mean": 56062579.0,
+        "p50": 50539359.0,
+        "p80": 68053246.0,
+        "p90": 84219716.0,
+        "worst_case": 120740013.0,
+        "minimum": 31576792.0,
+        "maximum": 147094841.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 14338256.0,
+          "p50": 12925667.0,
+          "p80": 17404922.0,
+          "p90": 21539569.0,
+          "worst_case": 30879799.0,
+          "minimum": 8075906.0,
+          "maximum": 37620164.0
+        },
+        "cached_input": {
+          "mean": 34411813.0,
+          "p50": 31021602.0,
+          "p80": 41771813.0,
+          "p90": 51694966.0,
+          "worst_case": 74111517.0,
+          "minimum": 19382174.0,
+          "maximum": 90288393.0
+        },
+        "cache_write": {
+          "mean": 4158094.0,
+          "p50": 3748444.0,
+          "p80": 5047427.0,
+          "p90": 6246475.0,
+          "worst_case": 8955142.0,
+          "minimum": 2342013.0,
+          "maximum": 10909848.0
+        },
+        "output": {
+          "mean": 1935664.0,
+          "p50": 1744965.0,
+          "p80": 2349664.0,
+          "p90": 2907842.0,
+          "worst_case": 4168773.0,
+          "minimum": 1090247.0,
+          "maximum": 5078722.0
+        },
+        "reasoning_output": {
+          "mean": 1218752.0,
+          "p50": 1098682.0,
+          "p80": 1479418.0,
+          "p90": 1830863.0,
+          "worst_case": 2624783.0,
+          "minimum": 686452.0,
+          "maximum": 3197714.0
+        }
+      }
+    },
+    {
+      "task_id": "java-swift-regression",
+      "name": "Java 源路线与 Swift 环境回归定向修复",
+      "total_tokens": {
+        "mean": 42816277.0,
+        "p50": 39730512.0,
+        "p80": 51743434.0,
+        "p90": 61438708.0,
+        "worst_case": 83068534.0,
+        "minimum": 24667257.0,
+        "maximum": 101675118.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 10528593.0,
+          "p50": 9769798.0,
+          "p80": 12723795.0,
+          "p90": 15107879.0,
+          "worst_case": 20426689.0,
+          "minimum": 6065719.0,
+          "maximum": 25002078.0
+        },
+        "cached_input": {
+          "mean": 26672435.0,
+          "p50": 24750155.0,
+          "p80": 32233615.0,
+          "p90": 38273293.0,
+          "worst_case": 51747611.0,
+          "minimum": 15366488.0,
+          "maximum": 63338598.0
+        },
+        "cache_write": {
+          "mean": 3088387.0,
+          "p50": 2865807.0,
+          "p80": 3732313.0,
+          "p90": 4431644.0,
+          "worst_case": 5991829.0,
+          "minimum": 1779278.0,
+          "maximum": 7333943.0
+        },
+        "output": {
+          "mean": 1544194.0,
+          "p50": 1432904.0,
+          "p80": 1866157.0,
+          "p90": 2215822.0,
+          "worst_case": 2995914.0,
+          "minimum": 889639.0,
+          "maximum": 3666971.0
+        },
+        "reasoning_output": {
+          "mean": 982669.0,
+          "p50": 911848.0,
+          "p80": 1187554.0,
+          "p90": 1410069.0,
+          "worst_case": 1906491.0,
+          "minimum": 566134.0,
+          "maximum": 2333527.0
+        }
+      }
+    },
+    {
+      "task_id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通（156 路线）",
+      "total_tokens": {
+        "mean": 41389477.0,
+        "p50": 38569480.0,
+        "p80": 49238901.0,
+        "p90": 58366823.0,
+        "worst_case": 82897918.0,
+        "minimum": 24215977.0,
+        "maximum": 96351027.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 8967720.0,
+          "p50": 8356721.0,
+          "p80": 10668429.0,
+          "p90": 12646145.0,
+          "worst_case": 17961215.0,
+          "minimum": 5246795.0,
+          "maximum": 20876056.0
+        },
+        "cached_input": {
+          "mean": 27592985.0,
+          "p50": 25712987.0,
+          "p80": 32825934.0,
+          "p90": 38911216.0,
+          "worst_case": 55265278.0,
+          "minimum": 16143985.0,
+          "maximum": 64234018.0
+        },
+        "cache_write": {
+          "mean": 2759298.0,
+          "p50": 2571299.0,
+          "p80": 3282593.0,
+          "p90": 3891122.0,
+          "worst_case": 5526528.0,
+          "minimum": 1614398.0,
+          "maximum": 6423402.0
+        },
+        "output": {
+          "mean": 1241684.0,
+          "p50": 1157084.0,
+          "p80": 1477167.0,
+          "p90": 1751005.0,
+          "worst_case": 2486938.0,
+          "minimum": 726479.0,
+          "maximum": 2890531.0
+        },
+        "reasoning_output": {
+          "mean": 827790.0,
+          "p50": 771390.0,
+          "p80": 984778.0,
+          "p90": 1167336.0,
+          "worst_case": 1657958.0,
+          "minimum": 484320.0,
+          "maximum": 1927021.0
+        }
+      }
+    },
+    {
+      "task_id": "repo-parallel-singlepass",
+      "name": "仓库级并行与单遍 AST 遍历",
+      "total_tokens": {
+        "mean": 31709634.0,
+        "p50": 29446503.0,
+        "p80": 37532268.0,
+        "p90": 44917569.0,
+        "worst_case": 62892417.0,
+        "minimum": 18721897.0,
+        "maximum": 73960933.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 7876483.0,
+          "p50": 7314335.0,
+          "p80": 9322790.0,
+          "p90": 11157255.0,
+          "worst_case": 15622099.0,
+          "minimum": 4650407.0,
+          "maximum": 18371452.0
+        },
+        "cached_input": {
+          "mean": 19691207.0,
+          "p50": 18285837.0,
+          "p80": 23306976.0,
+          "p90": 27893137.0,
+          "worst_case": 39055248.0,
+          "minimum": 11626017.0,
+          "maximum": 45928630.0
+        },
+        "cache_write": {
+          "mean": 2308624.0,
+          "p50": 2143857.0,
+          "p80": 2732542.0,
+          "p90": 3270230.0,
+          "worst_case": 4578891.0,
+          "minimum": 1363050.0,
+          "maximum": 5384736.0
+        },
+        "output": {
+          "mean": 1127152.0,
+          "p50": 1046707.0,
+          "p80": 1334123.0,
+          "p90": 1596642.0,
+          "worst_case": 2235576.0,
+          "minimum": 665489.0,
+          "maximum": 2629018.0
+        },
+        "reasoning_output": {
+          "mean": 706167.0,
+          "p50": 655768.0,
+          "p80": 835836.0,
+          "p90": 1000306.0,
+          "worst_case": 1400602.0,
+          "minimum": 416933.0,
+          "maximum": 1647096.0
+        }
+      }
+    },
+    {
+      "task_id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "total_tokens": {
+        "mean": 31416675.0,
+        "p50": 29433754.0,
+        "p80": 36990878.0,
+        "p90": 41865481.0,
+        "worst_case": 61509006.0,
+        "minimum": 19067591.0,
+        "maximum": 77710131.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 6605693.0,
+          "p50": 6188762.0,
+          "p80": 7777729.0,
+          "p90": 8802666.0,
+          "worst_case": 12932928.0,
+          "minimum": 4009166.0,
+          "maximum": 16339388.0
+        },
+        "cached_input": {
+          "mean": 21138217.0,
+          "p50": 19804039.0,
+          "p80": 24888732.0,
+          "p90": 28168532.0,
+          "worst_case": 41385370.0,
+          "minimum": 12829330.0,
+          "maximum": 52286043.0
+        },
+        "cache_write": {
+          "mean": 2113822.0,
+          "p50": 1980404.0,
+          "p80": 2488873.0,
+          "p90": 2816853.0,
+          "worst_case": 4138537.0,
+          "minimum": 1282933.0,
+          "maximum": 5228604.0
+        },
+        "output": {
+          "mean": 924797.0,
+          "p50": 866427.0,
+          "p80": 1088882.0,
+          "p90": 1232373.0,
+          "worst_case": 1810610.0,
+          "minimum": 561283.0,
+          "maximum": 2287514.0
+        },
+        "reasoning_output": {
+          "mean": 634147.0,
+          "p50": 594121.0,
+          "p80": 746662.0,
+          "p90": 845056.0,
+          "worst_case": 1241561.0,
+          "minimum": 384880.0,
+          "maximum": 1568581.0
+        }
+      }
+    },
+    {
+      "task_id": "analyzer-cache-batch",
+      "name": "Analyzer 缓存与批量化（保住可提升/不可提升拒绝区分）",
+      "total_tokens": {
+        "mean": 27886118.0,
+        "p50": 26051102.0,
+        "p80": 32771997.0,
+        "p90": 37953821.0,
+        "worst_case": 55455373.0,
+        "minimum": 16904328.0,
+        "maximum": 67335126.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 6931540.0,
+          "p50": 6475417.0,
+          "p80": 8146003.0,
+          "p90": 9434028.0,
+          "worst_case": 13784318.0,
+          "minimum": 4201841.0,
+          "maximum": 16737221.0
+        },
+        "cached_input": {
+          "mean": 17328850.0,
+          "p50": 16188543.0,
+          "p80": 20365008.0,
+          "p90": 23585070.0,
+          "worst_case": 34460796.0,
+          "minimum": 10504601.0,
+          "maximum": 41843051.0
+        },
+        "cache_write": {
+          "mean": 1999483.0,
+          "p50": 1867909.0,
+          "p80": 2349809.0,
+          "p90": 2721354.0,
+          "worst_case": 3976246.0,
+          "minimum": 1212069.0,
+          "maximum": 4828044.0
+        },
+        "output": {
+          "mean": 1013071.0,
+          "p50": 946407.0,
+          "p80": 1190570.0,
+          "p90": 1378819.0,
+          "worst_case": 2014631.0,
+          "minimum": 614115.0,
+          "maximum": 2446209.0
+        },
+        "reasoning_output": {
+          "mean": 613175.0,
+          "p50": 572825.0,
+          "p80": 720608.0,
+          "p90": 834549.0,
+          "worst_case": 1219382.0,
+          "minimum": 371701.0,
+          "maximum": 1480600.0
+        }
+      }
+    },
+    {
+      "task_id": "certification-package",
+      "name": "认证材料与交付包",
+      "total_tokens": {
+        "mean": 23045869.0,
+        "p50": 21851589.0,
+        "p80": 27007363.0,
+        "p90": 29838388.0,
+        "worst_case": 45119559.0,
+        "minimum": 14220085.0,
+        "maximum": 54454017.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 5453107.0,
+          "p50": 5170517.0,
+          "p80": 6390475.0,
+          "p90": 7060351.0,
+          "worst_case": 10676177.0,
+          "minimum": 3364753.0,
+          "maximum": 12884894.0
+        },
+        "cached_input": {
+          "mean": 14281947.0,
+          "p50": 13541830.0,
+          "p80": 16736957.0,
+          "p90": 18491395.0,
+          "worst_case": 27961417.0,
+          "minimum": 8812447.0,
+          "maximum": 33746151.0
+        },
+        "cache_write": {
+          "mean": 1622949.0,
+          "p50": 1538844.0,
+          "p80": 1901927.0,
+          "p90": 2101295.0,
+          "worst_case": 3177434.0,
+          "minimum": 1001414.0,
+          "maximum": 3834790.0
+        },
+        "output": {
+          "mean": 1168523.0,
+          "p50": 1107968.0,
+          "p80": 1369387.0,
+          "p90": 1512932.0,
+          "worst_case": 2287752.0,
+          "minimum": 721018.0,
+          "maximum": 2761049.0
+        },
+        "reasoning_output": {
+          "mean": 519344.0,
+          "p50": 492430.0,
+          "p80": 608617.0,
+          "p90": 672414.0,
+          "worst_case": 1016779.0,
+          "minimum": 320453.0,
+          "maximum": 1227133.0
+        }
+      }
+    },
+    {
+      "task_id": "perf-baseline",
+      "name": "性能基线与回归门禁",
+      "total_tokens": {
+        "mean": 20806289.0,
+        "p50": 19501463.0,
+        "p80": 24562859.0,
+        "p90": 27847371.0,
+        "worst_case": 40691498.0,
+        "minimum": 12707729.0,
+        "maximum": 50106065.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 5016745.0,
+          "p50": 4702129.0,
+          "p80": 5922517.0,
+          "p90": 6714468.0,
+          "worst_case": 9811402.0,
+          "minimum": 3064046.0,
+          "maximum": 12081412.0
+        },
+        "cached_input": {
+          "mean": 13201960.0,
+          "p50": 12374025.0,
+          "p80": 15585571.0,
+          "p90": 17669651.0,
+          "worst_case": 25819479.0,
+          "minimum": 8063280.0,
+          "maximum": 31793189.0
+        },
+        "cache_write": {
+          "mean": 1452216.0,
+          "p50": 1361143.0,
+          "p80": 1714413.0,
+          "p90": 1943662.0,
+          "worst_case": 2840143.0,
+          "minimum": 886961.0,
+          "maximum": 3497251.0
+        },
+        "output": {
+          "mean": 686502.0,
+          "p50": 643449.0,
+          "p80": 810450.0,
+          "p90": 918822.0,
+          "worst_case": 1342613.0,
+          "minimum": 419291.0,
+          "maximum": 1653246.0
+        },
+        "reasoning_output": {
+          "mean": 448867.0,
+          "p50": 420717.0,
+          "p80": 529909.0,
+          "p90": 600768.0,
+          "worst_case": 877862.0,
+          "minimum": 274152.0,
+          "maximum": 1080968.0
+        }
+      }
+    },
+    {
+      "task_id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "total_tokens": {
+        "mean": 17501650.0,
+        "p50": 16419138.0,
+        "p80": 20450876.0,
+        "p90": 23031530.0,
+        "worst_case": 34787238.0,
+        "minimum": 10827426.0,
+        "maximum": 42281963.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 4192012.0,
+          "p50": 3932728.0,
+          "p80": 4898413.0,
+          "p90": 5516534.0,
+          "worst_case": 8332273.0,
+          "minimum": 2593395.0,
+          "maximum": 10127416.0
+        },
+        "cached_input": {
+          "mean": 11135032.0,
+          "p50": 10446308.0,
+          "p80": 13011410.0,
+          "p90": 14653294.0,
+          "worst_case": 22132599.0,
+          "minimum": 6888706.0,
+          "maximum": 26900949.0
+        },
+        "cache_write": {
+          "mean": 1244504.0,
+          "p50": 1167529.0,
+          "p80": 1454216.0,
+          "p90": 1637721.0,
+          "worst_case": 2473643.0,
+          "minimum": 769914.0,
+          "maximum": 3006577.0
+        },
+        "output": {
+          "mean": 563302.0,
+          "p50": 528460.0,
+          "p80": 658224.0,
+          "p90": 741284.0,
+          "worst_case": 1119649.0,
+          "minimum": 348487.0,
+          "maximum": 1360872.0
+        },
+        "reasoning_output": {
+          "mean": 366801.0,
+          "p50": 344114.0,
+          "p80": 428611.0,
+          "p90": 482697.0,
+          "worst_case": 729074.0,
+          "minimum": 226922.0,
+          "maximum": 886149.0
+        }
+      }
+    },
+    {
+      "task_id": "matrix-authority-audit",
+      "name": "路由矩阵权威源审计与口径对齐",
+      "total_tokens": {
+        "mean": 11302709.0,
+        "p50": 10734421.0,
+        "p80": 13153039.0,
+        "p90": 14603087.0,
+        "worst_case": 21484690.0,
+        "minimum": 7165823.0,
+        "maximum": 29230093.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 3294511.0,
+          "p50": 3128867.0,
+          "p80": 3833845.0,
+          "p90": 4256505.0,
+          "worst_case": 6262354.0,
+          "minimum": 2088693.0,
+          "maximum": 8519982.0
+        },
+        "cached_input": {
+          "mean": 6589023.0,
+          "p50": 6257734.0,
+          "p80": 7667691.0,
+          "p90": 8513010.0,
+          "worst_case": 12524707.0,
+          "minimum": 4177386.0,
+          "maximum": 17039965.0
+        },
+        "cache_write": {
+          "mean": 886984.0,
+          "p50": 842387.0,
+          "p80": 1032189.0,
+          "p90": 1145982.0,
+          "worst_case": 1686018.0,
+          "minimum": 562340.0,
+          "maximum": 2293841.0
+        },
+        "output": {
+          "mean": 329451.0,
+          "p50": 312887.0,
+          "p80": 383385.0,
+          "p90": 425651.0,
+          "worst_case": 626235.0,
+          "minimum": 208869.0,
+          "maximum": 851998.0
+        },
+        "reasoning_output": {
+          "mean": 202739.0,
+          "p50": 192546.0,
+          "p80": 235929.0,
+          "p90": 261939.0,
+          "worst_case": 385376.0,
+          "minimum": 128535.0,
+          "maximum": 524307.0
+        }
+      }
+    }
+  ],
+  "costs": {
+    "registry_version": "2026-08-19-verified-list-prices",
+    "base_currency": "USD",
+    "currencies": [
+      "USD"
+    ],
+    "models": [
+      {
+        "model_id": "anthropic-opus-5",
+        "provider": "anthropic",
+        "display_name": "Claude Opus 5",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 2664.3432,
+          "p50": 2641.7244,
+          "p80": 2874.9757,
+          "p90": 3013.5856,
+          "worst_case": 3367.834,
+          "minimum": 2016.3456,
+          "maximum": 3745.9097
+        },
+        "mean_cost_by_category": {
+          "input": 970.351939,
+          "cached_input": 254.618416,
+          "cache_write": 352.172736,
+          "output": 671.458932,
+          "reasoning_output": 415.741209
+        }
+      },
+      {
+        "model_id": "anthropic-sonnet-5",
+        "provider": "anthropic",
+        "display_name": "Claude Sonnet 5",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 1065.7373,
+          "p50": 1056.6897,
+          "p80": 1149.9903,
+          "p90": 1205.4342,
+          "worst_case": 1347.1336,
+          "minimum": 806.5382,
+          "maximum": 1498.3639
+        },
+        "mean_cost_by_category": {
+          "input": 388.140776,
+          "cached_input": 101.847366,
+          "cache_write": 140.869095,
+          "output": 268.583573,
+          "reasoning_output": 166.296483
+        }
+      },
+      {
+        "model_id": "anthropic-haiku-4-5",
+        "provider": "anthropic",
+        "display_name": "Claude Haiku 4.5",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 532.8686,
+          "p50": 528.3449,
+          "p80": 574.9951,
+          "p90": 602.7171,
+          "worst_case": 673.5668,
+          "minimum": 403.2691,
+          "maximum": 749.1819
+        },
+        "mean_cost_by_category": {
+          "input": 194.070388,
+          "cached_input": 50.923683,
+          "cache_write": 70.434547,
+          "output": 134.291786,
+          "reasoning_output": 83.148242
+        }
+      },
+      {
+        "model_id": "openai-gpt-5-6-sol",
+        "provider": "openai",
+        "display_name": "gpt-5.6-sol (short context)",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://developers.openai.com/api/docs/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 1264.8053,
+          "p50": 1253.8568,
+          "p80": 1363.8141,
+          "p90": 1430.5374,
+          "worst_case": 1599.4582,
+          "minimum": 957.5072,
+          "maximum": 1775.6992
+        },
+        "mean_cost_by_category": {
+          "input": 485.17597,
+          "cached_input": 127.309208,
+          "cache_write": 0.0,
+          "output": 402.875359,
+          "reasoning_output": 249.444725
+        }
+      },
+      {
+        "model_id": "openai-gpt-5-6-terra",
+        "provider": "openai",
+        "display_name": "gpt-5.6-terra (short context)",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://developers.openai.com/api/docs/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 505.9221,
+          "p50": 501.5427,
+          "p80": 545.5256,
+          "p90": 572.215,
+          "worst_case": 639.7833,
+          "minimum": 383.0029,
+          "maximum": 710.2797
+        },
+        "mean_cost_by_category": {
+          "input": 194.070388,
+          "cached_input": 50.923683,
+          "cache_write": 0.0,
+          "output": 161.150144,
+          "reasoning_output": 99.77789
+        }
+      },
+      {
+        "model_id": "openai-gpt-5-6-luna",
+        "provider": "openai",
+        "display_name": "gpt-5.6-luna (short context)",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://developers.openai.com/api/docs/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 50.5922,
+          "p50": 50.1543,
+          "p80": 54.5526,
+          "p90": 57.2215,
+          "worst_case": 63.9783,
+          "minimum": 38.3003,
+          "maximum": 71.028
+        },
+        "mean_cost_by_category": {
+          "input": 19.407039,
+          "cached_input": 5.092368,
+          "cache_write": 0.0,
+          "output": 16.115014,
+          "reasoning_output": 9.977789
+        }
+      },
+      {
+        "model_id": "deepseek-v4-pro-peak",
+        "provider": "deepseek",
+        "display_name": "deepseek-v4-pro (peak hours)",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 450.7918,
+          "p50": 446.9484,
+          "p80": 486.4556,
+          "p90": 509.962,
+          "worst_case": 570.3299,
+          "minimum": 341.0004,
+          "maximum": 634.5737
+        },
+        "mean_cost_by_category": {
+          "input": 256.172912,
+          "cached_input": 22.406421,
+          "cache_write": 0.0,
+          "output": 106.359095,
+          "reasoning_output": 65.853407
+        }
+      },
+      {
+        "model_id": "deepseek-v4-flash-peak",
+        "provider": "deepseek",
+        "display_name": "deepseek-v4-flash (peak hours)",
+        "currency": "USD",
+        "effective_date": "2026-08-19",
+        "verified_at": "2026-08-19T00:00:00Z",
+        "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+        "billing_mode": "api",
+        "not_for_billing": false,
+        "cost": {
+          "mean": 149.9245,
+          "p50": 148.6453,
+          "p80": 161.7818,
+          "p90": 169.607,
+          "worst_case": 189.6773,
+          "minimum": 113.41,
+          "maximum": 211.0408
+        },
+        "mean_cost_by_category": {
+          "input": 85.390971,
+          "cached_input": 7.129316,
+          "cache_write": 0.0,
+          "output": 35.453032,
+          "reasoning_output": 21.951136
+        }
+      }
+    ],
+    "rankings_by_currency": {
+      "USD": {
+        "ranked_model_ids_by_p50": [
+          "openai-gpt-5-6-luna",
+          "deepseek-v4-flash-peak",
+          "deepseek-v4-pro-peak",
+          "openai-gpt-5-6-terra",
+          "anthropic-haiku-4-5",
+          "anthropic-sonnet-5",
+          "openai-gpt-5-6-sol",
+          "anthropic-opus-5"
+        ],
+        "cheapest_p50": "openai-gpt-5-6-luna",
+        "ranking_pool": "verified_rates"
+      }
+    },
+    "cross_currency_comparison": null,
+    "mix_verification": {
+      "checked": true,
+      "sessions": 1,
+      "minimum_sessions": 20,
+      "sample_sufficient": false,
+      "observed_cached_input_share": 0.988231,
+      "forecast_cached_input_share": 0.63,
+      "overstatement_by_depth": [
+        {
+          "turns": 5,
+          "factor": 1.168
+        },
+        {
+          "turns": 10,
+          "factor": 1.924
+        },
+        {
+          "turns": 20,
+          "factor": 2.703
+        },
+        {
+          "turns": 50,
+          "factor": 3.248
+        },
+        {
+          "turns": 100,
+          "factor": 4.158
+        },
+        {
+          "turns": 200,
+          "factor": 4.528
+        },
+        {
+          "turns": 500,
+          "factor": 5.57
+        },
+        {
+          "turns": 800,
+          "factor": 5.542
+        }
+      ],
+      "detail": "分类占比已与真实用量对照过（见 TOKEN_MIX_COMPARISON.md）。**下表的费用建立在未经校准的假设占比上**，实测显示它对长任务高估明显、对短任务基本准确——具体倍数看那份报告的曲线，不要套一个固定倍数。"
+    },
+    "cross_currency_note": "Models priced in different currencies are never ranked against each other here. Supply a dated FX rate and do that conversion explicitly if it is needed.",
+    "warning": "Any model marked not_for_billing uses illustrative rates. It validates the arithmetic only and must not back a financial commitment."
+  },
+  "system_runtime": {
+    "runs": 5000,
+    "seed": 42,
+    "configured_workers": 9,
+    "effective_worker_capacity": 4.307,
+    "global_overhead_ratio": 0.08,
+    "wall_clock_hours": {
+      "mean": 57.575,
+      "p50": 56.648,
+      "p80": 64.043,
+      "p90": 68.156,
+      "worst_case": 79.266,
+      "minimum": 36.511,
+      "maximum": 96.456
+    },
+    "active_worker_hours": {
+      "mean": 178.611,
+      "p50": 175.986,
+      "p80": 198.728,
+      "p90": 212.361,
+      "worst_case": 247.099,
+      "minimum": 105.185,
+      "maximum": 284.075
+    },
+    "critical_path_hours": {
+      "mean": 49.55,
+      "p50": 48.724,
+      "p80": 55.742,
+      "p90": 59.828,
+      "worst_case": 70.57,
+      "minimum": 28.48,
+      "maximum": 80.955
+    },
+    "scope": "machine-autonomous execution only",
+    "excludes": [
+      "human approvals",
+      "human acceptance and review effort",
+      "credential and access provisioning waits",
+      "external business or vendor decisions"
+    ]
+  },
+  "human_effort": {
+    "runs": 5000,
+    "seed": 100045,
+    "person_hours": {
+      "mean": 6823.728,
+      "p50": 6815.225,
+      "p80": 7088.551,
+      "p90": 7233.074,
+      "worst_case": 7562.701,
+      "minimum": 5795.952,
+      "maximum": 8137.756
+    },
+    "person_days": {
+      "mean": 852.966,
+      "p50": 851.903,
+      "p80": 886.069,
+      "p90": 904.134,
+      "worst_case": 945.338,
+      "minimum": 724.494,
+      "maximum": 1017.22
+    },
+    "person_months": {
+      "mean": 42.648,
+      "p50": 42.595,
+      "p80": 44.303,
+      "p90": 45.207,
+      "worst_case": 47.267,
+      "minimum": 36.225,
+      "maximum": 50.861
+    },
+    "calendar_weeks": {
+      "mean": 42.936,
+      "p50": 42.827,
+      "p80": 45.071,
+      "p90": 46.265,
+      "worst_case": 48.901,
+      "minimum": 35.098,
+      "maximum": 52.509
+    },
+    "critical_path_work_hours": {
+      "mean": 1717.459,
+      "p50": 1713.083,
+      "p80": 1802.835,
+      "p90": 1850.607,
+      "worst_case": 1956.054,
+      "minimum": 1403.905,
+      "maximum": 2100.372
+    },
+    "role_person_hours": {
+      "architect": {
+        "mean": 489.217,
+        "p50": 488.408,
+        "p80": 514.241,
+        "p90": 528.305,
+        "worst_case": 563.203,
+        "minimum": 391.568,
+        "maximum": 603.161
+      },
+      "backend": {
+        "mean": 1862.407,
+        "p50": 1858.888,
+        "p80": 1947.598,
+        "p90": 1991.247,
+        "worst_case": 2103.966,
+        "minimum": 1538.112,
+        "maximum": 2283.714
+      },
+      "compiler": {
+        "mean": 866.702,
+        "p50": 862.686,
+        "p80": 921.611,
+        "p90": 956.145,
+        "worst_case": 1032.045,
+        "minimum": 665.107,
+        "maximum": 1114.587
+      },
+      "devops": {
+        "mean": 443.654,
+        "p50": 442.218,
+        "p80": 471.046,
+        "p90": 485.863,
+        "worst_case": 520.999,
+        "minimum": 352.372,
+        "maximum": 578.755
+      },
+      "frontend": {
+        "mean": 727.525,
+        "p50": 723.918,
+        "p80": 786.608,
+        "p90": 819.482,
+        "worst_case": 902.355,
+        "minimum": 541.193,
+        "maximum": 996.751
+      },
+      "product": {
+        "mean": 191.91,
+        "p50": 190.55,
+        "p80": 210.726,
+        "p90": 221.018,
+        "worst_case": 242.911,
+        "minimum": 137.013,
+        "maximum": 266.972
+      },
+      "qa": {
+        "mean": 2047.262,
+        "p50": 2042.124,
+        "p80": 2148.781,
+        "p90": 2209.58,
+        "worst_case": 2331.45,
+        "minimum": 1668.458,
+        "maximum": 2537.649
+      },
+      "security": {
+        "mean": 195.051,
+        "p50": 191.358,
+        "p80": 219.847,
+        "p90": 234.142,
+        "worst_case": 259.044,
+        "minimum": 138.718,
+        "maximum": 275.95
+      }
+    },
+    "team": {
+      "architect": 1,
+      "backend": 3,
+      "compiler": 2,
+      "devops": 1,
+      "frontend": 2,
+      "product": 1,
+      "qa": 2,
+      "security": 1
+    },
+    "overhead_multiplier": 1.52,
+    "focus_ratio": 0.68,
+    "same_definition_of_done": true
+  },
+  "comparison": {
+    "definition_of_done": {
+      "level": "production_verified",
+      "checks": [
+        "source-compiles",
+        "unit-tests",
+        "integration-tests",
+        "behavioral-equivalence",
+        "security-and-license-scan",
+        "performance-baseline",
+        "evidence-recorded"
+      ],
+      "exclusions": []
+    },
+    "same_definition_of_done_for_both_baselines": true,
+    "system_autonomous": {
+      "runs": 5000,
+      "seed": 42,
+      "configured_workers": 9,
+      "effective_worker_capacity": 4.307,
+      "global_overhead_ratio": 0.08,
+      "wall_clock_hours": {
+        "mean": 57.575,
+        "p50": 56.648,
+        "p80": 64.043,
+        "p90": 68.156,
+        "worst_case": 79.266,
+        "minimum": 36.511,
+        "maximum": 96.456
+      },
+      "active_worker_hours": {
+        "mean": 178.611,
+        "p50": 175.986,
+        "p80": 198.728,
+        "p90": 212.361,
+        "worst_case": 247.099,
+        "minimum": 105.185,
+        "maximum": 284.075
+      },
+      "critical_path_hours": {
+        "mean": 49.55,
+        "p50": 48.724,
+        "p80": 55.742,
+        "p90": 59.828,
+        "worst_case": 70.57,
+        "minimum": 28.48,
+        "maximum": 80.955
+      },
+      "scope": "machine-autonomous execution only",
+      "excludes": [
+        "human approvals",
+        "human acceptance and review effort",
+        "credential and access provisioning waits",
+        "external business or vendor decisions"
+      ]
+    },
+    "human_only": {
+      "runs": 5000,
+      "seed": 100045,
+      "person_hours": {
+        "mean": 6823.728,
+        "p50": 6815.225,
+        "p80": 7088.551,
+        "p90": 7233.074,
+        "worst_case": 7562.701,
+        "minimum": 5795.952,
+        "maximum": 8137.756
+      },
+      "person_days": {
+        "mean": 852.966,
+        "p50": 851.903,
+        "p80": 886.069,
+        "p90": 904.134,
+        "worst_case": 945.338,
+        "minimum": 724.494,
+        "maximum": 1017.22
+      },
+      "person_months": {
+        "mean": 42.648,
+        "p50": 42.595,
+        "p80": 44.303,
+        "p90": 45.207,
+        "worst_case": 47.267,
+        "minimum": 36.225,
+        "maximum": 50.861
+      },
+      "calendar_weeks": {
+        "mean": 42.936,
+        "p50": 42.827,
+        "p80": 45.071,
+        "p90": 46.265,
+        "worst_case": 48.901,
+        "minimum": 35.098,
+        "maximum": 52.509
+      },
+      "critical_path_work_hours": {
+        "mean": 1717.459,
+        "p50": 1713.083,
+        "p80": 1802.835,
+        "p90": 1850.607,
+        "worst_case": 1956.054,
+        "minimum": 1403.905,
+        "maximum": 2100.372
+      },
+      "role_person_hours": {
+        "architect": {
+          "mean": 489.217,
+          "p50": 488.408,
+          "p80": 514.241,
+          "p90": 528.305,
+          "worst_case": 563.203,
+          "minimum": 391.568,
+          "maximum": 603.161
+        },
+        "backend": {
+          "mean": 1862.407,
+          "p50": 1858.888,
+          "p80": 1947.598,
+          "p90": 1991.247,
+          "worst_case": 2103.966,
+          "minimum": 1538.112,
+          "maximum": 2283.714
+        },
+        "compiler": {
+          "mean": 866.702,
+          "p50": 862.686,
+          "p80": 921.611,
+          "p90": 956.145,
+          "worst_case": 1032.045,
+          "minimum": 665.107,
+          "maximum": 1114.587
+        },
+        "devops": {
+          "mean": 443.654,
+          "p50": 442.218,
+          "p80": 471.046,
+          "p90": 485.863,
+          "worst_case": 520.999,
+          "minimum": 352.372,
+          "maximum": 578.755
+        },
+        "frontend": {
+          "mean": 727.525,
+          "p50": 723.918,
+          "p80": 786.608,
+          "p90": 819.482,
+          "worst_case": 902.355,
+          "minimum": 541.193,
+          "maximum": 996.751
+        },
+        "product": {
+          "mean": 191.91,
+          "p50": 190.55,
+          "p80": 210.726,
+          "p90": 221.018,
+          "worst_case": 242.911,
+          "minimum": 137.013,
+          "maximum": 266.972
+        },
+        "qa": {
+          "mean": 2047.262,
+          "p50": 2042.124,
+          "p80": 2148.781,
+          "p90": 2209.58,
+          "worst_case": 2331.45,
+          "minimum": 1668.458,
+          "maximum": 2537.649
+        },
+        "security": {
+          "mean": 195.051,
+          "p50": 191.358,
+          "p80": 219.847,
+          "p90": 234.142,
+          "worst_case": 259.044,
+          "minimum": 138.718,
+          "maximum": 275.95
+        }
+      },
+      "team": {
+        "architect": 1,
+        "backend": 3,
+        "compiler": 2,
+        "devops": 1,
+        "frontend": 2,
+        "product": 1,
+        "qa": 2,
+        "security": 1
+      },
+      "overhead_multiplier": 1.52,
+      "focus_ratio": 0.68,
+      "same_definition_of_done": true
+    },
+    "human_assisted": {
+      "review_person_hours": 0.0,
+      "review_parallel_fraction": 0.0,
+      "serial_review_hours": 0.0,
+      "approval_wait_hours": 0.0,
+      "external_wait_hours": 0.0,
+      "end_to_end_hours": {
+        "p50": 56.648,
+        "p80": 64.043,
+        "p90": 68.156,
+        "worst_case": 79.266
+      },
+      "definition": "system autonomous wall-clock + non-parallelisable human review + approval/external waits"
+    },
+    "comparison": {
+      "calendar_speedup": {
+        "p50": 127.011,
+        "p80": 118.232,
+        "p90": 114.04,
+        "formula": "human calendar weeks x 7 x 24 / system autonomous wall-clock hours",
+        "caveat": "Human calendar weeks include nights and weekends; the system figure is continuous machine time."
+      },
+      "labor_reduction_ratio": 1.0,
+      "human_hours_saved_p50": 6815.225,
+      "automation_coverage": 1.0
+    },
+    "model_costs": {
+      "registry_version": "2026-08-19-verified-list-prices",
+      "base_currency": "USD",
+      "currencies": [
+        "USD"
+      ],
+      "models": [
+        {
+          "model_id": "anthropic-opus-5",
+          "provider": "anthropic",
+          "display_name": "Claude Opus 5",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 2664.3432,
+            "p50": 2641.7244,
+            "p80": 2874.9757,
+            "p90": 3013.5856,
+            "worst_case": 3367.834,
+            "minimum": 2016.3456,
+            "maximum": 3745.9097
+          },
+          "mean_cost_by_category": {
+            "input": 970.351939,
+            "cached_input": 254.618416,
+            "cache_write": 352.172736,
+            "output": 671.458932,
+            "reasoning_output": 415.741209
+          }
+        },
+        {
+          "model_id": "anthropic-sonnet-5",
+          "provider": "anthropic",
+          "display_name": "Claude Sonnet 5",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 1065.7373,
+            "p50": 1056.6897,
+            "p80": 1149.9903,
+            "p90": 1205.4342,
+            "worst_case": 1347.1336,
+            "minimum": 806.5382,
+            "maximum": 1498.3639
+          },
+          "mean_cost_by_category": {
+            "input": 388.140776,
+            "cached_input": 101.847366,
+            "cache_write": 140.869095,
+            "output": 268.583573,
+            "reasoning_output": 166.296483
+          }
+        },
+        {
+          "model_id": "anthropic-haiku-4-5",
+          "provider": "anthropic",
+          "display_name": "Claude Haiku 4.5",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 532.8686,
+            "p50": 528.3449,
+            "p80": 574.9951,
+            "p90": 602.7171,
+            "worst_case": 673.5668,
+            "minimum": 403.2691,
+            "maximum": 749.1819
+          },
+          "mean_cost_by_category": {
+            "input": 194.070388,
+            "cached_input": 50.923683,
+            "cache_write": 70.434547,
+            "output": 134.291786,
+            "reasoning_output": 83.148242
+          }
+        },
+        {
+          "model_id": "openai-gpt-5-6-sol",
+          "provider": "openai",
+          "display_name": "gpt-5.6-sol (short context)",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://developers.openai.com/api/docs/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 1264.8053,
+            "p50": 1253.8568,
+            "p80": 1363.8141,
+            "p90": 1430.5374,
+            "worst_case": 1599.4582,
+            "minimum": 957.5072,
+            "maximum": 1775.6992
+          },
+          "mean_cost_by_category": {
+            "input": 485.17597,
+            "cached_input": 127.309208,
+            "cache_write": 0.0,
+            "output": 402.875359,
+            "reasoning_output": 249.444725
+          }
+        },
+        {
+          "model_id": "openai-gpt-5-6-terra",
+          "provider": "openai",
+          "display_name": "gpt-5.6-terra (short context)",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://developers.openai.com/api/docs/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 505.9221,
+            "p50": 501.5427,
+            "p80": 545.5256,
+            "p90": 572.215,
+            "worst_case": 639.7833,
+            "minimum": 383.0029,
+            "maximum": 710.2797
+          },
+          "mean_cost_by_category": {
+            "input": 194.070388,
+            "cached_input": 50.923683,
+            "cache_write": 0.0,
+            "output": 161.150144,
+            "reasoning_output": 99.77789
+          }
+        },
+        {
+          "model_id": "openai-gpt-5-6-luna",
+          "provider": "openai",
+          "display_name": "gpt-5.6-luna (short context)",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://developers.openai.com/api/docs/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 50.5922,
+            "p50": 50.1543,
+            "p80": 54.5526,
+            "p90": 57.2215,
+            "worst_case": 63.9783,
+            "minimum": 38.3003,
+            "maximum": 71.028
+          },
+          "mean_cost_by_category": {
+            "input": 19.407039,
+            "cached_input": 5.092368,
+            "cache_write": 0.0,
+            "output": 16.115014,
+            "reasoning_output": 9.977789
+          }
+        },
+        {
+          "model_id": "deepseek-v4-pro-peak",
+          "provider": "deepseek",
+          "display_name": "deepseek-v4-pro (peak hours)",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 450.7918,
+            "p50": 446.9484,
+            "p80": 486.4556,
+            "p90": 509.962,
+            "worst_case": 570.3299,
+            "minimum": 341.0004,
+            "maximum": 634.5737
+          },
+          "mean_cost_by_category": {
+            "input": 256.172912,
+            "cached_input": 22.406421,
+            "cache_write": 0.0,
+            "output": 106.359095,
+            "reasoning_output": 65.853407
+          }
+        },
+        {
+          "model_id": "deepseek-v4-flash-peak",
+          "provider": "deepseek",
+          "display_name": "deepseek-v4-flash (peak hours)",
+          "currency": "USD",
+          "effective_date": "2026-08-19",
+          "verified_at": "2026-08-19T00:00:00Z",
+          "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+          "billing_mode": "api",
+          "not_for_billing": false,
+          "cost": {
+            "mean": 149.9245,
+            "p50": 148.6453,
+            "p80": 161.7818,
+            "p90": 169.607,
+            "worst_case": 189.6773,
+            "minimum": 113.41,
+            "maximum": 211.0408
+          },
+          "mean_cost_by_category": {
+            "input": 85.390971,
+            "cached_input": 7.129316,
+            "cache_write": 0.0,
+            "output": 35.453032,
+            "reasoning_output": 21.951136
+          }
+        }
+      ],
+      "rankings_by_currency": {
+        "USD": {
+          "ranked_model_ids_by_p50": [
+            "openai-gpt-5-6-luna",
+            "deepseek-v4-flash-peak",
+            "deepseek-v4-pro-peak",
+            "openai-gpt-5-6-terra",
+            "anthropic-haiku-4-5",
+            "anthropic-sonnet-5",
+            "openai-gpt-5-6-sol",
+            "anthropic-opus-5"
+          ],
+          "cheapest_p50": "openai-gpt-5-6-luna",
+          "ranking_pool": "verified_rates"
+        }
+      },
+      "cross_currency_comparison": null,
+      "mix_verification": {
+        "checked": true,
+        "sessions": 1,
+        "minimum_sessions": 20,
+        "sample_sufficient": false,
+        "observed_cached_input_share": 0.988231,
+        "forecast_cached_input_share": 0.63,
+        "overstatement_by_depth": [
+          {
+            "turns": 5,
+            "factor": 1.168
+          },
+          {
+            "turns": 10,
+            "factor": 1.924
+          },
+          {
+            "turns": 20,
+            "factor": 2.703
+          },
+          {
+            "turns": 50,
+            "factor": 3.248
+          },
+          {
+            "turns": 100,
+            "factor": 4.158
+          },
+          {
+            "turns": 200,
+            "factor": 4.528
+          },
+          {
+            "turns": 500,
+            "factor": 5.57
+          },
+          {
+            "turns": 800,
+            "factor": 5.542
+          }
+        ],
+        "detail": "分类占比已与真实用量对照过（见 TOKEN_MIX_COMPARISON.md）。**下表的费用建立在未经校准的假设占比上**，实测显示它对长任务高估明显、对短任务基本准确——具体倍数看那份报告的曲线，不要套一个固定倍数。"
+      },
+      "cross_currency_note": "Models priced in different currencies are never ranked against each other here. Supply a dated FX rate and do that conversion explicitly if it is needed.",
+      "warning": "Any model marked not_for_billing uses illustrative rates. It validates the arithmetic only and must not back a financial commitment."
+    },
+    "confidence": 0.6,
+    "assumptions": [
+      "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+      "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+    ],
+    "exclusions": [
+      "Human approval and acceptance time (carried in human_assisted).",
+      "Vendor pricing (supply a verified rate card)."
+    ]
+  },
+  "static_scan": {
+    "schema_version": "1.0.0",
+    "root": "/sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos",
+    "model": null,
+    "counting_method": "cjk-aware-heuristic",
+    "exact_counts": false,
+    "calibration": {
+      "version": "2026-08-19",
+      "global_factor": 0.8263,
+      "reference_tokenizer": {
+        "name": "legacy Claude BPE tokenizer",
+        "vocab_size": 65000,
+        "obtained_from": "anthropic==0.21.3, anthropic/tokenizer.json (the last release that bundled it)",
+        "caveat": "This is NOT the tokenizer of any current model. It is a real BPE tokenizer of the right family and rough vocabulary scale, which makes it a far better yardstick than the 4-characters-per-token rule -- but it is a yardstick, not ground truth. Billing-grade counts still require the target provider's own counting endpoint."
+      },
+      "applied": true,
+      "note": "calibrated_tokens = estimated_tokens / factor. The factor was measured against a real BPE tokenizer; it narrows the error, it does not make the count exact."
+    },
+    "max_file_bytes": 2000000,
+    "ignored_directories": [
+      ".DS_Store",
+      ".ai-tmp",
+      ".cargo",
+      ".eggs",
+      ".git",
+      ".gradle",
+      ".hg",
+      ".hvigor",
+      ".idea",
+      ".m2",
+      ".mypy_cache",
+      ".next",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".stack-work",
+      ".svn",
+      ".tox",
+      ".turbo",
+      ".venv",
+      ".vscode",
+      "__cmake_systeminformation",
+      "__pycache__",
+      "_merge_conflicts",
+      "_to_delete",
+      "artifacts",
+      "build",
+      "coverage",
+      "dist",
+      "env",
+      "htmlcov",
+      "node_modules",
+      "out",
+      "site-packages",
+      "target",
+      "vendor",
+      "venv"
+    ],
+    "ignored_globs": [
+      "*.min.js",
+      "*.min.css",
+      "*.lock",
+      "*-lock.json",
+      "*.map",
+      "*.snap"
+    ],
+    "ignored_directory_globs": [
+      ".next*",
+      "*.egg-info",
+      "*.dSYM",
+      "build-*",
+      "cmake-build-*",
+      ".terraform*"
+    ],
+    "totals": {
+      "files": 45790,
+      "bytes": 377045233,
+      "characters": 366736507,
+      "estimated_tokens": 95021753,
+      "calibrated_tokens": 113672287,
+      "skill_files": 9212,
+      "skill_catalog_tokens": 556211,
+      "skill_body_tokens": 13804476
+    },
+    "groups": [
+      {
+        "group": "verification-packs",
+        "files": 6283,
+        "estimated_tokens": 26560165,
+        "bytes": 106099324
+      },
+      {
+        "group": "client-packs",
+        "files": 4793,
+        "estimated_tokens": 20276057,
+        "bytes": 80979930
+      },
+      {
+        "group": "routes",
+        "files": 4638,
+        "estimated_tokens": 8734313,
+        "bytes": 34918861
+      },
+      {
+        "group": "agent-skills",
+        "files": 8374,
+        "estimated_tokens": 7345257,
+        "bytes": 28995444
+      },
+      {
+        "group": "skills",
+        "files": 7739,
+        "estimated_tokens": 6144810,
+        "bytes": 23317580
+      },
+      {
+        "group": "test-suites",
+        "files": 1991,
+        "estimated_tokens": 4248621,
+        "bytes": 16731822
+      },
+      {
+        "group": "docs",
+        "files": 528,
+        "estimated_tokens": 3477424,
+        "bytes": 13641103
+      },
+      {
+        "group": "engines",
+        "files": 1051,
+        "estimated_tokens": 3382441,
+        "bytes": 13512459
+      },
+      {
+        "group": ".agents",
+        "files": 2595,
+        "estimated_tokens": 2360720,
+        "bytes": 9060514
+      },
+      {
+        "group": "apps",
+        "files": 1801,
+        "estimated_tokens": 2265097,
+        "bytes": 8994120
+      },
+      {
+        "group": "framework-packs",
+        "files": 125,
+        "estimated_tokens": 1978912,
+        "bytes": 7915635
+      },
+      {
+        "group": "elmos-codex-skills-batch66-80-complete",
+        "files": 440,
+        "estimated_tokens": 1380863,
+        "bytes": 5530578
+      },
+      {
+        "group": "scripts",
+        "files": 298,
+        "estimated_tokens": 1144802,
+        "bytes": 4574920
+      },
+      {
+        "group": "modules",
+        "files": 618,
+        "estimated_tokens": 1099861,
+        "bytes": 4397315
+      },
+      {
+        "group": "elmos-language-packs-batch81-95-complete",
+        "files": 250,
+        "estimated_tokens": 699307,
+        "bytes": 2799862
+      },
+      {
+        "group": "packages",
+        "files": 1083,
+        "estimated_tokens": 599451,
+        "bytes": 2384914
+      },
+      {
+        "group": "tests",
+        "files": 554,
+        "estimated_tokens": 595118,
+        "bytes": 2380460
+      },
+      {
+        "group": "elmos-project-synthesis-batch46-60",
+        "files": 248,
+        "estimated_tokens": 467891,
+        "bytes": 1873668
+      },
+      {
+        "group": "tooling",
+        "files": 62,
+        "estimated_tokens": 433248,
+        "bytes": 1726493
+      },
+      {
+        "group": "mature-product-packs",
+        "files": 177,
+        "estimated_tokens": 414282,
+        "bytes": 1662363
+      },
+      {
+        "group": "schemas",
+        "files": 388,
+        "estimated_tokens": 276712,
+        "bytes": 1106832
+      },
+      {
+        "group": "<root>",
+        "files": 11,
+        "estimated_tokens": 194247,
+        "bytes": 703482
+      },
+      {
+        "group": "contracts",
+        "files": 314,
+        "estimated_tokens": 135373,
+        "bytes": 541151
+      },
+      {
+        "group": "elmos-project-synthesis-batch61-65",
+        "files": 77,
+        "estimated_tokens": 129333,
+        "bytes": 517910
+      },
+      {
+        "group": "services",
+        "files": 472,
+        "estimated_tokens": 126105,
+        "bytes": 504402
+      },
+      {
+        "group": "batch46-product-convergence-complete-skills",
+        "files": 171,
+        "estimated_tokens": 105423,
+        "bytes": 400502
+      },
+      {
+        "group": "templates",
+        "files": 329,
+        "estimated_tokens": 77395,
+        "bytes": 309094
+      },
+      {
+        "group": "portfolio-packs",
+        "files": 23,
+        "estimated_tokens": 73295,
+        "bytes": 293168
+      },
+      {
+        "group": ".ai",
+        "files": 23,
+        "estimated_tokens": 71000,
+        "bytes": 278982
+      },
+      {
+        "group": ".claude",
+        "files": 22,
+        "estimated_tokens": 53411,
+        "bytes": 213648
+      },
+      {
+        "group": ".codex",
+        "files": 22,
+        "estimated_tokens": 53411,
+        "bytes": 213648
+      },
+      {
+        "group": "deploy",
+        "files": 14,
+        "estimated_tokens": 20569,
+        "bytes": 78450
+      },
+      {
+        "group": "convergence-packs",
+        "files": 28,
+        "estimated_tokens": 13916,
+        "bytes": 55663
+      },
+      {
+        "group": ".elmos",
+        "files": 2,
+        "estimated_tokens": 12804,
+        "bytes": 51231
+      },
+      {
+        "group": ".github",
+        "files": 4,
+        "estimated_tokens": 9340,
+        "bytes": 37233
+      },
+      {
+        "group": "evidence",
+        "files": 4,
+        "estimated_tokens": 8493,
+        "bytes": 33970
+      },
+      {
+        "group": "marketplace-packs",
+        "files": 58,
+        "estimated_tokens": 7536,
+        "bytes": 30119
+      },
+      {
+        "group": "sandbox-images",
+        "files": 64,
+        "estimated_tokens": 7432,
+        "bytes": 29738
+      },
+      {
+        "group": "toolchains",
+        "files": 1,
+        "estimated_tokens": 6711,
+        "bytes": 26843
+      },
+      {
+        "group": "cloud-packs",
+        "files": 16,
+        "estimated_tokens": 6678,
+        "bytes": 26713
+      },
+      {
+        "group": "developer-experience-packs",
+        "files": 35,
+        "estimated_tokens": 6535,
+        "bytes": 26140
+      },
+      {
+        "group": "product-convergence",
+        "files": 16,
+        "estimated_tokens": 5646,
+        "bytes": 22589
+      },
+      {
+        "group": "database-packs",
+        "files": 23,
+        "estimated_tokens": 4328,
+        "bytes": 17317
+      },
+      {
+        "group": "telemetry",
+        "files": 6,
+        "estimated_tokens": 2486,
+        "bytes": 9948
+      },
+      {
+        "group": "sandbox",
+        "files": 6,
+        "estimated_tokens": 1793,
+        "bytes": 7167
+      },
+      {
+        "group": "quick-fix",
+        "files": 3,
+        "estimated_tokens": 1622,
+        "bytes": 5850
+      },
+      {
+        "group": "plans",
+        "files": 2,
+        "estimated_tokens": 554,
+        "bytes": 2216
+      },
+      {
+        "group": "recipes",
+        "files": 3,
+        "estimated_tokens": 373,
+        "bytes": 1491
+      },
+      {
+        "group": "ownership",
+        "files": 1,
+        "estimated_tokens": 308,
+        "bytes": 1233
+      },
+      {
+        "group": "examples",
+        "files": 2,
+        "estimated_tokens": 187,
+        "bytes": 748
+      },
+      {
+        "group": "config",
+        "files": 2,
+        "estimated_tokens": 97,
+        "bytes": 390
+      }
+    ],
+    "largest_files": [
+      {
+        "path": "docs/precision-migration-b01-44/executable-contracts.json",
+        "bytes": 1966673,
+        "characters": 1441821,
+        "estimated_tokens": 536792,
+        "calibrated_tokens": 715341,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/toolchain/frontend-formal-toolchain-evidence-v2.json",
+        "bytes": 1653536,
+        "characters": 1653536,
+        "estimated_tokens": 413384,
+        "calibrated_tokens": 550885,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/toolchain/frontend-formal-toolchain-evidence-v2.json",
+        "bytes": 1653536,
+        "characters": 1653536,
+        "estimated_tokens": 413384,
+        "calibrated_tokens": 550885,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "docs/precision-migration-b01-44/installed-manifest.json",
+        "bytes": 1632669,
+        "characters": 1578707,
+        "estimated_tokens": 412548,
+        "calibrated_tokens": 549771,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "verification-packs/precision-migration-b01-44-runtime/domain-qualification/results.json",
+        "bytes": 1578776,
+        "characters": 1578776,
+        "estimated_tokens": 394694,
+        "calibrated_tokens": 525978,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch81-95-language-packs-slightly-strict/results/catalog.json",
+        "bytes": 1516638,
+        "characters": 1516638,
+        "estimated_tokens": 379160,
+        "calibrated_tokens": 505277,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "docs/frt-g01-g30/compiled-skill-contracts.json",
+        "bytes": 1484495,
+        "characters": 1484495,
+        "estimated_tokens": 371124,
+        "calibrated_tokens": 494568,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "docs/frt-g01-g30/installed-manifest.json",
+        "bytes": 1202112,
+        "characters": 1202112,
+        "estimated_tokens": 300528,
+        "calibrated_tokens": 400490,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-local-non-certifying-20260812.json",
+        "bytes": 1174777,
+        "characters": 1174777,
+        "estimated_tokens": 293694,
+        "calibrated_tokens": 391383,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "docs/precision-migration-b01-44/handler-implementations.json",
+        "bytes": 1163229,
+        "characters": 1161583,
+        "estimated_tokens": 290810,
+        "calibrated_tokens": 387540,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-local-non-certifying-20260811.json",
+        "bytes": 1061542,
+        "characters": 1061542,
+        "estimated_tokens": 265386,
+        "calibrated_tokens": 353659,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-local-non-certifying-attempt1-20260811.json",
+        "bytes": 1059034,
+        "characters": 1059034,
+        "estimated_tokens": 264758,
+        "calibrated_tokens": 352822,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch38-45-strict/cases/catalog.json",
+        "bytes": 1032792,
+        "characters": 1011320,
+        "estimated_tokens": 260798,
+        "calibrated_tokens": 347545,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-authorized-final-20260814.json",
+        "bytes": 997480,
+        "characters": 997480,
+        "estimated_tokens": 249370,
+        "calibrated_tokens": 332316,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "engines/uir-java-python/docs/survey-elmos-java.json",
+        "bytes": 986367,
+        "characters": 986367,
+        "estimated_tokens": 246592,
+        "calibrated_tokens": 328614,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "docs/precision-migration-b01-44/external-execution-profiles.json",
+        "bytes": 956995,
+        "characters": 956995,
+        "estimated_tokens": 239249,
+        "calibrated_tokens": 318829,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-authorized-20260814.json",
+        "bytes": 919277,
+        "characters": 919277,
+        "estimated_tokens": 229819,
+        "calibrated_tokens": 306262,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "docs/precision-migration-b01-44/adapter-registry.json",
+        "bytes": 905400,
+        "characters": 905400,
+        "estimated_tokens": 226350,
+        "calibrated_tokens": 301639,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "mature-product-packs/batch40/elmos-platform-supply-chain/evidence/execution/b40-secret-scan.json",
+        "bytes": 866559,
+        "characters": 861315,
+        "estimated_tokens": 215329,
+        "calibrated_tokens": 286952,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch38-45-strict/cases/catalog.jsonl",
+        "bytes": 829876,
+        "characters": 808404,
+        "estimated_tokens": 210069,
+        "calibrated_tokens": 254228,
+        "calibration_factor": 0.8263
+      },
+      {
+        "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/test-suites/batch1-37-strict/cases/catalog.json",
+        "bytes": 729462,
+        "characters": 556346,
+        "estimated_tokens": 198743,
+        "calibrated_tokens": 264849,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch1-37-strict/cases/catalog.json",
+        "bytes": 729462,
+        "characters": 556346,
+        "estimated_tokens": 198743,
+        "calibrated_tokens": 264849,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-20260814.json",
+        "bytes": 766738,
+        "characters": 766738,
+        "estimated_tokens": 191684,
+        "calibrated_tokens": 255442,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch66-80-slightly-strict/cases/catalog.json",
+        "bytes": 723266,
+        "characters": 660912,
+        "estimated_tokens": 186159,
+        "calibrated_tokens": 248080,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "engines/frontend-client-engine/_snapshot-20260805T0649/src/frt-catalog.generated.ts",
+        "bytes": 726096,
+        "characters": 705620,
+        "estimated_tokens": 182662,
+        "calibrated_tokens": 197259,
+        "calibration_factor": 0.926
+      },
+      {
+        "path": "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
+        "bytes": 708882,
+        "characters": 708882,
+        "estimated_tokens": 177220,
+        "calibrated_tokens": 191382,
+        "calibration_factor": 0.926
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/references/TARGET_MANIFEST.json",
+        "bytes": 696618,
+        "characters": 686978,
+        "estimated_tokens": 172884,
+        "calibrated_tokens": 230389,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/target-manifest.json",
+        "bytes": 696618,
+        "characters": 686978,
+        "estimated_tokens": 172884,
+        "calibrated_tokens": 230389,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/frontend-formal-route-campaign.json",
+        "bytes": 624473,
+        "characters": 624473,
+        "estimated_tokens": 156118,
+        "calibrated_tokens": 208046,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/frontend-formal-route-campaign.json",
+        "bytes": 624473,
+        "characters": 624473,
+        "estimated_tokens": 156118,
+        "calibrated_tokens": 208046,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/test-suites/batch1-37-strict/cases/catalog.jsonl",
+        "bytes": 555622,
+        "characters": 382506,
+        "estimated_tokens": 155283,
+        "calibrated_tokens": 187926,
+        "calibration_factor": 0.8263
+      },
+      {
+        "path": "test-suites/batch1-37-strict/cases/catalog.jsonl",
+        "bytes": 555622,
+        "characters": 382506,
+        "estimated_tokens": 155283,
+        "calibrated_tokens": 187926,
+        "calibration_factor": 0.8263
+      },
+      {
+        "path": "ChatGPT-属灵星球情感成熟度.md",
+        "bytes": 517697,
+        "characters": 328892,
+        "estimated_tokens": 145194,
+        "calibrated_tokens": 142711,
+        "calibration_factor": 1.0174
+      },
+      {
+        "path": "verification-packs/polyglot-30-route-formal-equivalence-v1/formal-route-campaign.json",
+        "bytes": 578643,
+        "characters": 578643,
+        "estimated_tokens": 144661,
+        "calibrated_tokens": 192779,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch66-80-slightly-strict/cases/catalog.jsonl",
+        "bytes": 553945,
+        "characters": 491591,
+        "estimated_tokens": 143829,
+        "calibrated_tokens": 174064,
+        "calibration_factor": 0.8263
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-security-stop-attempt2-20260811.json",
+        "bytes": 557495,
+        "characters": 557495,
+        "estimated_tokens": 139374,
+        "calibrated_tokens": 185733,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch1-55-slightly-strict/results/catalog.json",
+        "bytes": 549183,
+        "characters": 549183,
+        "estimated_tokens": 137296,
+        "calibrated_tokens": 182964,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-build-attempt1-20260811.json",
+        "bytes": 549094,
+        "characters": 549094,
+        "estimated_tokens": 137274,
+        "calibrated_tokens": 182934,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/results/catalog.json",
+        "bytes": 548069,
+        "characters": 548069,
+        "estimated_tokens": 137017,
+        "calibrated_tokens": 182592,
+        "calibration_factor": 0.7504
+      },
+      {
+        "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-20260811.json",
+        "bytes": 531517,
+        "characters": 531517,
+        "estimated_tokens": 132879,
+        "calibrated_tokens": 177078,
+        "calibration_factor": 0.7504
+      }
+    ],
+    "skills": [
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+        "name": "elmos-modernization-synthesis-interoperability-tests",
+        "catalog_tokens": 37,
+        "body_tokens": 5721
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+        "name": "elmos-legacy-modernization-end-to-end-tests",
+        "catalog_tokens": 33,
+        "body_tokens": 5706
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+        "name": "elmos-complete-package-release-certification-tests",
+        "catalog_tokens": 33,
+        "body_tokens": 5645
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+        "name": "elmos-checkpoint-resume-failure-recovery-tests",
+        "catalog_tokens": 32,
+        "body_tokens": 5642
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+        "name": "elmos-secret-privacy-redaction-tests",
+        "catalog_tokens": 31,
+        "body_tokens": 5638
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+        "name": "elmos-lifecycle-state-machine-cancellation-tests",
+        "catalog_tokens": 36,
+        "body_tokens": 5636
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+        "name": "elmos-supply-chain-provenance-sbom-tests",
+        "catalog_tokens": 32,
+        "body_tokens": 5634
+      },
+      {
+        "path": "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+        "name": "batch-05-target-language-lowering-framework-backend-idiomatic-code-generation",
+        "catalog_tokens": 20,
+        "body_tokens": 5630
+      },
+      {
+        "path": "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+        "name": "batch-05-target-language-lowering-framework-backend-idiomatic-code-generation",
+        "catalog_tokens": 20,
+        "body_tokens": 5630
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md",
+        "name": "elmos-scale-performance-cost-budget-tests",
+        "catalog_tokens": 33,
+        "body_tokens": 5625
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/SKILL.md",
+        "name": "elmos-deployment-rollout-rollback-dr-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5623
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/SKILL.md",
+        "name": "elmos-project-synthesis-end-to-end-tests",
+        "catalog_tokens": 32,
+        "body_tokens": 5620
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/SKILL.md",
+        "name": "elmos-build-test-repair-anti-cheating-tests",
+        "catalog_tokens": 32,
+        "body_tokens": 5618
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/SKILL.md",
+        "name": "elmos-artifact-graph-traceability-tests",
+        "catalog_tokens": 32,
+        "body_tokens": 5616
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/SKILL.md",
+        "name": "elmos-policy-capability-least-privilege-tests",
+        "catalog_tokens": 35,
+        "body_tokens": 5615
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/SKILL.md",
+        "name": "elmos-idempotency-replay-dedup-tests",
+        "catalog_tokens": 29,
+        "body_tokens": 5608
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/SKILL.md",
+        "name": "elmos-multi-agent-separation-of-duties-tests",
+        "catalog_tokens": 30,
+        "body_tokens": 5608
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/SKILL.md",
+        "name": "elmos-schema-contract-version-compatibility-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5602
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/SKILL.md",
+        "name": "elmos-multitenancy-isolation-tests",
+        "catalog_tokens": 30,
+        "body_tokens": 5600
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/SKILL.md",
+        "name": "elmos-cross-language-behavior-parity-tests",
+        "catalog_tokens": 29,
+        "body_tokens": 5593
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/SKILL.md",
+        "name": "elmos-change-regeneration-manual-edit-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5589
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/SKILL.md",
+        "name": "elmos-sandbox-network-containment-tests",
+        "catalog_tokens": 28,
+        "body_tokens": 5586
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/SKILL.md",
+        "name": "elmos-evidence-audit-tamper-resistance-tests",
+        "catalog_tokens": 31,
+        "body_tokens": 5585
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/SKILL.md",
+        "name": "elmos-human-approval-ui-integrity-tests",
+        "catalog_tokens": 28,
+        "body_tokens": 5578
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/SKILL.md",
+        "name": "elmos-domain-pack-safety-boundary-tests",
+        "catalog_tokens": 30,
+        "body_tokens": 5553
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-38-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-38-slightly-strict-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5496
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-37-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-37-slightly-strict-tests",
+        "catalog_tokens": 36,
+        "body_tokens": 5494
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-39-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-39-slightly-strict-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5478
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-45-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-45-slightly-strict-tests",
+        "catalog_tokens": 37,
+        "body_tokens": 5472
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-42-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-42-slightly-strict-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5463
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-41-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-41-slightly-strict-tests",
+        "catalog_tokens": 34,
+        "body_tokens": 5456
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-40-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-40-slightly-strict-tests",
+        "catalog_tokens": 30,
+        "body_tokens": 5401
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-44-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-44-slightly-strict-tests",
+        "catalog_tokens": 32,
+        "body_tokens": 5377
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-43-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-43-slightly-strict-tests",
+        "catalog_tokens": 30,
+        "body_tokens": 5342
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-36-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-36-slightly-strict-tests",
+        "catalog_tokens": 36,
+        "body_tokens": 5290
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-35-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-35-slightly-strict-tests",
+        "catalog_tokens": 36,
+        "body_tokens": 5136
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-05-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-05-slightly-strict-tests",
+        "catalog_tokens": 40,
+        "body_tokens": 5062
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-16-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-16-slightly-strict-tests",
+        "catalog_tokens": 40,
+        "body_tokens": 5062
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-10-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-10-slightly-strict-tests",
+        "catalog_tokens": 38,
+        "body_tokens": 5020
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-14-slightly-strict-tests/SKILL.md",
+        "name": "elmos-batch-14-slightly-strict-tests",
+        "catalog_tokens": 37,
+        "body_tokens": 5010
+      }
+    ],
+    "findings": [
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+        "estimated_tokens": 5721,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+        "estimated_tokens": 5706,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+        "estimated_tokens": 5645,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+        "estimated_tokens": 5642,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+        "estimated_tokens": 5638,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+        "estimated_tokens": 5636,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+        "estimated_tokens": 5634,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+        "estimated_tokens": 5630,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+        "estimated_tokens": 5630,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md",
+        "estimated_tokens": 5625,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/SKILL.md",
+        "estimated_tokens": 5623,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/SKILL.md",
+        "estimated_tokens": 5620,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/SKILL.md",
+        "estimated_tokens": 5618,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/SKILL.md",
+        "estimated_tokens": 5616,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/SKILL.md",
+        "estimated_tokens": 5615,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/SKILL.md",
+        "estimated_tokens": 5608,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/SKILL.md",
+        "estimated_tokens": 5608,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/SKILL.md",
+        "estimated_tokens": 5602,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/SKILL.md",
+        "estimated_tokens": 5600,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/SKILL.md",
+        "estimated_tokens": 5593,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/SKILL.md",
+        "estimated_tokens": 5589,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/SKILL.md",
+        "estimated_tokens": 5586,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/SKILL.md",
+        "estimated_tokens": 5585,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/SKILL.md",
+        "estimated_tokens": 5578,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/SKILL.md",
+        "estimated_tokens": 5553,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-38-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5496,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-37-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5494,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-39-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5478,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-45-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5472,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-42-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5463,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-41-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5456,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-40-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5401,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-44-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5377,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-43-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5342,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-36-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5290,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-35-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5136,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-05-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5062,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-16-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5062,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-10-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5020,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      },
+      {
+        "severity": "warning",
+        "kind": "oversized-skill",
+        "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-14-slightly-strict-tests/SKILL.md",
+        "estimated_tokens": 5010,
+        "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+      }
+    ],
+    "skipped": [
+      {
+        "path": "apps/web-console/app/lib/frtCatalog.generated.ts",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/frontend-formal-route-campaign-v2.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "engines/frontend-client-engine/src/frt-catalog.generated.ts",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "engines/uir-java-python/docs/survey-elmos-java-noindex.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "skills/ChatGPT-分支 · 中度与强专用化.md",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "skills/ChatGPT-分支 · 前端差分等价验证平台.md",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/cases/catalog.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "test-suites/batch1-65-slightly-strict/source-package/CASE_CATALOG.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "test-suites/batch81-95-language-packs-slightly-strict/cases/catalog.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/frontend-formal-route-campaign-v2.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "verification-packs/precision-migration-b01-44-runtime/contract-qualification/results.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "verification-packs/precision-migration-b01-44-runtime/external-engineering-qualification/cases.json",
+        "reason": "larger than max_file_bytes=2000000"
+      },
+      {
+        "path": "verification-packs/precision-migration-b01-44-runtime/external-engineering-qualification/results.json",
+        "reason": "larger than max_file_bytes=2000000"
+      }
+    ],
+    "skipped_count": 13,
+    "interpretation": [
+      "estimated_tokens is the one-pass cost of the material on disk, not a project token budget.",
+      "Repeated reads, retries, sub-agent fan-out and tool results are modelled by the task DAG, not here."
+    ],
+    "warning": "Counts are heuristic estimates. Use the target provider's official token counting endpoint before making any billing-grade claim."
+  }
+}

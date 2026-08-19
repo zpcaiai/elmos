@@ -1,0 +1,242 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "result-manifest",
+  "run_id": "aaf3ec68-a0db-4184-a4a3-e6b7fe27a781",
+  "project_id": "elmos-156-route-behavioural-equivalence",
+  "run_state": "succeeded",
+  "sealed": true,
+  "seal_refused_reason": null,
+  "artifact_count": 16,
+  "total_bytes": 317,
+  "artifacts": [
+    {
+      "logical_name": "analyzer-cache-batch.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 22,
+      "sha256": "62ba524db66605d7b1f5e2085949a16a03b1b97f14149214fb9c66318bac5ee1",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/analyzer-cache-batch.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "certification-package.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 23,
+      "sha256": "19362ab28bc3e36996a6b097364870bce4db35f2237c1314633f0ceadb3816ca",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/certification-package.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "flutter-analyzer.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 18,
+      "sha256": "1971dc28f3829c72db0aaf85e9fda7d733734d4a68f976f8484acf0d6d93d37e",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/flutter-analyzer.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "frozen-rerun-evidence.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 23,
+      "sha256": "721e5d57913908869083f9f7dd02688b1ff3e86eaf7cbb055b3190c77d10b2f1",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/frozen-rerun-evidence.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "independent-client-repos.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 26,
+      "sha256": "d899c92a87ba1eb6090375b7448d2d90ac3a6aa37d31037393859e6f219b141b",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/independent-client-repos.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "java-swift-regression.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 23,
+      "sha256": "e1b5f93acba2683c6786f43aaae0c70f2aec1278dc75352149df948bb6961c59",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/java-swift-regression.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "kotlin-analyzer.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 17,
+      "sha256": "207e9d8af798cfb0ec441a797616de048046e23f5655efc1d090d3d1c1f68b4f",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/kotlin-analyzer.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "matrix-authority-audit.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 24,
+      "sha256": "9c415f0277dbb9642d2efbdfe089124958fadf2fdbadfaa34401a1fe16e72db1",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/matrix-authority-audit.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "matrix-medium.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 15,
+      "sha256": "292ef55d2aca3493928740256fa02c549785f435614ede9766783432a8bcf6a5",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/matrix-medium.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "matrix-small.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 14,
+      "sha256": "ba88f0d7166ab8158896dc73c6156e2dda05bc471a23a8d3b820447ca80b9d5e",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/matrix-small.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "perf-baseline.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 15,
+      "sha256": "66c1d4cd56cb3f0414ab7a49db90b72e8cdb0902d7ae93572b2ca3b3646c6830",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/perf-baseline.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "react-analyzer.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 16,
+      "sha256": "f88a6304de580ac897b7189ea1b56bd8557d6db805c345f8ded0a4b8e83a0629",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/react-analyzer.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "repo-parallel-singlepass.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 26,
+      "sha256": "a6ac4e81307ae17d028624ddda3ba97bdb40c954f09cbae1ed363e964bf44d5b",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/repo-parallel-singlepass.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "route-packs-66.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 16,
+      "sha256": "8679a40ff248c06c25642ff447a6f8c46615f84deb8f69bc36c5b6445a04fb79",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/route-packs-66.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "security-license.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 18,
+      "sha256": "0023838e38294688a25459b80205b78c3df7195e253300f0f83a28504c880084",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/security-license.result/1",
+      "git_ref": null
+    },
+    {
+      "logical_name": "semantic-divergence.result",
+      "version": 1,
+      "media_type": "application/octet-stream",
+      "size_bytes": 21,
+      "sha256": "88ab02fe5ed2f7c93e6e08d6069eddbe44c0a02b1d418485924c5968a6d8debf",
+      "storage_uri": "artifact://aaf3ec68-a0db-4184-a4a3-e6b7fe27a781/semantic-divergence.result/1",
+      "git_ref": null
+    }
+  ],
+  "superseded_logical_names": [],
+  "git_checkpoints": [
+    {
+      "task_id": "certification-package",
+      "git_commit": "sim-certification-package-1",
+      "created_at": 269.0
+    },
+    {
+      "task_id": "security-license",
+      "git_commit": "sim-security-license-1",
+      "created_at": 254.0
+    },
+    {
+      "task_id": "perf-baseline",
+      "git_commit": "sim-perf-baseline-1",
+      "created_at": 239.0
+    },
+    {
+      "task_id": "independent-client-repos",
+      "git_commit": "sim-independent-client-repos-1",
+      "created_at": 224.0
+    },
+    {
+      "task_id": "frozen-rerun-evidence",
+      "git_commit": "sim-frozen-rerun-evidence-1",
+      "created_at": 209.0
+    },
+    {
+      "task_id": "matrix-medium",
+      "git_commit": "sim-matrix-medium-2",
+      "created_at": 194.0
+    },
+    {
+      "task_id": "matrix-small",
+      "git_commit": "sim-matrix-small-1",
+      "created_at": 169.0
+    },
+    {
+      "task_id": "java-swift-regression",
+      "git_commit": "sim-java-swift-regression-1",
+      "created_at": 154.0
+    },
+    {
+      "task_id": "semantic-divergence",
+      "git_commit": "sim-semantic-divergence-1",
+      "created_at": 139.0
+    },
+    {
+      "task_id": "route-packs-66",
+      "git_commit": "sim-route-packs-66-1",
+      "created_at": 124.0
+    },
+    {
+      "task_id": "repo-parallel-singlepass",
+      "git_commit": "sim-repo-parallel-singlepass-1",
+      "created_at": 109.0
+    },
+    {
+      "task_id": "react-analyzer",
+      "git_commit": "sim-react-analyzer-2",
+      "created_at": 94.0
+    },
+    {
+      "task_id": "kotlin-analyzer",
+      "git_commit": "sim-kotlin-analyzer-2",
+      "created_at": 69.0
+    },
+    {
+      "task_id": "flutter-analyzer",
+      "git_commit": "sim-flutter-analyzer-1",
+      "created_at": 44.0
+    },
+    {
+      "task_id": "analyzer-cache-batch",
+      "git_commit": "sim-analyzer-cache-batch-1",
+      "created_at": 29.0
+    },
+    {
+      "task_id": "matrix-authority-audit",
+      "git_commit": "sim-matrix-authority-audit-1",
+      "created_at": 14.0
+    }
+  ],
+  "manifest_sha256": "91ff569035d7599052e552a4cd94c5c1882362ec0bbae7f5f2d843aa43e7ef28",
+  "verification": "Recompute sha256 over each artifact's bytes and re-digest the (logical_name, version, sha256, size_bytes) tuples; a mismatch means the manifest and the bytes have diverged."
+}

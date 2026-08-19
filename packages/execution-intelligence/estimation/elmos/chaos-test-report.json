@@ -1,0 +1,213 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "chaos-test-report",
+  "project_id": "elmos-156-route-behavioural-equivalence",
+  "scenarios": [
+    {
+      "scenario": "worker-killed-mid-task",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "interrupted attempt stayed open for the sweeper",
+          "ok": true,
+          "observed": 1
+        },
+        {
+          "name": "lost attempt classified as lost_worker, not failed",
+          "ok": true,
+          "observed": [
+            "c1"
+          ]
+        },
+        {
+          "name": "completed work was not redone",
+          "ok": true,
+          "observed": [
+            "c0"
+          ]
+        },
+        {
+          "name": "run reached succeeded after recovery",
+          "ok": true,
+          "observed": "succeeded"
+        },
+        {
+          "name": "c1 was retried exactly once",
+          "ok": true,
+          "observed": 2
+        }
+      ],
+      "narrative": "第二个任务的 Worker 在执行中消失，未写回任何结论。心跳超时后被判定为 lost_worker，经四步核对后重试，最终整条 DAG 完成。",
+      "reconciliation": {
+        "original_request": "completed",
+        "original_commit": "absent",
+        "original_artifact": "absent",
+        "decision": "adopt_existing_result"
+      },
+      "detection_ms": 120000,
+      "recovery_ms": 1000,
+      "residual_impact": "无。c0 未重跑，c1 只重试一次。"
+    },
+    {
+      "scenario": "orchestrator-restart",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "no task executed twice across the restart",
+          "ok": true,
+          "observed": [
+            "c0",
+            "c1",
+            "c2",
+            "c3"
+          ]
+        },
+        {
+          "name": "work completed before the restart was preserved",
+          "ok": true,
+          "observed": [
+            "c0",
+            "c1"
+          ]
+        },
+        {
+          "name": "run completed after the restart",
+          "ok": true,
+          "observed": "succeeded"
+        }
+      ],
+      "narrative": "编排器进程在两个任务之后重启。新进程只从存储恢复状态，不持有任何内存状态，因此继续执行剩余任务而没有重跑已完成的部分。",
+      "reconciliation": {
+        "decision": "n/a",
+        "original_request": "n/a",
+        "original_commit": "n/a",
+        "original_artifact": "n/a"
+      },
+      "detection_ms": 0,
+      "recovery_ms": 0,
+      "residual_impact": "无。"
+    },
+    {
+      "scenario": "client-disconnect-and-reconnect",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "replay is gapless from the last seen sequence",
+          "ok": true,
+          "observed": [
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "name": "no already-seen event is redelivered",
+          "ok": true,
+          "observed": 7
+        },
+        {
+          "name": "nothing produced while disconnected was dropped",
+          "ok": true,
+          "observed": {
+            "seen": 7,
+            "replayed": 17,
+            "total": 24
+          }
+        },
+        {
+          "name": "execution continued while the client was gone",
+          "ok": true,
+          "observed": 17
+        }
+      ],
+      "narrative": "客户端在第一个任务后断开，运行继续。重连时带 Last-Event-ID，服务端回放其错过的全部事件，序号连续、无重复。",
+      "reconciliation": {
+        "decision": "n/a",
+        "original_request": "n/a",
+        "original_commit": "n/a",
+        "original_artifact": "n/a"
+      },
+      "detection_ms": 0,
+      "recovery_ms": 0,
+      "residual_impact": "无。事件流是仅追加的，断连不影响执行。"
+    },
+    {
+      "scenario": "duplicate-submission",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "every duplicate submission replayed instead of re-executing",
+          "ok": true,
+          "observed": [
+            "replayed",
+            "replayed",
+            "replayed",
+            "replayed"
+          ]
+        },
+        {
+          "name": "no additional side effect ran",
+          "ok": true,
+          "observed": 4
+        },
+        {
+          "name": "republishing identical bytes did not create a new artifact version",
+          "ok": true,
+          "observed": 1
+        }
+      ],
+      "narrative": "同一批工作被重复提交。幂等键命中已完成记录，直接返回原响应；重复发布相同字节的 Artifact 被内容寻址去重，没有产生新版本。",
+      "reconciliation": {
+        "decision": "adopt_existing_result",
+        "original_request": "completed",
+        "original_commit": "present",
+        "original_artifact": "present"
+      },
+      "detection_ms": 0,
+      "recovery_ms": 0,
+      "residual_impact": "无。副作用只发生一次。"
+    },
+    {
+      "scenario": "idempotency-key-misuse",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "same key with a different body is refused",
+          "ok": true,
+          "observed": true
+        },
+        {
+          "name": "same key with the same body still replays the original response",
+          "ok": true,
+          "observed": [
+            "replayed",
+            {
+              "receipt": "r"
+            }
+          ]
+        }
+      ],
+      "narrative": "同一个幂等键被配上不同的请求体。服务端拒绝而不是把旧响应发给一个不同的请求——后者会产生几乎无法排查的错误结果。",
+      "reconciliation": {
+        "decision": "reject",
+        "original_request": "completed",
+        "original_commit": "n/a",
+        "original_artifact": "n/a"
+      },
+      "detection_ms": 0,
+      "recovery_ms": 0,
+      "residual_impact": "无。冲突请求未被执行。"
+    }
+  ],
+  "scenarios_not_run": [],
+  "passed": true,
+  "counts": {
+    "run": 5,
+    "passed": 5,
+    "failed": 0,
+    "not_run": 0
+  },
+  "rule": "A scenario that was not run is reported as not-run. It never counts as a pass."
+}

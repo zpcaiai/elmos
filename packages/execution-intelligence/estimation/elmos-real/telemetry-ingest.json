@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "telemetry-ingest",
+  "source": "pytest-log",
+  "rows": 2,
+  "logs": [
+    {
+      "log": "matrix182-final-detached.log",
+      "total_seconds": 4759.49,
+      "executed_nodes": 84,
+      "passed": 83,
+      "failed": 1,
+      "deselected": 0,
+      "skipped": 0,
+      "mean_seconds_per_node": 56.6606,
+      "aborted_early": true
+    },
+    {
+      "log": "matrix182-final-live4.log",
+      "total_seconds": 4731.05,
+      "executed_nodes": 84,
+      "passed": 83,
+      "failed": 1,
+      "deselected": 0,
+      "skipped": 0,
+      "mean_seconds_per_node": 56.322,
+      "aborted_early": true
+    }
+  ],
+  "total_executed_nodes": 168,
+  "total_seconds": 9490.54,
+  "measurement": "aggregate_mean_per_node",
+  "token_data_available": false,
+  "rule": "These rows are real measurements of real runs, aggregated per node. They calibrate runtime only. Any token multiplier derived from them would be invented, so none is."
+}

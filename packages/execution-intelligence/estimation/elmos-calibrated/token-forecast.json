@@ -1,0 +1,1065 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "token-forecast",
+  "project_id": "elmos-156-route-behavioural-equivalence",
+  "mode": "verification",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence-small",
+      "behavioral-equivalence-medium",
+      "frozen-matrix-rerun",
+      "independent-client-repository-verification",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded-in-TEST_RESULTS-and-EVIDENCE"
+    ],
+    "exclusions": [
+      "第三方客户生产环境切流",
+      "外部认证机构的排期与出证时间"
+    ]
+  },
+  "confidence": 0.52,
+  "assumptions": [
+    "路由分母以 routes/inventory.json 为唯一权威：156 条有向路线、13 门语言。",
+    "kotlin / react / flutter 三门语言的 analyzer 仍是 PENDING_ANALYZER，需要从零补齐并钉死工具链。",
+    "工具链沿用 symlink-free 钉版契约，不引入包管理器的全局安装。",
+    "系统 Worker 可 24×7 连续运行，中断后能从 Checkpoint 恢复。",
+    "任务时长与 token 画像是工程估计而非实测，首个里程碑执行完必须用 calibrate 回填。",
+    "code_conflict_factor 取 0.82，反映多个 Agent 在同一棵树上写入的真实冲突代价。",
+    "配置 12 个 Agent Worker，在可用率、并行效率、模型并发与代码冲突系数之后有效并发约 4.8，必须不小于单个任务声明的 worker_units 上限（4）。"
+  ],
+  "exclusions": [
+    "人工审批与验收时间（计入 human_assisted，不计入系统 ETA）",
+    "外部客户提供仓库与授权的等待时间",
+    "认证机构排期",
+    "真实厂商价格（价格来自可配置费率表，本包不写死）"
+  ],
+  "runs": 5000,
+  "seed": 42,
+  "totals": {
+    "input": {
+      "mean": 194070388.0,
+      "p50": 192295061.0,
+      "p80": 209789023.0,
+      "p90": 219997925.0,
+      "worst_case": 246969965.0,
+      "minimum": 146502993.0,
+      "maximum": 275383438.0
+    },
+    "cached_input": {
+      "mean": 509236832.0,
+      "p50": 504446552.0,
+      "p80": 550427763.0,
+      "p90": 577503707.0,
+      "worst_case": 649788616.0,
+      "minimum": 385157054.0,
+      "maximum": 725635476.0
+    },
+    "cache_write": {
+      "mean": 56347638.0,
+      "p50": 55880481.0,
+      "p80": 60766012.0,
+      "p90": 63729022.0,
+      "worst_case": 71362418.0,
+      "minimum": 42610833.0,
+      "maximum": 79432823.0
+    },
+    "output": {
+      "mean": 26858357.0,
+      "p50": 26644186.0,
+      "p80": 28903855.0,
+      "p90": 30247803.0,
+      "worst_case": 33844966.0,
+      "minimum": 20354964.0,
+      "maximum": 37149254.0
+    },
+    "reasoning_output": {
+      "mean": 16629648.0,
+      "p50": 16502593.0,
+      "p80": 17910244.0,
+      "p90": 18784843.0,
+      "worst_case": 20955009.0,
+      "minimum": 12529352.0,
+      "maximum": 23239531.0
+    },
+    "total": {
+      "mean": 803142863.0,
+      "p50": 795559011.0,
+      "p80": 867847847.0,
+      "p90": 909753569.0,
+      "worst_case": 1021266536.0,
+      "minimum": 607271618.0,
+      "maximum": 1140840522.0
+    },
+    "category_sum_equals_total": true,
+    "accounting_rule": "input/cached_input/cache_write/output/reasoning_output are disjoint categories; total is their sum and must never be added back to a category."
+  },
+  "by_task": [
+    {
+      "task_id": "independent-client-repos",
+      "name": "独立客户仓库验证（当前 0/156）",
+      "total_tokens": {
+        "mean": 135866889.0,
+        "p50": 119201242.0,
+        "p80": 174945510.0,
+        "p90": 216032068.0,
+        "worst_case": 296656338.0,
+        "minimum": 72898370.0,
+        "maximum": 349600597.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 33101568.0,
+          "p50": 29041277.0,
+          "p80": 42622383.0,
+          "p90": 52632398.0,
+          "worst_case": 72275077.0,
+          "minimum": 17760400.0,
+          "maximum": 85174010.0
+        },
+        "cached_input": {
+          "mean": 87267770.0,
+          "p50": 76563367.0,
+          "p80": 112368102.0,
+          "p90": 138758139.0,
+          "worst_case": 190543384.0,
+          "minimum": 46822873.0,
+          "maximum": 224549663.0
+        },
+        "cache_write": {
+          "mean": 9027700.0,
+          "p50": 7920348.0,
+          "p80": 11624286.0,
+          "p90": 14354290.0,
+          "worst_case": 19711385.0,
+          "minimum": 4843746.0,
+          "maximum": 23229276.0
+        },
+        "output": {
+          "mean": 3912003.0,
+          "p50": 3432151.0,
+          "p80": 5037191.0,
+          "p90": 6220192.0,
+          "worst_case": 8541600.0,
+          "minimum": 2098956.0,
+          "maximum": 10066019.0
+        },
+        "reasoning_output": {
+          "mean": 2557848.0,
+          "p50": 2244099.0,
+          "p80": 3293548.0,
+          "p90": 4067049.0,
+          "worst_case": 5584892.0,
+          "minimum": 1372395.0,
+          "maximum": 6581628.0
+        }
+      }
+    },
+    {
+      "task_id": "route-packs-66",
+      "name": "kotlin/react/flutter 相关 66 条路由包生成与登记",
+      "total_tokens": {
+        "mean": 90700521.0,
+        "p50": 84529768.0,
+        "p80": 108068459.0,
+        "p90": 126259940.0,
+        "worst_case": 178790326.0,
+        "minimum": 53540388.0,
+        "maximum": 211177859.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 21888512.0,
+          "p50": 20399341.0,
+          "p80": 26079869.0,
+          "p90": 30469970.0,
+          "worst_case": 43146987.0,
+          "minimum": 12920757.0,
+          "maximum": 50962983.0
+        },
+        "cached_input": {
+          "mean": 57457343.0,
+          "p50": 53548269.0,
+          "p80": 68459657.0,
+          "p90": 79983672.0,
+          "worst_case": 113260840.0,
+          "minimum": 33916988.0,
+          "maximum": 133777829.0
+        },
+        "cache_write": {
+          "mean": 6292947.0,
+          "p50": 5864810.0,
+          "p80": 7497962.0,
+          "p90": 8760116.0,
+          "worst_case": 12404759.0,
+          "minimum": 3714718.0,
+          "maximum": 14651857.0
+        },
+        "output": {
+          "mean": 3283277.0,
+          "p50": 3059901.0,
+          "p80": 3911980.0,
+          "p90": 4570496.0,
+          "worst_case": 6472048.0,
+          "minimum": 1938114.0,
+          "maximum": 7644447.0
+        },
+        "reasoning_output": {
+          "mean": 1778442.0,
+          "p50": 1657446.0,
+          "p80": 2118989.0,
+          "p90": 2475685.0,
+          "worst_case": 3505693.0,
+          "minimum": 1049812.0,
+          "maximum": 4140742.0
+        }
+      }
+    },
+    {
+      "task_id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通（156 路线）",
+      "total_tokens": {
+        "mean": 78399559.0,
+        "p50": 72396360.0,
+        "p80": 94543112.0,
+        "p90": 111743053.0,
+        "worst_case": 153569983.0,
+        "minimum": 45497937.0,
+        "maximum": 186385755.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 16621815.0,
+          "p50": 15349052.0,
+          "p80": 20044476.0,
+          "p90": 23691107.0,
+          "worst_case": 32559007.0,
+          "minimum": 9646206.0,
+          "maximum": 39516414.0
+        },
+        "cached_input": {
+          "mean": 52635746.0,
+          "p50": 48605330.0,
+          "p80": 63474174.0,
+          "p90": 75021838.0,
+          "worst_case": 103103522.0,
+          "minimum": 30546318.0,
+          "maximum": 125135312.0
+        },
+        "cache_write": {
+          "mean": 5263575.0,
+          "p50": 4860533.0,
+          "p80": 6347417.0,
+          "p90": 7502184.0,
+          "worst_case": 10310352.0,
+          "minimum": 3054632.0,
+          "maximum": 12513531.0
+        },
+        "output": {
+          "mean": 2354757.0,
+          "p50": 2174449.0,
+          "p80": 2839634.0,
+          "p90": 3356240.0,
+          "worst_case": 4612526.0,
+          "minimum": 1366546.0,
+          "maximum": 5598159.0
+        },
+        "reasoning_output": {
+          "mean": 1523666.0,
+          "p50": 1406996.0,
+          "p80": 1837410.0,
+          "p90": 2171685.0,
+          "worst_case": 2984576.0,
+          "minimum": 884236.0,
+          "maximum": 3622338.0
+        }
+      }
+    },
+    {
+      "task_id": "semantic-divergence",
+      "name": "13 语言两两语义分歧表与 IR 归一",
+      "total_tokens": {
+        "mean": 73326310.0,
+        "p50": 67788216.0,
+        "p80": 88480887.0,
+        "p90": 104786292.0,
+        "worst_case": 144638158.0,
+        "minimum": 42886868.0,
+        "maximum": 168900167.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 18019698.0,
+          "p50": 16658730.0,
+          "p80": 21743885.0,
+          "p90": 25750885.0,
+          "worst_case": 35544349.0,
+          "minimum": 10539306.0,
+          "maximum": 41506657.0
+        },
+        "cached_input": {
+          "mean": 45742311.0,
+          "p50": 42287545.0,
+          "p80": 55196017.0,
+          "p90": 65367630.0,
+          "worst_case": 90227963.0,
+          "minimum": 26753623.0,
+          "maximum": 105363053.0
+        },
+        "cache_write": {
+          "mean": 5267296.0,
+          "p50": 4869475.0,
+          "p80": 6355905.0,
+          "p90": 7527182.0,
+          "worst_case": 10389887.0,
+          "minimum": 3080720.0,
+          "maximum": 12132715.0
+        },
+        "output": {
+          "mean": 2633648.0,
+          "p50": 2434737.0,
+          "p80": 3177952.0,
+          "p90": 3763591.0,
+          "worst_case": 5194943.0,
+          "minimum": 1540360.0,
+          "maximum": 6066358.0
+        },
+        "reasoning_output": {
+          "mean": 1663357.0,
+          "p50": 1537729.0,
+          "p80": 2007128.0,
+          "p90": 2377005.0,
+          "worst_case": 3281017.0,
+          "minimum": 972859.0,
+          "maximum": 3831384.0
+        }
+      }
+    },
+    {
+      "task_id": "kotlin-analyzer",
+      "name": "Kotlin 原生 analyzer 补齐（PENDING_ANALYZER）",
+      "total_tokens": {
+        "mean": 61687881.0,
+        "p50": 55419356.0,
+        "p80": 75821454.0,
+        "p90": 94407830.0,
+        "worst_case": 131213161.0,
+        "minimum": 34469339.0,
+        "maximum": 161134102.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 15985081.0,
+          "p50": 14360728.0,
+          "p80": 19647491.0,
+          "p90": 24463749.0,
+          "worst_case": 34001055.0,
+          "minimum": 8931984.0,
+          "maximum": 41754420.0
+        },
+        "cached_input": {
+          "mean": 37782919.0,
+          "p50": 33943539.0,
+          "p80": 46439524.0,
+          "p90": 57823406.0,
+          "worst_case": 80366129.0,
+          "minimum": 21111963.0,
+          "maximum": 98692265.0
+        },
+        "cache_write": {
+          "mean": 4504887.0,
+          "p50": 4047114.0,
+          "p80": 5537020.0,
+          "p90": 6894329.0,
+          "worst_case": 9582115.0,
+          "minimum": 2517196.0,
+          "maximum": 11767155.0
+        },
+        "output": {
+          "mean": 2107124.0,
+          "p50": 1893005.0,
+          "p80": 2589897.0,
+          "p90": 3224767.0,
+          "worst_case": 4481957.0,
+          "minimum": 1177398.0,
+          "maximum": 5503992.0
+        },
+        "reasoning_output": {
+          "mean": 1307870.0,
+          "p50": 1174969.0,
+          "p80": 1607522.0,
+          "p90": 2001579.0,
+          "worst_case": 2781904.0,
+          "minimum": 730799.0,
+          "maximum": 3416271.0
+        }
+      }
+    },
+    {
+      "task_id": "flutter-analyzer",
+      "name": "Flutter/Dart analyzer 补齐（PENDING_ANALYZER）",
+      "total_tokens": {
+        "mean": 59224427.0,
+        "p50": 52994081.0,
+        "p80": 72174463.0,
+        "p90": 90612495.0,
+        "worst_case": 127983155.0,
+        "minimum": 32880985.0,
+        "maximum": 156278867.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 15249055.0,
+          "p50": 13644871.0,
+          "p80": 18583420.0,
+          "p90": 23330829.0,
+          "worst_case": 32952995.0,
+          "minimum": 8466168.0,
+          "maximum": 40238551.0
+        },
+        "cached_input": {
+          "mean": 36307275.0,
+          "p50": 32487788.0,
+          "p80": 44246238.0,
+          "p90": 55549592.0,
+          "worst_case": 78459511.0,
+          "minimum": 20157544.0,
+          "maximum": 95806074.0
+        },
+        "cache_write": {
+          "mean": 4356873.0,
+          "p50": 3898535.0,
+          "p80": 5309549.0,
+          "p90": 6665951.0,
+          "worst_case": 9415141.0,
+          "minimum": 2418905.0,
+          "maximum": 11496729.0
+        },
+        "output": {
+          "mean": 2033207.0,
+          "p50": 1819316.0,
+          "p80": 2477789.0,
+          "p90": 3110777.0,
+          "worst_case": 4393733.0,
+          "minimum": 1128822.0,
+          "maximum": 5365140.0
+        },
+        "reasoning_output": {
+          "mean": 1278016.0,
+          "p50": 1143570.0,
+          "p80": 1557468.0,
+          "p90": 1955346.0,
+          "worst_case": 2761775.0,
+          "minimum": 709546.0,
+          "maximum": 3372374.0
+        }
+      }
+    },
+    {
+      "task_id": "react-analyzer",
+      "name": "React 方言 analyzer 补齐（PENDING_ANALYZER）",
+      "total_tokens": {
+        "mean": 56062579.0,
+        "p50": 50539359.0,
+        "p80": 68053246.0,
+        "p90": 84219716.0,
+        "worst_case": 120740013.0,
+        "minimum": 31576792.0,
+        "maximum": 147094841.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 14338256.0,
+          "p50": 12925667.0,
+          "p80": 17404922.0,
+          "p90": 21539569.0,
+          "worst_case": 30879799.0,
+          "minimum": 8075906.0,
+          "maximum": 37620164.0
+        },
+        "cached_input": {
+          "mean": 34411813.0,
+          "p50": 31021602.0,
+          "p80": 41771813.0,
+          "p90": 51694966.0,
+          "worst_case": 74111517.0,
+          "minimum": 19382174.0,
+          "maximum": 90288393.0
+        },
+        "cache_write": {
+          "mean": 4158094.0,
+          "p50": 3748444.0,
+          "p80": 5047427.0,
+          "p90": 6246475.0,
+          "worst_case": 8955142.0,
+          "minimum": 2342013.0,
+          "maximum": 10909848.0
+        },
+        "output": {
+          "mean": 1935664.0,
+          "p50": 1744965.0,
+          "p80": 2349664.0,
+          "p90": 2907842.0,
+          "worst_case": 4168773.0,
+          "minimum": 1090247.0,
+          "maximum": 5078722.0
+        },
+        "reasoning_output": {
+          "mean": 1218752.0,
+          "p50": 1098682.0,
+          "p80": 1479418.0,
+          "p90": 1830863.0,
+          "worst_case": 2624783.0,
+          "minimum": 686452.0,
+          "maximum": 3197714.0
+        }
+      }
+    },
+    {
+      "task_id": "java-swift-regression",
+      "name": "Java 源路线与 Swift 环境回归定向修复",
+      "total_tokens": {
+        "mean": 42816277.0,
+        "p50": 39730512.0,
+        "p80": 51743434.0,
+        "p90": 61438708.0,
+        "worst_case": 83068534.0,
+        "minimum": 24667257.0,
+        "maximum": 101675118.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 10528593.0,
+          "p50": 9769798.0,
+          "p80": 12723795.0,
+          "p90": 15107879.0,
+          "worst_case": 20426689.0,
+          "minimum": 6065719.0,
+          "maximum": 25002078.0
+        },
+        "cached_input": {
+          "mean": 26672435.0,
+          "p50": 24750155.0,
+          "p80": 32233615.0,
+          "p90": 38273293.0,
+          "worst_case": 51747611.0,
+          "minimum": 15366488.0,
+          "maximum": 63338598.0
+        },
+        "cache_write": {
+          "mean": 3088387.0,
+          "p50": 2865807.0,
+          "p80": 3732313.0,
+          "p90": 4431644.0,
+          "worst_case": 5991829.0,
+          "minimum": 1779278.0,
+          "maximum": 7333943.0
+        },
+        "output": {
+          "mean": 1544194.0,
+          "p50": 1432904.0,
+          "p80": 1866157.0,
+          "p90": 2215822.0,
+          "worst_case": 2995914.0,
+          "minimum": 889639.0,
+          "maximum": 3666971.0
+        },
+        "reasoning_output": {
+          "mean": 982669.0,
+          "p50": 911848.0,
+          "p80": 1187554.0,
+          "p90": 1410069.0,
+          "worst_case": 1906491.0,
+          "minimum": 566134.0,
+          "maximum": 2333527.0
+        }
+      }
+    },
+    {
+      "task_id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通（156 路线）",
+      "total_tokens": {
+        "mean": 41389477.0,
+        "p50": 38569480.0,
+        "p80": 49238901.0,
+        "p90": 58366823.0,
+        "worst_case": 82897918.0,
+        "minimum": 24215977.0,
+        "maximum": 96351027.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 8967720.0,
+          "p50": 8356721.0,
+          "p80": 10668429.0,
+          "p90": 12646145.0,
+          "worst_case": 17961215.0,
+          "minimum": 5246795.0,
+          "maximum": 20876056.0
+        },
+        "cached_input": {
+          "mean": 27592985.0,
+          "p50": 25712987.0,
+          "p80": 32825934.0,
+          "p90": 38911216.0,
+          "worst_case": 55265278.0,
+          "minimum": 16143985.0,
+          "maximum": 64234018.0
+        },
+        "cache_write": {
+          "mean": 2759298.0,
+          "p50": 2571299.0,
+          "p80": 3282593.0,
+          "p90": 3891122.0,
+          "worst_case": 5526528.0,
+          "minimum": 1614398.0,
+          "maximum": 6423402.0
+        },
+        "output": {
+          "mean": 1241684.0,
+          "p50": 1157084.0,
+          "p80": 1477167.0,
+          "p90": 1751005.0,
+          "worst_case": 2486938.0,
+          "minimum": 726479.0,
+          "maximum": 2890531.0
+        },
+        "reasoning_output": {
+          "mean": 827790.0,
+          "p50": 771390.0,
+          "p80": 984778.0,
+          "p90": 1167336.0,
+          "worst_case": 1657958.0,
+          "minimum": 484320.0,
+          "maximum": 1927021.0
+        }
+      }
+    },
+    {
+      "task_id": "repo-parallel-singlepass",
+      "name": "仓库级并行与单遍 AST 遍历",
+      "total_tokens": {
+        "mean": 31709634.0,
+        "p50": 29446503.0,
+        "p80": 37532268.0,
+        "p90": 44917569.0,
+        "worst_case": 62892417.0,
+        "minimum": 18721897.0,
+        "maximum": 73960933.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 7876483.0,
+          "p50": 7314335.0,
+          "p80": 9322790.0,
+          "p90": 11157255.0,
+          "worst_case": 15622099.0,
+          "minimum": 4650407.0,
+          "maximum": 18371452.0
+        },
+        "cached_input": {
+          "mean": 19691207.0,
+          "p50": 18285837.0,
+          "p80": 23306976.0,
+          "p90": 27893137.0,
+          "worst_case": 39055248.0,
+          "minimum": 11626017.0,
+          "maximum": 45928630.0
+        },
+        "cache_write": {
+          "mean": 2308624.0,
+          "p50": 2143857.0,
+          "p80": 2732542.0,
+          "p90": 3270230.0,
+          "worst_case": 4578891.0,
+          "minimum": 1363050.0,
+          "maximum": 5384736.0
+        },
+        "output": {
+          "mean": 1127152.0,
+          "p50": 1046707.0,
+          "p80": 1334123.0,
+          "p90": 1596642.0,
+          "worst_case": 2235576.0,
+          "minimum": 665489.0,
+          "maximum": 2629018.0
+        },
+        "reasoning_output": {
+          "mean": 706167.0,
+          "p50": 655768.0,
+          "p80": 835836.0,
+          "p90": 1000306.0,
+          "worst_case": 1400602.0,
+          "minimum": 416933.0,
+          "maximum": 1647096.0
+        }
+      }
+    },
+    {
+      "task_id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "total_tokens": {
+        "mean": 31416675.0,
+        "p50": 29433754.0,
+        "p80": 36990878.0,
+        "p90": 41865481.0,
+        "worst_case": 61509006.0,
+        "minimum": 19067591.0,
+        "maximum": 77710131.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 6605693.0,
+          "p50": 6188762.0,
+          "p80": 7777729.0,
+          "p90": 8802666.0,
+          "worst_case": 12932928.0,
+          "minimum": 4009166.0,
+          "maximum": 16339388.0
+        },
+        "cached_input": {
+          "mean": 21138217.0,
+          "p50": 19804039.0,
+          "p80": 24888732.0,
+          "p90": 28168532.0,
+          "worst_case": 41385370.0,
+          "minimum": 12829330.0,
+          "maximum": 52286043.0
+        },
+        "cache_write": {
+          "mean": 2113822.0,
+          "p50": 1980404.0,
+          "p80": 2488873.0,
+          "p90": 2816853.0,
+          "worst_case": 4138537.0,
+          "minimum": 1282933.0,
+          "maximum": 5228604.0
+        },
+        "output": {
+          "mean": 924797.0,
+          "p50": 866427.0,
+          "p80": 1088882.0,
+          "p90": 1232373.0,
+          "worst_case": 1810610.0,
+          "minimum": 561283.0,
+          "maximum": 2287514.0
+        },
+        "reasoning_output": {
+          "mean": 634147.0,
+          "p50": 594121.0,
+          "p80": 746662.0,
+          "p90": 845056.0,
+          "worst_case": 1241561.0,
+          "minimum": 384880.0,
+          "maximum": 1568581.0
+        }
+      }
+    },
+    {
+      "task_id": "analyzer-cache-batch",
+      "name": "Analyzer 缓存与批量化（保住可提升/不可提升拒绝区分）",
+      "total_tokens": {
+        "mean": 27886118.0,
+        "p50": 26051102.0,
+        "p80": 32771997.0,
+        "p90": 37953821.0,
+        "worst_case": 55455373.0,
+        "minimum": 16904328.0,
+        "maximum": 67335126.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 6931540.0,
+          "p50": 6475417.0,
+          "p80": 8146003.0,
+          "p90": 9434028.0,
+          "worst_case": 13784318.0,
+          "minimum": 4201841.0,
+          "maximum": 16737221.0
+        },
+        "cached_input": {
+          "mean": 17328850.0,
+          "p50": 16188543.0,
+          "p80": 20365008.0,
+          "p90": 23585070.0,
+          "worst_case": 34460796.0,
+          "minimum": 10504601.0,
+          "maximum": 41843051.0
+        },
+        "cache_write": {
+          "mean": 1999483.0,
+          "p50": 1867909.0,
+          "p80": 2349809.0,
+          "p90": 2721354.0,
+          "worst_case": 3976246.0,
+          "minimum": 1212069.0,
+          "maximum": 4828044.0
+        },
+        "output": {
+          "mean": 1013071.0,
+          "p50": 946407.0,
+          "p80": 1190570.0,
+          "p90": 1378819.0,
+          "worst_case": 2014631.0,
+          "minimum": 614115.0,
+          "maximum": 2446209.0
+        },
+        "reasoning_output": {
+          "mean": 613175.0,
+          "p50": 572825.0,
+          "p80": 720608.0,
+          "p90": 834549.0,
+          "worst_case": 1219382.0,
+          "minimum": 371701.0,
+          "maximum": 1480600.0
+        }
+      }
+    },
+    {
+      "task_id": "certification-package",
+      "name": "认证材料与交付包",
+      "total_tokens": {
+        "mean": 23045869.0,
+        "p50": 21851589.0,
+        "p80": 27007363.0,
+        "p90": 29838388.0,
+        "worst_case": 45119559.0,
+        "minimum": 14220085.0,
+        "maximum": 54454017.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 5453107.0,
+          "p50": 5170517.0,
+          "p80": 6390475.0,
+          "p90": 7060351.0,
+          "worst_case": 10676177.0,
+          "minimum": 3364753.0,
+          "maximum": 12884894.0
+        },
+        "cached_input": {
+          "mean": 14281947.0,
+          "p50": 13541830.0,
+          "p80": 16736957.0,
+          "p90": 18491395.0,
+          "worst_case": 27961417.0,
+          "minimum": 8812447.0,
+          "maximum": 33746151.0
+        },
+        "cache_write": {
+          "mean": 1622949.0,
+          "p50": 1538844.0,
+          "p80": 1901927.0,
+          "p90": 2101295.0,
+          "worst_case": 3177434.0,
+          "minimum": 1001414.0,
+          "maximum": 3834790.0
+        },
+        "output": {
+          "mean": 1168523.0,
+          "p50": 1107968.0,
+          "p80": 1369387.0,
+          "p90": 1512932.0,
+          "worst_case": 2287752.0,
+          "minimum": 721018.0,
+          "maximum": 2761049.0
+        },
+        "reasoning_output": {
+          "mean": 519344.0,
+          "p50": 492430.0,
+          "p80": 608617.0,
+          "p90": 672414.0,
+          "worst_case": 1016779.0,
+          "minimum": 320453.0,
+          "maximum": 1227133.0
+        }
+      }
+    },
+    {
+      "task_id": "perf-baseline",
+      "name": "性能基线与回归门禁",
+      "total_tokens": {
+        "mean": 20806289.0,
+        "p50": 19501463.0,
+        "p80": 24562859.0,
+        "p90": 27847371.0,
+        "worst_case": 40691498.0,
+        "minimum": 12707729.0,
+        "maximum": 50106065.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 5016745.0,
+          "p50": 4702129.0,
+          "p80": 5922517.0,
+          "p90": 6714468.0,
+          "worst_case": 9811402.0,
+          "minimum": 3064046.0,
+          "maximum": 12081412.0
+        },
+        "cached_input": {
+          "mean": 13201960.0,
+          "p50": 12374025.0,
+          "p80": 15585571.0,
+          "p90": 17669651.0,
+          "worst_case": 25819479.0,
+          "minimum": 8063280.0,
+          "maximum": 31793189.0
+        },
+        "cache_write": {
+          "mean": 1452216.0,
+          "p50": 1361143.0,
+          "p80": 1714413.0,
+          "p90": 1943662.0,
+          "worst_case": 2840143.0,
+          "minimum": 886961.0,
+          "maximum": 3497251.0
+        },
+        "output": {
+          "mean": 686502.0,
+          "p50": 643449.0,
+          "p80": 810450.0,
+          "p90": 918822.0,
+          "worst_case": 1342613.0,
+          "minimum": 419291.0,
+          "maximum": 1653246.0
+        },
+        "reasoning_output": {
+          "mean": 448867.0,
+          "p50": 420717.0,
+          "p80": 529909.0,
+          "p90": 600768.0,
+          "worst_case": 877862.0,
+          "minimum": 274152.0,
+          "maximum": 1080968.0
+        }
+      }
+    },
+    {
+      "task_id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "total_tokens": {
+        "mean": 17501650.0,
+        "p50": 16419138.0,
+        "p80": 20450876.0,
+        "p90": 23031530.0,
+        "worst_case": 34787238.0,
+        "minimum": 10827426.0,
+        "maximum": 42281963.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 4192012.0,
+          "p50": 3932728.0,
+          "p80": 4898413.0,
+          "p90": 5516534.0,
+          "worst_case": 8332273.0,
+          "minimum": 2593395.0,
+          "maximum": 10127416.0
+        },
+        "cached_input": {
+          "mean": 11135032.0,
+          "p50": 10446308.0,
+          "p80": 13011410.0,
+          "p90": 14653294.0,
+          "worst_case": 22132599.0,
+          "minimum": 6888706.0,
+          "maximum": 26900949.0
+        },
+        "cache_write": {
+          "mean": 1244504.0,
+          "p50": 1167529.0,
+          "p80": 1454216.0,
+          "p90": 1637721.0,
+          "worst_case": 2473643.0,
+          "minimum": 769914.0,
+          "maximum": 3006577.0
+        },
+        "output": {
+          "mean": 563302.0,
+          "p50": 528460.0,
+          "p80": 658224.0,
+          "p90": 741284.0,
+          "worst_case": 1119649.0,
+          "minimum": 348487.0,
+          "maximum": 1360872.0
+        },
+        "reasoning_output": {
+          "mean": 366801.0,
+          "p50": 344114.0,
+          "p80": 428611.0,
+          "p90": 482697.0,
+          "worst_case": 729074.0,
+          "minimum": 226922.0,
+          "maximum": 886149.0
+        }
+      }
+    },
+    {
+      "task_id": "matrix-authority-audit",
+      "name": "路由矩阵权威源审计与口径对齐",
+      "total_tokens": {
+        "mean": 11302709.0,
+        "p50": 10734421.0,
+        "p80": 13153039.0,
+        "p90": 14603087.0,
+        "worst_case": 21484690.0,
+        "minimum": 7165823.0,
+        "maximum": 29230093.0
+      },
+      "by_category": {
+        "input": {
+          "mean": 3294511.0,
+          "p50": 3128867.0,
+          "p80": 3833845.0,
+          "p90": 4256505.0,
+          "worst_case": 6262354.0,
+          "minimum": 2088693.0,
+          "maximum": 8519982.0
+        },
+        "cached_input": {
+          "mean": 6589023.0,
+          "p50": 6257734.0,
+          "p80": 7667691.0,
+          "p90": 8513010.0,
+          "worst_case": 12524707.0,
+          "minimum": 4177386.0,
+          "maximum": 17039965.0
+        },
+        "cache_write": {
+          "mean": 886984.0,
+          "p50": 842387.0,
+          "p80": 1032189.0,
+          "p90": 1145982.0,
+          "worst_case": 1686018.0,
+          "minimum": 562340.0,
+          "maximum": 2293841.0
+        },
+        "output": {
+          "mean": 329451.0,
+          "p50": 312887.0,
+          "p80": 383385.0,
+          "p90": 425651.0,
+          "worst_case": 626235.0,
+          "minimum": 208869.0,
+          "maximum": 851998.0
+        },
+        "reasoning_output": {
+          "mean": 202739.0,
+          "p50": 192546.0,
+          "p80": 235929.0,
+          "p90": 261939.0,
+          "worst_case": 385376.0,
+          "minimum": 128535.0,
+          "maximum": 524307.0
+        }
+      }
+    }
+  ],
+  "static_scan_totals": null,
+  "accounting_rule": "input/cached_input/cache_write/output/reasoning_output are disjoint categories; total is their sum and must never be added back to a category."
+}

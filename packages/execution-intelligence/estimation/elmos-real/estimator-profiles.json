@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "estimator-profiles",
+  "derived_from_samples": 3,
+  "default": {
+    "runtime_multiplier": 0.263,
+    "runtime_measured": true,
+    "token_multiplier": 1.0,
+    "token_measured": false,
+    "confidence": 0.41,
+    "basis": "global"
+  },
+  "by_group": {},
+  "unavailable": [
+    "token: no row carried a positive estimated/actual token pair"
+  ],
+  "rule": "Use a group multiplier only when that group has at least 5 samples (applicable=true); otherwise fall back to the global multiplier and keep the wider interval."
+}

@@ -1,0 +1,163 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "human-effort",
+  "project_id": "elmos",
+  "mode": "verification",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded"
+    ],
+    "exclusions": []
+  },
+  "confidence": 0.6,
+  "assumptions": [
+    "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+    "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+  ],
+  "exclusions": [
+    "Human approval and acceptance time (carried in human_assisted).",
+    "Vendor pricing (supply a verified rate card)."
+  ],
+  "runs": 5000,
+  "seed": 100045,
+  "person_hours": {
+    "mean": 6823.728,
+    "p50": 6815.225,
+    "p80": 7088.551,
+    "p90": 7233.074,
+    "worst_case": 7562.701,
+    "minimum": 5795.952,
+    "maximum": 8137.756
+  },
+  "person_days": {
+    "mean": 852.966,
+    "p50": 851.903,
+    "p80": 886.069,
+    "p90": 904.134,
+    "worst_case": 945.338,
+    "minimum": 724.494,
+    "maximum": 1017.22
+  },
+  "person_months": {
+    "mean": 42.648,
+    "p50": 42.595,
+    "p80": 44.303,
+    "p90": 45.207,
+    "worst_case": 47.267,
+    "minimum": 36.225,
+    "maximum": 50.861
+  },
+  "calendar_weeks": {
+    "mean": 42.936,
+    "p50": 42.827,
+    "p80": 45.071,
+    "p90": 46.265,
+    "worst_case": 48.901,
+    "minimum": 35.098,
+    "maximum": 52.509
+  },
+  "critical_path_work_hours": {
+    "mean": 1717.459,
+    "p50": 1713.083,
+    "p80": 1802.835,
+    "p90": 1850.607,
+    "worst_case": 1956.054,
+    "minimum": 1403.905,
+    "maximum": 2100.372
+  },
+  "role_person_hours": {
+    "architect": {
+      "mean": 489.217,
+      "p50": 488.408,
+      "p80": 514.241,
+      "p90": 528.305,
+      "worst_case": 563.203,
+      "minimum": 391.568,
+      "maximum": 603.161
+    },
+    "backend": {
+      "mean": 1862.407,
+      "p50": 1858.888,
+      "p80": 1947.598,
+      "p90": 1991.247,
+      "worst_case": 2103.966,
+      "minimum": 1538.112,
+      "maximum": 2283.714
+    },
+    "compiler": {
+      "mean": 866.702,
+      "p50": 862.686,
+      "p80": 921.611,
+      "p90": 956.145,
+      "worst_case": 1032.045,
+      "minimum": 665.107,
+      "maximum": 1114.587
+    },
+    "devops": {
+      "mean": 443.654,
+      "p50": 442.218,
+      "p80": 471.046,
+      "p90": 485.863,
+      "worst_case": 520.999,
+      "minimum": 352.372,
+      "maximum": 578.755
+    },
+    "frontend": {
+      "mean": 727.525,
+      "p50": 723.918,
+      "p80": 786.608,
+      "p90": 819.482,
+      "worst_case": 902.355,
+      "minimum": 541.193,
+      "maximum": 996.751
+    },
+    "product": {
+      "mean": 191.91,
+      "p50": 190.55,
+      "p80": 210.726,
+      "p90": 221.018,
+      "worst_case": 242.911,
+      "minimum": 137.013,
+      "maximum": 266.972
+    },
+    "qa": {
+      "mean": 2047.262,
+      "p50": 2042.124,
+      "p80": 2148.781,
+      "p90": 2209.58,
+      "worst_case": 2331.45,
+      "minimum": 1668.458,
+      "maximum": 2537.649
+    },
+    "security": {
+      "mean": 195.051,
+      "p50": 191.358,
+      "p80": 219.847,
+      "p90": 234.142,
+      "worst_case": 259.044,
+      "minimum": 138.718,
+      "maximum": 275.95
+    }
+  },
+  "team": {
+    "architect": 1,
+    "backend": 3,
+    "compiler": 2,
+    "devops": 1,
+    "frontend": 2,
+    "product": 1,
+    "qa": 2,
+    "security": 1
+  },
+  "overhead_multiplier": 1.52,
+  "focus_ratio": 0.68,
+  "same_definition_of_done": true,
+  "baseline_rule": "The human baseline consumes the same task DAG as the system estimate and therefore the same Definition of Done."
+}

@@ -1,0 +1,345 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "token-mix-comparison",
+  "project_tokens_p50": 795559011.0,
+  "forecast": {
+    "counts": {
+      "input": 161421341.0,
+      "cached_input": 423731021.0,
+      "cache_write": 47081225.0,
+      "output": 26903557.0,
+      "reasoning_output": 13451778.0
+    },
+    "total": 672588922.0,
+    "mix": {
+      "input": 0.24,
+      "cached_input": 0.63,
+      "cache_write": 0.07,
+      "output": 0.04,
+      "reasoning_output": 0.02
+    }
+  },
+  "observed": {
+    "counts": {
+      "input": 1600.0,
+      "cached_input": 315392054.0,
+      "cache_write": 2813860.0,
+      "output": 784802.0,
+      "reasoning_output": 155662.0
+    },
+    "total": 319147978.0,
+    "mix": {
+      "input": 5e-06,
+      "cached_input": 0.988231,
+      "cache_write": 0.008817,
+      "output": 0.002459,
+      "reasoning_output": 0.000488
+    },
+    "sessions": 1,
+    "models": [
+      "claude-opus-5"
+    ]
+  },
+  "by_category": [
+    {
+      "category": "input",
+      "forecast_share": 0.24,
+      "observed_share": 5e-06,
+      "delta_share": -0.239995,
+      "ratio": 0.0
+    },
+    {
+      "category": "cached_input",
+      "forecast_share": 0.63,
+      "observed_share": 0.988231,
+      "delta_share": 0.358231,
+      "ratio": 1.5686
+    },
+    {
+      "category": "cache_write",
+      "forecast_share": 0.07,
+      "observed_share": 0.008817,
+      "delta_share": -0.061183,
+      "ratio": 0.126
+    },
+    {
+      "category": "output",
+      "forecast_share": 0.04,
+      "observed_share": 0.002459,
+      "delta_share": -0.037541,
+      "ratio": 0.0615
+    },
+    {
+      "category": "reasoning_output",
+      "forecast_share": 0.02,
+      "observed_share": 0.000488,
+      "delta_share": -0.019512,
+      "ratio": 0.0244
+    }
+  ],
+  "warmup": {
+    "depths": [
+      {
+        "turns": 5,
+        "is_full_session": false,
+        "total_tokens": 433192,
+        "mix": {
+          "input": 2.3e-05,
+          "cached_input": 0.585796,
+          "cache_write": 0.410178,
+          "output": 0.001734,
+          "reasoning_output": 0.002269
+        }
+      },
+      {
+        "turns": 10,
+        "is_full_session": false,
+        "total_tokens": 896990,
+        "mix": {
+          "input": 2.2e-05,
+          "cached_input": 0.785763,
+          "cache_write": 0.210867,
+          "output": 0.001434,
+          "reasoning_output": 0.001913
+        }
+      },
+      {
+        "turns": 20,
+        "is_full_session": false,
+        "total_tokens": 1944704,
+        "mix": {
+          "input": 2.1e-05,
+          "cached_input": 0.882307,
+          "cache_write": 0.112311,
+          "output": 0.002149,
+          "reasoning_output": 0.003212
+        }
+      },
+      {
+        "turns": 50,
+        "is_full_session": false,
+        "total_tokens": 6238296,
+        "mix": {
+          "input": 1.6e-05,
+          "cached_input": 0.937481,
+          "cache_write": 0.051644,
+          "output": 0.008936,
+          "reasoning_output": 0.001923
+        }
+      },
+      {
+        "turns": 100,
+        "is_full_session": false,
+        "total_tokens": 16437695,
+        "mix": {
+          "input": 1.2e-05,
+          "cached_input": 0.967854,
+          "cache_write": 0.024373,
+          "output": 0.006482,
+          "reasoning_output": 0.001279
+        }
+      },
+      {
+        "turns": 200,
+        "is_full_session": false,
+        "total_tokens": 46370818,
+        "mix": {
+          "input": 9e-06,
+          "cached_input": 0.97815,
+          "cache_write": 0.01454,
+          "output": 0.006295,
+          "reasoning_output": 0.001006
+        }
+      },
+      {
+        "turns": 500,
+        "is_full_session": false,
+        "total_tokens": 209255080,
+        "mix": {
+          "input": 5e-06,
+          "cached_input": 0.989237,
+          "cache_write": 0.007668,
+          "output": 0.002585,
+          "reasoning_output": 0.000505
+        }
+      },
+      {
+        "turns": 800,
+        "is_full_session": true,
+        "total_tokens": 319147978,
+        "mix": {
+          "input": 5e-06,
+          "cached_input": 0.988231,
+          "cache_write": 0.008817,
+          "output": 0.002459,
+          "reasoning_output": 0.000488
+        }
+      }
+    ],
+    "cached_input_share_at_shallowest": 0.585796,
+    "cached_input_share_at_full_session": 0.988231,
+    "warmup_spread": 0.402435,
+    "per_turn_cached_share": {
+      "p10": 0.9742,
+      "p50": 0.9943,
+      "p90": 0.9985,
+      "turns_below_half": 6,
+      "turns": 800
+    },
+    "how_to_use": "Pick the row whose turn count is closest to the task being priced, rather than the full-session row. The full-session mix is the best case for cache reuse and the worst choice for a short task."
+  },
+  "cost_restatement": [
+    {
+      "model_id": "openai-gpt-5-6-luna",
+      "display_name": "gpt-5.6-luna (short context)",
+      "currency": "USD",
+      "cost_under_forecast_mix": 52.75,
+      "cost_under_observed_mix": 9.27,
+      "overstatement_factor": 5.691,
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "deepseek-v4-flash-peak",
+      "display_name": "deepseek-v4-flash (peak hours)",
+      "currency": "USD",
+      "cost_under_forecast_mix": 154.04,
+      "cost_under_observed_mix": 14.1,
+      "overstatement_factor": 10.922,
+      "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "deepseek-v4-pro-peak",
+      "display_name": "deepseek-v4-pro (peak hours)",
+      "currency": "USD",
+      "cost_under_forecast_mix": 463.11,
+      "cost_under_observed_mix": 43.88,
+      "overstatement_factor": 10.554,
+      "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "openai-gpt-5-6-terra",
+      "display_name": "gpt-5.6-terra (short context)",
+      "currency": "USD",
+      "cost_under_forecast_mix": 527.46,
+      "cost_under_observed_mix": 92.69,
+      "overstatement_factor": 5.691,
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "anthropic-haiku-4-5",
+      "display_name": "Claude Haiku 4.5",
+      "currency": "USD",
+      "cost_under_forecast_mix": 549.33,
+      "cost_under_observed_mix": 99.11,
+      "overstatement_factor": 5.542,
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "anthropic-sonnet-5",
+      "display_name": "Claude Sonnet 5",
+      "currency": "USD",
+      "cost_under_forecast_mix": 1098.67,
+      "cost_under_observed_mix": 198.23,
+      "overstatement_factor": 5.542,
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "openai-gpt-5-6-sol",
+      "display_name": "gpt-5.6-sol (short context)",
+      "currency": "USD",
+      "cost_under_forecast_mix": 1318.64,
+      "cost_under_observed_mix": 231.72,
+      "overstatement_factor": 5.691,
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    },
+    {
+      "model_id": "anthropic-opus-5",
+      "display_name": "Claude Opus 5",
+      "currency": "USD",
+      "cost_under_forecast_mix": 2746.67,
+      "cost_under_observed_mix": 495.57,
+      "overstatement_factor": 5.542,
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "verified_at": "2026-08-19T00:00:00Z"
+    }
+  ],
+  "cost_by_session_depth": [
+    {
+      "turns": 5,
+      "is_full_session": false,
+      "cost_under_observed_mix": 2352.23,
+      "overstatement_factor": 1.168
+    },
+    {
+      "turns": 10,
+      "is_full_session": false,
+      "cost_under_observed_mix": 1427.7,
+      "overstatement_factor": 1.924
+    },
+    {
+      "turns": 20,
+      "is_full_session": false,
+      "cost_under_observed_mix": 1016.11,
+      "overstatement_factor": 2.703
+    },
+    {
+      "turns": 50,
+      "is_full_session": false,
+      "cost_under_observed_mix": 845.74,
+      "overstatement_factor": 3.248
+    },
+    {
+      "turns": 100,
+      "is_full_session": false,
+      "cost_under_observed_mix": 660.59,
+      "overstatement_factor": 4.158
+    },
+    {
+      "turns": 200,
+      "is_full_session": false,
+      "cost_under_observed_mix": 606.63,
+      "overstatement_factor": 4.528
+    },
+    {
+      "turns": 500,
+      "is_full_session": false,
+      "cost_under_observed_mix": 493.1,
+      "overstatement_factor": 5.57
+    },
+    {
+      "turns": 800,
+      "is_full_session": true,
+      "cost_under_observed_mix": 495.57,
+      "overstatement_factor": 5.542
+    }
+  ],
+  "cost_by_session_depth_basis": {
+    "reference_model": "anthropic-opus-5",
+    "cost_under_forecast_mix": 2746.67,
+    "currency": "USD"
+  },
+  "overstatement_factor_range": [
+    5.542,
+    10.922
+  ],
+  "overstatement_factor_is_full_session_only": true,
+  "overstatement_caveat": "The headline factor compares the assumed mix against the FULL-SESSION observed mix. It is the largest factor, not the typical one. Short tasks never accumulate that much cache reuse and are dominated by cache writes, which are priced above fresh input, so for them the assumed mix is close to right. See cost_by_session_depth.",
+  "cross_currency_comparison": null,
+  "sample_sufficient": false,
+  "minimum_sessions": 20,
+  "applied_to_forecast": false,
+  "why_not_applied": "这里没有任何东西被写回预测。实测占比只属于它来源的那些会话、那个模型、那类工作；判断它能不能推广到整个项目，是人的判断，不是脚本的判断。况且 1 个会话对门槛 20，就算该推广也过不了样本关。",
+  "why_this_matters": "五个分类之间的单价相差最多五十倍。一份预测可以把 token 总量算得很准，账单却错一个数量级——只比总量，永远看不出来。",
+  "caveats": [
+    "实测占比测的是那几个会话，不是这个项目。",
+    "缓存读取的占比高度依赖会话跑多久：缓存是**攒出来的**，第一轮无缓存可读。实测里前 5 轮只有 58.6%，前 50 轮 93.8%，整场 98.8%。用整场占比去算一个短任务会**低估**费用——和这份报告要揭示的错误同一类，只是方向相反。见 warmup 表。",
+    "费率是公开列表价，不是账户议价。费率变，这里的钱数就变。"
+  ]
+}

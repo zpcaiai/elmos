@@ -1,0 +1,868 @@
+{
+  "schema_version": "1.0.0",
+  "dag_id": "elmos-generated",
+  "generated_for": "/sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos",
+  "generated_by": "decomposition-engine",
+  "drivers": {
+    "routes": 156.0,
+    "languages": 13.0,
+    "pending_languages": 3.0,
+    "pending_routes": 66.0,
+    "language_pairs": 156.0,
+    "corpus_mtokens": 95.0218,
+    "kfiles": 45.79
+  },
+  "model_version": "1.0.0",
+  "provenance": [
+    "Derived from a scope baseline; every duration and token figure is base + coefficient x driver.",
+    "Coefficients live in config/decomposition-model.json and are seeds, not measurements.",
+    "Run `calibrate` then `apply-calibration` after the first executed milestone."
+  ],
+  "tasks": [
+    {
+      "id": "scope-authority-audit",
+      "name": "范围与权威源审计",
+      "depends_on": [],
+      "category": "discovery",
+      "complexity": "medium",
+      "priority": 100,
+      "system": {
+        "optimistic_minutes": 48.74,
+        "most_likely_minutes": 81.23,
+        "pessimistic_minutes": 170.58,
+        "worker_units": 1,
+        "rework_probability": 0.1,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.02,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 2975741.0,
+          "cached_input": 7811321.0,
+          "cache_write": 867925.0,
+          "output": 495957.0,
+          "reasoning_output": 247978.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 98009
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 12.58,
+          "backend": 8.0,
+          "qa": 4.0,
+          "product": 6.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "scope-authority-audit",
+        "item": null,
+        "minutes_formula": {
+          "base": 30,
+          "per": {
+            "kfiles": 0.6,
+            "corpus_mtokens": 0.25
+          },
+          "floor": 30,
+          "ceiling": 240
+        },
+        "total_tokens_formula": {
+          "base": 3000000,
+          "per": {
+            "corpus_mtokens": 70000,
+            "kfiles": 60000
+          },
+          "floor": 3000000,
+          "ceiling": 40000000
+        }
+      }
+    },
+    {
+      "id": "analyzer-flutter",
+      "name": "flutter analyzer 补齐（PENDING_ANALYZER）",
+      "depends_on": [
+        "scope-authority-audit"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 92,
+      "system": {
+        "optimistic_minutes": 301.0,
+        "most_likely_minutes": 602.0,
+        "pessimistic_minutes": 1444.8,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.2,
+        "failure_probability": 0.15,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 10008000.0,
+          "cached_input": 26271000.0,
+          "cache_write": 2919000.0,
+          "output": 1668000.0,
+          "reasoning_output": 834000.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 146000
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 20.0,
+          "compiler": 146.0,
+          "backend": 50.0,
+          "qa": 40.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "analyzer",
+        "item": "flutter",
+        "minutes_formula": {
+          "base": 420,
+          "per": {
+            "languages": 14
+          },
+          "floor": 300,
+          "ceiling": 1800
+        },
+        "total_tokens_formula": {
+          "base": 30000000,
+          "per": {
+            "languages": 900000
+          },
+          "floor": 20000000,
+          "ceiling": 90000000
+        }
+      }
+    },
+    {
+      "id": "analyzer-kotlin",
+      "name": "kotlin analyzer 补齐（PENDING_ANALYZER）",
+      "depends_on": [
+        "scope-authority-audit"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 92,
+      "system": {
+        "optimistic_minutes": 301.0,
+        "most_likely_minutes": 602.0,
+        "pessimistic_minutes": 1444.8,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.2,
+        "failure_probability": 0.15,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 10008000.0,
+          "cached_input": 26271000.0,
+          "cache_write": 2919000.0,
+          "output": 1668000.0,
+          "reasoning_output": 834000.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 146000
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 20.0,
+          "compiler": 146.0,
+          "backend": 50.0,
+          "qa": 40.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "analyzer",
+        "item": "kotlin",
+        "minutes_formula": {
+          "base": 420,
+          "per": {
+            "languages": 14
+          },
+          "floor": 300,
+          "ceiling": 1800
+        },
+        "total_tokens_formula": {
+          "base": 30000000,
+          "per": {
+            "languages": 900000
+          },
+          "floor": 20000000,
+          "ceiling": 90000000
+        }
+      }
+    },
+    {
+      "id": "analyzer-react",
+      "name": "react analyzer 补齐（PENDING_ANALYZER）",
+      "depends_on": [
+        "scope-authority-audit"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 92,
+      "system": {
+        "optimistic_minutes": 301.0,
+        "most_likely_minutes": 602.0,
+        "pessimistic_minutes": 1444.8,
+        "worker_units": 2,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.2,
+        "failure_probability": 0.15,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 10008000.0,
+          "cached_input": 26271000.0,
+          "cache_write": 2919000.0,
+          "output": 1668000.0,
+          "reasoning_output": 834000.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 146000
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 20.0,
+          "compiler": 146.0,
+          "backend": 50.0,
+          "qa": 40.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "analyzer",
+        "item": "react",
+        "minutes_formula": {
+          "base": 420,
+          "per": {
+            "languages": 14
+          },
+          "floor": 300,
+          "ceiling": 1800
+        },
+        "total_tokens_formula": {
+          "base": 30000000,
+          "per": {
+            "languages": 900000
+          },
+          "floor": 20000000,
+          "ceiling": 90000000
+        }
+      }
+    },
+    {
+      "id": "route-packs",
+      "name": "待补路由包生成与登记",
+      "depends_on": [
+        "analyzer-flutter",
+        "analyzer-kotlin",
+        "analyzer-react"
+      ],
+      "category": "generation",
+      "complexity": "high",
+      "priority": 85,
+      "system": {
+        "optimistic_minutes": 389.4,
+        "most_likely_minutes": 708.0,
+        "pessimistic_minutes": 1628.4,
+        "worker_units": 3,
+        "rework_probability": 0.25,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.1,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 15552000.0,
+          "cached_input": 40824000.0,
+          "cache_write": 4536000.0,
+          "output": 2592000.0,
+          "reasoning_output": 1296000.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 119800
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 20.0,
+          "backend": 165.6,
+          "frontend": 106.0,
+          "qa": 63.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "route-packs",
+        "item": null,
+        "minutes_formula": {
+          "base": 180,
+          "per": {
+            "pending_routes": 8
+          },
+          "floor": 180,
+          "ceiling": 2400
+        },
+        "total_tokens_formula": {
+          "base": 12000000,
+          "per": {
+            "pending_routes": 800000
+          },
+          "floor": 12000000,
+          "ceiling": 140000000
+        }
+      }
+    },
+    {
+      "id": "semantic-divergence",
+      "name": "两两语义分歧表与 IR 归一",
+      "depends_on": [
+        "route-packs"
+      ],
+      "category": "engine",
+      "complexity": "high",
+      "priority": 80,
+      "system": {
+        "optimistic_minutes": 389.4,
+        "most_likely_minutes": 708.0,
+        "pessimistic_minutes": 1557.6,
+        "worker_units": 2,
+        "rework_probability": 0.28,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.08,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 15580800.0,
+          "cached_input": 40899600.0,
+          "cache_write": 4544400.0,
+          "output": 2596800.0,
+          "reasoning_output": 1298400.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 179000
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 40.0,
+          "compiler": 142.4,
+          "backend": 60.0,
+          "qa": 30.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "semantic-divergence",
+        "item": null,
+        "minutes_formula": {
+          "base": 240,
+          "per": {
+            "language_pairs": 3.0
+          },
+          "floor": 240,
+          "ceiling": 2400
+        },
+        "total_tokens_formula": {
+          "base": 15000000,
+          "per": {
+            "language_pairs": 320000
+          },
+          "floor": 15000000,
+          "ceiling": 120000000
+        }
+      }
+    },
+    {
+      "id": "analyzer-performance",
+      "name": "Analyzer 缓存、批量化与仓库级并行",
+      "depends_on": [
+        "scope-authority-audit"
+      ],
+      "category": "performance",
+      "complexity": "medium",
+      "priority": 76,
+      "system": {
+        "optimistic_minutes": 237.6,
+        "most_likely_minutes": 396.0,
+        "pessimistic_minutes": 831.6,
+        "worker_units": 2,
+        "rework_probability": 0.2,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.07,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 4920000.0,
+          "cached_input": 12915000.0,
+          "cache_write": 1435000.0,
+          "output": 820000.0,
+          "reasoning_output": 410000.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 109500
+      },
+      "human": {
+        "hours_by_role": {
+          "backend": 70.0,
+          "compiler": 40.0,
+          "qa": 24.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "analyzer-performance",
+        "item": null,
+        "minutes_formula": {
+          "base": 240,
+          "per": {
+            "languages": 12
+          },
+          "floor": 180,
+          "ceiling": 1200
+        },
+        "total_tokens_formula": {
+          "base": 14000000,
+          "per": {
+            "languages": 500000
+          },
+          "floor": 10000000,
+          "ceiling": 60000000
+        }
+      }
+    },
+    {
+      "id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通",
+      "depends_on": [
+        "semantic-divergence",
+        "analyzer-performance"
+      ],
+      "category": "verification",
+      "complexity": "high",
+      "priority": 70,
+      "system": {
+        "optimistic_minutes": 352.8,
+        "most_likely_minutes": 588.0,
+        "pessimistic_minutes": 1411.2,
+        "worker_units": 4,
+        "rework_probability": 0.25,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.18,
+        "recovery_optimistic_minutes": 10,
+        "recovery_most_likely_minutes": 30,
+        "recovery_pessimistic_minutes": 120,
+        "token_profile": {
+          "input": 16147200.0,
+          "cached_input": 42386400.0,
+          "cache_write": 4709600.0,
+          "output": 2691200.0,
+          "reasoning_output": 1345600.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 91200
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 169.2,
+          "backend": 40.0,
+          "devops": 24.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "matrix-small",
+        "item": null,
+        "minutes_formula": {
+          "base": 120,
+          "per": {
+            "routes": 3.0
+          },
+          "floor": 120,
+          "ceiling": 2400
+        },
+        "total_tokens_formula": {
+          "base": 8000000,
+          "per": {
+            "routes": 380000
+          },
+          "floor": 8000000,
+          "ceiling": 120000000
+        }
+      }
+    },
+    {
+      "id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通",
+      "depends_on": [
+        "matrix-small"
+      ],
+      "category": "verification",
+      "complexity": "high",
+      "priority": 68,
+      "system": {
+        "optimistic_minutes": 724.32,
+        "most_likely_minutes": 1207.2,
+        "pessimistic_minutes": 3018.0,
+        "worker_units": 4,
+        "rework_probability": 0.3,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.22,
+        "recovery_optimistic_minutes": 15,
+        "recovery_most_likely_minutes": 45,
+        "recovery_pessimistic_minutes": 180,
+        "token_profile": {
+          "input": 30316800.0,
+          "cached_input": 79581600.0,
+          "cache_write": 8842400.0,
+          "output": 5052800.0,
+          "reasoning_output": 2526400.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 144600
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 261.6,
+          "backend": 70.0,
+          "devops": 36.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "matrix-medium",
+        "item": null,
+        "minutes_formula": {
+          "base": 240,
+          "per": {
+            "routes": 6.2
+          },
+          "floor": 240,
+          "ceiling": 4800
+        },
+        "total_tokens_formula": {
+          "base": 14000000,
+          "per": {
+            "routes": 720000
+          },
+          "floor": 14000000,
+          "ceiling": 200000000
+        }
+      }
+    },
+    {
+      "id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "depends_on": [
+        "matrix-medium"
+      ],
+      "category": "verification",
+      "complexity": "medium",
+      "priority": 64,
+      "system": {
+        "optimistic_minutes": 461.76,
+        "most_likely_minutes": 710.4,
+        "pessimistic_minutes": 1562.88,
+        "worker_units": 3,
+        "rework_probability": 0.18,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.2,
+        "recovery_optimistic_minutes": 15,
+        "recovery_most_likely_minutes": 45,
+        "recovery_pessimistic_minutes": 180,
+        "token_profile": {
+          "input": 7430400.0,
+          "cached_input": 19504800.0,
+          "cache_write": 2167200.0,
+          "output": 1238400.0,
+          "reasoning_output": 619200.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 93400
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 122.4,
+          "devops": 40.0,
+          "architect": 20.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "frozen-rerun-evidence",
+        "item": null,
+        "minutes_formula": {
+          "base": 180,
+          "per": {
+            "routes": 3.4
+          },
+          "floor": 180,
+          "ceiling": 2400
+        },
+        "total_tokens_formula": {
+          "base": 6000000,
+          "per": {
+            "routes": 160000
+          },
+          "floor": 6000000,
+          "ceiling": 60000000
+        }
+      }
+    },
+    {
+      "id": "independent-client-verification",
+      "name": "独立客户仓库验证",
+      "depends_on": [
+        "frozen-rerun-evidence"
+      ],
+      "category": "verification",
+      "complexity": "high",
+      "priority": 60,
+      "system": {
+        "optimistic_minutes": 778.8,
+        "most_likely_minutes": 1416.0,
+        "pessimistic_minutes": 3681.6,
+        "worker_units": 3,
+        "rework_probability": 0.35,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 1.3,
+        "failure_probability": 0.25,
+        "recovery_optimistic_minutes": 20,
+        "recovery_most_likely_minutes": 60,
+        "recovery_pessimistic_minutes": 240,
+        "token_profile": {
+          "input": 30412800.0,
+          "cached_input": 79833600.0,
+          "cache_write": 8870400.0,
+          "output": 5068800.0,
+          "reasoning_output": 2534400.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 182400
+      },
+      "human": {
+        "hours_by_role": {
+          "qa": 224.8,
+          "backend": 90.0,
+          "architect": 30.0,
+          "product": 30.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "independent-client-verification",
+        "item": null,
+        "minutes_formula": {
+          "base": 480,
+          "per": {
+            "routes": 6.0
+          },
+          "floor": 480,
+          "ceiling": 5400
+        },
+        "total_tokens_formula": {
+          "base": 30000000,
+          "per": {
+            "routes": 620000
+          },
+          "floor": 30000000,
+          "ceiling": 220000000
+        }
+      }
+    },
+    {
+      "id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "depends_on": [
+        "matrix-medium"
+      ],
+      "category": "compliance",
+      "complexity": "medium",
+      "priority": 56,
+      "system": {
+        "optimistic_minutes": 182.0,
+        "most_likely_minutes": 280.0,
+        "pessimistic_minutes": 560.0,
+        "worker_units": 1,
+        "rework_probability": 0.15,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.05,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 2772000.0,
+          "cached_input": 7276500.0,
+          "cache_write": 808500.0,
+          "output": 462000.0,
+          "reasoning_output": 231000.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 75600
+      },
+      "human": {
+        "hours_by_role": {
+          "security": 92.5,
+          "devops": 24.0,
+          "backend": 16.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "security-license",
+        "item": null,
+        "minutes_formula": {
+          "base": 150,
+          "per": {
+            "languages": 10
+          },
+          "floor": 120,
+          "ceiling": 900
+        },
+        "total_tokens_formula": {
+          "base": 7000000,
+          "per": {
+            "languages": 350000
+          },
+          "floor": 6000000,
+          "ceiling": 40000000
+        }
+      }
+    },
+    {
+      "id": "certification-package",
+      "name": "认证材料与交付包",
+      "depends_on": [
+        "independent-client-verification",
+        "security-license"
+      ],
+      "category": "delivery",
+      "complexity": "medium",
+      "priority": 50,
+      "system": {
+        "optimistic_minutes": 238.68,
+        "most_likely_minutes": 367.2,
+        "pessimistic_minutes": 771.12,
+        "worker_units": 1,
+        "rework_probability": 0.15,
+        "rework_multiplier_min": 0.2,
+        "rework_multiplier_max": 0.9,
+        "failure_probability": 0.04,
+        "recovery_optimistic_minutes": 3,
+        "recovery_most_likely_minutes": 12,
+        "recovery_pessimistic_minutes": 60,
+        "token_profile": {
+          "input": 5289600.0,
+          "cached_input": 13885200.0,
+          "cache_write": 1542800.0,
+          "output": 881600.0,
+          "reasoning_output": 440800.0,
+          "uncertainty_min": 0.8,
+          "uncertainty_mode": 1.0,
+          "uncertainty_max": 1.8
+        },
+        "peak_context_tokens": 78720
+      },
+      "human": {
+        "hours_by_role": {
+          "architect": 40.0,
+          "product": 50.0,
+          "qa": 40.0,
+          "devops": 24.0,
+          "security": 16.0
+        },
+        "uncertainty_min": 0.8,
+        "uncertainty_mode": 1.0,
+        "uncertainty_max": 1.7
+      },
+      "derivation": {
+        "template": "certification-package",
+        "item": null,
+        "minutes_formula": {
+          "base": 180,
+          "per": {
+            "routes": 1.2
+          },
+          "floor": 150,
+          "ceiling": 1200
+        },
+        "total_tokens_formula": {
+          "base": 8000000,
+          "per": {
+            "routes": 90000
+          },
+          "floor": 7000000,
+          "ceiling": 45000000
+        }
+      }
+    }
+  ]
+}

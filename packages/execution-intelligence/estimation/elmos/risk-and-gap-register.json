@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "risk-and-gap-register",
+  "gaps": [
+    {
+      "id": "route-directory-count-differs",
+      "severity": "low",
+      "kind": "informational",
+      "detail": "176 route directories on disk vs declared route_count=156; surplus reconciled: 20 retained pack(s) = deprecated_route_keys of 'eleven-language-complete-110'",
+      "needs_human_input": false
+    },
+    {
+      "id": "pending-analyzer-flutter",
+      "severity": "high",
+      "kind": "missing-capability",
+      "detail": "language 'flutter' is declared in the matrix but its analyzer is PENDING_ANALYZER",
+      "needs_human_input": false
+    },
+    {
+      "id": "pending-analyzer-kotlin",
+      "severity": "high",
+      "kind": "missing-capability",
+      "detail": "language 'kotlin' is declared in the matrix but its analyzer is PENDING_ANALYZER",
+      "needs_human_input": false
+    },
+    {
+      "id": "pending-analyzer-react",
+      "severity": "high",
+      "kind": "missing-capability",
+      "detail": "language 'react' is declared in the matrix but its analyzer is PENDING_ANALYZER",
+      "needs_human_input": false
+    },
+    {
+      "id": "historical-denominators-in-prose",
+      "severity": "low",
+      "kind": "informational",
+      "detail": "9 non-authoritative document(s) quote an older denominator. That is usually correct as history; it is listed so nobody quotes one by accident.",
+      "evidence": {
+        ".ai/CODE_LEVEL_BACKLOG.md": [
+          24
+        ],
+        ".ai/FINDINGS-2026-08-18-claude.md": [
+          182
+        ],
+        ".ai/FINDINGS-2026-08-19-elmos-polyglot-skills-assessment.md": [
+          1015
+        ],
+        ".ai/NODE_TOOLCHAIN_PIN_DRIFT.md": [
+          110
+        ],
+        ".ai/R10_INDEPENDENT_VERIFICATION.md": [
+          90,
+          182
+        ],
+        ".ai/TEST_RESULTS.md": [
+          90,
+          182
+        ],
+        "docs/BUSINESS_LINE_CLOSURE_MATRIX.md": [
+          33,
+          409,
+          1015
+        ],
+        "docs/INDEPENDENT_VERIFICATION.md": [
+          30
+        ],
+        "docs/cross-language-equivalence-gap-plan.md": [
+          30
+        ]
+      },
+      "needs_human_input": false
+    },
+    {
+      "id": "oversized-skills",
+      "severity": "medium",
+      "kind": "context-pressure",
+      "detail": "40 SKILL.md bodies exceed the activation-cost threshold",
+      "evidence": [
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+        "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+        "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+        "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md"
+      ],
+      "needs_human_input": false
+    },
+    {
+      "id": "unscanned-files",
+      "severity": "low",
+      "kind": "coverage",
+      "detail": "13 files were skipped (too large or not UTF-8) and are not in any total",
+      "needs_human_input": false
+    }
+  ],
+  "counts_by_severity": {
+    "high": 3,
+    "medium": 1,
+    "low": 3
+  },
+  "rule": "A gap with needs_human_input=true blocks a production-grade forecast; the auditor will not invent the answer."
+}

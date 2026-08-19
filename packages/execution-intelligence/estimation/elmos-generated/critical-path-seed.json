@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "critical-path-seed",
+  "dag_id": "elmos-generated",
+  "critical_path": [
+    "scope-authority-audit",
+    "analyzer-flutter",
+    "route-packs",
+    "semantic-divergence",
+    "matrix-small",
+    "matrix-medium",
+    "frozen-rerun-evidence",
+    "independent-client-verification",
+    "certification-package"
+  ],
+  "critical_path_minutes": 6388.03,
+  "critical_path_hours": 106.467,
+  "task_count": 13,
+  "total_task_minutes": 8268.03,
+  "median_task_minutes": 602.0,
+  "max_theoretical_speedup": 1.294,
+  "interpretation": "This is the no-contention lower bound. The Monte Carlo wall-clock is longer because it adds worker contention, rework and recovery."
+}

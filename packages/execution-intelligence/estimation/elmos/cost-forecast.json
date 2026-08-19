@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "cost-forecast",
+  "project_id": "elmos",
+  "mode": "verification",
+  "definition_of_done": {
+    "level": "production_verified",
+    "checks": [
+      "source-compiles",
+      "unit-tests",
+      "integration-tests",
+      "behavioral-equivalence",
+      "security-and-license-scan",
+      "performance-baseline",
+      "evidence-recorded"
+    ],
+    "exclusions": []
+  },
+  "confidence": 0.6,
+  "assumptions": [
+    "Seeded by the scope auditor from measured repository facts plus configured defaults.",
+    "Durations and token profiles are seeds, not measurements; calibrate after the first milestone."
+  ],
+  "exclusions": [
+    "Human approval and acceptance time (carried in human_assisted).",
+    "Vendor pricing (supply a verified rate card)."
+  ],
+  "registry_version": "2026-08-19-verified-list-prices",
+  "base_currency": "USD",
+  "currencies": [
+    "USD"
+  ],
+  "models": [
+    {
+      "model_id": "anthropic-opus-5",
+      "provider": "anthropic",
+      "display_name": "Claude Opus 5",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 2664.3432,
+        "p50": 2641.7244,
+        "p80": 2874.9757,
+        "p90": 3013.5856,
+        "worst_case": 3367.834,
+        "minimum": 2016.3456,
+        "maximum": 3745.9097
+      },
+      "mean_cost_by_category": {
+        "input": 970.351939,
+        "cached_input": 254.618416,
+        "cache_write": 352.172736,
+        "output": 671.458932,
+        "reasoning_output": 415.741209
+      }
+    },
+    {
+      "model_id": "anthropic-sonnet-5",
+      "provider": "anthropic",
+      "display_name": "Claude Sonnet 5",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 1065.7373,
+        "p50": 1056.6897,
+        "p80": 1149.9903,
+        "p90": 1205.4342,
+        "worst_case": 1347.1336,
+        "minimum": 806.5382,
+        "maximum": 1498.3639
+      },
+      "mean_cost_by_category": {
+        "input": 388.140776,
+        "cached_input": 101.847366,
+        "cache_write": 140.869095,
+        "output": 268.583573,
+        "reasoning_output": 166.296483
+      }
+    },
+    {
+      "model_id": "anthropic-haiku-4-5",
+      "provider": "anthropic",
+      "display_name": "Claude Haiku 4.5",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 532.8686,
+        "p50": 528.3449,
+        "p80": 574.9951,
+        "p90": 602.7171,
+        "worst_case": 673.5668,
+        "minimum": 403.2691,
+        "maximum": 749.1819
+      },
+      "mean_cost_by_category": {
+        "input": 194.070388,
+        "cached_input": 50.923683,
+        "cache_write": 70.434547,
+        "output": 134.291786,
+        "reasoning_output": 83.148242
+      }
+    },
+    {
+      "model_id": "openai-gpt-5-6-sol",
+      "provider": "openai",
+      "display_name": "gpt-5.6-sol (short context)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 1264.8053,
+        "p50": 1253.8568,
+        "p80": 1363.8141,
+        "p90": 1430.5374,
+        "worst_case": 1599.4582,
+        "minimum": 957.5072,
+        "maximum": 1775.6992
+      },
+      "mean_cost_by_category": {
+        "input": 485.17597,
+        "cached_input": 127.309208,
+        "cache_write": 0.0,
+        "output": 402.875359,
+        "reasoning_output": 249.444725
+      }
+    },
+    {
+      "model_id": "openai-gpt-5-6-terra",
+      "provider": "openai",
+      "display_name": "gpt-5.6-terra (short context)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 505.9221,
+        "p50": 501.5427,
+        "p80": 545.5256,
+        "p90": 572.215,
+        "worst_case": 639.7833,
+        "minimum": 383.0029,
+        "maximum": 710.2797
+      },
+      "mean_cost_by_category": {
+        "input": 194.070388,
+        "cached_input": 50.923683,
+        "cache_write": 0.0,
+        "output": 161.150144,
+        "reasoning_output": 99.77789
+      }
+    },
+    {
+      "model_id": "openai-gpt-5-6-luna",
+      "provider": "openai",
+      "display_name": "gpt-5.6-luna (short context)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://developers.openai.com/api/docs/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 50.5922,
+        "p50": 50.1543,
+        "p80": 54.5526,
+        "p90": 57.2215,
+        "worst_case": 63.9783,
+        "minimum": 38.3003,
+        "maximum": 71.028
+      },
+      "mean_cost_by_category": {
+        "input": 19.407039,
+        "cached_input": 5.092368,
+        "cache_write": 0.0,
+        "output": 16.115014,
+        "reasoning_output": 9.977789
+      }
+    },
+    {
+      "model_id": "deepseek-v4-pro-peak",
+      "provider": "deepseek",
+      "display_name": "deepseek-v4-pro (peak hours)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 450.7918,
+        "p50": 446.9484,
+        "p80": 486.4556,
+        "p90": 509.962,
+        "worst_case": 570.3299,
+        "minimum": 341.0004,
+        "maximum": 634.5737
+      },
+      "mean_cost_by_category": {
+        "input": 256.172912,
+        "cached_input": 22.406421,
+        "cache_write": 0.0,
+        "output": 106.359095,
+        "reasoning_output": 65.853407
+      }
+    },
+    {
+      "model_id": "deepseek-v4-flash-peak",
+      "provider": "deepseek",
+      "display_name": "deepseek-v4-flash (peak hours)",
+      "currency": "USD",
+      "effective_date": "2026-08-19",
+      "verified_at": "2026-08-19T00:00:00Z",
+      "source_reference": "https://api-docs.deepseek.com/quick_start/pricing",
+      "billing_mode": "api",
+      "not_for_billing": false,
+      "cost": {
+        "mean": 149.9245,
+        "p50": 148.6453,
+        "p80": 161.7818,
+        "p90": 169.607,
+        "worst_case": 189.6773,
+        "minimum": 113.41,
+        "maximum": 211.0408
+      },
+      "mean_cost_by_category": {
+        "input": 85.390971,
+        "cached_input": 7.129316,
+        "cache_write": 0.0,
+        "output": 35.453032,
+        "reasoning_output": 21.951136
+      }
+    }
+  ],
+  "rankings_by_currency": {
+    "USD": {
+      "ranked_model_ids_by_p50": [
+        "openai-gpt-5-6-luna",
+        "deepseek-v4-flash-peak",
+        "deepseek-v4-pro-peak",
+        "openai-gpt-5-6-terra",
+        "anthropic-haiku-4-5",
+        "anthropic-sonnet-5",
+        "openai-gpt-5-6-sol",
+        "anthropic-opus-5"
+      ],
+      "cheapest_p50": "openai-gpt-5-6-luna",
+      "ranking_pool": "verified_rates"
+    }
+  },
+  "cross_currency_comparison": null,
+  "cross_currency_note": "Models priced in different currencies are never ranked against each other here. Supply a dated FX rate and do that conversion explicitly if it is needed.",
+  "warning": "Any model marked not_for_billing uses illustrative rates. It validates the arithmetic only and must not back a financial commitment.",
+  "token_totals_used": {
+    "mean": 803142863.0,
+    "p50": 795559011.0,
+    "p80": 867847847.0,
+    "p90": 909753569.0,
+    "worst_case": 1021266536.0,
+    "minimum": 607271618.0,
+    "maximum": 1140840522.0
+  }
+}

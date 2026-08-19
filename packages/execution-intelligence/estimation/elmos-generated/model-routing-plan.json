@@ -1,0 +1,200 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "model-routing-plan",
+  "currency": "USD",
+  "optimised_within_currency_only": true,
+  "baseline_model": "openai-gpt-5-6-sol",
+  "assignments": [
+    {
+      "task_id": "scope-authority-audit",
+      "name": "范围与权威源审计",
+      "category": "discovery",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 7.2177,
+      "frontier_baseline_cost": 20.5512,
+      "saving": 13.3335
+    },
+    {
+      "task_id": "analyzer-flutter",
+      "name": "flutter analyzer 补齐（PENDING_ANALYZER）",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 69.1178,
+      "frontier_baseline_cost": 69.1178,
+      "saving": 0.0
+    },
+    {
+      "task_id": "analyzer-kotlin",
+      "name": "kotlin analyzer 补齐（PENDING_ANALYZER）",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 69.1178,
+      "frontier_baseline_cost": 69.1178,
+      "saving": 0.0
+    },
+    {
+      "task_id": "analyzer-react",
+      "name": "react analyzer 补齐（PENDING_ANALYZER）",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 69.1178,
+      "frontier_baseline_cost": 69.1178,
+      "saving": 0.0
+    },
+    {
+      "task_id": "route-packs",
+      "name": "待补路由包生成与登记",
+      "category": "generation",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 107.406,
+      "frontier_baseline_cost": 107.406,
+      "saving": 0.0
+    },
+    {
+      "task_id": "semantic-divergence",
+      "name": "两两语义分歧表与 IR 归一",
+      "category": "engine",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 107.6049,
+      "frontier_baseline_cost": 107.6049,
+      "saving": 0.0
+    },
+    {
+      "task_id": "analyzer-performance",
+      "name": "Analyzer 缓存、批量化与仓库级并行",
+      "category": "performance",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 11.9335,
+      "frontier_baseline_cost": 33.9787,
+      "saving": 22.0453
+    },
+    {
+      "task_id": "matrix-small",
+      "name": "全矩阵 SMALL 规模跑通",
+      "category": "verification",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 111.5166,
+      "frontier_baseline_cost": 111.5166,
+      "saving": 0.0
+    },
+    {
+      "task_id": "matrix-medium",
+      "name": "全矩阵 MEDIUM 规模跑通",
+      "category": "verification",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 209.3754,
+      "frontier_baseline_cost": 209.3754,
+      "saving": 0.0
+    },
+    {
+      "task_id": "frozen-rerun-evidence",
+      "name": "冻结全矩阵重跑与证据收集",
+      "category": "verification",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 18.0224,
+      "frontier_baseline_cost": 51.3162,
+      "saving": 33.2938
+    },
+    {
+      "task_id": "independent-client-verification",
+      "name": "独立客户仓库验证",
+      "category": "verification",
+      "complexity": "high",
+      "required_tier": "frontier",
+      "assigned_model": "openai-gpt-5-6-sol",
+      "assigned_tier": "frontier",
+      "estimated_cost": 210.0384,
+      "frontier_baseline_cost": 210.0384,
+      "saving": 0.0
+    },
+    {
+      "task_id": "security-license",
+      "name": "安全扫描与依赖许可证核查",
+      "category": "compliance",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 6.7235,
+      "frontier_baseline_cost": 19.1441,
+      "saving": 12.4206
+    },
+    {
+      "task_id": "certification-package",
+      "name": "认证材料与交付包",
+      "category": "delivery",
+      "complexity": "medium",
+      "required_tier": "mid",
+      "assigned_model": "deepseek-v4-pro-peak",
+      "assigned_tier": "mid",
+      "estimated_cost": 12.8299,
+      "frontier_baseline_cost": 36.5313,
+      "saving": 23.7014
+    }
+  ],
+  "unroutable_tasks": [],
+  "tier_distribution": {
+    "frontier": 8,
+    "mid": 5
+  },
+  "context_constraint": {
+    "enforced_for": [
+      "analyzer-flutter",
+      "analyzer-kotlin",
+      "analyzer-performance",
+      "analyzer-react",
+      "certification-package",
+      "frozen-rerun-evidence",
+      "independent-client-verification",
+      "matrix-medium",
+      "matrix-small",
+      "route-packs",
+      "scope-authority-audit",
+      "security-license",
+      "semantic-divergence"
+    ],
+    "not_declared_for": [],
+    "rule": "A model is only eligible when its max_context_tokens covers the task's declared peak_context_tokens. Tasks that declare no peak are listed here rather than being assumed to fit."
+  },
+  "totals": {
+    "optimized": 1010.0215,
+    "frontier_baseline": 1114.8161,
+    "saving": 104.7946,
+    "saving_ratio": 0.094
+  },
+  "rates_are_illustrative": false,
+  "caveats": [
+    "Routing assumes the cheaper tier actually completes the task; if it fails and escalates, the retry cost eats the saving. Verify escalation rate before trusting the number.",
+    "Costs use point token estimates (P50-equivalent), not the full distribution."
+  ]
+}

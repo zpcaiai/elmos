@@ -1,0 +1,14 @@
+task_id,name,category,complexity,depends_on,worker_units,optimistic_minutes,most_likely_minutes,pessimistic_minutes,rework_probability,failure_probability,total_tokens,input,cached_input,cache_write,output,reasoning_output,human_hours_total
+scope-authority-audit,范围与权威源审计,discovery,medium,,1,48.74,81.23,170.58,0.1,0.02,12398922.0,2975741.0,7811321.0,867925.0,495957.0,247978.0,30.58
+analyzer-flutter,flutter analyzer 补齐（PENDING_ANALYZER）,engine,high,scope-authority-audit,2,301.0,602.0,1444.8,0.3,0.15,41700000.0,10008000.0,26271000.0,2919000.0,1668000.0,834000.0,256.0
+analyzer-kotlin,kotlin analyzer 补齐（PENDING_ANALYZER）,engine,high,scope-authority-audit,2,301.0,602.0,1444.8,0.3,0.15,41700000.0,10008000.0,26271000.0,2919000.0,1668000.0,834000.0,256.0
+analyzer-react,react analyzer 补齐（PENDING_ANALYZER）,engine,high,scope-authority-audit,2,301.0,602.0,1444.8,0.3,0.15,41700000.0,10008000.0,26271000.0,2919000.0,1668000.0,834000.0,256.0
+route-packs,待补路由包生成与登记,generation,high,analyzer-flutter;analyzer-kotlin;analyzer-react,3,389.4,708.0,1628.4,0.25,0.1,64800000.0,15552000.0,40824000.0,4536000.0,2592000.0,1296000.0,354.6
+semantic-divergence,两两语义分歧表与 IR 归一,engine,high,route-packs,2,389.4,708.0,1557.6,0.28,0.08,64920000.0,15580800.0,40899600.0,4544400.0,2596800.0,1298400.0,272.4
+analyzer-performance,Analyzer 缓存、批量化与仓库级并行,performance,medium,scope-authority-audit,2,237.6,396.0,831.6,0.2,0.07,20500000.0,4920000.0,12915000.0,1435000.0,820000.0,410000.0,134.0
+matrix-small,全矩阵 SMALL 规模跑通,verification,high,semantic-divergence;analyzer-performance,4,352.8,588.0,1411.2,0.25,0.18,67280000.0,16147200.0,42386400.0,4709600.0,2691200.0,1345600.0,233.2
+matrix-medium,全矩阵 MEDIUM 规模跑通,verification,high,matrix-small,4,724.32,1207.2,3018.0,0.3,0.22,126320000.0,30316800.0,79581600.0,8842400.0,5052800.0,2526400.0,367.6
+frozen-rerun-evidence,冻结全矩阵重跑与证据收集,verification,medium,matrix-medium,3,461.76,710.4,1562.88,0.18,0.2,30960000.0,7430400.0,19504800.0,2167200.0,1238400.0,619200.0,182.4
+independent-client-verification,独立客户仓库验证,verification,high,frozen-rerun-evidence,3,778.8,1416.0,3681.6,0.35,0.25,126720000.0,30412800.0,79833600.0,8870400.0,5068800.0,2534400.0,374.8
+security-license,安全扫描与依赖许可证核查,compliance,medium,matrix-medium,1,182.0,280.0,560.0,0.15,0.05,11550000.0,2772000.0,7276500.0,808500.0,462000.0,231000.0,132.5
+certification-package,认证材料与交付包,delivery,medium,independent-client-verification;security-license,1,238.68,367.2,771.12,0.15,0.04,22040000.0,5289600.0,13885200.0,1542800.0,881600.0,440800.0,170.0

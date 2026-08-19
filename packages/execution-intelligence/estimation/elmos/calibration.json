@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "valid_samples": 3,
+  "runtime_samples": 3,
+  "token_samples": 0,
+  "dropped_samples": 0,
+  "dropped_detail": [],
+  "global": {
+    "runtime_multiplier": {
+      "mean": 0.304,
+      "p50": 0.263,
+      "p80": 0.338,
+      "p90": 0.363,
+      "worst_case": 0.386,
+      "minimum": 0.261,
+      "maximum": 0.388
+    },
+    "token_multiplier": null,
+    "confidence": 0.41
+  },
+  "unavailable": [
+    "token: no row carried a positive estimated/actual token pair"
+  ],
+  "groups": {
+    "verification|high|not-a-model-run": {
+      "samples": 3,
+      "runtime_samples": 3,
+      "token_samples": 0,
+      "runtime_multiplier": {
+        "mean": 0.304,
+        "p50": 0.263,
+        "p80": 0.338,
+        "p90": 0.363,
+        "worst_case": 0.386,
+        "minimum": 0.261,
+        "maximum": 0.388
+      },
+      "token_multiplier": null,
+      "confidence": 0.5,
+      "applicable": false
+    }
+  },
+  "rule": "Use a group multiplier only when that group has at least 5 samples (applicable=true); otherwise fall back to the global multiplier and keep the wider interval."
+}

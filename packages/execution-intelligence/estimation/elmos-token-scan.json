@@ -1,0 +1,1298 @@
+{
+  "schema_version": "1.0.0",
+  "root": "/sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos",
+  "model": null,
+  "counting_method": "cjk-aware-heuristic",
+  "exact_counts": false,
+  "calibration": {
+    "version": "2026-08-19",
+    "global_factor": 0.8263,
+    "reference_tokenizer": {
+      "name": "legacy Claude BPE tokenizer",
+      "vocab_size": 65000,
+      "obtained_from": "anthropic==0.21.3, anthropic/tokenizer.json (the last release that bundled it)",
+      "caveat": "This is NOT the tokenizer of any current model. It is a real BPE tokenizer of the right family and rough vocabulary scale, which makes it a far better yardstick than the 4-characters-per-token rule -- but it is a yardstick, not ground truth. Billing-grade counts still require the target provider's own counting endpoint."
+    },
+    "applied": true,
+    "note": "calibrated_tokens = estimated_tokens / factor. The factor was measured against a real BPE tokenizer; it narrows the error, it does not make the count exact."
+  },
+  "max_file_bytes": 2000000,
+  "ignored_directories": [
+    ".DS_Store",
+    ".ai-tmp",
+    ".cargo",
+    ".eggs",
+    ".git",
+    ".gradle",
+    ".hg",
+    ".hvigor",
+    ".idea",
+    ".m2",
+    ".mypy_cache",
+    ".next",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".stack-work",
+    ".svn",
+    ".tox",
+    ".turbo",
+    ".venv",
+    ".vscode",
+    "__cmake_systeminformation",
+    "__pycache__",
+    "_merge_conflicts",
+    "_to_delete",
+    "artifacts",
+    "build",
+    "coverage",
+    "dist",
+    "env",
+    "htmlcov",
+    "node_modules",
+    "out",
+    "site-packages",
+    "target",
+    "vendor",
+    "venv"
+  ],
+  "ignored_globs": [
+    "*.min.js",
+    "*.min.css",
+    "*.lock",
+    "*-lock.json",
+    "*.map",
+    "*.snap"
+  ],
+  "ignored_directory_globs": [
+    ".next*",
+    "*.egg-info",
+    "*.dSYM",
+    "build-*",
+    "cmake-build-*",
+    ".terraform*"
+  ],
+  "totals": {
+    "files": 45790,
+    "bytes": 377045233,
+    "characters": 366736507,
+    "estimated_tokens": 95021753,
+    "calibrated_tokens": 113672287,
+    "skill_files": 9212,
+    "skill_catalog_tokens": 556211,
+    "skill_body_tokens": 13804476
+  },
+  "groups": [
+    {
+      "group": "verification-packs",
+      "files": 6283,
+      "estimated_tokens": 26560165,
+      "bytes": 106099324
+    },
+    {
+      "group": "client-packs",
+      "files": 4793,
+      "estimated_tokens": 20276057,
+      "bytes": 80979930
+    },
+    {
+      "group": "routes",
+      "files": 4638,
+      "estimated_tokens": 8734313,
+      "bytes": 34918861
+    },
+    {
+      "group": "agent-skills",
+      "files": 8374,
+      "estimated_tokens": 7345257,
+      "bytes": 28995444
+    },
+    {
+      "group": "skills",
+      "files": 7739,
+      "estimated_tokens": 6144810,
+      "bytes": 23317580
+    },
+    {
+      "group": "test-suites",
+      "files": 1991,
+      "estimated_tokens": 4248621,
+      "bytes": 16731822
+    },
+    {
+      "group": "docs",
+      "files": 528,
+      "estimated_tokens": 3477424,
+      "bytes": 13641103
+    },
+    {
+      "group": "engines",
+      "files": 1051,
+      "estimated_tokens": 3382441,
+      "bytes": 13512459
+    },
+    {
+      "group": ".agents",
+      "files": 2595,
+      "estimated_tokens": 2360720,
+      "bytes": 9060514
+    },
+    {
+      "group": "apps",
+      "files": 1801,
+      "estimated_tokens": 2265097,
+      "bytes": 8994120
+    },
+    {
+      "group": "framework-packs",
+      "files": 125,
+      "estimated_tokens": 1978912,
+      "bytes": 7915635
+    },
+    {
+      "group": "elmos-codex-skills-batch66-80-complete",
+      "files": 440,
+      "estimated_tokens": 1380863,
+      "bytes": 5530578
+    },
+    {
+      "group": "scripts",
+      "files": 298,
+      "estimated_tokens": 1144802,
+      "bytes": 4574920
+    },
+    {
+      "group": "modules",
+      "files": 618,
+      "estimated_tokens": 1099861,
+      "bytes": 4397315
+    },
+    {
+      "group": "elmos-language-packs-batch81-95-complete",
+      "files": 250,
+      "estimated_tokens": 699307,
+      "bytes": 2799862
+    },
+    {
+      "group": "packages",
+      "files": 1083,
+      "estimated_tokens": 599451,
+      "bytes": 2384914
+    },
+    {
+      "group": "tests",
+      "files": 554,
+      "estimated_tokens": 595118,
+      "bytes": 2380460
+    },
+    {
+      "group": "elmos-project-synthesis-batch46-60",
+      "files": 248,
+      "estimated_tokens": 467891,
+      "bytes": 1873668
+    },
+    {
+      "group": "tooling",
+      "files": 62,
+      "estimated_tokens": 433248,
+      "bytes": 1726493
+    },
+    {
+      "group": "mature-product-packs",
+      "files": 177,
+      "estimated_tokens": 414282,
+      "bytes": 1662363
+    },
+    {
+      "group": "schemas",
+      "files": 388,
+      "estimated_tokens": 276712,
+      "bytes": 1106832
+    },
+    {
+      "group": "<root>",
+      "files": 11,
+      "estimated_tokens": 194247,
+      "bytes": 703482
+    },
+    {
+      "group": "contracts",
+      "files": 314,
+      "estimated_tokens": 135373,
+      "bytes": 541151
+    },
+    {
+      "group": "elmos-project-synthesis-batch61-65",
+      "files": 77,
+      "estimated_tokens": 129333,
+      "bytes": 517910
+    },
+    {
+      "group": "services",
+      "files": 472,
+      "estimated_tokens": 126105,
+      "bytes": 504402
+    },
+    {
+      "group": "batch46-product-convergence-complete-skills",
+      "files": 171,
+      "estimated_tokens": 105423,
+      "bytes": 400502
+    },
+    {
+      "group": "templates",
+      "files": 329,
+      "estimated_tokens": 77395,
+      "bytes": 309094
+    },
+    {
+      "group": "portfolio-packs",
+      "files": 23,
+      "estimated_tokens": 73295,
+      "bytes": 293168
+    },
+    {
+      "group": ".ai",
+      "files": 23,
+      "estimated_tokens": 71000,
+      "bytes": 278982
+    },
+    {
+      "group": ".claude",
+      "files": 22,
+      "estimated_tokens": 53411,
+      "bytes": 213648
+    },
+    {
+      "group": ".codex",
+      "files": 22,
+      "estimated_tokens": 53411,
+      "bytes": 213648
+    },
+    {
+      "group": "deploy",
+      "files": 14,
+      "estimated_tokens": 20569,
+      "bytes": 78450
+    },
+    {
+      "group": "convergence-packs",
+      "files": 28,
+      "estimated_tokens": 13916,
+      "bytes": 55663
+    },
+    {
+      "group": ".elmos",
+      "files": 2,
+      "estimated_tokens": 12804,
+      "bytes": 51231
+    },
+    {
+      "group": ".github",
+      "files": 4,
+      "estimated_tokens": 9340,
+      "bytes": 37233
+    },
+    {
+      "group": "evidence",
+      "files": 4,
+      "estimated_tokens": 8493,
+      "bytes": 33970
+    },
+    {
+      "group": "marketplace-packs",
+      "files": 58,
+      "estimated_tokens": 7536,
+      "bytes": 30119
+    },
+    {
+      "group": "sandbox-images",
+      "files": 64,
+      "estimated_tokens": 7432,
+      "bytes": 29738
+    },
+    {
+      "group": "toolchains",
+      "files": 1,
+      "estimated_tokens": 6711,
+      "bytes": 26843
+    },
+    {
+      "group": "cloud-packs",
+      "files": 16,
+      "estimated_tokens": 6678,
+      "bytes": 26713
+    },
+    {
+      "group": "developer-experience-packs",
+      "files": 35,
+      "estimated_tokens": 6535,
+      "bytes": 26140
+    },
+    {
+      "group": "product-convergence",
+      "files": 16,
+      "estimated_tokens": 5646,
+      "bytes": 22589
+    },
+    {
+      "group": "database-packs",
+      "files": 23,
+      "estimated_tokens": 4328,
+      "bytes": 17317
+    },
+    {
+      "group": "telemetry",
+      "files": 6,
+      "estimated_tokens": 2486,
+      "bytes": 9948
+    },
+    {
+      "group": "sandbox",
+      "files": 6,
+      "estimated_tokens": 1793,
+      "bytes": 7167
+    },
+    {
+      "group": "quick-fix",
+      "files": 3,
+      "estimated_tokens": 1622,
+      "bytes": 5850
+    },
+    {
+      "group": "plans",
+      "files": 2,
+      "estimated_tokens": 554,
+      "bytes": 2216
+    },
+    {
+      "group": "recipes",
+      "files": 3,
+      "estimated_tokens": 373,
+      "bytes": 1491
+    },
+    {
+      "group": "ownership",
+      "files": 1,
+      "estimated_tokens": 308,
+      "bytes": 1233
+    },
+    {
+      "group": "examples",
+      "files": 2,
+      "estimated_tokens": 187,
+      "bytes": 748
+    },
+    {
+      "group": "config",
+      "files": 2,
+      "estimated_tokens": 97,
+      "bytes": 390
+    }
+  ],
+  "largest_files": [
+    {
+      "path": "docs/precision-migration-b01-44/executable-contracts.json",
+      "bytes": 1966673,
+      "characters": 1441821,
+      "estimated_tokens": 536792,
+      "calibrated_tokens": 715341,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/toolchain/frontend-formal-toolchain-evidence-v2.json",
+      "bytes": 1653536,
+      "characters": 1653536,
+      "estimated_tokens": 413384,
+      "calibrated_tokens": 550885,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/toolchain/frontend-formal-toolchain-evidence-v2.json",
+      "bytes": 1653536,
+      "characters": 1653536,
+      "estimated_tokens": 413384,
+      "calibrated_tokens": 550885,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "docs/precision-migration-b01-44/installed-manifest.json",
+      "bytes": 1632669,
+      "characters": 1578707,
+      "estimated_tokens": 412548,
+      "calibrated_tokens": 549771,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "verification-packs/precision-migration-b01-44-runtime/domain-qualification/results.json",
+      "bytes": 1578776,
+      "characters": 1578776,
+      "estimated_tokens": 394694,
+      "calibrated_tokens": 525978,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch81-95-language-packs-slightly-strict/results/catalog.json",
+      "bytes": 1516638,
+      "characters": 1516638,
+      "estimated_tokens": 379160,
+      "calibrated_tokens": 505277,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "docs/frt-g01-g30/compiled-skill-contracts.json",
+      "bytes": 1484495,
+      "characters": 1484495,
+      "estimated_tokens": 371124,
+      "calibrated_tokens": 494568,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "docs/frt-g01-g30/installed-manifest.json",
+      "bytes": 1202112,
+      "characters": 1202112,
+      "estimated_tokens": 300528,
+      "calibrated_tokens": 400490,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-local-non-certifying-20260812.json",
+      "bytes": 1174777,
+      "characters": 1174777,
+      "estimated_tokens": 293694,
+      "calibrated_tokens": 391383,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "docs/precision-migration-b01-44/handler-implementations.json",
+      "bytes": 1163229,
+      "characters": 1161583,
+      "estimated_tokens": 290810,
+      "calibrated_tokens": 387540,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-local-non-certifying-20260811.json",
+      "bytes": 1061542,
+      "characters": 1061542,
+      "estimated_tokens": 265386,
+      "calibrated_tokens": 353659,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-local-non-certifying-attempt1-20260811.json",
+      "bytes": 1059034,
+      "characters": 1059034,
+      "estimated_tokens": 264758,
+      "calibrated_tokens": 352822,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch38-45-strict/cases/catalog.json",
+      "bytes": 1032792,
+      "characters": 1011320,
+      "estimated_tokens": 260798,
+      "calibrated_tokens": 347545,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-authorized-final-20260814.json",
+      "bytes": 997480,
+      "characters": 997480,
+      "estimated_tokens": 249370,
+      "calibrated_tokens": 332316,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "engines/uir-java-python/docs/survey-elmos-java.json",
+      "bytes": 986367,
+      "characters": 986367,
+      "estimated_tokens": 246592,
+      "calibrated_tokens": 328614,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "docs/precision-migration-b01-44/external-execution-profiles.json",
+      "bytes": 956995,
+      "characters": 956995,
+      "estimated_tokens": 239249,
+      "calibrated_tokens": 318829,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-authorized-20260814.json",
+      "bytes": 919277,
+      "characters": 919277,
+      "estimated_tokens": 229819,
+      "calibrated_tokens": 306262,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "docs/precision-migration-b01-44/adapter-registry.json",
+      "bytes": 905400,
+      "characters": 905400,
+      "estimated_tokens": 226350,
+      "calibrated_tokens": 301639,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "mature-product-packs/batch40/elmos-platform-supply-chain/evidence/execution/b40-secret-scan.json",
+      "bytes": 866559,
+      "characters": 861315,
+      "estimated_tokens": 215329,
+      "calibrated_tokens": 286952,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch38-45-strict/cases/catalog.jsonl",
+      "bytes": 829876,
+      "characters": 808404,
+      "estimated_tokens": 210069,
+      "calibrated_tokens": 254228,
+      "calibration_factor": 0.8263
+    },
+    {
+      "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/test-suites/batch1-37-strict/cases/catalog.json",
+      "bytes": 729462,
+      "characters": 556346,
+      "estimated_tokens": 198743,
+      "calibrated_tokens": 264849,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch1-37-strict/cases/catalog.json",
+      "bytes": 729462,
+      "characters": 556346,
+      "estimated_tokens": 198743,
+      "calibrated_tokens": 264849,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-20260814.json",
+      "bytes": 766738,
+      "characters": 766738,
+      "estimated_tokens": 191684,
+      "calibrated_tokens": 255442,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch66-80-slightly-strict/cases/catalog.json",
+      "bytes": 723266,
+      "characters": 660912,
+      "estimated_tokens": 186159,
+      "calibrated_tokens": 248080,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "engines/frontend-client-engine/_snapshot-20260805T0649/src/frt-catalog.generated.ts",
+      "bytes": 726096,
+      "characters": 705620,
+      "estimated_tokens": 182662,
+      "calibrated_tokens": 197259,
+      "calibration_factor": 0.926
+    },
+    {
+      "path": "engines/frontend-client-engine/src/frt-handler-registry.generated.ts",
+      "bytes": 708882,
+      "characters": 708882,
+      "estimated_tokens": 177220,
+      "calibrated_tokens": 191382,
+      "calibration_factor": 0.926
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/references/TARGET_MANIFEST.json",
+      "bytes": 696618,
+      "characters": 686978,
+      "estimated_tokens": 172884,
+      "calibrated_tokens": 230389,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/target-manifest.json",
+      "bytes": 696618,
+      "characters": 686978,
+      "estimated_tokens": 172884,
+      "calibrated_tokens": 230389,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/frontend-formal-route-campaign.json",
+      "bytes": 624473,
+      "characters": 624473,
+      "estimated_tokens": 156118,
+      "calibrated_tokens": 208046,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/frontend-formal-route-campaign.json",
+      "bytes": 624473,
+      "characters": 624473,
+      "estimated_tokens": 156118,
+      "calibrated_tokens": 208046,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/test-suites/batch1-37-strict/cases/catalog.jsonl",
+      "bytes": 555622,
+      "characters": 382506,
+      "estimated_tokens": 155283,
+      "calibrated_tokens": 187926,
+      "calibration_factor": 0.8263
+    },
+    {
+      "path": "test-suites/batch1-37-strict/cases/catalog.jsonl",
+      "bytes": 555622,
+      "characters": 382506,
+      "estimated_tokens": 155283,
+      "calibrated_tokens": 187926,
+      "calibration_factor": 0.8263
+    },
+    {
+      "path": "ChatGPT-属灵星球情感成熟度.md",
+      "bytes": 517697,
+      "characters": 328892,
+      "estimated_tokens": 145194,
+      "calibrated_tokens": 142711,
+      "calibration_factor": 1.0174
+    },
+    {
+      "path": "verification-packs/polyglot-30-route-formal-equivalence-v1/formal-route-campaign.json",
+      "bytes": 578643,
+      "characters": 578643,
+      "estimated_tokens": 144661,
+      "calibrated_tokens": 192779,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch66-80-slightly-strict/cases/catalog.jsonl",
+      "bytes": 553945,
+      "characters": 491591,
+      "estimated_tokens": 143829,
+      "calibrated_tokens": 174064,
+      "calibration_factor": 0.8263
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-security-stop-attempt2-20260811.json",
+      "bytes": 557495,
+      "characters": 557495,
+      "estimated_tokens": 139374,
+      "calibrated_tokens": 185733,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch1-55-slightly-strict/results/catalog.json",
+      "bytes": 549183,
+      "characters": 549183,
+      "estimated_tokens": 137296,
+      "calibrated_tokens": 182964,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-build-attempt1-20260811.json",
+      "bytes": 549094,
+      "characters": 549094,
+      "estimated_tokens": 137274,
+      "calibrated_tokens": 182934,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/results/catalog.json",
+      "bytes": 548069,
+      "characters": 548069,
+      "estimated_tokens": 137017,
+      "calibrated_tokens": 182592,
+      "calibration_factor": 0.7504
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/real-repository/retro-game-linux-amd64-local-non-certifying-20260811.json",
+      "bytes": 531517,
+      "characters": 531517,
+      "estimated_tokens": 132879,
+      "calibrated_tokens": 177078,
+      "calibration_factor": 0.7504
+    }
+  ],
+  "skills": [
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+      "name": "elmos-modernization-synthesis-interoperability-tests",
+      "catalog_tokens": 37,
+      "body_tokens": 5721
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+      "name": "elmos-legacy-modernization-end-to-end-tests",
+      "catalog_tokens": 33,
+      "body_tokens": 5706
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+      "name": "elmos-complete-package-release-certification-tests",
+      "catalog_tokens": 33,
+      "body_tokens": 5645
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+      "name": "elmos-checkpoint-resume-failure-recovery-tests",
+      "catalog_tokens": 32,
+      "body_tokens": 5642
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+      "name": "elmos-secret-privacy-redaction-tests",
+      "catalog_tokens": 31,
+      "body_tokens": 5638
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+      "name": "elmos-lifecycle-state-machine-cancellation-tests",
+      "catalog_tokens": 36,
+      "body_tokens": 5636
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+      "name": "elmos-supply-chain-provenance-sbom-tests",
+      "catalog_tokens": 32,
+      "body_tokens": 5634
+    },
+    {
+      "path": "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+      "name": "batch-05-target-language-lowering-framework-backend-idiomatic-code-generation",
+      "catalog_tokens": 20,
+      "body_tokens": 5630
+    },
+    {
+      "path": "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+      "name": "batch-05-target-language-lowering-framework-backend-idiomatic-code-generation",
+      "catalog_tokens": 20,
+      "body_tokens": 5630
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md",
+      "name": "elmos-scale-performance-cost-budget-tests",
+      "catalog_tokens": 33,
+      "body_tokens": 5625
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/SKILL.md",
+      "name": "elmos-deployment-rollout-rollback-dr-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5623
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/SKILL.md",
+      "name": "elmos-project-synthesis-end-to-end-tests",
+      "catalog_tokens": 32,
+      "body_tokens": 5620
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/SKILL.md",
+      "name": "elmos-build-test-repair-anti-cheating-tests",
+      "catalog_tokens": 32,
+      "body_tokens": 5618
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/SKILL.md",
+      "name": "elmos-artifact-graph-traceability-tests",
+      "catalog_tokens": 32,
+      "body_tokens": 5616
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/SKILL.md",
+      "name": "elmos-policy-capability-least-privilege-tests",
+      "catalog_tokens": 35,
+      "body_tokens": 5615
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/SKILL.md",
+      "name": "elmos-idempotency-replay-dedup-tests",
+      "catalog_tokens": 29,
+      "body_tokens": 5608
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/SKILL.md",
+      "name": "elmos-multi-agent-separation-of-duties-tests",
+      "catalog_tokens": 30,
+      "body_tokens": 5608
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/SKILL.md",
+      "name": "elmos-schema-contract-version-compatibility-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5602
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/SKILL.md",
+      "name": "elmos-multitenancy-isolation-tests",
+      "catalog_tokens": 30,
+      "body_tokens": 5600
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/SKILL.md",
+      "name": "elmos-cross-language-behavior-parity-tests",
+      "catalog_tokens": 29,
+      "body_tokens": 5593
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/SKILL.md",
+      "name": "elmos-change-regeneration-manual-edit-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5589
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/SKILL.md",
+      "name": "elmos-sandbox-network-containment-tests",
+      "catalog_tokens": 28,
+      "body_tokens": 5586
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/SKILL.md",
+      "name": "elmos-evidence-audit-tamper-resistance-tests",
+      "catalog_tokens": 31,
+      "body_tokens": 5585
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/SKILL.md",
+      "name": "elmos-human-approval-ui-integrity-tests",
+      "catalog_tokens": 28,
+      "body_tokens": 5578
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/SKILL.md",
+      "name": "elmos-domain-pack-safety-boundary-tests",
+      "catalog_tokens": 30,
+      "body_tokens": 5553
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-38-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-38-slightly-strict-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5496
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-37-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-37-slightly-strict-tests",
+      "catalog_tokens": 36,
+      "body_tokens": 5494
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-39-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-39-slightly-strict-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5478
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-45-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-45-slightly-strict-tests",
+      "catalog_tokens": 37,
+      "body_tokens": 5472
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-42-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-42-slightly-strict-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5463
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-41-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-41-slightly-strict-tests",
+      "catalog_tokens": 34,
+      "body_tokens": 5456
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-40-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-40-slightly-strict-tests",
+      "catalog_tokens": 30,
+      "body_tokens": 5401
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-44-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-44-slightly-strict-tests",
+      "catalog_tokens": 32,
+      "body_tokens": 5377
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-43-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-43-slightly-strict-tests",
+      "catalog_tokens": 30,
+      "body_tokens": 5342
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-36-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-36-slightly-strict-tests",
+      "catalog_tokens": 36,
+      "body_tokens": 5290
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-35-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-35-slightly-strict-tests",
+      "catalog_tokens": 36,
+      "body_tokens": 5136
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-05-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-05-slightly-strict-tests",
+      "catalog_tokens": 40,
+      "body_tokens": 5062
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-16-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-16-slightly-strict-tests",
+      "catalog_tokens": 40,
+      "body_tokens": 5062
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-10-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-10-slightly-strict-tests",
+      "catalog_tokens": 38,
+      "body_tokens": 5020
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-14-slightly-strict-tests/SKILL.md",
+      "name": "elmos-batch-14-slightly-strict-tests",
+      "catalog_tokens": 37,
+      "body_tokens": 5010
+    }
+  ],
+  "findings": [
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+      "estimated_tokens": 5721,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+      "estimated_tokens": 5706,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+      "estimated_tokens": 5645,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+      "estimated_tokens": 5642,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+      "estimated_tokens": 5638,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+      "estimated_tokens": 5636,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+      "estimated_tokens": 5634,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+      "estimated_tokens": 5630,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+      "estimated_tokens": 5630,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md",
+      "estimated_tokens": 5625,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/SKILL.md",
+      "estimated_tokens": 5623,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/SKILL.md",
+      "estimated_tokens": 5620,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/SKILL.md",
+      "estimated_tokens": 5618,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/SKILL.md",
+      "estimated_tokens": 5616,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/SKILL.md",
+      "estimated_tokens": 5615,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/SKILL.md",
+      "estimated_tokens": 5608,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/SKILL.md",
+      "estimated_tokens": 5608,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/SKILL.md",
+      "estimated_tokens": 5602,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/SKILL.md",
+      "estimated_tokens": 5600,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/SKILL.md",
+      "estimated_tokens": 5593,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/SKILL.md",
+      "estimated_tokens": 5589,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/SKILL.md",
+      "estimated_tokens": 5586,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/SKILL.md",
+      "estimated_tokens": 5585,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/SKILL.md",
+      "estimated_tokens": 5578,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/SKILL.md",
+      "estimated_tokens": 5553,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-38-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5496,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-37-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5494,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-39-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5478,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-45-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5472,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-42-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5463,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-41-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5456,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-40-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5401,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-44-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5377,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-43-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5342,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-36-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5290,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-35-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5136,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-05-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5062,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-16-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5062,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-10-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5020,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    },
+    {
+      "severity": "warning",
+      "kind": "oversized-skill",
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-14-slightly-strict-tests/SKILL.md",
+      "estimated_tokens": 5010,
+      "detail": "SKILL.md body exceeds 5000 tokens; split references out so activation stays cheap."
+    }
+  ],
+  "skipped": [
+    {
+      "path": "apps/web-console/app/lib/frtCatalog.generated.ts",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/frontend-formal-route-campaign-v2.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "engines/frontend-client-engine/src/frt-catalog.generated.ts",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "engines/uir-java-python/docs/survey-elmos-java-noindex.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "skills/ChatGPT-分支 · 中度与强专用化.md",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "skills/ChatGPT-分支 · 前端差分等价验证平台.md",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/cases/catalog.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/CASE_CATALOG.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "test-suites/batch81-95-language-packs-slightly-strict/cases/catalog.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/frontend-formal-route-campaign-v2.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "verification-packs/precision-migration-b01-44-runtime/contract-qualification/results.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "verification-packs/precision-migration-b01-44-runtime/external-engineering-qualification/cases.json",
+      "reason": "larger than max_file_bytes=2000000"
+    },
+    {
+      "path": "verification-packs/precision-migration-b01-44-runtime/external-engineering-qualification/results.json",
+      "reason": "larger than max_file_bytes=2000000"
+    }
+  ],
+  "skipped_count": 13,
+  "interpretation": [
+    "estimated_tokens is the one-pass cost of the material on disk, not a project token budget.",
+    "Repeated reads, retries, sub-agent fan-out and tool results are modelled by the task DAG, not here."
+  ],
+  "warning": "Counts are heuristic estimates. Use the target provider's official token counting endpoint before making any billing-grade claim."
+}

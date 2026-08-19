@@ -1,0 +1,804 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "skill-split-advice",
+  "root": "/sessions/rcw-01selignehxwntgsnfurjwmx/mnt/elmos",
+  "threshold": 5000,
+  "flagged": 40,
+  "advised": 40,
+  "total_tokens_over_threshold": 20060,
+  "total_tokens_movable": 12860,
+  "cannot_fit_by_moving_alone": [
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+    "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+    "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/SKILL.md",
+    "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/SKILL.md"
+  ],
+  "advice": [
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/SKILL.md",
+      "tokens": 5721,
+      "threshold": 5000,
+      "over_by": 721,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5721,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-modernization-synthesis-interoperability-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/SKILL.md",
+      "tokens": 5706,
+      "threshold": 5000,
+      "over_by": 706,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5706,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-legacy-modernization-end-to-end-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/SKILL.md",
+      "tokens": 5645,
+      "threshold": 5000,
+      "over_by": 645,
+      "sections": 30,
+      "proposed_moves": [
+        {
+          "title": "T088 — Complete Package release certification Slightly Strict Tests",
+          "level": 1,
+          "tokens": 18,
+          "characters": 71,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 18,
+      "body_after": 5627,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-complete-package-release-certification-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/SKILL.md",
+      "tokens": 5642,
+      "threshold": 5000,
+      "over_by": 642,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5642,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-checkpoint-resume-failure-recovery-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/SKILL.md",
+      "tokens": 5638,
+      "threshold": 5000,
+      "over_by": 638,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5638,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-secret-privacy-redaction-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/SKILL.md",
+      "tokens": 5636,
+      "threshold": 5000,
+      "over_by": 636,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5636,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-lifecycle-state-machine-cancellation-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/SKILL.md",
+      "tokens": 5634,
+      "threshold": 5000,
+      "over_by": 634,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5634,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-supply-chain-provenance-sbom-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+      "tokens": 5630,
+      "threshold": 5000,
+      "over_by": 630,
+      "sections": 25,
+      "proposed_moves": [
+        {
+          "title": "7. 完整生成工作流",
+          "level": 2,
+          "tokens": 175,
+          "characters": 678,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "3.3 完整工程生成",
+          "level": 3,
+          "tokens": 119,
+          "characters": 192,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 294,
+      "body_after": 5336,
+      "fits_after": false,
+      "suggested_reference_dir": "skills/batch_01_to_44_complete_skill_system/batch_05_target_language_lowering_complete_skill_pack/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/SKILL.md",
+      "tokens": 5630,
+      "threshold": 5000,
+      "over_by": 630,
+      "sections": 25,
+      "proposed_moves": [
+        {
+          "title": "7. 完整生成工作流",
+          "level": 2,
+          "tokens": 175,
+          "characters": 678,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "3.3 完整工程生成",
+          "level": 3,
+          "tokens": 119,
+          "characters": 192,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 294,
+      "body_after": 5336,
+      "fits_after": false,
+      "suggested_reference_dir": "skills/modernization-skills-batch-01-44/batch_05_target_language_lowering_complete_skill_pack/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/SKILL.md",
+      "tokens": 5625,
+      "threshold": 5000,
+      "over_by": 625,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5625,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-scale-performance-cost-budget-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/SKILL.md",
+      "tokens": 5623,
+      "threshold": 5000,
+      "over_by": 623,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5623,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-deployment-rollout-rollback-dr-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/SKILL.md",
+      "tokens": 5620,
+      "threshold": 5000,
+      "over_by": 620,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5620,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-project-synthesis-end-to-end-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/SKILL.md",
+      "tokens": 5618,
+      "threshold": 5000,
+      "over_by": 618,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5618,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-build-test-repair-anti-cheating-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/SKILL.md",
+      "tokens": 5616,
+      "threshold": 5000,
+      "over_by": 616,
+      "sections": 30,
+      "proposed_moves": [
+        {
+          "title": "T070 — Artifact Graph and traceability completeness Slightly Strict Tests",
+          "level": 1,
+          "tokens": 19,
+          "characters": 77,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 19,
+      "body_after": 5597,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-artifact-graph-traceability-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/SKILL.md",
+      "tokens": 5615,
+      "threshold": 5000,
+      "over_by": 615,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5615,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-policy-capability-least-privilege-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/SKILL.md",
+      "tokens": 5608,
+      "threshold": 5000,
+      "over_by": 608,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5608,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-idempotency-replay-dedup-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/SKILL.md",
+      "tokens": 5608,
+      "threshold": 5000,
+      "over_by": 608,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5608,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multi-agent-separation-of-duties-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/SKILL.md",
+      "tokens": 5602,
+      "threshold": 5000,
+      "over_by": 602,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5602,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-schema-contract-version-compatibility-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/SKILL.md",
+      "tokens": 5600,
+      "threshold": 5000,
+      "over_by": 600,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5600,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-multitenancy-isolation-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/SKILL.md",
+      "tokens": 5593,
+      "threshold": 5000,
+      "over_by": 593,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5593,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-cross-language-behavior-parity-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/SKILL.md",
+      "tokens": 5589,
+      "threshold": 5000,
+      "over_by": 589,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5589,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-change-regeneration-manual-edit-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/SKILL.md",
+      "tokens": 5586,
+      "threshold": 5000,
+      "over_by": 586,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5586,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-sandbox-network-containment-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/SKILL.md",
+      "tokens": 5585,
+      "threshold": 5000,
+      "over_by": 585,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5585,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-evidence-audit-tamper-resistance-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/SKILL.md",
+      "tokens": 5578,
+      "threshold": 5000,
+      "over_by": 578,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5578,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-human-approval-ui-integrity-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/SKILL.md",
+      "tokens": 5553,
+      "threshold": 5000,
+      "over_by": 553,
+      "sections": 30,
+      "proposed_moves": [],
+      "tokens_moved": 0,
+      "body_after": 5553,
+      "fits_after": false,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-domain-pack-safety-boundary-tests/references",
+      "residual_note": "Moving every reference-classified section is still not enough. This skill is doing too many jobs; splitting it into separate skills is the real fix."
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-38-slightly-strict-tests/SKILL.md",
+      "tokens": 5496,
+      "threshold": 5000,
+      "over_by": 496,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T038-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 397,
+          "characters": 1589,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 925,
+          "characters": 3700,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1322,
+      "body_after": 4174,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-38-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-37-slightly-strict-tests/SKILL.md",
+      "tokens": 5494,
+      "threshold": 5000,
+      "over_by": 494,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T037-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 401,
+          "characters": 1603,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 890,
+          "characters": 3559,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1291,
+      "body_after": 4203,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-37-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-39-slightly-strict-tests/SKILL.md",
+      "tokens": 5478,
+      "threshold": 5000,
+      "over_by": 478,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T039-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 397,
+          "characters": 1587,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 912,
+          "characters": 3646,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1309,
+      "body_after": 4169,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-39-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-45-slightly-strict-tests/SKILL.md",
+      "tokens": 5472,
+      "threshold": 5000,
+      "over_by": 472,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T045-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 403,
+          "characters": 1611,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 848,
+          "characters": 3392,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1251,
+      "body_after": 4221,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-45-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-42-slightly-strict-tests/SKILL.md",
+      "tokens": 5463,
+      "threshold": 5000,
+      "over_by": 463,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T042-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 397,
+          "characters": 1589,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 892,
+          "characters": 3568,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1289,
+      "body_after": 4174,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-42-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-41-slightly-strict-tests/SKILL.md",
+      "tokens": 5456,
+      "threshold": 5000,
+      "over_by": 456,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T041-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 398,
+          "characters": 1591,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 880,
+          "characters": 3520,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1278,
+      "body_after": 4178,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-41-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-40-slightly-strict-tests/SKILL.md",
+      "tokens": 5401,
+      "threshold": 5000,
+      "over_by": 401,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T040-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 390,
+          "characters": 1561,
+          "classification": "move",
+          "reason": "reference material by heading"
+        },
+        {
+          "title": "2. Target Scope",
+          "level": 2,
+          "tokens": 896,
+          "characters": 3585,
+          "classification": "review",
+          "reason": "large section with an unclassified heading; needs a human call"
+        }
+      ],
+      "tokens_moved": 1286,
+      "body_after": 4115,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-40-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-44-slightly-strict-tests/SKILL.md",
+      "tokens": 5377,
+      "threshold": 5000,
+      "over_by": 377,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T044-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 393,
+          "characters": 1573,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 393,
+      "body_after": 4984,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-44-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-43-slightly-strict-tests/SKILL.md",
+      "tokens": 5342,
+      "threshold": 5000,
+      "over_by": 342,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T043-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 388,
+          "characters": 1553,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 388,
+      "body_after": 4954,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-43-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-36-slightly-strict-tests/SKILL.md",
+      "tokens": 5290,
+      "threshold": 5000,
+      "over_by": 290,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T036-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 401,
+          "characters": 1605,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 401,
+      "body_after": 4889,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-36-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-35-slightly-strict-tests/SKILL.md",
+      "tokens": 5136,
+      "threshold": 5000,
+      "over_by": 136,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T035-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 400,
+          "characters": 1601,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 400,
+      "body_after": 4736,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-35-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-05-slightly-strict-tests/SKILL.md",
+      "tokens": 5062,
+      "threshold": 5000,
+      "over_by": 62,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T005-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 409,
+          "characters": 1637,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 409,
+      "body_after": 4653,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-05-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-16-slightly-strict-tests/SKILL.md",
+      "tokens": 5062,
+      "threshold": 5000,
+      "over_by": 62,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T016-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 409,
+          "characters": 1637,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 409,
+      "body_after": 4653,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-16-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-10-slightly-strict-tests/SKILL.md",
+      "tokens": 5020,
+      "threshold": 5000,
+      "over_by": 20,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T010-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 405,
+          "characters": 1619,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 405,
+      "body_after": 4615,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-10-slightly-strict-tests/references",
+      "residual_note": null
+    },
+    {
+      "path": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-14-slightly-strict-tests/SKILL.md",
+      "tokens": 5010,
+      "threshold": 5000,
+      "over_by": 10,
+      "sections": 28,
+      "proposed_moves": [
+        {
+          "title": "TC-T014-008 — Tampered or incomplete evidence cannot produce a pass",
+          "level": 3,
+          "tokens": 404,
+          "characters": 1615,
+          "classification": "move",
+          "reason": "reference material by heading"
+        }
+      ],
+      "tokens_moved": 404,
+      "body_after": 4606,
+      "fits_after": true,
+      "suggested_reference_dir": "test-suites/batch1-65-slightly-strict/source-package/agent-skills/runtime/elmos-batch-14-slightly-strict-tests/references",
+      "residual_note": null
+    }
+  ],
+  "rule": "Sections that state the goal, triggers, inputs, outputs, steps, acceptance or failure handling are never proposed for a move: a skill that has lost those is broken, not slim.",
+  "not_applied": "This is advice. No file is rewritten; a human decides and edits."
+}

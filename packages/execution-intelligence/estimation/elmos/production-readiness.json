@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "production-readiness",
+  "evidence_dir": "estimation/elmos",
+  "decision": "block",
+  "supported_confidence": {
+    "floor": 0.3,
+    "ceiling": 0.65,
+    "earned": {
+      "runtime_calibrated": 0.15,
+      "no_blocking_gaps": 0.1,
+      "chaos_passing": 0.05,
+      "verified_rates": 0.05
+    },
+    "withheld": [
+      "缺 运行时样本 >= 20（+0.10）",
+      "缺 token 维度已用真实用量校准（+0.20）",
+      "缺 token 样本 >= 20（+0.10）",
+      "缺 token 分类占比已对照实测用量（+0.05）"
+    ],
+    "rule": "The ceiling starts at the floor and rises only for evidence that exists. Editing the declared confidence cannot move it."
+  },
+  "gates": [
+    {
+      "id": "forecast-present",
+      "title": "存在可读的项目预测",
+      "required": true,
+      "status": "PASS",
+      "detail": "token 分类互斥且 total 为分类之和",
+      "evidence": "project-forecast.json"
+    },
+    {
+      "id": "confidence-is-supported",
+      "title": "声明的置信度不高于证据支撑的上限",
+      "required": true,
+      "status": "PASS",
+      "detail": "声明 0.6，证据支撑上限 0.65；缺 运行时样本 >= 20（+0.10）；缺 token 维度已用真实用量校准（+0.20）；缺 token 样本 >= 20（+0.10）；缺 token 分类占比已对照实测用量（+0.05）",
+      "evidence": "project-forecast.json"
+    },
+    {
+      "id": "forecast-confidence",
+      "title": "预测置信度达到发布门槛",
+      "required": true,
+      "status": "PASS",
+      "detail": "confidence=0.6（门槛 0.6）",
+      "evidence": "project-forecast.json"
+    },
+    {
+      "id": "eta-scope",
+      "title": "系统 ETA 明文排除人工等待",
+      "required": true,
+      "status": "PASS",
+      "detail": "排除项 4 条",
+      "evidence": "project-forecast.json"
+    },
+    {
+      "id": "verified-rates",
+      "title": "费用基于已核验费率",
+      "required": false,
+      "status": "PASS",
+      "detail": "8 个可计费费率",
+      "evidence": "project-forecast.json"
+    },
+    {
+      "id": "scope-gaps",
+      "title": "范围缺口已清零或已决策",
+      "required": true,
+      "status": "PASS",
+      "detail": "无待决缺口",
+      "evidence": "risk-and-gap-register.json"
+    },
+    {
+      "id": "calibrated",
+      "title": "预测已用真实遥测校准",
+      "required": true,
+      "status": "FAIL",
+      "detail": "3 个有效样本（门槛 20）",
+      "evidence": "calibration.json"
+    },
+    {
+      "id": "chaos-recovery",
+      "title": "Chaos 与恢复验证通过",
+      "required": true,
+      "status": "PASS",
+      "detail": "5 个场景，0 个失败",
+      "evidence": "chaos-test-report.json"
+    },
+    {
+      "id": "artifacts-sealed",
+      "title": "结果 Manifest 已封存",
+      "required": true,
+      "status": "PASS",
+      "detail": "sealed=True，artifact 16 个",
+      "evidence": "result-manifest.json"
+    },
+    {
+      "id": "token-mix-verified",
+      "title": "token 分类占比已对照实测",
+      "required": true,
+      "status": "FAIL",
+      "detail": "1 个会话（门槛 20），当前假设使费用偏离 1.17 倍（5 轮任务）到 5.54 倍（800 轮），随任务长度变化",
+      "evidence": "token-mix-comparison.json"
+    },
+    {
+      "id": "routing-complete",
+      "title": "每个任务都有可用模型",
+      "required": false,
+      "status": "PASS",
+      "detail": "全部任务可路由",
+      "evidence": "model-routing-plan.json"
+    }
+  ],
+  "counts": {
+    "pass": 9,
+    "fail": 2,
+    "not_executed": 0
+  },
+  "rule": "A gate with no evidence is NOT_EXECUTED, never PASS. 'release' requires every required gate to have executed and passed; anything else is 'not_certified' or 'block'."
+}
