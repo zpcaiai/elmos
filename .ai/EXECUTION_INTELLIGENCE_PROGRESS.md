@@ -706,7 +706,81 @@ $2,746.67，**没有任何指向那份发现的线索**。只打开费用报告�
 
 ---
 
-## 11. 待清理
+## 11. 第六轮 —— 为什么 `calibrated` 一直卡在 3 个样本，以及怎么解开
+
+### 11.1 历史日志里救不回来
+
+`calibrated` 缺的是**每节点**运行时样本。我先去翻了 `.ai/` 下全部 30 个 `*.log`，
+用正则找 `--durations` 的逐节点输出：**一条都没有**。
+
+matrix 那几次跑（4759s / 8066s）都是不带 `--durations` 跑的，所以只留下一行汇总。
+**那 182 个节点的时间已经永久丢了**，不是藏在某个文件里没找到。3 个聚合样本确实是历史的全部。
+
+结论：只能靠**下一次跑**。所以这一轮的目标变成——保证下一次跑能留下数据。
+
+### 11.2 差点改错地方
+
+第一反应是把 `--durations=0` 加进 `engines/polyglot-route-engine/pyproject.toml` 的
+`addopts`（现在是 `-q --strict-markers`）。查了一下谁会受影响，发现
+`tools/run_emitter_mutation_campaign.py` 的 `_run_tests()` 只留 `completed.stdout[-400:]`
+当失败详情——加了全局 `--durations` 之后，那 400 字符会被时长表挤满，
+**排查失败基线的人就看不到断言错误了**。
+
+而且那是别人的子系统，共享文件并发编辑（见 concurrent_sessions_in_elmos）。
+所以没动它。改成在本 package 里提供 `make durations` 和文档化的命令行。
+
+### 11.3 真正的坑：`--durations=0` **不给你全部节点**
+
+拿本 package 自己的套件实测（291 个测试）：
+
+| 调用方式 | 拿到的节点 | 总时长 | 均值 |
+| --- | --- | --- | --- |
+| `--durations=0` | **89** | 24.36s | **0.2737s** |
+| `--durations=0 --durations-min=0` | **291** | 27.07s | **0.0930s** |
+
+pytest 默认把低于 0.005s 的条目藏起来，并在末尾印一行
+`(768 durations < 0.005s hidden. Use -vv to show these durations.)`。
+
+**被藏起来的全是快的那些**。所以只用 `--durations=0` 的话：
+- 丢掉 **202 / 291 = 69%** 的节点
+- 均值被抬高 **2.9 倍**
+
+而且它**看起来完全正常**——一份有 89 个真实节点的日志，每个数字都是真的，
+算出来的倍率却系统性偏高。这和坑 9（没测到的看起来像测到了 0）是同一类：
+**一个安静的、方向一致的偏差**。
+
+### 11.4 所以摄入端直接拒收
+
+`parse_pytest_durations` 现在会找那行 hidden 提示，命中就抛 `TruncatedDurations`，
+消息里直接给出正确命令。要那份慢尾巴也行，得显式传 `allow_truncated=True` /
+`--allow-truncated-durations`——但那是一个明确的动作，不是默认行为。
+
+结果里也带 `truncated` / `hidden_durations` 两个字段，事后能查。
+
+### 11.5 下一次跑 matrix 时怎么把 `calibrated` 解开
+
+```
+# 关键是 --durations-min=0，光有 --durations=0 会少 69% 的节点
+uv run pytest <matrix tests> -q --durations=0 --durations-min=0 | tee .ai/matrix-durations.log
+
+# 然后
+make -C packages/execution-intelligence ingest \
+  DURATIONS_LOG=.ai/matrix-durations.log
+# 或
+PYTHONPATH=src python3 -m elmos_execution_intelligence.cli ingest-telemetry \
+  --durations-log .ai/matrix-durations.log --task <task-id> --unit-count <n> ...
+```
+
+一次 182 节点的跑 = **182 个真实样本**，门槛是 20。**这一跑就能把 `calibrated` 解开**。
+
+本 package 自己也加了 `make durations`（跑自己的套件、带正确参数、顺手 tee 出来）。
+
+> `token-mix-verified` 那条不一样：它需要的是**更多真实 Agent 会话**，
+> 只能随着实际使用自然累积，没有一次性的解法。
+
+---
+
+## 12. 待清理
 
 `_to_delete/` 下所有 `ei-transfer-2026-08-19*.tgz` 传输归档（12 个）、`.ai-tmp/token-sample.tgz`、
 `.ai-tmp/_to_delete/`（传输提交脚本用的 base64 中转文件）、`.ai-tmp/sync-token-mix.tgz` / `mixart.tgz` / `execution-intelligence.yml` / `_sync_stage/`（第五轮的代码传输中转），以及

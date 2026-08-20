@@ -516,7 +516,8 @@ def command_ingest_telemetry(args: argparse.Namespace) -> int:
             raise Blocked("BLOCKED — --unit-count is required for a pytest source")
         rows, parsed = rows_from_pytest_durations(
             args.durations_log, task, unit_count=args.unit_count,
-            task_type=args.task_type, complexity=args.complexity, caveats=caveats)
+            task_type=args.task_type, complexity=args.complexity, caveats=caveats,
+            allow_truncated=args.allow_truncated_durations)
         report = ingest_report(rows, parsed)
         report["measurement"] = "per_node_observed"
     else:
@@ -894,7 +895,13 @@ def build_parser() -> argparse.ArgumentParser:
     ingest_parser.add_argument("--pytest-log", action="append",
                                help="pytest log with a summary line: an aggregate mean per node (repeatable)")
     ingest_parser.add_argument("--durations-log", action="append",
-                               help="pytest log produced with --durations=0: a real duration per node (repeatable)")
+                               help="pytest log produced with --durations=0 --durations-min=0: a real "
+                                    "duration per node (repeatable). --durations=0 ALONE is not enough: "
+                                    "pytest hides sub-5ms entries, leaving a slow-biased subset")
+    ingest_parser.add_argument("--allow-truncated-durations", action="store_true",
+                               help="Accept a durations log that pytest truncated. Off by default: the "
+                                    "hidden entries are the fast ones, so the surviving sample inflates "
+                                    "the mean in a consistent direction")
     ingest_parser.add_argument("--transcript", action="append",
                                help="Agent session transcript (Claude Code / Codex JSONL): the only source "
                                     "carrying real token counts (repeatable)")

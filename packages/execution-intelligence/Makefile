@@ -14,7 +14,7 @@ UNITS ?= 156
 GIT_LOG ?= /tmp/git.log
 GIT_SCOPE ?= engines/polyglot-route-engine
 
-.PHONY: lint test scan audit dag validate forecast plan execute route chaos calibrate certify schemas pg-conformance ingest advise anchor mix serve all clean-outputs
+.PHONY: lint test scan audit dag validate forecast plan execute route chaos calibrate certify schemas pg-conformance ingest advise anchor mix durations serve all clean-outputs
 
 # ruff E,F,I,B,UP,S at 120 columns and mypy --strict: the same gate the route
 # engine runs under. Both are clean as of 2026-08-19.
@@ -86,6 +86,18 @@ ingest:
 # Which sections of an oversized SKILL.md to move to references/.
 advise:
 	$(CLI) advise-skills --static-scan estimation/elmos-token-scan.json --output $(OUT)
+
+# Produce a COMPLETE per-node durations log for this package's own suite.
+#
+# --durations=0 alone is not enough: pytest hides entries below 0.005s, and the
+# hidden ones are the fast ones. On this suite that silently drops 69% of nodes
+# and inflates the mean 2.9x. --durations-min=0 is what makes it complete, and
+# the ingester refuses a truncated log rather than calibrating on a skewed one.
+DURATIONS_LOG ?= /tmp/elmos-ei-durations.log
+durations:
+	$(PY) -m pytest tests -q --durations=0 --durations-min=0 | tee $(DURATIONS_LOG)
+	@echo "wrote $(DURATIONS_LOG) — ingest with:"
+	@echo "  $(CLI) ingest-telemetry --durations-log $(DURATIONS_LOG) --task <id> --unit-count <n> ..."
 
 # Compare the forecast's assumed token category mix against real observed usage.
 # TRANSCRIPT must point at an agent session record (Claude Code / Codex JSONL) --

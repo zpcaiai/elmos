@@ -147,8 +147,27 @@ DURATION_LINE = re.compile(
 )
 
 
-def parse_pytest_durations(path: str | Path) -> dict[str, Any]:
-    """Read per-node timings from a log produced with ``--durations=0``.
+#: pytest's own admission that it truncated the duration report, e.g.
+#: "(768 durations < 0.005s hidden.  Use -vv to show these durations.)"
+#:
+#: This matters far more than it looks. ``--durations=0`` does NOT mean "every
+#: node": pytest still hides entries below 0.005s. The hidden ones are the FAST
+#: ones, so what survives is a slow-biased sample, and a calibration multiplier
+#: computed from it is wrong in a consistent direction while looking entirely
+#: reasonable. The complete incantation is ``--durations=0 --durations-min=0``.
+DURATIONS_TRUNCATED = re.compile(
+    r"\((?P<hidden>\d+)\s+durations?\s*<\s*(?P<threshold>[\d.]+)s\s+hidden",
+)
+
+
+class TruncatedDurations(ValueError):
+    """Raised when a durations log is a slow-biased subset rather than the full set."""
+
+
+def parse_pytest_durations(
+    path: str | Path, allow_truncated: bool = False
+) -> dict[str, Any]:
+    """Read per-node timings from a log produced with ``--durations=0 --durations-min=0``.
 
     This is the measurement the aggregate parser cannot give you: a real duration
     per node instead of a mean over all of them. setup, call and teardown are
@@ -164,7 +183,19 @@ def parse_pytest_durations(path: str | Path) -> dict[str, Any]:
     matches = list(DURATION_LINE.finditer(text))
     if not matches:
         raise ValueError(
-            f"{source}: no per-node duration lines found; re-run pytest with --durations=0"
+            f"{source}: no per-node duration lines found; re-run pytest with "
+            "--durations=0 --durations-min=0"
+        )
+
+    truncated = DURATIONS_TRUNCATED.search(text)
+    if truncated and not allow_truncated:
+        raise TruncatedDurations(
+            f"{source}: pytest hid {truncated.group('hidden')} durations below "
+            f"{truncated.group('threshold')}s, so this log holds only the slowest "
+            f"{len(matches)} phase entries. Calibrating on it would inflate the mean in a "
+            "consistent direction while looking reasonable. Re-run with "
+            "--durations=0 --durations-min=0, or pass allow_truncated=True if you "
+            "genuinely want the slow tail only."
         )
 
     per_node: dict[str, dict[str, float]] = {}
@@ -189,6 +220,8 @@ def parse_pytest_durations(path: str | Path) -> dict[str, Any]:
         "log": source.name,
         "nodes": nodes,
         "node_count": len(nodes),
+        "truncated": bool(truncated),
+        "hidden_durations": int(truncated.group("hidden")) if truncated else 0,
         "total_seconds": round(total, 4),
         "mean_seconds_per_node": round(total / len(nodes), 4),
         "phases_summed": True,
@@ -202,6 +235,7 @@ def rows_from_pytest_durations(
     task_type: str | None = None,
     complexity: str | None = None,
     caveats: tuple[str, ...] = (),
+    allow_truncated: bool = False,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """One calibrate row per measured node, instead of one per log.
 
@@ -216,7 +250,7 @@ def rows_from_pytest_durations(
     rows: list[dict[str, Any]] = []
     parsed: list[dict[str, Any]] = []
     for log in logs:
-        report = parse_pytest_durations(log)
+        report = parse_pytest_durations(log, allow_truncated=allow_truncated)
         parsed.append({
             "log": report["log"],
             "total_seconds": report["total_seconds"],

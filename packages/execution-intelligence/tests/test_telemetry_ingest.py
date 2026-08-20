@@ -7,7 +7,9 @@ from conftest import TASKS_PATH
 from elmos_execution_intelligence.calibration import calibrate
 from elmos_execution_intelligence.io_utils import load_json
 from elmos_execution_intelligence.telemetry import (
+    TruncatedDurations,
     ingest_report,
+    parse_pytest_durations,
     parse_pytest_log,
     rows_from_pytest_logs,
 )
@@ -244,3 +246,65 @@ def test_transcripts_are_the_only_source_that_can_calibrate_tokens(tmp_path):
     report = transcript_ingest_report(rows, parsed)
     assert report["token_data_available"] is True
     assert report["measurement"] == "per_session_observed"
+
+
+# ------------------------------------------- truncated durations detection ---
+
+TRUNCATED_LOG = """\
+============================= slowest durations ==============================
+0.84s call     tests/test_a.py::test_slow
+0.74s call     tests/test_b.py::test_slowish
+(768 durations < 0.005s hidden.  Use -vv to show these durations.)
+280 passed, 11 skipped in 24.92s
+"""
+
+COMPLETE_LOG = """\
+============================= slowest durations ==============================
+0.84s call     tests/test_a.py::test_slow
+0.01s setup    tests/test_a.py::test_slow
+0.74s call     tests/test_b.py::test_slowish
+0.00s teardown tests/test_b.py::test_slowish
+280 passed, 11 skipped in 24.92s
+"""
+
+
+def test_truncated_durations_log_is_refused(tmp_path):
+    """--durations=0 alone hides the FAST entries, leaving a slow-biased sample.
+
+    Accepting it produces a mean that is wrong in a consistent direction while
+    looking perfectly reasonable -- measured at ~2.9x on this package's own
+    suite, with 69% of nodes silently dropped.
+    """
+    log = tmp_path / "truncated.log"
+    log.write_text(TRUNCATED_LOG, encoding="utf-8")
+    with pytest.raises(TruncatedDurations) as excinfo:
+        parse_pytest_durations(log)
+    message = str(excinfo.value)
+    assert "768" in message
+    # The message must name the exact fix, not just the problem.
+    assert "--durations-min=0" in message
+
+
+def test_truncation_can_be_opted_into_explicitly(tmp_path):
+    log = tmp_path / "truncated.log"
+    log.write_text(TRUNCATED_LOG, encoding="utf-8")
+    report = parse_pytest_durations(log, allow_truncated=True)
+    assert report["truncated"] is True
+    assert report["hidden_durations"] == 768
+
+
+def test_complete_durations_log_records_that_it_is_complete(tmp_path):
+    log = tmp_path / "complete.log"
+    log.write_text(COMPLETE_LOG, encoding="utf-8")
+    report = parse_pytest_durations(log)
+    assert report["truncated"] is False
+    assert report["hidden_durations"] == 0
+    assert report["node_count"] == 2
+
+
+def test_a_log_with_no_durations_at_all_still_says_so(tmp_path):
+    log = tmp_path / "plain.log"
+    log.write_text("280 passed, 11 skipped in 24.92s\n", encoding="utf-8")
+    with pytest.raises(ValueError) as excinfo:
+        parse_pytest_durations(log)
+    assert "--durations-min=0" in str(excinfo.value)
