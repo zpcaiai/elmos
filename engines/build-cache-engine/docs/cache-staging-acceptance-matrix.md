@@ -52,6 +52,29 @@ Every executed row must record: test ID, exact command, fixture, source commit, 
 | E2E-001 | End to end | Java/Spring → C#/ASP.NET complete project | Complete staged, validated, atomically published tree |
 | E2E-002 | End to end | Service restart during generation | Resume without duplicate side effects or partial output |
 | E2E-003 | End to end | No-change rerun | Same final tree digest; model/compiler work avoided except freshness policy |
+| SOTA-01 | Policy replay | Same trace, same capacity, same seed, twice | Byte-identical decisions and identical policy state digest |
+| SOTA-02 | Policy baseline | Any candidate against LRU at equal capacity | LRU always measured; a candidate that does not beat it is not selected |
+| SOTA-03 | Policy workload | One-hit monorepo scan | Scan-resistant policies keep the hot set; LRU is flushed |
+| SOTA-04 | Policy workload | High temporal reuse (identical rerun) | Frequency/cost-aware policies beat LRU on avoided-compute ratio |
+| SOTA-05 | Policy workload | Heterogeneous object sizes | Size-aware policies do not let one large object evict many small hot ones |
+| SOTA-06 | Policy workload | Expensive, sparsely reused objects | Cost-aware admission keeps them; size-only policies drop them |
+| SOTA-07 | Policy prefetch | DAG with a known future window | Prefetch precision above the floor; budget and cancellation respected |
+| SOTA-08 | Policy admission | Restore slower than recompute | Object is bypassed, not admitted |
+| SOTA-09 | Policy adaptation | Workload regime shift | Selector switches only past the margin and the minimum dwell |
+| SOTA-10 | Policy safety | Out-of-distribution or drifted features | Pinned fixed fallback, with the reason recorded |
+| SOTA-11 | Policy safety | Model missing, stale, unsigned or low-confidence | Fixed parameters used; no unbounded value ever applied |
+| SOTA-12 | Policy fairness | Multi-tenant burst | Per-tenant quota holds; fairness stays above the gate |
+| SOTA-13 | Policy state | Snapshot and restore across a restart | State digest matches; counters excluded from the digest |
+| SOTA-14 | Policy privacy | Captured trace | No path, prompt, source or tenant name; positive-rule check passes |
+| SOTA-15 | Policy certification | Full benchmark matrix | No single policy wins every cell; equal capacity in every arm |
+| SOTA-16 | Policy boundary | Any policy decision | Never changes validity, freshness or reuse eligibility |
+| SOTA-17 | Policy boundary | Crash during staging with the policy plane active | Staging invariants unchanged |
+| SOTA-18 | Policy rollout | Regression after promotion | Automatic rollback to the pinned fallback; certificate expires |
+| SOTA-19 | Policy configuration | Unknown policy, bad objective, out-of-range fraction | Loading fails; no silent default |
+| SOTA-20 | Policy invalidation | Revoked or quarantined entry | `forget()` removes it, counted as an invalidation and not an eviction |
+| SOTA-21 | Policy integration | Policy-backed hot index under load | Index membership always equals policy residency |
+| SOTA-22 | Policy integration | GC plan with a replacement policy | Ordering changes; protected roots never become candidates |
+| SOTA-23 | Policy operations | `policy` and `trace` CLI commands | Evidence is emitted; certification refuses without rollout evidence |
 
 ## Required performance scenarios
 

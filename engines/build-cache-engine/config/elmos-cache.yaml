@@ -2,7 +2,7 @@ elmos:
   cache:
     enabled: true
     mode: read-write  # bypass | read-only | write-only | read-write | refresh
-    package_version: 1.0.0
+    package_version: 1.1.0
 
     local:
       root: .elmos/cache
@@ -86,3 +86,25 @@ elmos:
       metrics_enabled: true
       log_source_content: false
       retain_all_failure_traces: true
+
+    policy:
+      enabled: true
+      l0_policy: W_TINY_LFU
+      l1_policy: SIEVE
+      l2_policy: GDSF
+      fallback: SIEVE
+      objective_profile: BALANCED
+      adaptive_selection: false
+      learned_tuning: false
+      learned_shadow_only: true
+      learned_canary_fraction: 0.0
+      minimum_dwell_events: 5000
+      improvement_margin: 0.03
+      admission_enabled: false
+      trace_capture: false
+      trace_sample_rate: 0.05
+      trace_per_tenant_budget: 1000000
+      prefetch_enabled: false
+      prefetch_horizon: 4
+      prefetch_max_in_flight: 4
+      prefetch_max_bytes: 536870912

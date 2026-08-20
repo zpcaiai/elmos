@@ -29,7 +29,7 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-from .action_cache import ActionCache, CommitRequest, LookupRequest
+from .action_cache import ActionCache, CommitRequest, HotIndex, LookupRequest
 from .cas import ContentAddressableStore
 from .checkpoint import CheckpointService, CompatibilityProfile
 from .clock import SYSTEM_CLOCK, Clock
@@ -242,7 +242,11 @@ class ConversionPipeline:
         self.tracer = Tracer(self.metrics, clock)
         self.accounting = CacheAccounting(self.metrics)
         self.action_cache = ActionCache(
-            store, cas, clock, negative_ttl_seconds=config.validation.negative_cache_ttl_seconds
+            store,
+            cas,
+            clock,
+            negative_ttl_seconds=config.validation.negative_cache_ttl_seconds,
+            hot_index=HotIndex.from_config(config.policy),
         )
         self.security = SecurityGate(config=config.security)
         self._fingerprints: dict[str, Fingerprint] = {}

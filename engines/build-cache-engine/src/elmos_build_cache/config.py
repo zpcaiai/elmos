@@ -151,10 +151,42 @@ class RolloutConfig:
 
 
 @dataclass(frozen=True)
+class PolicyConfig:
+    """Cache replacement policy, admission, tracing and prefetch settings.
+
+    Defaults are the conservative ones: a fixed policy per tier, no adaptive
+    switching, no learned tuning, no tracing and no prefetch. Every SOTA
+    behaviour is opt-in because the safe configuration must be the one you get
+    by not thinking about it.
+    """
+
+    enabled: bool = True
+    l0_policy: str = "W_TINY_LFU"
+    l1_policy: str = "SIEVE"
+    l2_policy: str = "GDSF"
+    fallback: str = "SIEVE"
+    objective_profile: str = "BALANCED"
+    adaptive_selection: bool = False
+    learned_tuning: bool = False
+    learned_shadow_only: bool = True
+    learned_canary_fraction: float = 0.0
+    minimum_dwell_events: int = 5_000
+    improvement_margin: float = 0.03
+    admission_enabled: bool = False
+    trace_capture: bool = False
+    trace_sample_rate: float = 0.05
+    trace_per_tenant_budget: int = 1_000_000
+    prefetch_enabled: bool = False
+    prefetch_horizon: int = 4
+    prefetch_max_in_flight: int = 4
+    prefetch_max_bytes: int = 512 * 1024 * 1024
+
+
+@dataclass(frozen=True)
 class CacheConfig:
     enabled: bool = True
     mode: CacheMode = CacheMode.READ_WRITE
-    package_version: str = "1.0.0"
+    package_version: str = "1.1.0"
     local: LocalStorageConfig = field(default_factory=LocalStorageConfig)
     remote: RemoteConfig = field(default_factory=RemoteConfig)
     redis: RedisConfig = field(default_factory=RedisConfig)
@@ -166,6 +198,7 @@ class CacheConfig:
     retention: RetentionConfig = field(default_factory=RetentionConfig)
     observability: ObservabilityConfig = field(default_factory=ObservabilityConfig)
     rollout: RolloutConfig = field(default_factory=RolloutConfig)
+    policy: PolicyConfig = field(default_factory=PolicyConfig)
 
     def resolved(self, base: Path) -> ResolvedPaths:
         return ResolvedPaths(
@@ -212,6 +245,10 @@ def _coerce(annotation: Any, value: Any, path: str) -> Any:
         if isinstance(value, bool) or not isinstance(value, int):
             raise ContractViolation(f"{path}: expected an integer", got=repr(value))
         return value
+    if annotation is float:
+        if isinstance(value, bool) or not isinstance(value, int | float):
+            raise ContractViolation(f"{path}: expected a number", got=repr(value))
+        return float(value)
     if annotation is str:
         if not isinstance(value, str):
             raise ContractViolation(f"{path}: expected a string", got=repr(value))
@@ -236,6 +273,7 @@ def _build(cls: Any, data: dict[str, Any], path: str) -> Any:
 _TYPE_NAMESPACE: dict[str, Any] = {
     "bool": bool,
     "int": int,
+    "float": float,
     "str": str,
     "CacheMode": CacheMode,
     "ValidationLevel": ValidationLevel,
@@ -250,6 +288,7 @@ _TYPE_NAMESPACE: dict[str, Any] = {
     "RetentionConfig": RetentionConfig,
     "ObservabilityConfig": ObservabilityConfig,
     "RolloutConfig": RolloutConfig,
+    "PolicyConfig": PolicyConfig,
     "tuple[str, ...]": tuple[str, ...],
 }
 
@@ -295,3 +334,71 @@ def _validate(config: CacheConfig) -> None:
         raise ContractViolation("default minimum validation level cannot be QUARANTINED")
     if config.workspace.keep_previous_published_versions < 1:
         raise ContractViolation("at least one previous published tree must be retained for rollback")
+    _validate_policy(config.policy)
+
+
+def _validate_policy(policy: PolicyConfig) -> None:
+    """Reject a policy section that names a policy or objective we do not have.
+
+    Done by importing the real enums rather than duplicating their members, so
+    a policy added to the portfolio is configurable the same day it lands.
+    """
+
+    from .cache_policy import PolicyName
+    from .cache_simulator import ObjectiveProfile
+
+    names = {member.value for member in PolicyName}
+    for attribute in ("l0_policy", "l1_policy", "l2_policy", "fallback"):
+        value = getattr(policy, attribute)
+        if value not in names:
+            raise ContractViolation(
+                f"policy.{attribute} is not a known cache policy",
+                value=value,
+                known=sorted(names),
+            )
+    objectives = {member.value for member in ObjectiveProfile}
+    if policy.objective_profile not in objectives:
+        raise ContractViolation(
+            "policy.objective_profile is not a known objective",
+            value=policy.objective_profile,
+            known=sorted(objectives),
+        )
+    if not 0.0 <= policy.learned_canary_fraction <= 1.0:
+        raise ContractViolation(
+            "policy.learned_canary_fraction must be a fraction",
+            value=policy.learned_canary_fraction,
+        )
+    if policy.learned_shadow_only and policy.learned_canary_fraction > 0.0:
+        raise ContractViolation(
+            "policy.learned_canary_fraction requires learned_shadow_only to be false",
+            value=policy.learned_canary_fraction,
+        )
+    if not 0.0 <= policy.trace_sample_rate <= 1.0:
+        raise ContractViolation(
+            "policy.trace_sample_rate must be a fraction", value=policy.trace_sample_rate
+        )
+    if policy.minimum_dwell_events < 1:
+        raise ContractViolation(
+            "policy.minimum_dwell_events must be positive", value=policy.minimum_dwell_events
+        )
+    if policy.improvement_margin < 0.0:
+        raise ContractViolation(
+            "policy.improvement_margin cannot be negative", value=policy.improvement_margin
+        )
+    if policy.prefetch_horizon < 1:
+        raise ContractViolation(
+            "policy.prefetch_horizon must be positive", value=policy.prefetch_horizon
+        )
+    if policy.prefetch_max_in_flight < 1:
+        raise ContractViolation(
+            "policy.prefetch_max_in_flight must be positive", value=policy.prefetch_max_in_flight
+        )
+    if policy.prefetch_max_bytes < 1:
+        raise ContractViolation(
+            "policy.prefetch_max_bytes must be positive", value=policy.prefetch_max_bytes
+        )
+    if policy.trace_per_tenant_budget < 1:
+        raise ContractViolation(
+            "policy.trace_per_tenant_budget must be positive",
+            value=policy.trace_per_tenant_budget,
+        )

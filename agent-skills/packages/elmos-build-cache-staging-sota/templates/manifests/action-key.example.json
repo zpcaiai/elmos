@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "stage_id": "target-code-generation",
+  "stage_version": "1.0.0",
+  "stage_contract_schema": "elmos.stage-contract/v1",
+  "inputs": {
+    "semantic_ir_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "mapping_plan_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "dependency_public_interface_digests": [
+      "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    ]
+  },
+  "target": {
+    "language": "csharp",
+    "framework": "aspnet-core",
+    "runtime": "net10.0"
+  },
+  "toolchain": {
+    "image_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+    "compiler": "dotnet-10.0"
+  },
+  "rule_pack_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+  "model_profile": {
+    "model_snapshot": "gpt-example-snapshot",
+    "prompt_template_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+    "seed": 42
+  },
+  "declared_environment": {
+    "LANG": "C.UTF-8",
+    "TZ": "UTC"
+  },
+  "feature_flags": {
+    "generated_file_staging": true
+  },
+  "action_key": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+  "explanation": {
+    "canonicalization": "canonical-json-v1"
+  }
+}

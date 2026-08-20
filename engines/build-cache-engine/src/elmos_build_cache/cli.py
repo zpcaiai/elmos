@@ -21,16 +21,36 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .action_cache import ActionCache
+from .action_cache import ActionCache, HotIndex
+from .cache_policy import PolicyName, create_policy
+from .cache_simulator import ObjectiveProfile, benchmark, recommended_capacity
+from .cache_trace import (
+    GENERATORS,
+    Split,
+    TraceCorpus,
+    assert_privacy,
+    detect_drift,
+    detect_leakage,
+    sufficient_sample,
+    workload_features,
+)
 from .canonical import require_digest
 from .cas import ContentAddressableStore
 from .clock import SYSTEM_CLOCK, Clock
 from .config import CacheConfig, default_config, load_config
 from .db import MetadataStore, open_store
 from .enums import RunStatus, StagedFileStatus, TrustNamespace
-from .errors import ElmosCacheError, NotFound
+from .errors import ContractViolation, ElmosCacheError, NotFound
 from .gc import GarbageCollector, RetentionPolicy, explain_retention
 from .journal import LeaseManager, RunCoordinator, RunJournal
+from .policy_certification import (
+    CertificationContext,
+    RolloutPlan,
+    benchmark_matrix,
+    certify_policy,
+)
+from .policy_orchestrator import RuleSelector, configuration_digest
+from .security import Ed25519ProvenanceSigner
 from .staging import Workspace
 
 SCHEMA_VERSION = "1.0.0"
@@ -51,7 +71,12 @@ class Context:
 
     @property
     def action_cache(self) -> ActionCache:
-        return ActionCache(self.store, self.cas, self.clock)
+        return ActionCache(
+            self.store,
+            self.cas,
+            self.clock,
+            hot_index=HotIndex.from_config(self.config.policy),
+        )
 
     def collector(self) -> GarbageCollector:
         retention = self.config.retention
@@ -70,6 +95,13 @@ class Context:
                 quota_bytes=self.config.local.max_size_gb * 1024**3,
             ),
             self.clock,
+            replacement=(
+                create_policy(
+                    self.config.policy.l2_policy, self.config.local.max_size_gb * 1024**3
+                )
+                if self.config.policy.enabled
+                else None
+            ),
         )
 
     def workspace(self, run_id: str) -> Workspace:
@@ -154,6 +186,63 @@ def build_parser() -> argparse.ArgumentParser:
     materialize = artifact.add_parser("materialize", help="write an artifact to a path")
     materialize.add_argument("digest")
     materialize.add_argument("destination", type=Path)
+
+    policy = subparsers.add_parser(
+        "policy", help="cache replacement policy: benchmark, select, certify"
+    ).add_subparsers(dest="command", required=True)
+
+    def _corpus_arguments(sub: argparse.ArgumentParser) -> None:
+        source = sub.add_mutually_exclusive_group(required=True)
+        source.add_argument("--workload", choices=sorted(GENERATORS), help="a built-in workload")
+        source.add_argument("--trace", type=Path, help="a captured trace in JSONL form")
+
+    policy.add_parser("show", help="the configured policy for each tier")
+
+    policy_benchmark = policy.add_parser("benchmark", help="replay every candidate on one trace")
+    _corpus_arguments(policy_benchmark)
+    policy_benchmark.add_argument("--capacity-fraction", type=float, default=0.2)
+    policy_benchmark.add_argument("--capacity-bytes", type=int)
+    policy_benchmark.add_argument("--objective", default=None)
+    policy_benchmark.add_argument("--baseline", default="LRU")
+    policy_benchmark.add_argument("--candidate", action="append", dest="candidates")
+    policy_benchmark.add_argument("--split", default=None, help="restrict to one split")
+
+    policy_matrix = policy.add_parser("matrix", help="every workload against every capacity")
+    policy_matrix.add_argument("--capacity-fraction", type=float, action="append", dest="fractions")
+    policy_matrix.add_argument("--objective", default=None)
+
+    policy_select = policy.add_parser("select", help="what the rule selector recommends")
+    _corpus_arguments(policy_select)
+
+    policy_certify = policy.add_parser("certify", help="certify a candidate on the test window")
+    _corpus_arguments(policy_certify)
+    policy_certify.add_argument("--candidate", required=True)
+    policy_certify.add_argument("--objective", default=None)
+    policy_certify.add_argument("--capacity-fraction", type=float, default=0.2)
+    policy_certify.add_argument("--elmos-commit", required=True)
+    policy_certify.add_argument("--hardware-profile", default="unspecified")
+    policy_certify.add_argument(
+        "--signing-key",
+        type=Path,
+        help="hex-encoded ed25519 seed; without it an ephemeral key is used and said so",
+    )
+    for evidence in ("shadow", "canary", "rollback"):
+        policy_certify.add_argument(
+            f"--{evidence}-evidence",
+            type=Path,
+            help=f"JSON file recording the {evidence} stage of the rollout ladder",
+        )
+    policy_certify.add_argument("--issued-at", default="1970-01-01T00:00:00+00:00")
+
+    trace = subparsers.add_parser("trace", help="cache trace capture and inspection").add_subparsers(
+        dest="command", required=True
+    )
+    trace_generate = trace.add_parser("generate", help="write a built-in workload to JSONL")
+    trace_generate.add_argument("--workload", choices=sorted(GENERATORS), required=True)
+    trace_generate.add_argument("--out", type=Path, required=True)
+    trace_verify = trace.add_parser("verify", help="privacy, leakage, drift and sample checks")
+    trace_verify.add_argument("--trace", type=Path, required=True)
+    trace.add_parser("workloads", help="list the built-in workloads")
 
     doctor = subparsers.add_parser("doctor", help="diagnostics").add_subparsers(
         dest="command", required=True
@@ -488,6 +577,173 @@ def cmd_doctor_cache(context: Context, args: argparse.Namespace) -> dict[str, An
     }
 
 
+# --------------------------------------------------------------------------
+# policy and trace commands
+#
+# These read a trace and produce a report; none of them mutate the cache. The
+# operator surface for a policy change is deliberately "show me the evidence",
+# not "switch it now": a policy is promoted by editing the ``policy`` section
+# of the configuration after a certificate exists, not by a CLI flag.
+# --------------------------------------------------------------------------
+def _load_corpus(args: argparse.Namespace) -> TraceCorpus:
+    if getattr(args, "trace", None):
+        corpus = TraceCorpus.read_jsonl(args.trace, label=args.trace.stem)
+    else:
+        corpus = GENERATORS[args.workload]()
+    split = getattr(args, "split", None)
+    if split:
+        events = corpus.split(Split(split))
+        if not events:
+            raise NotFound(f"split {split} is empty", split=split)
+        corpus = TraceCorpus(events, label=f"{corpus.label}:{split}")
+    return corpus
+
+
+def _objective(context: Context, args: argparse.Namespace) -> str:
+    requested = getattr(args, "objective", None) or context.config.policy.objective_profile
+    return ObjectiveProfile(requested).value
+
+
+def _capacity(corpus: TraceCorpus, args: argparse.Namespace) -> int:
+    explicit = getattr(args, "capacity_bytes", None)
+    if explicit:
+        return int(explicit)
+    return recommended_capacity(corpus.events, getattr(args, "capacity_fraction", 0.2) or 0.2)
+
+
+def cmd_policy_show(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    policy = context.config.policy
+    return {
+        "enabled": policy.enabled,
+        "tiers": {"L0": policy.l0_policy, "L1": policy.l1_policy, "L2": policy.l2_policy},
+        "fallback": policy.fallback,
+        "objective_profile": policy.objective_profile,
+        "adaptive_selection": policy.adaptive_selection,
+        "learned_tuning": policy.learned_tuning,
+        "learned_shadow_only": policy.learned_shadow_only,
+        "admission_enabled": policy.admission_enabled,
+        "trace_capture": policy.trace_capture,
+        "prefetch_enabled": policy.prefetch_enabled,
+        "available_policies": [name.value for name in PolicyName],
+        "configuration_digest": configuration_digest(
+            policy.l1_policy, context.config.local.max_size_gb * 1024**3, policy.objective_profile, {}
+        ),
+    }
+
+
+def cmd_policy_benchmark(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    corpus = _load_corpus(args)
+    candidates = tuple(args.candidates) if args.candidates else tuple(n.value for n in PolicyName)
+    return benchmark(
+        corpus,
+        policies=candidates,
+        capacity_bytes=_capacity(corpus, args),
+        baseline=args.baseline,
+        objective=_objective(context, args),
+    )
+
+
+def cmd_policy_matrix(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    fractions = tuple(args.fractions) if args.fractions else (0.05, 0.2, 0.5)
+    return benchmark_matrix(capacity_fractions=fractions, objective=_objective(context, args))
+
+
+def cmd_policy_select(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    corpus = _load_corpus(args)
+    features = workload_features(corpus.events)
+    selection = RuleSelector().select(features)
+    payload = selection.to_dict()
+    payload["features"] = features
+    payload["configured"] = context.config.policy.l1_policy
+    payload["agrees_with_configuration"] = selection.policy == context.config.policy.l1_policy
+    return payload
+
+
+def cmd_policy_certify(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    corpus = _load_corpus(args)
+    if args.signing_key:
+        seed = bytes.fromhex(args.signing_key.read_text(encoding="utf-8").strip())
+        signer = Ed25519ProvenanceSigner({"elmos-policy-1": seed}, "elmos-policy-1")
+        ephemeral = False
+    else:
+        signer = Ed25519ProvenanceSigner.generate("elmos-policy-ephemeral")
+        ephemeral = True
+    objective = _objective(context, args)
+    capacity = _capacity(corpus, args)
+    plan = RolloutPlan()
+
+    def _evidence(path: Path | None) -> dict[str, Any] | None:
+        if path is None:
+            return None
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(loaded, dict):
+            raise ContractViolation("rollout evidence must be a JSON object", path=str(path))
+        return loaded
+
+    result = certify_policy(
+        corpus,
+        args.candidate,
+        CertificationContext(
+            elmos_commit=args.elmos_commit,
+            policy_digest=configuration_digest(args.candidate, capacity, objective, {}),
+            configuration_digest=configuration_digest(args.candidate, capacity, objective, {}),
+            capacity_bytes=capacity,
+            objective_profile=objective,
+            protected_root_rules="active-runs,checkpoints,published,pins,legal-holds",
+            hardware_profile=args.hardware_profile,
+        ),
+        signer,
+        objective=objective,
+        rollout=plan,
+        shadow_evidence=_evidence(args.shadow_evidence),
+        canary_evidence=_evidence(args.canary_evidence),
+        rollback_evidence=_evidence(args.rollback_evidence),
+        issued_at=args.issued_at,
+    )
+    payload = result.to_dict()
+    payload["ephemeral_signing_key"] = ephemeral
+    if ephemeral:
+        payload["warning"] = (
+            "signed with an ephemeral key; supply --signing-key for a certificate "
+            "anyone else can verify"
+        )
+    return payload
+
+
+def cmd_trace_generate(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    corpus = GENERATORS[args.workload]()
+    path = corpus.write_jsonl(args.out)
+    return {"workload": args.workload, "path": str(path), "manifest": corpus.manifest()}
+
+
+def cmd_trace_verify(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    corpus = TraceCorpus.read_jsonl(args.trace, label=args.trace.stem)
+    assert_privacy(corpus.events)
+    leakage = [finding.to_dict() for finding in detect_leakage(corpus)]
+    train = corpus.split(Split.TRAIN) if Split.TRAIN.value in corpus.splits else ()
+    test = corpus.split(Split.TEST) if Split.TEST.value in corpus.splits else ()
+    sufficient, detail = sufficient_sample(test or corpus.events)
+    return {
+        "path": str(args.trace),
+        "manifest": corpus.manifest(),
+        "privacy_clean": True,
+        "leakage": leakage,
+        "drift": detect_drift(train, test) if train and test else None,
+        "sample_sufficient": sufficient,
+        "sample_detail": detail,
+        "usable_for_certification": sufficient and not leakage,
+    }
+
+
+def cmd_trace_workloads(context: Context, args: argparse.Namespace) -> dict[str, Any]:
+    return {
+        "workloads": [
+            {"name": name, "features": workload_features(generator().events)}
+            for name, generator in sorted(GENERATORS.items())
+        ]
+    }
+
+
 COMMANDS: dict[tuple[str, str], Any] = {
     ("cache", "status"): cmd_cache_status,
     ("cache", "inspect"): cmd_cache_inspect,
@@ -506,6 +762,14 @@ COMMANDS: dict[tuple[str, str], Any] = {
     ("run", "cancel"): cmd_run_cancel,
     ("artifact", "materialize"): cmd_artifact_materialize,
     ("doctor", "cache"): cmd_doctor_cache,
+    ("policy", "show"): cmd_policy_show,
+    ("policy", "benchmark"): cmd_policy_benchmark,
+    ("policy", "matrix"): cmd_policy_matrix,
+    ("policy", "select"): cmd_policy_select,
+    ("policy", "certify"): cmd_policy_certify,
+    ("trace", "generate"): cmd_trace_generate,
+    ("trace", "verify"): cmd_trace_verify,
+    ("trace", "workloads"): cmd_trace_workloads,
 }
 
 

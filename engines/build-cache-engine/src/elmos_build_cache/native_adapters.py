@@ -130,7 +130,19 @@ class NativeBuildCacheAdapter:
         env: dict[str, str] = {}
         for key, relative in self.env_template.items():
             env[key] = str((self.root / relative).resolve())
+        env.update(self.derived_environment())
         return dict(sorted(env.items()))
+
+    def derived_environment(self) -> dict[str, str]:
+        """Variables whose value is not a bare path.
+
+        Some tools take their cache location as a flag rather than as a path
+        variable -- Maven's ``-Dmaven.repo.local`` is the one that matters here.
+        These are derived from the path variables above, so they are sandboxed
+        by construction, but they cannot be checked by ``assert_sandboxed``'s
+        path rule and are kept separate for that reason.
+        """
+        return {}
 
     def assert_sandboxed(self, environment: Mapping[str, str]) -> None:
         """Fail loudly if any declared cache path escaped the volume."""
@@ -244,11 +256,17 @@ class GradleMavenAdapter(NativeBuildCacheAdapter):
     adapter_id = "gradle-maven"
     env_template = {
         "GRADLE_USER_HOME": "gradle-home",
-        "MAVEN_OPTS_REPO": "maven-repo",
+        "MAVEN_REPO_LOCAL": "maven-repo",
     }
     cache_subdirs = ("gradle-home", "maven-repo", "build-cache")
     output_patterns = ("build/libs/*.jar", "target/*.jar", "build/classes/**/*.class")
     lockfile_names = ("gradle.lockfile", "pom.xml", "build.gradle", "build.gradle.kts")
+
+    def derived_environment(self) -> dict[str, str]:
+        # ``MAVEN_REPO_LOCAL`` is this adapter's own name for the directory;
+        # ``MAVEN_OPTS`` is what Maven itself reads, and Maven prints the
+        # resulting path in its own repository list.
+        return {"MAVEN_OPTS": f"-Dmaven.repo.local={(self.root / 'maven-repo').resolve()}"}
 
     _GRADLE_HIT = re.compile(r"FROM-CACHE|UP-TO-DATE")
     _GRADLE_MISS = re.compile(r"Task .* executed|EXECUTED")

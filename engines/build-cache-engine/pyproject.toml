@@ -1,6 +1,6 @@
 [project]
 name = "elmos-build-cache"
-version = "1.0.0"
+version = "1.1.0"
 description = "ELMOS build cache, generated-file staging, checkpoint/recovery and atomic publication subsystem"
 requires-python = ">=3.11"
 dependencies = [
@@ -78,6 +78,12 @@ mypy_path = "src"
 # and its surface is exercised by contract tests against a live endpoint.
 [[tool.mypy.overrides]]
 module = ["boto3", "boto3.*", "botocore", "botocore.*"]
+ignore_missing_imports = true
+
+# The polyglot route engine is an optional sibling, imported lazily by
+# ``elmos_route_stages`` and absent from this package's dependency set.
+[[tool.mypy.overrides]]
+module = ["elmos_polyglot_route", "elmos_polyglot_route.*"]
 ignore_missing_imports = true
 
 # The grammar bundle ships no py.typed marker; every value crossing back out of

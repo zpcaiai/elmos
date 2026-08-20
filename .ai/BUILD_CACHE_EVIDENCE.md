@@ -2,17 +2,20 @@
 
 > Acceptance row → required result → implementing symbol → test → executed
 > verdict. Source of the rows:
-> `agent-skills/packages/elmos-build-cache-staging-recovery/tests/acceptance/cache-staging-acceptance-matrix.md`.
+> `agent-skills/packages/elmos-build-cache-staging-sota/tests/acceptance/cache-staging-acceptance-matrix.md`
+> (the `SOTA-` rows come from the v1.1.0 package's own matrix).
 >
-> Every row below was executed on 2026-08-19 (pass 2), Linux x86_64,
-> Python 3.12.3, `pytest tests` → **550 passed, 5 skipped**, with a live
-> PostgreSQL 16 server, a live HTTP S3 endpoint and seven real build toolchains
-> in the run. A row without an executed command is marked `NOT EXECUTED`.
-> Nothing here is a certification claim beyond what the commands showed.
+> Every row below was re-executed on 2026-08-20 (pass 4), Linux x86_64,
+> Python 3.12.3, `pytest tests` → **914 passed, 7 skipped**, with a live
+> PostgreSQL 16 server, a live HTTP S3 endpoint, eight real build toolchains, a
+> real kernel overlayfs, a real macOS APFS volume and ELMOS's own conversion
+> engine in the run. A row without an executed command is marked
+> `NOT EXECUTED`. Nothing here is a certification claim beyond what the
+> commands showed.
 
 | ID | Required result | Implementation | Test | Verdict |
 | --- | --- | --- | --- | --- |
-| SNAP-001 | Same logical repository → same canonical root digest | `snapshot.take_snapshot` (path-independent, NFC, sorted Merkle) | `test_snap_001_same_repository_different_absolute_paths`, `test_snap_001_windows_style_separators_normalise` | **PASS**, cross-OS fixtures `NOT EXECUTED` |
+| SNAP-001 | Same logical repository → same canonical root digest | `snapshot.take_snapshot` (path-independent, **logical paths composed to NFC**, sorted Merkle) + `portability_findings` | `test_snap_001_same_repository_different_absolute_paths`, `test_snap_001_windows_style_separators_normalise`, `test_this_host_agrees_with_every_platform_ever_recorded`, `test_a_decomposed_filename_snapshots_as_the_composed_one` | **PASS** — one fixture, identical root digest on Linux/ext4 and on a real macOS APFS volume; native Darwin and Windows captures `NOT EXECUTED` and named in a skip |
 | SNAP-002 | Whitespace-only edit: raw digest changes, semantic follows policy | `FileEntry.raw_digest` vs `normalized_digest`, `normalize_text` | `test_snap_002_formatting_only_change` | **PASS** |
 | SNAP-003 | Rename recognised; unrelated subtrees unchanged | `diff_snapshots` content-identity rename matching | `test_snap_003_rename_detected_and_unrelated_subtrees_stable` | **PASS** |
 | KEY-001 | Irrelevant temporary path leaves the ActionKey unchanged | `EXCLUDED_DIMENSIONS`, declared-environment filtering, `canonical_flags` | `test_key_001_irrelevant_inputs_do_not_move_the_key`, `test_key_001_flag_order_and_duplicates_are_canonical` | **PASS** |
@@ -57,7 +60,7 @@
 | CHAOS-001 | Kill at each file-write boundary → no partial publication; recovery converges | `FaultInjector` at 10 boundaries + `KillMode.SIGKILL` (`run_until_kill`) + `check_no_partial_publication` + `check_recovery_converges` | `test_chaos_001_kill_at_every_write_boundary_never_publishes_partially`, `test_chaos_process.py` (8 real kill points) | **PASS** — a real child process is `SIGKILL`ed and a separate parent asserts the invariants over what survived on disk |
 | CHAOS-002 | Disk full / inode exhaustion → controlled failure, no corrupt canonical state | `QuotaExceeded` at the write kill point; `bounded_filesystem()` mounts a real tmpfs via `libc.mount` | `test_chaos_002_disk_full_is_a_controlled_failure`, `test_chaos_002_real_enospc_is_a_controlled_failure`, `test_chaos_002_real_inode_exhaustion_is_bounded` | **PASS** — real `ENOSPC` on a 1 MiB tmpfs and real inode exhaustion at 96 inodes |
 | CERT-001 | Expired / revoked / scope-mismatched certificate → production reuse rejected | `CertificationService.verify` | `test_cert_001_expired_revoked_and_scope_mismatch_are_rejected`, `test_certificate_revocation_blocks_reuse` | **PASS** |
-| E2E-001 | Java/Spring → C#/ASP.NET complete project: staged, validated, atomically published | `ConversionPipeline` + `TreePublisher`, driven by a real `javac` stage and a real tree-sitter-driven translator | `test_e2e_001_complete_project_is_staged_validated_and_published`, `test_e2e_001_real_stages_compile_translate_and_publish`, `test_the_generated_csharp_preserves_the_public_surface` | **PASS** for the orchestration over real artifacts; **`NOT EXECUTED`** for ELMOS's own model-driven stage, which is registered by the orchestrator and not by this engine |
+| E2E-001 | Java/Spring → C#/ASP.NET complete project: staged, validated, atomically published | `ConversionPipeline` + `TreePublisher`, driven by a real `javac` stage, a real tree-sitter-driven translator, and — through `elmos_route_stages` — **ELMOS's own `polyglot-route-engine`** | `test_e2e_001_complete_project_is_staged_validated_and_published`, `test_e2e_001_real_stages_compile_translate_and_publish`, `test_the_pipeline_publishes_what_the_route_engine_emitted` | **PASS** — the route engine's analyzer, IR and emitter run inside the pipeline; the emitted Java compiles and is executed against the Python original |
 | E2E-002 | Service restart during generation → resume without duplicate side effects or partial output | lease reclaim + workspace recovery | `test_e2e_002_restart_during_generation_resumes_without_duplicates` | **PASS** |
 | E2E-003 | No-change rerun → same final tree digest, model/compiler work avoided | ActionKey stability + restore-from-cache staging | `test_e2e_003_no_change_rerun_reproduces_the_tree_without_model_work` | **PASS** (identical `root_digest`, generator invoked 0 times, hit rate 1.0) |
 
@@ -65,7 +68,7 @@
 
 | Gate | Verdict |
 | --- | --- |
-| 1. Cross-platform deterministic snapshot fixtures | **PARTIAL** — deterministic and path-independent on Linux; macOS/Windows fixtures `NOT EXECUTED` |
+| 1. Cross-platform deterministic snapshot fixtures | **PASS on two filesystems** — identical root digest on Linux/ext4 and real macOS APFS, plus a from-any-host hazard audit; native Darwin and Windows captures `NOT EXECUTED` |
 | 2. CAS concurrent-write, interruption, corruption | **PASS** |
 | 3. ActionKey dimension tests | **PASS** |
 | 4. Staged-file kill-point tests at all critical boundaries | **PASS** — in-process injection at 10 boundaries **and** real `SIGKILL` at 8 |
@@ -73,13 +76,15 @@
 | 6. Checkpoint resume matches clean-run output digest | **PASS** for the deterministic fixture |
 | 7. Stale-worker and duplicate-message tests | **PASS** |
 | 8. Tenant isolation, secret leakage, cache poisoning | **PASS** |
-| 9. No-change and small-change benchmark budgets | **PARTIAL** — gate implemented and exercised, including against real compiler and translator work; the budget *numbers* are still engineering estimates |
+| 9. No-change and small-change benchmark budgets | **PARTIAL** — gate implemented and exercised, including against real compiler, translator and route-engine work; the budget *numbers* are still engineering estimates |
 | 10. Production certificate bound to exact artifacts, scope, expiry, fresh evidence | **PASS** for issue/verify/revoke, now with Ed25519 signatures and a policy that refuses a symmetric signer; **no certificate issued** for a real ELMOS output tree |
 
-**Overall: `CERTIFIED_IN_SANDBOX`.** Every gate that can be decided without
-ELMOS's own conversion workload passes against real services and real tools.
-Gates 1, 9 and 10 remain open for the reasons stated, and only for those
-reasons; the ordered work is in `BUILD_CACHE_HANDOFF.md` §3.
+**Overall: `CERTIFIED_IN_SANDBOX`.** Every gate that can be decided from this
+host passes against real services, real tools and ELMOS's own conversion
+engine. What remains is bounded and named: budget *numbers* (gate 9), a
+certificate over a real ELMOS output tree (gate 10), and captures on hosts this
+session cannot reach — a native Darwin run, a Windows run, and the Swift and
+Flutter toolchains. The ordered work is in `BUILD_CACHE_HANDOFF.md` §3.
 
 ## Pass-2 rows added
 
@@ -96,6 +101,50 @@ reasons; the ordered work is in `BUILD_CACHE_HANDOFF.md` §3.
 | NATIVE-003 | A different trust domain starts from a cold native cache | per-trust-domain adapter root | `test_a_second_trust_domain_starts_from_a_cold_go_cache` | **PASS** |
 | E2E-004 | A conversion's target preserves the source's public surface | tree-sitter Java reader + C# emitter + C# grammar re-parse | `test_the_generated_csharp_preserves_the_public_surface`, `test_a_dropped_method_would_fail_verification` | **PASS** |
 | OBS-003 | A restored node reports the compiler time it saved | `saved_compiler_ms` through record → store → action cache → accounting | `test_action_cache_entry_round_trip` (both dialects), `test_a_no_change_rerun_…` | **PASS** — previously reported `0` for every restore |
+
+## Pass-3 rows added
+
+| ID | Required result | Implementation | Test | Verdict |
+| --- | --- | --- | --- | --- |
+| SNAP-004 | A decomposed (NFD) filename snapshots as the composed one | `snapshot._logical` | `test_a_decomposed_filename_snapshots_as_the_composed_one` | **PASS** — this was a real defect: before pass 3 the same checkout produced two root digests |
+| SNAP-005 | A repository that cannot round-trip elsewhere says so from here | `snapshot.portability_findings` | `test_snapshot_portability.py` (case collisions, normalisation folds, 10 Windows-hostile names, symlinks, over-long paths) | **PASS** |
+| OVL-001 | Projection shares storage; the first write breaks the sharing | `OverlayWorkspace.populate_overlay` / `open_for_write` | `test_projection_shares_storage_and_the_first_write_breaks_it` (inode + link-count evidence) | **PASS** |
+| OVL-002 | The source layer cannot be edited by the stage that reads it | `materialize_source` + `_protect` | `test_the_materialised_source_is_read_only_on_disk` | **PASS** (mode asserted; the write attempt skips under root) |
+| OVL-003 | A stage sees only declared mounts; credentials and host paths are refused | `SandboxPolicy.check`, `assert_writable` | 7 + 9 parameterised cases in `test_overlay.py` | **PASS** |
+| OVL-004 | The workspace behaves on the filesystem a containerised runner actually has | the whole lifecycle | `test_the_workspace_works_on_top_of_a_kernel_overlayfs` (real `mount -t overlay`) | **PASS** |
+| ROUTE-001 | The cache drives ELMOS's own conversion engine | `elmos_route_stages.RouteStages` | `test_the_real_analyzer_produces_a_semantic_ir`, `test_the_real_emitter_produces_overflow_checked_java`, `test_the_pipeline_publishes_what_the_route_engine_emitted` | **PASS** |
+| ROUTE-002 | Generation is keyed by the IR, so a comment-only edit re-emits nothing | `RouteStages.generation_fingerprint` | `test_a_comment_only_edit_does_not_re_emit` | **PASS** — emitter invoked 0 times, same tree digest |
+| ROUTE-003 | `TEST_VERIFIED` is earned by execution, not asserted | `RouteStages.differential_check` | `test_the_emitted_java_compiles_with_a_real_compiler`, `test_a_wrong_translation_cannot_claim_test_verified` | **PASS** — a sabotaged translation is caught and refused reuse |
+| ROUTE-004 | A toolchain identity is never invented | `RouteStages.toolchain_identity`, `require`-style refusal | `test_strict_mode_refuses_an_unpinned_toolchain`, `test_an_unpinned_identity_cannot_collide_with_a_pinned_one` | **PASS** |
+| NATIVE-004 | Maven reads the sandboxed local repository | `GradleMavenAdapter.derived_environment` (`-Dmaven.repo.local`) | `test_maven_reads_the_sandboxed_local_repository` | **PASS** — Maven's own repository list names the sandbox path |
+
+## SOTA rows (v1.1.0, pass 4)
+
+| ID | Required result | Implementation | Test | Verdict |
+| --- | --- | --- | --- | --- |
+| SOTA-01 | Same trace, capacity and seed twice → identical decisions and state | `CachePolicy.snapshot`/`restore`/`state_digest` (counters excluded on purpose), `cache_simulator.replay` | `test_sota_01_replay_is_deterministic`, `test_state_digest_survives_a_snapshot_restore_round_trip` | **PASS** — byte-identical decision sequence and state digest |
+| SOTA-02 | LRU is always measured; a candidate that does not beat it is not selected | `benchmark(baseline="LRU")` forces LRU into the arm set; `BenchmarkGates.minimum_weighted_improvement` | `test_sota_02_lru_is_always_in_the_comparison`, `test_a_candidate_that_does_not_improve_is_not_selected` | **PASS** — on `multi-tenant-burst` and `large-binaries` at 5 % capacity, `selected` is `None` |
+| SOTA-03 | One-hit scan: scan-resistant policies keep the hot set | `SievePolicy`, `S3FifoPolicy`, `WTinyLfuPolicy` | `test_sota_03_scan_does_not_flush_the_hot_set` | **PASS** — ACR at 5 %: LRU 0.000, S3-FIFO 0.216, W-TinyLFU 0.346 |
+| SOTA-04 | High temporal reuse: cost/frequency policies beat LRU | `GdsfPolicy`, `WTinyLfuPolicy` | `test_sota_04_high_reuse_favours_frequency_and_cost` | **PASS** — `identical-rerun` at 5 %: LRU 0.000, GDSF 0.581 |
+| SOTA-05 | Heterogeneous sizes: one large object may not evict many small hot ones | `SizeAwareTinyLfuPolicy._score` (frequency ÷ bytes) | `test_sota_05_size_aware_keeps_the_denser_object`, `test_size_aware_tinylfu_prefers_the_denser_object` | **PASS** |
+| SOTA-06 | Expensive, sparsely reused objects are kept | `GdsfPolicy` priority `clock + freq × saved ÷ size`; `AdmissionController.evaluate` | `test_sota_06_expensive_sparse_objects_survive` | **PASS** |
+| SOTA-07 | DAG known future: prefetch precision above the floor, budget respected | `FutureUseIndex.from_dag` over the real `ConversionDag`, `PrefetchPlanner` | `test_sota_07_known_future_is_prefetched_within_budget`, `test_dag_prefetch.py` (23) | **PASS** — cancellation and unused-prefetch accounting included |
+| SOTA-08 | Restore slower than recompute → bypass, not admit | `AdmissionReason.BYPASS_RESTORE_SLOWER_THAN_RECOMPUTE`, `restore_or_recompute` | `test_sota_08_restore_slower_than_recompute_is_bypassed` | **PASS** |
+| SOTA-09 | Regime shift: switch only past the margin and the dwell | `PolicyOrchestrator.evaluate` (hysteresis + `minimum_dwell_events`) | `test_sota_09_regime_shift_switches_only_past_the_margin` | **PASS** — a shift inside the dwell window does not switch |
+| SOTA-10 | Out-of-distribution or drifted features → pinned fallback with a reason | `RuleSelector.out_of_distribution`, `PINNED_FALLBACK = SIEVE`, `detect_drift` | `test_sota_10_out_of_distribution_falls_back_and_says_so` | **PASS** — reason codes `OUT_OF_DISTRIBUTION`, `STRONG_FIXED_FALLBACK` |
+| SOTA-11 | Model missing/stale/unsigned/low-confidence → fixed parameters, never an unbounded value | `LearningAugmentedController._fallback_proposal`, `LearnedModel.predict` clipping, `ModelRegistry.verify` | `test_sota_11_missing_or_untrusted_model_uses_fixed_parameters`, `test_learned_control.py` (23) | **PASS** — clipping is the safety property; an unsigned model is refused |
+| SOTA-12 | Multi-tenant burst: quota holds, fairness above the gate | `TenantQuota`, `SimulationResult.tenant_fairness` | `test_sota_12_one_tenant_cannot_take_the_whole_cache` | **PASS** |
+| SOTA-13 | Snapshot/restore across a restart → matching state digest | `snapshot()`/`restore()`/`state_digest()` on all six policies | `test_sota_13_policy_state_survives_a_restart` (parameterised over all policies) | **PASS** |
+| SOTA-14 | Captured trace contains no path, prompt, source or tenant name | `assert_privacy` (positive rule: only allowed shapes pass), HMAC `namespace_hash`, closed vocabularies | `test_sota_14_a_trace_carries_no_identifying_content`, `test_cache_trace.py` (33) | **PASS** — the check allows a listed shape rather than blocking a listed pattern, so a new field is refused by default |
+| SOTA-15 | Full matrix: no single policy wins every cell, equal capacity per arm | `benchmark_matrix` (10 workloads × 3 capacities) | `test_sota_15_no_single_policy_wins_everything` | **PASS** — `no_single_winner = True`; wins GDSF 14, W-TinyLFU 8, size-aware 4, SIEVE 2, LRU 1, S3-FIFO 1 |
+| SOTA-16 | A policy decision never changes validity, freshness or reuse eligibility | separate modules; `ActionCache` policy checks are untouched by `cache_policy` | `test_sota_16_policy_never_decides_correctness` | **PASS** — the same lookup returns the same verdict under all six policies (`test_sota_21_action_cache_lookup_still_works_under_every_policy`) |
+| SOTA-17 | Crash during staging with the policy plane active → staging invariants unchanged | `staging.Workspace` (unchanged), policy plane not on the staging path | `test_sota_17_staging_invariants_hold_with_the_policy_plane_active` | **PASS** |
+| SOTA-18 | Regression after promotion → automatic rollback, certificate expires | `RolloutPlan.rollback` (straight to `SIMULATOR`, not one step down), `expired_reasons` | `test_sota_18_a_regression_rolls_back_to_the_pinned_fallback` | **PASS** |
+| SOTA-19 | Unknown policy / bad objective / out-of-range fraction fails to load | `config.PolicyConfig` + `_validate_policy` (enum members read from the real enums, not duplicated) | `test_sota_19_bad_policy_configuration_is_refused` (10 params), `test_sota_19_shipped_configuration_carries_the_policy_section` | **PASS** — including the cross-field rule that a canary fraction requires `learned_shadow_only: false` |
+| SOTA-20 | Invalidation is removal, not eviction; a half-empty cache admits | `CachePolicy.forget`, `PolicyCounters.invalidations`; W-TinyLFU main-region room check | `test_sota_20_forget_is_accounted_separately_from_eviction`, `test_sota_20_a_half_empty_cache_admits` (both × 6 policies) | **PASS** — the second test is what caught the W-TinyLFU cold-start bug |
+| SOTA-21 | Policy-backed hot index never drifts from its policy | `HotIndex(policy=…)` reconciling on `decision.evicted` and refused admissions; `invalidate` → `forget` | `test_sota_21_hot_index_never_drifts_from_its_policy` (× 6), `…_invalidation_reaches_the_policy`, `…_disabled_policy_gives_back_the_built_in_lru` | **PASS** — index membership equals policy residency exactly, under all six |
+| SOTA-22 | GC ordering changes; protected roots never become candidates | `GarbageCollector._order_by_replacement_policy` (roots declared to the policy first) | `test_sota_22_replacement_policy_orders_but_never_protects`, `…_protected_roots_are_fed_to_the_policy_first` | **PASS** — same candidate set and same reclaimable bytes as without a policy; only the order moves |
+| SOTA-23 | Operator surface emits evidence and refuses without it | `cli` `policy show/benchmark/matrix/select/certify`, `trace generate/verify/workloads` | `test_sota_23_*` (6 tests) | **PASS** — certification refused with `NO_ROLLBACK_EXERCISE`/`NO_SHADOW_EVIDENCE`, granted and Ed25519-signed once the three evidence files exist |
 
 ## Transfer verification (cloud → Mac), pass 2
 
@@ -115,3 +164,55 @@ Identical, so the tree on the Mac is byte-for-byte the tree that produced the
 The engine's own tests were **not** re-run on the Mac: its system Python is
 3.10 and the engine requires 3.11+. `BUILD_CACHE_HANDOFF.md` §2 has the 3.12
 recipe, including the two optional extras and the PostgreSQL DSN.
+
+## Transfer verification (cloud → Mac), pass 3
+
+10 files were written into `engines/build-cache-engine/` (5 new, 5 changed) and
+5 into `.ai/`. Aggregate digest over the engine tree — `sha256` of the sorted
+`path sha256` listing of every `.py`, `.md`, `.sql`, `.json`, `.yaml` and
+`.toml` file (excluding `.venv`, `__pycache__`, `.mypy_cache`, `.pytest_cache`
+and `*.egg-info`) — computed independently on both sides:
+
+```text
+7831339ac222d1a36578eb14a6238ba9941ee1025361938a0af54ca8c16020fa   (112 files)
+```
+
+Identical, so the tree on the Mac is byte-for-byte the tree that produced the
+622 passing tests above.
+
+The cross-platform capture left two scratch directories on the Mac. The bridge
+cannot delete, so they were moved to
+`~/DevProjects/AIProjects/elmos/.ai-tmp/_to_delete/{xplat-probe,xplat-fixture}`
+for removal.
+
+## Transfer verification (cloud → Mac), pass 4
+
+33 files were written into `engines/build-cache-engine/` (23 new, 10 changed),
+5 into `.ai/`, and the v1.1.0 skills package was vendored at
+`agent-skills/packages/elmos-build-cache-staging-sota/` with its 31 `SKILL.md`
+files installed into `agent-skills/runtime/` (7 of them new). Aggregate digest
+over the engine tree — `sha256` of the sorted `path sha256` listing of every
+`.py`, `.md`, `.sql`, `.json`, `.yaml` and `.toml` file (excluding `.venv`,
+`__pycache__`, `.mypy_cache`, `.pytest_cache` and `*.egg-info`) — computed
+independently on both sides:
+
+```text
+15d4a7077138aac8f670dc2301c7e5516f9fd58665efa287327200400cc3528a   (135 files)
+```
+
+Identical, so the tree on the Mac is byte-for-byte the tree that produced the
+914 passing tests above.
+
+The skills package was additionally validated **on the Mac**, not only in the
+sandbox:
+
+```text
+$ agent-skills/packages/elmos-build-cache-staging-sota/validate.sh
+package structure and checksums OK: 31 skills
+Python compilation OK
+reference implementation tests OK        (20 tests)
+```
+
+The transfer tarball cannot be deleted from here; it was moved to
+`agent-skills/packages/_to_delete/elmos-build-cache-staging-sota-v1.1.0.tar.gz`
+for removal.

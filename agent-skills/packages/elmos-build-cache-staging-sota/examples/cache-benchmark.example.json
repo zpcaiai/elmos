@@ -1,0 +1,198 @@
+{
+  "baseline": "LRU",
+  "candidates": [
+    {
+      "configuration": {
+        "capacity_bytes": 1000000
+      },
+      "metrics": {
+        "admitted_misses": 47,
+        "avoided_compute_ratio": 0.11726533572546474,
+        "avoided_model_token_ratio": 0.0,
+        "avoided_model_tokens": 0,
+        "avoided_recompute_ms": 3072.0,
+        "bypassed_misses": 5,
+        "byte_hit_ratio": 0.059901531728665205,
+        "critical_path_saved_ms": 2650.6399999999994,
+        "evictions": 46,
+        "hit_bytes": 3504000,
+        "hits": 12,
+        "misses": 52,
+        "net_saved_ms": 2824.8,
+        "object_hit_ratio": 0.1875,
+        "request_bytes": 58496000,
+        "requests": 64,
+        "restore_ms_on_hits": 247.20000000000002,
+        "total_model_tokens": 0,
+        "total_recompute_ms": 26197.0
+      },
+      "policy": "LRU"
+    },
+    {
+      "configuration": {
+        "capacity_bytes": 1000000
+      },
+      "metrics": {
+        "admitted_misses": 47,
+        "avoided_compute_ratio": 0.11726533572546474,
+        "avoided_model_token_ratio": 0.0,
+        "avoided_model_tokens": 0,
+        "avoided_recompute_ms": 3072.0,
+        "bypassed_misses": 5,
+        "byte_hit_ratio": 0.059901531728665205,
+        "critical_path_saved_ms": 2650.6399999999994,
+        "evictions": 46,
+        "hit_bytes": 3504000,
+        "hits": 12,
+        "misses": 52,
+        "net_saved_ms": 2824.8,
+        "object_hit_ratio": 0.1875,
+        "request_bytes": 58496000,
+        "requests": 64,
+        "restore_ms_on_hits": 247.20000000000002,
+        "total_model_tokens": 0,
+        "total_recompute_ms": 26197.0
+      },
+      "policy": "SIEVE"
+    },
+    {
+      "configuration": {
+        "capacity_bytes": 1000000
+      },
+      "metrics": {
+        "admitted_misses": 21,
+        "avoided_compute_ratio": 0.13444287513837463,
+        "avoided_model_token_ratio": 0.0,
+        "avoided_model_tokens": 0,
+        "avoided_recompute_ms": 3522.0,
+        "bypassed_misses": 14,
+        "byte_hit_ratio": 0.0692355032822757,
+        "critical_path_saved_ms": 2774.2999999999993,
+        "evictions": 28,
+        "hit_bytes": 4050000,
+        "hits": 29,
+        "misses": 35,
+        "net_saved_ms": 3237.0,
+        "object_hit_ratio": 0.453125,
+        "request_bytes": 58496000,
+        "requests": 64,
+        "restore_ms_on_hits": 285.0,
+        "total_model_tokens": 0,
+        "total_recompute_ms": 26197.0
+      },
+      "policy": "S3_FIFO"
+    },
+    {
+      "configuration": {
+        "capacity_bytes": 1000000
+      },
+      "metrics": {
+        "admitted_misses": 11,
+        "avoided_compute_ratio": 0.22029239989311752,
+        "avoided_model_token_ratio": 0.0,
+        "avoided_model_tokens": 0,
+        "avoided_recompute_ms": 5771.0,
+        "bypassed_misses": 17,
+        "byte_hit_ratio": 0.11303336980306346,
+        "critical_path_saved_ms": 4747.159999999999,
+        "evictions": 6,
+        "hit_bytes": 6612000,
+        "hits": 36,
+        "misses": 28,
+        "net_saved_ms": 5305.2,
+        "object_hit_ratio": 0.5625,
+        "request_bytes": 58496000,
+        "requests": 64,
+        "restore_ms_on_hits": 465.8000000000001,
+        "total_model_tokens": 0,
+        "total_recompute_ms": 26197.0
+      },
+      "policy": "W_TINY_LFU"
+    },
+    {
+      "configuration": {
+        "capacity_bytes": 1000000
+      },
+      "metrics": {
+        "admitted_misses": 29,
+        "avoided_compute_ratio": 0.019162499522846127,
+        "avoided_model_token_ratio": 0.0,
+        "avoided_model_tokens": 0,
+        "avoided_recompute_ms": 502.0,
+        "bypassed_misses": 18,
+        "byte_hit_ratio": 0.010017778993435448,
+        "critical_path_saved_ms": 137.82,
+        "evictions": 24,
+        "hit_bytes": 586000,
+        "hits": 17,
+        "misses": 47,
+        "net_saved_ms": 459.4,
+        "object_hit_ratio": 0.265625,
+        "request_bytes": 58496000,
+        "requests": 64,
+        "restore_ms_on_hits": 42.6,
+        "total_model_tokens": 0,
+        "total_recompute_ms": 26197.0
+      },
+      "policy": "SIZE_AWARE_TINY_LFU"
+    },
+    {
+      "configuration": {
+        "capacity_bytes": 1000000
+      },
+      "metrics": {
+        "admitted_misses": 55,
+        "avoided_compute_ratio": 0.1068824674581059,
+        "avoided_model_token_ratio": 0.0,
+        "avoided_model_tokens": 0,
+        "avoided_recompute_ms": 2800.0,
+        "bypassed_misses": 5,
+        "byte_hit_ratio": 0.05470459518599562,
+        "critical_path_saved_ms": 2576.0,
+        "evictions": 54,
+        "hit_bytes": 3200000,
+        "hits": 4,
+        "misses": 60,
+        "net_saved_ms": 2576.0,
+        "object_hit_ratio": 0.0625,
+        "request_bytes": 58496000,
+        "requests": 64,
+        "restore_ms_on_hits": 224.0,
+        "total_model_tokens": 0,
+        "total_recompute_ms": 26197.0
+      },
+      "policy": "GDSF"
+    }
+  ],
+  "capacity_bytes": 1000000,
+  "created_at": "2026-08-19T09:58:12.753221+00:00",
+  "gates": {
+    "correctness_failures": 0,
+    "reasons": [
+      "Reference simulator output only; production selection requires representative ELMOS holdout traces."
+    ],
+    "selected": null
+  },
+  "report_id": "cache-benchmark-20260819T095812Z",
+  "schema_version": "1.1.0",
+  "selector_recommendation": {
+    "confidence": 0.35,
+    "policy": "S3_FIFO",
+    "reason_codes": [
+      "INSUFFICIENT_TRACE",
+      "STRONG_FIXED_FALLBACK"
+    ]
+  },
+  "trace_corpus_digest": "sha256:9dfc1e0a01c66217c53c704bb2124fcf63831c1cd4605b8e9f4b7b3ed8b46442",
+  "workload_features": {
+    "cost_cv": 1.2932564799109345,
+    "known_future_ratio": 0.0,
+    "median_size": 64000.0,
+    "one_hit_ratio": 0.0,
+    "p90_size": 1000000.0,
+    "request_count": 64,
+    "reuse_ratio": 0.875,
+    "size_cv": 2.29501421525393,
+    "unique_count": 8
+  }
+}

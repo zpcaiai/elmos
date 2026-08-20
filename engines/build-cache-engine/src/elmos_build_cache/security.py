@@ -375,6 +375,45 @@ def signing_payload(statement: Mapping[str, Any], algorithm: str, key_id: str) -
     )
 
 
+@dataclass(frozen=True)
+class SignedStatement:
+    """Any canonical statement, signed by the same key material as provenance.
+
+    Provenance signs artifacts. A cache-policy certificate and a learned model
+    need the same guarantee -- this is who produced it, and it has not been
+    edited since -- over a different payload, so the signer exposes a generic
+    form rather than growing a second key hierarchy.
+    """
+
+    kind: str
+    statement: dict[str, Any]
+    signature: str
+    key_id: str
+    algorithm: str
+
+    def payload(self) -> dict[str, Any]:
+        return {"kind": self.kind, "statement": self.statement}
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": self.kind,
+            "statement": self.statement,
+            "signature": self.signature,
+            "key_id": self.key_id,
+            "algorithm": self.algorithm,
+        }
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> SignedStatement:
+        return cls(
+            kind=str(value["kind"]),
+            statement=dict(value["statement"]),
+            signature=str(value["signature"]),
+            key_id=str(value["key_id"]),
+            algorithm=str(value["algorithm"]),
+        )
+
+
 class ProvenanceSigner(ABC):
     """Signing contract. Implementations differ only in the primitive."""
 
@@ -389,6 +428,30 @@ class ProvenanceSigner(ABC):
 
     @abstractmethod
     def verify(self, signed: SignedProvenance, now: float) -> None: ...
+
+    @abstractmethod
+    def _sign_payload(self, payload: bytes) -> str: ...
+
+    @abstractmethod
+    def _verify_payload(self, payload: bytes, signature: str, key_id: str) -> None: ...
+
+    def sign_statement(self, kind: str, statement: Mapping[str, Any]) -> SignedStatement:
+        """Sign an arbitrary canonical statement under the active key."""
+        key_id = self.active_key_id
+        body = {"kind": kind, "statement": dict(statement)}
+        payload = signing_payload(body, self.algorithm, key_id)
+        return SignedStatement(kind, dict(statement), self._sign_payload(payload), key_id, self.algorithm)
+
+    def verify_statement(self, signed: SignedStatement) -> None:
+        """Reject a statement whose algorithm, key or bytes do not check out."""
+        if signed.algorithm != self.algorithm:
+            raise ProvenanceInvalid(
+                "algorithm mismatch; refusing to verify",
+                expected=self.algorithm,
+                found=signed.algorithm,
+            )
+        payload = signing_payload(signed.payload(), signed.algorithm, signed.key_id)
+        self._verify_payload(payload, signed.signature, signed.key_id)
 
     @property
     def asymmetric(self) -> bool:
@@ -478,15 +541,21 @@ class Ed25519ProvenanceSigner(ProvenanceSigner):
                 expected=self.algorithm,
                 found=signed.algorithm,
             )
-        public = self._public.get(signed.key_id)
-        if public is None:
-            raise ProvenanceInvalid("unknown signing key", key_id=signed.key_id)
         payload = signing_payload(signed.provenance.statement(), signed.algorithm, signed.key_id)
-        try:
-            public.verify(bytes.fromhex(signed.signature), payload)
-        except (InvalidSignature, ValueError) as exc:
-            raise ProvenanceInvalid("provenance signature does not verify") from exc
+        self._verify_payload(payload, signed.signature, signed.key_id)
         self._check_time_bounds(signed, now)
+
+    def _sign_payload(self, payload: bytes) -> str:
+        return self._private[self.active_key_id].sign(payload).hex()
+
+    def _verify_payload(self, payload: bytes, signature: str, key_id: str) -> None:
+        public = self._public.get(key_id)
+        if public is None:
+            raise ProvenanceInvalid("unknown signing key", key_id=key_id)
+        try:
+            public.verify(bytes.fromhex(signature), payload)
+        except (InvalidSignature, ValueError) as exc:
+            raise ProvenanceInvalid("signature does not verify") from exc
 
 
 class HmacProvenanceSigner(ProvenanceSigner):
@@ -521,14 +590,20 @@ class HmacProvenanceSigner(ProvenanceSigner):
                 expected=self.algorithm,
                 found=signed.algorithm,
             )
-        key = self._keys.get(signed.key_id)
-        if key is None:
-            raise ProvenanceInvalid("unknown signing key", key_id=signed.key_id)
         payload = signing_payload(signed.provenance.statement(), signed.algorithm, signed.key_id)
-        expected = hmac.new(key, payload, sha256).hexdigest()
-        if not hmac.compare_digest(expected, signed.signature):
-            raise ProvenanceInvalid("provenance signature does not verify")
+        self._verify_payload(payload, signed.signature, signed.key_id)
         self._check_time_bounds(signed, now)
+
+    def _sign_payload(self, payload: bytes) -> str:
+        return hmac.new(self._keys[self._active], payload, sha256).hexdigest()
+
+    def _verify_payload(self, payload: bytes, signature: str, key_id: str) -> None:
+        key = self._keys.get(key_id)
+        if key is None:
+            raise ProvenanceInvalid("unknown signing key", key_id=key_id)
+        expected = hmac.new(key, payload, sha256).hexdigest()
+        if not hmac.compare_digest(expected, signature):
+            raise ProvenanceInvalid("signature does not verify")
 
 
 def require_asymmetric(signer: ProvenanceSigner, config: SecurityConfig | None = None) -> ProvenanceSigner:

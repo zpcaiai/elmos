@@ -32,6 +32,7 @@ from pathlib import Path
 import pytest
 
 from elmos_build_cache.cas import ContentAddressableStore
+from elmos_build_cache.errors import ContractViolation
 from elmos_build_cache.native_adapters import (
     NativeBuildCacheAdapter,
     ToolchainProfile,
@@ -385,6 +386,22 @@ def test_pip_serves_the_second_download_from_the_sandboxed_cache(tmp_path: Path)
 # ==========================================================================
 # Declared, unprovable here
 # ==========================================================================
+def _adapter_contract_without_the_tool(adapter: NativeBuildCacheAdapter, home: Path) -> None:
+    """Everything about an adapter that does not need its tool to exist."""
+    env = sandbox_env(adapter, home)
+    adapter.assert_sandboxed(env)
+    for key in adapter.env_template:
+        assert Path(env[key]).is_dir() or Path(env[key]).parent.is_dir()
+    assert adapter.fingerprint_digest().startswith("sha256:")
+    assert adapter.stats().degraded is False
+    degraded = adapter.degrade("the toolchain is absent on this platform")
+    assert degraded.degraded is True and degraded.detail
+    hostile = dict(env)
+    hostile[next(iter(adapter.env_template))] = str(Path.home())
+    with pytest.raises(ContractViolation):
+        adapter.assert_sandboxed(hostile)
+
+
 def test_msbuild_incremental_build_through_the_sandboxed_nuget_cache(tmp_path: Path) -> None:
     """The .NET half of the target side, against the real SDK.
 
@@ -444,19 +461,76 @@ def test_msbuild_incremental_build_through_the_sandboxed_nuget_cache(tmp_path: P
     assert adapter.clean_room_flags() == {"MSBUILD_NO_INCREMENTAL": "1"}
 
 
-def test_xcode_swift_adapter_needs_a_swift_toolchain() -> None:
-    tool("swiftc")
-    pytest.fail("swiftc appeared: this skip should be replaced with a real Xcode/SwiftPM certification")
+def test_the_xcode_swift_adapter_holds_without_a_swift_toolchain(tmp_path: Path) -> None:
+    """Narrow the gap to exactly what needs the tool.
+
+    Swift is not installable here -- the sandbox's package archives do not
+    carry it and swift.org is not on the network allowlist -- so the cold/warm
+    build half stays uncertified. Everything that does *not* need ``swiftc``
+    is asserted here so the residue is one specific thing rather than a whole
+    adapter.
+    """
+    adapter = adapter_for("swift", tmp_path / "volume", ToolchainProfile("swift", "6.0", sdk="macosx"))
+    _adapter_contract_without_the_tool(adapter, tmp_path / "home")
+    assert set(adapter.env_template) == {"DERIVED_DATA_DIR", "MODULE_CACHE_DIR", "SWIFTPM_CACHE_DIR"}
+    assert adapter.clean_room_flags() == {"SWIFT_DETERMINISTIC_HASHING": "1"}
+
+    if shutil.which("swiftc") is None:
+        pytest.skip("swiftc is unavailable on this platform; the real cold/warm build is uncertified")
+    pytest.fail("swiftc appeared: replace this skip with a real Xcode/SwiftPM certification")
 
 
-def test_flutter_pub_adapter_needs_a_flutter_sdk() -> None:
-    tool("flutter")
-    pytest.fail("flutter appeared: this skip should be replaced with a real pub certification")
+def test_the_flutter_pub_adapter_holds_without_a_flutter_sdk(tmp_path: Path) -> None:
+    """Same shape as the Swift row: the SDK is not obtainable in this sandbox."""
+    adapter = adapter_for("dart", tmp_path / "volume", ToolchainProfile("flutter", "3.24"))
+    _adapter_contract_without_the_tool(adapter, tmp_path / "home")
+    assert set(adapter.env_template) == {"PUB_CACHE", "FLUTTER_BUILD_DIR"}
+
+    if shutil.which("flutter") is None:
+        pytest.skip("flutter is unavailable on this platform; the real cold/warm build is uncertified")
+    pytest.fail("flutter appeared: replace this skip with a real pub certification")
 
 
-def test_the_maven_half_of_the_jvm_adapter_needs_a_reachable_central() -> None:
+def test_maven_reads_the_sandboxed_local_repository(tmp_path: Path) -> None:
+    """Maven's own repository list is the evidence, not our environment dump.
+
+    Maven Central is unreachable from this sandbox, so a full build cannot be
+    certified here. What *can* be: Maven reads the adapter's redirected local
+    repository. It prints the repository set it resolved against, and the
+    sandbox path has to be the local one.
+    """
+    mvn = tool("mvn")
+    project = tmp_path / "maven-project"
+    project.mkdir()
+    (project / "pom.xml").write_text(
+        '<project xmlns="http://maven.apache.org/POM/4.0.0">\n'
+        "  <modelVersion>4.0.0</modelVersion>\n"
+        "  <groupId>demo</groupId><artifactId>probe</artifactId><version>1.0</version>\n"
+        "</project>\n",
+        encoding="utf-8",
+    )
+
+    adapter = adapter_for("java", tmp_path / "volume", profile("maven", [mvn, "--version"]))
+    home = tmp_path / "home"
+    env = sandbox_env(adapter, home, passthrough=("JAVA_HOME", "JAVA_TOOL_OPTIONS"))
+    repository = Path(env["MAVEN_REPO_LOCAL"])
+    assert env["MAVEN_OPTS"] == f"-Dmaven.repo.local={repository}"
+
+    completed = subprocess.run(  # noqa: S603
+        [mvn, "-o", "help:evaluate", "-Dexpression=maven.repo.local"],
+        cwd=str(project), env=env, capture_output=True, text=True, timeout=BUILD_TIMEOUT, check=False,
+    )
+    log = completed.stdout + completed.stderr
+    # Offline with no plugins cached, this fails -- and names the repositories
+    # it looked in while failing. The local one must be the sandbox.
+    assert f"local ({repository})" in log, log[-2000:]
+    assert not (home / ".m2" / "repository").exists()
+
+
+def test_a_full_maven_build_needs_a_reachable_central() -> None:
     tool("mvn")
     pytest.skip(
         "Maven Central is unreachable from this sandbox (plugin resolution fails online and "
-        "offline), so only the Gradle half of gradle-maven is certified here"
+        "offline), so only the Gradle half of gradle-maven and Maven's repository redirection "
+        "are certified here"
     )

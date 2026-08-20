@@ -1,0 +1,449 @@
+{
+  "schema_version": "1.1.0",
+  "package_id": "elmos-build-cache-staging-sota",
+  "package_version": "1.1.0",
+  "created_date": "2026-08-19",
+  "description": "Production skills for ELMOS deterministic build caching, generated-file staging, checkpoint recovery, and SOTA adaptive cache admission, eviction, prefetch, placement, retention, learning-augmented control, benchmarking, and certification.",
+  "install_roots": {
+    "codex": "~/.codex/skills",
+    "claude": "~/.claude/skills"
+  },
+  "entry_skill": "elmos-cache-rollout-end-to-end",
+  "topological_order": [
+    "elmos-cache-system-architecture",
+    "elmos-cache-metadata-database",
+    "elmos-cache-api-cli-contracts",
+    "elmos-project-snapshot-merkle",
+    "elmos-content-addressable-storage",
+    "elmos-cache-key-fingerprinting",
+    "elmos-action-cache",
+    "elmos-project-generation-file-staging",
+    "elmos-atomic-file-write-promotion",
+    "elmos-sandbox-overlay-workspaces",
+    "elmos-intermediate-artifact-manifest",
+    "elmos-stage-contract-registry",
+    "elmos-semantic-interface-hashing",
+    "elmos-incremental-conversion-dag",
+    "elmos-run-journal-state-machine",
+    "elmos-checkpoint-resume",
+    "elmos-generation-conflict-merge",
+    "elmos-remote-shared-cache",
+    "elmos-native-build-cache-adapters",
+    "elmos-cache-security-provenance",
+    "elmos-cache-retention-gc",
+    "elmos-cache-observability-performance",
+    "elmos-cache-chaos-certification",
+    "elmos-cache-trace-replay-simulator",
+    "elmos-sota-cache-policy-portfolio",
+    "elmos-dag-aware-cache-prefetch",
+    "elmos-cost-aware-cache-admission",
+    "elmos-adaptive-cache-policy-orchestrator",
+    "elmos-learning-augmented-cache-control",
+    "elmos-cache-autotuning-certification",
+    "elmos-cache-rollout-end-to-end"
+  ],
+  "skills": [
+    {
+      "id": "elmos-cache-system-architecture",
+      "title": "ELMOS Cache System Architecture",
+      "phase": "P0-foundation",
+      "path": "agent-skills/runtime/elmos-cache-system-architecture/SKILL.md",
+      "dependencies": [],
+      "summary": "Define the authoritative architecture for deterministic build caching, durable generated-file staging, checkpointing, recovery, and evidence-backed publication across the ELMOS conversion pipeline."
+    },
+    {
+      "id": "elmos-cache-metadata-database",
+      "title": "Cache Metadata Database",
+      "phase": "P0-foundation",
+      "path": "agent-skills/runtime/elmos-cache-metadata-database/SKILL.md",
+      "dependencies": [
+        "elmos-cache-system-architecture"
+      ],
+      "summary": "Implement transactional metadata for projects, snapshots, runs, nodes, artifacts, Action Cache entries, staged files, checkpoints, leases, references, events, and outbox jobs."
+    },
+    {
+      "id": "elmos-cache-api-cli-contracts",
+      "title": "Cache API and CLI Contracts",
+      "phase": "P0-foundation",
+      "path": "agent-skills/runtime/elmos-cache-api-cli-contracts/SKILL.md",
+      "dependencies": [
+        "elmos-cache-system-architecture",
+        "elmos-cache-metadata-database"
+      ],
+      "summary": "Define stable APIs and commands for cache lookup, blob transfer, workspace lifecycle, staged-file transitions, checkpoints, run recovery, diagnostics, and administration."
+    },
+    {
+      "id": "elmos-project-snapshot-merkle",
+      "title": "Project Snapshot and Merkle Tree",
+      "phase": "P1-local-cache",
+      "path": "agent-skills/runtime/elmos-project-snapshot-merkle/SKILL.md",
+      "dependencies": [
+        "elmos-cache-system-architecture"
+      ],
+      "summary": "Create deterministic repository snapshots and Merkle trees so small changes invalidate only affected modules, files, symbols, and downstream actions."
+    },
+    {
+      "id": "elmos-content-addressable-storage",
+      "title": "Content Addressable Storage",
+      "phase": "P1-local-cache",
+      "path": "agent-skills/runtime/elmos-content-addressable-storage/SKILL.md",
+      "dependencies": [
+        "elmos-cache-system-architecture",
+        "elmos-cache-metadata-database"
+      ],
+      "summary": "Implement immutable, deduplicated, integrity-checked storage for AST, Semantic IR, mapping plans, generated files, patches, build outputs, tests, checkpoints, logs, and evidence bundles."
+    },
+    {
+      "id": "elmos-cache-key-fingerprinting",
+      "title": "ActionKey and Stage Fingerprinting",
+      "phase": "P1-local-cache",
+      "path": "agent-skills/runtime/elmos-cache-key-fingerprinting/SKILL.md",
+      "dependencies": [
+        "elmos-project-snapshot-merkle",
+        "elmos-cache-system-architecture"
+      ],
+      "summary": "Build canonical, explainable cache keys that include every result-affecting input while excluding irrelevant machine-specific noise."
+    },
+    {
+      "id": "elmos-action-cache",
+      "title": "Action Cache",
+      "phase": "P1-local-cache",
+      "path": "agent-skills/runtime/elmos-action-cache/SKILL.md",
+      "dependencies": [
+        "elmos-content-addressable-storage",
+        "elmos-cache-key-fingerprinting",
+        "elmos-cache-metadata-database"
+      ],
+      "summary": "Map deterministic ActionKeys to immutable ActionResult manifests, diagnostics, resource usage, provenance, and validation levels."
+    },
+    {
+      "id": "elmos-project-generation-file-staging",
+      "title": "Project Generation File Staging",
+      "phase": "P2-staging",
+      "path": "agent-skills/runtime/elmos-project-generation-file-staging/SKILL.md",
+      "dependencies": [
+        "elmos-cache-system-architecture",
+        "elmos-cache-metadata-database",
+        "elmos-content-addressable-storage"
+      ],
+      "summary": "Provide a durable, recoverable workspace and explicit lifecycle for every file created while ELMOS generates a converted project, including fragments, patches, source maps, manifests, compiler outputs, and final publish candidates."
+    },
+    {
+      "id": "elmos-atomic-file-write-promotion",
+      "title": "Atomic File Write and Promotion",
+      "phase": "P2-staging",
+      "path": "agent-skills/runtime/elmos-atomic-file-write-promotion/SKILL.md",
+      "dependencies": [
+        "elmos-project-generation-file-staging",
+        "elmos-content-addressable-storage"
+      ],
+      "summary": "Implement crash-safe writes, sealing, CAS promotion, complete-tree assembly, atomic publication, and rollback."
+    },
+    {
+      "id": "elmos-sandbox-overlay-workspaces",
+      "title": "Sandbox and Overlay Workspaces",
+      "phase": "P2-staging",
+      "path": "agent-skills/runtime/elmos-sandbox-overlay-workspaces/SKILL.md",
+      "dependencies": [
+        "elmos-project-generation-file-staging",
+        "elmos-atomic-file-write-promotion"
+      ],
+      "summary": "Create isolated copy-on-write workspaces combining immutable source snapshots, writable conversion overlays, durable staged output, and disposable scratch data."
+    },
+    {
+      "id": "elmos-intermediate-artifact-manifest",
+      "title": "Intermediate Artifact Manifest",
+      "phase": "P2-staging",
+      "path": "agent-skills/runtime/elmos-intermediate-artifact-manifest/SKILL.md",
+      "dependencies": [
+        "elmos-content-addressable-storage",
+        "elmos-project-generation-file-staging",
+        "elmos-cache-metadata-database"
+      ],
+      "summary": "Standardize manifests for CST/AST, symbol tables, type/call/dataflow graphs, Semantic IR, mapping plans, generated fragments, patches, build outputs, tests, repair candidates, and certification evidence."
+    },
+    {
+      "id": "elmos-stage-contract-registry",
+      "title": "Stage Contract Registry",
+      "phase": "P3-incremental",
+      "path": "agent-skills/runtime/elmos-stage-contract-registry/SKILL.md",
+      "dependencies": [
+        "elmos-cache-key-fingerprinting",
+        "elmos-intermediate-artifact-manifest"
+      ],
+      "summary": "Require every ELMOS stage to declare input/output schemas, determinism, fingerprint dimensions, cache policy, workspace mounts, resources, side effects, and checkpoint semantics."
+    },
+    {
+      "id": "elmos-semantic-interface-hashing",
+      "title": "Semantic and Public Interface Hashing",
+      "phase": "P3-incremental",
+      "path": "agent-skills/runtime/elmos-semantic-interface-hashing/SKILL.md",
+      "dependencies": [
+        "elmos-project-snapshot-merkle",
+        "elmos-cache-key-fingerprinting",
+        "elmos-stage-contract-registry"
+      ],
+      "summary": "Separate raw implementation changes from public contract changes so unaffected dependents retain cache hits."
+    },
+    {
+      "id": "elmos-incremental-conversion-dag",
+      "title": "Incremental Conversion DAG",
+      "phase": "P3-incremental",
+      "path": "agent-skills/runtime/elmos-incremental-conversion-dag/SKILL.md",
+      "dependencies": [
+        "elmos-project-snapshot-merkle",
+        "elmos-cache-key-fingerprinting",
+        "elmos-semantic-interface-hashing",
+        "elmos-stage-contract-registry"
+      ],
+      "summary": "Model conversion as a fine-grained deterministic DAG that re-executes only impacted parse, analysis, IR, planning, generation, build, test, repair, and certification nodes."
+    },
+    {
+      "id": "elmos-run-journal-state-machine",
+      "title": "Run Journal and State Machine",
+      "phase": "P4-recovery",
+      "path": "agent-skills/runtime/elmos-run-journal-state-machine/SKILL.md",
+      "dependencies": [
+        "elmos-cache-metadata-database",
+        "elmos-incremental-conversion-dag",
+        "elmos-project-generation-file-staging"
+      ],
+      "summary": "Persist authoritative run/node states, append-only events, leases, retries, pause, cancel, stale detection, and recovery ownership."
+    },
+    {
+      "id": "elmos-checkpoint-resume",
+      "title": "Checkpoint and Resume",
+      "phase": "P4-recovery",
+      "path": "agent-skills/runtime/elmos-checkpoint-resume/SKILL.md",
+      "dependencies": [
+        "elmos-intermediate-artifact-manifest",
+        "elmos-run-journal-state-machine",
+        "elmos-content-addressable-storage"
+      ],
+      "summary": "Create durable checkpoints at stage and interval boundaries so service or worker failure resumes from verified state instead of restarting the full conversion."
+    },
+    {
+      "id": "elmos-generation-conflict-merge",
+      "title": "Generation Conflict and Merge",
+      "phase": "P4-recovery",
+      "path": "agent-skills/runtime/elmos-generation-conflict-merge/SKILL.md",
+      "dependencies": [
+        "elmos-project-generation-file-staging",
+        "elmos-atomic-file-write-promotion",
+        "elmos-intermediate-artifact-manifest"
+      ],
+      "summary": "Resolve collisions among generators, retries, framework adapters, previous generated output, and user edits without silent data loss."
+    },
+    {
+      "id": "elmos-remote-shared-cache",
+      "title": "Remote Shared Cache",
+      "phase": "P5-distributed",
+      "path": "agent-skills/runtime/elmos-remote-shared-cache/SKILL.md",
+      "dependencies": [
+        "elmos-content-addressable-storage",
+        "elmos-action-cache",
+        "elmos-cache-metadata-database",
+        "elmos-cache-api-cli-contracts"
+      ],
+      "summary": "Scale reuse across workers and teams with S3/MinIO blobs, PostgreSQL metadata, optional Redis leases/hot indexes, resumable transfer, and trust namespaces."
+    },
+    {
+      "id": "elmos-native-build-cache-adapters",
+      "title": "Native Build Cache Adapters",
+      "phase": "P5-distributed",
+      "path": "agent-skills/runtime/elmos-native-build-cache-adapters/SKILL.md",
+      "dependencies": [
+        "elmos-action-cache",
+        "elmos-cache-key-fingerprinting",
+        "elmos-sandbox-overlay-workspaces"
+      ],
+      "summary": "Integrate ecosystem-native incremental caches while keeping ELMOS ActionResults, manifests, and evidence authoritative."
+    },
+    {
+      "id": "elmos-cache-security-provenance",
+      "title": "Cache Security and Provenance",
+      "phase": "P6-assurance",
+      "path": "agent-skills/runtime/elmos-cache-security-provenance/SKILL.md",
+      "dependencies": [
+        "elmos-content-addressable-storage",
+        "elmos-action-cache",
+        "elmos-project-generation-file-staging",
+        "elmos-intermediate-artifact-manifest",
+        "elmos-remote-shared-cache"
+      ],
+      "summary": "Protect cache and staged output against poisoning, path attacks, malicious artifacts, secret leakage, stale evidence, and cross-tenant access."
+    },
+    {
+      "id": "elmos-cache-retention-gc",
+      "title": "Cache Retention and Garbage Collection",
+      "phase": "P6-assurance",
+      "path": "agent-skills/runtime/elmos-cache-retention-gc/SKILL.md",
+      "dependencies": [
+        "elmos-content-addressable-storage",
+        "elmos-cache-metadata-database",
+        "elmos-intermediate-artifact-manifest"
+      ],
+      "summary": "Control storage growth using pins, protected roots, mark-and-sweep GC, grace periods, cost-based eviction, quarantine retention, and deletion receipts."
+    },
+    {
+      "id": "elmos-cache-observability-performance",
+      "title": "Cache Observability and Performance",
+      "phase": "P6-assurance",
+      "path": "agent-skills/runtime/elmos-cache-observability-performance/SKILL.md",
+      "dependencies": [
+        "elmos-action-cache",
+        "elmos-project-generation-file-staging",
+        "elmos-run-journal-state-machine",
+        "elmos-remote-shared-cache",
+        "elmos-incremental-conversion-dag"
+      ],
+      "summary": "Instrument cache lookup, staging, promotion, recovery, GC, and publication; then tune hit rate and restore economics without weakening correctness."
+    },
+    {
+      "id": "elmos-cache-chaos-certification",
+      "title": "Chaos Testing and Production Certification",
+      "phase": "P6-assurance",
+      "path": "agent-skills/runtime/elmos-cache-chaos-certification/SKILL.md",
+      "dependencies": [
+        "elmos-atomic-file-write-promotion",
+        "elmos-checkpoint-resume",
+        "elmos-cache-security-provenance",
+        "elmos-cache-observability-performance"
+      ],
+      "summary": "Prove crash safety, determinism, security, and operational readiness through replayable fault injection and signed production certification."
+    },
+    {
+      "id": "elmos-cache-trace-replay-simulator",
+      "title": "Cache Trace Capture and Replay Simulator",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-cache-trace-replay-simulator/SKILL.md",
+      "dependencies": [
+        "elmos-cache-observability-performance",
+        "elmos-action-cache",
+        "elmos-incremental-conversion-dag"
+      ],
+      "summary": "Capture privacy-safe ELMOS cache workloads and replay them deterministically across modern policies so policy selection is evidence-driven rather than assumed."
+    },
+    {
+      "id": "elmos-sota-cache-policy-portfolio",
+      "title": "SOTA Cache Policy Portfolio",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-sota-cache-policy-portfolio/SKILL.md",
+      "dependencies": [
+        "elmos-cache-trace-replay-simulator",
+        "elmos-content-addressable-storage",
+        "elmos-action-cache"
+      ],
+      "summary": "Implement a deployable portfolio of SIEVE, S3-FIFO, W-TinyLFU, size-aware and cost-aware policies with modern adaptive candidates and safe fallbacks."
+    },
+    {
+      "id": "elmos-dag-aware-cache-prefetch",
+      "title": "DAG-Aware Future-Reuse Prefetch and Placement",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-dag-aware-cache-prefetch/SKILL.md",
+      "dependencies": [
+        "elmos-sota-cache-policy-portfolio",
+        "elmos-incremental-conversion-dag",
+        "elmos-remote-shared-cache",
+        "elmos-project-generation-file-staging"
+      ],
+      "summary": "Exploit the known ELMOS conversion DAG to predict next use, protect imminent artifacts, prefetch selectively, and place work near cached state."
+    },
+    {
+      "id": "elmos-cost-aware-cache-admission",
+      "title": "Cost-Aware Admission, Retention, and Eviction",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-cost-aware-cache-admission/SKILL.md",
+      "dependencies": [
+        "elmos-sota-cache-policy-portfolio",
+        "elmos-cache-retention-gc",
+        "elmos-cache-observability-performance"
+      ],
+      "summary": "Optimize cache value using recomputation cost, token cost, artifact size, restore latency, validation value, reuse probability, and critical-path impact."
+    },
+    {
+      "id": "elmos-adaptive-cache-policy-orchestrator",
+      "title": "Adaptive Cache Policy Orchestrator",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-adaptive-cache-policy-orchestrator/SKILL.md",
+      "dependencies": [
+        "elmos-sota-cache-policy-portfolio",
+        "elmos-cost-aware-cache-admission",
+        "elmos-cache-trace-replay-simulator"
+      ],
+      "summary": "Select and tune cache policies off the hot path using workload fingerprints, objective profiles, hysteresis, shadow evaluation, and safe rollback."
+    },
+    {
+      "id": "elmos-learning-augmented-cache-control",
+      "title": "Learning-Augmented Cache Control Plane",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-learning-augmented-cache-control/SKILL.md",
+      "dependencies": [
+        "elmos-adaptive-cache-policy-orchestrator",
+        "elmos-cache-security-provenance",
+        "elmos-cache-trace-replay-simulator"
+      ],
+      "summary": "Add S4-FIFO-style asynchronous parameter learning and optional low-overhead learned eviction experiments without putting ML on cache correctness paths."
+    },
+    {
+      "id": "elmos-cache-autotuning-certification",
+      "title": "Cache Autotuning and Production Certification",
+      "phase": "P6-optimization",
+      "path": "agent-skills/runtime/elmos-cache-autotuning-certification/SKILL.md",
+      "dependencies": [
+        "elmos-learning-augmented-cache-control",
+        "elmos-dag-aware-cache-prefetch",
+        "elmos-cache-chaos-certification"
+      ],
+      "summary": "Benchmark, tune, canary, and certify adaptive cache policies against representative ELMOS traces with multi-objective and worst-cohort gates."
+    },
+    {
+      "id": "elmos-cache-rollout-end-to-end",
+      "title": "Rollout and End-to-End Integration",
+      "phase": "P7-rollout",
+      "path": "agent-skills/runtime/elmos-cache-rollout-end-to-end/SKILL.md",
+      "dependencies": [
+        "elmos-cache-api-cli-contracts",
+        "elmos-incremental-conversion-dag",
+        "elmos-checkpoint-resume",
+        "elmos-generation-conflict-merge",
+        "elmos-native-build-cache-adapters",
+        "elmos-cache-retention-gc",
+        "elmos-cache-chaos-certification",
+        "elmos-cache-autotuning-certification"
+      ],
+      "summary": "Integrate deterministic caching, durable generated-file staging, adaptive SOTA policy optimization, DAG-aware prefetch, recovery, and certified rollout into the complete ELMOS conversion flow."
+    }
+  ],
+  "required_files": [
+    "README.md",
+    "README.zh-CN.md",
+    "AGENTS.md",
+    "PACKAGE_INDEX.md",
+    "manifest.json",
+    "docs/source-packages/elmos-build-cache-staging-spec.md",
+    "references/sql/postgres-schema.sql",
+    "references/openapi/cache-control-plane.openapi.yaml",
+    "references/schemas/staged-file.schema.json",
+    "references/schemas/file-tree-manifest.schema.json",
+    "tests/acceptance/cache-staging-acceptance-matrix.md",
+    "reference-implementation/elmos_cache_ref/staging.py",
+    "scripts/install.py",
+    "scripts/validate_package.py",
+    "VALIDATION.md",
+    "docs/source-packages/elmos-sota-cache-optimization-spec.md",
+    "docs/research/sota-cache-algorithm-matrix.md",
+    "references/schemas/cache-policy.schema.json",
+    "references/schemas/cache-trace-event.schema.json",
+    "references/schemas/cache-benchmark-report.schema.json",
+    "templates/config/elmos-cache.sota.yaml",
+    "templates/manifests/cache-policy.example.json",
+    "tests/acceptance/sota-cache-acceptance-matrix.md",
+    "reference-implementation/elmos_cache_ref/policies.py",
+    "reference-implementation/elmos_cache_ref/simulator.py",
+    "reference-implementation/elmos_cache_ref/dag_prefetch.py",
+    "scripts/run_cache_benchmark.py",
+    "examples/cache-benchmark.example.json",
+    "examples/cache-trace.example.jsonl"
+  ]
+}

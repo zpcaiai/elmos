@@ -22,11 +22,13 @@ from __future__ import annotations
 import fnmatch
 import os
 import stat
+import unicodedata
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path, PurePosixPath
+from typing import Any
 
-from .canonical import digest_of, merkle_node_digest, sha256_bytes, sha256_file
+from .canonical import case_fold_key, digest_of, merkle_node_digest, sha256_bytes, sha256_file
 from .errors import UnsafePath
 
 POLICY_VERSION = "elmos.snapshot-policy/1.0.0"
@@ -242,6 +244,19 @@ def _is_ignored(logical_path: str, policy: SnapshotPolicy) -> bool:
     return False
 
 
+def _logical(relative_dir: str, name: str) -> str:
+    """The path as the snapshot records it: NFC, POSIX separators.
+
+    macOS filesystems may hand back a decomposed (NFD) spelling of a name that
+    Linux hands back composed, and git on macOS has ``core.precomposeunicode``
+    for exactly this reason. Without normalising here, the same checkout would
+    produce two different root digests on two platforms -- which is the one
+    thing a snapshot digest is not allowed to do.
+    """
+    composed = unicodedata.normalize("NFC", name)
+    return f"{relative_dir}/{composed}" if relative_dir else composed
+
+
 def take_snapshot(
     root: Path,
     policy: SnapshotPolicy | None = None,
@@ -264,7 +279,7 @@ def take_snapshot(
 
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
         current = Path(dirpath)
-        relative_dir = current.relative_to(root).as_posix()
+        relative_dir = unicodedata.normalize("NFC", current.relative_to(root).as_posix())
         if relative_dir == ".":
             relative_dir = ""
         dirnames.sort()
@@ -272,7 +287,7 @@ def take_snapshot(
 
         kept: list[str] = []
         for name in dirnames:
-            logical = f"{relative_dir}/{name}" if relative_dir else name
+            logical = _logical(relative_dir, name)
             if _is_ignored(logical + "/x", policy) or _is_ignored(logical, policy):
                 excluded.append(logical + "/")
                 continue
@@ -282,7 +297,7 @@ def take_snapshot(
         dirnames[:] = kept
 
         for name in filenames:
-            logical = f"{relative_dir}/{name}" if relative_dir else name
+            logical = _logical(relative_dir, name)
             absolute = current / name
             if _is_ignored(logical, policy):
                 excluded.append(logical)
@@ -504,6 +519,137 @@ def impacted_modules(diff: SnapshotDiff) -> tuple[str, ...]:
             parent = str(PurePosixPath(path).parent)
             touched.add("" if parent == "." else parent)
     return tuple(sorted(touched))
+
+
+#: Windows refuses these device names, with or without an extension.
+WINDOWS_RESERVED_NAMES: frozenset[str] = frozenset(
+    {"con", "prn", "aux", "nul", *(f"com{index}" for index in range(1, 10)), *(f"lpt{index}" for index in range(1, 10))}
+)
+
+#: Characters Windows refuses in a path segment.
+WINDOWS_ILLEGAL_CHARACTERS: str = '<>:"|?*'
+
+#: The classic MAX_PATH, still the default limit for many Windows toolchains.
+WINDOWS_PATH_LIMIT: int = 260
+
+
+@dataclass(frozen=True)
+class PortabilityFinding:
+    """One reason this repository may not snapshot identically elsewhere."""
+
+    hazard: str
+    logical_path: str
+    detail: str
+    platforms: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "hazard": self.hazard,
+            "logical_path": self.logical_path,
+            "detail": self.detail,
+            "platforms": list(self.platforms),
+        }
+
+
+def portability_findings(snapshot: Snapshot) -> tuple[PortabilityFinding, ...]:
+    """Predict, from one platform, where another platform would disagree.
+
+    A snapshot digest is only useful if it is the *same* digest everywhere. Two
+    files differing only in case are two files on Linux and one file on macOS
+    or Windows; a name Windows refuses outright cannot be checked out there at
+    all. Running the same fixture on three machines can only ever tell you
+    about the repositories you happened to try. This tells you about the one in
+    front of you, from wherever you are.
+
+    Findings are hazards, not errors: the caller decides whether a repository
+    that cannot round-trip on Windows is a problem for it.
+    """
+    findings: list[PortabilityFinding] = []
+    by_fold: dict[str, str] = {}
+    seen: set[str] = set()
+
+    for entry in sorted(snapshot.entries, key=lambda item: item.logical_path):
+        logical = entry.logical_path
+
+        # Paths are recorded composed, so two on-disk spellings of one name
+        # arrive here as the same logical path -- two filesystem entries that a
+        # normalisation-insensitive filesystem could only ever hold as one.
+        if logical in seen:
+            findings.append(
+                PortabilityFinding(
+                    "UNICODE_NORMALIZATION",
+                    logical,
+                    "two filesystem entries compose to this one logical path",
+                    ("macos",),
+                )
+            )
+        seen.add(logical)
+
+        folded = case_fold_key(logical)
+        first = by_fold.get(folded)
+        if first is not None and first != logical:
+            findings.append(
+                PortabilityFinding(
+                    "CASE_COLLISION",
+                    logical,
+                    f"collides with {first!r} on a case-insensitive filesystem",
+                    ("macos", "windows"),
+                )
+            )
+        else:
+            by_fold.setdefault(folded, logical)
+
+        for segment in logical.split("/"):
+            stem = segment.split(".", 1)[0].lower()
+            if stem in WINDOWS_RESERVED_NAMES:
+                findings.append(
+                    PortabilityFinding(
+                        "WINDOWS_RESERVED_NAME", logical, f"{segment!r} is a reserved device name", ("windows",)
+                    )
+                )
+            illegal = sorted({char for char in segment if char in WINDOWS_ILLEGAL_CHARACTERS})
+            if illegal:
+                findings.append(
+                    PortabilityFinding(
+                        "WINDOWS_ILLEGAL_CHARACTER",
+                        logical,
+                        "segment contains " + " ".join(repr(char) for char in illegal),
+                        ("windows",),
+                    )
+                )
+            if segment != segment.rstrip(". "):
+                findings.append(
+                    PortabilityFinding(
+                        "TRAILING_DOT_OR_SPACE", logical, f"{segment!r} ends with a dot or space", ("windows",)
+                    )
+                )
+
+        if len(logical) > WINDOWS_PATH_LIMIT:
+            findings.append(
+                PortabilityFinding(
+                    "PATH_TOO_LONG",
+                    logical,
+                    f"{len(logical)} characters exceeds MAX_PATH ({WINDOWS_PATH_LIMIT})",
+                    ("windows",),
+                )
+            )
+
+        if entry.is_symlink:
+            findings.append(
+                PortabilityFinding(
+                    "SYMLINK",
+                    logical,
+                    "symlinks need elevated privileges or developer mode on Windows",
+                    ("windows",),
+                )
+            )
+
+    return tuple(findings)
+
+
+def portable_everywhere(snapshot: Snapshot) -> bool:
+    """True when this repository snapshots identically on every platform."""
+    return not portability_findings(snapshot)
 
 
 def iter_source_files(snapshot: Snapshot, kinds: Iterable[str] = (FileKind.SOURCE,)) -> tuple[FileEntry, ...]:

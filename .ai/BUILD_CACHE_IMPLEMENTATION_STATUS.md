@@ -1,17 +1,22 @@
 # BUILD_CACHE_IMPLEMENTATION_STATUS.md
 
-> Skill → implementation → test → status, for the 24 skills of
-> `elmos-build-cache-staging-recovery` v1.0.0.
+> Skill → implementation → test → status, for the 31 skills of
+> `elmos-build-cache-staging-sota` v1.1.0 (the 24 of
+> `elmos-build-cache-staging-recovery` v1.0.0, re-stamped to 1.1.0, plus 7 new
+> P8 skills).
 > Status vocabulary is closed: `IMPLEMENTED` · `PARTIAL` · `STUB` · `MISSING` ·
 > `BROKEN` · `NOT VERIFIED`. Nothing here is a certification claim.
 
-- **Audit date:** 2026-08-19 (pass 2 — the seven `PARTIAL` rows)
+- **Audit date:** 2026-08-20 (pass 4 — the v1.1.0 SOTA package)
 - **Auditor:** Claude (Cowork cloud session)
-- **Working tree:** pass 1 is committed; this pass is a second, additive change
-  under `engines/build-cache-engine/` and `.ai/` only
-- **Static gates:** `ruff check src tests` clean · `mypy --strict` clean (42 files)
-- **Dynamic gate:** `pytest tests` → **550 passed, 5 skipped, 0 failed**
-  (live PostgreSQL 16 + live S3 endpoint + real toolchains all in the run)
+- **Working tree:** passes 1 and 2 are committed; **pass 3 is still
+  uncommitted**, so the working tree carries passes 3 and 4 together. Both are
+  additive and confined to `engines/build-cache-engine/`, `agent-skills/` and
+  `.ai/`
+- **Static gates:** `ruff check .` clean · `mypy --strict` clean (51 files)
+- **Dynamic gate:** `pytest tests` → **914 passed, 7 skipped, 0 failed**
+  (live PostgreSQL 16 + live S3 endpoint + eight real toolchains + a real
+  kernel overlayfs + ELMOS's own conversion engine all in the run)
 
 ## P0 — foundation
 
@@ -25,7 +30,7 @@
 
 | Skill | Implementation | Tests | Status |
 | --- | --- | --- | --- |
-| `elmos-project-snapshot-merkle` | `snapshot.py` — 7-way classification, raw/normalised/semantic digests kept separate, bottom-up directory + module Merkle, rename detection by content identity, lockfile and submodule roots, symlinks recorded not followed | `test_snapshot.py` (7) | **IMPLEMENTED**; cross-platform fixtures **PARTIAL** (Linux only) |
+| `elmos-project-snapshot-merkle` | `snapshot.py` — 7-way classification, raw/normalised/semantic digests kept separate, bottom-up directory + module Merkle, rename detection by content identity, lockfile and submodule roots, symlinks recorded not followed, **logical paths composed to NFC** (a decomposed macOS spelling no longer moves the digest), plus `portability_findings` predicting case collisions, normalisation folds, Windows-hostile names, over-long paths and symlinks from any host | `test_snapshot.py` (7), `test_snapshot_portability.py` (21), `tools/cross_platform_snapshot.py` | **IMPLEMENTED** — one fixture, identical root digest on Linux **and on a real macOS APFS volume**; a native Darwin run and a Windows run are recorded as not captured and skip loudly |
 | `elmos-content-addressable-storage` | `cas.py` — sharded paths, streaming put/get, sidecar metadata, compression, create-if-absent convergence via `os.link`, scrub, corruption quarantine, replica repair, restore-cost estimation, read-only blobs | `test_cas.py` (12) | **IMPLEMENTED** |
 | `elmos-cache-key-fingerprinting` | `fingerprint.py` — `StageFingerprintSpec` with required/optional/excluded/secret dimensions, canonical flags and maps, explainable fingerprint document, per-dimension miss attribution, hermeticity audit | `test_fingerprint.py` (18) | **IMPLEMENTED** |
 | `elmos-action-cache` | `action_cache.py` — policy-checked lookup (tenant, trust, provenance, expiry, revocation, validation floor, artifact presence, restore cost), CAS commit, nondeterminism quarantine that survives the caller's rollback, bounded negative cache, five cache modes, non-authoritative hot index | `test_action_cache.py` (19) | **IMPLEMENTED** |
@@ -36,7 +41,7 @@
 | --- | --- | --- | --- |
 | `elmos-project-generation-file-staging` | `staging.py` (808 lines) — full workspace contract, five file classes, eight-state lifecycle, transactional path reservation, undeclared-output quarantine, recovery planner and executor that converges | `test_staging.py` (27) | **IMPLEMENTED** |
 | `elmos-atomic-file-write-promotion` | `atomic.py` (exclusive `O_NOFOLLOW` temp, streaming digest, fsync-before-rename, cross-device copy-verify fallback), `publish.py` (complete-tree materialisation, atomic pointer switch, retention, rollback) | `test_staging.py`, `test_publish.py` (11) | **IMPLEMENTED** |
-| `elmos-sandbox-overlay-workspaces` | `overlay.py` — reflink / hardlink-CoW / copy strategy detection, read-only source materialisation, copy-on-write break on first write, mount allowlist denying home and credential paths, quotas, declared-output export | `test_e2e.py`, exercised via `staging` | **PARTIAL** — implemented and self-tested during development, but has **no dedicated test file**; platform-specific isolation tests (overlayfs, macOS APFS) not written |
+| `elmos-sandbox-overlay-workspaces` | `overlay.py` — reflink / hardlink-CoW / copy strategy detection, read-only source materialisation, copy-on-write break on first write, mount allowlist denying home and credential paths, quotas, declared-output export | `test_overlay.py` (36) | **IMPLEMENTED** — copy-on-write is verified by reading back inode numbers and link counts, the whole lifecycle is re-run **on a real kernel overlayfs mount**, and the hazard the API prevents (writing through a shared link corrupts the base) is demonstrated rather than asserted |
 | `elmos-intermediate-artifact-manifest` | `manifests.py` — artifact / file-tree / action-result / checkpoint / evidence / source-map envelopes, content-addressed identity, schema validation before storage, required-vs-optional outputs | `test_publish.py`, `test_contracts_and_config.py` | **IMPLEMENTED** |
 
 ## P3 — incremental
@@ -60,7 +65,7 @@
 | Skill | Implementation | Tests | Status |
 | --- | --- | --- | --- |
 | `elmos-remote-shared-cache` | `remote.py` — filesystem and S3 backends, read-through / write-through / write-behind, bounded queue and retry budget, multipart with parts-before-object ordering, end-to-end digest verification independent of transport, miss leases, offline sync that never overwrites a canonical entry, replicas, scrub/repair, bandwidth budget | `test_remote.py` (15), `test_remote_s3.py` (12) | **IMPLEMENTED** — filesystem backend plus a **live HTTP S3 endpoint**: conditional creation refused by the service with `412 PreconditionFailed`, a genuine multipart create/upload-part/complete cycle, and an aborted upload proven to leave nothing discoverable |
-| `elmos-native-build-cache-adapters` | `native_adapters.py` — **9** adapters (Gradle/Maven, MSBuild/NuGet, Cargo/sccache, CMake/ccache, TS/pnpm/Vite, pip/uv, Xcode/Swift, Flutter/pub, **Go build cache**), sandbox path redirection with escape detection, per-toolchain and per-trust-domain isolation, diagnostics parsing rewritten against real tool output, CAS import, clean-room comparison, safe degradation | `test_native_adapters.py` (15), `test_native_toolchains.py` (12) | **PARTIAL** — seven adapters certified against the **real** tool (Gradle 8.14.3, .NET SDK 8.0.130, Cargo 1.95, ccache 4.9.1 + CMake, tsc 6.0.3 + npm, pip 24.0, Go 1.24.7): cold build, destroyed outputs, warm build the tool itself reports as a hit. Xcode/Swift, Flutter/pub and Maven Central are unavailable in this environment and **skip loudly** rather than passing |
+| `elmos-native-build-cache-adapters` | `native_adapters.py` — **9** adapters (Gradle/Maven, MSBuild/NuGet, Cargo/sccache, CMake/ccache, TS/pnpm/Vite, pip/uv, Xcode/Swift, Flutter/pub, **Go build cache**), sandbox path redirection with escape detection, per-toolchain and per-trust-domain isolation, diagnostics parsing rewritten against real tool output, CAS import, clean-room comparison, safe degradation | `test_native_adapters.py` (15), `test_native_toolchains.py` (13) | **PARTIAL** — seven adapters certified against the **real** tool (Gradle 8.14.3, .NET SDK 8.0.130, Cargo 1.95, ccache 4.9.1 + CMake, tsc 6.0.3 + npm, pip 24.0, Go 1.24.7): cold build, destroyed outputs, warm build the tool itself reports as a hit. Maven's local-repository redirection is now certified against Maven itself (`MAVEN_OPTS=-Dmaven.repo.local=…`, and Maven prints the sandbox path in its own repository list); a full Maven build still needs a reachable Central. Swift and Flutter are not installable on this platform, and for both the adapter contract that does *not* need the tool is asserted so the residue is one specific thing |
 
 ## P6 — assurance
 
@@ -70,24 +75,76 @@
 | `elmos-cache-retention-gc` | `gc.py` — root set from active runs, checkpoints, pins, published trees, valid certificates and legal holds; transitive reachability; multi-factor eviction scoring; two-phase dry-run → grace → apply with receipts; protection re-derived at apply time; orphan reconciliation both directions | `test_gc.py` (11) | **IMPLEMENTED** |
 | `elmos-cache-observability-performance` | `observability.py` — 11 fixed span names, allowlisted low-cardinality labels, per-stage hit accounting with avoided CPU/wall/compiler/token work, incident counters, Prometheus exposition, 10 benchmark scenarios, 9 SLOs with a pass/fail gate, measurement-driven tuning advice | `test_observability.py` (11) | **IMPLEMENTED** (benchmark *harness* implemented; real ELMOS workload numbers **NOT VERIFIED**) |
 | `elmos-cache-chaos-certification` | `chaos.py` — 17 kill points × 13 fault kinds, deterministic seeded injection with a replayable reproduce block, invariant checks (no partial publication, recovery converges, at-most-once effects, no orphan metadata), cross-mode digest comparison, certificate issue/verify/revoke, regression corpus | `test_chaos.py` (12), `test_chaos_process.py` (17) | **IMPLEMENTED** — `KillMode.SIGKILL` kills a real child process at 8 kill points and the parent asserts the invariants over what survived on disk; disk-full and inode exhaustion run against a **real tmpfs mount** (1 MiB / 96 inodes) rather than a simulated quota |
-| `elmos-cache-rollout-end-to-end` | `pipeline.py` — snapshot → plan → resolve → allocate → generate into staging → seal → promote → assemble → evidence → publish, with justification required for every skipped node, tree-reachability enforcement, six rollout phases, kill switch, shadow comparison | `test_e2e.py` (10), `test_e2e_real_stages.py` (9) | **PARTIAL** — the orchestration contract is now certified against **real** stages: a real `javac` invocation and a real tree-sitter-driven Java→C# translation whose output is parsed back with the C# grammar and compared against the Java source's public surface. A private-body edit restores the dependent from cache; a public-interface edit retranslates it. Residual gap: ELMOS's own **model-driven** conversion stage still has to be registered by the orchestrator |
+| `elmos-cache-rollout-end-to-end` | `pipeline.py` — snapshot → plan → resolve → allocate → generate into staging → seal → promote → assemble → evidence → publish, with justification required for every skipped node, tree-reachability enforcement, six rollout phases, kill switch, shadow comparison | `test_e2e.py` (10), `test_e2e_real_stages.py` (9), `test_elmos_route_stages.py` (16) | **IMPLEMENTED** — `elmos_route_stages.py` registers **ELMOS's own conversion engine** (`engines/polyglot-route-engine`) against these contracts: its analyzer produces the semantic IR, its emitter produces the target file, and generation is keyed by the IR digest, so a comment-only source edit re-emits nothing while an emitter edit invalidates everything. `TEST_VERIFIED` is earned by compiling the emitted Java and running it against the Python original; a deliberately sabotaged translation is caught and refused reuse |
+
+## P8 — the SOTA policy plane
+
+New in v1.1.0. The rule these seven skills share: **the policy plane decides
+what is kept, fetched early and let in; it never decides what is valid.** Every
+one of them is a separate module with its own tests, and the boundary is
+asserted, not assumed (`SOTA-16`).
+
+| Skill | Implementation | Tests | Status |
+| --- | --- | --- | --- |
+| `elmos-sota-cache-policy-portfolio` | `cache_policy.py` (1 090 lines) — one SPI (`access`/`put`/`forget`/`resize`/`snapshot`/`restore`/`explain`) behind six policies: **LRU** (mandatory baseline), **SIEVE** (NSDI'24), **S3-FIFO** (SOSP'23, small/main/ghost), **W-TinyLFU** (Count-Min sketch + doorkeeper + halving), **size-aware TinyLFU** (frequency per byte), **GDSF** (frequency × cost ÷ size with clock inflation). Protected roots are registered before any decision and are never victims — when only protected objects remain, admission is *refused*. `state_digest()` deliberately excludes counters so a snapshot/restore round trip is bit-identical. Object size is immutable per key: a size change is a `ContractViolation`, not a silent update | `test_cache_policy.py` (74), `test_policy_integration.py` (41) | **IMPLEMENTED** |
+| `elmos-cache-trace-replay-simulator` | `cache_trace.py` (790 lines) — `CacheTraceEvent` schema 1.1.0, `TraceRecorder` with HMAC tenant pseudonyms, key-deterministic sampling and per-tenant budgets, positive-rule `assert_privacy`, `TraceCorpus` with time-separated splits (warmup/train/validation/test/drift/adversarial) validated non-overlapping, leakage and drift detection, sample-size floors, JSONL round trip, and ten workload generators. `cache_simulator.py` — `replay()`, five objective profiles, `weighted_value`, `BenchmarkGates`, `benchmark()` emitting a report valid against `cache-benchmark-report.schema.json` | `test_cache_trace.py` (33), `test_cache_simulator.py` (24) | **IMPLEMENTED** — replay is deterministic to the byte (`SOTA-01`), every arm is bound to one capacity, warm-up and request sequence (`SOTA-15`) |
+| `elmos-cost-aware-cache-admission` | `cache_admission.py` — `CacheValue = P(reuse) × (avoided work + critical path + validation value) − storage − restore − pollution − trust risk`, with cost provenance (`OBSERVED`/`PREDICTED`/`FALLBACK`), per-tenant quotas, and the bypass rule that an object costing more to restore than to rebuild is not admitted at all | `test_cache_admission.py` (16) | **IMPLEMENTED** |
+| `elmos-dag-aware-cache-prefetch` | `dag_prefetch.py` — `FutureUseIndex.from_dag` builds the next-use index from the **real** `ConversionDag`, Belady within the planned window, prefetch budgets and cancellation, precision accounting, restore-vs-recompute bypass, locality-aware placement with fairness slack | `test_dag_prefetch.py` (23) | **IMPLEMENTED** |
+| `elmos-adaptive-cache-policy-orchestrator` | `policy_orchestrator.py` — `RuleSelector` over workload fingerprints (readable branches, each returning its own evidence), schema-bound `PolicyEpoch`, hysteresis and minimum dwell, shadow policies, and a **pinned** fixed fallback (SIEVE) for insufficient sample, out-of-distribution input or low confidence | `test_policy_orchestrator.py` (22) | **IMPLEMENTED** — off by default (`policy.adaptive_selection: false`) |
+| `elmos-learning-augmented-cache-control` | `learned_control.py` — off-path bounded parameter tuning, ridge regression by Gaussian elimination, **clipping to certified bounds as the safety property** (not model accuracy), signed model registry with activate/verify/rollback, OOD/drift/stale/low-confidence fallback, canary fractions and automatic rollback | `test_learned_control.py` (23) | **IMPLEMENTED** — off by default, and shadow-only when on; the configuration loader refuses a canary fraction while `learned_shadow_only` is true |
+| `elmos-cache-autotuning-certification` | `policy_certification.py` — the benchmark matrix, Pareto frontier, parameter search on train/validation with the test window untouched, `CertificationContext` binding commit + policy digest + configuration digest + capacity + objective + protected-root rules + hardware profile, an Ed25519-signed `CachePolicyCertificate`, `expired_reasons()`, and the rollout ladder `SIMULATOR → SHADOW → RECOMMENDATION → CANARY → PROGRESSIVE → FULL` | `test_sota_acceptance.py` (36), `test_policy_integration.py` | **IMPLEMENTED** — the gates genuinely refuse: on 8 of 30 matrix cells no candidate clears the threshold and `selected` is `None`; certification without shadow or rollback evidence is refused with those exact reason codes |
+
+### Where the policy plane is actually wired in
+
+The package is explicit that a prototype does not count. It is reachable from
+three real places:
+
+| Seam | What it does | Off switch |
+| --- | --- | --- |
+| `config.PolicyConfig` | typed, total configuration section; unknown policy names, unknown objectives and out-of-range fractions all fail to load rather than defaulting. Shipped in `config/elmos-cache.yaml`, so it is reviewable in git | `policy.enabled: false` |
+| `action_cache.HotIndex` | the in-process action-cache accelerator now runs the configured L0 policy; `HotIndex.from_config` builds it, and `pipeline.ConversionPipeline` and the CLI both use it. Chosen first *because* the index is never authoritative — the worst a policy bug costs here is one database read | `policy.enabled: false` → the original built-in LRU |
+| `gc.GarbageCollector.replacement` | orders deletion candidates by the configured L2 policy. Membership of the candidate list is still decided entirely by the root set, which is declared to the policy first | pass `replacement=None` |
+
+Two invariants that fell out of doing this properly:
+
+- **`CachePolicy.forget()`** — a revocation or quarantine removes an entry
+  without being counted as an eviction, and is accounted separately
+  (`counters.invalidations`). Without it the correctness plane would have had
+  to lie to the policy.
+- **A half-empty cache must admit.** W-TinyLFU originally ran its frequency
+  contest against a main-region incumbent that was not competing for the slot,
+  so a cold cache never warmed. Fixed, and pinned by a test that runs against
+  all six policies (`SOTA-20`).
 
 ## Aggregate
 
 | Status | Count | Change |
 | --- | --- | --- |
-| `IMPLEMENTED` | 20 | +3 |
-| `PARTIAL` | 4 | −3 |
+| `IMPLEMENTED` | 30 | +7 |
+| `PARTIAL` | 1 | — |
 | `STUB` / `MISSING` / `BROKEN` | 0 | — |
 
-The four remaining `PARTIAL` rows and exactly what is missing from each:
+One `PARTIAL` row remains, and exactly what is missing from it:
 
 | Skill | What is missing | Why it is not closed here |
 | --- | --- | --- |
-| `elmos-project-snapshot-merkle` | Golden root digests captured on macOS and Windows | Linux-only sandbox |
-| `elmos-sandbox-overlay-workspaces` | A dedicated test file with platform-specific isolation | overlayfs/APFS behaviour cannot be exercised meaningfully here |
-| `elmos-native-build-cache-adapters` | Xcode/Swift, Flutter/pub, and the Maven half of `gradle-maven` | no Swift or Flutter toolchain; Maven Central unreachable |
-| `elmos-cache-rollout-end-to-end` | ELMOS's model-driven conversion stage | lives in the orchestrator, not in this engine |
+| `elmos-native-build-cache-adapters` | Xcode/Swift and Flutter/pub against their real tools; a full Maven build | Neither toolchain exists for Linux and neither is obtainable from this sandbox's network allowlist; Maven Central is unreachable. Everything about those adapters that does not need the tool is asserted, and the three gaps skip with their reason printed. |
+
+Three things that are **not** counted as gaps in a skill, but are worth
+stating plainly:
+
+- The policy corpora are **synthetic**. They are shaped after ELMOS conversion
+  patterns and they are enough to show that no single policy dominates and to
+  refuse a policy that regresses — but a certificate issued against them binds
+  to them, and `expired_reasons()` says so. `TraceRecorder` is the path to real
+  traces and capture is off by default.
+
+- No native-Darwin and no Windows snapshot capture exists. The fixture agrees
+  on Linux and on a real macOS APFS volume; `portability_findings` covers the
+  general question from any host; `tools/cross_platform_snapshot.py` produces
+  the missing entries in one command.
+- The route-engine bridge refuses to run when the host does not match the
+  engine's pinned toolchain tree. That refusal is tested, not worked around.
 
 Every `PARTIAL` is explained in the row above and carries an entry in
 `BUILD_CACHE_HANDOFF.md`. No skill is claimed complete on the strength of a

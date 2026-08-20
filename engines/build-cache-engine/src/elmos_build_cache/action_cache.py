@@ -19,9 +19,12 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from .cache_policy import CacheObject, CachePolicy, create_policy
+from .cache_trace import key_hash
 from .canonical import require_digest
 from .cas import ContentAddressableStore
 from .clock import SYSTEM_CLOCK, Clock
+from .config import PolicyConfig
 from .db import MetadataStore
 from .db.records import ActionCacheRecord
 from .enums import (
@@ -87,19 +90,39 @@ class CommitResult:
 
 class HotIndex:
     """Bounded in-memory acceleration. Never authoritative: it only skips a
-    database read for keys we have already resolved in this process."""
+    database read for keys we have already resolved in this process.
 
-    def __init__(self, capacity: int = 4096) -> None:
+    Replacement is pluggable. Without a ``policy`` this is exactly the LRU it
+    has always been; given one of the portfolio policies it delegates the
+    eviction decision, which is the point where a certified policy actually
+    takes effect on a real request path rather than only in a simulator.
+    Because the index is never authoritative, a policy bug here can cost a
+    database read and nothing else -- which is why this is the first seam the
+    portfolio is wired into, not the CAS.
+    """
+
+    def __init__(self, capacity: int = 4096, policy: CachePolicy | None = None) -> None:
         self.capacity = capacity
+        self.policy = policy
         self._entries: OrderedDict[tuple[str, str, str], str] = OrderedDict()
         self.hits = 0
         self.misses = 0
+        self.policy_evictions = 0
+
+    @staticmethod
+    def _policy_key(composite: tuple[str, str, str]) -> str:
+        return key_hash("\x1f".join(composite))
+
+    def _composites(self) -> dict[str, tuple[str, str, str]]:
+        return {self._policy_key(composite): composite for composite in self._entries}
 
     def get(self, tenant: str, namespace: str, key: str) -> str | None:
         composite = (tenant, namespace, key)
         if composite in self._entries:
             self._entries.move_to_end(composite)
             self.hits += 1
+            if self.policy is not None:
+                self.policy.access(CacheObject(self._policy_key(composite), 1))
             return self._entries[composite]
         self.misses += 1
         return None
@@ -108,11 +131,51 @@ class HotIndex:
         composite = (tenant, namespace, key)
         self._entries[composite] = result_digest
         self._entries.move_to_end(composite)
-        while len(self._entries) > self.capacity:
-            self._entries.popitem(last=False)
+        if self.policy is None:
+            while len(self._entries) > self.capacity:
+                self._entries.popitem(last=False)
+            return
+        # ``put`` rather than ``access``: this is an explicit insertion after a
+        # database read, not a cache request, and must not count as a miss.
+        decision = self.policy.put(CacheObject(self._policy_key(composite), 1))
+        if not decision.admitted:
+            # The policy refused the newcomer; the index must agree, or the two
+            # would drift and the policy would be evicting keys we still hold.
+            self._entries.pop(composite, None)
+            return
+        known = self._composites()
+        for evicted in decision.evicted:
+            victim = known.get(evicted)
+            if victim is not None and victim != composite:
+                self._entries.pop(victim, None)
+                self.policy_evictions += 1
 
     def invalidate(self, tenant: str, namespace: str, key: str) -> None:
-        self._entries.pop((tenant, namespace, key), None)
+        composite = (tenant, namespace, key)
+        if self._entries.pop(composite, None) is not None and self.policy is not None:
+            self.policy.forget(self._policy_key(composite))
+
+    @classmethod
+    def from_config(cls, config: PolicyConfig, capacity: int = 4096) -> HotIndex:
+        """Build the index the configured policy asks for.
+
+        ``enabled: false`` gives the built-in LRU, which is the behaviour this
+        index has always had -- so turning the portfolio off is a real off,
+        not a differently-shaped policy.
+        """
+        if not config.enabled:
+            return cls(capacity)
+        return cls(capacity, create_policy(config.l0_policy, capacity))
+
+    def statistics(self) -> dict[str, Any]:
+        return {
+            "entries": len(self._entries),
+            "capacity": self.capacity,
+            "hits": self.hits,
+            "misses": self.misses,
+            "policy": self.policy.name.value if self.policy is not None else "LRU_BUILTIN",
+            "policy_evictions": self.policy_evictions,
+        }
 
 
 class ActionCache:

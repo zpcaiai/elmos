@@ -15,10 +15,11 @@ An interrupted pass resumes from its receipts, so re-running it is safe.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, field
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass, field, replace
 from typing import Any
 
+from .cache_policy import CacheObject, CachePolicy
 from .cas import ContentAddressableStore
 from .clock import SYSTEM_CLOCK, Clock
 from .db import MetadataStore
@@ -116,6 +117,11 @@ class GarbageCollector:
     tenant_id: str
     policy: RetentionPolicy = field(default_factory=RetentionPolicy)
     clock: Clock = SYSTEM_CLOCK
+    #: Optional replacement policy used to *order* deletion candidates.
+    #: It never decides what is protected -- the root set does that, and the
+    #: policy is told about every root before it is asked anything. A policy
+    #: that disagrees with the root set loses.
+    replacement: CachePolicy | None = None
 
     # -- root set ---------------------------------------------------------
     def live_roots(self) -> list[RootReason]:
@@ -227,6 +233,53 @@ class GarbageCollector:
         )
         return score, reason
 
+    def _order_by_replacement_policy(
+        self, candidates: list[Candidate], protected: Mapping[str, RootReason]
+    ) -> list[Candidate]:
+        """Re-rank deletion candidates using the configured replacement policy.
+
+        The retention score above answers "what is cheapest to lose"; a policy
+        such as SIEVE or GDSF additionally knows what the access pattern has
+        actually been. Where the two disagree the policy wins on *ordering
+        only*: membership of the candidate list is decided entirely by the root
+        set, which is fed to the policy first, so no policy can make a
+        protected object collectable. An object the policy could not even hold
+        at this capacity is the first to go.
+        """
+        if self.replacement is None or not candidates:
+            return candidates
+        policy = self.replacement
+        for digest in protected:
+            policy.protect(digest)
+        for candidate in candidates:
+            policy.put(
+                CacheObject(
+                    key=candidate.digest,
+                    size_bytes=max(candidate.size_bytes, 1),
+                    recompute_ms=float(candidate.recompute_cost_ms),
+                    restore_ms=float(candidate.restore_cost_ms),
+                    validation_level=candidate.validation_level,
+                )
+            )
+        rank = {key: index for index, key in enumerate(policy.keys())}
+        evicted_rank = -1  # sorts ahead of every resident object
+
+        def order(item: Candidate) -> tuple[int, float, str]:
+            return (rank.get(item.digest, evicted_rank), -item.score, item.digest)
+
+        return [
+            replace(
+                candidate,
+                reason=(
+                    f"{candidate.reason} policy={policy.name.value} "
+                    f"rank={rank[candidate.digest]}"
+                    if candidate.digest in rank
+                    else f"{candidate.reason} policy={policy.name.value} not-resident"
+                ),
+            )
+            for candidate in sorted(candidates, key=order)
+        ]
+
     # -- phase one: plan --------------------------------------------------
     def plan(self, additional_protected: Iterable[str] = ()) -> GcPlan:
         now = self.clock.now()
@@ -263,6 +316,7 @@ class GarbageCollector:
                 )
             )
         candidates.sort(key=lambda item: (-item.score, item.digest))
+        candidates = self._order_by_replacement_policy(candidates, protected)
         quota_pressure = (
             total_bytes / self.policy.quota_bytes if self.policy.quota_bytes else 0.0
         )
