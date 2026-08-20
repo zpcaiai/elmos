@@ -9,7 +9,7 @@ from typing import Any
 from .batch import run_batch
 from .discovery import discover_repository, write_report
 from .engine import migrate, migrate_module
-from .models import SUPPORTED_LANGUAGES, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, RouteError
 from .pipeline import run_repository_pipeline
 from .repository import plan_repository
 from .single_unit import check_only, emit_only
@@ -29,8 +29,8 @@ SUBCOMMANDS = (
 def _migration_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-polyglot-route")
     parser.add_argument("--source", type=Path, required=True)
-    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
-    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--source-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
     parser.add_argument("--function", required=True)
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -41,8 +41,8 @@ def _inventory_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-polyglot-route inventory")
     parser.add_argument("--repository", type=Path, required=True)
     parser.add_argument("--repository-ref", required=True)
-    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
-    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--source-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser
 
@@ -93,8 +93,8 @@ def _repository_pipeline_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-polyglot-route repository-pipeline")
     parser.add_argument("--repository", type=Path, required=True)
     parser.add_argument("--repository-ref", required=True)
-    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
-    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--source-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
     parser.add_argument("--cases-directory", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser
@@ -103,8 +103,8 @@ def _repository_pipeline_parser() -> argparse.ArgumentParser:
 def _emit_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-polyglot-route emit")
     parser.add_argument("--source", type=Path, required=True)
-    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
-    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--source-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
     parser.add_argument("--function", required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser
@@ -112,7 +112,7 @@ def _emit_parser() -> argparse.ArgumentParser:
 
 def _check_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-polyglot-route check")
-    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
     parser.add_argument("--file", type=Path, required=True, help="Path to the already-emitted file to check.")
     parser.add_argument("--output", type=Path, required=True)
     return parser
@@ -121,8 +121,8 @@ def _check_parser() -> argparse.ArgumentParser:
 def _module_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="elmos-polyglot-route module")
     parser.add_argument("--source", type=Path, required=True)
-    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
-    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--source-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=REPOSITORY_SURFACE_LANGUAGES, required=True)
     parser.add_argument(
         "--manifest",
         type=Path,

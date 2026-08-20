@@ -22,7 +22,7 @@ from typing import Any, cast
 
 import pytest
 
-from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language
+from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, Language
 from elmos_polyglot_route.pipeline import (
     ARTIFACT_MANIFEST_NAME,
     ARTIFACT_NAME,
@@ -31,11 +31,11 @@ from elmos_polyglot_route.pipeline import (
 )
 
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
-    (source, target) for source, target in product(SUPPORTED_LANGUAGES, repeat=2) if source != target
+    (source, target) for source, target in product(REPOSITORY_SURFACE_LANGUAGES, repeat=2) if source != target
 )
 MEDIUM_LANGUAGE_RING: tuple[tuple[Language, Language], ...] = tuple(
-    (source, SUPPORTED_LANGUAGES[(index + 1) % len(SUPPORTED_LANGUAGES)])
-    for index, source in enumerate(SUPPORTED_LANGUAGES)
+    (source, REPOSITORY_SURFACE_LANGUAGES[(index + 1) % len(REPOSITORY_SURFACE_LANGUAGES)])
+    for index, source in enumerate(REPOSITORY_SURFACE_LANGUAGES)
 )
 
 _SMALL_MAXIMUM_BYTES = 8 * 1024 * 1024
@@ -1115,11 +1115,18 @@ def _assert_artifact_closure(
 
 
 def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> None:
-    assert len(SUPPORTED_LANGUAGES) == 11
+    # 11, not 13.  This suite drives real repository execution, so it is
+    # parametrised over REPOSITORY_SURFACE_LANGUAGES -- the languages that have
+    # an analyzer, a placer and a build file.  The route matrix is wider (13
+    # languages, 156 directions); test_language_set.py owns that number.
+    assert len(REPOSITORY_SURFACE_LANGUAGES) == 11
     assert len(DIRECTED_LANGUAGE_PAIRS) == 110
     assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 110
     assert set(DIRECTED_LANGUAGE_PAIRS) == {
-        (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
+        (source, target)
+        for source in REPOSITORY_SURFACE_LANGUAGES
+        for target in REPOSITORY_SURFACE_LANGUAGES
+        if source != target
     }
     _assert_javascript_typescript_fixture_contract()
 
@@ -1128,8 +1135,8 @@ def test_medium_language_ring_covers_every_source_and_target_once() -> None:
     assert len(MEDIUM_LANGUAGE_RING) == 11
     assert len(set(MEDIUM_LANGUAGE_RING)) == 11
     assert all(source != target for source, target in MEDIUM_LANGUAGE_RING)
-    assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
-    assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
+    assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(REPOSITORY_SURFACE_LANGUAGES)
 
 
 @pytest.mark.parametrize(
@@ -1258,3 +1265,32 @@ def test_repository_pipeline_converts_medium_repository_for_every_directed_pair(
     batch = _assert_batch_evidence_closure(output, cases, source_language, target_language, 5)
     assembly = _assert_assembly_closure(output, batch, source_language, target_language, 5)
     _assert_artifact_closure(output, report, assembly)
+
+
+def test_pending_analyzer_languages_are_refused_by_the_repository_surface(tmp_path: Path) -> None:
+    """Declared in the matrix, refused here -- and refused on both sides.
+
+    Without this, "kotlin is in the route matrix" and "kotlin can be run" are
+    indistinguishable from the outside, which is exactly the confusion
+    PENDING_ANALYZER_LANGUAGES exists to prevent.
+    """
+
+    from elmos_polyglot_route.models import (
+        PENDING_ANALYZER_LANGUAGES,
+        RouteError,
+        is_routed_pair,
+    )
+    from elmos_polyglot_route.repository import plan_repository
+
+    assert not set(PENDING_ANALYZER_LANGUAGES) & set(REPOSITORY_SURFACE_LANGUAGES)
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    for language in PENDING_ANALYZER_LANGUAGES:
+        # Routed at the matrix level ...
+        assert is_routed_pair(language, "python")
+        assert is_routed_pair("python", language)
+        # ... and refused at the execution boundary, in both directions.
+        with pytest.raises(RouteError, match="^UNSUPPORTED_LANGUAGE$"):
+            plan_repository(repository, f"local:{language}", language, "python")
+        with pytest.raises(RouteError, match="^UNSUPPORTED_LANGUAGE$"):
+            plan_repository(repository, f"local:{language}", "python", language)

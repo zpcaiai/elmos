@@ -53,7 +53,7 @@ from .identifier_hygiene import (
     validate_identifier_plan,
 )
 from .models import (
-    SUPPORTED_LANGUAGES,
+    REPOSITORY_SURFACE_LANGUAGES,
     TYPED_PURE_FUNCTION_PROFILE,
     Expression,
     Function,
@@ -2961,7 +2961,7 @@ def migrate_module(
 ) -> dict[str, Any]:
     """Snapshot immutable module inputs, then run the closed migration."""
 
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -3026,7 +3026,7 @@ def _migrate_module_snapshot(
 ) -> dict[str, Any]:
     """Analyze, emit, relift, execute, and compose a real pure module."""
 
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -3235,7 +3235,7 @@ def migrate(
 ) -> dict[str, Any]:
     """Snapshot immutable single-function inputs before any compiler phase."""
 
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -3308,7 +3308,7 @@ def _migrate_from_snapshot(
     """Translate and execute one bounded function.
 
     ``repository_execution_mode`` is deliberately non-certifying. It opens
-    every distinct pair in ``SUPPORTED_LANGUAGES`` for source/target compiler
+    every distinct pair in ``REPOSITORY_SURFACE_LANGUAGES`` for source/target compiler
     and behavior execution so repository orchestration has the complete directed
     local surface, while skipping route-pack layered/formal claims. The report
     remains ``PASSED_LOCAL_UNCERTIFIED`` with critical unknown semantics until
@@ -3323,7 +3323,7 @@ def _migrate_from_snapshot(
         descriptor_snapshot,
         javascript_descriptor_bytes,
     )
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")

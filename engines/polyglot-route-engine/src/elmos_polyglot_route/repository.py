@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
 
 _EXTENSIONS: dict[str, Language] = {
     ".java": "java",
@@ -195,7 +195,7 @@ def plan_repository(
     source_language: Language,
     target_language: Language,
 ) -> dict[str, Any]:
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -205,7 +205,7 @@ def plan_repository(
     safe_ref = _repository_ref(repository_ref)
     inventory: list[dict[str, Any]] = []
     javascript_esm_descriptors: list[dict[str, Any]] = []
-    language_counts = {language: 0 for language in SUPPORTED_LANGUAGES}
+    language_counts = {language: 0 for language in REPOSITORY_SURFACE_LANGUAGES}
     ignored_symlink_count = 0
     total_bytes = 0
 

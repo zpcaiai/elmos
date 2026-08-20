@@ -30,7 +30,7 @@ from .assembly import (
 )
 from .batch import run_batch
 from .discovery import discover_repository
-from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
 from .project_graph import build_project_graph, verify_project_graph
 from .repository import plan_repository
 
@@ -285,8 +285,8 @@ def _verify_deterministic_zip(archive: Path, entries: list[dict[str, Any]]) -> N
             source_language = embedded_manifest.get("source_language")
             target_language = embedded_manifest.get("target_language")
             if (
-                source_language not in SUPPORTED_LANGUAGES
-                or target_language not in SUPPORTED_LANGUAGES
+                source_language not in REPOSITORY_SURFACE_LANGUAGES
+                or target_language not in REPOSITORY_SURFACE_LANGUAGES
                 or source_language == target_language
                 or embedded_manifest.get("route_id") != f"{source_language}-to-{target_language}"
             ):
@@ -429,16 +429,20 @@ def _bind_project_graph_to_plan(graph: dict[str, object], plan: dict[str, Any]) 
     graph_languages = graph.get("supported_languages")
     if (
         not isinstance(graph_languages, list)
-        or len(graph_languages) != len(SUPPORTED_LANGUAGES)
+        or len(graph_languages) != len(REPOSITORY_SURFACE_LANGUAGES)
         or any(not isinstance(language, str) for language in graph_languages)
         or len(set(graph_languages)) != len(graph_languages)
-        or set(graph_languages) != set(SUPPORTED_LANGUAGES)
+        or set(graph_languages) != set(REPOSITORY_SURFACE_LANGUAGES)
     ):
         raise RouteError("PROJECT_GRAPH_LANGUAGE_SET_MISMATCH")
     nodes = graph.get("nodes")
     work_units = plan.get("work_units")
     source_language = plan.get("source_language")
-    if not isinstance(nodes, list) or not isinstance(work_units, list) or source_language not in SUPPORTED_LANGUAGES:
+    if (
+        not isinstance(nodes, list)
+        or not isinstance(work_units, list)
+        or source_language not in REPOSITORY_SURFACE_LANGUAGES
+    ):
         raise RouteError("PROJECT_GRAPH_PLAN_BINDING_INVALID")
 
     file_bindings: dict[str, tuple[str, str]] = {}
@@ -451,7 +455,7 @@ def _bind_project_graph_to_plan(graph: dict[str, object], plan: dict[str, Any]) 
         if not isinstance(path, str) or not isinstance(attributes, dict):
             raise RouteError("PROJECT_GRAPH_FILE_NODE_INVALID")
         digest = attributes.get("sha256")
-        if not isinstance(digest, str) or language not in SUPPORTED_LANGUAGES:
+        if not isinstance(digest, str) or language not in REPOSITORY_SURFACE_LANGUAGES:
             continue
         binding = (digest, str(language))
         previous = file_bindings.get(path)
@@ -479,7 +483,7 @@ def _conversion_coverage_summary(
 
     source_language = discovery.get("source_language")
     status_counts = {status: 0 for status in _CONVERSION_COVERAGE_STATUSES}
-    if source_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("CONVERSION_COVERAGE_LANGUAGE_INVALID")
 
     nodes = graph.get("nodes")
@@ -813,7 +817,7 @@ def _run_repository_pipeline_attempt(
     recomputed from the read-only source on every invocation so source drift is
     detected before prior work is reused.
     """
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")

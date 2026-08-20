@@ -335,6 +335,23 @@ sql-dialect:
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests
 	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev mypy --ignore-missing-imports src
+
+# What the polyglot engine actually does right now, by running it rather than
+# by reading it. Every capability question here had been answered by reading
+# code, and reading code has a specific failure mode: a rejection code in an
+# intermediate layer is not the system's boundary. `discover_unit()` refuses a
+# multi-function file; `discover_repository()` then splits that same result
+# into one READY unit per function. Only the second is the boundary.
+#
+# Rows reading NOT_PROBED mean this machine lacks that language's pinned
+# toolchain. That is an instruction to re-run somewhere that has it, never a
+# capability claim -- which is why this is a report, not a gate.
+.PHONY: capability-probe capability-probe-json
+capability-probe:
+	$(UV) --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py
+
+capability-probe-json:
+	$(UV) --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py --json
 # The component engine drives real framework toolchains (TypeScript,
 # @vue/compiler-sfc, vue-template-compiler, @angular/compiler,
 # svelte/compiler, @wxml/parser) plus real SSR renderers, so its tests are

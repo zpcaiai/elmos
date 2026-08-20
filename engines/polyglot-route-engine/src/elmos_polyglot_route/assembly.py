@@ -198,6 +198,7 @@ _SOURCE_LAYOUTS: dict[Language, tuple[str, str, frozenset[str]]] = {
     "objc": ("src", ".m", frozenset()),
     "swift": ("Sources", ".swift", frozenset()),
     "php": ("src", ".php", frozenset()),
+    "kotlin": ("src/main/kotlin", ".kt", frozenset()),
 }
 
 # These generated source files participate in the whole-project compiler input
@@ -1085,6 +1086,30 @@ def _place_objc(destination: Path, namespace: str, content: str) -> str:
     return relative
 
 
+def _place_kotlin(destination: Path, namespace: str, content: str) -> str:
+    """Place one emitted Kotlin unit, giving it its own package.
+
+    Same division of labour as Java, C# and PHP: the emitted file carries no
+    package declaration and the placer adds the one that matches where the file
+    lands.  For Kotlin this is load-bearing rather than cosmetic.  A top-level
+    `fun` compiles into a static method on a synthetic `MigratedKt` file class,
+    and that class name is derived from the file name alone -- so two units
+    both emitted as `migrated.kt` would produce two `MigratedKt` classes with
+    the same JVM binary name, and the second one silently wins at link time.
+    The package is what keeps their binary names distinct.
+
+    The declaration must be the first statement in the file, before the
+    helpers, which is why it is prepended rather than inserted.
+    """
+    relative = f"src/main/kotlin/elmos/generated/{namespace}/migrated.kt"
+    target = destination / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if content.lstrip().startswith("package "):
+        raise RouteError("ASSEMBLY_KOTLIN_PACKAGE_ALREADY_DECLARED")
+    target.write_text(f"package elmos.generated.{namespace}\n\n{content}", encoding="utf-8")
+    return relative
+
+
 def _place_php(destination: Path, namespace: str, content: str) -> str:
     """Place one emitted PHP unit, giving it its own namespace.
 
@@ -1154,6 +1179,7 @@ def _expected_assembled_path(target_language: Language, namespace: str) -> str:
         "objc": f"src/{namespace}/migrated.m",
         "swift": f"Sources/{namespace.capitalize()}/migrated.swift",
         "php": f"src/{namespace}/migrated.php",
+        "kotlin": f"src/main/kotlin/elmos/generated/{namespace}/migrated.kt",
     }
     return paths[target_language]
 

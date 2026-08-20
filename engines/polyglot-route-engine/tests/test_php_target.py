@@ -523,3 +523,159 @@ def test_the_identifier_dialect_matches_the_pinned_interpreter() -> None:
     match = re.search(r"PHP (\d+\.\d+\.\d+)", toolchains._EXPECTED_PHP_VERSION)
     assert match is not None, "the pinned version string is not in the expected shape"
     assert _PHP_DIALECT == f"php-{match.group(1)}-strict-types"
+
+
+def test_php_module_inventory_is_wired_into_the_enumeration_surface() -> None:
+    """PHP was the one routed language with no whole-file enumeration.
+
+    `inventory_module` is what establishes file closure; a language missing
+    from it raises `MODULE_INVENTORY_UNSUPPORTED` and every repository node
+    with that language as its source is structurally blocked regardless of
+    how many of its functions the named-function frontend could lift.
+    """
+    import inspect
+
+    from elmos_polyglot_route.native import inventory_module
+
+    source = inspect.getsource(inventory_module)
+    assert 'elif language == "php":' in source
+    assert '_run_trusted_php_analyzer(' in source
+    php_branch = source.index('elif language == "php":')
+    unsupported = source.index('MODULE_INVENTORY_UNSUPPORTED')
+    assert php_branch < unsupported, "php must be handled before the fail-closed default"
+
+
+def test_the_php_analyzer_exposes_an_inventory_mode_distinct_from_lifting() -> None:
+    from elmos_polyglot_route.native import _PHP_ANALYZER
+
+    script = _PHP_ANALYZER.read_text(encoding="utf-8")
+    assert "function moduleInventory(" in script
+    assert "function moduleInventorySubjects(" in script
+    assert "$functionName === '--inventory'" in script
+    # Enumeration reports; it must not borrow lift()'s rejection path.
+    inventory_at = script.index("$functionName === '--inventory'")
+    lift_at = script.index("$function = lift($cursor, $functionName")
+    assert inventory_at < lift_at
+
+
+def test_an_empty_php_subject_signature_survives_the_module_inventory_contract() -> None:
+    """`[]` in PHP encodes as a JSON array, and the contract requires an object.
+
+    This is the exact shape that made the first working enumeration fail
+    validation, so it is locked here rather than left to the toolchain tests
+    that only run on a machine with the pinned interpreter.
+    """
+    import json
+
+    from elmos_polyglot_route.native import _PHP_ANALYZER
+
+    script = _PHP_ANALYZER.read_text(encoding="utf-8")
+    assert "$signature === [] ? new stdClass() : $signature" in script
+    assert json.loads("{}") == {}
+
+
+def test_the_php_module_inventory_contract_accepts_a_well_formed_enumeration(
+    tmp_path,
+) -> None:
+    from elmos_polyglot_route.native import _validated_module_inventory
+
+    source = tmp_path / "sample.php"
+    body = b"<?php\n\ndeclare(strict_types=1);\n\nfunction clamp(int $v): int\n{\n    return $v;\n}\n"
+    source.write_bytes(body)
+    value = {
+        "schema_version": "1.0.0",
+        "kind": "elmos.typed-pure-module-inventory",
+        "profile": "typed-pure-module-v1",
+        "source_language": "php",
+        "source_file": "sample.php",
+        "analyzer": "php/ext-tokenizer Zend token stream",
+        "analyzer_version": "php-8.5.9;tokenizer=8.5.9",
+        "enumeration_status": "PASSED",
+        "subjects": [
+            {
+                "name": "<declare>",
+                "qualified_name": "<declare>",
+                "declaration_kind": "declare-directive",
+                "analyzable": False,
+                "source_span": {"file": "sample.php", "start_byte": 7, "end_byte": 30},
+                "signature": {},
+            },
+            {
+                "name": "clamp",
+                "qualified_name": "clamp",
+                "declaration_kind": "function",
+                "analyzable": True,
+                "source_span": {"file": "sample.php", "start_byte": 32, "end_byte": len(body)},
+                "signature": {
+                    "source_parameters": "(int $v)",
+                    "source_return_type": "int",
+                    "by_reference": False,
+                },
+            },
+        ],
+        "diagnostics": [],
+    }
+
+    validated = _validated_module_inventory(value, "php", source, body)
+
+    assert validated["source_artifact_bytes"] == len(body)
+    assert validated["source_artifact_sha256"].startswith("sha256:")
+    assert validated["directives"] == []
+    assert [subject["occurrence"] for subject in validated["subjects"]] == [1, 1]
+    assert [subject["analyzable"] for subject in validated["subjects"]] == [False, True]
+
+
+def test_a_php_subject_signature_that_is_a_list_is_rejected() -> None:
+    """The failure mode this whole shape exists to catch, asserted directly."""
+    import pytest
+
+    from elmos_polyglot_route.models import RouteError
+    from elmos_polyglot_route.native import _validated_module_inventory
+    from pathlib import Path
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as directory:
+        source = Path(directory) / "sample.php"
+        body = b"<?php\n"
+        source.write_bytes(body)
+        value = {
+            "schema_version": "1.0.0",
+            "kind": "elmos.typed-pure-module-inventory",
+            "profile": "typed-pure-module-v1",
+            "source_language": "php",
+            "source_file": "sample.php",
+            "analyzer": "php/ext-tokenizer Zend token stream",
+            "analyzer_version": "php-8.5.9;tokenizer=8.5.9",
+            "enumeration_status": "PASSED",
+            "subjects": [
+                {
+                    "name": "x",
+                    "qualified_name": "x",
+                    "declaration_kind": "constant",
+                    "analyzable": False,
+                    "source_span": None,
+                    "signature": [],
+                }
+            ],
+            "diagnostics": [],
+        }
+        with pytest.raises(RouteError, match="MODULE_INVENTORY_SUBJECT_INVALID"):
+            _validated_module_inventory(value, "php", source, body)
+
+
+def test_the_php_lifter_no_longer_decides_file_closure() -> None:
+    """Enumeration and lifting had contradictory answers for the same file.
+
+    `lift()` failed on any top-level token that was not `function`, so a file
+    with a `const` above the target was unliftable -- while `--inventory` was
+    simultaneously reporting that target as analyzable. File closure is
+    enumeration's question; this asserts the lifter stopped answering it.
+    """
+    from elmos_polyglot_route.native import _PHP_ANALYZER
+
+    script = _PHP_ANALYZER.read_text(encoding="utf-8")
+
+    assert "function skipTopLevelDeclaration(" in script
+    assert "skipTopLevelDeclaration($cursor);" in script
+    # The body parser is what keeps skipping safe, so it must still be strict.
+    assert "PHP_CALL_OUTSIDE_CERTIFIED_SUBSET" in script

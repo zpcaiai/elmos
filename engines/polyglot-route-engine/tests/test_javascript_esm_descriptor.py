@@ -1,4 +1,15 @@
-"""Repository-level closure for Node's ``.js`` ESM interpretation."""
+"""Repository-level closure for Node's ``.js`` ESM interpretation.
+
+``javascript`` is a deprecated language: it is absent from the active route
+matrix, so ``engine.migrate`` and ``engine.migrate_module`` reject every
+javascript direction with ``UNSUPPORTED_DIRECTED_ROUTE`` before any Node.js
+specific logic runs.  The descriptor machinery below is unchanged and still
+ships; three route-level tests that used to drive it through ``migrate`` are
+therefore skipped under ``JAVASCRIPT_ROUTE_RETIRED``.  That is a real, recorded
+coverage loss of the deprecation -- not a test that passes.  Reviving
+javascript means putting it back in ``SUPPORTED_LANGUAGES`` and un-skipping
+them; deleting them instead would erase the record that the guards exist.
+"""
 
 from __future__ import annotations
 
@@ -19,6 +30,13 @@ from elmos_polyglot_route.project_graph import ProjectGraphError, build_project_
 from elmos_polyglot_route.repository import plan_repository
 from elmos_polyglot_route.toolchains import ExactToolchain
 from elmos_polyglot_route.validation import validate_source
+
+JAVASCRIPT_ROUTE_RETIRED = pytest.mark.skip(
+    reason=(
+        "javascript is deprecated; engine.migrate rejects the direction with "
+        "UNSUPPORTED_DIRECTED_ROUTE before the descriptor guard can run"
+    )
+)
 
 SOURCE = "/** @param {integer} value @returns {integer} */\nexport function identity(value) { return value; }\n"
 
@@ -175,7 +193,10 @@ def test_private_js_snapshot_preserves_nested_descriptor_topology(
     )
 
 
-@pytest.mark.parametrize("module", [False, True])
+@pytest.mark.parametrize(
+    "module",
+    [False, pytest.param(True, marks=JAVASCRIPT_ROUTE_RETIRED)],
+)
 def test_nested_descriptor_snapshot_reaches_single_and_module_inner_migrations(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -360,6 +381,7 @@ def test_plain_js_to_python_repository_pipeline_preserves_descriptor_artifact(tm
     assert (output / "repository-migration-artifact.zip").is_file()
 
 
+@JAVASCRIPT_ROUTE_RETIRED
 def test_engine_rejects_origin_descriptor_drift_after_private_snapshot(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -381,6 +403,7 @@ def test_engine_rejects_origin_descriptor_drift_after_private_snapshot(
         engine.migrate(source, "javascript", "python", "identity", cases, tmp_path / "output")
 
 
+@JAVASCRIPT_ROUTE_RETIRED
 def test_engine_rejects_private_descriptor_snapshot_tamper(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -398,3 +421,20 @@ def test_engine_rejects_private_descriptor_snapshot_tamper(
 
     with pytest.raises(RouteError, match="^JAVASCRIPT_ESM_DESCRIPTOR_SNAPSHOT_CHANGED_DURING_MIGRATION$"):
         engine.migrate(source, "javascript", "python", "identity", cases, tmp_path / "output")
+
+
+def test_every_javascript_direction_is_retired_at_the_route_boundary(tmp_path: Path) -> None:
+    """The deprecation itself, asserted where it takes effect.
+
+    This replaces the end-to-end reach of the three skipped tests above: it
+    proves the direction is refused, and refused *early*, which is why their
+    descriptor assertions can no longer be reached.
+    """
+
+    _repository_root, source = _repository(tmp_path)
+    cases = tmp_path / "cases.json"
+    cases.write_text('[{"args":[3],"expected":3}]\n', encoding="utf-8")
+
+    for target in ("python", "java", "typescript"):
+        with pytest.raises(RouteError, match=f"^UNSUPPORTED_DIRECTED_ROUTE:javascript-to-{target}$"):
+            engine.migrate(source, "javascript", target, "identity", cases, tmp_path / f"out-{target}")

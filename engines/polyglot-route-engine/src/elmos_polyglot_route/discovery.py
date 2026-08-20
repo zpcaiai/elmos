@@ -24,7 +24,7 @@ from collections import Counter
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
 from .native import analyze_many, inventory_module
 from .project_graph import (
     PythonCoverageSubject,
@@ -1058,7 +1058,7 @@ def discover_repository(
     """Classify every work unit in a repository route plan."""
     source_language = plan.get("source_language")
     target_language = plan.get("target_language")
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if plan.get("kind") != "elmos.repository-route-plan":
         raise RouteError("REPOSITORY_PLAN_KIND_INVALID")

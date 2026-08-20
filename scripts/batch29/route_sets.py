@@ -1,9 +1,15 @@
-"""Authoritative directed route sets for the explicit ten-language matrix.
+"""Authoritative directed route sets for the explicit thirteen-language matrix.
 
-The original six-language matrix, exact-eight native profile, and nine-language
-completion retain their immutable identities for provenance.  JavaScript is a
-separate Node.js/ESM language identity (not a TypeScript alias) and contributes
-exactly eighteen new directed routes against the established nine languages.
+The original six-language matrix, exact-eight native profile, nine-language
+completion, Node.js expansion and PHP completion retain their immutable
+identities for provenance.  Kotlin, React and Flutter contribute exactly
+sixty-six new directed routes against the ten languages that remain active.
+
+JavaScript is deprecated: its twenty directions leave the *active* matrix but
+stay declared, keep their packs under ``routes/``, and keep their provenance
+partitions at their recorded sizes.  ``COMPLETE_ROUTE_KEYS`` is therefore the
+active set (156) while ``ALL_DECLARED_ROUTE_KEYS`` is the set the provenance
+partitions must exactly cover (176).
 """
 
 from __future__ import annotations
@@ -16,7 +22,31 @@ NINE_LANGUAGE_MATRIX_LANGUAGES = (*CORE_LANGUAGES, *SPECIALIZED_LANGUAGES)
 NODEJS_LANGUAGES = ("javascript",)
 PHP_LANGUAGES = ("php",)
 TEN_LANGUAGE_MATRIX_LANGUAGES = (*NINE_LANGUAGE_MATRIX_LANGUAGES, *NODEJS_LANGUAGES)
-SUPPORTED_ROUTE_LANGUAGES = (*TEN_LANGUAGE_MATRIX_LANGUAGES, *PHP_LANGUAGES)
+
+#: The eleven-language matrix as it stood before javascript was deprecated.
+#: Frozen under its own name for the same reason the nine- and ten-language
+#: tuples are: "eleven-language-complete-110" is a recorded set name and 110
+#: routes' evidence is filed under it.
+ELEVEN_LANGUAGE_MATRIX_LANGUAGES = (*TEN_LANGUAGE_MATRIX_LANGUAGES, *PHP_LANGUAGES)
+
+#: Kotlin, React and Flutter.  React and Flutter are declared ahead of their
+#: analyzers -- see ``models.PENDING_ANALYZER_LANGUAGES``; Kotlin is declared
+#: ahead of its analyzer for the same reason.  Declaration is a matrix fact,
+#: not an evidence claim.
+V3_LANGUAGES = ("kotlin", "react", "flutter")
+
+#: Deprecated: still declared, no longer active.  Every javascript direction is
+#: excluded from ``COMPLETE_ROUTE_KEYS`` and rejected by ``split_route_key``.
+DEPRECATED_ROUTE_LANGUAGES = NODEJS_LANGUAGES
+
+SUPPORTED_ROUTE_LANGUAGES = (
+    *(
+        language
+        for language in ELEVEN_LANGUAGE_MATRIX_LANGUAGES
+        if language not in DEPRECATED_ROUTE_LANGUAGES
+    ),
+    *V3_LANGUAGES,
+)
 
 NINE_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
@@ -36,12 +66,36 @@ TEN_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
     if source != target
 )
 
+#: The 110 the matrix had before javascript was deprecated and before kotlin,
+#: react and flutter were added.  Frozen for the same reason as the 90.
+ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS = tuple(
+    f"{source}-to-{target}"
+    for source in ELEVEN_LANGUAGE_MATRIX_LANGUAGES
+    for target in ELEVEN_LANGUAGE_MATRIX_LANGUAGES
+    if source != target
+)
+
+#: The active matrix: 13 x 12 = 156.  Contains no javascript direction.
 COMPLETE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
     for source in SUPPORTED_ROUTE_LANGUAGES
     for target in SUPPORTED_ROUTE_LANGUAGES
     if source != target
 )
+
+#: The 20 javascript directions that left the active matrix.  They keep their
+#: packs, their evidence and their partition names; they are simply no longer
+#: executable through the official runner.
+DEPRECATED_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS
+    if route_key not in set(COMPLETE_ROUTE_KEYS)
+)
+
+#: Active plus deprecated.  This -- not ``COMPLETE_ROUTE_KEYS`` -- is what the
+#: provenance partitions must exactly cover, because a partition owns filed
+#: evidence and evidence does not disappear when a language is deprecated.
+ALL_DECLARED_ROUTE_KEYS = (*COMPLETE_ROUTE_KEYS, *DEPRECATED_ROUTE_KEYS)
 
 CORE_ROUTE_KEYS = tuple(
     f"{source}-to-{target}"
@@ -83,24 +137,45 @@ NODEJS_EXACT_ROUTE_KEYS = tuple(
 #: runtime, but they are php directions by provenance: no evidence exists for
 #: them, and filing them under the Node partition would attach them to a
 #: campaign that never ran them.
+#: Derived from the frozen eleven-language set, NOT from COMPLETE_ROUTE_KEYS.
+#: Against the thirteen-language active set this comprehension would have
+#: returned 86 keys (20 php + 66 kotlin/react/flutter) and silently grown a
+#: recorded 20-route partition, exactly the failure the nodejs comment below
+#: warns about.
 PHP_EXACT_ROUTE_KEYS = tuple(
     route_key
-    for route_key in COMPLETE_ROUTE_KEYS
+    for route_key in ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS
     if route_key not in TEN_LANGUAGE_COMPLETE_ROUTE_KEYS
 )
 
-# These four provenance sets are the only authority partition for the complete
-# ten-language matrix.  The 72-route and 90-route sets below are convenient
-# unions, not additional owners.  Keeping the partition explicit prevents a
-# newer campaign from silently reclassifying or overwriting the immutable
-# legacy 30-route evidence.
+#: Exactly the 66 directions kotlin, react and flutter added to the eleven
+#: language matrix.  Derived as active-minus-eleven, so every direction naming
+#: a new language belongs here -- including the ones whose other end is
+#: javascript-free but previously unrouted.
+V3_EXACT_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in COMPLETE_ROUTE_KEYS
+    if route_key not in set(ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS)
+)
+
+# These six provenance sets are the only authority partition for every declared
+# direction, active or deprecated.  The 72-, 90- and 110-route sets below are
+# convenient unions, not additional owners.  Keeping the partition explicit
+# prevents a newer campaign from silently reclassifying or overwriting the
+# immutable legacy 30-route evidence -- and prevents a deprecation from
+# orphaning evidence that was filed under a still-recorded name.
 ROUTE_PROVENANCE_PARTITIONS = {
     "legacy-complete-30": CORE_ROUTE_KEYS,
     "cpp-objc-swift-java-exact-8": SPECIALIZED_ROUTE_KEYS,
     "nine-language-completion-34": COMPLETION_ROUTE_KEYS,
     "javascript-node26-completion-18": NODEJS_EXACT_ROUTE_KEYS,
     "php-php85-completion-20": PHP_EXACT_ROUTE_KEYS,
+    "kotlin-react-flutter-completion-66": V3_EXACT_ROUTE_KEYS,
 }
+
+#: The partitions that own an *active* direction.  A deprecated partition still
+#: owns its evidence; it simply owns nothing the runner will execute.
+DEPRECATED_ROUTE_PROVENANCE_SETS = ("javascript-node26-completion-18",)
 
 _partition_members = tuple(
     route_key
@@ -109,8 +184,13 @@ _partition_members = tuple(
 )
 if len(_partition_members) != len(set(_partition_members)):
     raise RuntimeError("ROUTE_PROVENANCE_PARTITIONS_OVERLAP")
-if set(_partition_members) != set(COMPLETE_ROUTE_KEYS):
+# Covers active *and* deprecated: see ALL_DECLARED_ROUTE_KEYS.  Comparing
+# against COMPLETE_ROUTE_KEYS here would reject the retained javascript
+# evidence and force it to be deleted to make the import succeed.
+if set(_partition_members) != set(ALL_DECLARED_ROUTE_KEYS):
     raise RuntimeError("ROUTE_PROVENANCE_PARTITIONS_INCOMPLETE")
+if set(DEPRECATED_ROUTE_KEYS) - set(NODEJS_EXACT_ROUTE_KEYS) - set(PHP_EXACT_ROUTE_KEYS):
+    raise RuntimeError("DEPRECATED_ROUTE_KEYS_UNOWNED")
 
 MODULE_EQUIVALENCE_ROUTE_KEYS = (*SPECIALIZED_ROUTE_KEYS, *NODEJS_EXACT_ROUTE_KEYS)
 
@@ -149,7 +229,11 @@ EXACT_ROUTE_SETS = {
     "nine-language-complete-72": NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
     "javascript-node26-completion-18": NODEJS_EXACT_ROUTE_KEYS,
     "ten-language-complete-90": TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
-    "eleven-language-complete-110": COMPLETE_ROUTE_KEYS,
+    # Repointed at the frozen tuple.  This entry used to be an alias for
+    # COMPLETE_ROUTE_KEYS; leaving it that way would have renamed the active
+    # 156 to "eleven-language-complete-110".
+    "eleven-language-complete-110": ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    "thirteen-language-complete-156": COMPLETE_ROUTE_KEYS,
 }
 EVIDENCED_ROUTE_KEYS = COMPLETE_ROUTE_KEYS
 
@@ -167,12 +251,21 @@ def provenance_route_set(route_key: str) -> str:
         return "javascript-node26-completion-18"
     if route_key in PHP_EXACT_ROUTE_KEYS:
         return "php-php85-completion-20"
+    if route_key in V3_EXACT_ROUTE_KEYS:
+        return "kotlin-react-flutter-completion-66"
     raise ValueError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
 
 
 def split_route_key(route_key: str) -> tuple[str, str]:
-    """Return one exact evidenced direction, rejecting inferred routes."""
+    """Return one exact evidenced direction, rejecting inferred routes.
 
+    Deprecated directions fail closed here with their own error code rather
+    than the generic one, so a caller that still names a javascript route gets
+    told the route was retired instead of being told it never existed.
+    """
+
+    if route_key in DEPRECATED_ROUTE_KEYS:
+        raise ValueError(f"DEPRECATED_DIRECTED_ROUTE:{route_key}")
     if route_key not in EVIDENCED_ROUTE_KEYS:
         raise ValueError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
     source, target = route_key.split("-to-", 1)

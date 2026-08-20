@@ -114,7 +114,40 @@ def environment_of(function: Function) -> dict[str, str]:
 def _check_statements(
     statements: tuple[Statement, ...], environment: dict[str, str], return_type: str
 ) -> None:
+    """Type-check one block. `environment` is this block's scope and is mutated
+    by `let`; callers hand nested blocks a copy.
+
+    SCOPING IS BLOCK SCOPING, AND DELIBERATELY THE STRICTER RULE
+
+    Python binds a name for the whole function, so `if c: x = 1` leaves `x`
+    readable after the `if`. Go, Rust, Java, C#, C++ and Swift bind it to the
+    block, where the same shape does not compile. A single IR cannot mean both,
+    so it means the stricter one: a binding introduced inside a branch is gone
+    at the end of that branch, and a source relying on Python's function scope
+    is rejected here rather than emitted into a target that would not build.
+    """
     for statement in statements:
+        if statement.kind == "let":
+            if statement.expression is None or statement.name is None:
+                raise RouteError("INVALID_LET_STATEMENT")
+            if statement.declared_type not in CANONICAL_TYPES:
+                raise RouteError(f"UNSUPPORTED_LET_TYPE:{statement.declared_type}")
+            if statement.name in environment:
+                # Shadowing is refused rather than resolved. Several targets
+                # forbid it outright, and where it is legal the reader has to
+                # track which binding is live -- neither is worth supporting
+                # when the frontend can simply pick another name.
+                raise RouteError(f"LET_NAME_ALREADY_BOUND:{statement.name}")
+            actual = infer(statement.expression, environment)
+            if actual != statement.declared_type:
+                # No integer -> number widening here. A `return` may widen
+                # because every target widens identically at that boundary; a
+                # binding names a value, and letting the name disagree with the
+                # value's type is how a later expression silently changes which
+                # arithmetic rules apply.
+                raise RouteError(f"LET_TYPE_MISMATCH:{statement.declared_type}:{actual}")
+            environment[statement.name] = statement.declared_type
+            continue
         if statement.kind == "return" and statement.expression is not None:
             actual = infer(statement.expression, environment)
             # integer -> number is the one widening every target performs
@@ -125,8 +158,8 @@ def _check_statements(
         elif statement.kind == "if" and statement.condition is not None:
             if infer(statement.condition, environment) != "boolean":
                 raise RouteError("CONDITION_MUST_BE_BOOLEAN")
-            _check_statements(statement.then_body, environment, return_type)
-            _check_statements(statement.else_body, environment, return_type)
+            _check_statements(statement.then_body, dict(environment), return_type)
+            _check_statements(statement.else_body, dict(environment), return_type)
 
 
 def check_function(function: Function) -> dict[str, str]:
