@@ -45,8 +45,9 @@
 | 能力 | 实现 | 产物 |
 | --- | --- | --- |
 | 真实遥测接入 | `telemetry.py` | 三种来源：pytest 汇总行（聚合均值）、`--durations=0`（逐节点实测）、Agent 会话记录（**唯一带真实 token 计数的来源**） |
-| Skill 拆分建议 | `skill_advice.py` | `skill-split-advice.json`、`SKILL_SPLIT_ADVICE.md` |
-| 人工基线锚点 | `human_anchor.py` | `human-baseline-anchor.json`、`HUMAN_BASELINE_ANCHOR.md`（从 git 历史推出的上下界，不是测量值） |
+| Skill 拆分建议 | `skill_advice.py`（`advise-skills`） | `skill-split-advice.json`、`SKILL_SPLIT_ADVICE.md` |
+| 人工基线锚点 | `human_anchor.py`（`human-anchor`） | `human-baseline-anchor.json`、`HUMAN_BASELINE_ANCHOR.md`（从 git 历史推出的上下界，不是测量值） |
+| 分类占比对照 | `token_mix.py`（`token-mix`） | `token-mix-comparison.json`、`TOKEN_MIX_COMPARISON.md`（见下面「分类占比比总量更容易错」） |
 | 计数校准 | `config/token-count-calibration.json` | 启发式对真实 BPE 的实测偏差，`scan-tokens` 默认应用 |
 | PostgreSQL 后端 | `postgres.py` | 同一份契约跑在未修改的生产 schema 上 |
 | 参考 HTTP 服务器 | `server.py` | 让 `openapi/` 的重连与幂等契约能被 curl 真的验证 |
@@ -56,7 +57,7 @@
 ```text
 src/elmos_execution_intelligence/   实现
 config/                             估算默认值、人工基线、价格模板、分解模型、能力矩阵
-schemas/                            21 个 JSON Schema（全部被执行校验）
+schemas/                            23 个 JSON Schema（全部被执行校验）
 sql/                                PostgreSQL 持久执行表结构（生产目标）
 openapi/                            异步任务 API 与 Last-Event-ID 重连契约
 references/                         架构、状态机、失败分类、持久执行、估算方法、验收标准
@@ -83,6 +84,11 @@ make calibrate   # 13 用执行遥测校准
 make certify     # 16 门禁式生产就绪评估
 make advise      # 超重 SKILL.md 的拆分建议
 make anchor      # 从 git 历史推人工基线锚点（需先导出 git log）
+make mix         # 预测假设的 token 分类占比 vs 真实会话实测占比
+make durations   # 用**正确参数**产出逐节点耗时日志（见下面「--durations 的坑」）
+make ingest      # 把真实遥测接进来（pytest 汇总 / 逐节点 / Agent 会话记录）
+make validate    # 校验画像与 DAG
+make schemas     # 对产物目录做一次 schema 自检
 make serve       # 起参考 HTTP 服务器
 make pg-conformance PG_DSN=...   # 同一批断言对 SQLite 与 PostgreSQL 各跑一遍
 make all         # 上面全部，按顺序
@@ -115,7 +121,7 @@ audit-scope ──► decompose ──► forecast ──► plan ──► exec
 
 **生产 schema 已在真实 PostgreSQL 16.13 上验证。** `sql/001_execution_intelligence.sql`
 完整执行通过；`postgres.py` 在这份未修改的 schema 上实现同一份契约；
-`tests/test_store_conformance.py` 的同一批断言对 SQLite 与 PostgreSQL 各跑一遍，22 项全过
+`tests/test_store_conformance.py` 的同一批断言对 SQLite 与 PostgreSQL 各跑一遍，11 个用例 × 两种后端全过
 （`make pg-conformance PG_DSN=...`）。这证明契约可移植，**不证明可以上生产**——
 Temporal、连接池、迁移管理、集群级故障演练都还没有。
 
@@ -132,6 +138,58 @@ Temporal、连接池、迁移管理、集群级故障演练都还没有。
 测试 `test_token_categories_sum_to_total_without_double_counting` 逐样本断言。
 任何时候都不得把 `total` 再加回某个分类。
 
+## 分类占比比总量更容易错
+
+五个分类的单价相差最多**五十倍**，所以一份预测可以把 token **总量**算得很准，
+账单却错一个数量级——而只比总量永远看不出来。
+
+`token-mix` 拿真实 Agent 会话记录和预测里假设的占比做对照。在 elmos 上实测的结果：
+
+| 分类 | 预测假设 | 实测（整场会话） |
+| --- | --- | --- |
+| input | 24.00% | **0.0005%** |
+| cached_input | 63.00% | **98.82%** |
+
+**但这个偏差不是常数。** 缓存是攒出来的——第一轮无缓存可读，占比要爬：
+
+| 任务长度（轮） | cached_input | cache_write | 费用高估 |
+| --- | --- | --- | --- |
+| 5 | 58.6% | **41.0%** | **1.17x** |
+| 50 | 93.8% | 5.2% | 3.25x |
+| 500 | 98.9% | 0.8% | **5.57x** |
+
+短任务由 `cache_write` 主导，而 cache_write 单价**高于**新鲜 input，
+所以对短任务那个 24/63/7/4/2 的假设反而基本是对的。**偏差随任务变长而变大。**
+
+产物里报的是**曲线**（`warmup.depths` / `cost_by_session_depth`），不是一个数；
+`overstatement_factor_is_full_session_only` 标明头条倍数是**上限**。
+
+**它不回写预测**：schema 里 `applied_to_forecast` 是 `const false`。
+一个会话是**发现**，不是校准（门槛 20 个会话）。
+`MODEL_COST_COMPARISON.md` 现在会声明它的占比有没有被核对过——没跑过 `token-mix`
+就直接印「⚠ 占比未经核对」。
+
+## `--durations` 的坑：默认会静默丢掉 69% 的节点
+
+`--durations=0` **不等于**「每个节点」。pytest 把低于 0.005s 的条目藏起来，
+而**藏的全是快的那些**。实测本包自己的 291 个测试：
+
+| 调用 | 拿到的节点 | 均值 |
+| --- | --- | --- |
+| `--durations=0` | 89 | 0.2737s |
+| `--durations=0 --durations-min=0` | **291** | **0.0930s** |
+
+丢 69% 的节点，均值虚高 **2.9 倍**——而且每个数字都是真的，所以它看起来完全正常。
+
+`ingest-telemetry --durations-log` **拒收**被截断的日志（`TruncatedDurations`），
+消息里直接给正确命令。要那份慢尾巴得显式加 `--allow-truncated-durations`。
+
+正确写法（`make durations` 用的就是这个）：
+
+```bash
+pytest <tests> -q --durations=0 --durations-min=0 | tee run.log
+```
+
 ## 静态扫描是什么，不是什么
 
 `scan-tokens` 回答的是「把磁盘上的材料喂给模型**一次**要多少 token」。它是预测的输入，
@@ -144,6 +202,9 @@ Temporal、连接池、迁移管理、集群级故障演练都还没有。
 ## 测试
 
 ```bash
+make lint        # ruff（E,F,I,B,UP,S / 120 列）+ mypy --strict，与路由引擎同一标准
+make test        # 全量测试
+# 或直接：
 python3 -m pytest -q tests
 ```
 
