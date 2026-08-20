@@ -7457,6 +7457,32 @@ def _analyze_batch(
     return results
 
 
+def _external_semantic_ir(value: dict[str, Any]) -> SemanticIR:
+    """Bind the analyzer's JSON contract before anything downstream trusts it.
+
+    Grafted from the other side of this merge: this side's analyzers are its
+    own, but nothing validated their output shape.  An analyzer that returns
+    no functions and one diagnostic is reporting a real source problem, and
+    promoting that diagnostic is far more useful than the shapeless failure a
+    caller would otherwise see several layers later.
+    """
+    functions = value.get("functions")
+    diagnostics = value.get("diagnostics")
+    if not isinstance(functions, list) or not isinstance(diagnostics, list):
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:FUNCTIONS_OR_DIAGNOSTICS")
+    if not functions:
+        if diagnostics and all(isinstance(item, str) and item for item in diagnostics):
+            raise RouteError(str(diagnostics[0]))
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:EMPTY_FUNCTIONS_WITHOUT_DIAGNOSTIC")
+    try:
+        semantic = SemanticIR.from_mapping(value)
+    except RouteError as error:
+        raise RouteError(f"NATIVE_ANALYZER_CONTRACT_INVALID:{error}") from error
+    if not semantic.functions:
+        raise RouteError("NATIVE_ANALYZER_CONTRACT_INVALID:NO_PARSED_FUNCTIONS")
+    return semantic
+
+
 def analyze(
     source: Path,
     language: Language,
@@ -7576,4 +7602,4 @@ def analyze(
         )
     else:
         raise RouteError(f"NATIVE_ANALYZER_UNSUPPORTED:{language}")
-    return SemanticIR.from_mapping(value)
+    return _external_semantic_ir(value)

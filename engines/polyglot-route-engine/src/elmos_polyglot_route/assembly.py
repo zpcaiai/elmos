@@ -2338,7 +2338,9 @@ def _run(
                     executable_dirs=(executable.resolve().parent, *executable_dirs),
                 ),
             )
-    except (OSError, subprocess.TimeoutExpired) as error:
+    except subprocess.TimeoutExpired as error:
+        raise RouteError(f"ASSEMBLY_BUILD_TIMEOUT:{command[0]}") from error
+    except OSError as error:
         raise RouteError(
             f"ASSEMBLY_BUILD_VERIFICATION_FAILED:{Path(command[0]).name}:process"
         ) from error
@@ -2352,6 +2354,8 @@ def _run(
             f"stderr={json.dumps(stderr, ensure_ascii=True)}"
         )
     return completed
+
+
 
 
 def _stat_identity(value: os.stat_result) -> tuple[int, ...]:

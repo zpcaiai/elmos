@@ -1,5 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { unzipSync } from "fflate";
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
@@ -63,12 +66,6 @@ test("跨语言整库范围只保存发现与拆分交接，不伪造执行结�
       file_count: 1,
       source_file_count: 1,
       source_bytes: 128,
-      repository_scale: "small",
-      repository_limits: {
-        maximum_source_files: 5000,
-        maximum_source_bytes: 67108864,
-        maximum_bytes_per_file: 2097152,
-      },
       language_counts: { java: 1, csharp: 0, go: 0, rust: 0, python: 0, typescript: 0 },
       ignored_symlink_count: 0,
       work_units: [{
@@ -79,7 +76,7 @@ test("跨语言整库范围只保存发现与拆分交接，不伪造执行结�
         source_bytes: 128,
         status: "DISCOVERY_REQUIRED",
         execution_status: "NOT_RUN",
-        required_inputs: ["behavior_cases_json_per_discovered_function"],
+        required_inputs: ["function_name", "behavior_cases_json"],
         declared_profile: "typed-pure-function-v1",
         unsupported_until_discovered: ["object_graph", "database"],
       }],
@@ -207,12 +204,6 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
     file_count: 1,
     source_file_count: 1,
     source_bytes: 128,
-    repository_scale: "small",
-    repository_limits: {
-      maximum_source_files: 5000,
-      maximum_source_bytes: 67108864,
-      maximum_bytes_per_file: 2097152,
-    },
     language_counts: { java: 1, csharp: 0, go: 0, rust: 0, python: 0, typescript: 0 },
     ignored_symlink_count: 0,
     work_units: [{
@@ -223,7 +214,7 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
       source_bytes: 128,
       status: "DISCOVERY_REQUIRED",
       execution_status: "NOT_RUN",
-      required_inputs: ["behavior_cases_json_per_discovered_function"],
+      required_inputs: ["function_name", "behavior_cases_json"],
       declared_profile: "typed-pure-function-v1",
       unsupported_until_discovered: ["object_graph"],
     }],
@@ -265,35 +256,160 @@ test("整库清单的接受判定发生在服务端，被篡改的客户端请�
   }
 });
 
-test("片段级本地通过不能放行仓库级 NOT_RUN 路线", async ({ page, request }) => {
-  const capabilityResponse = await request.get("/api/capabilities/translation");
-  expect(capabilityResponse.ok()).toBe(true);
-  const capability = await capabilityResponse.json();
-  expect(capability.routes.length).toBeGreaterThan(0);
-  expect(capability.routes.some((route: { localExecution: string }) =>
-    route.localExecution === "PASSED")).toBe(true);
-  expect(capability.routes.every((route: {
-    repositoryExecutionStatus: string;
-    repositoryProfile: string | null;
-    repositoryEvidenceRef: string | null;
-  }) => route.repositoryExecutionStatus === "NOT_RUN"
-    && route.repositoryProfile === null
-    && route.repositoryEvidenceRef === null)).toBe(true);
-  expect(capability.repositoryExecutableRouteCount).toBe(0);
-  expect(capability.repositoryExecutionEvidence).toBe("NOT_RUN");
+test("跨语言整库受控任务完成真实回放、构建、恢复和摘要校验下载", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "有副作用的代表整库旅程只执行一次");
+  test.setTimeout(300_000);
 
   await page.goto("/translation");
-  await expect(page.locator(".route-profile-facts")).toContainText("仓库执行NOT_RUN");
-  await expect(page.getByRole("button", { name: "启动整库转换" })).toBeDisabled();
+  await expect(page.getByText(
+    "单个转换任务硬上限为 10,000 个已报告功能义务行（最多 5 个内容寻址分片，每片 2,000）。非 Python 路线可能仍有 inventory 未知范围，不能把行数当作项目真实功能总数。超过上限会在接受转换、计费、原生编译与代码生成前失败关闭；请先按仓库、模块或授权工作区拆分为多个任务。",
+    { exact: true },
+  )).toBeVisible();
+  await page.getByLabel("跨语言租户标识").fill("local-e2e");
+  await page.getByLabel("跨语言执行者标识").fill("user:e2e");
+  await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+  await page.getByLabel("受控源码工作区 ID").fill("pure-python");
+  await page.getByLabel("独立行为用例包 ID").fill("pure-python-holdout");
+  await page.getByRole("button", { name: /python 到 typescript/i }).click();
+  await page.getByRole("button", { name: "启动整库转换" }).click();
 
-  // UI disabling is advisory. The server repeats the independent repository
-  // admission so a forged POST cannot reuse snippet-level PASSED_LOCAL.
-  const rejected = await request.post("/api/translation/jobs", {
+  await expect(page.getByText("COMPLETE", { exact: true }).last()).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByText("PASSED", { exact: true }).last()).toBeVisible();
+  await expect(page.getByText("1/1 = 100.00%", { exact: true })).toBeVisible();
+  await expect(page.getByText("完整 · MEASURED", { exact: true })).toBeVisible();
+  const jobId = await page.getByText(/[0-9a-f]{8}-[0-9a-f-]{27}/).last().textContent();
+  expect(jobId).toMatch(/^[0-9a-f-]{36}$/);
+
+  await page.reload();
+  await page.getByLabel("跨语言租户标识").fill("local-e2e");
+  await page.getByLabel("跨语言执行者标识").fill("user:e2e");
+  await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
+  await expect(page.getByLabel("恢复任务 UUID")).toHaveValue(jobId ?? "");
+  await page.getByRole("button", { name: "恢复任务" }).click();
+  await expect(page.getByText("COMPLETE", { exact: true }).last()).toBeVisible();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "下载摘要校验归档" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("python-to-typescript-complete.zip");
+
+  const reportDownloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "下载转换报告" }).click();
+  const reportDownload = await reportDownloadPromise;
+  expect(reportDownload.suggestedFilename()).toBe("FUNCTION_CONVERSION_REPORT.md");
+  const downloadedReportPath = await reportDownload.path();
+  if (!downloadedReportPath) throw new Error("Playwright did not expose the conversion report path");
+  const markdown = await readFile(downloadedReportPath, "utf8");
+  expect(markdown).toContain("## 转换总览");
+  expect(markdown).toContain("1/1 = 100.00%");
+  expect(markdown).toContain("## 逐功能转换结果");
+
+  const denied = await page.request.get(`/api/translation/jobs/${jobId}/report`, {
     headers: {
       authorization: "Bearer elmos-e2e-local-token-32-characters",
-      "x-elmos-tenant": "local-e2e",
+      "x-elmos-tenant": "other-e2e-tenant",
       "x-elmos-actor": "user:e2e",
     },
+  });
+  expect(denied.status()).toBe(403);
+
+  const runnerRoot = process.env.ELMOS_E2E_EFFECTIVE_RUNNER_ROOT;
+  if (!runnerRoot) throw new Error("ELMOS_E2E_EFFECTIVE_RUNNER_ROOT_REQUIRED");
+  const storedReport = path.join(
+    runnerRoot,
+    "tenants",
+    "local-e2e",
+    "translation-jobs",
+    jobId ?? "",
+    "pipeline",
+    "FUNCTION_CONVERSION_REPORT.md",
+  );
+  const originalReport = await readFile(storedReport);
+  try {
+    await writeFile(storedReport, Buffer.concat([originalReport, Buffer.from("\ntampered\n")]));
+    const tampered = await page.request.get(`/api/translation/jobs/${jobId}/report`, {
+      headers: {
+        authorization: "Bearer elmos-e2e-local-token-32-characters",
+        "x-elmos-tenant": "local-e2e",
+        "x-elmos-actor": "user:e2e",
+      },
+    });
+    expect(tampered.status()).toBe(409);
+    expect((await tampered.json()).reason).toBe("TRANSLATION_REPORT_INTEGRITY_MISMATCH");
+  } finally {
+    await writeFile(storedReport, originalReport);
+  }
+
+  await page.getByLabel("受控源码工作区 ID").fill("pure-python");
+  await page.getByLabel("独立行为用例包 ID").fill("pure-python-empty");
+  await page.getByRole("button", { name: /python 到 typescript/i }).click();
+  await page.getByRole("button", { name: "启动整库转换" }).click();
+  await expect(page.getByText("blocked · 100%", { exact: true })).toBeVisible({ timeout: 120_000 });
+  await expect(page.getByText("0/1 = 0.00%", { exact: true })).toBeVisible();
+  const failedFunction = page.locator("details").filter({ hasText: "SKIPPED_NO_CASES" });
+  await expect(failedFunction).toBeVisible();
+  await failedFunction.locator("summary").click();
+  await expect(failedFunction).toContainText(
+    "No independent behavior-case corpus was supplied for this unit.",
+  );
+  await expect(failedFunction).toContainText(
+    "独立行为用例 JSON，覆盖正常、边界和反例后重新运行转换。",
+  );
+  await expect(page.getByRole("button", { name: "下载摘要校验归档" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "下载转换报告" })).toBeEnabled();
+
+  const blockedReportPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "下载转换报告" }).click();
+  const blockedReport = await blockedReportPromise;
+  const blockedReportPath = await blockedReport.path();
+  if (!blockedReportPath) throw new Error("Playwright did not expose the blocked report path");
+  const blockedMarkdown = await readFile(blockedReportPath, "utf8");
+  expect(blockedMarkdown).toContain("0/1 = 0.00%");
+  expect(blockedMarkdown).toContain("原代码块：");
+  expect(blockedMarkdown).toContain("目标代码块：");
+  expect(blockedMarkdown).toContain("NOT_GENERATED");
+
+  await page.getByLabel("受控源码工作区 ID").fill("sharded-python");
+  await page.getByLabel("独立行为用例包 ID").fill("sharded-python-empty");
+  await page.getByRole("button", { name: /python 到 typescript/i }).click();
+  await page.getByRole("button", { name: "启动整库转换" }).click();
+  // The preceding job is also BLOCKED. Wait on this job's unique metric first so a stale
+  // terminal status cannot satisfy the assertion while the new request is still polling.
+  await expect(page.getByText("0/2001 = 0.00%", { exact: true })).toBeVisible({ timeout: 240_000 });
+  await expect(page.getByText("blocked · 100%", { exact: true })).toBeVisible();
+  const bundleButton = page.getByRole("button", { name: "下载完整转换报告包" });
+  await expect(bundleButton).toBeEnabled();
+  const bundleDownloadPromise = page.waitForEvent("download");
+  await bundleButton.click();
+  const bundleDownload = await bundleDownloadPromise;
+  expect(bundleDownload.suggestedFilename()).toBe("FUNCTION_CONVERSION_REPORT_BUNDLE.zip");
+  const bundleDownloadPath = await bundleDownload.path();
+  if (!bundleDownloadPath) throw new Error("Playwright did not expose the conversion report bundle path");
+  const bundleEntries = unzipSync(await readFile(bundleDownloadPath));
+  expect(Object.keys(bundleEntries).sort()).toEqual([
+    "FUNCTION_CONVERSION_REPORT.md",
+    "FUNCTION_CONVERSION_REPORT_BUNDLE_MANIFEST.json",
+    "functional-conversion-report-shards/report-00001.json",
+    "functional-conversion-report-shards/report-00001.md",
+    "functional-conversion-report-shards/report-00002.json",
+    "functional-conversion-report-shards/report-00002.md",
+    "functional-conversion-report.json",
+  ].sort());
+  const bundleManifest = JSON.parse(
+    Buffer.from(bundleEntries["FUNCTION_CONVERSION_REPORT_BUNDLE_MANIFEST.json"]).toString("utf8"),
+  );
+  expect(bundleManifest.kind).toBe("elmos.project-language-conversion-report-bundle-manifest");
+  expect(bundleManifest.file_count).toBe(6);
+
+  const runnerHeaders = {
+    authorization: "Bearer elmos-e2e-local-token-32-characters",
+    "x-elmos-tenant": "local-e2e",
+    "x-elmos-actor": "user:e2e",
+  };
+  const racingCreate = await page.request.post("/api/translation/jobs", {
+    headers: runnerHeaders,
     data: {
       workspaceId: "pure-python",
       casesBundleId: "pure-python-holdout",
@@ -301,6 +417,22 @@ test("片段级本地通过不能放行仓库级 NOT_RUN 路线", async ({ page,
       targetLanguage: "typescript",
     },
   });
-  expect(rejected.status()).toBe(409);
-  expect((await rejected.json()).reason).toBe("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
+  expect(racingCreate.status()).toBe(202);
+  const racingJob = await racingCreate.json() as { id: string };
+  const racingCancel = await page.request.post(
+    `/api/translation/jobs/${racingJob.id}/cancel`,
+    { headers: runnerHeaders },
+  );
+  expect(racingCancel.status()).toBe(200);
+  expect((await racingCancel.json()).status).toBe("CANCELLED");
+  await page.waitForTimeout(2_500);
+  const durableCancellation = await page.request.get(
+    `/api/translation/jobs/${racingJob.id}`,
+    { headers: runnerHeaders },
+  );
+  expect(durableCancellation.status()).toBe(200);
+  const durableCancellationJob = await durableCancellation.json();
+  expect(durableCancellationJob.status).toBe("CANCELLED");
+  expect(durableCancellationJob.reportReady).toBe(false);
+  expect(durableCancellationJob.artifactReady).toBe(false);
 });

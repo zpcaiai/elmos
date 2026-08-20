@@ -590,10 +590,11 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
             COPY . .
             RUN CGO_ENABLED=0 go build -o /out/service .
 
-            FROM gcr.io/distroless/static-debian12:nonroot
+            FROM scratch
+            COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
             COPY --from=build /out/service /service
             EXPOSE {port}
-            USER nonroot:nonroot
+            USER 10001:10001
             ENTRYPOINT ["/service"]
             """
         ),

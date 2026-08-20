@@ -1259,6 +1259,100 @@ def _javascript_descriptor_stable_projection(
     }
 
 
+
+
+def _extract_python_function(source: str, function_name: str) -> str:
+    import ast
+
+    try:
+        tree = ast.parse(source)
+    except SyntaxError as error:
+        raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED") from error
+    lines = source.splitlines(keepends=True)
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == function_name:
+            start = min([node.lineno, *(item.lineno for item in node.decorator_list)]) - 1
+            end = node.end_lineno or node.lineno
+            return "".join(lines[start:end])
+    raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+
+
+def _extract_braced_function(source: str, function_name: str) -> str:
+    matches = list(re.finditer(rf"(?<![A-Za-z0-9_$]){re.escape(function_name)}\s*\(", source))
+    if not matches:
+        raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+    match = matches[0]
+    start = source.rfind("\n", 0, match.start()) + 1
+    opening = source.find("{", match.end())
+    if opening < 0:
+        raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+    depth = 0
+    quote: str | None = None
+    escaped = False
+    line_comment = False
+    block_comment = False
+    index = opening
+    while index < len(source):
+        character = source[index]
+        following = source[index + 1] if index + 1 < len(source) else ""
+        if line_comment:
+            if character == "\n":
+                line_comment = False
+        elif block_comment:
+            if character == "*" and following == "/":
+                block_comment = False
+                index += 1
+        elif quote is not None:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == quote:
+                quote = None
+        elif character == "/" and following == "/":
+            line_comment = True
+            index += 1
+        elif character == "/" and following == "*":
+            block_comment = True
+            index += 1
+        elif character in {'"', "'"}:
+            quote = character
+        elif character == "{":
+            depth += 1
+        elif character == "}":
+            depth -= 1
+            if depth == 0:
+                return source[start : index + 1]
+        index += 1
+    raise RouteError("SOURCE_VALIDATION_EXTRACTION_FAILED")
+
+
+def _source_subject(source: Path, language: Language, function: Function) -> EmittedFile:
+    content = source.read_text(encoding="utf-8")
+    extracted = (
+        _extract_python_function(content, function.name)
+        if language == "python"
+        else _extract_braced_function(content, function.name)
+    )
+    if language == "python":
+        return EmittedFile("migrated.py", extracted.rstrip() + "\n")
+    if language == "java":
+        return EmittedFile("Migrated.java", f"public final class Migrated {{\n{extracted}\n}}\n")
+    if language == "csharp":
+        return EmittedFile("Migrated.cs", f"public static class Migrated\n{{\n{extracted}\n}}\n")
+    if language == "typescript":
+        return EmittedFile("migrated.ts", extracted.rstrip() + "\n")
+    if language == "go":
+        return EmittedFile("migrated.go", "package main\n\n" + extracted.rstrip() + "\n")
+    if language == "rust":
+        return EmittedFile("migrated.rs", extracted.rstrip() + "\n")
+    if language == "cpp":
+        return EmittedFile("migrated.cpp", "#include <cstdint>\n#include <string>\n\n" + extracted.rstrip() + "\n")
+    if language == "objc":
+        return EmittedFile("migrated.m", "#import <Foundation/Foundation.h>\n\n" + extracted.rstrip() + "\n")
+    return EmittedFile("migrated.swift", extracted.rstrip() + "\n")
+
+
 def validate_source(
     source: Path,
     language: Language,
@@ -1708,12 +1802,16 @@ def validate(
 
 
 def safe_output(path: Path) -> Path:
-    resolved = path.expanduser().resolve()
+    lexical = Path(os.path.abspath(path.expanduser()))
+    current = Path(lexical.anchor)
+    for component in lexical.parts[1:]:
+        current /= component
+        if current.is_symlink():
+            raise RouteError("OUTPUT_SYMLINK_REJECTED")
+    resolved = lexical.resolve(strict=False)
     if resolved == Path.home() or resolved == REPOSITORY_ROOT or len(resolved.parts) < 4:
         raise RouteError("OUTPUT_PATH_TOO_BROAD")
-    if resolved.exists() and resolved.is_symlink():
-        raise RouteError("OUTPUT_SYMLINK_REJECTED")
-    return resolved
+    return lexical
 
 
 def temporary_output() -> Path:

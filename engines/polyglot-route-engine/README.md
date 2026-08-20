@@ -442,6 +442,13 @@ per-unit execution, collision-safe assembly, and a real whole-project build into
 one operator command:
 
 ```bash
+uv run elmos-polyglot-route repository-preflight \
+  --repository /approved/read-only/workspace \
+  --repository-ref local:customer-repository \
+  --source-language java \
+  --target-language python \
+  --output /durable/tenant-job/preflight.json
+
 uv run elmos-polyglot-route repository-pipeline \
   --repository /approved/read-only/workspace \
   --repository-ref local:customer-repository \
@@ -450,6 +457,19 @@ uv run elmos-polyglot-route repository-pipeline \
   --cases-directory /approved/independent-cases \
   --output /durable/tenant-job/pipeline
 ```
+
+`repository-preflight` performs only stable repository planning and declaration
+inventory. It never runs native analyzers, emission, behavior cases or builds.
+The 10,000 limit is a per-task reported-row capacity, not a claim about the
+actual number of functions in an inventory-incomplete language. Python AST
+inventory reports an exact count. Other language scanners return
+`PASSED_WITH_INCOMPLETE_INVENTORY`, `count_complete=false`, a reported-row lower
+bound and `actual_obligation_count_status=UNKNOWN`; their final report remains
+INDETERMINATE with an UNKNOWN scope blocker. At the 10,001st reported row,
+preflight returns a content-addressed `REJECTED` sentinel without continuing an
+unbounded count. Trusted business results exit zero; unsafe paths, digest drift
+and output integrity failures remain non-zero. The formal pipeline repeats the
+plan and inventory and rejects any later snapshot drift.
 
 The output directory is a durable checkpoint boundary. Re-running the command
 recomputes inventory and discovery from the read-only source, detects source
@@ -468,6 +488,60 @@ unresolved dependencies, or execution failures produce `PARTIAL / LIMITED` and
 remain visible in the report and artifact. Local execution never changes
 independent or external evidence from `NOT_RUN`, and the 72-direction local
 experiment never changes any governed route to certified.
+
+manifest. `COMPLETE` requires every functional obligation to pass; missing
+behavior cases, unsupported units or failures produce `PARTIAL` when verified
+target code remains or `BLOCKED` at zero verified functions, and stay visible
+in the pipeline report. Local execution never changes independent or external
+evidence from `NOT_RUN`.
+
+Every normally finalized pipeline also writes two content-addressed functional
+reports, even when no target function succeeds:
+
+- `functional-conversion-report.json` is the machine-readable authority.
+- `FUNCTION_CONVERSION_REPORT.md` is derived from that JSON and contains the
+  source/target code comparison, failure reason and deterministic next actions
+  for every unsuccessful obligation. Reports with more than 2,000 obligations
+  are written as up to five content-addressed JSON/Markdown shards plus a root
+  index and deterministic download bundle; the aggregate is recomputed from
+  every shard and no obligation is represented by a capacity sentinel. More
+  than 10,000 reported obligation rows fail closed before native analysis or emission with
+  `FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED` and require an explicit campaign split.
+
+The success-rate numerator contains only functions whose emitted target passed
+the declared behavior oracle **and** whose assembled target project passed its
+real build. For a compiler-complete inventory, the denominator contains every
+identified callable; `FAILED`, `UNSUPPORTED` and `NOT_RUN` are never removed.
+A source unit whose declarations are not compiler-completely enumerable adds
+an explicit `UNKNOWN_SOURCE_UNIT`, sets `denominator_complete=false`, and makes
+the project-level result `INDETERMINATE`. In that case the exact `N/D` and
+percentage are labelled only as the known-scope diagnostic, while the main
+result is an honest range with the unknown scope and its remediation described;
+one file-level sentinel is never presented as the number of missed functions.
+For measured inventories, basis points use floor division, so `2/3` is
+displayed as `66.66%`, never rounded up.
+
+A single report contains at most 2,000 obligation rows. A bounded run may contain
+up to 10,000 rows across at most five exact shards. Every report file is capped
+at 64 MiB and a sharded deterministic bundle at 256 MiB. Embedded excerpts use
+a 4 MiB global budget. A truncated or omitted excerpt still retains the exact
+full-block byte/line range, full-block digest, document digest, extraction
+method and a machine-readable omission reason; Markdown prints those identifiers
+before the comparison. Only a target that was never generated has no target
+range and is explicitly marked `NOT_GENERATED`.
+
+A zero-success or build-blocked run has `status=BLOCKED`, keeps the two report
+files downloadable to its authorized tenant, and does not expose a code ZIP.
+Paths, symlinks, source/case drift, corrupt checkpoints and digest mismatches
+remain hard integrity failures and do not authorize a newly generated report.
+The comparison basis is `DECLARED_BEHAVIOR_ORACLE`: a VERIFIED obligation must
+pass the same declared cases in the extracted source function and generated
+target function, then pass the whole-target-project build. This is bounded case
+evidence only; full source-versus-target semantic/runtime equivalence,
+independent verification and certification remain `NOT_RUN` / `NOT_CERTIFIED`.
+The source snapshot and the complete behavior-case manifest are re-inventoried
+at pipeline completion; addition, deletion, rename or byte drift is a hard
+integrity failure and cannot publish a new final report or code archive.
 
 ## Single-declaration bridging (`emit` / `check`)
 

@@ -8,6 +8,7 @@ import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -3545,7 +3546,28 @@ def _php() -> ExactToolchain:
     )
 
 
-def exact_toolchain(language: Language) -> ExactToolchain:
+def _toolchain_fingerprint() -> tuple[str, ...]:
+    tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
+    try:
+        tsc_stat = tsc.stat(follow_symlinks=True)
+        tsc_identity = f"{tsc_stat.st_dev}:{tsc_stat.st_ino}:{tsc_stat.st_size}:{tsc_stat.st_mtime_ns}"
+    except OSError:
+        tsc_identity = "MISSING"
+    return (
+        os.environ.get("PATH", ""),
+        os.environ.get("ELMOS_JAVA21_HOME", ""),
+        os.environ.get("ELMOS_CLANG_HOME", ""),
+        os.environ.get(_CLANG_VERSION_VARIABLE, ""),
+        os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
+        tsc_identity,
+    )
+
+
+@lru_cache(maxsize=64)
+def _cached_exact_toolchain(
+    language: Language,
+    _fingerprint: tuple[str, ...],
+) -> ExactToolchain:
     return {
         "java": _java,
         "python": _python,
@@ -3559,3 +3581,11 @@ def exact_toolchain(language: Language) -> ExactToolchain:
         "swift": _swift,
         "php": _php,
     }[language]()
+
+
+def clear_exact_toolchain_cache() -> None:
+    _cached_exact_toolchain.cache_clear()
+
+
+def exact_toolchain(language: Language) -> ExactToolchain:
+    return _cached_exact_toolchain(language, _toolchain_fingerprint())

@@ -69,7 +69,11 @@ Spring 代理、整库转换 Runner 和项目生成 Runner 都默认关闭。启
 - `ELMOS_LOCAL_RUNNER_EXECUTOR=ROOTLESS_CONTAINER`：生产模式唯一允许的执行器；必须配置绝对 rootless Podman/Docker 路径。`HOST_DEVELOPMENT` 仅用于显式本地开发并在 `NODE_ENV=production` 下拒绝。
 
 整库转换额外要求 `ELMOS_TRANSLATION_SOURCE_ROOT` 与
-`ELMOS_TRANSLATION_CASES_ROOT` 两个管理员材料化的绝对只读目录。生产
+`ELMOS_TRANSLATION_CASES_ROOT` 两个管理员材料化的绝对只读目录。生产请求
+必须提交经 control plane 按租户授权的 `repositoryWorkspaceId`，裸
+`workspaceId` 仅允许显式本地开发；独立行为用例必须存放在
+`ELMOS_TRANSLATION_CASES_ROOT/<tenantId>/<bundleId>`，不得使用可由其他租户
+猜测的全局 bundle 目录。生产
 Rootless 执行还要求 `ELMOS_TRANSLATION_RUNNER_IMAGE` 为
 `name@sha256:<64 hex>` 不可变镜像；容器以只读根文件系统、只读源码/语料挂载、
 默认拒绝网络、删除全部 capability、`no-new-privileges` 及 CPU/内存/PID 限额运行。

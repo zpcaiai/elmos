@@ -5,6 +5,10 @@ import {
 } from "../../../lib/server/translationRunner";
 import { GenerationRunnerError } from "../../../lib/server/generationRunner";
 import { withBusinessAudit } from "../../../lib/server/operationsProxy";
+import {
+  readBoundedTranslationRequest,
+  rejectDuplicateTopLevelJsonFields,
+} from "../../../lib/server/translationRequestBody";
 
 export const dynamic = "force-dynamic";
 
@@ -30,18 +34,27 @@ export async function POST(request: NextRequest) {
 
 async function create(request: NextRequest) {
   try {
+    const context = authorizeTranslation(request);
     if (!request.headers.get("content-type")?.startsWith("application/json")) {
       return NextResponse.json({ status: "BLOCKED", reason: "JSON_CONTENT_TYPE_REQUIRED" }, { status: 415 });
     }
-    const raw = await request.text();
-    if (Buffer.byteLength(raw, "utf-8") > 8 * 1024) {
-      return NextResponse.json({ status: "BLOCKED", reason: "REQUEST_TOO_LARGE" }, { status: 413 });
-    }
-    const context = authorizeTranslation(request);
-    return NextResponse.json(await createTranslationJob(context, JSON.parse(raw)), { status: 202 });
+    const raw = await readBoundedTranslationRequest(request);
+    const body = JSON.parse(raw);
+    rejectDuplicateTopLevelJsonFields(raw);
+    return NextResponse.json(
+      await createTranslationJob(context, body),
+      { status: 202, headers: { "Cache-Control": "private, no-store" } },
+    );
   } catch (error) {
-    const status = error instanceof GenerationRunnerError ? error.status : 400;
-    const reason = error instanceof Error ? error.message : "TRANSLATION_REQUEST_INVALID";
-    return NextResponse.json({ status: "BLOCKED", reason }, { status });
+    const status = error instanceof GenerationRunnerError
+      ? error.status
+      : error instanceof SyntaxError ? 400 : 500;
+    const reason = error instanceof GenerationRunnerError
+      ? error.message
+      : error instanceof SyntaxError ? "TRANSLATION_REQUEST_INVALID" : "TRANSLATION_RUNNER_ERROR";
+    return NextResponse.json(
+      { status: "BLOCKED", reason },
+      { status, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 }

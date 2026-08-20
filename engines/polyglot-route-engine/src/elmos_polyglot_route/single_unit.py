@@ -119,15 +119,18 @@ def emit_only(
 def _run(command: list[str], cwd: Path, *, timeout: int = 120) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     environment["NO_COLOR"] = "1"
-    return subprocess.run(
-        command,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        env=environment,
-    )
+    try:
+        return subprocess.run(
+            command,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=environment,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise RouteError(f"TARGET_VALIDATION_TIMEOUT:{command[0]}") from error
 
 
 def check_only(target_language: Language, content: str, output: Path) -> dict[str, Any]:

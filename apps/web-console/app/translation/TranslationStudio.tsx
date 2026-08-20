@@ -4,9 +4,8 @@ import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Icon } from "../components/Icon";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
-import { SmokeRunButton } from "../components/SmokeRunButton";
-import { TranslationEvidenceCharts } from "../components/ProjectEvidenceCharts";
-import { consoleTranslationLanguages, directedLanguageRoutes } from "../lib/businessLines";
+import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
+import { Sha256Accumulator } from "../lib/sha256Accumulator";
 import type {
   DirectedLanguageRoute,
   TranslationCapabilityResponse,
@@ -42,6 +41,10 @@ type TranslationRunnerHealth = {
 const STORAGE_KEY = "elmos.translation-handoff.v3";
 const JOB_STORAGE_KEY = "elmos.translation.latest-job-id";
 const WORK_UNIT_PAGE_SIZE = 25;
+const MAX_REPORT_BYTES = 64 * 1024 * 1024;
+const MAX_REPORT_BUNDLE_BYTES = 256 * 1024 * 1024;
+const MAX_TRANSLATION_ARTIFACT_BYTES = 256 * 1024 * 1024;
+const routeIds = new Set(directedLanguageRoutes.map((route) => route.id));
 
 function isSafeRepositoryRef(value: string): boolean {
   if (
@@ -63,17 +66,14 @@ function isSafeRepositoryRef(value: string): boolean {
   }
 }
 
-function isStoredHandoff(
-  value: unknown,
-  allowedRouteIds: ReadonlySet<string>,
-): value is Handoff {
+function isStoredHandoff(value: unknown): value is Handoff {
   if (!value || typeof value !== "object") return false;
   const stored = value as Partial<Handoff>;
   return stored.schemaVersion === "1.1.0"
     && typeof stored.repositoryRef === "string"
     && isSafeRepositoryRef(stored.repositoryRef)
     && typeof stored.routeId === "string"
-    && allowedRouteIds.has(stored.routeId)
+    && routeIds.has(stored.routeId)
     && ["single-module", "repository", "portfolio"].includes(stored.scope ?? "")
     && stored.requestedStatus === "EXPERIMENTAL_EVALUATION"
     && stored.executionStatus === "NOT_RUN"
@@ -113,6 +113,64 @@ function routeCellIcon(route: DirectedLanguageRoute | undefined) {
   if (!route) return "close" as const;
   if (route.localExecution === "PASSED") return "check" as const;
   return "lock" as const;
+}
+
+function triggerVerifiedDownload(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.rel = "noopener";
+  anchor.hidden = true;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+}
+
+async function verifiedDownloadBlob(
+  response: Response,
+  expectedBytes: number,
+  expectedSha256: string,
+  maximumBytes: number,
+  errorCode: string,
+): Promise<Blob> {
+  if (
+    !response.body
+    || !Number.isSafeInteger(expectedBytes)
+    || expectedBytes < 1
+    || expectedBytes > maximumBytes
+    || response.headers.get("content-length") !== String(expectedBytes)
+    || response.headers.get("x-content-sha256") !== expectedSha256
+  ) throw new Error(errorCode);
+  const reader = response.body.getReader();
+  const digest = new Sha256Accumulator();
+  const chunks: ArrayBuffer[] = [];
+  let observedBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      observedBytes += value.byteLength;
+      if (observedBytes > expectedBytes || observedBytes > maximumBytes) throw new Error(errorCode);
+      digest.update(value);
+      chunks.push(value.slice().buffer as ArrayBuffer);
+    }
+  } catch (error) {
+    await reader.cancel(error).catch(() => undefined);
+    throw error;
+  }
+  if (observedBytes !== expectedBytes || digest.digestHex() !== expectedSha256) {
+    throw new Error(errorCode);
+  }
+  return new Blob(chunks, { type: response.headers.get("content-type") ?? "application/octet-stream" });
+}
+
+function translationRunnerFailureMessage(reason: string): string {
+  if (reason === "FUNCTIONAL_OBLIGATION_LIMIT_EXCEEDED") {
+    return "单任务最多处理 10,000 个已报告功能义务行（5 个分片 × 每片 2,000）。请先按仓库、模块或授权工作区拆成多个独立任务，再逐个提交；本次未接受转换或计费，也未开始原生编译或代码生成。";
+  }
+  return reason;
 }
 
 export function TranslationStudio() {
@@ -155,7 +213,7 @@ export function TranslationStudio() {
     if (/^[0-9a-f-]{36}$/.test(value)) setRepositoryWorkspaceId(value);
   }, []);
 
-  const languages = capability?.languages ?? consoleTranslationLanguages;
+  const languages = capability?.languages ?? translationLanguages;
   const routes = capability?.routes ?? directedLanguageRoutes;
   const routeByPair = useMemo(() => {
     const index = new Map<string, DirectedLanguageRoute>();
@@ -164,12 +222,6 @@ export function TranslationStudio() {
   }, [routes]);
   const selectedRoute = routeByPair.get(`${sourceLanguage}>${targetLanguage}`);
   const selectedRouteExecutable = selectedRoute?.localExecution === "PASSED";
-  const selectedRepositoryExecutable = selectedRoute?.repositoryExecutionStatus === "PASSED"
-    && Boolean(selectedRoute.repositoryProfile)
-    && Boolean(selectedRoute.repositoryEvidenceRef)
-    && Boolean(selectedRoute.repositoryEvidenceSha256)
-    && Number.isInteger(selectedRoute.repositoryEvidenceBytes)
-    && Number(selectedRoute.repositoryEvidenceBytes) > 0;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -187,19 +239,6 @@ export function TranslationStudio() {
         }
         setCapability(payload);
         setCapabilityError("");
-        try {
-          const stored = JSON.parse(
-            window.localStorage.getItem(STORAGE_KEY) ?? "null",
-          ) as Handoff | null;
-          const allowedRouteIds = new Set(payload.routes.map((route) => route.id));
-          if (isStoredHandoff(stored, allowedRouteIds)) {
-            setHandoff(stored);
-          } else if (stored !== null) {
-            window.localStorage.removeItem(STORAGE_KEY);
-          }
-        } catch {
-          try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be denied. */ }
-        }
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
@@ -209,6 +248,12 @@ export function TranslationStudio() {
           + "所有路线状态保持 NOT_RUN，页面不会展示未读取到的通过结论。",
         );
       });
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "null") as Handoff | null;
+      if (isStoredHandoff(stored)) setHandoff(stored);
+    } catch {
+      try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be denied. */ }
+    }
     return () => controller.abort();
   }, []);
 
@@ -230,7 +275,7 @@ export function TranslationStudio() {
   }, []);
 
   useEffect(() => {
-    if (!job || !["QUEUED", "RUNNING"].includes(job.status)) return;
+    if (!job || !["QUEUED", "PRECHECK", "RUNNING"].includes(job.status)) return;
     const timer = window.setInterval(() => {
       void runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}`)
         .then(setJob)
@@ -260,12 +305,8 @@ export function TranslationStudio() {
   const routeCounts = useMemo(() => ({
     total: routes.length,
     locallyPassed: routes.filter((route) => route.localExecution === "PASSED").length,
-    repositoryPassed: routes.filter(
-      (route) => route.repositoryExecutionStatus === "PASSED",
-    ).length,
     externallyPending: routes.filter((route) => route.externalVerification === "NOT_RUN").length,
   }), [routes]);
-  const routeMatrixColumns = `90px repeat(${languages.length}, minmax(65px, 1fr))`;
 
   const filteredWorkUnits = useMemo(() => {
     const units = repositoryPlan?.work_units ?? [];
@@ -497,8 +538,12 @@ export function TranslationStudio() {
   }
 
   async function startRepositoryPipeline() {
-    if (!selectedRepositoryExecutable) {
-      setFeedback("当前路线没有仓库级 Profile 与执行证据，整库任务保持关闭。");
+    if (!selectedRouteExecutable) {
+      setFeedback("当前路线没有本地 Profile 通过证据，受控执行保持关闭。");
+      return;
+    }
+    if (accountRunner && !repositoryWorkspaceId.trim()) {
+      setFeedback("企业账户执行必须选择已授权的仓库工作区；不接受全局预物化源码 ID。");
       return;
     }
     setJobBusy(true);
@@ -516,9 +561,10 @@ export function TranslationStudio() {
       setJob(next);
       setRecoveryJobId(next.id);
       window.sessionStorage.setItem(JOB_STORAGE_KEY, next.id);
-      setFeedback("整库任务已进入持久队列；页面将显示真实编译、回放、装配与构建状态。");
+      setFeedback("整库预检已进入持久队列；此时尚未接受转换或计费。预检通过后页面才会显示真实编译、回放、装配与构建状态。");
     } catch (error) {
-      setFeedback(`整库执行被阻断：${error instanceof Error ? error.message : "TRANSLATION_RUNNER_ERROR"}`);
+      const reason = error instanceof Error ? error.message : "TRANSLATION_RUNNER_ERROR";
+      setFeedback(`整库执行被阻断：${translationRunnerFailureMessage(reason)}`);
     } finally {
       setJobBusy(false);
     }
@@ -571,27 +617,65 @@ export function TranslationStudio() {
         const payload = await response.json().catch(() => null) as { reason?: string } | null;
         throw new Error(payload?.reason ?? `HTTP_${response.status}`);
       }
-      const blob = await response.blob();
-      const digest = [...new Uint8Array(await crypto.subtle.digest(
-        "SHA-256",
-        await blob.arrayBuffer(),
-      ))].map((value) => value.toString(16).padStart(2, "0")).join("");
-      if (
-        response.headers.get("x-content-sha256") !== job.artifactSha256
-        || digest !== job.artifactSha256
-        || blob.size !== job.artifactSize
-      ) {
-        throw new Error("TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH");
-      }
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = `${job.sourceLanguage}-to-${job.targetLanguage}-${job.status.toLowerCase()}.zip`;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      const blob = await verifiedDownloadBlob(
+        response,
+        job.artifactSize,
+        job.artifactSha256,
+        MAX_TRANSLATION_ARTIFACT_BYTES,
+        "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
+      );
+      triggerVerifiedDownload(
+        blob,
+        `${job.sourceLanguage}-to-${job.targetLanguage}-${job.status.toLowerCase()}.zip`,
+      );
       setFeedback(`已复算 ZIP 摘要并下载；结果状态 ${job.status}，外部验证仍为 NOT_RUN。`);
     } catch (error) {
       setFeedback(`归档下载失败：${error instanceof Error ? error.message : "TRANSLATION_DOWNLOAD_FAILED"}`);
+    } finally {
+      setJobBusy(false);
+    }
+  }
+
+  async function downloadConversionReport(
+    format: "markdown" | "json" | "bundle" = job?.conversionSummary?.storageMode === "SHARDED"
+      ? "bundle"
+      : "markdown",
+  ) {
+    const descriptor = format === "markdown"
+      ? job?.reportMarkdown
+      : format === "json" ? job?.reportJson : job?.reportBundle;
+    if (!job?.reportReady || !descriptor) return;
+    setJobBusy(true);
+    try {
+      const response = await fetch(
+        `/api/translation/jobs/${job.id}/report?format=${format}`,
+        {
+          cache: "no-store",
+          headers: accountRunner ? undefined : {
+            authorization: `Bearer ${runnerToken}`,
+            "x-elmos-tenant": tenantId,
+            "x-elmos-actor": actorId,
+          },
+        },
+      );
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null) as { reason?: string } | null;
+        throw new Error(payload?.reason ?? `HTTP_${response.status}`);
+      }
+      const blob = await verifiedDownloadBlob(
+        response,
+        descriptor.bytes,
+        descriptor.sha256,
+        format === "bundle" ? MAX_REPORT_BUNDLE_BYTES : MAX_REPORT_BYTES,
+        "TRANSLATION_REPORT_INTEGRITY_MISMATCH",
+      );
+      triggerVerifiedDownload(blob, descriptor.path);
+      setFeedback(
+        `已在浏览器复算 ${format === "bundle" ? "完整 ZIP" : format === "markdown" ? "Markdown" : "JSON"} 报告摘要并下载；`
+        + "报告状态不代表独立验证或认证。",
+      );
+    } catch (error) {
+      setFeedback(`转换报告下载失败：${error instanceof Error ? error.message : "TRANSLATION_REPORT_DOWNLOAD_FAILED"}`);
     } finally {
       setJobBusy(false);
     }
@@ -651,7 +735,9 @@ export function TranslationStudio() {
         <div>
           <span className="overline">DIRECTED LANGUAGE ROUTES · BATCH 29</span>
           <h1>全库跨语言转换</h1>
-          <p>Java、C#、Python 与 TypeScript 形成 12 条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。</p>
+          <p>{capability
+            ? `${capability.languages.length} 种可用语言形成 ${capability.routes.length} 条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。`
+            : "可用语言和有向路线以仓库能力契约为准；每条路线分别绑定语义风险、精确工具链、语料和认证证据。"}</p>
         </div>
         <div className="header-actions">
           <StatusChip
@@ -668,7 +754,7 @@ export function TranslationStudio() {
       <section className="metric-grid metric-grid-four" aria-label="跨语言路线摘要">
         <article className="metric-card"><span>语言引擎</span><strong>{languages.length}</strong><small>精确版本、相互独立</small></article>
         <article className="metric-card"><span>有向路线</span><strong>{capability?.routePackageCount ?? routeCounts.total}</strong><small>反向路线不复用结论</small></article>
-        <article className="metric-card"><span>本地受限 Profile</span><strong className={routeCounts.locallyPassed > 0 ? "" : "warning-text"}>{routeCounts.locallyPassed}</strong><small>{capability?.semanticProfile ?? "契约未读取"} · 整库准入 {routeCounts.repositoryPassed}</small></article>
+        <article className="metric-card"><span>本地受限 Profile</span><strong className={routeCounts.locallyPassed > 0 ? "" : "warning-text"}>{routeCounts.locallyPassed}</strong><small>{capability?.semanticProfile ?? "契约未读取"}</small></article>
         <article className="metric-card"><span>独立验证待办</span><strong className="warning-text">{routeCounts.externallyPending}</strong><small>外部证据 {capability?.externalExecutionEvidence ?? "UNREAD"}</small></article>
       </section>
 
@@ -686,9 +772,9 @@ export function TranslationStudio() {
             <fieldset><legend>2 · 目标语言</legend><div>{languages.map((language) => <button type="button" disabled={sourceLanguage === language.id} className={targetLanguage === language.id ? "selected" : ""} key={language.id} onClick={() => chooseTarget(language.id)} aria-pressed={targetLanguage === language.id}><strong>{language.label}</strong><small>{language.runtime}</small></button>)}</div></fieldset>
           </div>
           <div className="route-matrix" role="table" aria-label={`${routeCounts.total} 条有向语言路线的本地执行状态`}>
-            <div className="route-matrix-row route-matrix-head" role="row" style={{ gridTemplateColumns: routeMatrixColumns }}><span role="columnheader">源 \\ 目标</span>{languages.map((language) => <b role="columnheader" key={language.id}>{language.label}</b>)}</div>
+            <div className="route-matrix-row route-matrix-head" role="row"><span role="columnheader">源 \\ 目标</span>{languages.map((language) => <b role="columnheader" key={language.id}>{language.label}</b>)}</div>
             {languages.map((source) => (
-              <div className="route-matrix-row" role="row" key={source.id} style={{ gridTemplateColumns: routeMatrixColumns }}>
+              <div className="route-matrix-row" role="row" key={source.id}>
                 <b role="rowheader">{source.label}</b>
                 {languages.map((target) => {
                   const route = routeByPair.get(`${source.id}>${target.id}`);
@@ -736,9 +822,6 @@ export function TranslationStudio() {
                 <div><dt>目标运行时</dt><dd>{targetProfile?.runtime}</dd></div>
                 <div><dt>方向 Skill</dt><dd>${selectedRoute.skill}</dd></div>
                 <div><dt>本地执行</dt><dd>{selectedRoute.localExecution}</dd></div>
-                <div><dt>仓库执行</dt><dd>{selectedRoute.repositoryExecutionStatus}</dd></div>
-                <div><dt>仓库 Profile</dt><dd>{selectedRoute.repositoryProfile ?? "NOT_RUN"}</dd></div>
-                <div><dt>仓库证据</dt><dd>{selectedRoute.repositoryEvidenceRef ?? "NOT_RUN"}</dd></div>
                 <div><dt>独立验证</dt><dd>{selectedRoute.independentVerification}</dd></div>
                 <div><dt>外部认证</dt><dd>{selectedRoute.externalVerification}</dd></div>
               </dl>
@@ -794,8 +877,10 @@ export function TranslationStudio() {
         <p>
           Runner 从管理员预先材料化的只读源码与独立行为用例目录读取输入，自动完成清单、编译器发现、
           断点批处理、无冲突装配、真实构建和内容寻址归档。它只覆盖 typed-pure-function-v1；
-          路线还必须具有独立的仓库级 PASSED、Profile 与证据引用；`PARTIAL` 会完整保留跳过与失败，
-          绝不等同于整库完成。
+          `PARTIAL` 会完整保留跳过与失败，绝不等同于整库完成。
+        </p>
+        <p className="translation-task-limit">
+          单个转换任务硬上限为 10,000 个已报告功能义务行（最多 5 个内容寻址分片，每片 2,000）。非 Python 路线可能仍有 inventory 未知范围，不能把行数当作项目真实功能总数。超过上限会在接受转换、计费、原生编译与代码生成前失败关闭；请先按仓库、模块或授权工作区拆分为多个任务。
         </p>
         <div className="business-form-grid">
           <label>
@@ -814,18 +899,20 @@ export function TranslationStudio() {
               <input aria-label="跨语言 Runner 令牌" type="password" value={runnerToken} onChange={(event) => setRunnerToken(event.target.value)} autoComplete="off" />
             </label>
           )}
+          {!accountRunner && (
+            <label>
+              <span>本地开发预物化源码 ID（与仓库工作区二选一）</span>
+              <input
+                aria-label="受控源码工作区 ID"
+                value={workspaceId}
+                onChange={(event) => setWorkspaceId(event.target.value)}
+                pattern="[a-z0-9][a-z0-9._-]{2,80}"
+                placeholder="customer-repository"
+              />
+            </label>
+          )}
           <label>
-            <span>预物化源码 ID（与仓库工作区二选一）</span>
-            <input
-              aria-label="受控源码工作区 ID"
-              value={workspaceId}
-              onChange={(event) => setWorkspaceId(event.target.value)}
-              pattern="[a-z0-9][a-z0-9._-]{2,80}"
-              placeholder="customer-repository"
-            />
-          </label>
-          <label>
-            <span>仓库工作区 UUID</span>
+            <span>{accountRunner ? "已授权仓库工作区 UUID（必填）" : "仓库工作区 UUID"}</span>
             <input value={repositoryWorkspaceId}
               onChange={(event) => setRepositoryWorkspaceId(event.target.value.toLowerCase())}
               pattern="[0-9a-f-]{36}" placeholder="从代码仓库工作区自动带入" />
@@ -841,8 +928,6 @@ export function TranslationStudio() {
             </strong>
             <small>
               源存储 {runnerHealth?.sourceStorage ?? "NOT_RUN"} · 活跃任务 {runnerHealth?.activeJobs ?? 0}。
-              仓库路线准入 {selectedRoute?.repositoryExecutionStatus ?? "NOT_RUN"}
-              {selectedRoute?.repositoryProfile ? ` · ${selectedRoute.repositoryProfile}` : ""}。
               {runnerHealth?.reason ? ` ${runnerHealth.reason}` : " 生产模式只允许不可变镜像的 Rootless Container。"}
             </small>
           </div>
@@ -855,8 +940,10 @@ export function TranslationStudio() {
           <button
             type="button"
             className="button button-primary"
-            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRepositoryExecutable
-              || (!workspaceId.trim() && !repositoryWorkspaceId.trim())}
+            disabled={jobBusy || runnerHealth?.status !== "READY" || !selectedRouteExecutable
+              || (accountRunner
+                ? !repositoryWorkspaceId.trim()
+                : (!workspaceId.trim() && !repositoryWorkspaceId.trim()))}
             onClick={() => void startRepositoryPipeline()}
           >
             <Icon name="workflow" size={15} />启动整库转换
@@ -872,7 +959,7 @@ export function TranslationStudio() {
           <button
             type="button"
             className="button button-secondary"
-            disabled={jobBusy || !job || !["QUEUED", "RUNNING"].includes(job.status)}
+            disabled={jobBusy || !job || !["QUEUED", "PRECHECK", "RUNNING"].includes(job.status)}
             onClick={() => void cancelRepositoryPipeline()}
           >
             取消
@@ -885,6 +972,18 @@ export function TranslationStudio() {
           >
             <Icon name="file" size={15} />下载摘要校验归档
           </button>
+          <button
+            type="button"
+            className="button button-secondary"
+            disabled={jobBusy || !job?.reportReady || (job.conversionSummary?.storageMode === "SHARDED"
+              ? !job.reportBundle
+              : !job.reportMarkdown)}
+            onClick={() => void downloadConversionReport()}
+          >
+            <Icon name="external" size={15} />{job?.conversionSummary?.storageMode === "SHARDED"
+              ? "下载完整转换报告包"
+              : "下载转换报告"}
+          </button>
         </div>
         {job && (
           <div className="spring-run-summary">
@@ -893,24 +992,94 @@ export function TranslationStudio() {
               <div><dt>阶段 / 进度</dt><dd>{job.stage} · {job.progress}%</dd></div>
               <div><dt>路线</dt><dd>{job.sourceLanguage} → {job.targetLanguage}</dd></div>
               <div><dt>工作单元</dt><dd>{job.includedUnitCount ?? 0} / {job.workUnitCount ?? "NOT_RUN"}</dd></div>
+              <div className="translation-rate-fact"><dt>项目功能转换成功率</dt><dd>{job.conversionSummary
+                ? job.conversionSummary.denominatorComplete
+                  ? `${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}`
+                  : `${job.conversionSummary.projectSuccessRateDisplay} · 项目功能转换成功率不可确定`
+                : "NOT_MEASURED"}</dd></div>
+              {job.conversionSummary && !job.conversionSummary.denominatorComplete && (
+                <div><dt>已报告 CALLABLE 义务验证率</dt><dd>
+                  {job.conversionSummary.denominator > 0
+                    ? `${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}（仅诊断）`
+                    : "N/A · 无已报告 CALLABLE 分母"}
+                </dd></div>
+              )}
+              <div><dt>计量口径</dt><dd>{job.conversionSummary
+                ? `${job.conversionSummary.measurementUnit} · ${job.conversionSummary.comparisonBasis}`
+                : "NOT_RUN"}</dd></div>
+              <div><dt>分母完整性</dt><dd>{job.conversionSummary
+                ? `${job.conversionSummary.denominatorComplete ? "完整" : "不完整"} · ${job.conversionSummary.measurementStatus}`
+                : "NOT_RUN"}</dd></div>
+              <div><dt>Inventory 未知范围</dt><dd>{job.conversionSummary
+                ? job.conversionSummary.denominatorComplete
+                  ? "未发现"
+                  : `${job.conversionSummary.unknownScopeCount} 个文件级 inventory 哨兵 · 不等于漏检功能数`
+                : "NOT_RUN"}</dd></div>
+              <div><dt>未验证 / 未知报告行</dt><dd>{job.conversionSummary?.unsuccessfulCount ?? "NOT_RUN"}</dd></div>
               <div><dt>真实构建</dt><dd>{job.buildVerification?.status ?? "NOT_RUN"}</dd></div>
-              <div><dt>项目图完整</dt><dd>{job.repositoryComplete === undefined ? "NOT_RUN" : String(job.repositoryComplete)}</dd></div>
-              <div><dt>项目图义务</dt><dd>{job.projectGraph?.obligation_count ?? "NOT_RUN"}</dd></div>
+              <div><dt>代码归档</dt><dd>{job.artifactReady ? "READY" : "NOT_READY"}</dd></div>
               <div><dt>外部证据</dt><dd>{job.externalVerificationStatus} · {job.certificationStatus}</dd></div>
             </dl>
-            <TranslationEvidenceCharts
-              semanticCoverage={job.semanticCoverage}
-              behaviorCoverage={job.behaviorCoverage}
-            />
-            {job.reason && <p className="warning-text">{job.reason}</p>}
+            {job.conversionSummary && (
+              <section className="translation-conversion-report" aria-labelledby="translation-conversion-report-title">
+                <div className="translation-report-heading">
+                  <div>
+                    <h3 id="translation-conversion-report-title">功能转换计量</h3>
+                    <p>{job.conversionSummary.denominatorComplete
+                      ? "分子只计入逐功能通过目标行为 Oracle 与源/目标声明用例的功能义务；PASSED_PER_VERIFIED_FUNCTION 不代表全项目运行时等价。源/目标代码对比与省略依据仅存在于内容寻址报告，不会进入轮询任务 JSON。代码摘录受安全预算限制，省略项仍保留路径、完整逻辑范围与摘要。"
+                      : `项目级功能报告范围不完整，成功率为 ${job.conversionSummary.projectSuccessRateDisplay}，结论不可确定。${job.conversionSummary.denominator > 0 ? "以下 N/D、百分比和基点只描述已报告 CALLABLE 义务；" : "当前没有已报告 CALLABLE 分母，因此不计算已报告义务百分比或基点；"}${job.conversionSummary.unknownScopeCount} 个文件级 inventory 未知范围哨兵不等于漏检功能数。`}</p>
+                  </div>
+                  <StatusChip status={job.conversionSummary.measurementStatus} compact />
+                </div>
+                <dl className="translation-rate-metrics">
+                  <div><dt>{job.conversionSummary.denominatorComplete ? "已验证" : "已验证（已报告）"}</dt><dd>{job.conversionSummary.verifiedCount}</dd></div>
+                  <div><dt>{job.conversionSummary.denominatorComplete ? "未成功" : "已报告义务 / 范围"}</dt><dd>{job.conversionSummary.denominatorComplete
+                    ? job.conversionSummary.failedCount
+                    : job.conversionSummary.reportedObligationCount}</dd></div>
+                  <div><dt>{job.conversionSummary.denominatorComplete ? "精确比例" : "已报告 CALLABLE 义务验证率"}</dt><dd>
+                    {job.conversionSummary.denominatorComplete
+                      ? job.conversionSummary.exactFraction
+                      : job.conversionSummary.denominator > 0
+                        ? `${job.conversionSummary.exactFraction} = ${job.conversionSummary.displayPercent}（仅诊断）`
+                        : "N/A · 无已报告 CALLABLE 分母"}
+                  </dd></div>
+                  <div><dt>{job.conversionSummary.denominatorComplete ? "基点" : "项目保守区间"}</dt><dd>{job.conversionSummary.denominatorComplete
+                    ? `${job.conversionSummary.successRateBasisPoints} / 10000`
+                    : job.conversionSummary.projectSuccessRateDisplay}</dd></div>
+                </dl>
+                {job.conversionSummary.failureSummaries.length > 0 && (
+                  <div className="translation-failure-list">
+                    <h3>未成功功能、原因与后续提高方法</h3>
+                    {job.conversionSummary.failureSummaries.map((failure) => (
+                      <details key={failure.obligationId}>
+                        <summary>
+                          <span>{failure.functionDescription}</span>
+                          <StatusChip status={failure.status} compact />
+                        </summary>
+                        <dl>
+                          <div><dt>功能 ID</dt><dd>{failure.obligationId}</dd></div>
+                          <div><dt>工作单元</dt><dd>{failure.workUnitId}</dd></div>
+                          <div><dt>原代码</dt><dd>{failure.sourcePath}</dd></div>
+                          <div><dt>目标代码</dt><dd>{failure.targetPath ?? "NOT_GENERATED"}</dd></div>
+                          <div><dt>错误码</dt><dd>{failure.failureCode}</dd></div>
+                        </dl>
+                        <p><strong>未成功原因：</strong>{failure.failureReason}</p>
+                        <div>
+                          <strong>后续提高转换成功率：</strong>
+                          <ol>{failure.improvementActions.map((action) => <li key={action}>{action}</li>)}</ol>
+                        </div>
+                      </details>
+                    ))}
+                    {job.conversionSummary.failureSummariesTruncated && (
+                      <p className="warning-text">页面只展示前 50 项；下载转换报告可查看全部失败功能。代码摘录受安全预算限制，省略项仍保留路径与文档摘要。</p>
+                    )}
+                  </div>
+                )}
+              </section>
+            )}
+            {job.reason && <p className="warning-text">{translationRunnerFailureMessage(job.reason)}</p>}
             <pre aria-label="跨语言任务日志">{job.logs.map((entry) => `[${entry.stream}] ${entry.message}`).join("\n") || "日志尚未产生。"}</pre>
           </div>
-        )}
-        {job?.artifactReady && (
-          // 转换完成后的一键运行入口。projectRef 约定为任务 ID：转换产物需落在
-          // ${ELMOS_SMOKE_PROJECTS_ROOT}/<jobId> 且已挂载 Batch 46 冒烟包，
-          // 否则面板会如实显示 SMOKE_PACK_NOT_FOUND，而不是假装可以运行。
-          <SmokeRunButton projectRef={job.id} />
         )}
       </section>
 

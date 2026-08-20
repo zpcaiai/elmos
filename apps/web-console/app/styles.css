@@ -318,12 +318,13 @@ html[data-theme="dark"] .button-primary:hover { background: #194b49; }
 .status-compact { padding: 4px 8px; font-size: 8px; }
 .status-ready, .status-enforced, .status-live-api { background: var(--green-soft); color: var(--green); }
 .status-blocked { background: var(--red-soft); color: var(--red); }
-.status-not-run, .status-not-configured, .status-configuration-required,
+.status-not-run, .status-not-configured, .status-configuration-required, .status-indeterminate,
 .status-optional, .status-conditional { background: var(--amber-soft); color: var(--amber); }
 .status-recommended { background: var(--green-soft); color: var(--green); }
 .status-not-certified { background: var(--red-soft); color: var(--red); }
 .status-experimental, .status-review { background: var(--violet-soft); color: var(--violet); }
 .status-limited, .status-supported { background: var(--blue-soft); color: var(--blue); }
+.status-measured { background: var(--blue-soft); color: var(--blue); }
 .status-draft, .status-repository-contract, .status-contract-ready,
 .status-installed, .status-adapter-declared { background: var(--blue-soft); color: var(--blue); }
 .precision-job-card { display: grid; gap: 15px; }
@@ -666,6 +667,23 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .generation-runtime-controls label span { color: var(--muted); font-size: 8px; font-weight: 700; }
 .generation-runtime-controls select { min-height: 36px; padding: 0 9px; border: 1px solid var(--line-strong); border-radius: 8px; background: white; font-size: 9px; }
 .generation-runtime-controls .button { min-height: 36px; padding-inline: 11px; font-size: 9px; }
+.generation-runtime-preview { max-height: 220px; overflow: auto; margin: 0; padding: 11px; border: 1px solid #b8d8d3; border-radius: 9px; background: #eef8f6; color: #173f3b; font: 9px/1.55 ui-monospace,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.generation-github-publish { display: flex; flex-direction: column; gap: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: white; }
+.generation-github-publish h4 { margin: 2px 0 0; font-size: 12px; }
+.generation-github-publish > p { margin: 0; color: var(--ink-soft); font-size: 9px; line-height: 1.6; }
+.generation-github-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.generation-github-fields label { display: flex; min-width: 0; flex-direction: column; gap: 5px; }
+.generation-github-fields label > span { color: var(--muted); font-size: 8px; font-weight: 700; }
+.generation-github-fields input { width: 100%; min-height: 38px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; background: white; color: var(--ink); font-size: 9px; }
+.generation-github-fields small { color: var(--muted); font-size: 8px; line-height: 1.5; }
+.generation-github-token { grid-column: 1 / -1; }
+.generation-github-confirmation { margin-top: 0; }
+.generation-github-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.generation-github-actions small { color: var(--red); font-size: 8px; }
+.generation-github-receipt { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; padding: 10px; border-radius: 8px; background: var(--green-soft); color: var(--green); }
+.generation-github-receipt strong { overflow-wrap: anywhere; font-size: 9px; }
+.generation-github-receipt span { grid-column: 1; color: var(--ink-soft); font: 8px ui-monospace,monospace; }
+.generation-github-receipt a { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 9px; font-weight: 750; }
 .generation-analysis { margin-top: 22px; padding-top: 21px; border-top: 1px solid var(--line); }
 .generation-analysis-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 13px; }
 .generation-analysis-card { min-width: 0; display: flex; flex-direction: column; gap: 7px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); }
@@ -992,6 +1010,29 @@ kbd { min-width: 22px; display: inline-grid; place-items: center; padding: 3px 6
 .spring-log-card pre { max-height: 460px; overflow: auto; margin: 18px 0 0; padding: 17px; border-radius: 10px; background: #102124; color: #b8d7d4; font: 500 9px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 .translation-runner-card .spring-run-summary { position: static; margin-top: 20px; }
 .translation-runner-card pre { max-height: 340px; overflow: auto; margin: 14px 0 0; padding: 15px; border-radius: 10px; background: #102124; color: #b8d7d4; font: 500 9px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.translation-rate-fact dd { color: var(--cyan-dark); font-size: 11px; }
+.translation-conversion-report { min-width: 0; margin-top: 18px; padding: 16px; border: 1px solid #cfe2df; border-radius: 11px; background: #f5faf9; }
+.translation-report-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.translation-task-limit { margin: 10px 0 16px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--amber-soft) 70%, transparent); color: var(--ink-soft); font-size: 10px; line-height: 1.6; }
+.translation-report-heading > div { min-width: 0; }
+.translation-report-heading h3, .translation-failure-list h3 { margin: 0; color: var(--ink-soft); font-size: 11px; }
+.translation-report-heading p { max-width: 760px; margin: 6px 0 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+.translation-rate-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin: 14px 0 0; }
+.translation-rate-metrics > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: white; }
+.translation-rate-metrics dt { color: var(--muted); font-size: 8px; }
+.translation-rate-metrics dd { min-width: 0; margin: 0; overflow-wrap: anywhere; color: var(--ink-soft); font: 800 10px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.translation-failure-list { min-width: 0; display: grid; gap: 8px; margin-top: 17px; }
+.translation-failure-list details { min-width: 0; overflow: hidden; border: 1px solid #ead8c2; border-radius: 9px; background: #fffaf3; }
+.translation-failure-list summary { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; color: var(--ink-soft); font-size: 9px; font-weight: 800; cursor: pointer; }
+.translation-failure-list summary > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.translation-failure-list details > dl, .translation-failure-list details > p, .translation-failure-list details > div { margin: 0; padding: 0 12px 12px; }
+.translation-failure-list details > dl { display: grid; gap: 6px; }
+.translation-failure-list details > dl > div { min-width: 0; display: grid; grid-template-columns: 76px minmax(0,1fr); gap: 8px; }
+.translation-failure-list dt { color: var(--muted); font-size: 8px; }
+.translation-failure-list dd { min-width: 0; margin: 0; overflow-wrap: anywhere; font: 700 8px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.translation-failure-list details > p, .translation-failure-list details > div { color: var(--ink-soft); font-size: 9px; line-height: 1.6; overflow-wrap: anywhere; }
+.translation-failure-list ol { margin: 6px 0 0; padding-left: 19px; }
+.translation-failure-list li + li { margin-top: 4px; }
 .spring-log-card > small { display: block; margin-top: 8px; color: var(--muted); font-size: 8px; }
 .status-succeeded, .status-healthy, .status-pass { background: var(--green-soft); color: var(--green); }
 .status-running, .status-starting, .status-queued { background: var(--blue-soft); color: var(--blue); }
@@ -1171,9 +1212,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .route-matrix-row { min-width: 500px; }
   .business-actions, .route-handoff-actions { flex-direction: column; }
   .business-actions .button, .route-handoff-actions .button { width: 100%; min-height: 44px; }
+  .translation-conversion-report { padding: 13px; }
+  .translation-report-heading { flex-direction: column; }
+  .translation-rate-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .translation-failure-list details > dl > div { grid-template-columns: 1fr; gap: 2px; }
   .generation-fields, .generation-source-grid, .asset-grid { grid-template-columns: 1fr; }
   .generation-analysis-grid { grid-template-columns: 1fr; }
   .generation-job-summary { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .generation-github-fields { grid-template-columns: 1fr; }
+  .generation-github-token { grid-column: 1; }
+  .generation-github-receipt { grid-template-columns: 1fr; }
+  .generation-github-receipt a { grid-column: 1; grid-row: auto; }
   .generation-field-wide { grid-column: auto; }
   .generation-draft-row { grid-template-columns: auto minmax(0,1fr) auto; }
   .generation-draft-row .status-chip { display: none; }

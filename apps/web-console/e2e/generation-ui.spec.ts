@@ -123,16 +123,42 @@ test.describe("多语言项目生成 UI", () => {
     await page.route(/\/api\/health(?:\?.*)?$/, (route) =>
       route.fulfill({ status: 200, json: readiness }));
     let observedAuthorization = "";
+    let analyzeRequestObserved = false;
     await page.route("**/api/generation/analyze", async (route) => {
-      observedAuthorization = await route.request().headerValue("authorization") ?? "";
+      const request = route.request();
+      expect(request.method()).toBe("POST");
+      // Capture the header off the real request rather than asserting a window
+      // hook: nothing in the application assigns window.__generationAuthorization,
+      // so a poll on it can only ever observe "" and never pass.
+      observedAuthorization = await request.headerValue("authorization") ?? "";
+      expect(request.headers()["x-elmos-tenant"]).toBe("local-dev");
+      expect(request.headers()["x-elmos-actor"]).toBe("user:reviewer");
+      expect(request.postDataJSON()).toMatchObject({
+        name: "order-service",
+        namespace: "io.elmos.orders",
+        entity: "order",
+        targets: ["java", "python"],
+        persistence: "in-memory",
+        authMode: "none",
+      });
+      analyzeRequestObserved = true;
       await route.fulfill({ status: 401, json: blocked });
     });
     await page.goto("/generation");
+    await expect(
+      page.getByRole("region", { name: "项目生成能力摘要" })
+        .getByText("READY", { exact: true }),
+    ).toBeVisible({ timeout: 30_000 });
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     const analyze = page.getByRole("button", { name: "分析并整理需求" });
+    // Runner controls are governed by credentials: with no token this button must
+    // be disabled, or a request goes out with an empty Authorization and the
+    // server's 401 becomes the only defence.
     await expect(analyze).toBeDisabled();
-    await page.getByLabel("本地 Runner 令牌").fill("incorrect-browser-token-000000");
-    await expect(analyze).toBeEnabled();
+    const runnerToken = page.getByLabel("本地 Runner 令牌");
+    await runnerToken.fill("incorrect-browser-token-000000");
+    await expect(runnerToken).toHaveValue("incorrect-browser-token-000000");
+    await expect(analyze).toBeEnabled({ timeout: 30_000 });
     await analyze.focus();
     await expect(analyze).toBeFocused();
     // Exercise the same accessible activation path in every browser. WebKit's
@@ -142,7 +168,10 @@ test.describe("多语言项目生成 UI", () => {
     await analyze.press("Enter");
     await expect.poll(() => observedAuthorization)
       .toBe("Bearer incorrect-browser-token-000000");
-    await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible();
+    await expect.poll(() => analyzeRequestObserved).toBe(true);
+    await expect(page.getByText("需求分析被阻断：AUTHENTICATION_REQUIRED")).toBeVisible({
+      timeout: 30_000,
+    });
     await expect(
       page.getByRole("checkbox", { name: /我已审阅结构化需求/ }),
     ).toBeDisabled();

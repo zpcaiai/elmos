@@ -1,3 +1,5 @@
+include Makefile.external-gates
+
 UV ?= uv
 BATCH29_PYTHON ?= $(UV) run --quiet --with jsonschema==4.25.1 --with pyyaml==6.0.2 --with z3-solver==4.16.0 python
 BATCH29_ROUTE_PYTHON ?= $(UV) --directory engines/polyglot-route-engine run --locked --quiet python
@@ -8,7 +10,7 @@ B29_REPOSITORY_CONTRACT_FILES := $(B29_REPOSITORY_SCHEMA_FILES) scripts/batch29/
 b29-repository-contract-check:
 	@for file in $(B29_REPOSITORY_CONTRACT_FILES); do test -f "$$file" || { echo "missing Batch 29 repository contract file: $$file"; exit 1; }; done
 	$(BATCH29_PYTHON) -c 'import json; from pathlib import Path; from jsonschema import Draft202012Validator; files = "$(B29_REPOSITORY_SCHEMA_FILES)".split(); [Draft202012Validator.check_schema(json.loads(Path(path).read_text(encoding="utf-8"))) for path in files]'
-b29-skills-test: b29-repository-contract-check
+b29-skills-test: b29-repository-contract-check external-gate-intake-test
 	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
 	$(BATCH29_ROUTE_PYTHON) -m unittest discover -s ../../tests/batch29 -p 'test_*.py'
 b29-route-validate:

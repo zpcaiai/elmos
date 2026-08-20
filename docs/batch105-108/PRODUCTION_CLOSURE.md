@@ -48,6 +48,83 @@ The control plane refuses job admission until
 containing `@sha256:<64 lowercase hex characters>`. The existing Runner Agent,
 object storage, OIDC and PostgreSQL/RLS configuration remain authoritative.
 
+The image builder distinguishes three decisions:
+
+- `artifact_readiness` covers a clean source tree, immutable digest, image
+  contract, restricted smoke execution and an authenticated Docker Scout scan.
+- `production_readiness` additionally requires a non-local registry and every
+  external boundary to be independently verified.
+- `certified` remains the decision of a separate external authority. Neither a
+  build nor a PR may set it to true.
+
+Use `--release-candidate` only with an external registry. It fails closed unless
+`--push` and `--scan` are supplied, the source tree is clean and the artifact
+gate passes. Docker Scout exit code 2 is recorded as `FAILED`; authentication,
+network or missing-report failures are `BLOCKED`, never a pass. Every scan uses
+a new SARIF path so a failed invocation cannot reuse a previous clean report.
+The builder binds the image to the same exact Git commit and checks source
+cleanliness both before and after the build.
+
+After opening a real Draft PR, collect its exact read-only observation with:
+
+```text
+python3 scripts/operations/collect_modernization_proof_release_evidence.py \
+  --repository zpcaiai/elmos --pr <number> \
+  --image-receipt <image-build-receipt.json> \
+  --output <release-closure-receipt.json>
+```
+
+The PR head must equal the image source commit. This records the operation as
+executed but awaiting independent verification; it does not self-approve,
+deploy, merge or certify the candidate.
+
+Re-evaluate both receipts without trusting their status fields:
+
+```text
+python3 scripts/operations/run_modernization_proof_release_gate.py \
+  --image-receipt <image-build-receipt.json> \
+  --release-closure <release-closure-receipt.json> \
+  --output <release-gate-result.json>
+```
+
+The gate verifies content bindings, exact external-boundary keys and allowed
+transitions, the immutable image/environment assignment, restricted smoke
+evidence, authenticated vulnerability evidence, distinct executor/verifier
+identities and required raw evidence roles. Its maximum local decision is
+`READY_FOR_EXTERNAL_GATE`; it always emits `production_ready=false` and
+`certified=false`.
+
+Collect the final conservative status only after the real Draft PR and local
+Flyway run exist:
+
+```text
+python3 scripts/operations/collect_modernization_proof_conservative_status.py \
+  --image-receipt <image-build-receipt.json> \
+  --release-closure <release-closure-receipt.json> \
+  --primary-worktree <developer-worktree> \
+  --source-worktree <clean-image-source-worktree> \
+  --repository zpcaiai/elmos --pr <number> \
+  --v63-surefire-xml <TEST-io.elmos.persistence.FlywayMigrationTest.xml> \
+  --v63-surefire-text <io.elmos.persistence.FlywayMigrationTest.txt> \
+  --v63-migration <V63__modernization_proof_execution_jobs.sql> \
+  --v63-test-source <FlywayMigrationTest.java> \
+  --evidence-directory <artifact-directory> \
+  --output <release-gate-result.json>
+```
+
+The collector re-runs the gate instead of trusting the previous result. It
+records the primary and isolated worktrees separately, binds the V63 report to
+the migration, test source and exact PostgreSQL image digest, and observes the
+current PR checks. GitHub Actions workflow checks are reported as `remote_ci`;
+legacy status contexts and third-party checks such as a Vercel preview are
+reported separately as `external_checks`. Either domain remains fail-closed,
+but a provider preview failure cannot be mislabeled as a failed CI workflow. A
+CI result is `PASSED` only when the workflow rollup is non-empty and every check
+succeeded. Failures and still-running checks are counted separately. V63
+success is explicitly scoped to `LOCAL_ENGINEERING_INTEGRATION`
+with `production_equivalent=false`, `promotes_external_boundary=false` and
+`certifies_release=false`.
+
 ## Local qualification
 
 ```text
@@ -67,10 +144,13 @@ success.
 ## Evidence boundary
 
 Source validation, Java tests, TypeScript compilation, local browser tests and
-the packaged-worker smoke run are engineering evidence only. Provider
-provisioning, native language toolchains, real service/browser journeys,
-independent holdout, customer acceptance, SCM checks, commercial review and
-production deployment remain `NOT_RUN` until separately authorized and backed
-by exact immutable evidence. The highest certificate level is emitted only by
-B108-S16 after the ordered ladder and cleanup prerequisites are satisfied; the
-result still does not approve deployment or certify the product.
+the packaged-worker smoke run are engineering evidence only. Every image build
+starts all six external boundaries at `NOT_RUN`. A separate closure receipt may
+advance only a boundary that was really observed; for example, an existing
+Draft PR becomes `EXECUTED_AWAITING_INDEPENDENT_VERIFICATION` and must not be
+rewritten to `NOT_RUN`. Provider provisioning, native language toolchains, real
+service/browser journeys, independent holdout, customer acceptance, commercial
+review and production deployment remain `NOT_RUN` until separately authorized
+and backed by exact immutable evidence. The highest certificate level is
+emitted only by B108-S16 after the ordered ladder and cleanup prerequisites are
+satisfied; the result still does not approve deployment or certify the product.

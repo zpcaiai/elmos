@@ -419,6 +419,7 @@
     "suite": "sha256:9ad7e8270209fe3299f013031283fcc6bbae12000c16e5f04fc2a6e32fa1013e"
   },
   "schema_digests": {
+    "certification-request.schema.json": "sha256:3fe1e36bda203781646a6527b68399bff902dae59dbf18908ee9deb35cff5427",
     "coverage-matrix.schema.json": "sha256:42150a284504c64eabcbf1236ba41539a4d108c1fcd46a77717880b279630b70",
     "evidence-manifest.schema.json": "sha256:9165bb353e769f104f92ee8dbd42a6c469f46a4bc14f10811374b666314c9b59",
     "release-gate.schema.json": "sha256:126ba20be80004ab7431dec2231ed4289a8a1eb41f8ae4d1b1ce56fa48abc6bb",
@@ -427,6 +428,7 @@
     "test-environment.schema.json": "sha256:80ee4c8447eb3f0cced6a679e98e327e494832a28c88032454374238a937c63a",
     "test-result.schema.json": "sha256:0e029efe2122fc3836da97bf8f809c59b3d17851ce562f8c08cfe7705712ecb4",
     "test-suite.schema.json": "sha256:7c736ed44869b8be0a86d5a23bcde7fc93caf0f34f6c1a5ed3b8aa51e214f156",
+    "trust-store.schema.json": "sha256:43fd42669cdfdf2b1717ea6669d5e933109fb71448b15ddfb07ae1c295adb427",
     "waiver.schema.json": "sha256:effda289f0506e895c32b6d501df10d7974dbcb7359d06af2f0fa2cfbb1c452a"
   }
 }

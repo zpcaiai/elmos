@@ -6,8 +6,17 @@ import {
   generateKeyPairSync,
   X509Certificate,
 } from "node:crypto";
-import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import {
+  chmodSync,
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import path from "node:path";
 
 process.env.NO_PROXY = "127.0.0.1,localhost";
@@ -15,8 +24,8 @@ process.env.no_proxy = "127.0.0.1,localhost";
 delete process.env.NO_COLOR;
 
 const repositoryRoot = path.resolve(__dirname, "../..");
-const translationSourceRoot = path.resolve(__dirname, "e2e/fixtures/translation-sources");
-const translationCasesRoot = path.resolve(__dirname, "e2e/fixtures/translation-cases");
+const translationSourceFixtureRoot = path.resolve(__dirname, "e2e/fixtures/translation-sources");
+const translationCasesFixtureRoot = path.resolve(__dirname, "e2e/fixtures/translation-cases");
 const runnerToken = "elmos-e2e-local-token-32-characters";
 
 function resolveExecutableOnPath(name: string): string | null {
@@ -30,12 +39,45 @@ function resolveExecutableOnPath(name: string): string | null {
 
 const configuredUvPath = process.env.ELMOS_UV_PATH?.trim();
 const uvPath = configuredUvPath
-  ? path.resolve(configuredUvPath)
+  ? realpathSync(path.resolve(configuredUvPath))
   : resolveExecutableOnPath(process.platform === "win32" ? "uv.exe" : "uv");
 if (!uvPath || !existsSync(uvPath)) {
   throw new Error("ELMOS_UV_PATH_REQUIRED");
 }
+const canonicalUvPath = realpathSync(uvPath);
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
+const canonicalTemporaryRoot = realpathSync(tmpdir());
+const translationFixtureRoot = path.join(
+  canonicalTemporaryRoot,
+  `elmos-web-console-e2e-translation-fixtures-${webPort}`,
+);
+const translationSourceRoot = path.join(translationFixtureRoot, "sources");
+const translationCasesRoot = path.join(translationFixtureRoot, "cases");
+rmSync(translationFixtureRoot, { recursive: true, force: true });
+mkdirSync(translationFixtureRoot, { recursive: true, mode: 0o700 });
+cpSync(translationSourceFixtureRoot, translationSourceRoot, { recursive: true });
+cpSync(translationCasesFixtureRoot, translationCasesRoot, { recursive: true });
+const shardedTranslationSource = path.join(translationSourceRoot, "sharded-python");
+const shardedTranslationCases = path.join(translationCasesRoot, "sharded-python-empty");
+mkdirSync(shardedTranslationSource, { recursive: true, mode: 0o700 });
+mkdirSync(shardedTranslationCases, { recursive: true, mode: 0o700 });
+writeFileSync(
+  path.join(shardedTranslationSource, "many_functions.py"),
+  `${Array.from({ length: 2_001 }, (_, index) => {
+    const name = `function_${String(index + 1).padStart(5, "0")}`;
+    return `def ${name}(value: int) -> int:\n    return value\n`;
+  }).join("\n")}\n`,
+  { mode: 0o600 },
+);
+writeFileSync(
+  path.join(shardedTranslationCases, "README.md"),
+  "This empty case bundle forces a bounded two-shard diagnostic report.\n",
+  { mode: 0o600 },
+);
+const githubPort = Number.parseInt(
+  process.env.ELMOS_E2E_GITHUB_PORT ?? String(webPort + 99),
+  10,
+);
 const webServerMode = process.env.ELMOS_E2E_WEB_SERVER_MODE ?? "development";
 const productionOidcEnabled = webServerMode === "production"
   && process.env.ELMOS_E2E_PRODUCTION_OIDC === "true";
@@ -45,6 +87,7 @@ const productionOidcEnabled = webServerMode === "production"
 const webServerTimeout = 300_000;
 const webServerBundler = process.env.ELMOS_E2E_WEB_BUNDLER ?? "turbopack";
 const chromiumChannel = process.env.ELMOS_E2E_CHROMIUM_CHANNEL?.trim();
+const fullRuntimeLease = process.env.ELMOS_E2E_FULL_RUNTIME_TTL === "true";
 if (!["development", "production"].includes(webServerMode)) {
   throw new Error("ELMOS_E2E_WEB_SERVER_MODE_INVALID");
 }
@@ -53,7 +96,7 @@ if (!["turbopack", "webpack"].includes(webServerBundler)) {
 }
 const configuredRunnerRoot = process.env.ELMOS_E2E_RUNNER_ROOT;
 const runnerRoot = configuredRunnerRoot
-  ?? path.join(tmpdir(), `elmos-web-console-e2e-${webPort}`);
+  ?? path.join(canonicalTemporaryRoot, `elmos-web-console-e2e-${webPort}`);
 const enginePort = webPort + 1_000;
 const auditPort = webPort + 2_000;
 const oidcPort = webPort + 3_000;
@@ -214,6 +257,7 @@ delete webServerEnvironment.FORCE_COLOR;
 delete webServerEnvironment.NO_COLOR;
 process.env.ELMOS_E2E_EFFECTIVE_RUNNER_ROOT = runnerRoot;
 process.env.ELMOS_E2E_AUTO_RUNNER_ROOT = configuredRunnerRoot ? "false" : "true";
+process.env.ELMOS_E2E_EFFECTIVE_TRANSLATION_FIXTURE_ROOT = translationFixtureRoot;
 process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR = path.resolve(__dirname, nextDistDir);
 
 export default defineConfig({
@@ -300,10 +344,20 @@ export default defineConfig({
       },
     },
     {
+      command: "node e2e/github-api-mock.mjs",
+      url: `http://127.0.0.1:${githubPort}/health`,
+      reuseExistingServer: false,
+      timeout: 30_000,
+      env: {
+        ...webServerEnvironment,
+        ELMOS_E2E_GITHUB_PORT: String(githubPort),
+      },
+    },
+    {
       command: webServerMode === "production"
         ? `pnpm build && pnpm start --hostname 127.0.0.1 --port ${nextUpstreamPort}`
         : `pnpm dev --hostname 127.0.0.1 --port ${webPort}${webServerBundler === "webpack" ? " --webpack" : ""}`,
-      url: `${nextServerBaseURL}/frontend`,
+      url: `${nextServerBaseURL}/api/capabilities/generation`,
       reuseExistingServer: false,
       timeout: webServerTimeout,
       env: {
@@ -313,7 +367,9 @@ export default defineConfig({
         ELMOS_REPOSITORY_ROOT: repositoryRoot,
         ELMOS_TRANSLATION_SOURCE_ROOT: translationSourceRoot,
         ELMOS_TRANSLATION_CASES_ROOT: translationCasesRoot,
-        ELMOS_UV_PATH: uvPath,
+        ELMOS_UV_PATH: canonicalUvPath,
+        ELMOS_PROJECT_SYNTHESIS_UV_CACHE: process.env.ELMOS_PROJECT_SYNTHESIS_UV_CACHE
+          ?? path.join(homedir(), ".cache", "uv"),
         ELMOS_LOCAL_RUNNER_EXECUTOR: "HOST_DEVELOPMENT",
         ELMOS_LOCAL_RUNNER_AUTH_TOKEN: runnerToken,
         ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT: new Date(
@@ -364,6 +420,11 @@ export default defineConfig({
             JAVA_ENGINE_BASE_URL: `http://127.0.0.1:${springEnginePort}`,
           } : {}),
         } : {}),
+        ELMOS_LOCAL_GITHUB_PUBLISH_ENABLED: "true",
+        ELMOS_GENERATION_GITHUB_API_BASE: `http://127.0.0.1:${githubPort}`,
+        ELMOS_GENERATION_GITHUB_ALLOW_HTTP_LOCALHOST: "true",
+        ELMOS_ALLOW_TEST_RUNTIME_TTL: fullRuntimeLease ? "false" : "true",
+        ELMOS_TEST_RUNTIME_TTL_MS: fullRuntimeLease ? "600000" : "12000",
       },
     },
   ],
