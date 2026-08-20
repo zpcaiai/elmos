@@ -272,3 +272,27 @@ uv run --directory engines/polyglot-route-engine --locked python -m pytest -q \
   tests/test_identifier_hygiene.py tests/test_capability_probe.py \
   tests/test_repository_pipeline_language_matrix.py
 ```
+
+
+---
+
+# 2026-08-20 收尾：六个测试文件 165 项全绿
+
+```
+uv run --directory engines/polyglot-route-engine --locked python -m pytest -q -p no:randomly \
+  tests/test_kotlin_target.py tests/test_emitted_names_are_reserved.py \
+  tests/test_emitted_target_reanalysis_gate.py tests/test_identifier_hygiene.py \
+  tests/test_local_bindings.py tests/test_else_chain.py
+→ 165 passed
+```
+
+覆盖了本轮全部结论：kotlin 目标侧（含我改正的 3 处过度指定断言 + 发射器真缺陷的返回点
+加宽）、发射器名字与标识符策略的跨语言不变量、两个闸门（pending 语言按分析器缺失
+而非 pin 缺失拒绝；relift 闸门的不可达性断言）、`_DIALECT` 条数改为自适应、
+局部绑定、else 链。
+
+已随 `5351a91f0` 提交并推送。
+
+**仍未证实**：`modules/persistence` 除 `FlywayMigrationTest` 外的 14 个测试类——
+不是红，是**没有结果**，报告因磁盘满写不出来。见
+`FINDINGS-2026-08-19-cas-wave2-closing-the-gaps.md` 的执行记录。

@@ -264,3 +264,64 @@ java -cp modules/cas/target/classes io.elmos.cas.ActionCacheBenchmark 200 25 /tm
 
 `FlywayMigrationTest` 会把 V65 一起跑掉，它断言的是「磁盘上发现的迁移数 == 实际执行数」，
 新增一条迁移不需要改那个数字。
+
+
+---
+
+## 2026-08-20 Mac 执行记录
+
+`bash scripts/cas/finish-mac-verification.sh`
+
+- **`verify_v65_migration.py`：PASSED，45 项检查全绿**
+  （`postgres: PostgreSQL 16.2`，pgserver 自带二进制，无 Docker、无网络）。
+- `modules/persistence`（Flyway + Testcontainers）：**尚无可信结论**。
+  11:22 那次 `BUILD SUCCESS` 不算数——15 个测试类里 14 个的 surefire 报告因
+  `No space left on device` 写不出来，汇总只剩 `Tests run: 1`，只有
+  `FlywayMigrationTest` 有据可查（65 条迁移干净应用到 v65）。此后 Docker 因磁盘
+  耗尽再未启动，该步一直是 SKIPPED。
+
+### 卡住这一整轮的不是代码，是磁盘
+
+Data 卷 926 GB 用满，可用一度只剩 112 MB。三件事被它连锁挡住：Docker Desktop
+起不来、surefire 写不出报告、`tempfile.mkdtemp` 找不到可写临时目录。
+
+根因是一个**孤儿挂载**：2026-08-17 的本地快照仍挂载在
+`/Volumes/com.apple.TimeMachine.localsnapshots/.../2026-08-17-002527/Data`，
+而该挂载点目录已经不存在了。于是形成死锁：
+
+- `umount <路径>` → `No such file or directory`（路径不可达）
+- `diskutil apfs deleteSnapshot` → `-69528 busy (mounted)`（挂载仍在）
+- `tmutil deletelocalsnapshots` → `Stale NFS file handle`（errno 70 = ESTALE，同一病根）
+
+按设备名 `com.apple.TimeMachine.2026-08-17-002527.local@/dev/disk3s5` 卸载同样无效：
+`unmount(2)` 只接受路径，内核把设备名翻译回那条不可达的路径。**运行中的系统清不掉它，
+只能重启。** 快照钉着约 28.8 GB（删掉的旧 `Docker.raw` 全在里面）。
+
+删缓存删掉 6.3 GB 却只放出 2.2 GB，差额同样被快照钉住——这从侧面确认了「快照是唯一
+关键路径」。而那 2.2 GB 恰好够 pgserver 起一个临时 PostgreSQL，第 2 步才得以跑完。
+
+### 脚本的两处修正（本轮已验证有效）
+
+**一、解释器一致性。** `pip` 与 `python3` 在 Homebrew Mac 上常常不是同一个解释器
+（此机 `pip` → python@3.11，`python3` → python@3.14）。原来文档和脚本写的
+`pip install X && python3 script.py` 会「安装成功 + ModuleNotFoundError」，
+再装一次仍然装进那个不运行脚本的解释器，无限循环。脚本改为：先找**已经**装好
+pgserver+psycopg 的解释器（有就不装，避免 wheel 解析漂移），没有就依次用
+`$PY -m pip` 试 `python3 → 3.13 → 3.12 → 3.11`，装成了才用它跑，并打印
+`sys.executable`。可用 `ELMOS_PYTHON=` 覆盖。本轮输出
+`python3.11 already has pgserver + psycopg` 即为该逻辑生效。
+挑序考虑了 pgserver 捆绑 PostgreSQL 二进制、并非每个 Python 版本都有 wheel——
+「python3 最新」不等于「python3 能用」。
+
+**二、Docker 探测限时。** `docker info` 在 Docker 未运行时**不会失败，会一直等**，
+而它是这一步的第一个动作，表现就是无声挂死。改为后台进程+轮询实现 20 秒超时
+（macOS 默认没有 `timeout(1)`），探测前先打印在做什么，「超时」与「装了但没运行」
+分开报，并都给出 `ELMOS_SKIP_DOCKER=1` 的出口。本轮两次都在 20 秒内给出可操作结论。
+
+### 待办
+
+1. 重启 Mac，然后
+   `sudo diskutil apfs deleteSnapshot /System/Volumes/Data -uuid 015A8114-3040-4CA2-BA07-50C9784ECFF5`
+   （若开机时 macOS 已自行 thin 掉快照则跳过）。
+2. 空间回到 ~30 GB 后重跑 `bash scripts/cas/finish-mac-verification.sh`，
+   让 `modules/persistence` 那 15 个测试类**第一次**产出可信结论。
