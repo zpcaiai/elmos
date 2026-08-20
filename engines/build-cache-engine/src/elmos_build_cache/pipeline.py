@@ -30,11 +30,13 @@ from pathlib import Path
 from typing import Any
 
 from .action_cache import ActionCache, CommitRequest, HotIndex, LookupRequest
+from .cache_trace import Access, Tier
 from .cas import ContentAddressableStore
 from .checkpoint import CheckpointService, CompatibilityProfile
 from .clock import SYSTEM_CLOCK, Clock
 from .config import CacheConfig, RolloutConfig
 from .dag import CacheProbe, ConversionDag, DagNode, ExecutionPlan, NodeDecision, ProbeResult
+from .dag_prefetch import Artifact
 from .db import MetadataStore
 from .db.records import StagedFileRecord
 from .enums import (
@@ -51,8 +53,9 @@ from .fingerprint import Fingerprint, FingerprintInputs, build_action_key, expla
 from .journal import LeaseManager, RunCoordinator, RunJournal
 from .manifests import ActionResultManifest, EvidenceBundle, ExecutionMetrics, FileTreeManifest
 from .observability import CacheAccounting, MetricsRegistry, PerformanceGate, Tracer, summarize_run
+from .policy_plane import PolicyPlane
 from .publish import PublishResult, TreePublisher
-from .security import SecurityGate
+from .security import ProvenanceSigner, SecurityGate
 from .snapshot import Snapshot, SnapshotPolicy, take_snapshot
 from .stage_contract import StageContract, StageContractRegistry, default_registry
 from .staging import Workspace
@@ -133,6 +136,9 @@ class RunReport:
     rollout_phase: str
     shadow: dict[str, Any] | None = None
     failures: tuple[dict[str, Any], ...] = ()
+    #: What the policy plane did this run, and what it advises for the next.
+    #: A recommendation, never an applied change -- see ``PolicyPlane``.
+    policy: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -147,6 +153,7 @@ class RunReport:
             "telemetry": self.telemetry,
             "shadow": self.shadow,
             "failures": list(self.failures),
+            "policy": self.policy,
         }
 
     def unjustified_skips(self) -> list[str]:
@@ -226,6 +233,7 @@ class ConversionPipeline:
         clock: Clock = SYSTEM_CLOCK,
         trust_namespace: TrustNamespace = TrustNamespace.BRANCH,
         producer_identity: str = "elmos-worker",
+        signer: ProvenanceSigner | None = None,
     ) -> None:
         self.config = config
         self.store = store
@@ -249,6 +257,13 @@ class ConversionPipeline:
             hot_index=HotIndex.from_config(config.policy),
         )
         self.security = SecurityGate(config=config.security)
+        self.policy_plane = PolicyPlane.from_config(
+            config.policy,
+            tenant_id=tenant_id,
+            capacity_bytes=config.local.max_size_gb * 1024**3,
+            trace_salt=project_id,
+            signer=signer,
+        )
         self._fingerprints: dict[str, Fingerprint] = {}
         self._previous_fingerprints: dict[str, Fingerprint] = {}
         self._node_outputs: dict[str, dict[str, Any]] = {}
@@ -312,6 +327,24 @@ class ConversionPipeline:
                         mode=mode,
                     )
                 )
+            # Capture the access as the policy plane sees it. This is the
+            # real lookup path, so a captured trace describes decisions the
+            # deployment actually took rather than a replay of a guess.
+            self.policy_plane.record_access(
+                action_key=fingerprint.action_key,
+                tier=Tier.L1_LOCAL_CAS,
+                access=Access.GET,
+                hit=result.hit,
+                size_bytes=int(result.detail.get("size_bytes", 0) or 0),
+                stage_class=node.stage_id,
+                recompute_ms=float(node.estimated_cost_ms),
+                restore_ms=float(result.detail.get("restore_ms", 0.0) or 0.0),
+                model_tokens=result.entry.saved_model_tokens if result.entry else 0,
+                validation_level=(
+                    str(result.entry.validation_level) if result.entry else "UNVERIFIED"
+                ),
+                trust_namespace=str(self.trust_namespace),
+            )
             if result.hit:
                 return ProbeResult(True, fingerprint.action_key, ())
             reasons = result.reasons
@@ -336,7 +369,12 @@ class ConversionPipeline:
         worker: str = "worker-1",
     ) -> list[NodeReport]:
         reports: list[NodeReport] = []
-        for wave in plan.waves:
+        self._prepare_prefetch(dag, plan)
+        for position, wave in enumerate(plan.waves):
+            # Prefetch is planned per wave, against the real DAG order, so a
+            # decision can only ever be about work the plan already commits to.
+            for decision in self.policy_plane.plan_prefetch(position):
+                self.metrics.increment("elmos.cache.prefetch.issued", reason=decision.reason)
             for node_id in wave:
                 node = dag.node(node_id)
                 node_plan = plan.decision_of(node_id)
@@ -378,6 +416,31 @@ class ConversionPipeline:
                     )
                 )
         return reports
+
+    def _prepare_prefetch(self, dag: ConversionDag, plan: ExecutionPlan) -> None:
+        """Describe the restorable artifacts to the prefetcher, once per run.
+
+        Only nodes the plan decided to RESTORE are offered: a node that will be
+        executed has nothing to fetch, and offering it would let the prefetcher
+        spend budget on bytes nobody is going to read.
+        """
+        if not self.config.policy.prefetch_enabled:
+            return
+        artifacts: dict[str, Artifact] = {}
+        for node in dag.nodes:
+            decision = plan.decision_of(node.node_id)
+            if decision.decision is not NodeDecision.RESTORE:
+                continue
+            for logical in node.logical_outputs:
+                artifacts[logical] = Artifact(
+                    key=logical,
+                    size_bytes=1,
+                    restore_ms=0.0,
+                    recompute_ms=float(node.estimated_cost_ms),
+                    resident=False,
+                    remote=True,
+                )
+        self.policy_plane.prepare_prefetch(dag, artifacts)
 
     def _restore(
         self,
@@ -536,7 +599,27 @@ class ConversionPipeline:
                 for record in staged
                 if record.artifact_digest
             )
+            admission = None
             if fingerprint is not None and self.rollout.cache_mode(node.cache_mode).may_write:
+                # Admission decides whether this result is worth *recording* as
+                # a reusable entry. It cannot affect the outputs: by this point
+                # every one of them is sealed, promoted into CAS and in the
+                # run's tree. A refusal costs a recomputation, never a file.
+                admission = self.policy_plane.admit(
+                    action_key=fingerprint.action_key,
+                    size_bytes=sum(record.actual_size or 0 for record in staged),
+                    stage_class=node.stage_id,
+                    recompute_ms=float(result.metrics.wall_ms),
+                    restore_ms=self._estimated_restore_ms(artifacts),
+                    validation_level=str(result.validation_level),
+                    model_tokens=result.metrics.model_tokens,
+                    critical_path_weight=1.0 if contract.checkpoint_stage_boundary else 0.0,
+                )
+            if (
+                fingerprint is not None
+                and self.rollout.cache_mode(node.cache_mode).may_write
+                and (admission is None or admission.admitted)
+            ):
                 manifest = ActionResultManifest(
                     action_key=fingerprint.action_key,
                     stage_id=node.stage_id,
@@ -601,6 +684,21 @@ class ConversionPipeline:
         except ElmosCacheError as exc:
             coordinator.fail(lease, exc.code, retryable=exc.code not in ("CONTRACT_VIOLATION",))
             raise
+
+    def _estimated_restore_ms(self, artifacts: Sequence[str]) -> float:
+        """What restoring these artifacts would cost, from the CAS itself.
+
+        Falls back to zero rather than to a guess: a fabricated restore cost
+        would flow straight into the admission value function, and a made-up
+        number there is worse than an absent one.
+        """
+        total = 0.0
+        for digest in artifacts:
+            try:
+                total += self.cas.estimate_restore(digest).estimated_restore_ms
+            except ElmosCacheError:
+                continue
+        return total
 
     def _inputs_for(self, node: DagNode) -> dict[str, Any]:
         return {
@@ -670,6 +768,19 @@ class ConversionPipeline:
         }
 
     # -- reporting --------------------------------------------------------
+    def policy_report(self) -> dict[str, Any] | None:
+        """What the policy plane did, plus its advice for the next run.
+
+        ``None`` when nothing is switched on, so a report from a deployment
+        that has not opted in is byte-identical to what it was before the
+        policy plane existed.
+        """
+        if not self.policy_plane.active:
+            return None
+        payload = self.policy_plane.report()
+        payload["recommendation"] = self.policy_plane.recommend()
+        return payload
+
     def report(
         self,
         run_id: str,
@@ -692,6 +803,7 @@ class ConversionPipeline:
             rollout_phase=self.config.rollout.phase,
             shadow=shadow,
             failures=tuple(failures),
+            policy=self.policy_report(),
         )
         unjustified = report.unjustified_skips()
         if unjustified:

@@ -16,10 +16,10 @@ a validated whole-tree manifest, and published by an atomic pointer switch.
 
 ```text
 engines/build-cache-engine/
-├── src/elmos_build_cache/     implementation (42 modules, mypy --strict clean)
+├── src/elmos_build_cache/     implementation (43 modules, mypy --strict clean)
 │   ├── _data/                 packaged JSON Schemas, SQL migrations, OpenAPI
 │   └── db/                    SQLite (local) and PostgreSQL (production) store
-├── tests/                     921 tests mapped to the acceptance matrix
+├── tests/                     933 tests mapped to the acceptance matrix
 ├── config/                    elmos-cache.yaml, elmos-cache.local.yaml
 ├── migrations/                postgres/0001_init.sql, 0002_elmos_extensions.sql
 │                              sqlite/0001_init.sql
@@ -94,6 +94,20 @@ separate tests, and every crossing is one-way:
 - **Nothing switches itself on.** `policy.adaptive_selection` and
   `policy.learned_tuning` default to off, learned parameters are clipped to
   certified bounds, and the pinned fallback is a fixed policy (SIEVE).
+- **Every switch drives real code.** `policy_plane.PolicyPlane` is the one
+  object that turns configuration into behaviour, and the pipeline holds one:
+  `trace_capture` records the pipeline's own lookups, `admission_enabled` is
+  consulted before an action-cache entry is recorded, `prefetch_enabled` plans
+  against the real DAG at each wave boundary, and `adaptive_selection` /
+  `learned_tuning` produce an end-of-run recommendation in `RunReport.policy`.
+  With everything off the plane is inert and `RunReport.policy` is `None`, so
+  opting out is byte-identical to the plane not existing.
+- **Admission runs after promotion, on purpose.** By the time it is consulted
+  the artifact is sealed, in CAS and in the run's tree. A refusal costs a
+  recomputation next time; it can never cost a file.
+- **Recommendations are end-of-run.** A replacement policy that changes
+  half-way through a run makes every number collected during that run
+  uninterpretable, so the orchestrator never switches a live policy.
 
 ## Storage model
 
@@ -178,7 +192,7 @@ pipeline = ConversionPipeline(config, store, cas, Path("."), "tenant", "project"
 ## Verification
 
 ```bash
-PYTHONPATH=src pytest tests -q          # 921 tests
+PYTHONPATH=src pytest tests -q          # 933 tests
 ruff check src tests
 mypy src/elmos_build_cache              # strict
 ```

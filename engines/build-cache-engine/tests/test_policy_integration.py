@@ -17,7 +17,7 @@ import pytest
 from conftest import TENANT
 from elmos_build_cache.action_cache import ActionCache, HotIndex
 from elmos_build_cache.cache_policy import CacheObject, PolicyName, create_policy
-from elmos_build_cache.cache_trace import key_hash
+from elmos_build_cache.cache_trace import Access, Tier, key_hash
 from elmos_build_cache.cas import ContentAddressableStore
 from elmos_build_cache.cli import main
 from elmos_build_cache.clock import ManualClock
@@ -328,3 +328,143 @@ def test_sota_23_workloads_are_discoverable(
     payload = _cli(capsys, tmp_path, "trace", "workloads")
     names = {entry["name"] for entry in payload["workloads"]}
     assert {"identical-rerun", "monorepo-scan", "dag-known-future"} <= names
+
+
+# --------------------------------------------------------------------------
+# SOTA-24: the configuration switches drive real behaviour, not a display
+# --------------------------------------------------------------------------
+def _plane(**overrides: object):
+    from elmos_build_cache.policy_plane import PolicyPlane
+    from elmos_build_cache.security import Ed25519ProvenanceSigner
+
+    config = dataclasses.replace(PolicyConfig(), **overrides)  # type: ignore[arg-type]
+    return PolicyPlane.from_config(
+        config,
+        tenant_id=TENANT,
+        capacity_bytes=1_000_000,
+        signer=Ed25519ProvenanceSigner.generate(),
+    )
+
+
+def test_sota_24_every_switch_is_off_by_default_and_the_plane_is_inert() -> None:
+    """The shipped default must behave exactly as it did before the plane existed."""
+    plane = _plane()
+    assert plane.active is False
+    assert plane.record_access(
+        action_key="sha256:" + "a" * 64,
+        tier=Tier.L1_LOCAL_CAS,
+        access=Access.GET,
+        hit=True,
+        size_bytes=1,
+        stage_class="gen",
+        recompute_ms=1.0,
+        restore_ms=0.0,
+    ) is None
+    assert plane.admit(
+        action_key="sha256:" + "a" * 64,
+        size_bytes=1,
+        stage_class="gen",
+        recompute_ms=1.0,
+        restore_ms=0.0,
+        validation_level="UNVERIFIED",
+    ) is None
+    assert plane.plan_prefetch(0) == []
+
+
+@pytest.mark.parametrize(
+    ("switch", "capability"),
+    [
+        ("trace_capture", "trace_capture"),
+        ("admission_enabled", "admission"),
+        ("adaptive_selection", "adaptive_selection"),
+        ("learned_tuning", "learned_tuning"),
+    ],
+)
+def test_sota_24_each_switch_turns_on_exactly_its_own_capability(
+    switch: str, capability: str
+) -> None:
+    """A switch that reports itself on but does nothing is worse than no switch."""
+    plane = _plane(**{switch: True})
+    capabilities = plane.report()["capabilities"]
+    assert capabilities[capability] is True
+    assert plane.active is True
+    assert [name for name, on in capabilities.items() if on] == [capability]
+
+
+def test_sota_24_admission_refuses_an_entry_that_is_not_worth_recording() -> None:
+    """Restore costing as much as recompute means the entry buys nothing."""
+    plane = _plane(admission_enabled=True)
+    worthwhile = plane.admit(
+        action_key="sha256:" + "a" * 64,
+        size_bytes=50_000,
+        stage_class="target-code-generation",
+        recompute_ms=9_000.0,
+        restore_ms=20.0,
+        validation_level="TEST_VERIFIED",
+    )
+    pointless = plane.admit(
+        action_key="sha256:" + "b" * 64,
+        size_bytes=50_000,
+        stage_class="target-code-generation",
+        recompute_ms=100.0,
+        restore_ms=95.0,
+        validation_level="UNVERIFIED",
+    )
+    assert worthwhile is not None and worthwhile.admitted is True
+    assert pointless is not None and pointless.admitted is False
+    assert "BYPASS_RESTORE_SLOWER_THAN_RECOMPUTE" in pointless.reasons
+    assert plane.report()["admission"]["rejected_by_value"] == 1
+
+
+def test_sota_24_learned_tuning_without_a_signer_is_refused() -> None:
+    """An unsigned model registry cannot verify what it loads, so it is refused."""
+    from elmos_build_cache.policy_plane import PolicyPlane
+
+    with pytest.raises(ContractViolation):
+        PolicyPlane.from_config(
+            dataclasses.replace(PolicyConfig(), learned_tuning=True), tenant_id=TENANT
+        )
+
+
+def test_sota_24_a_trace_captured_here_is_usable_downstream() -> None:
+    """Capture has to produce a corpus the rest of the plane can actually read."""
+    plane = _plane(trace_capture=True, trace_sample_rate=1.0, adaptive_selection=True)
+    for step in range(300):
+        plane.record_access(
+            action_key=f"sha256:{step % 40:064d}",
+            tier=Tier.L1_LOCAL_CAS,
+            access=Access.GET,
+            hit=step % 3 != 0,
+            size_bytes=4096,
+            stage_class="target-code-generation",
+            recompute_ms=900.0,
+            restore_ms=12.0,
+        )
+    assert plane.report()["trace"]["captured"] == 300
+
+    recommendation = plane.recommend()
+    assert recommendation["features"]["request_count"] == 300
+    assert recommendation["selection"]["policy"] in ALL_POLICIES
+    assert recommendation["selection"]["reason_codes"]
+
+
+def test_sota_24_the_plane_recommends_but_never_switches_a_live_policy() -> None:
+    """Changing a replacement algorithm mid-run makes the run uninterpretable."""
+    plane = _plane(trace_capture=True, trace_sample_rate=1.0, adaptive_selection=True)
+    assert plane.orchestrator is not None
+    before = plane.orchestrator.policy.name.value
+    for step in range(400):
+        plane.record_access(
+            action_key=f"sha256:{step:064d}",
+            tier=Tier.L1_LOCAL_CAS,
+            access=Access.GET,
+            hit=False,
+            size_bytes=4096,
+            stage_class="scan",
+            recompute_ms=10.0,
+            restore_ms=1.0,
+        )
+    plane.recommend()
+    assert plane.orchestrator.policy.name.value == before, (
+        "the live policy must not move during a run"
+    )

@@ -48,8 +48,8 @@ a test that exercises the behaviour, and an **executed** result recorded in
 
 | Deliverable | Path |
 |---|---|
-| Implementation | `engines/build-cache-engine/src/elmos_build_cache/` (45 modules, 23 870 lines) |
-| Tests | `engines/build-cache-engine/tests/` (41 files, 11 955 lines, 921 tests) |
+| Implementation | `engines/build-cache-engine/src/elmos_build_cache/` (46 modules, 24 322 lines) |
+| Tests | `engines/build-cache-engine/tests/` (41 files, 12 165 lines, 933 tests) |
 | Tools | `engines/build-cache-engine/tools/cross_platform_snapshot.py` |
 | SQL migrations | `engines/build-cache-engine/migrations/{postgres,sqlite}/` (6 files) |
 | JSON Schemas | `engines/build-cache-engine/schemas/` — 10 files (+ packaged copy under `src/.../_data/`) |

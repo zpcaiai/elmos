@@ -75,6 +75,8 @@ Every executed row must record: test ID, exact command, fixture, source commit, 
 | SOTA-21 | Policy integration | Policy-backed hot index under load | Index membership always equals policy residency |
 | SOTA-22 | Policy integration | GC plan with a replacement policy | Ordering changes; protected roots never become candidates |
 | SOTA-23 | Policy operations | `policy` and `trace` CLI commands | Evidence is emitted; certification refuses without rollout evidence |
+| SOTA-24 | Policy configuration | Each switch turned on alone | Exactly its own capability activates; a switch never reports on while doing nothing |
+| SOTA-25 | Policy integration | A full run with the plane on, and with it off | On: the run's own lookups are captured and admission is consulted before recording. Off: the report is identical to one produced without the plane |
 
 ## Required performance scenarios
 

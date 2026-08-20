@@ -13,8 +13,8 @@
   uncommitted**, so the working tree carries passes 3 and 4 together. Both are
   additive and confined to `engines/build-cache-engine/`, `agent-skills/` and
   `.ai/`
-- **Static gates:** `ruff check .` clean · `mypy --strict` clean (51 files)
-- **Dynamic gate:** `pytest tests` → **914 passed, 7 skipped, 0 failed**
+- **Static gates:** `ruff check .` clean · `mypy --strict` clean (52 files)
+- **Dynamic gate:** `pytest tests` → **926 passed, 7 skipped, 0 failed**
   (live PostgreSQL 16 + live S3 endpoint + eight real toolchains + a real
   kernel overlayfs + ELMOS's own conversion engine all in the run)
 
@@ -102,6 +102,7 @@ three real places:
 | Seam | What it does | Off switch |
 | --- | --- | --- |
 | `config.PolicyConfig` | typed, total configuration section; unknown policy names, unknown objectives and out-of-range fractions all fail to load rather than defaulting. Shipped in `config/elmos-cache.yaml`, so it is reviewable in git | `policy.enabled: false` |
+| `policy_plane.PolicyPlane` | the single object that turns configuration into behaviour, held by `ConversionPipeline`. `trace_capture` records the run's own lookups at `plan()`'s probe; `admission_enabled` is consulted immediately before `ActionCache.commit`; `prefetch_enabled` plans against the real DAG at each wave boundary; `adaptive_selection` and `learned_tuning` produce an end-of-run recommendation in `RunReport.policy`. With everything off the plane is inert and `RunReport.policy` is `None` | each switch individually |
 | `action_cache.HotIndex` | the in-process action-cache accelerator now runs the configured L0 policy; `HotIndex.from_config` builds it, and `pipeline.ConversionPipeline` and the CLI both use it. Chosen first *because* the index is never authoritative — the worst a policy bug costs here is one database read | `policy.enabled: false` → the original built-in LRU |
 | `gc.GarbageCollector.replacement` | orders deletion candidates by the configured L2 policy. Membership of the candidate list is still decided entirely by the root set, which is declared to the policy first | pass `replacement=None` |
 
@@ -111,6 +112,10 @@ Two invariants that fell out of doing this properly:
   without being counted as an eviction, and is accounted separately
   (`counters.invalidations`). Without it the correctness plane would have had
   to lie to the policy.
+- **A switch that reports itself on must do something.** The five capability
+  switches shipped inert at first — their only reader was the `policy show`
+  display, so `admission_enabled: true` did nothing. That is worse than not
+  having the switch, and `SOTA-24` now pins each one to its own capability.
 - **A half-empty cache must admit.** W-TinyLFU originally ran its frequency
   contest against a main-region incumbent that was not competing for the slot,
   so a cold cache never warmed. Fixed, and pinned by a test that runs against

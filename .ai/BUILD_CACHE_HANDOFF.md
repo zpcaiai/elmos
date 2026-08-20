@@ -7,7 +7,7 @@
 - **Last updated:** 2026-08-20 (pass 4)
 - **Written by:** Claude (Cowork cloud session)
 - **Overall status:** `CERTIFIED_IN_SANDBOX` — 31/31 skills implemented,
-  **921 tests (914 pass, 7 skip)**, 1 skill `PARTIAL` and only because two
+  **933 tests (926 pass, 7 skip)**, 1 skill `PARTIAL` and only because two
   toolchains do not exist for this platform.
 
 ## 0. What landed in pass 4
@@ -20,7 +20,7 @@ modified. So the next commit carries **passes 3 and 4 together**. Nothing
 earlier was deleted by either pass.
 
 ```text
-engines/build-cache-engine/                          45 modules, 23 870 lines · 41 test files, 11 955 lines
+engines/build-cache-engine/                          46 modules, 24 322 lines · 41 test files, 12 165 lines
 agent-skills/packages/elmos-build-cache-staging-sota/ the v1.1.0 package, vendored and validated on the Mac
 agent-skills/runtime/                                 31 SKILL.md installed (7 new)
 .ai/BUILD_CACHE_*.md                                  this evidence set
@@ -42,6 +42,7 @@ New engine files:
 | `src/elmos_build_cache/policy_orchestrator.py` | Rule-based selection over workload fingerprints, policy epochs, shadow policies, pinned fallback |
 | `src/elmos_build_cache/learned_control.py` | Off-path bounded parameter tuning, signed model registry, clipping as the safety property |
 | `src/elmos_build_cache/policy_certification.py` | Benchmark matrix, Pareto frontier, signed certificates, the rollout ladder |
+| `src/elmos_build_cache/policy_plane.py` | The one place configuration becomes behaviour; held by `ConversionPipeline` and wired into its probe, commit and wave-boundary paths |
 | `schemas/cache-{policy,trace-event,benchmark-report}.schema.json` | Three new contract schemas (and their `_data/` copies) |
 | `tests/test_{cache_policy,cache_trace,cache_simulator,cache_admission,dag_prefetch,policy_orchestrator,learned_control,sota_acceptance,policy_integration}.py` | 292 new tests |
 
@@ -72,6 +73,13 @@ New engine files:
   from before this pass, they are wrong for W-TinyLFU and size-aware TinyLFU.
 - **New CLI groups: `policy` and `trace`** — seven read-only commands. None of
   them mutate the cache.
+- **`ConversionPipeline` gained a `signer` keyword.** It is optional and only
+  required when `policy.learned_tuning` is on: an unsigned model registry
+  cannot verify what it loads, so the plane refuses to construct rather than
+  degrading quietly.
+- **`RunReport` gained a `policy` field.** `None` unless something in the
+  `policy` section is switched on, so an opted-out report is byte-identical to
+  what it was before.
 
 ## 1b. What landed in pass 3
 
@@ -188,7 +196,7 @@ automatically; `ELMOS_POLYGLOT_ROUTE_SRC` overrides that. They need
 | --- | --- | --- |
 | 1 | **Capture real traces.** Turn on `policy.trace_capture` in one project, let it run, then `elmos-cache trace verify` and re-run `policy matrix` against the captured corpus. Everything downstream — selection, tuning, certification — is currently reasoning about synthetic workloads. | The single biggest gap in this pass. |
 | 2 | **Run one policy through the ladder.** `SIMULATOR → SHADOW` costs nothing (shadow policies observe, they do not serve). Only after shadow evidence exists is a canary meaningful. | The ladder is tested but has never carried a real deployment. |
-| 3 | **Wire admission into the CAS write path.** `AdmissionController` is complete and tested but is not yet consulted when an artifact is promoted. That seam is authoritative storage, which is why it was left last. | Turns admission from a decision into a saving. |
+| 3 | **Consider admission at the CAS write path too.** It is now consulted before an action-cache *entry* is recorded (`policy.admission_enabled`), which is the safe seam: the artifact is already sealed and promoted, so a refusal costs a recomputation and never a file. Extending it to refuse the CAS write itself is a bigger step and touches authoritative storage. | Would turn a recomputation saving into a storage saving. |
 | 4 | **Give certification a real key.** `policy certify` without `--signing-key` uses an ephemeral key and says so in the output. Point it at the same key hierarchy as provenance. | A certificate nobody else can verify is a note to self. |
 | 5 | **Calibrate `CostModel`.** `token_ms`, `storage_ms_per_mb`, `pollution_ms_per_mb` and `trust_risk_ms` are engineering estimates. Every admission decision is downstream of them. | The value function is only as good as its constants. |
 

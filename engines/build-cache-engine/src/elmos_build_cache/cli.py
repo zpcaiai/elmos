@@ -50,6 +50,7 @@ from .policy_certification import (
     certify_policy,
 )
 from .policy_orchestrator import RuleSelector, configuration_digest
+from .policy_plane import PolicyPlane
 from .security import Ed25519ProvenanceSigner
 from .staging import Workspace
 
@@ -625,6 +626,9 @@ def cmd_policy_show(context: Context, args: argparse.Namespace) -> dict[str, Any
         "trace_capture": policy.trace_capture,
         "prefetch_enabled": policy.prefetch_enabled,
         "available_policies": [name.value for name in PolicyName],
+        "capabilities": PolicyPlane.from_config(
+            policy, tenant_id=context.tenant_id
+        ).report()["capabilities"],
         "configuration_digest": configuration_digest(
             policy.l1_policy, context.config.local.max_size_gb * 1024**3, policy.objective_profile, {}
         ),

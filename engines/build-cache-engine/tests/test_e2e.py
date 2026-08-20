@@ -420,3 +420,73 @@ def test_snapshot_diff_drives_the_closure(tmp_path: Path, clock: ManualClock) ->
     delta = diff_snapshots(before, take_snapshot(harness.root))
     assert delta.modified == ("src/main/java/com/demo/UserController.java",)
     assert delta.formatting_only == ()
+
+
+# --------------------------------------------------------------------------
+# SOTA-25: the policy plane on the real pipeline path
+# --------------------------------------------------------------------------
+def _policy_harness(tmp_path: Path, clock: ManualClock, **policy: object) -> Harness:
+    from elmos_build_cache.config import PolicyConfig
+
+    harness = Harness(tmp_path, clock)
+    harness.config = dataclasses.replace(
+        harness.config, policy=dataclasses.replace(PolicyConfig(), **policy)  # type: ignore[arg-type]
+    )
+    return harness
+
+
+def test_sota_25_a_run_captures_a_trace_from_the_real_lookup_path(
+    tmp_path: Path, clock: ManualClock
+) -> None:
+    """Trace capture must observe the pipeline's own probes, not a replay."""
+    harness = _policy_harness(tmp_path, clock, trace_capture=True, trace_sample_rate=1.0)
+    _, _, _, _, _, _, _, report = harness.run("run-sota-trace")
+
+    assert report is not None
+    policy = report.to_dict()["policy"]
+    assert policy is not None
+    assert policy["capabilities"]["trace_capture"] is True
+    assert policy["trace"]["captured"] > 0, "the run's own lookups should have been recorded"
+
+
+def test_sota_25_the_report_is_unchanged_when_nothing_is_switched_on(
+    tmp_path: Path, clock: ManualClock
+) -> None:
+    """Opting out must be indistinguishable from the plane not existing."""
+    harness = Harness(tmp_path, clock)
+    _, _, _, _, _, _, _, report = harness.run("run-sota-off")
+
+    assert report is not None
+    assert report.to_dict()["policy"] is None
+
+
+def test_sota_25_admission_can_refuse_to_record_without_losing_an_output(
+    tmp_path: Path, clock: ManualClock
+) -> None:
+    """A refused entry costs a recomputation, never a file.
+
+    The published tree must be identical whether or not admission refused, and
+    every published path must still come from a sealed staged record -- the
+    whole point of putting admission *after* promotion.
+    """
+    admitting = Harness(tmp_path / "on", clock)
+    _, _, _, _, _, _, admitted_tree, admitted_report = admitting.run("run-sota-admit-on")
+
+    refusing = _policy_harness(
+        tmp_path / "off", clock, admission_enabled=True, objective_profile="BYTE_NETWORK"
+    )
+    _, _, _, _, workspace, _, refused_tree, refused_report = refusing.run("run-sota-admit-off")
+
+    assert admitted_tree is not None and refused_tree is not None
+    assert admitted_tree.root_digest == refused_tree.root_digest, (
+        "admission may change what is cached, never what is produced"
+    )
+    assert refused_report is not None and refused_report.published is True
+
+    sealed = {
+        record.logical_path
+        for record in workspace.store.list_staged_files("run-sota-admit-off")
+        if record.status in (StagedFileStatus.PUBLISHED, StagedFileStatus.TREE_INCLUDED)
+    }
+    assert set(refused_tree.paths()) <= sealed
+    assert admitted_report is not None

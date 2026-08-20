@@ -39,8 +39,8 @@ one, no `CAP_SYS_ADMIN` for the overlayfs mount.
 | Gate | Command | Result |
 | --- | --- | --- |
 | Lint | `ruff check src tests tools` | **All checks passed** (rules `E,F,I,B,UP,S`, line length 120) |
-| Types | `mypy` (`strict = true`) | **Success: no issues found in 51 source files** |
-| Tests | `pytest tests` | **914 passed, 7 skipped** in 159.8 s, 0 failed, 0 xfail |
+| Types | `mypy` (`strict = true`) | **Success: no issues found in 52 source files** |
+| Tests | `pytest tests` | **926 passed, 7 skipped** in 136.8 s, 0 failed, 0 xfail |
 | Skills package | `agent-skills/packages/elmos-build-cache-staging-sota/validate.sh` | **31 skills, checksums OK, 20 reference tests OK** (run on the Mac, not only in the sandbox) |
 
 The seven skips, verbatim:
@@ -79,7 +79,7 @@ SKIPPED tests/test_treesitter_hash.py: objectivec has no statically private memb
 | `test_contracts_and_config.py` | 20 | schema/config/state-machine contracts | 1 |
 | `test_dag.py` | 14 | DAG-001..003 | 1 |
 | `test_dag_prefetch.py` | 23 | SOTA-07 | 4 |
-| `test_e2e.py` | 10 | E2E-001..003 | 1 |
+| `test_e2e.py` | 13 | E2E-001..003, SOTA-25 | 1 |
 | `test_e2e_real_stages.py` | 9 | E2E-001 with real stages | 2 |
 | `test_elmos_route_stages.py` | 16 | E2E-001 with **ELMOS's own engine** | 3 |
 | `test_fingerprint.py` | 18 | KEY-001..003 | 1 |
@@ -93,7 +93,7 @@ SKIPPED tests/test_treesitter_hash.py: objectivec has no statically private memb
 | `test_native_toolchains.py` | 13 | native build caches (real tools) | 2 |
 | `test_observability.py` | 11 | OBS-001..002, PERF-001..002 | 1 |
 | `test_overlay.py` | 36 | sandbox overlay workspaces | 3 |
-| `test_policy_integration.py` | 41 | SOTA-19..23 (the wiring) | 4 |
+| `test_policy_integration.py` | 50 | SOTA-19..24 (the wiring) | 4 |
 | `test_policy_orchestrator.py` | 22 | SOTA-09..10 | 4 |
 | `test_provenance_crypto.py` | 24 | SEC-003, envelope encryption | 2 |
 | `test_publish.py` | 11 | PUB-001..003 | 1 |
@@ -106,7 +106,7 @@ SKIPPED tests/test_treesitter_hash.py: objectivec has no statically private memb
 | `test_stage_contract.py` | 22 | stage contracts and lint | 1 |
 | `test_staging.py` | 27 | STAGE-001..007 | 1 |
 | `test_treesitter_hash.py` | 103 | exact interface hashing, 13 languages | 2 |
-| **Total** | **921** | | |
+| **Total** | **933** | | |
 
 ## What pass 3 actually executed
 
@@ -201,8 +201,8 @@ vendored there. Same output both times.
 
 | Area | Files | Lines |
 | --- | ---: | ---: |
-| Implementation (`src/elmos_build_cache/`) | 45 | 23 870 |
-| Tests (`tests/`) | 42 | 11 955 |
+| Implementation (`src/elmos_build_cache/`) | 46 | 24 322 |
+| Tests (`tests/`) | 42 | 12 165 |
 | Tools (`tools/`) | 1 | 92 |
 | SQL migrations | 6 | ~380 |
 

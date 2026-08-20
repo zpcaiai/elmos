@@ -6,7 +6,7 @@
 > (the `SOTA-` rows come from the v1.1.0 package's own matrix).
 >
 > Every row below was re-executed on 2026-08-20 (pass 4), Linux x86_64,
-> Python 3.12.3, `pytest tests` → **914 passed, 7 skipped**, with a live
+> Python 3.12.3, `pytest tests` → **926 passed, 7 skipped**, with a live
 > PostgreSQL 16 server, a live HTTP S3 endpoint, eight real build toolchains, a
 > real kernel overlayfs, a real macOS APFS volume and ELMOS's own conversion
 > engine in the run. A row without an executed command is marked
@@ -145,6 +145,8 @@ Flutter toolchains. The ordered work is in `BUILD_CACHE_HANDOFF.md` §3.
 | SOTA-21 | Policy-backed hot index never drifts from its policy | `HotIndex(policy=…)` reconciling on `decision.evicted` and refused admissions; `invalidate` → `forget` | `test_sota_21_hot_index_never_drifts_from_its_policy` (× 6), `…_invalidation_reaches_the_policy`, `…_disabled_policy_gives_back_the_built_in_lru` | **PASS** — index membership equals policy residency exactly, under all six |
 | SOTA-22 | GC ordering changes; protected roots never become candidates | `GarbageCollector._order_by_replacement_policy` (roots declared to the policy first) | `test_sota_22_replacement_policy_orders_but_never_protects`, `…_protected_roots_are_fed_to_the_policy_first` | **PASS** — same candidate set and same reclaimable bytes as without a policy; only the order moves |
 | SOTA-23 | Operator surface emits evidence and refuses without it | `cli` `policy show/benchmark/matrix/select/certify`, `trace generate/verify/workloads` | `test_sota_23_*` (6 tests) | **PASS** — certification refused with `NO_ROLLBACK_EXERCISE`/`NO_SHADOW_EVIDENCE`, granted and Ed25519-signed once the three evidence files exist |
+| SOTA-24 | Each configuration switch activates exactly its own capability | `policy_plane.PolicyPlane` — the single place configuration becomes behaviour | `test_sota_24_each_switch_turns_on_exactly_its_own_capability` (4 params), `…_every_switch_is_off_by_default_and_the_plane_is_inert`, `…_admission_refuses_an_entry_that_is_not_worth_recording`, `…_learned_tuning_without_a_signer_is_refused`, `…_a_trace_captured_here_is_usable_downstream`, `…_recommends_but_never_switches_a_live_policy` | **PASS** — this row exists because the five switches were previously read *only* by `policy show`; setting one did nothing |
+| SOTA-25 | The plane acts on the real pipeline path, and opting out is inert | `ConversionPipeline.policy_plane`: trace at `plan()`'s probe, admission before `action_cache.commit`, prefetch at each wave boundary, recommendation in `RunReport.policy` | `test_sota_25_a_run_captures_a_trace_from_the_real_lookup_path`, `…_the_report_is_unchanged_when_nothing_is_switched_on`, `…_admission_can_refuse_to_record_without_losing_an_output` | **PASS** — with everything off `RunReport.policy` is `None`; with admission on the published tree digest is *identical* and every published path still comes from a sealed staged record |
 
 ## Transfer verification (cloud → Mac), pass 2
 
@@ -216,3 +218,32 @@ reference implementation tests OK        (20 tests)
 The transfer tarball cannot be deleted from here; it was moved to
 `agent-skills/packages/_to_delete/elmos-build-cache-staging-sota-v1.1.0.tar.gz`
 for removal.
+
+## Transfer verification (cloud → Mac), pass 4b — the switch wiring
+
+A follow-up within pass 4. The five `policy` switches (`adaptive_selection`,
+`learned_tuning`, `admission_enabled`, `trace_capture`, `prefetch_enabled`) and
+`prefetch_horizon` were **declared but inert**: their only reader was the
+`policy show` CLI display. `src/elmos_build_cache/policy_plane.py` now turns
+each of them into behaviour on a real call path, and 7 files were rewritten:
+
+```text
+2ea9f4d5b6a9c5682d59ae01d7452e40a0584b7280dbcb8d25dccbdf70bdd88d   (136 files)
+```
+
+Identical on both sides, and the tree that produced **926 passed, 7 skipped**,
+`ruff` clean, `mypy --strict` clean across 52 files.
+
+Where each switch now takes effect:
+
+| Switch | Call path it drives |
+| --- | --- |
+| `trace_capture` | `ConversionPipeline.plan()`'s cache probe — the run's own lookups, not a replay |
+| `admission_enabled` | consulted immediately before `ActionCache.commit`, *after* the artifact is sealed, promoted and in the tree |
+| `prefetch_enabled` / `prefetch_horizon` | `ConversionPipeline.execute()` at each wave boundary, against the real `ConversionDag` order |
+| `adaptive_selection` | end-of-run recommendation in `RunReport.policy.recommendation.selection` |
+| `learned_tuning` | end-of-run bounded parameter proposal; refuses to construct at all without a provenance signer |
+
+With every switch off, `PolicyPlane.active` is `False` and `RunReport.policy`
+is `None` — a report from a deployment that has not opted in is byte-identical
+to one produced before the plane existed.
