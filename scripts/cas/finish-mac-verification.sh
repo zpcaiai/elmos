@@ -50,7 +50,33 @@ else
         0)
             echo "pulling postgres:17.5-alpine (first time only, be patient -- do not Ctrl-C)..."
             docker pull postgres:17.5-alpine || echo "pull failed; the test may still use a cached image"
-            if mvn -f pom.xml -pl modules/persistence -am test; then step1=PASSED; else step1=FAILED; fi
+            # The build requires a JDK in [21,22) and says so through the
+            # enforcer, but `java` on PATH is whatever Homebrew linked last --
+            # here, openjdk 26, which `/usr/libexec/java_home -V` does not even
+            # list among the registered JVMs. This is the same failure class as
+            # `pip` and `python3` disagreeing below: the tool on PATH is not the
+            # tool the project needs, and the error arrives one full build later
+            # as a rule violation rather than as "wrong JDK selected".
+            #
+            # Set ELMOS_JAVA_HOME to override.
+            if [ -n "${ELMOS_JAVA_HOME:-}" ]; then
+                JDK21="$ELMOS_JAVA_HOME"
+            else
+                JDK21="$(/usr/libexec/java_home -v 21 2>/dev/null)"
+            fi
+            if [ -z "$JDK21" ]; then
+                echo "No JDK 21 found. The enforcer requires [21,22); install one"
+                echo "(brew install openjdk@21) or set ELMOS_JAVA_HOME."
+                step1=FAILED
+            else
+                echo "JDK: $("$JDK21/bin/java" -version 2>&1 | head -1)  [$JDK21]"
+                if JAVA_HOME="$JDK21" PATH="$JDK21/bin:$PATH" \
+                       mvn -f pom.xml -pl modules/persistence -am test; then
+                    step1=PASSED
+                else
+                    step1=FAILED
+                fi
+            fi
             ;;
         124)
             echo "The Docker daemon did not answer within 20s."

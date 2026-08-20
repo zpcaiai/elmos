@@ -325,3 +325,49 @@ pgserver+psycopg 的解释器（有就不装，避免 wheel 解析漂移），�
    （若开机时 macOS 已自行 thin 掉快照则跳过）。
 2. 空间回到 ~30 GB 后重跑 `bash scripts/cas/finish-mac-verification.sh`，
    让 `modules/persistence` 那 15 个测试类**第一次**产出可信结论。
+
+
+---
+
+## 2026-08-20 重启后：两步全绿，这次有报告为证
+
+快照删掉后可用空间回到 **33 GB**（`No snapshots for disk3s5`），Docker Desktop 正常启动。
+
+```
+  modules/persistence test (Flyway + Testcontainers) PASSED
+  verify_v65_migration.py (45 constraint checks)     PASSED
+```
+
+`modules/persistence` 的 **15 个测试类这次全部产出了结果**（共 60 项，0 失败，
+`JdbcSelfServiceBillingLiveTest` 1 项 skipped），surefire 报告也写出来了——
+上一轮那句 `BUILD SUCCESS` 之所以不算数，正是因为这些报告写不出来。对照：
+
+| | 11:22（盘满） | 11:53（重启后） |
+|---|---|---|
+| 有结果的 persistence 测试类 | 1 / 15 | **15 / 15** |
+| surefire 报告 | 写不出来 | 正常写出 |
+| 结论可信度 | 无 | 有据可查 |
+
+### 中间还挡了一道：JDK 选错（已修进脚本）
+
+重启后第一次跑直接 `BUILD FAILURE`：
+
+```
+Rule 0: RequireJavaVersion failed with message:
+Detected JDK /opt/homebrew/Cellar/openjdk/26.0.1/... is version 26.0.1
+which is not in the allowed range [21,22).
+```
+
+`JAVA_HOME` 未设置，PATH 上的 `java` 是 Homebrew 最后 link 的 openjdk 26——
+而 `/usr/libexec/java_home -V` **根本没把它列进已注册的 JVM**（21.0.11、21.0.6、
+17、11、8 都在）。
+
+这与 `pip` / `python3` 不同源是**同一个失效类**：PATH 上的工具不是项目要的工具，
+而错误要等一整轮构建之后才以「规则违反」的形式冒出来，而不是当场说「JDK 选错了」。
+脚本按同样的办法修：用 `/usr/libexec/java_home -v 21` 选一个 JDK 21，只为这一条
+`mvn` 设 `JAVA_HOME`/`PATH`，跑之前把选中的版本和路径打印出来，可用
+`ELMOS_JAVA_HOME` 覆盖；找不到就明确说「装一个或设这个变量」，而不是让 enforcer
+去报一个看起来像项目配置错误的消息。
+
+**这个脚本至此有三处同类加固**：解释器一致（pip/python3）、JDK 选择、Docker 探测限时。
+三者都属于「环境挑了个不对的东西，而报错发生在离原因很远的地方」。
