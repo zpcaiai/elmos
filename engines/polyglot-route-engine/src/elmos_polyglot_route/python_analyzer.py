@@ -126,6 +126,40 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
                     "else": _statements(node.orelse, emitted_target=emitted_target),
                 }
             )
+        elif isinstance(node, ast.AnnAssign):
+            # `x: int = expr` -- the IR's `let`.
+            #
+            # ONLY the annotated form. A bare `x = 1` carries no declared type,
+            # and inferring one here would mean the IR's type came from this
+            # analyzer's guess rather than from the source language's own type
+            # system -- which is exactly the thing `let` was designed not to do.
+            # Python's own checkers treat the two forms differently too, so
+            # refusing the unannotated one costs the author one annotation and
+            # buys the whole pipeline a type it can hold the source to.
+            if node.value is None:
+                # `x: int` alone declares without binding. `let` is a binding.
+                raise RouteError("PYTHON_ANNOTATED_DECLARATION_WITHOUT_VALUE")
+            if node.simple != 1 or not isinstance(node.target, ast.Name):
+                # `(x): int = 1`, `obj.x: int = 1`, `a[0]: int = 1` -- none of
+                # these bind a plain local name.
+                raise RouteError("PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            declared = _type(node.annotation)
+            if not declared:
+                raise RouteError(f"PYTHON_UNSUPPORTED_LOCAL_TYPE:{ast.unparse(node.annotation)}")
+            result.append(
+                {
+                    "kind": "let",
+                    "name": node.target.id,
+                    "type": declared,
+                    "expression": _expression(node.value, emitted_target=emitted_target),
+                }
+            )
+        elif isinstance(node, ast.Assign):
+            # Named apart from the generic rejection so the message says what
+            # to do: annotate it. `PYTHON_UNSUPPORTED_STATEMENT:Assign` would
+            # have read as "assignment is not supported at all", which stopped
+            # being true here.
+            raise RouteError("PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
         else:
             raise RouteError(f"PYTHON_UNSUPPORTED_STATEMENT:{type(node).__name__}")
     return result
@@ -162,18 +196,36 @@ def _reject_python_only_arithmetic(expression: Expression, environment: dict[str
 
 
 def _check_statements(statements: tuple[Statement, ...], environment: dict[str, str]) -> None:
+    """Walk for the Python-only arithmetic rejection, carrying the same scope
+    rule `types._check_statements` uses.
+
+    `_reject_python_only_arithmetic` calls `types.infer` to decide whether a
+    `/` has two integer operands, and `infer` fails closed on a name it has
+    never seen. So this walk has to bind `let` names as it meets them, and hand
+    branches a copy -- otherwise a perfectly legal `x: int = 1` followed by
+    `x / y` would be rejected as an undeclared name instead of being judged on
+    its operand types.
+    """
     for statement in statements:
         if statement.expression is not None:
             _reject_python_only_arithmetic(statement.expression, environment)
         if statement.condition is not None:
             _reject_python_only_arithmetic(statement.condition, environment)
-        _check_statements(statement.then_body, environment)
-        _check_statements(statement.else_body, environment)
+        if statement.kind == "let" and statement.name is not None and statement.declared_type is not None:
+            # After its own initializer, never before.
+            environment[statement.name] = statement.declared_type
+            continue
+        _check_statements(statement.then_body, dict(environment))
+        _check_statements(statement.else_body, dict(environment))
 
 
 def _check_function(function: Function) -> None:
-    environment = types.check_function(function)
-    _check_statements(function.body, environment)
+    # The canonical checker mutates and returns its environment, so its result
+    # contains every top-level `let`.  The Python-only arithmetic walk must
+    # instead start with parameters and bind locals in source order; otherwise
+    # a later declaration is incorrectly visible to an earlier statement.
+    types.check_function(function)
+    _check_statements(function.body, types.environment_of(function))
 
 
 def _emitted_body(nodes: list[ast.stmt], parameters: list[dict[str, str]]) -> list[ast.stmt]:
