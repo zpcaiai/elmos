@@ -42,6 +42,7 @@ _SMALL_MAXIMUM_BYTES = 8 * 1024 * 1024
 _MEDIUM_MAXIMUM_BYTES = 64 * 1024 * 1024
 _FILE_MAXIMUM_BYTES = 2 * 1024 * 1024
 _MEDIUM_COMMENT_BYTES_PER_FILE = 1_700_000
+_PHP_PROFILE_PREAMBLE = "<?php\n\ndeclare(strict_types=1);\n\n"
 _ASSEMBLY_AUXILIARY_INPUTS: dict[Language, tuple[str, ...]] = {
     "python": ("src/elmos_generated/__init__.py",),
 }
@@ -728,6 +729,14 @@ def _medium_comment_filler(language: Language) -> str:
     return filler
 
 
+def _medium_source_with_filler(language: Language, content: str) -> str:
+    filler = _medium_comment_filler(language)
+    if language != "php":
+        return filler + content
+    assert content.startswith(_PHP_PROFILE_PREAMBLE)
+    return _PHP_PROFILE_PREAMBLE + filler + content[len(_PHP_PROFILE_PREAMBLE) :]
+
+
 def _write_medium_repository_and_cases(
     root: Path,
     source_language: Language,
@@ -740,9 +749,8 @@ def _write_medium_repository_and_cases(
 
     source_files = sorted(_route_medium_source_files(source_language, target_language))
     assert len(source_files) == 5
-    filler = _medium_comment_filler(source_language)
     for index, (name, content) in enumerate(source_files, start=1):
-        source = filler + content
+        source = _medium_source_with_filler(source_language, content)
         source_bytes = source.encode("utf-8")
         assert len(source_bytes) < _FILE_MAXIMUM_BYTES
         function_name = Path(name).stem.lower()
@@ -1137,6 +1145,13 @@ def test_medium_language_ring_covers_every_source_and_target_once() -> None:
     assert all(source != target for source, target in MEDIUM_LANGUAGE_RING)
     assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(REPOSITORY_SURFACE_LANGUAGES)
     assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(REPOSITORY_SURFACE_LANGUAGES)
+    content = _SOURCE_FILES["php"][0][1]
+    source = _medium_source_with_filler("php", content)
+
+    assert source.startswith(_PHP_PROFILE_PREAMBLE + "// ")
+    assert source.count("<?php") == 1
+    assert source.count("declare(strict_types=1);") == 1
+    assert source.endswith(content[len(_PHP_PROFILE_PREAMBLE) :])
 
 
 @pytest.mark.parametrize(

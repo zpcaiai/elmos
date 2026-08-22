@@ -231,6 +231,7 @@ def _output(
     command: list[str],
     *,
     executable_dirs: tuple[Path, ...] = (),
+    include_stderr: bool = True,
 ) -> str:
     try:
         with tempfile.TemporaryDirectory(prefix="elmos-toolchain-env-") as temporary:
@@ -255,7 +256,7 @@ def _output(
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}") from error
     if completed.returncode != 0:
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}")
-    return (completed.stdout + completed.stderr).strip()
+    return (completed.stdout + (completed.stderr if include_stderr else "")).strip()
 
 
 _EXPECTED_JAVA_HOME = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
@@ -3010,9 +3011,17 @@ def _apple_profile(language: Language) -> tuple[str, ...]:
     xcrun = Path("/usr/bin/xcrun")
     if not xcodebuild.is_file() or not xcrun.is_file():
         raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcodebuild/xcrun")
-    observed_xcode = _output([str(xcodebuild), "-version"])
-    sdk_version = _output([str(xcrun), "--sdk", "macosx", "--show-sdk-version"])
-    sdk_path = Path(_output([str(xcrun), "--sdk", "macosx", "--show-sdk-path"]))
+    observed_xcode = _output([str(xcodebuild), "-version"], include_stderr=False)
+    sdk_version = _output(
+        [str(xcrun), "--sdk", "macosx", "--show-sdk-version"],
+        include_stderr=False,
+    )
+    sdk_path = Path(
+        _output(
+            [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
+            include_stderr=False,
+        )
+    )
     if observed_xcode != _EXPECTED_XCODE or sdk_version != _EXPECTED_MACOS_SDK:
         raise RouteError(
             f"EXACT_TOOLCHAIN_APPLE_PROFILE_MISMATCH:{language}:"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -290,6 +291,51 @@ def test_php_declarations_outside_the_profile_block_repository_completion(
         blocker["blocker_code"] == "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
         for blocker in blockers
     )
+
+
+def test_php_strict_types_profile_preamble_is_content_bound_not_a_work_unit(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "sample.php"
+    source.write_text(
+        "<?php\n\ndeclare(strict_types=1);\n\n"
+        "function clean(int $left, int $right): int\n"
+        "{\n    return $left + $right;\n}\n",
+        encoding="utf-8",
+    )
+
+    inventory = inventory_module(source, "php")
+
+    assert [subject["name"] for subject in inventory["subjects"]] == ["clean"]
+    assert inventory["directives"] == [
+        {
+            "order": 0,
+            "kind": "declare",
+            "value": "strict_types=1",
+            "source_span": {"file": "sample.php", "start_byte": 7, "end_byte": 31},
+            "sha256": "sha256:" + hashlib.sha256(b"declare(strict_types=1);").hexdigest(),
+        }
+    ]
+
+
+def test_php_non_profile_declare_remains_an_explicit_module_obligation(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "sample.php"
+    source.write_text(
+        "<?php\n\ndeclare(strict_types=1);\n\ndeclare(ticks=1);\n\n"
+        "function clean(int $left, int $right): int\n"
+        "{\n    return $left + $right;\n}\n",
+        encoding="utf-8",
+    )
+
+    inventory = inventory_module(source, "php")
+
+    assert [subject["declaration_kind"] for subject in inventory["subjects"]] == [
+        "declare-directive",
+        "function",
+    ]
+    assert inventory["directives"][0]["value"] == "strict_types=1"
 
 
 def test_a_php_top_level_statement_is_enumerated_as_its_own_obligation(

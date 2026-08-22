@@ -89,8 +89,8 @@ _TYPESCRIPT_ANALYZER_SHA256 = "482d2875c625f21fa13e02741ea4350e5ad43f0a168257a74
 _TYPESCRIPT_ANALYZER_BYTES = 31_436
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
-_PHP_ANALYZER_SHA256 = "eb32e4983dce7f992a059d1de71de8ad304fd8308d283508fdf05fe0950b8cdf"
-_PHP_ANALYZER_BYTES = 62950
+_PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
+_PHP_ANALYZER_BYTES = 63489
 _PHP_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 #: Every PHP invocation the engine makes. `-n` drops php.ini so the analyzer's
 #: behaviour is the build's, not the machine's, and the four `-d` overrides pin
@@ -143,11 +143,11 @@ _APPLE_GIT_VERSION = "git version 2.50.1 (Apple Git-155)"
 _APPLE_GIT_SHA256 = "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
 _APPLE_GIT_BYTES = 3_704_880
 _SANDBOX_EXEC = Path("/usr/bin/sandbox-exec")
-_SANDBOX_EXEC_SHA256 = "e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
-_SANDBOX_EXEC_CDHASH_FULL = "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"
+_SANDBOX_EXEC_SHA256 = "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+_SANDBOX_EXEC_CDHASH_FULL = "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"
 _SANDBOX_EXEC_BYTES = 102_368
 _CODESIGN = Path("/usr/bin/codesign")
-_CODESIGN_SHA256 = "6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
+_CODESIGN_SHA256 = "844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
 _CODESIGN_BYTES = 458_576
 _SANDBOX_EXEC_POLICY = "(version 1)\n(allow default)\n(deny network*)\n"
 _SANDBOX_NETWORK_PROBE_SOURCE = r"""#include <arpa/inet.h>
@@ -5089,11 +5089,18 @@ def _toolchain_build_cache(kind: str, key: str, names: Sequence[str]) -> tuple[P
         )
         base.mkdir(mode=0o700, parents=True, exist_ok=True)
         root = base / key
+        root.mkdir(mode=0o700, parents=True, exist_ok=True)
         directories = []
         for name in names:
             directory = root / name
             directory.mkdir(mode=0o700, parents=True, exist_ok=True)
             directories.append(directory)
+        for directory in (root, *directories):
+            with tempfile.TemporaryFile(
+                prefix=".elmos-cache-write-probe-",
+                dir=directory,
+            ):
+                pass
     except OSError:
         return None
     return tuple(directories)
@@ -7084,6 +7091,64 @@ def _run_csharp_semantic_cli(
     return _bind_csharp_analyzer_identity(value, receipt), receipt
 
 
+_PHP_PROFILE_PREAMBLE = b"declare(strict_types=1);"
+
+
+def _partition_php_profile_preamble(
+    subjects: list[dict[str, Any]],
+    source: Path,
+    source_bytes: bytes,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Keep PHP's exact strict-types contract as byte-bound prelude evidence.
+
+    The declaration is a prerequisite of the typed PHP profile, not a symbol
+    that a target generator must translate.  Every other ``declare`` remains a
+    normal module obligation and therefore continues to block repository
+    completion.
+    """
+
+    profile_subjects = [
+        subject
+        for subject in subjects
+        if subject.get("declaration_kind") == "php-profile-preamble"
+    ]
+    if len(profile_subjects) > 1:
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    if not profile_subjects:
+        return subjects, []
+
+    subject = profile_subjects[0]
+    span = subject.get("source_span")
+    signature = subject.get("signature")
+    if (
+        subject.get("name") != "<strict-types>"
+        or subject.get("qualified_name") != "<strict-types>"
+        or subject.get("analyzable") is not False
+        or subject.get("occurrence") != 1
+        or signature != {"directive": "strict_types", "value": 1}
+        or not isinstance(span, dict)
+        or span.get("file") != source.name
+    ):
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    start = span.get("start_byte")
+    end = span.get("end_byte")
+    if not isinstance(start, int) or not isinstance(end, int):
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    raw = source_bytes[start:end]
+    if raw != _PHP_PROFILE_PREAMBLE:
+        raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+    remaining = [subject for subject in subjects if subject is not profile_subjects[0]]
+    return remaining, [
+        {
+            "order": 0,
+            "kind": "declare",
+            "value": "strict_types=1",
+            "source_span": span,
+            "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+        }
+    ]
+
+
 def _validated_module_inventory(
     value: dict[str, Any],
     language: Language,
@@ -7178,11 +7243,20 @@ def _validated_module_inventory(
                 "occurrence": occurrence,
             }
         )
+    directives = _scan_preprocessor_directives(source, language, source_bytes)
+    if language == "php":
+        if directives:
+            raise RouteError("MODULE_INVENTORY_PHP_PROFILE_PREAMBLE_INVALID")
+        normalized_subjects, directives = _partition_php_profile_preamble(
+            normalized_subjects,
+            source,
+            source_bytes,
+        )
     return {
         **value,
         "source_artifact_sha256": "sha256:" + hashlib.sha256(source_bytes).hexdigest(),
         "source_artifact_bytes": len(source_bytes),
-        "directives": _scan_preprocessor_directives(source, language, source_bytes),
+        "directives": directives,
         "subjects": normalized_subjects,
         "diagnostics": [str(item) for item in diagnostics],
     }

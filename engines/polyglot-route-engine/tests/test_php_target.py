@@ -7,6 +7,8 @@ host without the pinned PHP build must not be able to make them pass.
 """
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from elmos_polyglot_route import types as canonical_types
@@ -593,19 +595,19 @@ def test_the_php_module_inventory_contract_accepts_a_well_formed_enumeration(
         "enumeration_status": "PASSED",
         "subjects": [
             {
-                "name": "<declare>",
-                "qualified_name": "<declare>",
-                "declaration_kind": "declare-directive",
+                "name": "<strict-types>",
+                "qualified_name": "<strict-types>",
+                "declaration_kind": "php-profile-preamble",
                 "analyzable": False,
-                "source_span": {"file": "sample.php", "start_byte": 7, "end_byte": 30},
-                "signature": {},
+                "source_span": {"file": "sample.php", "start_byte": 7, "end_byte": 31},
+                "signature": {"directive": "strict_types", "value": 1},
             },
             {
                 "name": "clamp",
                 "qualified_name": "clamp",
                 "declaration_kind": "function",
                 "analyzable": True,
-                "source_span": {"file": "sample.php", "start_byte": 32, "end_byte": len(body)},
+                "source_span": {"file": "sample.php", "start_byte": 33, "end_byte": len(body)},
                 "signature": {
                     "source_parameters": "(int $v)",
                     "source_return_type": "int",
@@ -620,19 +622,26 @@ def test_the_php_module_inventory_contract_accepts_a_well_formed_enumeration(
 
     assert validated["source_artifact_bytes"] == len(body)
     assert validated["source_artifact_sha256"].startswith("sha256:")
-    assert validated["directives"] == []
-    assert [subject["occurrence"] for subject in validated["subjects"]] == [1, 1]
-    assert [subject["analyzable"] for subject in validated["subjects"]] == [False, True]
+    assert validated["directives"] == [
+        {
+            "order": 0,
+            "kind": "declare",
+            "value": "strict_types=1",
+            "source_span": {"file": "sample.php", "start_byte": 7, "end_byte": 31},
+            "sha256": "sha256:" + hashlib.sha256(b"declare(strict_types=1);").hexdigest(),
+        }
+    ]
+    assert [subject["occurrence"] for subject in validated["subjects"]] == [1]
+    assert [subject["analyzable"] for subject in validated["subjects"]] == [True]
 
 
 def test_a_php_subject_signature_that_is_a_list_is_rejected() -> None:
     """The failure mode this whole shape exists to catch, asserted directly."""
-    import pytest
+    import tempfile
+    from pathlib import Path
 
     from elmos_polyglot_route.models import RouteError
     from elmos_polyglot_route.native import _validated_module_inventory
-    from pathlib import Path
-    import tempfile
 
     with tempfile.TemporaryDirectory() as directory:
         source = Path(directory) / "sample.php"

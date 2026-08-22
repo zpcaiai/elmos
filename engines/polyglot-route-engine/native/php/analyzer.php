@@ -1163,23 +1163,19 @@ function stripInternal(mixed $node): mixed
  *  type story does not hold, so nothing in the file can be analyzable. */
 function inventoryHasStrictTypes(array $tokens): bool
 {
-    $limit = min(12, count($tokens));
-    for ($index = 0; $index < $limit; $index++) {
-        if ($tokens[$index]->kind !== T_DECLARE) {
-            continue;
-        }
-        for ($ahead = $index + 1; $ahead < min($index + 7, count($tokens)); $ahead++) {
-            $token = $tokens[$ahead];
-            if ($token->kind === T_STRING && strtolower($token->text) === 'strict_types') {
-                for ($value = $ahead + 1; $value < min($ahead + 4, count($tokens)); $value++) {
-                    if ($tokens[$value]->kind === T_LNUMBER && $tokens[$value]->text === '1') {
-                        return true;
-                    }
-                }
-            }
-        }
+    if (count($tokens) < 8) {
+        return false;
     }
-    return false;
+    return $tokens[0]->kind === T_OPEN_TAG
+        && $tokens[1]->kind === T_DECLARE
+        && $tokens[2]->kind === '('
+        && $tokens[3]->kind === T_STRING
+        && strtolower($tokens[3]->text) === 'strict_types'
+        && $tokens[4]->kind === '='
+        && $tokens[5]->kind === T_LNUMBER
+        && $tokens[5]->text === '1'
+        && $tokens[6]->kind === ')'
+        && $tokens[7]->kind === ';';
 }
 
 /** Read a possibly-qualified name (`Foo\Bar`) starting at $index. */
@@ -1388,7 +1384,28 @@ function moduleInventorySubjects(array $tokens, string $file, string $source, bo
 
             case T_DECLARE:
                 [$endIndex, $endByte] = inventoryDeclarationEnd($tokens, $index, false);
-                $push('<declare>', $prefix . '<declare>', 'declare-directive', false, $token->start, $endByte, []);
+                $directive = substr($source, $token->start, $endByte - $token->start);
+                if ($strictTypes && $index === 1 && $directive === 'declare(strict_types=1);') {
+                    $push(
+                        '<strict-types>',
+                        '<strict-types>',
+                        'php-profile-preamble',
+                        false,
+                        $token->start,
+                        $endByte,
+                        ['directive' => 'strict_types', 'value' => 1],
+                    );
+                } else {
+                    $push(
+                        '<declare>',
+                        $prefix . '<declare>',
+                        'declare-directive',
+                        false,
+                        $token->start,
+                        $endByte,
+                        [],
+                    );
+                }
                 $index = $endIndex;
                 continue 2;
 

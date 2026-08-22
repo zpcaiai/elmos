@@ -783,13 +783,13 @@
       "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "cdhash_full"],
       "properties": {
         "path": {"const": "/usr/bin/sandbox-exec"},
-        "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+        "sha256": {"const": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"},
         "bytes": {"const": 102368},
         "mode": {"const": "0755"},
         "uid": {"const": 0},
         "gid": {"const": 0},
         "nlink": {"const": 1},
-        "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+        "cdhash_full": {"const": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"}
       },
       "additionalProperties": false
     },
@@ -798,7 +798,7 @@
       "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink"],
       "properties": {
         "path": {"const": "/usr/bin/codesign"},
-        "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+        "sha256": {"const": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"},
         "bytes": {"const": 458576},
         "mode": {"const": "0755"},
         "uid": {"const": 0},
@@ -1056,11 +1056,11 @@
           "type": "object",
           "required": ["sha256", "bytes", "mode", "nlink", "cdhash_full"],
           "properties": {
-            "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+            "sha256": {"const": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"},
             "bytes": {"const": 102368},
             "mode": {"const": "0755"},
             "nlink": {"const": 1},
-            "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+            "cdhash_full": {"const": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"}
           },
           "additionalProperties": false
         },
@@ -1068,7 +1068,7 @@
           "type": "object",
           "required": ["sha256", "bytes", "mode", "nlink"],
           "properties": {
-            "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+            "sha256": {"const": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"},
             "bytes": {"const": 458576},
             "mode": {"const": "0755"},
             "nlink": {"const": 1}

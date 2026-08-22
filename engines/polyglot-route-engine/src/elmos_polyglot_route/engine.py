@@ -1615,17 +1615,17 @@ def _verify_inventory_analyzer_build_receipt(
         "scope": "swift-build-process-tree",
         "sandbox": {
             "path": "/usr/bin/sandbox-exec",
-            "sha256": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f",
+            "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
             "bytes": 102_368,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
             "nlink": 1,
-            "cdhash_full": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5",
+            "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
         },
         "verifier": {
             "path": "/usr/bin/codesign",
-            "sha256": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40",
+            "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
             "bytes": 458_576,
             "mode": "0755",
             "uid": 0,
@@ -1822,22 +1822,32 @@ def _verify_language_prelude(
     language: Language,
     artifact_bytes: bytes,
 ) -> dict[str, Any]:
-    expected_raw = {
-        ("cpp", "source"): [b"#include <cstdint>"],
+    expected_directives = {
+        ("cpp", "source"): [(b"#include <cstdint>", "include", "<cstdint>")],
         ("cpp", "target"): [
-            b"#include <cstdint>",
-            b"#include <stdexcept>",
-            b"#include <string>",
+            (b"#include <cstdint>", "include", "<cstdint>"),
+            (b"#include <stdexcept>", "include", "<stdexcept>"),
+            (b"#include <string>", "include", "<string>"),
         ],
-        ("objc", "source"): [b"#import <Foundation/Foundation.h>"],
-        ("objc", "target"): [b"#import <Foundation/Foundation.h>"],
+        ("objc", "source"): [
+            (b"#import <Foundation/Foundation.h>", "import", "<Foundation/Foundation.h>")
+        ],
+        ("objc", "target"): [
+            (b"#import <Foundation/Foundation.h>", "import", "<Foundation/Foundation.h>")
+        ],
+        ("php", "source"): [
+            (b"declare(strict_types=1);", "declare", "strict_types=1")
+        ],
+        ("php", "target"): [
+            (b"declare(strict_types=1);", "declare", "strict_types=1")
+        ],
     }.get((language, role), [])
     directives = inventory.get("directives")
     if not isinstance(directives, list):
         raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_INVENTORY_INVALID:{role}")
-    if len(directives) != len(expected_raw):
+    if len(directives) != len(expected_directives):
         raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_MISMATCH:{role}:{language}")
-    for order, (directive, expected) in enumerate(zip(directives, expected_raw, strict=True)):
+    for order, (directive, expected) in enumerate(zip(directives, expected_directives, strict=True)):
         if not isinstance(directive, dict) or set(directive) != {
             "order",
             "kind",
@@ -1852,14 +1862,14 @@ def _verify_language_prelude(
         start = source_span.get("start_byte")
         end = source_span.get("end_byte")
         observed = artifact_bytes[start:end] if isinstance(start, int) and isinstance(end, int) else b""
-        expected_kind, expected_value = expected[1:].split(maxsplit=1)
+        expected_raw, expected_kind, expected_value = expected
         if (
             directive.get("order") != order
-            or directive.get("kind") != expected_kind.decode("ascii")
-            or directive.get("value") != expected_value.decode("utf-8")
+            or directive.get("kind") != expected_kind
+            or directive.get("value") != expected_value
             or source_span.get("file") != inventory.get("source_file")
-            or observed != expected
-            or directive.get("sha256") != _digest(expected)
+            or observed != expected_raw
+            or directive.get("sha256") != _digest(expected_raw)
         ):
             raise RouteError(f"PURE_MODULE_LANGUAGE_PRELUDE_MISMATCH:{role}:{language}")
     return {
