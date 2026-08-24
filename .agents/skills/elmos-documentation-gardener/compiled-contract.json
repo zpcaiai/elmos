@@ -1,0 +1,63 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-software-factory-master"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-documentation-gardener",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-documentation-gardener"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-documentation-gardener",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "publish-config",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "requires_adapter",
+    "module": "elmos_software_factory",
+    "operation": "workflow",
+    "package_id": "P00",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "config_revision"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-documentation-gardener",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/00-elmos-software-factory-master-v1.0.0.zip",
+    "key": "P00:documentation-gardener",
+    "logical_path": "00-elmos-software-factory-master/skills/documentation-gardener/SKILL.md",
+    "materialized_path": "00-elmos-software-factory-master/skills/documentation-gardener/SKILL.md.source-data",
+    "name": "elmos-documentation-gardener",
+    "package_id": "P00",
+    "package_name": "elmos-software-factory-master",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/00-elmos-software-factory-master/skills/documentation-gardener/SKILL.md.source-data",
+    "role": "child",
+    "sha256": "sha256:ab5b04329cb805e0b3e3cec485c5a4420ea73c2a5af2a526ba27e78684c7d8f5"
+  },
+  "source_dependencies": [
+    "elmos-software-factory-master"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}

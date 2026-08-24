@@ -1,0 +1,64 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-project-generation-transformation-engine"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-frontend-miniapp-transformer",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-frontend-miniapp-transformer"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-frontend-miniapp-transformer",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "plan-transformation",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "local",
+    "module": "elmos_software_factory",
+    "operation": "transformation-plan",
+    "package_id": "P03",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "requirements",
+      "target_profile"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-frontend-miniapp-transformer",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/03-elmos-project-generation-transformation-engine-v1.0.0.zip",
+    "key": "P03:frontend-miniapp-transformer",
+    "logical_path": "03-elmos-project-generation-transformation-engine/skills/frontend-miniapp-transformer/SKILL.md",
+    "materialized_path": "03-elmos-project-generation-transformation-engine/skills/frontend-miniapp-transformer/SKILL.md.source-data",
+    "name": "elmos-frontend-miniapp-transformer",
+    "package_id": "P03",
+    "package_name": "elmos-project-generation-transformation-engine",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/03-elmos-project-generation-transformation-engine/skills/frontend-miniapp-transformer/SKILL.md.source-data",
+    "role": "child",
+    "sha256": "sha256:2416c91b0ecc47a831d446ff09759145f64fea7500754bb2f73e2f6b3e28ee5f"
+  },
+  "source_dependencies": [
+    "elmos-project-generation-transformation-engine"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}

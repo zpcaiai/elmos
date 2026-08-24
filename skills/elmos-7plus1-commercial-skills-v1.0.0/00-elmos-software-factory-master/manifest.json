@@ -1,0 +1,64 @@
+{
+  "package_id": "P00",
+  "name": "elmos-software-factory-master",
+  "version": "1.0.0",
+  "phase": "全程 / Phase 0–4",
+  "dependencies": [],
+  "capabilities": [
+    {
+      "id": "P00-C01",
+      "name": "Package Registry",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C02",
+      "name": "Workflow Compiler",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C03",
+      "name": "Architecture Governor",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C04",
+      "name": "Repository Knowledge System",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C05",
+      "name": "Commercial Control Plane",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C06",
+      "name": "Release & Certification Manager",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C07",
+      "name": "Configuration & Feature Governance",
+      "maturity": "design"
+    },
+    {
+      "id": "P00-C08",
+      "name": "Upstream Intelligence",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "OpenAI Harness Engineering",
+    "OpenAI Symphony",
+    "OpenRouter Skills"
+  ],
+  "subskills": [
+    "repository-system-of-record",
+    "workflow-contract-compiler",
+    "package-dependency-governor",
+    "architecture-invariant-linter",
+    "commercial-control-plane",
+    "release-certification",
+    "documentation-gardener",
+    "upstream-change-monitor"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/benchmark-case/1.0",
+  "title": "Elmos Benchmark Case",
+  "type": "object",
+  "required": [
+    "case_id",
+    "version",
+    "task_type",
+    "inputs",
+    "expected_capabilities",
+    "metrics",
+    "environment"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "task_type": {
+      "enum": [
+        "project_generation",
+        "repository_conversion",
+        "modernization",
+        "frontend_conversion",
+        "repair",
+        "verification"
+      ]
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "expected_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "environment": {
+      "type": "object"
+    },
+    "holdout": {
+      "type": "boolean"
+    },
+    "data_scope": {
+      "enum": [
+        "public",
+        "tenant-private",
+        "internal-holdout"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

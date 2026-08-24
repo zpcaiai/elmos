@@ -1,0 +1,29 @@
+rule_id: RULE-SPRING-TRANSACTION-001
+version: "1.0.0"
+maturity: candidate
+source_pattern:
+  language: java
+  framework: spring
+  annotations: [Transactional]
+target_strategy:
+  language: rust
+  framework: axum-sqlx
+  construct: sqlx_transaction
+semantic_invariants:
+  - atomicity
+  - rollback_on_error
+  - isolation_preserved_or_explicitly_decided
+  - propagation_semantics_accounted_for
+applicability:
+  source_versions: [">=2.7"]
+  target_versions: [">=0.8"]
+known_exceptions:
+  - condition: distributed_transaction
+    action: semantic_gap
+verification:
+  - type: failure_injection
+    assertion: no_partial_commit
+  - type: concurrency
+    assertion: isolation_policy_holds
+evidence_refs: []
+scope: organization

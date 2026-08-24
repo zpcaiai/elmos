@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "version": "1.0.0",
+  "status": "experimental",
+  "owner": "elmos-software-factory-engineering",
+  "maintenance_owner": "elmos-verification-engineering",
+  "scope": {
+    "migration_route": "untrusted-7plus1-zip-blueprints-to-local-contract-runtime",
+    "source_artifact_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+    "target_artifact_digest": "sha256:4620844c7d549cde507a28a131a11d5b42fa770bab514e36ad4649d167767819",
+    "target_artifact_manifest": "artifacts/target-artifacts.json",
+    "target_artifact_manifest_digest": "sha256:b25c38f1a0d4fc7082511597140ff186b4613584c810979a1b2abb008cfbc8c5",
+    "workload_key": "eight-archive-import-and-stdlib-runtime-contract",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+    "validation_kind": "local-structural-and-contract-engineering",
+    "archive_count": 8,
+    "archive_source_state": "UNTRUSTED_BLUEPRINT",
+    "development_execution": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "negative_execution": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "installation_execution": "LOCAL_INSTALLED_AND_CHECKED_SELF_ATTESTED",
+    "skill_creator_validation": "LOCAL_EXECUTED_SELF_ATTESTED_204_OF_204",
+    "mutation_execution": "NOT_RUN",
+    "fuzz_execution": "NOT_RUN",
+    "symbolic_or_smt_execution": "NOT_RUN",
+    "independent_review": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "provider_or_production_execution": "NOT_RUN",
+    "external_certification": "NOT_RUN"
+  },
+  "contracts": {
+    "validation_profile": "validation-profile.json",
+    "oracle_registry": "oracle-registry.json",
+    "assurance_case": "assurance/assurance-case.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json"
+  },
+  "tags": [
+    "batch35",
+    "untrusted-archives",
+    "local-contract",
+    "fail-closed",
+    "not-certified"
+  ]
+}

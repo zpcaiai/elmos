@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "oracles": [
+    {
+      "oracle_id": "oracle.archive-identity-contract",
+      "type": "contract",
+      "owner": "elmos-software-factory-engineering",
+      "scope": [
+        "claim.archive-identity-and-nonexecution"
+      ],
+      "independence": "dependent",
+      "trust_level": "strong",
+      "version": "1.0.0",
+      "evidence_refs": [
+        "artifacts/source-archives.json"
+      ],
+      "limitations": [
+        "Byte identity is not provenance, behavior, or safety evidence."
+      ]
+    },
+    {
+      "oracle_id": "oracle.repository-contract",
+      "type": "contract",
+      "owner": "elmos-software-factory-engineering",
+      "scope": [
+        "claim.installed-contract-identity",
+        "claim.runtime-fail-closed"
+      ],
+      "independence": "dependent",
+      "trust_level": "strong",
+      "version": "1.0.0",
+      "evidence_refs": [
+        "models/model.json",
+        "properties/sample.json",
+        "artifacts/target-artifacts.json",
+        "certification/local-installation-validation.json"
+      ],
+      "limitations": [
+        "Typed specifications are design inputs, not execution evidence."
+      ]
+    },
+    {
+      "oracle_id": "oracle.local-contract-tests",
+      "type": "test",
+      "owner": "elmos-verification-engineering",
+      "scope": [
+        "claim.installed-contract-identity"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "supporting",
+      "version": "2026-08-24-local-self-attested",
+      "evidence_refs": [
+        "certification/local-runtime-test-result.json",
+        "certification/raw/runtime-tests.txt",
+        "certification/raw/importer-integration-tests.txt"
+      ],
+      "limitations": [
+        "Local test execution is supporting self-attested evidence; it is not independent verification."
+      ]
+    },
+    {
+      "oracle_id": "oracle.local-negative-tests",
+      "type": "test",
+      "owner": "elmos-verification-engineering",
+      "scope": [
+        "claim.archive-identity-and-nonexecution",
+        "claim.runtime-fail-closed"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "supporting",
+      "version": "2026-08-24-local-self-attested",
+      "evidence_refs": [
+        "counterexamples/sample.json",
+        "certification/local-runtime-test-result.json",
+        "certification/raw/runtime-tests.txt",
+        "certification/raw/importer-integration-tests.txt"
+      ],
+      "limitations": [
+        "Negative controls executed locally, but mutation, fuzz, untouched holdout, representative workloads, and independent verification remain NOT_RUN."
+      ]
+    },
+    {
+      "oracle_id": "oracle.independent-review",
+      "type": "human-expert",
+      "owner": "external-independent-verifier",
+      "scope": [
+        "claim.archive-identity-and-nonexecution",
+        "claim.installed-contract-identity",
+        "claim.runtime-fail-closed"
+      ],
+      "independence": "independent",
+      "trust_level": "authoritative",
+      "version": "NOT_RUN",
+      "evidence_refs": [],
+      "limitations": [
+        "No independent reviewer, approval, or signed evidence exists."
+      ]
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "archive-and-runtime-contract",
+      "ordered_oracles": [
+        "oracle.independent-review",
+        "oracle.archive-identity-contract",
+        "oracle.repository-contract",
+        "oracle.local-negative-tests",
+        "oracle.local-contract-tests"
+      ],
+      "unknown_policy": "fail-closed"
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

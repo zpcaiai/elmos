@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "executed_on": "2026-08-24",
+  "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+  "toolchain": {
+    "python": "CPython 3.12.14 via uv",
+    "jsonschema": "4.25.1"
+  },
+  "checks": [
+    {
+      "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_oracle_registry.py verification-packs/elmos-7plus1-local-contract-v1/oracle-registry.json",
+      "status": "PASSED",
+      "summary": "5 oracle identities and precedence references validated"
+    },
+    {
+      "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_model_spec.py verification-packs/elmos-7plus1-local-contract-v1/models/model.json",
+      "status": "PASSED",
+      "summary": "8 states and 6 declared transitions validated"
+    },
+    {
+      "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/elmos-7plus1-local-contract-v1",
+      "status": "PASSED",
+      "summary": "Required Batch 35 documents passed JSON Schema and focused validators"
+    },
+    {
+      "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/elmos-7plus1-local-contract-v1",
+      "status": "PASSED",
+      "summary": "Structural gate passed with conservative decision NOT_CERTIFIED"
+    }
+  ],
+  "scope": "Pack structure and fail-closed decision only",
+  "excluded_execution": [
+    "importer and runtime development tests",
+    "negative controls and counterexample replay",
+    "mutation and fuzz campaigns",
+    "symbolic or SMT proof",
+    "holdout and representative workloads",
+    "provider, production, independent review, and external certification"
+  ],
+  "certification_decision": "NOT_CERTIFIED"
+}

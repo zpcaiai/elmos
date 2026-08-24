@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "profile_key": "elmos-7plus1-local-contract-v1-profile-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.archive-identity-and-nonexecution",
+      "description": "Only the eight byte-pinned ZIP inputs are accepted, unsafe members fail closed, and embedded instructions or executables are never run by the importer.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.archive-identity-contract",
+        "oracle.local-negative-tests",
+        "oracle.independent-review"
+      ],
+      "required_techniques": [
+        "contract",
+        "property",
+        "negative-archive-cases",
+        "independent-review"
+      ]
+    },
+    {
+      "claim_id": "claim.installed-contract-identity",
+      "description": "Canonical extraction, dual-root installed interfaces, compiled contracts, and runtime bindings preserve exact source identity and conservative evidence states without collisions or drift.",
+      "criticality": "P1",
+      "required_oracles": [
+        "oracle.repository-contract",
+        "oracle.local-contract-tests",
+        "oracle.independent-review"
+      ],
+      "required_techniques": [
+        "contract",
+        "metamorphic",
+        "model",
+        "holdout"
+      ]
+    },
+    {
+      "claim_id": "claim.runtime-fail-closed",
+      "description": "The standard-library runtime requires exact tenant/project/correlation/policy/source bindings and never upgrades missing, caller-asserted, unsupported, provider, or external observations into executed or certified success.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.repository-contract",
+        "oracle.local-negative-tests",
+        "oracle.independent-review"
+      ],
+      "required_techniques": [
+        "property",
+        "model",
+        "security",
+        "negative-runtime-cases",
+        "independent-review"
+      ]
+    }
+  ],
+  "techniques": [
+    "contract",
+    "property",
+    "metamorphic",
+    "model",
+    "negative-archive-cases",
+    "negative-runtime-cases",
+    "mutation-not-run",
+    "fuzz-not-run",
+    "symbolic-smt-unsupported",
+    "holdout-not-run",
+    "representative-workload-not-run",
+    "assurance-case"
+  ],
+  "budgets": {
+    "max_local_test_cases": 1000,
+    "max_archive_uncompressed_bytes": 268435456,
+    "max_archive_members": 4096,
+    "max_wall_time_minutes": 15,
+    "max_mutants": 0,
+    "max_fuzz_seconds": 0,
+    "max_solver_seconds": 0,
+    "max_external_calls": 0,
+    "max_production_writes": 0
+  },
+  "stop_conditions": [
+    "archive-digest-or-member-drift",
+    "unsafe-or-ambiguous-archive-member",
+    "embedded-code-execution-attempt",
+    "skill-name-or-contract-collision",
+    "tenant-project-correlation-or-policy-binding-missing",
+    "caller-asserted-external-evidence-treated-as-proof",
+    "unknown-or-unsupported-result-promoted-to-success",
+    "critical-oracle-conflict",
+    "budget-exhausted"
+  ],
+  "approvals": []
+}

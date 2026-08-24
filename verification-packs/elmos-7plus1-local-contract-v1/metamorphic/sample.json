@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.archive-enumeration-order-preserves-canonical-union",
+  "claim_id": "claim.installed-contract-identity",
+  "owner": "elmos-verification-engineering",
+  "preconditions": [
+    "all-eight-archive-digests-match",
+    "shared-members-are-byte-identical",
+    "no-unsafe-or-ambiguous-member-exists"
+  ],
+  "transformation": {
+    "kind": "permute-archive-enumeration-order",
+    "execution_status": "NOT_RUN"
+  },
+  "expected_relation": {
+    "kind": "same-canonical-member-set-digests-dag-and-installed-contracts"
+  },
+  "oracle_refs": [
+    "oracle.archive-identity-contract",
+    "oracle.repository-contract",
+    "oracle.local-contract-tests"
+  ],
+  "non_applicable": [
+    "archive-byte-drift",
+    "shared-member-byte-conflict",
+    "unsafe-member"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-repository-intelligence-semantic-ir"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-provenance-confidence-engine",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-provenance-confidence-engine"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-provenance-confidence-engine",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "compile-semantic-ir",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "local",
+    "module": "elmos_software_factory",
+    "operation": "repository-intelligence",
+    "package_id": "P02",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "inventory"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-provenance-confidence-engine",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/02-elmos-repository-intelligence-semantic-ir-v1.0.0.zip",
+    "key": "P02:provenance-confidence-engine",
+    "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/provenance-confidence-engine/SKILL.md",
+    "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/provenance-confidence-engine/SKILL.md.source-data",
+    "name": "elmos-provenance-confidence-engine",
+    "package_id": "P02",
+    "package_name": "elmos-repository-intelligence-semantic-ir",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/02-elmos-repository-intelligence-semantic-ir/skills/provenance-confidence-engine/SKILL.md.source-data",
+    "role": "child",
+    "sha256": "sha256:e7d0a45c36739ea8970cbfe5cd047178ea6ab2c3a105e224171d03b954e617ba"
+  },
+  "source_dependencies": [
+    "elmos-repository-intelligence-semantic-ir"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}

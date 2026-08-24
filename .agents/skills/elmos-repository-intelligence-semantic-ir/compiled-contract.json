@@ -1,0 +1,65 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-software-factory-master",
+    "elmos-harness-runtime-platform"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-repository-intelligence-semantic-ir",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-repository-intelligence-semantic-ir"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-repository-intelligence-semantic-ir",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "scan-repository",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "requires_adapter",
+    "module": "elmos_software_factory",
+    "operation": "repository-intelligence",
+    "package_id": "P02",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "repository_snapshot"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-repository-intelligence-semantic-ir",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/02-elmos-repository-intelligence-semantic-ir-v1.0.0.zip",
+    "key": "P02",
+    "logical_path": "02-elmos-repository-intelligence-semantic-ir/SKILL.md",
+    "materialized_path": "02-elmos-repository-intelligence-semantic-ir/SKILL.md.source-data",
+    "name": "elmos-repository-intelligence-semantic-ir",
+    "package_id": "P02",
+    "package_name": "elmos-repository-intelligence-semantic-ir",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/02-elmos-repository-intelligence-semantic-ir/SKILL.md.source-data",
+    "role": "package-orchestrator",
+    "sha256": "sha256:4c34ab4f4517dc7a240007e6f660968625e6257b10a3c8830079f46bf5bd81f9"
+  },
+  "source_dependencies": [
+    "elmos-software-factory-master",
+    "elmos-harness-runtime-platform"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}

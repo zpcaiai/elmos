@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/package/P02/config/1.0",
+  "title": "P02 package configuration",
+  "type": "object",
+  "required": [
+    "package_id",
+    "version",
+    "enabled",
+    "components",
+    "policy"
+  ],
+  "properties": {
+    "package_id": {
+      "const": "P02"
+    },
+    "version": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "P02-C01",
+          "P02-C02",
+          "P02-C03",
+          "P02-C04",
+          "P02-C05",
+          "P02-C06",
+          "P02-C07",
+          "P02-C08",
+          "P02-C09",
+          "P02-C10",
+          "P02-C11",
+          "P02-C12"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "policy": {
+      "type": "object"
+    },
+    "limits": {
+      "type": "object"
+    },
+    "feature_flags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    }
+  },
+  "additionalProperties": false
+}

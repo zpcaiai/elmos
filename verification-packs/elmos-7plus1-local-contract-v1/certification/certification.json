@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-7plus1-local-contract-v1",
+  "status": "experimental",
+  "owner": "elmos-verification-engineering",
+  "exact_scope": {
+    "migration_route": "untrusted-7plus1-zip-blueprints-to-local-contract-runtime",
+    "source_artifact_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
+    "target_artifact_digest": "sha256:4620844c7d549cde507a28a131a11d5b42fa770bab514e36ad4649d167767819",
+    "target_artifact_manifest": "artifacts/target-artifacts.json",
+    "target_artifact_manifest_digest": "sha256:b25c38f1a0d4fc7082511597140ff186b4613584c810979a1b2abb008cfbc8c5",
+    "workload_key": "eight-archive-import-and-stdlib-runtime-contract",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+    "validation_kind": "local-structural-and-contract-engineering",
+    "development_execution": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "negative_execution": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "installation_execution": "LOCAL_INSTALLED_AND_CHECKED_SELF_ATTESTED",
+    "skill_creator_validation": "LOCAL_EXECUTED_SELF_ATTESTED_204_OF_204",
+    "independent_holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "external_execution": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "metrics": {
+    "local_focused_test_count": 40,
+    "local_focused_test_pass_rate": 1.0,
+    "local_focused_test_failures": 0,
+    "installed_skills_per_root": 102,
+    "skill_creator_validated": 204,
+    "skill_creator_failures": 0
+  },
+  "local_runtime_test_result_digest": "sha256:a76072f65a834bef63c46b1f41cf58bafa5fc84ab61281c441a864ae040f1a09",
+  "local_installation_validation_digest": "sha256:8648afa549745e2db7d1fc2d5e79ecb40324a3ac89aaecc5ce696c62463d9d33",
+  "evidence_refs": [
+    "artifacts/source-archives.json",
+    "artifacts/target-artifacts.json",
+    "environment/local-validation-environment.json",
+    "technique-status.json",
+    "certification/local-pack-validation.json",
+    "certification/local-runtime-test-result.json",
+    "certification/local-installation-validation.json",
+    "certification/raw/install-summary.txt",
+    "certification/raw/install-check.txt",
+    "certification/raw/skill-creator-validation.txt",
+    "certification/gate-result.json"
+  ],
+  "limitations": [
+    "NOT_CERTIFIED",
+    "The target digest covers the exact 25-file repository-owned importer/runtime/test/documentation/manifest scope recorded in artifacts/target-artifacts.json; the two installed manifests transitively bind canonical source and both 102-Skill roots.",
+    "Development and negative evidence is local and self-attested; executor and verifier are not independent.",
+    "Installation, read-only check, and 204 Skill Creator validations are local and self-attested; they are not independent or certification evidence.",
+    "Mutation and fuzz campaigns are NOT_RUN.",
+    "Symbolic and SMT proof are unsupported and NOT_RUN.",
+    "Independent holdout and representative workload execution are NOT_RUN.",
+    "Provider, production, external verification, approval, and certification are NOT_RUN.",
+    "Local structural validation cannot authorize archive scripts, provider calls, deployment, production use, or certification."
+  ],
+  "approved_at": null
+}

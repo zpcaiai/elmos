@@ -1,0 +1,36 @@
+Command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src python3 -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v
+Date: 2026-08-24
+Exit code: 0
+
+test_all_50_public_method_modes_are_authoritative ... ok
+test_all_50_public_methods_fail_when_a_required_input_is_missing ... ok
+test_caller_availability_is_explicitly_unverified ... ok
+test_child_cannot_switch_to_another_package_action ... ok
+test_cli_rejects_oversized_sparse_file_before_read ... ok
+test_every_public_method_blocked_envelope_code_is_registry_authorized ... ok
+test_every_skill_has_an_exact_capability_contract ... ok
+test_evidence_gate_is_local_structure_only_and_scope_bound ... ok
+test_external_observation_never_substitutes_for_adapter ... ok
+test_invalid_non_json_request_returns_stable_failure ... ok
+test_json_schema_fields_match_runtime_models ... ok
+test_local_linter_and_planner_are_child_specific ... ok
+test_machine_readable_capability_registry_is_strict ... ok
+test_machine_readable_public_method_registry_and_adapter_union ... ok
+test_missing_required_input_fails_closed ... ok
+test_named_local_inputs_have_meaningful_distinct_outputs ... ok
+test_observation_correlation_mismatch_blocks ... ok
+test_promotion_stays_blocked_and_queries_are_tenant_safe ... ok
+test_public_domain_and_platform_errors_are_separate ... ok
+test_ready_tasks_with_zero_capacity_block ... ok
+test_registry_matches_exact_archive_frontmatter_names ... ok
+test_request_model_requires_schema_required_documents_and_token_syntax ... ok
+test_request_payload_policy_and_dependencies_bind_result_and_receipt_digests ... ok
+test_tool_and_compiler_children_require_adapters ... ok
+test_workflow_violation_maps_to_declared_domain_error ... ok
+
+Ran 25 tests in 2.218s
+
+OK
+
+Evidence classification: LOCAL_EXECUTED_SELF_ATTESTED
+This transcript is bounded local engineering evidence, not independent evidence or certification.

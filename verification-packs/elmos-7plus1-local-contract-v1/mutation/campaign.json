@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.elmos-7plus1-fail-closed-boundaries-v1",
+  "owner": "elmos-verification-engineering",
+  "target_scope": [
+    "tooling/integrate_elmos_7plus1_skills.py",
+    "engines/software-factory-engine/src/elmos_software_factory"
+  ],
+  "operators": [
+    {
+      "key": "remove-archive-digest-check",
+      "risk": "P0"
+    },
+    {
+      "key": "accept-unsafe-archive-member",
+      "risk": "P0"
+    },
+    {
+      "key": "promote-unsupported-or-external-result-to-executed",
+      "risk": "P0"
+    },
+    {
+      "key": "remove-tenant-project-correlation-binding",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 0,
+    "max_minutes": 0,
+    "execution_status": "NOT_RUN"
+  },
+  "required_tests": [
+    "tests/elmos-7plus1-commercial-skills",
+    "engines/software-factory-engine/tests"
+  ],
+  "equivalent_mutant_policy": "No mutant may be excluded without independent evidence; campaign is NOT_RUN."
+}

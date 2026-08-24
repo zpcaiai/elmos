@@ -1,0 +1,64 @@
+{
+  "archive_content_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "dependencies": [
+    "elmos-transformation-learning-evolution"
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "implementation_state": "BLUEPRINT_IMPORTED",
+  "installed_name_resolution": {
+    "installed_name": "elmos-active-learning-queue",
+    "reason": "SOURCE_NAME_PRESERVED",
+    "source_name": "elmos-active-learning-queue"
+  },
+  "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
+  "kind": "archive-source-skill-wrapper",
+  "name": "elmos-active-learning-queue",
+  "namespace": "elmos-7plus1-commercial-v1",
+  "repository_handler_state": "LOCAL_IMPLEMENTED_BOUNDED",
+  "runtime_binding": {
+    "action": "plan-learning",
+    "capability_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json",
+      "sha256": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7"
+    },
+    "mode": "local",
+    "module": "elmos_software_factory",
+    "operation": "knowledge",
+    "package_id": "P07",
+    "public_method_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
+      "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
+    },
+    "required_inputs": [
+      "entries",
+      "value_score"
+    ],
+    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "skill_name": "elmos-active-learning-queue",
+    "skill_registry": {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
+      "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
+    },
+    "state": "BOUND_NOT_EXECUTED"
+  },
+  "runtime_evidence_status": "NOT_RUN",
+  "schema_version": "elmos.7plus1.compiled-skill-contract.v1",
+  "side_effects_authorized": false,
+  "source": {
+    "archive": "skills/subskills/archives/07-elmos-transformation-learning-evolution-v1.0.0.zip",
+    "key": "P07:active-learning-queue",
+    "logical_path": "07-elmos-transformation-learning-evolution/skills/active-learning-queue/SKILL.md",
+    "materialized_path": "07-elmos-transformation-learning-evolution/skills/active-learning-queue/SKILL.md.source-data",
+    "name": "elmos-active-learning-queue",
+    "package_id": "P07",
+    "package_name": "elmos-transformation-learning-evolution",
+    "path": "skills/elmos-7plus1-commercial-skills-v1.0.0/07-elmos-transformation-learning-evolution/skills/active-learning-queue/SKILL.md.source-data",
+    "role": "child",
+    "sha256": "sha256:e20e93351266f59d72181b85f38f17cf88c3f85492d9f414e67c0033f9040312"
+  },
+  "source_dependencies": [
+    "elmos-transformation-learning-evolution"
+  ],
+  "source_implementation_state": "BLUEPRINT_IMPORTED"
+}
