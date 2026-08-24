@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/platform-profile.schema.json",
+  "title": "MiniApp Platform Profile",
+  "type": "object",
+  "required": [
+    "platform",
+    "profile_version",
+    "verified_at",
+    "file_model",
+    "toolchain",
+    "limits"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "wechat",
+        "alipay",
+        "douyin",
+        "xiaohongshu"
+      ]
+    },
+    "profile_version": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "file_model": {
+      "type": "object",
+      "required": [
+        "app_config",
+        "page_config",
+        "template_extension",
+        "style_extension",
+        "script_extension"
+      ],
+      "properties": {
+        "app_config": {
+          "type": "string"
+        },
+        "page_config": {
+          "type": "string"
+        },
+        "template_extension": {
+          "type": "string"
+        },
+        "style_extension": {
+          "type": "string"
+        },
+        "script_extension": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "toolchain": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "build_supported",
+        "preview_supported",
+        "upload_supported"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "build_supported": {
+          "type": "boolean"
+        },
+        "preview_supported": {
+          "type": "boolean"
+        },
+        "upload_supported": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "number",
+          "integer",
+          "string",
+          "boolean"
+        ]
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

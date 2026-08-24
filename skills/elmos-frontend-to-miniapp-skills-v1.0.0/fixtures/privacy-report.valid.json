@@ -1,0 +1,19 @@
+{
+  "report_id": "privacy-demo",
+  "platform": "wechat",
+  "verdict": "passed",
+  "data_flows": [
+    {
+      "data_type": "todo-text",
+      "sensitive": false,
+      "source": "user-input",
+      "purpose": "task-management",
+      "destination": "local-storage",
+      "consent": "not-required",
+      "retention": "until-user-deletes"
+    }
+  ],
+  "permissions": [],
+  "secret_findings": [],
+  "findings": []
+}

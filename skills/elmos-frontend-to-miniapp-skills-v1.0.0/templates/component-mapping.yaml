@@ -1,0 +1,25 @@
+mapping_id: map-example-select
+source_component:
+  framework: react
+  symbol: Select
+  usage_ref: src/components/Select.tsx
+semantic_role: single-select
+requirements:
+  props:
+    - disabled
+    - value
+  events:
+    - change
+  slots:
+    - option
+  accessibility:
+    - label
+targets:
+  - platform: wechat
+    classification: B
+    strategy: generated-composite
+    target_component: elmos-select
+    tests:
+      - select-option
+      - disabled
+      - async-options

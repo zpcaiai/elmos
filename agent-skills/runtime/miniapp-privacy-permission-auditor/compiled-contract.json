@@ -1,0 +1,121 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.compiled-skill-contract.v1",
+  "package_id": "elmos.frontend-to-miniapp.skills",
+  "package_version": "1.0.0",
+  "source_name": "miniapp-privacy-permission-auditor",
+  "source_path": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/.agents/skills/miniapp-privacy-permission-auditor/SKILL.md",
+  "source_sha256": "sha256:689f4161046d604164dac0e871c9026ea55b9d8785d19b063952769b588ad370",
+  "stage": "validation",
+  "description": "Audit generated miniapps for permissions, personal-data flows, secrets, logging, storage, consent, third-party SDKs, and platform review disclosures. Use before release and after any capability or dependency change.",
+  "depends_on": [
+    "miniapp-capability-registry",
+    "miniapp-third-party-dependency-migrator",
+    "wechat-miniapp-codegen",
+    "alipay-miniapp-codegen",
+    "douyin-miniapp-codegen",
+    "xiaohongshu-miniapp-codegen"
+  ],
+  "task_ids": [
+    "MAPP-029",
+    "MAPP-030"
+  ],
+  "declared_outputs": [
+    "privacy-report.json",
+    "permission-manifest.json",
+    "secret-scan.json",
+    "review-disclosure-checklist.md"
+  ],
+  "required_outputs": [
+    {
+      "path": "privacy-report.json",
+      "required": true
+    },
+    {
+      "path": "permission-manifest.json",
+      "required": true
+    },
+    {
+      "path": "secret-scan.json",
+      "required": true
+    },
+    {
+      "path": "review-disclosure-checklist.md",
+      "required": true
+    }
+  ],
+  "gates": [
+    {
+      "name": "严重/高危 secret=0",
+      "required": true
+    },
+    {
+      "name": "敏感数据流 100% 可追踪",
+      "required": true
+    },
+    {
+      "name": "权限与声明一致",
+      "required": true
+    },
+    {
+      "name": "第三方 SDK 已披露",
+      "required": true
+    }
+  ],
+  "failure_policy": {
+    "silent_drop": "deny",
+    "max_retries": 2,
+    "escalate_on": [
+      "permission-change",
+      "real-payment",
+      "release",
+      "quality-gate-lowering",
+      "repeated-equivalent-patch"
+    ]
+  },
+  "runtime_binding": {
+    "runtime_authority": {
+      "package_path": "engines/frontend-client-engine",
+      "cli_command": "npm run miniapp",
+      "cli_entrypoint": "dist/src/miniapp-cli.js",
+      "structured_request_handler": "handleMiniappSkillRequest",
+      "json_handler": "runMiniappSkillJson",
+      "full_conversion_handler": "runMiniappConversion",
+      "package_conversion_handler": "runMiniappPackageConversion",
+      "package_cli_command": "npm run miniapp -- package",
+      "single_skill_handler": "executeMiniappSkill",
+      "skill_key": "miniapp-privacy-permission-auditor"
+    },
+    "canonical_package_request": {
+      "source_schema": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json",
+      "request_case": "snake_case",
+      "wrapper_fields": [
+        "packageRequest",
+        "files",
+        "versionBindings",
+        "evidenceBindings"
+      ],
+      "handler_action": "run-package",
+      "handler_input_field": "packageInput",
+      "validator": "validateMiniappPackageConversionInput",
+      "compiler": "compileMiniappPackageConversionInput",
+      "runner": "runMiniappPackageConversion",
+      "cli_command": "npm run miniapp -- package",
+      "input_boundary": "caller-supplied-in-memory-files-no-disk-discovery"
+    },
+    "component_adapter": {
+      "package_path": "engines/component-dialect-engine",
+      "cli_command": "npm run miniapp-worker",
+      "cli_entrypoint": "dist/miniapp-worker.js",
+      "structured_request_handler": "handleMiniAppWorkerRequest",
+      "json_handler": "runMiniAppWorkerJson",
+      "emitter": "emitPlatformMiniApp"
+    }
+  },
+  "contract_state": "HANDLER_IMPLEMENTED",
+  "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "runtime_evidence_status": "DECLARED",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "side_effects_authorized": false,
+  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+}

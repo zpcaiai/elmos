@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "profile": "source-contract-preservation-candidate-v1",
+  "static_contracts": ["Todo text accessible name", "Add disabled for blank trimmed input"],
+  "automated_scan_state": "NOT_RUN",
+  "manual_keyboard_or_focus_state": "NOT_RUN",
+  "assistive_technology_state": "NOT_RUN",
+  "physical_device_state": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

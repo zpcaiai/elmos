@@ -1,0 +1,402 @@
+schema_version: '1.0'
+tasks:
+- id: MAPP-001
+  skill: frontend-to-miniapp-orchestrator
+  title: 定义 conversion request、run、artifact、gate、approval、cost 数据契约
+  depends_on: []
+  definition_of_done: 14 个 Schema 的根契约与最小请求可验证
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-002
+  skill: frontend-to-miniapp-orchestrator
+  title: 实现可恢复状态机、检查点、幂等键和阶段裁剪
+  depends_on:
+  - MAPP-001
+  definition_of_done: 任务中断后从最近 checkpoint 恢复且不重复副作用
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-003
+  skill: miniapp-source-framework-detector
+  title: 实现只读、安全的仓库清单与内容哈希扫描
+  depends_on:
+  - MAPP-001
+  definition_of_done: fixture 文件覆盖率 100%，不执行仓库脚本
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-004
+  skill: miniapp-source-framework-detector
+  title: 实现多框架证据、版本范围、置信度与冲突检测
+  depends_on:
+  - MAPP-003
+  definition_of_done: Vue/React/Flutter/混合 fixture 检测结论可解释
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-005
+  skill: vue-to-miniapp-analyzer
+  title: 实现 Vue SFC、template、script、style AST 分析
+  depends_on:
+  - MAPP-003
+  - MAPP-004
+  definition_of_done: Vue 2/3 fixture 全部节点带源位置
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-006
+  skill: vue-to-miniapp-analyzer
+  title: 实现 Router、Vuex、Pinia、生命周期与副作用提取
+  depends_on:
+  - MAPP-005
+  definition_of_done: 路由和 store 图闭合，动态项有风险记录
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-007
+  skill: react-to-miniapp-analyzer
+  title: 实现 TSX/JSX、组件、Hooks 与类生命周期分析
+  depends_on:
+  - MAPP-003
+  - MAPP-004
+  definition_of_done: Hook 依赖、cleanup 和组件图可验证
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-008
+  skill: react-to-miniapp-analyzer
+  title: 实现 React Router、Redux、Zustand、MobX 与 Context 提取
+  depends_on:
+  - MAPP-007
+  definition_of_done: 路由、状态和异步 action trace 完整
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-009
+  skill: flutter-widget-semantic-reconstructor
+  title: 建立 Dart analyzer CLI 与类型/常量/类模型导出
+  depends_on:
+  - MAPP-003
+  - MAPP-004
+  definition_of_done: Flutter fixture 可稳定输出 source facts
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-010
+  skill: flutter-widget-semantic-reconstructor
+  title: 重建 Widget Tree、Navigator、状态库、动画与 Platform Channel
+  depends_on:
+  - MAPP-009
+  definition_of_done: 页面/导航/状态图闭合，插件 100% 有结论
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-011
+  skill: miniapp-semantic-ir
+  title: 实现 Semantic IR v1 Schema、类型和稳定 ID
+  depends_on:
+  - MAPP-005
+  definition_of_done: Vue 最小闭环可生成确定性 IR
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-012
+  skill: miniapp-semantic-ir
+  title: 实现 IR 校验、版本迁移、确定性序列化与 trace index
+  depends_on:
+  - MAPP-011
+  definition_of_done: 重复序列化哈希一致，迁移 fixture 通过
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-013
+  skill: miniapp-capability-registry
+  title: 建立四平台 versioned profile 与能力注册表种子
+  depends_on:
+  - MAPP-012
+  definition_of_done: 常用能力包含支持、权限、运行时、风险和资料时间
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-014
+  skill: miniapp-capability-registry
+  title: 实现 capability resolver、A-E 分类和组合冲突检查
+  depends_on:
+  - MAPP-013
+  definition_of_done: 所有 IR capability 有结论，C/D/E 全部披露
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-015
+  skill: miniapp-component-mapping-engine
+  title: 实现组件映射 DSL、匹配优先级与解释输出
+  depends_on:
+  - MAPP-012
+  - MAPP-014
+  definition_of_done: 基础组件和表单 fixture 100% 有映射
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-016
+  skill: miniapp-component-mapping-engine
+  title: 实现组合组件生成、props/events/slots 与无障碍契约
+  depends_on:
+  - MAPP-015
+  definition_of_done: 复杂组件无空 stub，行为测试生成
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-017
+  skill: miniapp-state-event-lifecycle-converter
+  title: 实现状态作用域、派生值与 app/page/component 生命周期下降
+  depends_on:
+  - MAPP-012
+  - MAPP-015
+  definition_of_done: 生命周期顺序和状态引用闭合
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-018
+  skill: miniapp-state-event-lifecycle-converter
+  title: 实现事件传播、异步副作用、cleanup、竞态与幂等计划
+  depends_on:
+  - MAPP-017
+  definition_of_done: 事件顺序与副作用账本可供差分测试
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-019
+  skill: miniapp-style-layout-converter
+  title: 实现 CSS/Flutter layout AST、单位和目标布局下降
+  depends_on:
+  - MAPP-012
+  - MAPP-015
+  definition_of_done: 核心页面无未解释布局丢失
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-020
+  skill: miniapp-style-layout-converter
+  title: 实现 design token、主题、响应式、安全区和动画策略
+  depends_on:
+  - MAPP-019
+  definition_of_done: 主题和设备矩阵 fixture 达到视觉阈值
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-021
+  skill: miniapp-third-party-dependency-migrator
+  title: 实现依赖实际调用面、传递关系和平台专属信号分析
+  depends_on:
+  - MAPP-003
+  definition_of_done: 所有直接依赖有 usage evidence
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-022
+  skill: miniapp-third-party-dependency-migrator
+  title: 实现保留/替代/重写/后端迁移/阻断及许可证供应链报告
+  depends_on:
+  - MAPP-021
+  - MAPP-014
+  definition_of_done: 依赖决策、风险、测试与回滚完整
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-023
+  skill: wechat-miniapp-codegen
+  title: 实现微信原生 generator、adapter、配置、测试和 trace
+  depends_on:
+  - MAPP-016
+  - MAPP-018
+  - MAPP-020
+  - MAPP-022
+  definition_of_done: golden project 官方构建和关键流程通过
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-024
+  skill: alipay-miniapp-codegen
+  title: 实现支付宝原生 generator、CLI 元数据、测试和 trace
+  depends_on:
+  - MAPP-016
+  - MAPP-018
+  - MAPP-020
+  - MAPP-022
+  definition_of_done: golden project 官方构建和关键流程通过
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-025
+  skill: douyin-miniapp-codegen
+  title: 实现抖音原生 generator、场景/OpenAPI contract 和 trace
+  depends_on:
+  - MAPP-016
+  - MAPP-018
+  - MAPP-020
+  - MAPP-022
+  definition_of_done: golden project 官方构建和场景流程通过
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-026
+  skill: xiaohongshu-miniapp-codegen
+  title: 实现小红书原生 generator、授权/交易 contract 和 trace
+  depends_on:
+  - MAPP-016
+  - MAPP-018
+  - MAPP-020
+  - MAPP-022
+  definition_of_done: golden project 构建或可验证阻断，授权流程完整
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-027
+  skill: miniapp-commerce-social-adapter
+  title: 定义身份、会话、订单、支付、退款、分享和内容领域 contract
+  depends_on:
+  - MAPP-014
+  definition_of_done: 平台无关状态机和服务端/客户端边界通过契约测试
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-028
+  skill: miniapp-commerce-social-adapter
+  title: 实现四平台商业/社交 adapter、sandbox/mock 和回调安全
+  depends_on:
+  - MAPP-027
+  - MAPP-023
+  - MAPP-024
+  - MAPP-025
+  - MAPP-026
+  definition_of_done: 订单幂等、验签、重放与补偿测试通过
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-029
+  skill: miniapp-privacy-permission-auditor
+  title: 实现权限、个人数据、存储、网络和第三方 SDK 数据流模型
+  depends_on:
+  - MAPP-014
+  - MAPP-022
+  definition_of_done: 敏感数据流 100% 可追踪
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-030
+  skill: miniapp-privacy-permission-auditor
+  title: 实现 secret、日志、权限用途和审核披露扫描
+  depends_on:
+  - MAPP-029
+  - MAPP-023
+  - MAPP-024
+  - MAPP-025
+  - MAPP-026
+  definition_of_done: 高危 secret=0，权限与声明一致
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-031
+  skill: miniapp-differential-testing
+  title: 实现源/目标场景驱动和行为 trace 捕获
+  depends_on:
+  - MAPP-023
+  - MAPP-024
+  - MAPP-025
+  - MAPP-026
+  definition_of_done: 关键流程可在相同 mock 数据下重放
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-032
+  skill: miniapp-differential-testing
+  title: 实现归一化、语义比较、定位和 flaky 隔离
+  depends_on:
+  - MAPP-031
+  definition_of_done: 差异关联到 source/IR/rule/target，关键流 100% 通过
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-033
+  skill: miniapp-visual-regression-testing
+  title: 实现设备矩阵、稳定截图、结构框和像素差分
+  depends_on:
+  - MAPP-020
+  - MAPP-023
+  - MAPP-024
+  - MAPP-025
+  - MAPP-026
+  definition_of_done: golden 页面可重复生成相同基线
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-034
+  skill: miniapp-visual-regression-testing
+  title: 实现关键区域加权、mask 审计和视觉修复候选
+  depends_on:
+  - MAPP-033
+  definition_of_done: 默认相似度门禁与文本/溢出检查生效
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-035
+  skill: miniapp-auto-repair-loop
+  title: 实现 finding 聚类、上游定位和最小补丁生成
+  depends_on:
+  - MAPP-030
+  - MAPP-032
+  - MAPP-034
+  definition_of_done: 相同缺陷优先修正规则而非一次性生成文件
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-036
+  skill: miniapp-auto-repair-loop
+  title: 实现有界修复状态机、重复补丁检测、回滚和受影响门禁
+  depends_on:
+  - MAPP-035
+  definition_of_done: 最大三次、无无限循环、失败可升级
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-037
+  skill: miniapp-ci-build-release
+  title: 实现四平台工具链 profile、隔离构建和可重现产物
+  depends_on:
+  - MAPP-030
+  - MAPP-036
+  definition_of_done: 工具版本、退出码、产物哈希和日志脱敏完整
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-038
+  skill: miniapp-ci-build-release
+  title: 实现 preview/upload/review/release 分级审批与回滚
+  depends_on:
+  - MAPP-037
+  definition_of_done: 无批准不能越级，回执与版本可追踪
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-039
+  skill: miniapp-migration-evidence-reporter
+  title: 实现 claim/evidence graph、artifact index 和完整性校验
+  depends_on:
+  - MAPP-030
+  - MAPP-032
+  - MAPP-034
+  - MAPP-038
+  definition_of_done: 所有关键 claim 有当前证据且哈希一致
+  status: not_started
+  artifacts: []
+  gate_results: []
+- id: MAPP-040
+  skill: miniapp-migration-evidence-reporter
+  title: 生成兼容、测试、风险、成本、运行时和发布就绪报告
+  depends_on:
+  - MAPP-039
+  definition_of_done: ready/not-ready 与门禁一致，不把计划写成结果
+  status: not_started
+  artifacts: []
+  gate_results: []

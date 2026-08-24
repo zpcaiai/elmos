@@ -1,0 +1,117 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.compiled-skill-contract.v1",
+  "package_id": "elmos.frontend-to-miniapp.skills",
+  "package_version": "1.0.0",
+  "source_name": "react-to-miniapp-analyzer",
+  "source_path": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/.agents/skills/react-to-miniapp-analyzer/SKILL.md",
+  "source_sha256": "sha256:4cf62b580b15e72556b1efb50c83953c78d6dd7f313883dc88751ab88fd8b424",
+  "stage": "source-analysis",
+  "description": "Analyze React JavaScript/TypeScript projects, JSX/TSX, hooks, class lifecycles, routers, Redux, Zustand, MobX, Context, portals, and styling, then emit source semantic facts for MiniApp IR. Use only after repository inventory.",
+  "depends_on": [
+    "miniapp-source-framework-detector"
+  ],
+  "task_ids": [
+    "MAPP-007",
+    "MAPP-008"
+  ],
+  "declared_outputs": [
+    "react-analysis.json",
+    "component-graph.json",
+    "hook-effect-graph.json",
+    "route-graph.json",
+    "source-trace-map.json"
+  ],
+  "required_outputs": [
+    {
+      "path": "react-analysis.json",
+      "required": true
+    },
+    {
+      "path": "component-graph.json",
+      "required": true
+    },
+    {
+      "path": "hook-effect-graph.json",
+      "required": true
+    },
+    {
+      "path": "route-graph.json",
+      "required": true
+    },
+    {
+      "path": "source-trace-map.json",
+      "required": true
+    }
+  ],
+  "gates": [
+    {
+      "name": "组件导入图闭合",
+      "required": true
+    },
+    {
+      "name": "Hook 依赖图可验证",
+      "required": true
+    },
+    {
+      "name": "关键 effect 与事件均有 trace",
+      "required": true
+    }
+  ],
+  "failure_policy": {
+    "silent_drop": "deny",
+    "max_retries": 2,
+    "escalate_on": [
+      "permission-change",
+      "real-payment",
+      "release",
+      "quality-gate-lowering",
+      "repeated-equivalent-patch"
+    ]
+  },
+  "runtime_binding": {
+    "runtime_authority": {
+      "package_path": "engines/frontend-client-engine",
+      "cli_command": "npm run miniapp",
+      "cli_entrypoint": "dist/src/miniapp-cli.js",
+      "structured_request_handler": "handleMiniappSkillRequest",
+      "json_handler": "runMiniappSkillJson",
+      "full_conversion_handler": "runMiniappConversion",
+      "package_conversion_handler": "runMiniappPackageConversion",
+      "package_cli_command": "npm run miniapp -- package",
+      "single_skill_handler": "executeMiniappSkill",
+      "skill_key": "react-to-miniapp-analyzer"
+    },
+    "canonical_package_request": {
+      "source_schema": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json",
+      "request_case": "snake_case",
+      "wrapper_fields": [
+        "packageRequest",
+        "files",
+        "versionBindings",
+        "evidenceBindings"
+      ],
+      "handler_action": "run-package",
+      "handler_input_field": "packageInput",
+      "validator": "validateMiniappPackageConversionInput",
+      "compiler": "compileMiniappPackageConversionInput",
+      "runner": "runMiniappPackageConversion",
+      "cli_command": "npm run miniapp -- package",
+      "input_boundary": "caller-supplied-in-memory-files-no-disk-discovery"
+    },
+    "component_adapter": {
+      "package_path": "engines/component-dialect-engine",
+      "cli_command": "npm run miniapp-worker",
+      "cli_entrypoint": "dist/miniapp-worker.js",
+      "structured_request_handler": "handleMiniAppWorkerRequest",
+      "json_handler": "runMiniAppWorkerJson",
+      "emitter": "emitPlatformMiniApp"
+    }
+  },
+  "contract_state": "HANDLER_IMPLEMENTED",
+  "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "runtime_evidence_status": "DECLARED",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "side_effects_authorized": false,
+  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+}

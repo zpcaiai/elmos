@@ -108,6 +108,28 @@ chinadb-commercial-migration-skills:
 database-bigdata-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
+.PHONY: frontend-to-miniapp-skills
+frontend-to-miniapp-skills:
+	@set -eu; \
+	closeout() { \
+		status=$$?; \
+		trap - EXIT HUP INT TERM; \
+		set +e; \
+		PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --closeout-portable; \
+		closeout_status=$$?; \
+		set -e; \
+		if [ "$$status" -ne 0 ]; then exit "$$status"; fi; \
+		exit "$$closeout_status"; \
+	}; \
+	trap closeout EXIT; \
+	trap 'exit 129' HUP; \
+	trap 'exit 130' INT; \
+	trap 'exit 143' TERM; \
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --qualify-local; \
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --refresh-owned; \
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --check; \
+	node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check; \
+	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:

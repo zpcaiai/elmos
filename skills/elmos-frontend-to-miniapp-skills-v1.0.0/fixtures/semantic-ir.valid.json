@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "application": {
+    "id": "app-demo",
+    "name": "Todo",
+    "routes": [
+      {
+        "id": "route-home",
+        "kind": "route",
+        "name": "home",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "props": {
+          "path": "/"
+        },
+        "children": [],
+        "references": [
+          "component-home"
+        ]
+      }
+    ],
+    "components": [
+      {
+        "id": "component-home",
+        "kind": "component",
+        "name": "HomePage",
+        "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "props": {
+          "role": "page"
+        },
+        "children": [],
+        "references": [
+          "store-todos"
+        ]
+      }
+    ],
+    "state_stores": [
+      {
+        "id": "store-todos",
+        "kind": "state-store",
+        "name": "todos",
+        "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "props": {
+          "scope": "application"
+        },
+        "children": [],
+        "references": []
+      }
+    ],
+    "events": [],
+    "styles": [],
+    "capabilities": [
+      {
+        "id": "cap-storage",
+        "kind": "capability",
+        "name": "storage.local",
+        "content_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "props": {},
+        "children": [],
+        "references": []
+      }
+    ],
+    "assets": []
+  },
+  "extensions": {},
+  "trace_index": [
+    {
+      "ir_id": "component-home",
+      "source": {
+        "path": "src/views/Home.vue",
+        "start_line": 1,
+        "end_line": 80
+      },
+      "confidence": 1.0
+    }
+  ]
+}

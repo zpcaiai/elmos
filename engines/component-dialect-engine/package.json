@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "jest",
+    "miniapp-worker": "node dist/miniapp-worker.js",
     "check": "npm run build && npm test"
   },
   "dependencies": {

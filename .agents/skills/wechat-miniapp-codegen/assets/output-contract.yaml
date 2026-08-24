@@ -1,0 +1,29 @@
+skill: wechat-miniapp-codegen
+version: 1.0.0
+task_ids:
+- MAPP-023
+required_outputs:
+- path: platforms/wechat/**
+  required: true
+- path: wechat-codegen-report.json
+  required: true
+- path: wechat-trace-map.json
+  required: true
+gates:
+- name: 目标结构完整
+  required: true
+- name: 静态检查通过
+  required: true
+- name: 官方构建通过
+  required: true
+- name: 关键能力契约通过
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

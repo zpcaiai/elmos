@@ -1,0 +1,113 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.compiled-skill-contract.v1",
+  "package_id": "elmos.frontend-to-miniapp.skills",
+  "package_version": "1.0.0",
+  "source_name": "miniapp-style-layout-converter",
+  "source_path": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/.agents/skills/miniapp-style-layout-converter/SKILL.md",
+  "source_sha256": "sha256:0e73a91fd7ba72df33a72f423b83d28e0325a249201bf68800920612d4f319b6",
+  "stage": "planning",
+  "description": "Convert CSS, scoped styles, CSS Modules, CSS-in-JS, Tailwind-like utilities, Flutter constraints, themes, units, animations, and responsive layouts into platform-specific style plans. Use before code generation and visual repair.",
+  "depends_on": [
+    "miniapp-semantic-ir",
+    "miniapp-component-mapping-engine"
+  ],
+  "task_ids": [
+    "MAPP-019",
+    "MAPP-020"
+  ],
+  "declared_outputs": [
+    "style-plan.json",
+    "token-map.json",
+    "responsive-rules.json",
+    "unsupported-style-report.json"
+  ],
+  "required_outputs": [
+    {
+      "path": "style-plan.json",
+      "required": true
+    },
+    {
+      "path": "token-map.json",
+      "required": true
+    },
+    {
+      "path": "responsive-rules.json",
+      "required": true
+    },
+    {
+      "path": "unsupported-style-report.json",
+      "required": true
+    }
+  ],
+  "gates": [
+    {
+      "name": "样式 AST 解析覆盖率=100% 或有错误清单",
+      "required": true
+    },
+    {
+      "name": "设计 token 可追踪",
+      "required": true
+    },
+    {
+      "name": "关键页面无未解释溢出",
+      "required": true
+    }
+  ],
+  "failure_policy": {
+    "silent_drop": "deny",
+    "max_retries": 2,
+    "escalate_on": [
+      "permission-change",
+      "real-payment",
+      "release",
+      "quality-gate-lowering",
+      "repeated-equivalent-patch"
+    ]
+  },
+  "runtime_binding": {
+    "runtime_authority": {
+      "package_path": "engines/frontend-client-engine",
+      "cli_command": "npm run miniapp",
+      "cli_entrypoint": "dist/src/miniapp-cli.js",
+      "structured_request_handler": "handleMiniappSkillRequest",
+      "json_handler": "runMiniappSkillJson",
+      "full_conversion_handler": "runMiniappConversion",
+      "package_conversion_handler": "runMiniappPackageConversion",
+      "package_cli_command": "npm run miniapp -- package",
+      "single_skill_handler": "executeMiniappSkill",
+      "skill_key": "miniapp-style-layout-converter"
+    },
+    "canonical_package_request": {
+      "source_schema": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json",
+      "request_case": "snake_case",
+      "wrapper_fields": [
+        "packageRequest",
+        "files",
+        "versionBindings",
+        "evidenceBindings"
+      ],
+      "handler_action": "run-package",
+      "handler_input_field": "packageInput",
+      "validator": "validateMiniappPackageConversionInput",
+      "compiler": "compileMiniappPackageConversionInput",
+      "runner": "runMiniappPackageConversion",
+      "cli_command": "npm run miniapp -- package",
+      "input_boundary": "caller-supplied-in-memory-files-no-disk-discovery"
+    },
+    "component_adapter": {
+      "package_path": "engines/component-dialect-engine",
+      "cli_command": "npm run miniapp-worker",
+      "cli_entrypoint": "dist/miniapp-worker.js",
+      "structured_request_handler": "handleMiniAppWorkerRequest",
+      "json_handler": "runMiniAppWorkerJson",
+      "emitter": "emitPlatformMiniApp"
+    }
+  },
+  "contract_state": "HANDLER_IMPLEMENTED",
+  "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "runtime_evidence_status": "DECLARED",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "side_effects_authorized": false,
+  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+}

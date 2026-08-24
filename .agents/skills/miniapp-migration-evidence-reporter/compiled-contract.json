@@ -1,0 +1,124 @@
+{
+  "schema_version": "elmos.frontend-to-miniapp.compiled-skill-contract.v1",
+  "package_id": "elmos.frontend-to-miniapp.skills",
+  "package_version": "1.0.0",
+  "source_name": "miniapp-migration-evidence-reporter",
+  "source_path": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/.agents/skills/miniapp-migration-evidence-reporter/SKILL.md",
+  "source_sha256": "sha256:847233bfa3b96bffe4e9be5d75c19f2ab2363af5a3827a179ab6ff2b560c3fdd",
+  "stage": "evidence",
+  "description": "Assemble an auditable evidence graph linking source revisions, IR nodes, mapping decisions, generated files, builds, tests, repairs, approvals, costs, and release status. Use at every checkpoint and for final migration sign-off.",
+  "depends_on": [
+    "miniapp-ci-build-release",
+    "miniapp-differential-testing",
+    "miniapp-visual-regression-testing",
+    "miniapp-privacy-permission-auditor"
+  ],
+  "task_ids": [
+    "MAPP-039",
+    "MAPP-040"
+  ],
+  "declared_outputs": [
+    "migration-evidence.json",
+    "compatibility-report.html",
+    "validation-report.md",
+    "release-readiness.md",
+    "artifact-index.json"
+  ],
+  "required_outputs": [
+    {
+      "path": "migration-evidence.json",
+      "required": true
+    },
+    {
+      "path": "compatibility-report.html",
+      "required": true
+    },
+    {
+      "path": "validation-report.md",
+      "required": true
+    },
+    {
+      "path": "release-readiness.md",
+      "required": true
+    },
+    {
+      "path": "artifact-index.json",
+      "required": true
+    }
+  ],
+  "gates": [
+    {
+      "name": "所有关键 claim 有证据",
+      "required": true
+    },
+    {
+      "name": "产物索引无悬空引用",
+      "required": true
+    },
+    {
+      "name": "最终结论与门禁一致",
+      "required": true
+    },
+    {
+      "name": "成本与运行状态可追溯",
+      "required": true
+    }
+  ],
+  "failure_policy": {
+    "silent_drop": "deny",
+    "max_retries": 2,
+    "escalate_on": [
+      "permission-change",
+      "real-payment",
+      "release",
+      "quality-gate-lowering",
+      "repeated-equivalent-patch"
+    ]
+  },
+  "runtime_binding": {
+    "runtime_authority": {
+      "package_path": "engines/frontend-client-engine",
+      "cli_command": "npm run miniapp",
+      "cli_entrypoint": "dist/src/miniapp-cli.js",
+      "structured_request_handler": "handleMiniappSkillRequest",
+      "json_handler": "runMiniappSkillJson",
+      "full_conversion_handler": "runMiniappConversion",
+      "package_conversion_handler": "runMiniappPackageConversion",
+      "package_cli_command": "npm run miniapp -- package",
+      "single_skill_handler": "executeMiniappSkill",
+      "skill_key": "miniapp-migration-evidence-reporter"
+    },
+    "canonical_package_request": {
+      "source_schema": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/schemas/conversion-request.schema.json",
+      "request_case": "snake_case",
+      "wrapper_fields": [
+        "packageRequest",
+        "files",
+        "versionBindings",
+        "evidenceBindings"
+      ],
+      "handler_action": "run-package",
+      "handler_input_field": "packageInput",
+      "validator": "validateMiniappPackageConversionInput",
+      "compiler": "compileMiniappPackageConversionInput",
+      "runner": "runMiniappPackageConversion",
+      "cli_command": "npm run miniapp -- package",
+      "input_boundary": "caller-supplied-in-memory-files-no-disk-discovery"
+    },
+    "component_adapter": {
+      "package_path": "engines/component-dialect-engine",
+      "cli_command": "npm run miniapp-worker",
+      "cli_entrypoint": "dist/miniapp-worker.js",
+      "structured_request_handler": "handleMiniAppWorkerRequest",
+      "json_handler": "runMiniAppWorkerJson",
+      "emitter": "emitPlatformMiniApp"
+    }
+  },
+  "contract_state": "HANDLER_IMPLEMENTED",
+  "runtime_implementation_digest": "sha256:0df2e3d9828a7fa62671e57409f635c594ea1ccf6b060dc83c1f4fabc2867a41",
+  "runtime_evidence_status": "DECLARED",
+  "external_evidence_status": "NOT_RUN",
+  "certification": "NOT_CERTIFIED",
+  "side_effects_authorized": false,
+  "maximum_local_claim": "HANDLER_IMPLEMENTED_NOT_EXECUTED"
+}

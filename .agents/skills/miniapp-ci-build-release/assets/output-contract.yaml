@@ -1,0 +1,34 @@
+skill: miniapp-ci-build-release
+version: 1.0.0
+task_ids:
+- MAPP-037
+- MAPP-038
+required_outputs:
+- path: ci pipelines
+  required: true
+- path: build manifests
+  required: true
+- path: preview artifacts
+  required: true
+- path: upload receipts
+  required: true
+- path: release records
+  required: true
+gates:
+- name: 可重现构建
+  required: true
+- name: 产物哈希记录
+  required: true
+- name: 凭证扫描通过
+  required: true
+- name: 审批记录完整
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

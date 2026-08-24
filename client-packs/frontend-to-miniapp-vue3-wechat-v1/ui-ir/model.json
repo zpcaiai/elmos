@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "pack_key": "frontend-to-miniapp-vue3-wechat-v1",
+  "source_snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "routes": [
+    {
+      "id": "route.home",
+      "kind": "route",
+      "name": "Todo home",
+      "path": "/",
+      "references": ["view.home"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/router.ts"]
+    }
+  ],
+  "views": [
+    {
+      "id": "view.app-shell",
+      "kind": "view",
+      "name": "Application shell",
+      "references": ["component.app-shell"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/App.vue"]
+    },
+    {
+      "id": "view.home",
+      "kind": "view",
+      "name": "Todo entry and list",
+      "references": ["component.home-view", "form.todo-entry", "permission.local-only"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    }
+  ],
+  "components": [
+    {
+      "id": "component.app-shell",
+      "kind": "component",
+      "name": "App shell",
+      "ownership": "generated-candidate",
+      "references": ["token.app-shell"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/App.vue"]
+    },
+    {
+      "id": "component.home-view",
+      "kind": "component",
+      "name": "Home view",
+      "ownership": "generated-candidate",
+      "references": ["component.todo-input", "component.add-button", "component.todo-list"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    },
+    {
+      "id": "component.todo-input",
+      "kind": "native-input-candidate",
+      "name": "Todo text input",
+      "references": ["binding.todo-text", "a11y.todo-input-label"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    },
+    {
+      "id": "component.add-button",
+      "kind": "native-button-candidate",
+      "name": "Add todo button",
+      "references": ["action.submit-todo", "state.todo-text", "a11y.disabled-state"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    },
+    {
+      "id": "component.todo-list",
+      "kind": "native-list-candidate",
+      "name": "Todo list",
+      "stable_key_contract": "item text plus source index; duplicate text remains distinct by index",
+      "references": ["state.todo-items"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    }
+  ],
+  "states": [
+    {
+      "id": "state.todo-text",
+      "kind": "local-form-state",
+      "name": "Current input text",
+      "initial_value": "",
+      "references": [],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    },
+    {
+      "id": "state.todo-items",
+      "kind": "pinia-store-state",
+      "name": "Todo item strings",
+      "initial_value": [],
+      "references": [],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/stores/todo.ts"]
+    }
+  ],
+  "actions": [
+    {
+      "id": "action.input-todo",
+      "kind": "input-event",
+      "name": "Update todo text",
+      "references": ["state.todo-text"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    },
+    {
+      "id": "action.submit-todo",
+      "kind": "tap-event",
+      "name": "Trim and add nonempty todo then clear input",
+      "precondition": "trim(todo-text) is nonempty",
+      "references": ["state.todo-text", "state.todo-items", "effect.add-todo"],
+      "source_refs": [
+        "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue",
+        "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/stores/todo.ts"
+      ]
+    }
+  ],
+  "effects": [
+    {
+      "id": "effect.add-todo",
+      "kind": "synchronous-local-state-effect",
+      "name": "Append trimmed todo and clear input",
+      "cleanup": "not-applicable-synchronous-effect",
+      "references": ["state.todo-items", "state.todo-text"],
+      "source_refs": [
+        "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/stores/todo.ts",
+        "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"
+      ]
+    }
+  ],
+  "forms": [
+    {
+      "id": "form.todo-entry",
+      "kind": "single-field-form-contract",
+      "name": "Todo entry",
+      "fields": ["todo-text"],
+      "validation": "trimmed value must be nonempty before add is enabled",
+      "references": ["binding.todo-text", "action.submit-todo"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    }
+  ],
+  "bindings": [
+    {
+      "id": "binding.todo-text",
+      "kind": "two-way-binding",
+      "name": "Vue v-model todo text",
+      "target_candidate": "WeChat input value plus bindinput handler",
+      "references": ["state.todo-text", "action.input-todo"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    }
+  ],
+  "permissions": [
+    {
+      "id": "permission.local-only",
+      "kind": "negative-permission-contract",
+      "name": "No network platform identity payment upload or release effect",
+      "effect": "deny undeclared external side effects",
+      "references": [],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/package.json"]
+    }
+  ],
+  "resources": [
+    {
+      "id": "resource.source-snapshot",
+      "kind": "content-addressed-source-resource",
+      "name": "Pinned Vue 3 todo fixture",
+      "digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+      "references": [],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/package.json"]
+    }
+  ],
+  "design_tokens": [
+    {
+      "id": "token.app-shell",
+      "kind": "layout-token-set",
+      "name": "App shell width margin and padding",
+      "values": {"max_width_px": 640, "margin_inline": "auto", "padding_px": 16},
+      "references": [],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/App.vue"]
+    }
+  ],
+  "accessibility": [
+    {
+      "id": "a11y.todo-input-label",
+      "kind": "accessible-name-contract",
+      "name": "Todo input accessible name",
+      "expected_name": "Todo text",
+      "references": ["component.todo-input"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    },
+    {
+      "id": "a11y.disabled-state",
+      "kind": "disabled-state-contract",
+      "name": "Add button disabled for blank trimmed input",
+      "references": ["component.add-button", "state.todo-text"],
+      "source_refs": ["skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/views/HomeView.vue"]
+    }
+  ],
+  "source_map": [
+    {"node_id": "route.home", "owner": "fixture-route"},
+    {"node_id": "view.app-shell", "owner": "fixture-app"},
+    {"node_id": "view.home", "owner": "fixture-home"},
+    {"node_id": "component.app-shell", "owner": "fixture-app"},
+    {"node_id": "component.home-view", "owner": "fixture-home"},
+    {"node_id": "component.todo-input", "owner": "fixture-home"},
+    {"node_id": "component.add-button", "owner": "fixture-home"},
+    {"node_id": "component.todo-list", "owner": "fixture-home"},
+    {"node_id": "state.todo-text", "owner": "fixture-home"},
+    {"node_id": "state.todo-items", "owner": "fixture-store"},
+    {"node_id": "action.input-todo", "owner": "fixture-home"},
+    {"node_id": "action.submit-todo", "owner": "fixture-home"},
+    {"node_id": "effect.add-todo", "owner": "fixture-store"},
+    {"node_id": "form.todo-entry", "owner": "fixture-home"},
+    {"node_id": "binding.todo-text", "owner": "fixture-home"},
+    {"node_id": "permission.local-only", "owner": "pack-boundary"},
+    {"node_id": "resource.source-snapshot", "owner": "source-package"},
+    {"node_id": "token.app-shell", "owner": "fixture-app"},
+    {"node_id": "a11y.todo-input-label", "owner": "fixture-home"},
+    {"node_id": "a11y.disabled-state", "owner": "fixture-home"}
+  ],
+  "unknowns": [
+    {
+      "id": "unknown.source-runtime-resolution",
+      "severity": "critical",
+      "status": "NOT_RUN",
+      "detail": "No source lockfile exists and the source app was not installed or launched; actual Vue Vue Router and Pinia runtime versions are unresolved."
+    },
+    {
+      "id": "unknown.official-wechat-runtime",
+      "severity": "critical",
+      "status": "NOT_RUN",
+      "detail": "Official WeChat build preview emulator physical-device and upload checks were not authorized or executed."
+    },
+    {
+      "id": "unknown.quality-equivalence",
+      "severity": "critical",
+      "status": "NOT_RUN",
+      "detail": "Visual accessibility performance holdout representative and independent equivalence evidence does not exist."
+    }
+  ]
+}

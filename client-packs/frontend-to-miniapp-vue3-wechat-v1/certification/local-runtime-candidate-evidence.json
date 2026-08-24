@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "evidence_key": "vue3-todo-wechat-local-runtime-2026-08-20",
+  "scope": "bounded local conversion runtime and generated-candidate static validation",
+  "source": {
+    "archive_path": "skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip",
+    "archive_sha256": "sha256:e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82",
+    "archive_bytes": 281829,
+    "manifest_sha256": "sha256:6dd05d088680de1ac50fe3778bfc6d654afcf17922dab2690cb770ac27701c9f",
+    "manifest_bytes": 1202,
+    "snapshot_id": "vue3-todo-source-package-1.0.0",
+    "privacy": "public synthetic fixture; no credentials or personal data",
+    "manifest_aggregate_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+    "runtime_file_set_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+    "file_count": 6,
+    "byte_count": 1639,
+    "source_scripts_executed": false
+  },
+  "runtime_implementation": {
+    "digest": "sha256:befdb81802430203e3e54f6db796990d6a562ea2ced59e075b782c24833e7a77",
+    "file_count": 22,
+    "node_version": "26.0.0",
+    "typescript_version": "5.9.2",
+    "vue_compiler_sfc_version": "3.5.39"
+  },
+  "request": {
+    "request_id": "conv-vue3-todo-wechat",
+    "request_digest": "sha256:3a6e8b167511c9c5decf5c090ac5bd9eae61445142bf6463c0806e8369241a02",
+    "source_revision": "e8fabbe19f96a432e3ba77470e1c35a000cc683cd4ac0c084bbabcf31df79d82",
+    "target": {
+      "platform": "wechat",
+      "platformVersion": "3.9.1",
+      "toolchainVersion": "1.06.2504010"
+    },
+    "target_profile_digest": "sha256:4d38f1e6365911d5731efeeeb2b9d7f4d4460a6950c4d7c0b2744e66d0f101e5",
+    "target_profile": {
+      "profile_key": "frontend-to-miniapp-vue3-wechat-v1-target",
+      "framework": "wechat-native-miniapp-candidate",
+      "versions": [
+        "wechat-base-library-3.9.1-requested-NOT_RUN"
+      ],
+      "runtime_versions": [
+        "wechat-base-library-3.9.1-requested-NOT_RUN"
+      ],
+      "generator_profile_version": "2026-08-20.1",
+      "official_toolchain_version": "wechat-devtools-1.06.2504010-NOT_RUN",
+      "authorization": {
+        "official_build": false,
+        "preview": false,
+        "upload": false,
+        "review": false,
+        "release": false
+      },
+      "file_model": {
+        "application_config": "app.json",
+        "page_config": "<page>.json",
+        "template_extension": ".wxml",
+        "style_extension": ".wxss",
+        "script_extension": ".js"
+      }
+    }
+  },
+  "conversion": {
+    "run_id": "miniapp-run-conv-vue3-todo-wechat-286db19cd7a9074d",
+    "deterministic_digest": "sha256:9d8130e19821fe1e1b70c6f0b1cbb07efbebb89514c4474f584d1eddffba0690",
+    "analysis_digest": "sha256:e5d485588477c286bd1c6d2d97ab766ad3033c79cc17689e6ff880ec39e78395",
+    "semantic_ir_digest": "sha256:f705675416fe8d12e08d3726b6c7705a25414f16a08fd94f6c91d31b5259e646",
+    "plan_digest": "sha256:49cb87d56391330a2a95999bdf0ef34226facb9747156641bff55c1908364bd7",
+    "checkpoint_digest": "sha256:a8f15173dc37865251d7b776585e52f91bfeedb4505d15b94c4cc114b7bb9ed0"
+  },
+  "analysis": {
+    "parser": "@vue/compiler-sfc+@vue/compiler-sfc-template@3.5.39+router-ast+typescript-compiler-api",
+    "coverage": 1,
+    "parsed_files": [
+      "src/App.vue",
+      "src/main.ts",
+      "src/router.ts",
+      "src/stores/todo.ts",
+      "src/views/HomeView.vue"
+    ],
+    "failed_files": [],
+    "component_count": 8,
+    "route_count": 1,
+    "state_count": 2,
+    "findings": [
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "severity": "warning",
+        "message": "createApp(App).use(createPinia()).use(router).mount is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/main.ts",
+            "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236",
+            "startLine": 6,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 60
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "severity": "warning",
+        "message": "createApp(App).use(createPinia()).use is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/main.ts",
+            "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236",
+            "startLine": 6,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 46
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "severity": "warning",
+        "message": "createApp(App).use is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/main.ts",
+            "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236",
+            "startLine": 6,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 34
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "severity": "warning",
+        "message": "createPinia is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/main.ts",
+            "sha256": "sha256:459212bdd373406bce624931836e0e759dfef13e43aa18143ae5cc5e3758c236",
+            "startLine": 6,
+            "startColumn": 20,
+            "endLine": 6,
+            "endColumn": 33
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "severity": "warning",
+        "message": "createWebHistory is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/router.ts",
+            "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d",
+            "startLine": 5,
+            "startColumn": 12,
+            "endLine": 5,
+            "endColumn": 30
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "severity": "warning",
+        "message": "main carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
+            "startLine": 6,
+            "startColumn": 3,
+            "endLine": 6,
+            "endColumn": 27
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "severity": "warning",
+        "message": "h1 carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
+            "startLine": 7,
+            "startColumn": 5,
+            "endLine": 7,
+            "endColumn": 18
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "severity": "warning",
+        "message": "section carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
+            "startLine": 15,
+            "startColumn": 3,
+            "endLine": 15,
+            "endColumn": 12
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "severity": "warning",
+        "message": "ul carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
+            "startLine": 18,
+            "startColumn": 5,
+            "endLine": 18,
+            "endColumn": 9
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "severity": "warning",
+        "message": "li carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/views/HomeView.vue",
+            "sha256": "sha256:ae19e4143890c99b4cba6f350f41ff8eef37f2244c98b354d3fe3b0f4c120c3f",
+            "startLine": 19,
+            "startColumn": 7,
+            "endLine": 19,
+            "endColumn": 89
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
+        "severity": "warning",
+        "message": "Router history/base semantics are not represented by the generated native page manifest.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/router.ts",
+            "sha256": "sha256:1b40f66376ec1849e3d8bbc34beff969d93a45ec375a11368126af3048f3e18d",
+            "startLine": 5,
+            "startColumn": 3,
+            "endLine": 5,
+            "endColumn": 30
+          }
+        ]
+      },
+      {
+        "code": "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
+        "severity": "warning",
+        "message": "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission.",
+        "classification": "C",
+        "blocking": false,
+        "sourceRefs": [
+          {
+            "path": "src/App.vue",
+            "sha256": "sha256:f051f1065b6ff315cf9c8d0e8f2e0d86d69ef0c8c02c2935d7017120d30bbe9c",
+            "startLine": 12,
+            "startColumn": 1,
+            "endLine": 12,
+            "endColumn": 15
+          }
+        ]
+      }
+    ]
+  },
+  "semantic_ir": {
+    "profile": "miniapp-ui-interaction-v1",
+    "node_count": 13,
+    "trace_coverage": 1,
+    "batch32_pack_model": "ui-ir/model.json is a separate 20-node review model, not this runtime IR"
+  },
+  "plan": {
+    "summary": {
+      "A": 8,
+      "B": 0,
+      "C": 12,
+      "D": 5,
+      "E": 0
+    },
+    "findings": [
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "createApp(App).use is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "createApp(App).use(createPinia()).use is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "createApp(App).use(createPinia()).use(router).mount is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "createPinia is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
+      },
+      {
+        "code": "MINIAPP_CALL_SEMANTICS_UNRESOLVED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "createWebHistory is parsed but not consumed by a capability, state transition, router, lifecycle or bounded interaction model."
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "h1 carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "li carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "main carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "section carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
+      },
+      {
+        "code": "MINIAPP_HTML_IMPLICIT_SEMANTICS_NOT_LOWERED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "ul carries implicit landmark, heading, label, or list accessibility semantics that are not represented by the target component profile."
+      },
+      {
+        "code": "MINIAPP_ROUTER_HISTORY_BASE_UNRESOLVED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "Router history/base semantics are not represented by the generated native page manifest."
+      },
+      {
+        "code": "MINIAPP_SCOPED_STYLE_NOT_LOWERED",
+        "platform": "all",
+        "classification": "C",
+        "blocking": true,
+        "message": "Vue scoped/module style ownership requires deterministic scope selectors and matching template attributes before target emission."
+      },
+      {
+        "code": "MINIAPP_SOURCE_BUILD_TOOL_BINDING_MISSING_OR_AMBIGUOUS",
+        "platform": "all",
+        "classification": "D",
+        "blocking": true,
+        "message": "requested build tool 5.9.2 requires exactly one known manifest dependency and package-lock resolution; found 0/0."
+      },
+      {
+        "code": "MINIAPP_SOURCE_LANGUAGE_LOCK_EVIDENCE_MISSING",
+        "platform": "all",
+        "classification": "D",
+        "blocking": true,
+        "message": "typescript@missing has no package-lock resolution for requested language 5.9.2."
+      },
+      {
+        "code": "MINIAPP_SOURCE_RUNTIME_DECLARATION_MISSING",
+        "platform": "all",
+        "classification": "D",
+        "blocking": true,
+        "message": "requested source runtime 26.0.0 has no exact package.json engines.node declaration; installed source runtime execution remains NOT_RUN."
+      },
+      {
+        "code": "MINIAPP_SOURCE_VERSION_LOCK_EVIDENCE_MISSING",
+        "platform": "all",
+        "classification": "D",
+        "blocking": true,
+        "message": "vue@^3.0.0 has no parsed package-lock resolution bound to source bytes."
+      },
+      {
+        "code": "MINIAPP_SOURCE_VERSION_MANIFEST_MISMATCH",
+        "platform": "all",
+        "classification": "D",
+        "blocking": true,
+        "message": "request 3.5.39 does not match source manifest vue@^3.0.0."
+      }
+    ]
+  },
+  "generated_project": {
+    "platform": "wechat",
+    "platform_version": "3.9.1",
+    "toolchain_version": "1.06.2504010",
+    "profile_version": "2026-08-20.1",
+    "deterministic_digest": "sha256:4f791e4894627ce2fa26c03e4f5f0bcced3bea2fdb51476808b435cabac7b873",
+    "file_count": 11,
+    "static_validation": "PASSED",
+    "official_build": "NOT_RUN",
+    "device_runtime": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+    "artifacts": [
+      {
+        "path": "adapters/platform.js",
+        "sha256": "sha256:8ea42b7b8ee37e4ec282ebd637ddb723aecbce3ebb547c666b7b6879709636ca",
+        "bytes": 649
+      },
+      {
+        "path": "app.js",
+        "sha256": "sha256:516bc3ee3685e36ec5c74d30eec6fa18690f6ad370eca17e194c1882e114396e",
+        "bytes": 169
+      },
+      {
+        "path": "app.json",
+        "sha256": "sha256:bfc2c6a6b1d0d35c4a703cf381337f6f1e0cdef73dd9fc8c79b9bec0693c0ad1",
+        "bytes": 223
+      },
+      {
+        "path": "app.wxss",
+        "sha256": "sha256:6e264462b17ffd3ebacf55d7568e7db53886ccb978fe3da2680b8303b0de653f",
+        "bytes": 476
+      },
+      {
+        "path": "migration-findings.json",
+        "sha256": "sha256:a9ddffa1cca817f8b8c0f842e4235f94af538ef5b8c26b504a9393edabb22802",
+        "bytes": 3109
+      },
+      {
+        "path": "pages/index/index.js",
+        "sha256": "sha256:04abb27c4135ff447c15747194ae9ca4b070d92d3ccb673c2d013ba529ee5d3a",
+        "bytes": 1488
+      },
+      {
+        "path": "pages/index/index.json",
+        "sha256": "sha256:0a8bcafa55f5e50b92ef24d825875f116290019242a8f949c4c9520cd9bc8228",
+        "bytes": 64
+      },
+      {
+        "path": "pages/index/index.wxml",
+        "sha256": "sha256:55568b579d5601b4a75bf9796f59d64fa6e609c4ea0aa5e6b580411996b7ec14",
+        "bytes": 950
+      },
+      {
+        "path": "pages/index/index.wxss",
+        "sha256": "sha256:6e264462b17ffd3ebacf55d7568e7db53886ccb978fe3da2680b8303b0de653f",
+        "bytes": 476
+      },
+      {
+        "path": "project.config.json",
+        "sha256": "sha256:3eb8d55fac876097c97cb485d171374b88f28bf9ed416b962b503ba23373aee5",
+        "bytes": 230
+      },
+      {
+        "path": "trace-map.json",
+        "sha256": "sha256:0284fd1e1e23d0af6e1650bd53c911ced148ac795056eb9501f34e4976557146",
+        "bytes": 938
+      }
+    ]
+  },
+  "gates": {
+    "G0": "PASSED",
+    "G1": "PASSED",
+    "G2": "PASSED",
+    "G3": "BLOCKED",
+    "G4": "BLOCKED",
+    "G5": "NOT_RUN",
+    "G6": "NOT_RUN",
+    "G7": "NOT_RUN",
+    "G8": "NOT_RUN",
+    "G9": "NOT_RUN"
+  },
+  "task_states": {
+    "BLOCKED": 24,
+    "NOT_APPLICABLE": 7,
+    "NOT_RUN_EXTERNAL": 9
+  },
+  "local_engineering": "BLOCKED",
+  "readiness": "NOT_READY",
+  "certification": "NOT_CERTIFIED",
+  "external_evidence": "NOT_RUN",
+  "official_wechat_build_preview_device_upload_review_release": "NOT_RUN",
+  "replay": "pnpm --dir engines/frontend-client-engine run build && node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check"
+}

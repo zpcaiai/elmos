@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/component-mapping.schema.json",
+  "title": "Component Mapping Decision",
+  "type": "object",
+  "required": [
+    "mapping_id",
+    "source_component",
+    "semantic_role",
+    "targets"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "mapping_id": {
+      "type": "string"
+    },
+    "source_component": {
+      "type": "object",
+      "required": [
+        "framework",
+        "symbol"
+      ],
+      "properties": {
+        "framework": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "usage_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "semantic_role": {
+      "type": "string"
+    },
+    "requirements": {
+      "type": "object",
+      "properties": {
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessibility": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "platform",
+          "classification",
+          "strategy",
+          "tests"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "wechat",
+              "alipay",
+              "douyin",
+              "xiaohongshu"
+            ]
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ]
+          },
+          "strategy": {
+            "type": "string"
+          },
+          "target_component": {
+            "type": "string"
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

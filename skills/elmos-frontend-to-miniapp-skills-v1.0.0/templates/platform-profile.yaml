@@ -1,0 +1,19 @@
+platform: wechat
+profile_version: "YYYY-MM-DD.N"
+verified_at: "YYYY-MM-DD"
+file_model:
+  app_config: app.json
+  page_config: "<page>.json"
+  template_extension: ".wxml"
+  style_extension: ".wxss"
+  script_extension: ".ts"
+toolchain:
+  name: "<official-tool>"
+  version: "<pinned-version>"
+  build_supported: true
+  preview_supported: false
+  upload_supported: false
+limits:
+  source: dynamic-official-profile
+source_refs:
+  - https://official.example/

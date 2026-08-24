@@ -32,6 +32,13 @@ For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, re
 - Keep development, negative, holdout, and representative workload corpora independent.
 - Only `scripts/batch32/run_client_gate.py` may determine certification readiness.
 
+## Frontend to MiniApp Skill package
+
+- The trusted source archive is `skills/subskills/elmos-frontend-to-miniapp-skills-v1.0.0.zip`; the immutable extracted source is `skills/elmos-frontend-to-miniapp-skills-v1.0.0/`.
+- Start repository-wide work with `$frontend-to-miniapp-orchestrator`, then invoke the narrowest source analyzer, semantic IR, planning, target generator, validation, repair, delivery, or evidence Skill. Preserve the 22 exact names and the manifest-owned DAG.
+- Treat the package's `implementation-ready` label as source intent only. Digest-bound bounded local handlers may be `LOCAL_EXECUTED`; official source/target runtime and external evidence remain `NOT_RUN`, and certification remains `NOT_CERTIFIED` until exact toolchains, official MiniApp builds, browser/emulator/device journeys, independent corpora, and the Batch 32 gate exist. Without a valid local qualification receipt, handler evidence remains `DECLARED`.
+- Frontend-to-MiniApp routes are directional. They do not imply reverse MiniApp-to-frontend support, other platform/API versions, WebView or full-page Canvas equivalence, permission broadening, silent feature drops, upload, review, payment, or release authorization.
+- Source package scripts are untrusted input and are not executed by the importer. Run `make frontend-to-miniapp-skills` for pinned ZIP, checksum, Schema, compiled-contract, DAG, dual-root, provenance, and drift validation.
 
 # Batch 33 Cloud, IaC, and DevOps modernization skills
 

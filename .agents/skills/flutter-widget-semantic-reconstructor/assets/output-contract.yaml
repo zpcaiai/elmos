@@ -1,0 +1,32 @@
+skill: flutter-widget-semantic-reconstructor
+version: 1.0.0
+task_ids:
+- MAPP-009
+- MAPP-010
+required_outputs:
+- path: flutter-analysis.json
+  required: true
+- path: widget-tree.json
+  required: true
+- path: navigation-graph.json
+  required: true
+- path: state-graph.json
+  required: true
+- path: platform-channel-report.json
+  required: true
+gates:
+- name: 主要页面 Widget Tree 可重建
+  required: true
+- name: 导航图闭合
+  required: true
+- name: 插件与 Platform Channel 100% 有结论
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

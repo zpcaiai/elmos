@@ -50,6 +50,7 @@ _to_delete/
 /elmos-*.skill
 /elmos-*.bundle
 /artifacts/batch105-108/
+/artifacts/frontend-to-miniapp/local-runtime-receipt-v1/
 /docs/migration-spec-source-batches.tar.gz
 /skills/*.zip
 /skills/batch_01_to_44_complete_skill_system/

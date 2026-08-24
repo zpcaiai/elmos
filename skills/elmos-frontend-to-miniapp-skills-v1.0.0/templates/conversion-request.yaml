@@ -1,0 +1,35 @@
+request_id: conv-example-001
+tenant_id: tenant-example
+source:
+  root: /absolute/path/to/source-repository
+  revision: "<git-commit-or-content-hash>"
+  framework_hint: auto
+  include:
+    - "src/**/*"
+    - "package.json"
+    - "pubspec.yaml"
+  exclude:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+targets:
+  - wechat
+  - alipay
+  - douyin
+  - xiaohongshu
+strategy:
+  priority: balanced
+  webview_fallback: deny
+  full_page_canvas_fallback: deny
+  unsupported_policy: ask-decision
+quality:
+  critical_flow_pass_rate: 1.0
+  visual_similarity_min: 0.95
+  max_auto_repair_iterations: 3
+  performance_policy_ref: plans/default-performance-policy.yaml
+release:
+  mode: build-only
+  human_approval_required: true
+  credential_refs: {}
+metadata:
+  owner: elmos

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "transformation_key": "vue3-todo-ir-to-wechat-native-candidate-v1",
+  "source_snapshot_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+  "input_contract": "ui-ir/model.json",
+  "target_profile": "target-profile/profile.json",
+  "semantic_core": "typed-ui-interaction-ir",
+  "regex_or_template_replacement_core": false,
+  "mappings": [
+    {"source_node": "route.home", "target_contract": "app.json pages[0] plus pages/index/index.json"},
+    {"source_node": "component.app-shell", "target_contract": "pages/index/index.wxml view shell"},
+    {"source_node": "component.todo-input", "target_contract": "input value bound to todoText with bindinput handler"},
+    {"source_node": "component.add-button", "target_contract": "button disabled for blank trimmed todoText with bindtap handler"},
+    {"source_node": "component.todo-list", "target_contract": "wx:for over todoItems with deterministic item-plus-index key contract"},
+    {"source_node": "effect.add-todo", "target_contract": "synchronous setData append trimmed value then clear todoText"},
+    {"source_node": "token.app-shell", "target_contract": "wxss shell width margin and padding candidate"},
+    {"source_node": "permission.local-only", "target_contract": "no generated network identity payment upload review or release effect"}
+  ],
+  "fallbacks": {"webview": "DENIED", "full_page_canvas": "DENIED", "silent_drop": "DENIED"},
+  "ownership": {"generated_files": "generated-candidate", "manual_regions": [], "protected_regions": []},
+  "local_contract_state": "REVIEW_ONLY_NOT_EXECUTED",
+  "execution_binding": {
+    "state": "NOT_RUN",
+    "reason": "The checked-in Batch 32 UI IR and this mapping contract are review artifacts. The local runtime builds a separate source-derived IR and does not consume or verify either artifact digest.",
+    "runtime_input_digest": null,
+    "runtime_mapping_coverage": null
+  },
+  "local_runtime_evidence": "certification/local-runtime-candidate-evidence.json",
+  "official_build_state": "NOT_RUN",
+  "runtime_equivalence_state": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "corpus_key": "vue3-wechat-development-v1",
+  "independence_class": "development",
+  "may_author_transformation_rules": true,
+  "cases": [
+    {
+      "case_id": "DEV-VUE3-WECHAT-001",
+      "input_ref": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source",
+      "input_digest": "sha256:53e3921c0c1a116529257851a92ce2b049f190dcf5df36cb609ec910bf9c74bc",
+      "scope": ["static inventory", "typed UI IR", "candidate mapping contract"],
+      "local_static_state": "PASSED",
+      "runtime_state": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    }
+  ]
+}

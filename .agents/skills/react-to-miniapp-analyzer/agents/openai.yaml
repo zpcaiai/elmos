@@ -1,0 +1,4 @@
+interface:
+  display_name: "React to MiniApp Analyzer"
+  short_description: "Run this frontend-to-MiniApp Skill with evidence controls"
+  default_prompt: "Use $react-to-miniapp-analyzer with its compiled contract, dispatch Skill key react-to-miniapp-analyzer through `engines/frontend-client-engine` via `npm run miniapp` / `executeMiniappSkill`. Treat bounded runtime evidence as DECLARED, while external evidence stays NOT_RUN and certification stays NOT_CERTIFIED until exact Batch 32 gates pass."

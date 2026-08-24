@@ -1,0 +1,34 @@
+skill: frontend-to-miniapp-orchestrator
+version: 1.0.0
+task_ids:
+- MAPP-001
+- MAPP-002
+required_outputs:
+- path: runs/<run-id>/state.json
+  required: true
+- path: runs/<run-id>/plan.json
+  required: true
+- path: runs/<run-id>/artifacts-index.json
+  required: true
+- path: 最终 migration-evidence.json 与兼容性报告
+  required: true
+gates:
+- name: 请求 Schema 通过
+  required: true
+- name: 所有目标平台均有明确计划
+  required: true
+- name: 关键流程 100% 通过
+  required: true
+- name: 无未披露 C/D/E 项
+  required: true
+- name: 证据包完整且可重放
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

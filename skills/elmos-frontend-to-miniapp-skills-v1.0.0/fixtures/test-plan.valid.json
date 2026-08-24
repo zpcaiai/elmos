@@ -1,0 +1,33 @@
+{
+  "plan_id": "test-plan-demo",
+  "targets": [
+    "source",
+    "wechat",
+    "alipay"
+  ],
+  "suites": [
+    {
+      "suite_id": "critical-todo-flow",
+      "type": "differential",
+      "critical": true,
+      "cases": [
+        {
+          "case_id": "add-todo",
+          "steps": [
+            "open home",
+            "enter text",
+            "tap add"
+          ],
+          "expected": [
+            "one todo visible",
+            "state count equals one"
+          ]
+        }
+      ]
+    }
+  ],
+  "thresholds": {
+    "critical_flow_pass_rate": 1.0,
+    "visual_similarity_min": 0.95
+  }
+}

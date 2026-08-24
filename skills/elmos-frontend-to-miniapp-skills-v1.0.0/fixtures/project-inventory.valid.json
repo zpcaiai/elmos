@@ -1,0 +1,60 @@
+{
+  "inventory_id": "inv-demo-001",
+  "source_revision": "0123456789abcdef",
+  "files": [
+    {
+      "path": "src/App.vue",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "vue-sfc",
+      "status": "eligible"
+    },
+    {
+      "path": "dist/app.js",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "kind": "generated",
+      "status": "excluded",
+      "reason": "exclude glob"
+    }
+  ],
+  "framework_candidates": [
+    {
+      "framework": "vue3",
+      "version_range": "^3",
+      "confidence": 0.99,
+      "evidence": [
+        "package.json:vue",
+        "src/App.vue"
+      ]
+    }
+  ],
+  "entrypoints": [
+    "src/main.ts"
+  ],
+  "routes": [
+    "src/router.ts"
+  ],
+  "components": [
+    "src/App.vue"
+  ],
+  "stores": [
+    "src/stores/todo.ts"
+  ],
+  "assets": [
+    "src/assets/logo.svg"
+  ],
+  "dependencies": [
+    {
+      "name": "vue",
+      "version": "3.x",
+      "scope": "direct",
+      "source": "package-lock.json"
+    }
+  ],
+  "platform_api_signals": [],
+  "coverage": {
+    "total_files": 2,
+    "eligible_files": 1,
+    "processed_files": 1,
+    "ratio": 1.0
+  }
+}

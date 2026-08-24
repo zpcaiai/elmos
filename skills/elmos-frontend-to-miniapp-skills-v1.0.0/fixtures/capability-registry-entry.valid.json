@@ -1,0 +1,60 @@
+{
+  "id": "storage.local",
+  "category": "storage",
+  "source_patterns": [
+    {
+      "framework": "vue",
+      "symbol": "localStorage"
+    }
+  ],
+  "targets": {
+    "wechat": {
+      "support": "adapter",
+      "runtime": "hybrid",
+      "permission": [],
+      "review_risk": "medium",
+      "adapter": "wechat-storage",
+      "required_tests": [
+        "contract"
+      ]
+    },
+    "alipay": {
+      "support": "adapter",
+      "runtime": "hybrid",
+      "permission": [],
+      "review_risk": "medium",
+      "adapter": "alipay-storage",
+      "required_tests": [
+        "contract"
+      ]
+    },
+    "douyin": {
+      "support": "adapter",
+      "runtime": "hybrid",
+      "permission": [],
+      "review_risk": "medium",
+      "adapter": "douyin-storage",
+      "required_tests": [
+        "contract"
+      ]
+    },
+    "xiaohongshu": {
+      "support": "adapter",
+      "runtime": "hybrid",
+      "permission": [],
+      "review_risk": "medium",
+      "adapter": "xhs-storage",
+      "required_tests": [
+        "contract"
+      ]
+    }
+  },
+  "fallback": {
+    "strategy": "memory-only-with-disclosure",
+    "requires_approval": true
+  },
+  "verified_at": "2026-08-19",
+  "source_refs": [
+    "docs/PLATFORM-REFERENCES.md"
+  ]
+}

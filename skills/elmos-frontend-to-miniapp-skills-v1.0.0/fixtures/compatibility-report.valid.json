@@ -1,0 +1,30 @@
+{
+  "report_id": "compat-demo",
+  "request_id": "conv-demo-001",
+  "targets": [
+    "wechat",
+    "alipay"
+  ],
+  "summary": {
+    "A": 2,
+    "B": 1,
+    "C": 0,
+    "D": 1,
+    "E": 0
+  },
+  "findings": [
+    {
+      "finding_id": "finding-payment-alipay",
+      "feature": "commerce.payment.request",
+      "classification": "D",
+      "platform": "alipay",
+      "source_ref": "src/services/payment.ts:10",
+      "impact": "requires account capability and server adapter",
+      "alternatives": [
+        "sandbox contract only"
+      ],
+      "blocking": true,
+      "decision_owner": "product-and-platform-owner"
+    }
+  ]
+}

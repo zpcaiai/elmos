@@ -1,0 +1,30 @@
+skill: miniapp-visual-regression-testing
+version: 1.0.0
+task_ids:
+- MAPP-033
+- MAPP-034
+required_outputs:
+- path: visual-diff-report.html
+  required: true
+- path: screenshots/**
+  required: true
+- path: layout-diffs.json
+  required: true
+- path: visual-repair-candidates.json
+  required: true
+gates:
+- name: 确定性页面相似度达到请求阈值
+  required: true
+- name: 关键区域无严重差异
+  required: true
+- name: 无文本截断或不可操作控件
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

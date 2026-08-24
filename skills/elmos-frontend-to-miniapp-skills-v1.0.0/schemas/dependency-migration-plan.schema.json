@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/dependency-migration-plan.schema.json",
+  "title": "Dependency Migration Plan",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "dependencies",
+    "summary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "plan_id": {
+      "type": "string"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "source_version",
+          "usage_evidence",
+          "action",
+          "risk",
+          "targets"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "source_version": {
+            "type": "string"
+          },
+          "usage_evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "retain",
+              "replace",
+              "rewrite",
+              "backend-move",
+              "isolate",
+              "remove-approved",
+              "block"
+            ]
+          },
+          "replacement": {
+            "type": "string"
+          },
+          "risk": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "license": {
+            "type": "string"
+          },
+          "targets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "supported",
+                "conditional",
+                "unsupported",
+                "unknown"
+              ]
+            }
+          },
+          "required_tests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total",
+        "blocked",
+        "high_risk"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "high_risk": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

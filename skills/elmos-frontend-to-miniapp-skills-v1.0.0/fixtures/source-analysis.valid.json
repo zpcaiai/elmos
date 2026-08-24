@@ -1,0 +1,72 @@
+{
+  "analysis_id": "analysis-vue-demo",
+  "framework": "vue3",
+  "framework_version": "3.x",
+  "confidence": 0.99,
+  "components": [
+    {
+      "id": "fact-component-app",
+      "kind": "component",
+      "name": "App",
+      "confidence": 1.0,
+      "data": {
+        "path": "src/App.vue"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "fact-route-home",
+      "kind": "route",
+      "name": "home",
+      "confidence": 1.0,
+      "data": {
+        "path": "/"
+      }
+    }
+  ],
+  "state_nodes": [
+    {
+      "id": "fact-state-todos",
+      "kind": "store",
+      "name": "todos",
+      "confidence": 1.0,
+      "data": {
+        "library": "pinia"
+      }
+    }
+  ],
+  "lifecycle_hooks": [
+    {
+      "id": "fact-hook-mounted",
+      "kind": "lifecycle",
+      "name": "mounted",
+      "confidence": 1.0,
+      "data": {}
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "fact-storage",
+      "kind": "capability",
+      "name": "storage.local",
+      "confidence": 1.0,
+      "data": {}
+    }
+  ],
+  "unsupported_signals": [],
+  "trace": [
+    {
+      "fact_id": "fact-component-app",
+      "path": "src/App.vue",
+      "start_line": 1,
+      "end_line": 42
+    },
+    {
+      "fact_id": "fact-route-home",
+      "path": "src/router.ts",
+      "start_line": 1,
+      "end_line": 12
+    }
+  ]
+}

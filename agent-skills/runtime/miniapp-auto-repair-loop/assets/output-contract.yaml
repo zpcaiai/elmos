@@ -1,0 +1,32 @@
+skill: miniapp-auto-repair-loop
+version: 1.0.0
+task_ids:
+- MAPP-035
+- MAPP-036
+required_outputs:
+- path: repair-action.json
+  required: true
+- path: patches/**
+  required: true
+- path: repair-history.json
+  required: true
+- path: post-repair-validation.json
+  required: true
+gates:
+- name: 失败已消失
+  required: true
+- name: 受影响门禁全部通过
+  required: true
+- name: 无新高严重度 finding
+  required: true
+- name: 补丁可回滚
+  required: true
+failure_policy:
+  silent_drop: deny
+  max_retries: 2
+  escalate_on:
+  - permission-change
+  - real-payment
+  - release
+  - quality-gate-lowering
+  - repeated-equivalent-patch

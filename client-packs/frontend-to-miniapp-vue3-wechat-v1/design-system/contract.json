@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "contract_key": "vue3-todo-local-style-to-wxss-candidate-v1",
+  "source": {"max_width_px": 640, "margin_inline": "auto", "padding_px": 16},
+  "candidate": {"max_width_px": 640, "margin_inline": "auto", "padding_px": 16},
+  "source_ref": "skills/elmos-frontend-to-miniapp-skills-v1.0.0/examples/vue3-todo/source/src/App.vue",
+  "visual_equivalence_state": "NOT_RUN",
+  "approved_baseline_ref": null,
+  "automatic_baseline_updates": false
+}
