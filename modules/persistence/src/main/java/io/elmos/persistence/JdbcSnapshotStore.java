@@ -1,5 +1,7 @@
 package io.elmos.persistence;
 
+import static io.elmos.persistence.SqlTimestamps.offset;
+
 import io.elmos.snapshot.SnapshotModel;
 import io.elmos.snapshot.SnapshotPorts;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -15,18 +17,28 @@ public class JdbcSnapshotStore implements SnapshotPorts.SnapshotStore {
     private final JdbcClient jdbc;
     public JdbcSnapshotStore(JdbcClient jdbc) { this.jdbc = jdbc; }
 
-    @Override public SnapshotModel.RepositorySnapshot findReusable(String repositoryId, String commitSha, int schemaVersion) {
+    @Override
+    @Transactional(readOnly = true)
+    public SnapshotModel.RepositorySnapshot findReusable(
+            String organizationId, String repositoryId, String commitSha, int schemaVersion
+    ) {
+        setTenant(organizationId);
         return jdbc.sql("""
-                select snapshot_id, organization_id, repository_id, requested_ref, commit_sha, tree_sha,
-                       archive_artifact_ref, archive_sha256, archive_size, manifest_artifact_ref, manifest_sha256,
-                       snapshot_schema_version, status, captured_at
-                from repository_snapshots where repository_id = :repository and commit_sha = :commit and snapshot_schema_version = :version
-                """).param("repository", repositoryId).param("commit", commitSha).param("version", schemaVersion)
+                select snapshot_id, organization_id, repository_id, requested_ref, commit_sha,
+                       tree_sha, archive_artifact_ref, archive_sha256, archive_size,
+                       manifest_artifact_ref, manifest_sha256, snapshot_schema_version, status,
+                       captured_at
+                  from repository_snapshots
+                 where organization_id = :organization and repository_id = :repository
+                   and commit_sha = :commit and snapshot_schema_version = :version
+                """).param("organization", organizationId).param("repository", repositoryId)
+                .param("commit", commitSha).param("version", schemaVersion)
                 .query(JdbcSnapshotStore::map).optional().orElse(null);
     }
 
     @Override @Transactional public SnapshotModel.RepositorySnapshot saveAvailable(SnapshotModel.RepositorySnapshot snapshot) {
         if (snapshot.status() != SnapshotModel.Status.AVAILABLE) throw new IllegalArgumentException("only available immutable snapshots may be stored");
+        setTenant(snapshot.organizationId());
         jdbc.sql("""
                 insert into repository_snapshots(snapshot_id, organization_id, repository_id, commit_sha, requested_ref,
                     captured_at, build_files_hash, archive_artifact_ref, tree_sha, archive_sha256, archive_size,
@@ -36,15 +48,32 @@ public class JdbcSnapshotStore implements SnapshotPorts.SnapshotStore {
                 on conflict (repository_id, commit_sha, snapshot_schema_version) do nothing
                 """).param("id", snapshot.snapshotId()).param("organization", snapshot.organizationId())
                 .param("repository", snapshot.repositoryId()).param("commit", snapshot.resolvedCommitSha())
-                .param("ref", snapshot.requestedRef()).param("captured", snapshot.capturedAt())
+                .param("ref", snapshot.requestedRef())
+                .param("captured", offset(snapshot.capturedAt()))
                 .param("buildHash", "sha256:" + snapshot.manifestSha256()).param("archiveRef", snapshot.archiveArtifactRef())
                 .param("tree", snapshot.treeSha()).param("archiveHash", snapshot.archiveSha256()).param("archiveSize", snapshot.archiveSize())
                 .param("manifestRef", snapshot.manifestArtifactRef()).param("manifestHash", snapshot.manifestSha256())
                 .param("version", snapshot.snapshotSchemaVersion()).update();
-        SnapshotModel.RepositorySnapshot stored = findReusable(snapshot.repositoryId(), snapshot.resolvedCommitSha(), snapshot.snapshotSchemaVersion());
+        SnapshotModel.RepositorySnapshot stored = findReusable(
+                snapshot.organizationId(), snapshot.repositoryId(),
+                snapshot.resolvedCommitSha(), snapshot.snapshotSchemaVersion());
         if (stored == null || !stored.archiveSha256().equals(snapshot.archiveSha256()) || !stored.manifestSha256().equals(snapshot.manifestSha256()))
             throw new SecurityException("snapshot content conflict for immutable commit identity");
         return stored;
+    }
+
+    private void setTenant(String organizationId) {
+        requireOrganization(organizationId);
+        jdbc.sql("select set_config('app.organization_id', :organization, true)")
+                .param("organization", organizationId)
+                .query(String.class)
+                .single();
+    }
+
+    private static void requireOrganization(String organizationId) {
+        if (organizationId == null || organizationId.isBlank()) {
+            throw new IllegalArgumentException("organizationId is required");
+        }
     }
 
     private static SnapshotModel.RepositorySnapshot map(ResultSet result, int row) throws SQLException {

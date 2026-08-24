@@ -49,6 +49,22 @@ public interface TenantEncryption {
         return false;
     }
 
+    /** Exact operator-visible application-tier protection mode. */
+    default String atRestProtection() {
+        return encryptsAtRest() ? "TENANT_AES_256_GCM" : "STORAGE_TIER_MANAGED";
+    }
+
+    /**
+     * Maximum bytes an implementation may add around the plaintext.
+     *
+     * <p>The encrypted local store uses this bound before allocating or reading an envelope. A
+     * cloud KMS envelope includes a wrapped data key and provider key reference, so the historic
+     * one-kibibyte AES-GCM allowance is not a safe universal assumption.
+     */
+    default long maximumEnvelopeOverheadBytes() {
+        return 1024L;
+    }
+
     /** Versioned form used by durable encrypted tiers so a key rotation keeps old objects readable. */
     default Envelope seal(String tenantId, CasDigest plaintextDigest, byte[] plaintext) {
         return new Envelope("default", encrypt(tenantId, plaintextDigest, plaintext));

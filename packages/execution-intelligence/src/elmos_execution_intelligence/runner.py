@@ -16,10 +16,8 @@ from typing import Any
 
 from .durable import DurableStore, Orchestrator, TaskOutcome
 from .io_utils import markdown_table
+from .resource_paths import TEMPLATE_DIR
 from .simulation import TOKEN_FIELDS, effective_capacity
-
-PACKAGE_ROOT = Path(__file__).resolve().parents[2]
-TEMPLATE_DIR = PACKAGE_ROOT / "templates"
 
 
 def render_template(name: str, values: dict[str, Any], template_dir: Path | None = None) -> str:

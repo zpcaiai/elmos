@@ -29,19 +29,19 @@ of cross-instance portfolio-cache hits.
 | `TieredCasStore` | read-through, best-effort vs durable writes, LRU eviction that never drops a not-yet-durable object |
 | `ResumableUploadService` | direct + multipart upload, per-chunk digests, resume offset, conflict detection, quarantine |
 | `TransferPolicy` | compression decision, deflate codec, token-bucket bandwidth limiter |
-| `TenantEncryption`, `DirectoryTenantEncryption`, `TenantEncryptedLocalCasStore` | versioned per-tenant AES-GCM envelopes, operator-mounted keyring rotation and tenant-namespaced ciphertext on local disk |
+| `TenantEncryption`, `DirectoryTenantEncryption`, `KmsTenantEncryption`, `TenantEncryptedLocalCasStore` | versioned per-tenant AES-GCM envelopes, operator-mounted keyring or external KMS data-key provider, rotation/revocation and tenant-namespaced ciphertext on local disk |
 | `ActionKeyBuilder`, `ActionKey` | exact action key + component diffing for miss explanation |
 | `ActionResultRecord` | `action-result.schema.json` shape, with the failure taxonomy |
 | `LogRedaction` | secret removal before a log is cached and replayed |
 | `CasAccessPolicy` | tenant / residency / clearance / permission-scope decision on every read |
-| `ActionCache`, `ActionCacheIndex`, `JdbcActionCacheIndex` | outcomes, failure-cache policy, sampled recompute, tenant-scoped quarantine and a durable reconstructable PostgreSQL index |
+| `ActionCache`, `ActionCacheIndex`, `JdbcActionCacheIndex`, `CachedActionExecutor` | outcomes, failure-cache policy, fresh read/execute authorization, sampled recompute, tenant-scoped quarantine and a durable reconstructable PostgreSQL index |
 | `CasGarbageCollector` | reachability marking, generation-safe roots, retention/legal hold and a reason-bound deletion manifest; any unresolved graph blocks the whole sweep |
 | `CasReconciler` | missing blobs, orphans, dangling manifests, incomplete uploads |
 | `CasMetrics` | per-layer outcome counters, savings, miss explanation |
 | `CasBatch`, `CasStore.putAll/getAll` | batch transfer with one existence probe and per-item failure isolation |
 | `RegionalPlacement` | residency to region mapping, placement admission, replication backlog |
 | `WorkloadIdentity` | PKIX chain validation, SPIFFE URI SAN, trust domain, clientAuth EKU, serial denylist |
-| `ResultSignature` | Ed25519 detached signatures over a versioned complete result/authorization/risk/writer subject; receipts bind the exact envelope digest |
+| `ResultSignature` | Ed25519 detached signatures over a versioned complete result/authorization/risk/writer subject; V69 persists detached bytes and every hit can reverify current key validity/revocation and the exact envelope |
 | `S3CasStore` | S3/MinIO shared tier over the REST API, signed by `modules/object-storage`'s `SigV4Presigner` |
 | `CasTelemetry`, `OtlpExporter` | OTel-shaped spans and instruments, OTLP/HTTP JSON export |
 | `CasAlerting` | six rules, per-rule-and-key throttling, webhook delivery |
@@ -101,24 +101,31 @@ These are real boundaries, not oversights. Do not read a green test run as cover
 - **Production certification.** The checked-in control-plane modes are single-host and explicitly
   `NOT_CERTIFIED`. Local tests do not prove multi-host object sharing, operator key custody,
   production PostgreSQL/RLS, recovery, scale, or independent verification.
-- **An execution-path ActionCache caller.** The durable Java index and control-plane bean exist,
-  but the typed runner/execution path does not yet call them; actuator status reports
-  `executionCaller=NOT_WIRED`.
-- **Cryptographic trust re-verification on a persisted ActionCache hit.** V67 stores the actual
-  writer-attested/result-attestation decisions and the versioned complete-subject envelope digest;
-  JDBC readback recomputes that digest and fails closed on drift. It deliberately does not persist
-  the detached signature bytes, verifier trust policy/key generation or workload attestation, and
-  it does not consult current revocation state on every hit. Actuator therefore still reports
-  `PERSISTED_DECISION_NOT_CRYPTOGRAPHICALLY_REVERIFIED`.
-- **Snapshot delete/archive lifecycle.** Capture registers atomic roots and handles known winner
-  replacement safely. No production snapshot deletion API currently invokes root release, and an
-  unknown database commit outcome deliberately retains the provisional root for reconciliation.
+- **A production execution-service binding for the typed caller.** `CachedActionExecutor` composes
+  fresh `CACHE_READ`/`EXECUTE` authorization and never executes after a cache denial, but no
+  production runner service invokes it yet. Actuator reports
+  `TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE`.
+- **An externally operated current-trust service.** V69 persists the detached signature bytes;
+  JDBC readback recomputes the complete-subject envelope, and `ResultSignature.Verifier` can
+  cryptographically reverify every hit against current key validity and revocation. The
+  control-plane default is deliberately `FAIL_CLOSED_CURRENT_TRUST_NOT_CONFIGURED`; an operator
+  must supply and validate the non-local trust/revocation provider before hits are enabled.
+- **A continuously operated snapshot lifecycle reconciler.** Capture and archive now record exact
+  root generations in the V68 journal, expose archive/reconciliation APIs, and retain ambiguous
+  roots. Running the reconciler as a production schedule, proving crash recovery under load, and
+  authorizing destructive snapshot policy are still external operational work.
 - **An atomic production legal-hold/deletion coordinator.** Catalogue loads now preserve the
   authoritative hold bit and the collector always checks it before tenant deletion. A hold applied
   after that load can still race the later object-store delete because no production GC epoch/row
   lock spans both systems. Executing collection remains unsupported until that handoff is atomic.
-- **Live PostgreSQL execution without an authorized database.** `JdbcCasCatalog` and
-  `JdbcActionCacheIndex` compile anywhere but their RLS/migration behavior requires a real
-  PostgreSQL run. In-memory contracts and SQL-shape tests are engineering evidence only.
+- **A production KMS provider and custody ceremony.** `KmsTenantEncryption` implements provider
+  data-key envelopes, context binding, rotation/revocation, outage fail-closed behavior and exact
+  plaintext-key zeroization. The control plane can select `provider=KMS` only with an explicit
+  provider bean. No cloud/HSM provider, production credentials, operator ceremony, recovery drill
+  or independent custody evidence is bundled here.
+- **Production PostgreSQL evidence.** Real PostgreSQL/Testcontainers harnesses cover migrations,
+  forced RLS and JDBC readback when Docker is available. Their exact run status belongs in
+  `.ai/TEST_RESULTS.md`; a local disposable database is not production availability, backup,
+  recovery, scale or independent evidence.
 - **A background exporter thread.** `OtlpExporter.export` is called by whoever owns the schedule.
   A hidden thread makes "did this reach the collector" untestable.

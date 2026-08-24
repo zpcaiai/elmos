@@ -10,6 +10,7 @@ import io.elmos.cas.TenantCasStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +18,7 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.util.Map;
 
-/** Wires the durable ActionCache index without claiming an execution-path caller exists. */
+/** Wires the durable ActionCache index and current-trust port without claiming caller binding. */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "elmos.action-cache.enabled", havingValue = "true")
 class CasActionCacheConfiguration {
@@ -38,20 +39,41 @@ class CasActionCacheConfiguration {
             TenantCasStore store,
             ActionCacheIndex index,
             Clock clock,
+            ObjectProvider<ActionCache.TrustRevalidator> trustProviders,
             @Value("${elmos.action-cache.sample-recompute-one-in-n:0}") int sampleOneInN
     ) {
         return new ActionCache(store, new CasAccessPolicy(),
                 ActionCache.FailureCachePolicy.none(),
                 new ActionCache.SampleRecomputePolicy(sampleOneInN),
-                clock::millis, new CasMetrics(), index, CasTelemetry.noop());
+                clock::millis, new CasMetrics(), index, CasTelemetry.noop(),
+                resolveTrustRevalidator(trustProviders));
     }
 
     @Bean
-    ActionCacheStatus actionCacheStatus(TenantCasStore store) {
+    ActionCacheStatus actionCacheStatus(TenantCasStore store,
+                                        ObjectProvider<ActionCache.TrustRevalidator> trustProviders) {
+        ActionCache.TrustRevalidator trustRevalidator =
+                resolveTrustRevalidator(trustProviders);
         return new ActionCacheStatus(
-                "JDBC_POSTGRESQL", "JDBC_INDEX_CONFIGURED_OBJECT_TIER_DEPENDENT", "NOT_WIRED",
-                "PERSISTED_DECISION_NOT_CRYPTOGRAPHICALLY_REVERIFIED",
+                "JDBC_POSTGRESQL", "JDBC_INDEX_CONFIGURED_OBJECT_TIER_DEPENDENT",
+                "TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE",
+                trustRevalidator.mode(),
                 store.physicalNamespace(), store.atRestProtection(), false);
+    }
+
+    private static ActionCache.TrustRevalidator resolveTrustRevalidator(
+            ObjectProvider<ActionCache.TrustRevalidator> providers
+    ) {
+        java.util.List<ActionCache.TrustRevalidator> candidates =
+                providers.orderedStream().toList();
+        if (candidates.isEmpty()) {
+            return ActionCache.TrustRevalidator.failClosedNotConfigured();
+        }
+        if (candidates.size() != 1) {
+            throw new IllegalStateException(
+                    "exactly one current ActionCache trust provider is required");
+        }
+        return candidates.get(0);
     }
 
     @Bean

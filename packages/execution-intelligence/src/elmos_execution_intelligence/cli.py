@@ -21,6 +21,7 @@ from .io_utils import load_json, read_jsonl, write_json, write_text
 from .jsonschema_lite import Validator
 from .publisher import build_manifest
 from .report import write_reports
+from .resource_paths import CONFIG_DIR, SCHEMA_DIR
 from .routing import optimize_routing, render_routing_comparison
 from .runner import execute_run, render_execution_plan
 from .scope import audit_scope, render_scope_baseline, seed_project_profile
@@ -38,10 +39,6 @@ from .telemetry import (
 from .token_mix import CATEGORIES, compare_mix, forecast_mix, mix_warmup, render_mix
 from .token_scan import scan_tokens
 from .validation import validate_all, validate_tasks
-
-PACKAGE_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_DIR = PACKAGE_ROOT / "schemas"
-CONFIG_DIR = PACKAGE_ROOT / "config"
 
 #: Every emitted JSON artifact is checked against its schema before the command
 #: returns. A schema nothing executes is a contract that rots silently.
@@ -62,6 +59,8 @@ ARTIFACT_SCHEMAS = {
     "chaos-test-report.json": "chaos-test-report.schema.json",
     "production-readiness.json": "production-readiness.schema.json",
     "evidence-manifest.json": "evidence-manifest.schema.json",
+    "evidence-provenance.json": "evidence-provenance.schema.json",
+    "evidence-trust-store.json": "evidence-trust-store.schema.json",
     "recovery-eta-update.json": "recovery-eta-update.schema.json",
     "telemetry-ingest.json": "telemetry-ingest.schema.json",
     "calibration.json": "calibration.schema.json",
@@ -749,7 +748,12 @@ def command_chaos(args: argparse.Namespace) -> int:
 
 
 def command_certify(args: argparse.Namespace) -> int:
-    report = evaluate(args.evidence, min_calibration_samples=args.min_calibration_samples)
+    report = evaluate(
+        args.evidence,
+        min_calibration_samples=args.min_calibration_samples,
+        trust_store=args.trust_store,
+        trust_store_sha256=args.trust_store_sha256,
+    )
     manifest = build_evidence_manifest(report, args.evidence)
     output = Path(args.output or args.evidence)
     output.mkdir(parents=True, exist_ok=True)
@@ -982,9 +986,19 @@ def build_parser() -> argparse.ArgumentParser:
     certify_parser = subparsers.add_parser(
         "certify", help="Evaluate release gates against the evidence actually present")
     certify_parser.add_argument("--evidence", required=True, help="Directory holding the evidence artifacts")
-    certify_parser.add_argument("--min-calibration-samples", type=int, default=20)
+    certify_parser.add_argument(
+        "--min-calibration-samples", type=int, default=20,
+        help="May raise the required sample count; values below the policy floor of 20 are clamped to 20",
+    )
+    certify_parser.add_argument(
+        "--trust-store",
+        help="External evidence trust store (must not be inside --evidence)",
+    )
+    certify_parser.add_argument(
+        "--trust-store-sha256",
+        help="Lowercase SHA-256 pin for the exact external trust-store bytes",
+    )
     certify_parser.add_argument("--output")
-    certify_parser.add_argument("--schema-dir")
     certify_parser.set_defaults(func=command_certify)
 
     schema_parser = subparsers.add_parser(

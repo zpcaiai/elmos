@@ -18,16 +18,20 @@ class SnapshotCaptureServiceTest {
         EphemeralCredential credential = new EphemeralCredential("token".toCharArray()); List<String> stored = new ArrayList<>();
         List<SnapshotPorts.ArtifactResourceContext> resources = new ArrayList<>();
         List<SnapshotModel.RepositorySnapshot> saved = new ArrayList<>();
+        SnapshotPorts.SnapshotStore snapshotStore = new SnapshotPorts.SnapshotStore() {
+            public SnapshotModel.RepositorySnapshot findReusable(
+                    String organization, String repository, String sha, int version) { return null; }
+            public SnapshotModel.RepositorySnapshot saveAvailable(SnapshotModel.RepositorySnapshot snapshot) { saved.add(snapshot); return snapshot; }
+        };
+        RecordingReconciliations reconciliations = new RecordingReconciliations();
         var service = new SnapshotCaptureService((organization, repository, external, installation) -> credential,
                 (repository, ref, secret) -> new SnapshotPorts.ResolvedRef("a".repeat(40), "b".repeat(40)),
                 (repository, ref, secret) -> new SnapshotPorts.FetchedSource(temp, () -> stagingClosed.set(true)),
                 new DeterministicSnapshotArchiver(), (resource, digest, size, content, media) -> {
                     resources.add(resource); stored.add(digest); return "cas:sha256:" + digest;
                 },
-                new SnapshotPorts.SnapshotStore() {
-                    public SnapshotModel.RepositorySnapshot findReusable(String repository, String sha, int version) { return null; }
-                    public SnapshotModel.RepositorySnapshot saveAvailable(SnapshotModel.RepositorySnapshot snapshot) { saved.add(snapshot); return snapshot; }
-                }, Clock.fixed(Instant.parse("2026-07-20T00:00:00Z"), ZoneOffset.UTC));
+                snapshotStore, coordinator(snapshotStore, reconciliations), reconciliations,
+                Clock.fixed(Instant.parse("2026-07-20T00:00:00Z"), ZoneOffset.UTC));
         var result = service.capture(new SnapshotCaptureService.CaptureRequest("org", "repo", 1, 2, "example/repo", "refs/heads/main", "corr", "key"));
         assertEquals(SnapshotModel.Status.AVAILABLE, result.status()); assertEquals(2, stored.size()); assertEquals(1, saved.size()); assertTrue(stagingClosed.get());
         assertEquals(List.of(
@@ -42,7 +46,7 @@ class SnapshotCaptureServiceTest {
         AtomicBoolean saveObservedRoot = new AtomicBoolean();
         var service = service(artifacts, new SnapshotPorts.SnapshotStore() {
             public SnapshotModel.RepositorySnapshot findReusable(
-                    String repository, String sha, int version) {
+                    String organization, String repository, String sha, int version) {
                 return null;
             }
 
@@ -71,7 +75,7 @@ class SnapshotCaptureServiceTest {
         RecordingArtifacts artifacts = new RecordingArtifacts();
         var service = service(artifacts, new SnapshotPorts.SnapshotStore() {
             public SnapshotModel.RepositorySnapshot findReusable(
-                    String repository, String sha, int version) {
+                    String organization, String repository, String sha, int version) {
                 return null;
             }
 
@@ -100,7 +104,7 @@ class SnapshotCaptureServiceTest {
                 Instant.parse("2026-07-19T00:00:00Z"));
         var service = service(artifacts, new SnapshotPorts.SnapshotStore() {
             public SnapshotModel.RepositorySnapshot findReusable(
-                    String repository, String sha, int version) {
+                    String organization, String repository, String sha, int version) {
                 return reusable;
             }
 
@@ -122,7 +126,7 @@ class SnapshotCaptureServiceTest {
         RecordingArtifacts artifacts = new RecordingArtifacts();
         var service = service(artifacts, new SnapshotPorts.SnapshotStore() {
             public SnapshotModel.RepositorySnapshot findReusable(
-                    String repository, String sha, int version) {
+                    String organization, String repository, String sha, int version) {
                 return null;
             }
 
@@ -156,7 +160,7 @@ class SnapshotCaptureServiceTest {
         RecordingArtifacts artifacts = new RecordingArtifacts();
         var service = service(artifacts, new SnapshotPorts.SnapshotStore() {
             public SnapshotModel.RepositorySnapshot findReusable(
-                    String repository, String sha, int version) {
+                    String organization, String repository, String sha, int version) {
                 return null;
             }
 
@@ -179,10 +183,55 @@ class SnapshotCaptureServiceTest {
                 "a conflicting durable winner must leave provisional bytes reachable");
     }
 
+    @Test void failedAttemptCanRetryOneLogicalCaptureOperation() throws Exception {
+        Files.writeString(temp.resolve("pom.xml"), "<project/>");
+        RecordingArtifacts artifacts = new RecordingArtifacts();
+        RecordingReconciliations reconciliations = new RecordingReconciliations();
+        java.util.concurrent.atomic.AtomicInteger saves =
+                new java.util.concurrent.atomic.AtomicInteger();
+        SnapshotPorts.SnapshotStore snapshots = new SnapshotPorts.SnapshotStore() {
+            @Override public SnapshotModel.RepositorySnapshot findReusable(
+                    String organization, String repository, String sha, int version) { return null; }
+            @Override public SnapshotModel.RepositorySnapshot saveAvailable(
+                    SnapshotModel.RepositorySnapshot snapshot) {
+                if (saves.getAndIncrement() == 0) {
+                    throw new IllegalStateException("first transaction rolled back");
+                }
+                return snapshot;
+            }
+        };
+        var service = new SnapshotCaptureService(
+                (organization, repository, external, installation) ->
+                        new EphemeralCredential("token".toCharArray()),
+                (repository, ref, secret) ->
+                        new SnapshotPorts.ResolvedRef("a".repeat(40), "b".repeat(40)),
+                (repository, ref, secret) ->
+                        new SnapshotPorts.FetchedSource(temp, () -> { }),
+                new DeterministicSnapshotArchiver(), artifacts, snapshots,
+                coordinator(snapshots, reconciliations), reconciliations,
+                Clock.fixed(Instant.parse("2026-07-20T00:00:00Z"), ZoneOffset.UTC));
+
+        assertThrows(IllegalStateException.class, () -> service.capture(request()));
+        service.capture(request());
+
+        List<SnapshotRootReconciliation> records =
+                new ArrayList<>(reconciliations.records.values());
+        assertEquals(2, records.size());
+        assertEquals(records.get(0).logicalOperationId(),
+                records.get(1).logicalOperationId());
+        assertNotEquals(records.get(0).reconciliationId(),
+                records.get(1).reconciliationId());
+        assertEquals(SnapshotRootReconciliation.Phase.COMMIT_FAILED,
+                records.get(0).phase());
+        assertEquals(SnapshotRootReconciliation.Phase.RESOLVED,
+                records.get(1).phase());
+    }
+
     private SnapshotCaptureService service(
             SnapshotPorts.ArtifactStore artifacts,
             SnapshotPorts.SnapshotStore snapshots
     ) {
+        RecordingReconciliations reconciliations = new RecordingReconciliations();
         return new SnapshotCaptureService(
                 (organization, repository, external, installation) ->
                         new EphemeralCredential("token".toCharArray()),
@@ -191,7 +240,22 @@ class SnapshotCaptureServiceTest {
                 (repository, ref, secret) ->
                         new SnapshotPorts.FetchedSource(temp, () -> { }),
                 new DeterministicSnapshotArchiver(), artifacts, snapshots,
+                coordinator(snapshots, reconciliations), reconciliations,
                 Clock.fixed(Instant.parse("2026-07-20T00:00:00Z"), ZoneOffset.UTC));
+    }
+
+    private static SnapshotLifecyclePorts.SnapshotCommitCoordinator coordinator(
+            SnapshotPorts.SnapshotStore snapshots,
+            RecordingReconciliations reconciliations
+    ) {
+        return reconciliation -> {
+            SnapshotModel.RepositorySnapshot stored = snapshots.saveAvailable(
+                    reconciliation.snapshot());
+            reconciliations.markDatabaseCommitted(
+                    reconciliation.snapshot().organizationId(),
+                    reconciliation.reconciliationId(), stored.snapshotId());
+            return stored;
+        };
     }
 
     private static SnapshotCaptureService.CaptureRequest request() {
@@ -234,6 +298,56 @@ class SnapshotCaptureServiceTest {
                                     String snapshotId) {
             releases.add(snapshotId);
             events.add("release:" + snapshotId);
+        }
+    }
+
+    private static final class RecordingReconciliations implements
+            SnapshotLifecyclePorts.RootReconciliationJournal {
+        private final Map<String, SnapshotRootReconciliation> records = new LinkedHashMap<>();
+
+        @Override
+        public void recordPending(SnapshotRootReconciliation reconciliation) {
+            if (records.putIfAbsent(reconciliation.reconciliationId(), reconciliation) != null) {
+                throw new IllegalStateException("duplicate reconciliation");
+            }
+        }
+
+        @Override
+        public void markDatabaseCommitted(
+                String organizationId,
+                String reconciliationId,
+                String durableSnapshotId
+        ) {
+            records.compute(reconciliationId, (key, value) -> {
+                if (value == null) throw new IllegalStateException("missing reconciliation");
+                return value.committed(durableSnapshotId);
+            });
+        }
+
+        @Override
+        public void markCommitFailed(String organizationId, String reconciliationId) {
+            records.compute(reconciliationId, (key, value) -> {
+                if (value == null) throw new IllegalStateException("missing reconciliation");
+                return value.phase() == SnapshotRootReconciliation.Phase.DATABASE_COMMITTED
+                        ? value : value.failed();
+            });
+        }
+
+        @Override
+        public void markResolved(String organizationId, String reconciliationId) {
+            records.compute(reconciliationId, (key, value) -> {
+                if (value == null) throw new IllegalStateException("missing reconciliation");
+                return value.resolved();
+            });
+        }
+
+        @Override
+        public List<SnapshotRootReconciliation> pending(String organizationId, int limit) {
+            return records.values().stream()
+                    .filter(value -> value.phase() != SnapshotRootReconciliation.Phase.RESOLVED)
+                    .filter(value -> value.snapshot().organizationId().equals(organizationId))
+                    .limit(limit)
+                    .toList();
         }
     }
 }

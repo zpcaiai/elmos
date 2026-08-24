@@ -17,9 +17,12 @@ public final class GitHubInstallationLifecycleService {
                              boolean archived, boolean disabled, boolean fork, Long parentRepositoryId) {}
     public interface Store {
         boolean bindIfUnclaimed(Installation installation);
-        Installation findByExternalId(long githubInstallationId);
-        void updateStatus(long githubInstallationId, Status status, Instant changedAt);
-        void replaceAuthorizedRepositories(long githubInstallationId, Set<Repository> repositories, Instant synchronizedAt);
+        Installation findByExternalId(String organizationId, long githubInstallationId);
+        void updateStatus(String organizationId, long githubInstallationId,
+                          Status status, Instant changedAt);
+        void replaceAuthorizedRepositories(String organizationId, long githubInstallationId,
+                                           Set<Repository> repositories,
+                                           Instant synchronizedAt);
     }
 
     private static final Map<String,String> REQUIRED_SNAPSHOT_PERMISSIONS = Map.of(
@@ -31,7 +34,8 @@ public final class GitHubInstallationLifecycleService {
         validatePermissions(installation.permissions());
         if (installation.status() != Status.ACTIVE) throw new IllegalArgumentException("new installation must be active");
         if (!store.bindIfUnclaimed(installation)) {
-            Installation existing = store.findByExternalId(installation.githubInstallationId());
+            Installation existing = store.findByExternalId(
+                    installation.organizationId(), installation.githubInstallationId());
             if (existing == null || !existing.organizationId().equals(installation.organizationId()))
                 throw new SecurityException("GitHub installation is already bound to another organization");
             return existing;
@@ -39,22 +43,30 @@ public final class GitHubInstallationLifecycleService {
         return installation;
     }
 
-    public void synchronize(long githubInstallationId, Set<Repository> repositories, Instant synchronizedAt) {
-        Installation installation = requireActive(githubInstallationId);
+    public void synchronize(String organizationId, long githubInstallationId,
+                            Set<Repository> repositories, Instant synchronizedAt) {
+        Installation installation = requireActive(organizationId, githubInstallationId);
         for (Repository repository : repositories) {
             if (repository.repositoryId() == null || repository.repositoryId().isBlank() || repository.fullName() == null
                     || !repository.fullName().equals(repository.owner() + "/" + repository.name()))
                 throw new IllegalArgumentException("repository identity is inconsistent");
         }
-        store.replaceAuthorizedRepositories(installation.githubInstallationId(), Set.copyOf(repositories), synchronizedAt);
+        store.replaceAuthorizedRepositories(organizationId, installation.githubInstallationId(),
+                Set.copyOf(repositories), synchronizedAt);
     }
 
-    public void suspend(long githubInstallationId, Instant changedAt) { store.updateStatus(githubInstallationId, Status.SUSPENDED, changedAt); }
-    public void unsuspend(long githubInstallationId, Instant changedAt) { store.updateStatus(githubInstallationId, Status.ACTIVE, changedAt); }
-    public void delete(long githubInstallationId, Instant changedAt) { store.updateStatus(githubInstallationId, Status.DELETED, changedAt); }
+    public void suspend(String organizationId, long githubInstallationId, Instant changedAt) {
+        store.updateStatus(organizationId, githubInstallationId, Status.SUSPENDED, changedAt);
+    }
+    public void unsuspend(String organizationId, long githubInstallationId, Instant changedAt) {
+        store.updateStatus(organizationId, githubInstallationId, Status.ACTIVE, changedAt);
+    }
+    public void delete(String organizationId, long githubInstallationId, Instant changedAt) {
+        store.updateStatus(organizationId, githubInstallationId, Status.DELETED, changedAt);
+    }
 
-    public Installation requireActive(long githubInstallationId) {
-        Installation installation = store.findByExternalId(githubInstallationId);
+    public Installation requireActive(String organizationId, long githubInstallationId) {
+        Installation installation = store.findByExternalId(organizationId, githubInstallationId);
         if (installation == null || installation.status() == Status.DELETED) throw new SecurityException("GitHub App installation is not installed");
         if (installation.status() == Status.SUSPENDED) throw new SecurityException("GitHub App installation is suspended");
         return installation;

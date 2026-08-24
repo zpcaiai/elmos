@@ -163,7 +163,7 @@ def test_a_failing_required_gate_blocks(tmp_path):
     assert report["decision"] == "block"
 
 
-def test_full_evidence_reaches_release(tmp_path):
+def test_unsigned_full_evidence_is_blocked(tmp_path):
     _evidence(
         tmp_path,
         **{
@@ -185,9 +185,10 @@ def test_full_evidence_reaches_release(tmp_path):
         },
     )
     report = evaluate(tmp_path, min_calibration_samples=20)
-    assert report["decision"] == "release"
-    assert report["counts"]["fail"] == 0
-    assert report["counts"]["not_executed"] == 0
+    assert report["decision"] == "block"
+    provenance = next(g for g in report["gates"] if g["id"] == "evidence-provenance")
+    assert provenance["status"] == "FAIL"
+    assert "evidence-provenance.json is required" in provenance["detail"]
 
 
 def test_too_few_calibration_samples_fails_the_gate(tmp_path):

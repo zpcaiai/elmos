@@ -38,6 +38,18 @@
       "type": "object",
       "required": ["models", "rankings_by_currency"],
       "properties": {
+        "models": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["not_for_billing"],
+            "properties": {
+              "not_for_billing": { "type": "boolean" }
+            }
+          }
+        },
+        "rankings_by_currency": { "type": "object" },
         "cross_currency_comparison": { "const": null }
       }
     },

@@ -411,7 +411,7 @@ public final class JdbcCasCatalog implements CasCatalog {
     }
 
     @Override
-    public void addReferenceRoots(List<ReferenceRoot> requestedRoots) {
+    public long addReferenceRoots(List<ReferenceRoot> requestedRoots) {
         ReferenceRoot first = requireOneRootSet(requestedRoots);
         Map<String, ReferenceRoot> requestedByHex = new LinkedHashMap<>();
         for (ReferenceRoot root : requestedRoots) {
@@ -420,7 +420,7 @@ public final class JdbcCasCatalog implements CasCatalog {
                 throw new IllegalArgumentException("one digest hex cannot carry two sizes in a root set");
             }
         }
-        inTenant(first.tenantId(), connection -> {
+        return inTenant(first.tenantId(), connection -> {
             // Row locks cannot serialize an as-yet absent root ID. A transaction advisory lock on
             // the exact logical root prevents two different first publications from interleaving
             // into an unauthorized union of their digest sets.
@@ -429,8 +429,12 @@ public final class JdbcCasCatalog implements CasCatalog {
                 lock.setString(1, first.tenantId() + "\n" + first.kind() + "\n" + first.rootId());
                 lock.execute();
             }
+            boolean hasHistory = false;
+            boolean hasActive = false;
+            long historicalGeneration = -1;
+            long activeGeneration = -1;
             try (PreparedStatement existing = connection.prepareStatement("""
-                    SELECT digest_hex, size_bytes, released_at
+                    SELECT digest_hex, size_bytes, created_at, released_at
                       FROM cas_reference_roots
                      WHERE organization_id = ? AND root_kind = ? AND root_id = ?
                      ORDER BY digest_hex
@@ -441,6 +445,10 @@ public final class JdbcCasCatalog implements CasCatalog {
                 existing.setString(3, first.rootId());
                 try (ResultSet rows = existing.executeQuery()) {
                     while (rows.next()) {
+                        hasHistory = true;
+                        historicalGeneration = Math.max(
+                                historicalGeneration,
+                                rows.getTimestamp("created_at").getTime());
                         String digestHex = rows.getString("digest_hex");
                         ReferenceRoot requested = requestedByHex.get(digestHex);
                         if (requested != null
@@ -448,12 +456,31 @@ public final class JdbcCasCatalog implements CasCatalog {
                             throw new IllegalStateException(
                                     "reference root digest size conflicts with history");
                         }
+                        if (rows.getTimestamp("released_at") == null) {
+                            long generation = rows.getTimestamp("created_at").getTime();
+                            if (hasActive && activeGeneration != generation) {
+                                throw new IllegalStateException(
+                                        "active reference root spans multiple generations");
+                            }
+                            hasActive = true;
+                            activeGeneration = generation;
+                        }
                         if (rows.getTimestamp("released_at") == null && requested == null) {
                             throw new IllegalStateException(
                                     "active reference root conflicts with requested digest set");
                         }
                     }
                 }
+            }
+            long requestedGeneration = requestedByHex.values().stream()
+                    .mapToLong(ReferenceRoot::createdAtEpochMillis)
+                    .max().orElseThrow();
+            long publicationGeneration = requestedGeneration;
+            if (hasActive) {
+                publicationGeneration = activeGeneration;
+            } else if (hasHistory) {
+                publicationGeneration = Math.max(
+                        requestedGeneration, Math.addExact(historicalGeneration, 1L));
             }
             try (PreparedStatement statement = connection.prepareStatement("""
                     INSERT INTO cas_reference_roots (organization_id, root_kind, root_id, digest_hex,
@@ -473,12 +500,31 @@ public final class JdbcCasCatalog implements CasCatalog {
                     statement.setString(3, root.rootId());
                     statement.setString(4, root.digest().hex());
                     statement.setLong(5, root.digest().sizeBytes());
-                    statement.setTimestamp(6, new Timestamp(root.createdAtEpochMillis()));
+                    statement.setTimestamp(6, new Timestamp(
+                            hasActive || hasHistory
+                                    ? publicationGeneration
+                                    : root.createdAtEpochMillis()));
                     statement.addBatch();
                 }
                 statement.executeBatch();
             }
-            return null;
+            try (PreparedStatement active = connection.prepareStatement("""
+                    SELECT max(created_at) AS active_generation
+                      FROM cas_reference_roots
+                     WHERE organization_id = ? AND root_kind = ? AND root_id = ?
+                       AND released_at IS NULL
+                    """)) {
+                active.setString(1, first.tenantId());
+                active.setString(2, first.kind().name());
+                active.setString(3, first.rootId());
+                try (ResultSet rows = active.executeQuery()) {
+                    if (!rows.next() || rows.getTimestamp("active_generation") == null) {
+                        throw new IllegalStateException(
+                                "reference root publication produced no active generation");
+                    }
+                    return rows.getTimestamp("active_generation").getTime();
+                }
+            }
         });
     }
 

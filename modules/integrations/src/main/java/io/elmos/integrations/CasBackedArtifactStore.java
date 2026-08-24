@@ -41,6 +41,7 @@ import java.util.function.LongSupplier;
 public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore, SnapshotPorts.ArtifactReader {
 
     public static final String SCHEME = "cas://";
+    public static final String ROOT_GENERATION = "cas.reference-root-created-at";
 
     private final TenantCasStore tenantStore;
     private final CasCatalog catalog;
@@ -152,6 +153,15 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
     public void retainSnapshot(SnapshotPorts.ArtifactResourceContext resource,
                                String snapshotId,
                                List<String> references) {
+        retainSnapshotGeneration(resource, snapshotId, references);
+    }
+
+    @Override
+    public SnapshotPorts.ArtifactRetention retainSnapshotGeneration(
+            SnapshotPorts.ArtifactResourceContext resource,
+            String snapshotId,
+            List<String> references
+    ) {
         Objects.requireNonNull(resource, "resource");
         requireSnapshotId(snapshotId);
         Objects.requireNonNull(references, "references");
@@ -177,12 +187,35 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         }
 
         long retainedAt = clock.getAsLong();
+        if (retainedAt < 0) {
+            throw new IllegalStateException("CAS root generation clock is invalid");
+        }
         String rootOwner = snapshotRootOwner(resource, snapshotId);
-        catalog.addReferenceRoots(digests.stream()
+        long authoritativeGeneration = catalog.addReferenceRoots(digests.stream()
                 .map(digest -> new CasCatalog.ReferenceRoot(
                         resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT,
                         rootOwner, digest, retainedAt))
                 .toList());
+
+        List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
+                        resource.organizationId()).stream()
+                .filter(root -> root.kind() == CasGarbageCollector.RootKind.SNAPSHOT)
+                .filter(root -> root.rootId().equals(rootOwner))
+                .toList();
+        Set<CasDigest> observed = active.stream().map(CasCatalog.ReferenceRoot::digest)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+        Set<CasDigest> expected = Set.copyOf(digests);
+        Set<Long> generations = active.stream()
+                .map(CasCatalog.ReferenceRoot::createdAtEpochMillis)
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+        if (!observed.equals(expected)
+                || !generations.equals(Set.of(authoritativeGeneration))) {
+            throw new IllegalStateException(
+                    "CAS catalogue did not expose one complete snapshot root generation");
+        }
+        return new SnapshotPorts.ArtifactRetention(
+                snapshotId, Map.of(ROOT_GENERATION,
+                authoritativeGeneration));
     }
 
     @Override
@@ -192,6 +225,37 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         catalog.releaseReferenceRoot(resource.organizationId(),
                 CasGarbageCollector.RootKind.SNAPSHOT, snapshotRootOwner(resource, snapshotId),
                 clock.getAsLong());
+    }
+
+    @Override
+    public void releaseSnapshotGeneration(
+            SnapshotPorts.ArtifactResourceContext resource,
+            SnapshotPorts.ArtifactRetention retention
+    ) {
+        Objects.requireNonNull(resource, "resource");
+        Objects.requireNonNull(retention, "retention");
+        requireSnapshotId(retention.snapshotId());
+        long generation = retention.requireGeneration(ROOT_GENERATION);
+        String rootOwner = snapshotRootOwner(resource, retention.snapshotId());
+        try {
+            catalog.releaseReferenceRoot(resource.organizationId(),
+                    CasGarbageCollector.RootKind.SNAPSHOT, rootOwner, generation);
+        } catch (IllegalArgumentException delayedRelease) {
+            // A later generation is deliberately not an error for an old reconciliation attempt:
+            // it proves this token no longer owns the active root. Verify that exact condition
+            // after the catalogue's atomic rejection before treating the old release as complete.
+            List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
+                            resource.organizationId()).stream()
+                    .filter(root -> root.kind() == CasGarbageCollector.RootKind.SNAPSHOT)
+                    .filter(root -> root.rootId().equals(rootOwner))
+                    .toList();
+            if (!active.isEmpty()
+                    && active.stream().allMatch(root ->
+                    root.createdAtEpochMillis() > generation)) {
+                return;
+            }
+            throw delayedRelease;
+        }
     }
 
     public static String reference(CasDigest digest) {

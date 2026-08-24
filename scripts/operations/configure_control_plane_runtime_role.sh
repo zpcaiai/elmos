@@ -29,13 +29,28 @@ export PGPASSWORD="$ELMOS_DATABASE_MIGRATION_PASSWORD"
 role_state="$(psql "$psql_url" \
   --username "$ELMOS_DATABASE_MIGRATION_USER" \
   --no-psqlrc --tuples-only --no-align --set ON_ERROR_STOP=1 \
-  --command "select rolsuper || '|' || rolbypassrls || '|' || rolcanlogin from pg_roles where rolname = '$runtime_role'")"
-test "$role_state" = "false|false|true" \
-  || fail "runtime role must exist with LOGIN NOSUPERUSER NOBYPASSRLS"
+  --command "select case when not rolsuper and not rolbypassrls and rolcanlogin and not rolinherit and not rolcreatedb and not rolcreaterole and not rolreplication then 'ok' else 'bad' end from pg_roles where rolname = '$runtime_role'")"
+test "$role_state" = "ok" \
+  || fail "runtime role must exist with LOGIN NOSUPERUSER NOBYPASSRLS NOINHERIT NOCREATEDB NOCREATEROLE NOREPLICATION"
+
+membership_count="$(psql "$psql_url" \
+  --username "$ELMOS_DATABASE_MIGRATION_USER" \
+  --no-psqlrc --tuples-only --no-align --set ON_ERROR_STOP=1 \
+  --command "select count(*) from pg_auth_members where member = (select oid from pg_roles where rolname = '$runtime_role')")"
+test "$membership_count" = "0" \
+  || fail "runtime role must not inherit privileges through role membership"
+
+owned_relation_count="$(psql "$psql_url" \
+  --username "$ELMOS_DATABASE_MIGRATION_USER" \
+  --no-psqlrc --tuples-only --no-align --set ON_ERROR_STOP=1 \
+  --command "select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relowner = (select oid from pg_roles where rolname = '$runtime_role')")"
+test "$owned_relation_count" = "0" \
+  || fail "runtime role must not own public schema relations"
 
 psql "$psql_url" \
   --username "$ELMOS_DATABASE_MIGRATION_USER" \
   --no-psqlrc --set ON_ERROR_STOP=1 --set runtime_role="$runtime_role" <<'SQL'
+BEGIN;
 GRANT USAGE ON SCHEMA public TO :"runtime_role";
 
 -- Only tables queried or mutated directly by the control-plane JDBC adapters.
@@ -49,16 +64,83 @@ GRANT SELECT ON TABLE
   runner_job_leases,
   object_storage_backends,
   content_objects,
-  job_artifacts
+  job_artifacts,
+  repositories,
+  scm_connections,
+  github_app_installations,
+  scm_repositories,
+  github_app_onboarding_states,
+  github_webhook_deliveries,
+  repository_snapshots,
+  snapshot_root_reconciliations,
+  cas_object_catalog,
+  cas_object_placement,
+  cas_resource_bindings,
+  cas_reference_roots,
+  cas_deletion_manifests,
+  cas_quarantine_events,
+  cas_action_cache_entries,
+  cas_action_cache_invalidations,
+  cas_action_cache_quarantined_nodes
 TO :"runtime_role";
+
+-- Idempotently tighten roles created by an earlier script revision before restoring the exact
+-- lifecycle grant below. A table-level UPDATE would bypass the intended column boundary.
+REVOKE UPDATE, DELETE ON TABLE
+  repository_snapshots,
+  github_app_onboarding_states,
+  github_app_installations,
+  scm_repositories,
+  github_webhook_deliveries
+FROM :"runtime_role";
 
 GRANT INSERT, UPDATE ON TABLE
   runner_enrollment_credentials,
   runner_node_authentication,
   runner_pools,
   runner_nodes,
-  content_objects
+  content_objects,
+  snapshot_root_reconciliations,
+  cas_object_catalog,
+  cas_object_placement,
+  cas_resource_bindings,
+  cas_reference_roots,
+  cas_action_cache_entries
 TO :"runtime_role";
+
+GRANT INSERT ON TABLE
+  audit_events,
+  outbox_events,
+  scm_connections,
+  github_app_onboarding_states,
+  github_app_installations,
+  repositories,
+  scm_repositories,
+  github_webhook_deliveries,
+  repository_snapshots,
+  cas_deletion_manifests,
+  cas_quarantine_events,
+  cas_action_cache_invalidations,
+  cas_action_cache_quarantined_nodes
+TO :"runtime_role";
+
+GRANT UPDATE (duplicate_count)
+ON TABLE github_webhook_deliveries TO :"runtime_role";
+
+GRANT UPDATE (status) ON TABLE repository_snapshots TO :"runtime_role";
+
+GRANT UPDATE (stage, installation_external_id, expires_at, updated_at, consumed_at)
+ON TABLE github_app_onboarding_states TO :"runtime_role";
+
+GRANT UPDATE (status, suspended_at, deleted_at, last_synced_at)
+ON TABLE github_app_installations TO :"runtime_role";
+
+GRANT UPDATE (
+  installation_id, owner_login, repository_name, full_name, clone_url, html_url,
+  default_branch, visibility, archived, disabled, fork, parent_repository_external_id,
+  authorization_status, synced_at
+)
+ON TABLE scm_repositories TO :"runtime_role";
 
 SELECT set_config('elmos.runtime_role', :'runtime_role', false);
 
@@ -118,6 +200,21 @@ BEGIN
   END LOOP;
 END;
 $$;
+
+DO $$
+BEGIN
+  IF to_regprocedure(
+      'public.elmos_resolve_github_webhook_organization(bigint,bigint)') IS NULL THEN
+    RAISE EXCEPTION 'required GitHub webhook tenant resolver is missing';
+  END IF;
+  EXECUTE format(
+    'GRANT EXECUTE ON FUNCTION '
+    || 'public.elmos_resolve_github_webhook_organization(bigint,bigint) TO %I',
+    current_setting('elmos.runtime_role')
+  );
+END;
+$$;
+COMMIT;
 SQL
 
 unset PGPASSWORD

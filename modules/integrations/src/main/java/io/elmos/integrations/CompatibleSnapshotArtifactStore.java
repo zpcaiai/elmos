@@ -29,6 +29,8 @@ public final class CompatibleSnapshotArtifactStore
     }
 
     private static final String LEGACY_PREFIX = "cas:sha256:";
+    private static final String LEGACY_PARTICIPANT = "compatible.legacy-participant";
+    private static final String CAS_PARTICIPANT = "compatible.cas-participant";
 
     private final WriterMode writerMode;
     private final SnapshotPorts.ArtifactStore legacyWriter;
@@ -82,6 +84,15 @@ public final class CompatibleSnapshotArtifactStore
     public void retainSnapshot(SnapshotPorts.ArtifactResourceContext resource,
                                String snapshotId,
                                List<String> references) {
+        retainSnapshotGeneration(resource, snapshotId, references);
+    }
+
+    @Override
+    public SnapshotPorts.ArtifactRetention retainSnapshotGeneration(
+            SnapshotPorts.ArtifactResourceContext resource,
+            String snapshotId,
+            List<String> references
+    ) {
         Objects.requireNonNull(resource, "resource");
         requireSnapshotId(snapshotId);
         Objects.requireNonNull(references, "references");
@@ -102,14 +113,22 @@ public final class CompatibleSnapshotArtifactStore
             }
         }
 
-        boolean legacyRetained = false;
+        SnapshotPorts.ArtifactRetention retention =
+                SnapshotPorts.ArtifactRetention.untracked(snapshotId);
+        SnapshotPorts.ArtifactRetention legacyRetention = null;
         if (!legacy.isEmpty()) {
-            legacyWriter.retainSnapshot(resource, snapshotId, legacy);
-            legacyRetained = true;
+            legacyRetention = legacyWriter.retainSnapshotGeneration(
+                    resource, snapshotId, legacy);
+            retention = retention.merge(legacyRetention).merge(
+                    new SnapshotPorts.ArtifactRetention(
+                            snapshotId, java.util.Map.of(LEGACY_PARTICIPANT, 1L)));
         }
         try {
             if (!cas.isEmpty()) {
-                casWriter.retainSnapshot(resource, snapshotId, cas);
+                retention = retention.merge(casWriter.retainSnapshotGeneration(
+                        resource, snapshotId, cas)).merge(
+                        new SnapshotPorts.ArtifactRetention(
+                                snapshotId, java.util.Map.of(CAS_PARTICIPANT, 1L)));
             }
         } catch (RuntimeException failure) {
             // Each backend owns all-or-none compensation for its own batch. In particular, never
@@ -117,11 +136,12 @@ public final class CompatibleSnapshotArtifactStore
             // root, and releasing it would turn a harmless conflict into data loss. The current
             // legacy backend has no GC lifecycle; this call only compensates a future backend
             // that successfully created state before the CAS backend failed.
-            if (legacyRetained) {
-                compensateLegacyRelease(resource, snapshotId, failure);
+            if (legacyRetention != null) {
+                compensateLegacyRelease(resource, legacyRetention, failure);
             }
             throw failure;
         }
+        return retention;
     }
 
     @Override
@@ -143,15 +163,48 @@ public final class CompatibleSnapshotArtifactStore
         if (failure != null) throw failure;
     }
 
+    @Override
+    public void releaseSnapshotGeneration(
+            SnapshotPorts.ArtifactResourceContext resource,
+            SnapshotPorts.ArtifactRetention retention
+    ) {
+        Objects.requireNonNull(resource, "resource");
+        Objects.requireNonNull(retention, "retention");
+        requireSnapshotId(retention.snapshotId());
+        boolean casParticipant = retention.generations().containsKey(CAS_PARTICIPANT);
+        boolean legacyParticipant = retention.generations().containsKey(LEGACY_PARTICIPANT);
+        if (!casParticipant && !legacyParticipant) {
+            throw new IllegalArgumentException(
+                    "compatible retention does not identify a participating backend");
+        }
+        RuntimeException failure = null;
+        if (casParticipant) {
+            try {
+                casWriter.releaseSnapshotGeneration(resource, retention);
+            } catch (RuntimeException error) {
+                failure = error;
+            }
+        }
+        if (legacyParticipant) {
+            try {
+                legacyWriter.releaseSnapshotGeneration(resource, retention);
+            } catch (RuntimeException error) {
+                if (failure == null) failure = error;
+                else failure.addSuppressed(error);
+            }
+        }
+        if (failure != null) throw failure;
+    }
+
     private SnapshotPorts.ArtifactStore writer() {
         return writerMode == WriterMode.CAS ? casWriter : legacyWriter;
     }
 
     private void compensateLegacyRelease(SnapshotPorts.ArtifactResourceContext resource,
-                                         String snapshotId,
+                                         SnapshotPorts.ArtifactRetention retention,
                                          RuntimeException failure) {
         try {
-            legacyWriter.releaseSnapshot(resource, snapshotId);
+            legacyWriter.releaseSnapshotGeneration(resource, retention);
         } catch (RuntimeException cleanupFailure) {
             failure.addSuppressed(cleanupFailure);
         }

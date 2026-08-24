@@ -1,0 +1,30 @@
+{
+  "boundary": "EXTERNAL_MINIO_TWO_INDEPENDENT_JVMS",
+  "evidence_class": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "production_certification": "NOT_CERTIFIED",
+  "reader": {
+    "bucket": "elmos-cas-two-process",
+    "digest": "sha256:a5f0c1b47f09bc1dcdd8d090143d9d2cef194ace81a91173e49690a214842c09/75",
+    "endpoint": "http://127.0.0.1:32768",
+    "observed_at": "2026-08-24T07:09:41.404117Z",
+    "operation": "read",
+    "process_id": 35273,
+    "schema_version": 1,
+    "size_bytes": 75,
+    "verified": true
+  },
+  "schema_version": 1,
+  "status": "PASS",
+  "topology": "SINGLE_HOST_EXTERNAL_PROCESS",
+  "writer": {
+    "bucket": "elmos-cas-two-process",
+    "digest": "sha256:a5f0c1b47f09bc1dcdd8d090143d9d2cef194ace81a91173e49690a214842c09/75",
+    "endpoint": "http://127.0.0.1:32768",
+    "observed_at": "2026-08-24T07:09:38.923804Z",
+    "operation": "write",
+    "process_id": 35250,
+    "schema_version": 1,
+    "size_bytes": 75,
+    "verified": true
+  }
+}

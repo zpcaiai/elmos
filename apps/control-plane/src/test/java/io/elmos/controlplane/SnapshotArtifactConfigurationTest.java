@@ -1,6 +1,7 @@
 package io.elmos.controlplane;
 
 import io.elmos.cas.JdbcCasCatalog;
+import io.elmos.cas.KmsTenantEncryption;
 import io.elmos.cas.LocalDiskCasStore;
 import io.elmos.cas.TenantCasStore;
 import io.elmos.cas.TenantEncryptedLocalCasStore;
@@ -119,7 +120,7 @@ class SnapshotArtifactConfigurationTest {
                     assertEquals("LEGACY_AND_CAS", status.readers());
                     assertEquals("ACTIVE_DUAL_READ", status.migrationState());
                     assertEquals("NOT_CONFIGURED", status.atRestTenantEncryption());
-                    assertEquals("CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED",
+                    assertEquals("CAPTURE_ARCHIVE_RECONCILIATION_WIRED",
                             status.snapshotReferenceRoots());
                     assertEquals("MIXED_LEGACY_UNSCOPED", status.readAuthorization());
                     assertTrue(status.casReaderTenantCatalogAuthorization());
@@ -127,7 +128,7 @@ class SnapshotArtifactConfigurationTest {
                     assertAccurateInfo(context.getBean(InfoContributor.class),
                             "CONFIGURED_LOCAL_ONLY", "SINGLE_HOST", "LEGACY_AND_CAS",
                             "ACTIVE_DUAL_READ", "GLOBAL_DIGEST", "NOT_CONFIGURED",
-                            "CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED", true);
+                            "CAPTURE_ARCHIVE_RECONCILIATION_WIRED", true);
                 });
     }
 
@@ -164,7 +165,43 @@ class SnapshotArtifactConfigurationTest {
                             "CONFIGURED_LOCAL_ONLY", "SINGLE_HOST", "LEGACY_AND_CAS",
                             "ACTIVE_DUAL_READ", "TENANT_NAMESPACED_CIPHERTEXT",
                             "TENANT_AES_256_GCM",
-                            "CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED", true);
+                            "CAPTURE_ARCHIVE_RECONCILIATION_WIRED", true);
+                });
+    }
+
+    @Test
+    void kmsEnvelopeModeRequiresAnExplicitProviderAndReportsItsExactBoundary() {
+        Path casRoot = temporary.resolve("kms-encrypted-cas");
+        ApplicationContextRunner kmsRunner = contextRunner()
+                .withPropertyValues(
+                        "elmos.snapshot.cas.enabled=true",
+                        "elmos.snapshot.artifact-root=" + temporary.resolve("kms-legacy"),
+                        "elmos.snapshot.cas.root=" + casRoot,
+                        "elmos.snapshot.cas.store-name=snapshot-kms-test",
+                        "elmos.snapshot.cas.data-residency=cn-east",
+                        "elmos.snapshot.cas.security-tier=CONFIDENTIAL",
+                        "elmos.snapshot.cas.encryption.enabled=true",
+                        "elmos.snapshot.cas.encryption.provider=KMS",
+                        "elmos.snapshot.max-artifact-bytes=1048576");
+
+        kmsRunner.run(context -> assertNotNull(context.getStartupFailure(),
+                "KMS mode must fail closed without an operator-supplied provider bean"));
+
+        kmsRunner
+                .withBean(KmsTenantEncryption.KeyManagementProvider.class,
+                        () -> mock(KmsTenantEncryption.KeyManagementProvider.class))
+                .run(context -> {
+                    assertNull(context.getStartupFailure());
+                    assertNotNull(context.getBean(KmsTenantEncryption.class));
+                    TenantCasStore tenantStore = context.getBean(TenantCasStore.class);
+                    assertEquals("TENANT_KMS_ENVELOPE_AES_256_GCM",
+                            tenantStore.atRestProtection());
+                    var status = context.getBean(
+                            SnapshotArtifactConfiguration.SnapshotArtifactStoreStatus.class);
+                    assertEquals("SINGLE_HOST", status.storageScope());
+                    assertEquals("TENANT_KMS_ENVELOPE_AES_256_GCM",
+                            status.atRestTenantEncryption());
+                    assertFalse(status.productionCertified());
                 });
     }
 
@@ -201,7 +238,7 @@ class SnapshotArtifactConfigurationTest {
                     assertEquals("LEGACY_WRITE_DUAL_READ", status.mode());
                     assertEquals("LEGACY_AND_CAS", status.readers());
                     assertEquals("CAS_ROLLBACK_DUAL_READ", status.migrationState());
-                    assertEquals("CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED",
+                    assertEquals("CAPTURE_ARCHIVE_RECONCILIATION_WIRED",
                             status.snapshotReferenceRoots());
                     assertEquals("MIXED_LEGACY_UNSCOPED", status.readAuthorization());
                     assertTrue(status.casReaderTenantCatalogAuthorization());
@@ -209,7 +246,7 @@ class SnapshotArtifactConfigurationTest {
                     assertAccurateInfo(context.getBean(InfoContributor.class),
                             "ROLLBACK_COMPATIBILITY", "SINGLE_HOST", "LEGACY_AND_CAS",
                             "CAS_ROLLBACK_DUAL_READ", "GLOBAL_DIGEST", "NOT_CONFIGURED",
-                            "CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED", true);
+                            "CAPTURE_ARCHIVE_RECONCILIATION_WIRED", true);
                 });
     }
 

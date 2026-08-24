@@ -22,6 +22,20 @@ class ResultSignatureTest {
     private final InMemoryCasStore store = new InMemoryCasStore("l2");
     private final CasMetrics metrics = new CasMetrics();
 
+    @Test void writePresentationPolicyCannotExceedTheDurableIndexBoundary() {
+        assertDoesNotThrow(() -> new ResultSignature.VerificationPolicy(1, 0));
+        assertDoesNotThrow(ResultSignature.VerificationPolicy::standard);
+        assertThrows(IllegalArgumentException.class,
+                () -> new ResultSignature.VerificationPolicy(
+                        ResultSignature.VerificationPolicy
+                                .PLATFORM_MAXIMUM_SIGNATURE_AGE_MILLIS + 1,
+                        0));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ResultSignature.VerificationPolicy(1,
+                        ResultSignature.VerificationPolicy
+                                .PLATFORM_MAXIMUM_CLOCK_SKEW_MILLIS + 1));
+    }
+
     private static CasDigest digest(String text) {
         return CasDigest.of(text.getBytes(StandardCharsets.UTF_8));
     }
@@ -267,7 +281,7 @@ class ResultSignatureTest {
                 actionKey, record, producer, writer, ActionCache.RiskTier.STANDARD,
                 signature, NOW);
         ActionCache.ResultAttestation unknownVersion = ActionCache.ResultAttestation.verified(
-                signature.keyId(), signature.algorithm(), signature.digest(),
+                signature.keyId(), signature.algorithm(), signature.digest(), signature.value(),
                 "elmos-result-signature/999", envelope.digest(), signature.signedAtEpochMillis());
         ActionCache cache = new ActionCache(store, new CasAccessPolicy(),
                 ActionCache.FailureCachePolicy.none(), ActionCache.SampleRecomputePolicy.disabled(),

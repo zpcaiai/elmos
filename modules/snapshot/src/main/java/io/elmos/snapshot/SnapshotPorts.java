@@ -3,7 +3,10 @@ package io.elmos.snapshot;
 import io.elmos.scm.EphemeralCredential;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public final class SnapshotPorts {
     private SnapshotPorts() {}
@@ -31,12 +34,24 @@ public final class SnapshotPorts {
         }
     }
 
-    public interface RefResolver { ResolvedRef resolve(String repositoryId, String requestedRef, EphemeralCredential credential); }
+    public interface RefResolver {
+        ResolvedRef resolve(
+                ArtifactResourceContext resource,
+                String requestedRef,
+                EphemeralCredential credential
+        );
+    }
     public record ResolvedRef(String commitSha, String treeSha, String fetchRef) {
         public ResolvedRef(String commitSha, String treeSha) { this(commitSha, treeSha, commitSha); }
     }
 
-    public interface SourceFetcher { FetchedSource fetch(String repositoryId, ResolvedRef ref, EphemeralCredential credential); }
+    public interface SourceFetcher {
+        FetchedSource fetch(
+                ArtifactResourceContext resource,
+                ResolvedRef ref,
+                EphemeralCredential credential
+        );
+    }
     public record FetchedSource(Path path, String treeSha, AutoCloseable cleanup) implements AutoCloseable {
         public FetchedSource(Path path, AutoCloseable cleanup) { this(path, null, cleanup); }
         @Override public void close() throws Exception { cleanup.close(); }
@@ -65,11 +80,100 @@ public final class SnapshotPorts {
         }
 
         /**
+         * Retains one logical snapshot and returns the exact collector generation that was
+         * observed or created by the operation.
+         *
+         * <p>Lifecycle callers must preserve this token until the database transition that makes
+         * the snapshot unreachable has committed. Passing a token back to
+         * {@link #releaseSnapshotGeneration} prevents a delayed delete acknowledgement from
+         * releasing a newer root generation that another process has reactivated.
+         */
+        default ArtifactRetention retainSnapshotGeneration(
+                ArtifactResourceContext resource,
+                String snapshotId,
+                List<String> references
+        ) {
+            retainSnapshot(resource, snapshotId, references);
+            return ArtifactRetention.untracked(snapshotId);
+        }
+
+        /**
          * Releases all reachability records owned by {@code snapshotId}. The call must be
          * idempotent so capture failure compensation and a later lifecycle retry are both safe.
          */
         default void releaseSnapshot(ArtifactResourceContext resource, String snapshotId) {
             // A store without a collector has no reachability catalogue to update.
+        }
+
+        /**
+         * Releases only the root generation named by {@code retention}. Collector-aware stores
+         * must reject missing or foreign generation tokens instead of falling back to a
+         * wall-clock release.
+         */
+        default void releaseSnapshotGeneration(
+                ArtifactResourceContext resource,
+                ArtifactRetention retention
+        ) {
+            Objects.requireNonNull(retention, "retention");
+            releaseSnapshot(resource, retention.snapshotId());
+        }
+    }
+
+    /**
+     * Opaque, persistence-safe collector generation token.
+     *
+     * <p>The map permits a compatibility adapter to preserve independent backend generations
+     * without making the snapshot module depend on a concrete CAS implementation. Empty maps are
+     * valid only for stores that do not perform garbage collection.
+     */
+    public record ArtifactRetention(String snapshotId, Map<String, Long> generations) {
+        public ArtifactRetention {
+            if (snapshotId == null
+                    || !snapshotId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
+                throw new IllegalArgumentException("snapshotId must be a safe identifier");
+            }
+            Objects.requireNonNull(generations, "generations");
+            Map<String, Long> copy = new LinkedHashMap<>();
+            generations.forEach((name, generation) -> {
+                if (name == null || !name.matches("[a-z][a-z0-9.-]{0,63}")) {
+                    throw new IllegalArgumentException("artifact retention generation name is invalid");
+                }
+                if (generation == null || generation < 0) {
+                    throw new IllegalArgumentException("artifact retention generation is invalid");
+                }
+                if (copy.putIfAbsent(name, generation) != null) {
+                    throw new IllegalArgumentException("duplicate artifact retention generation");
+                }
+            });
+            generations = Map.copyOf(copy);
+        }
+
+        public static ArtifactRetention untracked(String snapshotId) {
+            return new ArtifactRetention(snapshotId, Map.of());
+        }
+
+        public ArtifactRetention merge(ArtifactRetention other) {
+            Objects.requireNonNull(other, "other");
+            if (!snapshotId.equals(other.snapshotId)) {
+                throw new IllegalArgumentException("cannot merge different snapshot retentions");
+            }
+            Map<String, Long> merged = new LinkedHashMap<>(generations);
+            other.generations.forEach((name, generation) -> {
+                Long previous = merged.putIfAbsent(name, generation);
+                if (previous != null && !previous.equals(generation)) {
+                    throw new IllegalStateException("artifact retention generations conflict");
+                }
+            });
+            return new ArtifactRetention(snapshotId, merged);
+        }
+
+        public long requireGeneration(String name) {
+            Long generation = generations.get(name);
+            if (generation == null) {
+                throw new IllegalArgumentException(
+                        "artifact retention does not contain generation " + name);
+            }
+            return generation;
         }
     }
 
@@ -82,7 +186,8 @@ public final class SnapshotPorts {
     }
 
     public interface SnapshotStore {
-        SnapshotModel.RepositorySnapshot findReusable(String repositoryId, String commitSha, int schemaVersion);
+        SnapshotModel.RepositorySnapshot findReusable(String organizationId, String repositoryId,
+                                                        String commitSha, int schemaVersion);
         SnapshotModel.RepositorySnapshot saveAvailable(SnapshotModel.RepositorySnapshot snapshot);
     }
 }

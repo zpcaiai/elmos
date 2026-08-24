@@ -178,7 +178,8 @@ final class GithubInstallationOnboardingService {
                     repository.parentId()
             ));
         }
-        lifecycle.synchronize(bound.githubInstallationId(), repositories, now);
+        lifecycle.synchronize(bound.organizationId(), bound.githubInstallationId(),
+                repositories, now);
         String redirect = UriComponentsBuilder.fromUriString(successUrl)
                 .queryParam("github", "connected")
                 .queryParam("repositories", repositories.size())

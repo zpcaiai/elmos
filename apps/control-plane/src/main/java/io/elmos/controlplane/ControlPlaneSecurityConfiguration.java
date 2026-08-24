@@ -66,6 +66,10 @@ public class ControlPlaneSecurityConfiguration {
                                 "/runner/v1/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
+                                "/api/v1/github/installations/setup",
+                                "/api/v1/github/installations/callback")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET,
                                 "/api/v1/operations-observability/summary",
                                 "/api/v1/operations-observability/audit-export",
                                 "/api/v1/operations-observability/runs/*/replay",

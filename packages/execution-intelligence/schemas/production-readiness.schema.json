@@ -3,88 +3,275 @@
   "$id": "https://elmos.dev/schemas/execution-intelligence/production-readiness.schema.json",
   "title": "production-readiness",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "schema_version",
     "artifact",
+    "evidence_dir",
     "decision",
+    "evidence_snapshot",
+    "evidence_schema",
+    "evidence_provenance",
+    "supported_confidence",
     "gates",
     "counts",
     "rule"
   ],
   "properties": {
-    "schema_version": {
-      "type": "string"
+    "schema_version": { "const": "1.0.0" },
+    "artifact": { "const": "production-readiness" },
+    "evidence_dir": { "type": "string", "minLength": 1 },
+    "decision": { "enum": ["release", "not_certified", "block"] },
+    "evidence_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "errors", "files"],
+      "properties": {
+        "status": { "enum": ["CAPTURED", "FAILED"] },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/contentFile" } }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "status": { "const": "CAPTURED" },
+            "errors": { "type": "array", "maxItems": 0 }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "FAILED" },
+            "errors": { "type": "array", "minItems": 1 }
+          }
+        }
+      ]
     },
-    "artifact": {
-      "const": "production-readiness"
-    },
-    "evidence_dir": {
-      "type": "string"
-    },
-    "decision": {
-      "enum": [
-        "release",
-        "not_certified",
-        "block"
+    "evidence_schema": { "$ref": "#/$defs/schemaValidation" },
+    "evidence_provenance": { "$ref": "#/$defs/provenance" },
+    "supported_confidence": {
+      "anyOf": [
+        { "$ref": "#/$defs/supportedConfidence" },
+        { "type": "null" }
       ]
     },
     "gates": {
       "type": "array",
       "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": [
-          "id",
-          "title",
-          "required",
-          "status",
-          "detail"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "status": {
-            "enum": [
-              "PASS",
-              "FAIL",
-              "NOT_EXECUTED"
-            ]
-          },
-          "detail": {
-            "type": "string"
-          },
-          "evidence": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        }
-      }
+      "items": { "$ref": "#/$defs/gate" }
     },
     "counts": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["pass", "fail", "not_executed"],
+      "properties": {
+        "pass": { "type": "integer", "minimum": 0 },
+        "fail": { "type": "integer", "minimum": 0 },
+        "not_executed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rule": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "contentFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "size_bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "schemaFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "schema", "status", "errors"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+\\.schema\\.json$"
+        },
+        "status": { "enum": ["VALID", "INVALID"] },
+        "errors": { "type": "array", "items": { "type": "string" } }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "status": { "const": "VALID" },
+            "errors": { "type": "array", "maxItems": 0 }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "INVALID" },
+            "errors": { "type": "array", "minItems": 1 }
+          }
+        }
+      ]
+    },
+    "schemaValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "errors", "files"],
+      "properties": {
+        "status": { "enum": ["VALID", "INVALID", "NOT_EXECUTED"] },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/schemaFile" } }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "status": { "const": "VALID" },
+            "errors": { "type": "array", "maxItems": 0 },
+            "files": { "type": "array", "minItems": 1 }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "INVALID" },
+            "errors": { "type": "array", "minItems": 1 }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "NOT_EXECUTED" },
+            "errors": { "type": "array", "maxItems": 0 },
+            "files": { "type": "array", "maxItems": 0 }
+          }
+        }
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
       "required": [
-        "pass",
-        "fail",
-        "not_executed"
+        "certifier",
+        "policy_version",
+        "min_calibration_samples",
+        "required_roles"
+      ],
+      "properties": {
+        "certifier": { "const": "elmos-execution-intelligence" },
+        "policy_version": { "const": "2.0.0" },
+        "min_calibration_samples": { "type": "integer", "minimum": 20 },
+        "required_roles": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "enum": ["executor", "independent_verifier"] }
+        }
+      }
+    },
+    "signer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "key_id",
+        "principal_id",
+        "organization_id",
+        "authority_id",
+        "signed_at"
+      ],
+      "properties": {
+        "role": { "enum": ["executor", "independent_verifier"] },
+        "key_id": { "type": "string", "minLength": 1 },
+        "principal_id": { "type": "string", "minLength": 1 },
+        "organization_id": { "type": "string", "minLength": 1 },
+        "authority_id": { "type": "string", "minLength": 1 },
+        "signed_at": { "type": "string", "pattern": "Z$" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "errors", "files", "signers"],
+      "properties": {
+        "status": { "enum": ["VERIFIED", "FAILED", "NOT_EXECUTED"] },
+        "verified_at": { "type": "string", "pattern": "Z$" },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "evidence_set_id": { "type": "string", "minLength": 1 },
+        "trust_store_id": { "type": "string", "minLength": 1 },
+        "trust_store_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "expires_at": { "type": "string", "pattern": "Z$" },
+        "policy": { "$ref": "#/$defs/policy" },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/contentFile" } },
+        "signers": { "type": "array", "items": { "$ref": "#/$defs/signer" } }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "verified_at",
+            "evidence_set_id",
+            "trust_store_id",
+            "trust_store_sha256",
+            "expires_at",
+            "policy"
+          ],
+          "properties": {
+            "status": { "const": "VERIFIED" },
+            "errors": { "type": "array", "maxItems": 0 },
+            "files": { "type": "array", "minItems": 1 },
+            "signers": { "type": "array", "minItems": 2, "maxItems": 2 }
+          }
+        },
+        {
+          "required": ["verified_at"],
+          "properties": {
+            "status": { "const": "FAILED" },
+            "errors": { "type": "array", "minItems": 1 },
+            "files": { "type": "array", "maxItems": 0 },
+            "signers": { "type": "array", "maxItems": 0 }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "NOT_EXECUTED" },
+            "errors": { "type": "array", "minItems": 1 },
+            "files": { "type": "array", "maxItems": 0 },
+            "signers": { "type": "array", "maxItems": 0 }
+          }
+        }
       ]
     },
-    "rule": {
-      "type": "string"
+    "supportedConfidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["floor", "ceiling", "earned", "withheld", "rule"],
+      "properties": {
+        "floor": { "type": "number", "minimum": 0, "maximum": 1 },
+        "ceiling": { "type": "number", "minimum": 0, "maximum": 1 },
+        "earned": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "runtime_calibrated": { "type": "number" },
+            "runtime_sample_depth": { "type": "number" },
+            "token_calibrated": { "type": "number" },
+            "token_sample_depth": { "type": "number" },
+            "no_blocking_gaps": { "type": "number" },
+            "chaos_passing": { "type": "number" },
+            "verified_rates": { "type": "number" },
+            "token_mix_verified": { "type": "number" }
+          }
+        },
+        "withheld": { "type": "array", "items": { "type": "string" } },
+        "rule": { "type": "string", "minLength": 1 }
+      }
     },
-    "supported_confidence": {
-      "type": [
-        "object",
-        "null"
-      ]
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "required", "status", "detail", "evidence"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "status": { "enum": ["PASS", "FAIL", "NOT_EXECUTED"] },
+        "detail": { "type": "string" },
+        "evidence": { "type": ["string", "null"] }
+      }
     }
   }
 }

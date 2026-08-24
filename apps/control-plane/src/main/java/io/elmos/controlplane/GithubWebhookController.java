@@ -26,6 +26,12 @@ class GithubWebhookController {
         } finally { active.forEach(value -> Arrays.fill(value, '\0')); }
     }
 
+    @ExceptionHandler(WebhookIngestionService.ResourceBindingException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    Map<String, String> forbiddenResource() {
+        return Map.of("code", "GITHUB_WEBHOOK_RESOURCE_BINDING_INVALID");
+    }
+
     @ExceptionHandler(SecurityException.class) @ResponseStatus(HttpStatus.UNAUTHORIZED)
     Map<String, String> unauthorized() { return Map.of("code", "GITHUB_WEBHOOK_SIGNATURE_INVALID"); }
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST)

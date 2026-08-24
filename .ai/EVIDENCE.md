@@ -302,3 +302,34 @@ runtime evidence remains `NOT_RUN`; this result does not change certification.
 No local result in this section changes R10 independent-client evidence,
 external verification, customer evidence, production evidence, or
 `certified_route_count=0`.
+
+### 2026-08-24 CAS / Snapshot / EI evidence correction
+
+| Evidence | Result | Supported claim |
+| --- | --- | --- |
+| Java focused Maven scope | 197/197 PASS across 34 classes | current task-owned Java contracts compile and pass locally |
+| PostgreSQL 17 / Flyway | V71 reached; 71/71 applied | fresh-schema migration is executable locally; not a historical production upgrade proof |
+| CAS JDBC live | 10/10 PASS, no skip | catalog metadata, roots, durable ActionCache and current-trust invalidation work on a real local PostgreSQL |
+| Snapshot/RLS/webhook live | 5/5 PASS, no skip | tenant context resets, immutable lifecycle, stale reconciliation and signed-webhook tenant routing work on a real local PostgreSQL |
+| MinIO process probe | PASS, PIDs 35250/35273, digest `a5f0c1b47f09bc1dcdd8d090143d9d2cef194ace81a91173e49690a214842c09`, 75 bytes | two distinct JVMs share an external object tier on one host |
+| EI package | 299 pass / 11 skip; PG conformance 22 pass / 0 skip | local code plus real local PostgreSQL backend contract |
+| EI static/install | Ruff PASS; strict MyPy PASS over 28 sources; wheel 25/7/2 resources PASS | source and installed-package engineering integrity |
+| EI gate | schema-valid thin evidence -> `BLOCK`, exit 2; empty evidence -> `NOT_CERTIFIED` | failure and missing evidence both fail closed without conflation |
+| ArkUI/Harmony | `hdc` unavailable | `NOT_RUN`, no device evidence |
+
+MinIO raw receipt directory:
+`.ai/cas-two-process-shared-tier-20260824T070853Z/`. Its own summary says
+`SINGLE_HOST_EXTERNAL_PROCESS`, `LOCAL_EXECUTED_SELF_ATTESTED`, and `NOT_CERTIFIED`.
+
+The local KMS tests validate provider binding, AAD, zeroization and startup refusal when no provider
+exists; they do not exercise a production KMS/HSM. The local detached-signature tests and live
+ActionCache revalidation do not supply an external, independently governed trust/revocation source.
+The webhook run uses seeded signed-resource bindings rather than real GitHub delivery. A fresh
+71-migration database does not cure the pre-existing V9 ordering hazard for a database containing
+historical `audit_events`; that needs a controlled pre-V9 bootstrap, not Flyway `repair`.
+
+Supported status therefore remains exactly:
+
+- CAS: `SINGLE_HOST / NOT_CERTIFIED`
+- Execution Intelligence: `BLOCK / NOT_CERTIFIED`
+- ArkUI/Harmony device: `NOT_RUN / NOT_CERTIFIED`

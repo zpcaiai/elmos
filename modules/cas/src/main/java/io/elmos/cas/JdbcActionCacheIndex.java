@@ -42,6 +42,7 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
               writer_attested,
               attestation_key_id, attestation_algorithm,
               attestation_signature_hex, attestation_signature_bytes,
+              attestation_signature_value,
               attestation_envelope_version,
               attestation_envelope_hex, attestation_envelope_bytes,
               attestation_signed_at_epoch_millis,
@@ -51,7 +52,7 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
             ) VALUES (
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL
             )
             ON CONFLICT (organization_id, action_key_hex) DO UPDATE SET
               action_key_bytes = EXCLUDED.action_key_bytes,
@@ -94,6 +95,7 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
               attestation_algorithm = EXCLUDED.attestation_algorithm,
               attestation_signature_hex = EXCLUDED.attestation_signature_hex,
               attestation_signature_bytes = EXCLUDED.attestation_signature_bytes,
+              attestation_signature_value = EXCLUDED.attestation_signature_value,
               attestation_envelope_version = EXCLUDED.attestation_envelope_version,
               attestation_envelope_hex = EXCLUDED.attestation_envelope_hex,
               attestation_envelope_bytes = EXCLUDED.attestation_envelope_bytes,
@@ -416,6 +418,12 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
         statement.setString(parameter++, entry.attestation().map(ActionCache.ResultAttestation::algorithm).orElse(null));
         parameter = bindOptionalDigest(statement, parameter,
                 entry.attestation().map(ActionCache.ResultAttestation::signatureDigest));
+        if (entry.attestation().isPresent()) {
+            statement.setBytes(parameter++, entry.attestation().orElseThrow()
+                    .signatureValue().orElse(null));
+        } else {
+            statement.setBytes(parameter++, null);
+        }
         statement.setString(parameter++, entry.attestation()
                 .map(ActionCache.ResultAttestation::envelopeVersion).orElse(null));
         parameter = bindOptionalDigest(statement, parameter,
@@ -458,9 +466,10 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
             throw new IllegalStateException(
                     "ACTION_CACHE_ENTRY_METADATA_INCOMPLETE:attestation_signed_at_epoch_millis");
         }
-        return ActionCache.ResultAttestation.verified(attestationKey,
+        return ActionCache.ResultAttestation.verifiedFromPersistence(attestationKey,
                 requireColumn(rows, "attestation_algorithm"),
                 digest(rows, "attestation_signature_hex", "attestation_signature_bytes"),
+                rows.getBytes("attestation_signature_value"),
                 requireColumn(rows, "attestation_envelope_version"),
                 digest(rows, "attestation_envelope_hex", "attestation_envelope_bytes"),
                 signedAt);
@@ -470,6 +479,7 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
         return rows.getString("attestation_algorithm") != null
                 || rows.getString("attestation_signature_hex") != null
                 || rows.getObject("attestation_signature_bytes") != null
+                || rows.getBytes("attestation_signature_value") != null
                 || rows.getString("attestation_envelope_version") != null
                 || rows.getString("attestation_envelope_hex") != null
                 || rows.getObject("attestation_envelope_bytes") != null

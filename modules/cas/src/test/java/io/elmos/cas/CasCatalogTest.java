@@ -324,6 +324,25 @@ class CasCatalogTest {
         assertEquals(300L, active.createdAtEpochMillis());
     }
 
+    @Test void reactivatedRootAdvancesPastHistoryWhenCallerClockMovesBackwards() {
+        CasDigest object = digest("clock-regressed-root");
+        CasGarbageCollector.RootKind kind = CasGarbageCollector.RootKind.SNAPSHOT;
+        long first = catalog.addReferenceRoots(List.of(new CasCatalog.ReferenceRoot(
+                "tenant-a", kind, "snap-clock-regressed", object, 500L)));
+        catalog.releaseReferenceRoot(
+                "tenant-a", kind, "snap-clock-regressed", first);
+
+        long reactivated = catalog.addReferenceRoots(List.of(new CasCatalog.ReferenceRoot(
+                "tenant-a", kind, "snap-clock-regressed", object, 100L)));
+
+        assertEquals(501L, reactivated);
+        assertThrows(IllegalArgumentException.class, () -> catalog.releaseReferenceRoot(
+                "tenant-a", kind, "snap-clock-regressed", first));
+        assertEquals(reactivated, catalog.activeReferenceRoots("tenant-a").stream()
+                .filter(root -> root.rootId().equals("snap-clock-regressed"))
+                .findFirst().orElseThrow().createdAtEpochMillis());
+    }
+
     @Test void legalHoldIsRecordedAgainstAKnownObjectOnly() {
         CasDigest object = digest("held");
         catalog.record(entry("tenant-a", object, CasObjectModel.Sensitivity.EVIDENCE, Optional.empty()));

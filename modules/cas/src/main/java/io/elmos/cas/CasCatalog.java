@@ -185,7 +185,16 @@ public interface CasCatalog {
      * root ID; either the complete set becomes active or none of it does. An existing active subset
      * may be repaired, but an unexpected active digest fails closed instead of widening the root.
      */
-    void addReferenceRoots(List<ReferenceRoot> roots);
+    /**
+     * Publishes the root set and returns its authoritative lifecycle generation.
+     *
+     * <p>When a previously released logical root is reactivated, the catalogue must allocate a
+     * generation strictly greater than every historical generation for that tenant/kind/root ID,
+     * even if the caller restarted or its wall clock moved backwards. Implementations backed by
+     * shared storage perform that comparison under the same logical-root transaction lock used
+     * for publication.
+     */
+    long addReferenceRoots(List<ReferenceRoot> roots);
 
     void releaseReferenceRoot(String tenantId, CasGarbageCollector.RootKind kind, String rootId,
                               long releasedAtEpochMillis);

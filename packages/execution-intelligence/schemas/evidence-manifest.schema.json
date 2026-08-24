@@ -3,60 +3,57 @@
   "$id": "https://elmos.dev/schemas/execution-intelligence/evidence-manifest.schema.json",
   "title": "evidence-manifest",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "schema_version",
     "artifact",
+    "evidence_dir",
     "decision",
     "files",
-    "missing_evidence"
+    "provenance",
+    "schema_validation",
+    "missing_evidence",
+    "invalid_evidence"
   ],
   "properties": {
-    "schema_version": {
-      "type": "string"
-    },
-    "artifact": {
-      "const": "evidence-manifest"
-    },
-    "evidence_dir": {
-      "type": "string"
-    },
-    "decision": {
-      "type": "string"
-    },
+    "schema_version": { "const": "2.0.0" },
+    "artifact": { "const": "evidence-manifest" },
+    "evidence_dir": { "type": "string", "minLength": 1 },
+    "decision": { "enum": ["release", "not_certified", "block"] },
     "files": {
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "path",
           "sha256",
           "size_bytes",
-          "supports_gate"
+          "supports_gate",
+          "provenance_bound"
         ],
         "properties": {
-          "path": {
-            "type": "string"
-          },
-          "sha256": {
-            "type": "string",
-            "minLength": 64,
-            "maxLength": 64
-          },
-          "size_bytes": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "supports_gate": {
-            "type": "string"
-          }
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "supports_gate": { "type": "string", "minLength": 1 },
+          "provenance_bound": { "type": "boolean" }
         }
       }
     },
+    "provenance": {
+      "$ref": "production-readiness.schema.json#/$defs/provenance"
+    },
+    "schema_validation": {
+      "$ref": "production-readiness.schema.json#/$defs/schemaValidation"
+    },
     "missing_evidence": {
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "invalid_evidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
     }
   }
 }

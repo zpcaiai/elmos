@@ -10,9 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ActionCacheMigrationContractTest {
 
     private static String migration() throws Exception {
+        return migration("V67__durable_action_cache_index.sql");
+    }
+
+    private static String signatureMigration() throws Exception {
+        return migration("V69__action_cache_detached_signature_bytes.sql");
+    }
+
+    private static String migration(String fileName) throws Exception {
         Path root = Path.of(System.getProperty("basedir"), "src", "main", "resources",
                 "db", "migration");
-        return Files.readString(root.resolve("V67__durable_action_cache_index.sql"));
+        return Files.readString(root.resolve(fileName));
     }
 
     @Test void legacyIncompleteRowsAreInvalidatedRatherThanServedWithInventedMetadata()
@@ -84,5 +92,25 @@ class ActionCacheMigrationContractTest {
         assertTrue(v67.contains("ADD COLUMN gpu_seconds double precision"));
         assertTrue(v67.contains("cas_action_active_resource_usage_finite"));
         assertTrue(v67.contains("array_position(cost_values, 'NaN'::double precision) IS NULL"));
+    }
+
+    @Test void detachedSignatureBytesAreRequiredForEveryActiveSignedEntry()
+            throws Exception {
+        String v69 = signatureMigration();
+        assertTrue(v69.contains("ADD COLUMN attestation_signature_value bytea"));
+        assertTrue(v69.contains("V69_SIGNATURE_BYTES_REQUIRED_FOR_CURRENT_TRUST"));
+        assertTrue(v69.contains("WHERE invalidated_at IS NULL"));
+        assertTrue(v69.contains("AND attestation_key_id IS NOT NULL"));
+        assertTrue(v69.contains("AND attestation_signature_value IS NULL"));
+        assertTrue(v69.contains("DROP CONSTRAINT cas_action_attestation_complete_shape"));
+        assertTrue(v69.contains("attestation_signature_value IS NOT NULL"));
+        assertTrue(v69.contains("octet_length(attestation_signature_value) BETWEEN 1 AND 16384"));
+        assertTrue(v69.contains(
+                "octet_length(attestation_signature_value) = attestation_signature_bytes"));
+        assertTrue(v69.contains("cas_action_attestation_write_presentation_window"));
+        assertTrue(v69.contains("attestation_signed_at_epoch_millis::numeric - 60000"));
+        assertTrue(v69.contains("attestation_signed_at_epoch_millis::numeric + 900000"));
+        assertTrue(v69.contains("ALTER TABLE cas_action_cache_entries NO FORCE ROW LEVEL SECURITY"));
+        assertTrue(v69.contains("ALTER TABLE cas_action_cache_entries FORCE ROW LEVEL SECURITY"));
     }
 }

@@ -123,6 +123,25 @@ record ControlPlanePrincipal(
                 organizationId, actorId, roles, permissions, memberships));
     }
 
+    static ControlPlanePrincipal requireDatabaseBound(
+            String requestedOrganizationId,
+            String permission
+    ) {
+        var requestAttributes =
+                org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+        Object bound = requestAttributes == null ? null : requestAttributes.getAttribute(
+                OidcTenantMembershipFilter.PRINCIPAL_ATTRIBUTE,
+                org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);
+        if (!(bound instanceof ControlPlanePrincipal principal)) {
+            throw new AccessDeniedException("CONTROL_PLANE_DATABASE_PRINCIPAL_REQUIRED");
+        }
+        if (!principal.organizationId().equals(requestedOrganizationId)) {
+            throw new AccessDeniedException("CONTROL_PLANE_PRIMARY_TENANT_MISMATCH");
+        }
+        principal.require(requestedOrganizationId, principal.actorId(), permission);
+        return principal;
+    }
+
     static ControlPlanePrincipal databaseBound(
             String selectedOrganizationId,
             String oidcActorId,

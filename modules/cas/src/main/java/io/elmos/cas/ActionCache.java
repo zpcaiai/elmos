@@ -1,6 +1,7 @@
 package io.elmos.cas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -40,6 +41,103 @@ public final class ActionCache {
         HIGH
     }
 
+    /** Current trust is evaluated separately from the historical decision persisted at write. */
+    public enum TrustStatus {
+        TRUSTED,
+        REVOKED,
+        DENIED,
+        UNKNOWN
+    }
+
+    public record TrustDecision(TrustStatus status, String reason) {
+        public TrustDecision {
+            Objects.requireNonNull(status, "status");
+            reason = CasText.required(reason, "reason");
+            if (reason.length() > 256) {
+                throw new IllegalArgumentException("trust reason exceeds 256 characters");
+            }
+            for (int index = 0; index < reason.length(); index++) {
+                if (Character.isISOControl(reason.charAt(index))) {
+                    throw new IllegalArgumentException("trust reason contains control characters");
+                }
+            }
+        }
+
+        public static TrustDecision trusted(String reason) {
+            return new TrustDecision(TrustStatus.TRUSTED, reason);
+        }
+
+        public static TrustDecision revoked(String reason) {
+            return new TrustDecision(TrustStatus.REVOKED, reason);
+        }
+
+        public static TrustDecision denied(String reason) {
+            return new TrustDecision(TrustStatus.DENIED, reason);
+        }
+
+        public static TrustDecision unknown(String reason) {
+            return new TrustDecision(TrustStatus.UNKNOWN, reason);
+        }
+    }
+
+    /**
+     * Lookup-time trust and revocation check. A production cache supplies a service-backed
+     * implementation; UNKNOWN and provider failures never become hits.
+     */
+    @FunctionalInterface
+    public interface TrustRevalidator {
+        TrustDecision revalidate(Entry entry, long nowEpochMillis);
+
+        default String mode() {
+            return "CUSTOM_CURRENT_TRUST_REVALIDATION";
+        }
+
+        /**
+         * Compatibility mode for direct library users predating lookup-time revalidation. It is
+         * intentionally named and must not be advertised as a production trust decision.
+         */
+        static TrustRevalidator persistedDecisionCompatibility() {
+            return new TrustRevalidator() {
+                @Override
+                public TrustDecision revalidate(Entry entry, long nowEpochMillis) {
+                    if (!entry.writer().attested()) {
+                        return TrustDecision.denied("PERSISTED_WRITER_NOT_ATTESTED");
+                    }
+                    if (entry.attestation().isPresent()
+                            && entry.attestation().filter(ResultAttestation::verified).isEmpty()) {
+                        return TrustDecision.denied("PERSISTED_ATTESTATION_NOT_VERIFIED");
+                    }
+                    if (entry.attestation().isPresent()
+                            && entry.attestation().filter(ResultAttestation::hasSignatureValue).isEmpty()) {
+                        return TrustDecision.unknown(
+                                "PERSISTED_ATTESTATION_SIGNATURE_BYTES_MISSING");
+                    }
+                    return TrustDecision.trusted("PERSISTED_DECISION_COMPATIBILITY_ONLY");
+                }
+
+                @Override
+                public String mode() {
+                    return "PERSISTED_DECISION_COMPATIBILITY_ONLY";
+                }
+            };
+        }
+
+        /** Default control-plane stance until a current trust provider is explicitly wired. */
+        static TrustRevalidator failClosedNotConfigured() {
+            return new TrustRevalidator() {
+                @Override
+                public TrustDecision revalidate(Entry entry, long nowEpochMillis) {
+                    return TrustDecision.unknown("CURRENT_TRUST_PROVIDER_NOT_CONFIGURED");
+                }
+
+                @Override
+                public String mode() {
+                    return "FAIL_CLOSED_CURRENT_TRUST_NOT_CONFIGURED";
+                }
+            };
+        }
+    }
+
     /** ELMOS-CAS-026. Writes require an authenticated, attested runner or service identity. */
     public record WriterIdentity(String serviceId, String trustDomain, String nodeId, boolean attested) {
         public WriterIdentity {
@@ -55,26 +153,51 @@ public final class ActionCache {
      * <p>There is deliberately no public constructor that accepts {@code verified=true}. External
      * callers may describe an unverified signature for rejection paths, but only
      * {@link ResultSignature.Verifier} and the package-local durable-index reader can reconstruct
-     * a verified receipt. The envelope digest is recalculated from the complete entry both before
-     * a write and after JDBC readback, so a receipt cannot be replayed over changed result,
-     * authorization, risk or writer metadata.
+     * a verified receipt. New receipts own a defensive copy of the detached signature bytes; a
+     * legacy digest-only receipt remains readable solely so current trust can fail closed. The
+     * envelope digest is recalculated from the complete entry both before a write and after JDBC
+     * readback, so a receipt cannot be replayed over changed result, authorization, risk or writer
+     * metadata.
      */
     public static final class ResultAttestation {
+        private static final int MAX_SIGNATURE_VALUE_BYTES = 16 * 1024;
+
         private final String signerId;
         private final String algorithm;
         private final CasDigest signatureDigest;
+        private final byte[] signatureValue;
         private final String envelopeVersion;
         private final CasDigest envelopeDigest;
         private final long signedAtEpochMillis;
         private final boolean verified;
+        private final long writeMaximumAgeMillis;
+        private final long writeMaximumClockSkewMillis;
 
         private ResultAttestation(String signerId, String algorithm, CasDigest signatureDigest,
-                                  String envelopeVersion, CasDigest envelopeDigest,
+                                  byte[] signatureValue, String envelopeVersion,
+                                  CasDigest envelopeDigest,
                                   long signedAtEpochMillis,
-                                  boolean verified) {
+                                  boolean verified, long writeMaximumAgeMillis,
+                                  long writeMaximumClockSkewMillis) {
             this.signerId = CasText.required(signerId, "signerId");
             this.algorithm = CasText.required(algorithm, "algorithm");
             this.signatureDigest = Objects.requireNonNull(signatureDigest, "signatureDigest");
+            if (signatureValue == null) {
+                this.signatureValue = null;
+            } else {
+                if (signatureValue.length == 0) {
+                    throw new IllegalArgumentException("signatureValue must not be empty");
+                }
+                if (signatureValue.length > MAX_SIGNATURE_VALUE_BYTES) {
+                    throw new IllegalArgumentException(
+                            "signatureValue exceeds " + MAX_SIGNATURE_VALUE_BYTES + " bytes");
+                }
+                this.signatureValue = signatureValue.clone();
+                if (!CasDigest.of(this.signatureValue).equals(signatureDigest)) {
+                    throw new IllegalArgumentException(
+                            "signatureValue does not match signatureDigest");
+                }
+            }
             this.envelopeVersion = CasText.required(envelopeVersion, "envelopeVersion");
             this.envelopeDigest = Objects.requireNonNull(envelopeDigest, "envelopeDigest");
             if (signedAtEpochMillis < 0) {
@@ -82,6 +205,16 @@ public final class ActionCache {
             }
             this.signedAtEpochMillis = signedAtEpochMillis;
             this.verified = verified;
+            if (writeMaximumAgeMillis < 0 || writeMaximumClockSkewMillis < 0) {
+                throw new IllegalArgumentException(
+                        "write presentation policy values must not be negative");
+            }
+            if (!verified && (writeMaximumAgeMillis != 0 || writeMaximumClockSkewMillis != 0)) {
+                throw new IllegalArgumentException(
+                        "an unverified attestation cannot carry write presentation authority");
+            }
+            this.writeMaximumAgeMillis = writeMaximumAgeMillis;
+            this.writeMaximumClockSkewMillis = writeMaximumClockSkewMillis;
         }
 
         public static ResultAttestation unverified(String signerId, String algorithm,
@@ -89,18 +222,55 @@ public final class ActionCache {
                                                    String envelopeVersion,
                                                    CasDigest envelopeDigest,
                                                    long signedAtEpochMillis) {
-            return new ResultAttestation(signerId, algorithm, signatureDigest, envelopeVersion,
-                    envelopeDigest,
-                    signedAtEpochMillis, false);
+            return new ResultAttestation(signerId, algorithm, signatureDigest, null,
+                    envelopeVersion, envelopeDigest,
+                    signedAtEpochMillis, false, 0, 0);
         }
 
+        /** Package-local reconstruction for lookup/tamper tests; it is never eligible for a put. */
         static ResultAttestation verified(String signerId, String algorithm,
-                                          CasDigest signatureDigest, String envelopeVersion,
+                                          CasDigest signatureDigest, byte[] signatureValue,
+                                          String envelopeVersion,
                                           CasDigest envelopeDigest,
                                           long signedAtEpochMillis) {
-            return new ResultAttestation(signerId, algorithm, signatureDigest, envelopeVersion,
+            return new ResultAttestation(signerId, algorithm, signatureDigest,
+                    Objects.requireNonNull(signatureValue, "signatureValue"), envelopeVersion,
                     envelopeDigest,
-                    signedAtEpochMillis, true);
+                    signedAtEpochMillis, true, 0, 0);
+        }
+
+        static ResultAttestation verifiedForWrite(
+                String signerId, String algorithm, CasDigest signatureDigest,
+                byte[] signatureValue, String envelopeVersion, CasDigest envelopeDigest,
+                long signedAtEpochMillis, long maximumAgeMillis,
+                long maximumClockSkewMillis) {
+            CasText.requirePositive(maximumAgeMillis, "maximumAgeMillis");
+            return new ResultAttestation(signerId, algorithm, signatureDigest,
+                    Objects.requireNonNull(signatureValue, "signatureValue"), envelopeVersion,
+                    envelopeDigest, signedAtEpochMillis, true, maximumAgeMillis,
+                    maximumClockSkewMillis);
+        }
+
+        /**
+         * Reconstructs a pre-V69 receipt that persisted only the signature digest. Such a receipt
+         * can remain as migration/audit evidence, but lookup-time trust must return UNKNOWN.
+         */
+        static ResultAttestation legacyVerifiedWithoutSignatureBytes(
+                String signerId, String algorithm, CasDigest signatureDigest,
+                String envelopeVersion, CasDigest envelopeDigest, long signedAtEpochMillis) {
+            return new ResultAttestation(signerId, algorithm, signatureDigest, null,
+                    envelopeVersion, envelopeDigest, signedAtEpochMillis, true, 0, 0);
+        }
+
+        static ResultAttestation verifiedFromPersistence(
+                String signerId, String algorithm, CasDigest signatureDigest,
+                byte[] signatureValue, String envelopeVersion, CasDigest envelopeDigest,
+                long signedAtEpochMillis) {
+            return signatureValue == null
+                    ? legacyVerifiedWithoutSignatureBytes(signerId, algorithm, signatureDigest,
+                    envelopeVersion, envelopeDigest, signedAtEpochMillis)
+                    : verified(signerId, algorithm, signatureDigest, signatureValue,
+                    envelopeVersion, envelopeDigest, signedAtEpochMillis);
         }
 
         public String signerId() {
@@ -113,6 +283,17 @@ public final class ActionCache {
 
         public CasDigest signatureDigest() {
             return signatureDigest;
+        }
+
+        /** Returns a defensive copy; detached signature bytes are never exposed by reference. */
+        public Optional<byte[]> signatureValue() {
+            return signatureValue == null
+                    ? Optional.empty()
+                    : Optional.of(signatureValue.clone());
+        }
+
+        public boolean hasSignatureValue() {
+            return signatureValue != null;
         }
 
         public String envelopeVersion() {
@@ -131,6 +312,28 @@ public final class ActionCache {
             return verified;
         }
 
+        Optional<String> writePresentationFailure(long nowEpochMillis) {
+            if (!verified || writeMaximumAgeMillis == 0) {
+                return Optional.of("RESULT_ATTESTATION_WRITE_VALIDATION_MISSING");
+            }
+            long earliest = signedAtEpochMillis >= writeMaximumClockSkewMillis
+                    ? signedAtEpochMillis - writeMaximumClockSkewMillis
+                    : 0;
+            long latest;
+            try {
+                latest = Math.addExact(signedAtEpochMillis, writeMaximumAgeMillis);
+            } catch (ArithmeticException overflow) {
+                latest = Long.MAX_VALUE;
+            }
+            if (nowEpochMillis < earliest) {
+                return Optional.of("RESULT_ATTESTATION_FROM_FUTURE");
+            }
+            if (nowEpochMillis > latest) {
+                return Optional.of("RESULT_ATTESTATION_PRESENTATION_EXPIRED");
+            }
+            return Optional.empty();
+        }
+
         @Override
         public boolean equals(Object other) {
             if (this == other) {
@@ -144,14 +347,16 @@ public final class ActionCache {
                     && signerId.equals(that.signerId)
                     && algorithm.equals(that.algorithm)
                     && signatureDigest.equals(that.signatureDigest)
+                    && Arrays.equals(signatureValue, that.signatureValue)
                     && envelopeVersion.equals(that.envelopeVersion)
                     && envelopeDigest.equals(that.envelopeDigest);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(signerId, algorithm, signatureDigest, envelopeVersion, envelopeDigest,
-                    signedAtEpochMillis, verified);
+            int result = Objects.hash(signerId, algorithm, signatureDigest, envelopeVersion,
+                    envelopeDigest, signedAtEpochMillis, verified);
+            return 31 * result + Arrays.hashCode(signatureValue);
         }
 
         @Override
@@ -159,9 +364,13 @@ public final class ActionCache {
             return "ResultAttestation[signerId=" + signerId
                     + ", algorithm=" + algorithm
                     + ", signatureDigest=" + signatureDigest
+                    + ", signatureValueBytes="
+                    + (signatureValue == null ? "legacy-missing" : signatureValue.length)
                     + ", envelopeVersion=" + envelopeVersion
                     + ", envelopeDigest=" + envelopeDigest
                     + ", signedAtEpochMillis=" + signedAtEpochMillis
+                    + ", writePresentation="
+                    + (writeMaximumAgeMillis == 0 ? "NOT_ESTABLISHED" : "TIME_BOUND_VERIFIED")
                     + ", verified=" + verified + "]";
         }
     }
@@ -291,6 +500,7 @@ public final class ActionCache {
     private final CasMetrics metrics;
     private final CasTelemetry telemetry;
     private final ActionCacheIndex index;
+    private final TrustRevalidator trustRevalidator;
 
     /** Compatibility-only process view; durable lookups always use {@link #index}. */
     private final Map<CasDigest, Entry> processEntries = new java.util.concurrent.ConcurrentHashMap<>();
@@ -300,16 +510,18 @@ public final class ActionCache {
 
     public ActionCache(CasStore store, CasAccessPolicy accessPolicy, FailureCachePolicy failurePolicy,
                        SampleRecomputePolicy samplePolicy, LongSupplier clock, CasMetrics metrics) {
-        this(store, accessPolicy, failurePolicy, samplePolicy, clock, metrics,
-                new InMemoryActionCacheIndex(), CasTelemetry.noop());
+        this(TenantCasStore.global(store), accessPolicy, failurePolicy, samplePolicy, clock, metrics,
+                new InMemoryActionCacheIndex(), CasTelemetry.noop(),
+                TrustRevalidator.persistedDecisionCompatibility());
     }
 
     /** ELMOS-CAS-039. Same cache, with OpenTelemetry spans and instruments attached. */
     public ActionCache(CasStore store, CasAccessPolicy accessPolicy, FailureCachePolicy failurePolicy,
                        SampleRecomputePolicy samplePolicy, LongSupplier clock, CasMetrics metrics,
                        CasTelemetry telemetry) {
-        this(store, accessPolicy, failurePolicy, samplePolicy, clock, metrics,
-                new InMemoryActionCacheIndex(), telemetry);
+        this(TenantCasStore.global(store), accessPolicy, failurePolicy, samplePolicy, clock, metrics,
+                new InMemoryActionCacheIndex(), telemetry,
+                TrustRevalidator.persistedDecisionCompatibility());
     }
 
     /** Production constructor. Multiple cache instances sharing {@code index} observe the same entries. */
@@ -324,14 +536,23 @@ public final class ActionCache {
                        FailureCachePolicy failurePolicy, SampleRecomputePolicy samplePolicy,
                        LongSupplier clock, CasMetrics metrics, ActionCacheIndex index,
                        CasTelemetry telemetry) {
+        this(store, accessPolicy, failurePolicy, samplePolicy, clock, metrics, index, telemetry,
+                TrustRevalidator.failClosedNotConfigured());
+    }
+
+    public ActionCache(TenantCasStore store, CasAccessPolicy accessPolicy,
+                       FailureCachePolicy failurePolicy, SampleRecomputePolicy samplePolicy,
+                       LongSupplier clock, CasMetrics metrics, ActionCacheIndex index,
+                       CasTelemetry telemetry, TrustRevalidator trustRevalidator) {
         this.store = Objects.requireNonNull(store, "store");
-        this.accessPolicy = accessPolicy;
-        this.failurePolicy = failurePolicy;
-        this.samplePolicy = samplePolicy;
-        this.clock = clock;
-        this.metrics = metrics;
+        this.accessPolicy = Objects.requireNonNull(accessPolicy, "accessPolicy");
+        this.failurePolicy = Objects.requireNonNull(failurePolicy, "failurePolicy");
+        this.samplePolicy = Objects.requireNonNull(samplePolicy, "samplePolicy");
+        this.clock = Objects.requireNonNull(clock, "clock");
+        this.metrics = Objects.requireNonNull(metrics, "metrics");
         this.index = Objects.requireNonNull(index, "index");
         this.telemetry = Objects.requireNonNull(telemetry, "telemetry");
+        this.trustRevalidator = Objects.requireNonNull(trustRevalidator, "trustRevalidator");
     }
 
     /**
@@ -347,6 +568,12 @@ public final class ActionCache {
         if (attestation.isPresent() && attestation.filter(ResultAttestation::verified).isEmpty()) {
             throw new CasExceptions.CasAccessDeniedException(
                     "RESULT_ATTESTATION_UNVERIFIED", attestation.orElseThrow().signerId());
+        }
+        if (attestation.isPresent()
+                && attestation.filter(ResultAttestation::hasSignatureValue).isEmpty()) {
+            throw new CasExceptions.CasAccessDeniedException(
+                    "RESULT_ATTESTATION_SIGNATURE_BYTES_MISSING",
+                    attestation.orElseThrow().signerId());
         }
         if (attestation.filter(receipt -> ResultSignature.binds(
                 receipt, key, result, producer, writer, riskTier)).isEmpty()
@@ -375,6 +602,14 @@ public final class ActionCache {
         // durable index entry is allowed to point at it.
         tenantOutputStore.get(result.outputManifestDigest());
         long storedAt = clock.getAsLong();
+        if (attestation.isPresent()) {
+            Optional<String> presentationFailure = attestation.orElseThrow()
+                    .writePresentationFailure(storedAt);
+            if (presentationFailure.isPresent()) {
+                throw new CasExceptions.CasAccessDeniedException(
+                        presentationFailure.orElseThrow(), attestation.orElseThrow().signerId());
+            }
+        }
         Optional<Long> expiry = Optional.empty();
         if (result.status() == ActionResultRecord.Status.FAILED) {
             ActionResultRecord.FailureClass failureClass = result.failureClass().orElseThrow();
@@ -458,6 +693,31 @@ public final class ActionCache {
         if (!decision.allowed()) {
             metrics.record(CasMetrics.Layer.ACTION, CacheOutcome.DENIED, decision.reason());
             return Lookup.denied(decision.reason());
+        }
+        TrustDecision trustDecision;
+        try {
+            trustDecision = Objects.requireNonNull(
+                    trustRevalidator.revalidate(entry, now), "trust revalidation decision");
+        } catch (RuntimeException providerFailure) {
+            trustDecision = TrustDecision.unknown("CURRENT_TRUST_PROVIDER_UNAVAILABLE");
+        }
+        if (trustDecision.status() == TrustStatus.REVOKED) {
+            index.invalidate(key, "CURRENT_TRUST_REVOKED", now);
+            processEntries.remove(key.digest());
+            metrics.record(CasMetrics.Layer.ACTION, CacheOutcome.INVALIDATED,
+                    "CURRENT_TRUST_REVOKED");
+            return new Lookup(CacheOutcome.INVALIDATED, "CURRENT_TRUST_REVOKED",
+                    Optional.empty(), Optional.empty());
+        }
+        if (trustDecision.status() != TrustStatus.TRUSTED) {
+            String reason = switch (trustDecision.status()) {
+                case DENIED -> "CURRENT_TRUST_DENIED:" + trustDecision.reason();
+                case UNKNOWN -> "CURRENT_TRUST_UNKNOWN:" + trustDecision.reason();
+                default -> throw new IllegalStateException(
+                        "unhandled current trust status " + trustDecision.status());
+            };
+            metrics.record(CasMetrics.Layer.ACTION, CacheOutcome.DENIED, reason);
+            return Lookup.denied(reason);
         }
         CasStore tenantOutputStore = store.forTenant(entry.producer().tenantId());
         if (!tenantOutputStore.contains(entry.result().outputManifestDigest())) {

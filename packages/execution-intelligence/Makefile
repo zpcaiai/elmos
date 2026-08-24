@@ -13,6 +13,10 @@ TASK_ID ?= matrix-medium
 UNITS ?= 156
 GIT_LOG ?= /tmp/git.log
 GIT_SCOPE ?= engines/polyglot-route-engine
+TRUST_STORE ?=
+TRUST_STORE_SHA256 ?=
+CERTIFY_TRUST_ARGS = $(if $(TRUST_STORE),--trust-store "$(TRUST_STORE)",) \
+	$(if $(TRUST_STORE_SHA256),--trust-store-sha256 "$(TRUST_STORE_SHA256)",)
 
 .PHONY: lint test scan audit dag validate forecast plan execute route chaos calibrate certify schemas pg-conformance ingest advise anchor mix durations serve all clean-outputs
 
@@ -62,7 +66,7 @@ calibrate:
 		--output $(OUT)/task-dag.calibrated.json
 
 certify:
-	$(CLI) certify --evidence $(OUT)
+	$(CLI) certify --evidence $(OUT) $(CERTIFY_TRUST_ARGS)
 
 schemas:
 	$(CLI) validate-schemas $(OUT)

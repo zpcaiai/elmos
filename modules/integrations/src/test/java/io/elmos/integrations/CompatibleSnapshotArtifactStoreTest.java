@@ -11,7 +11,9 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -101,6 +103,43 @@ class CompatibleSnapshotArtifactStoreTest {
         assertEquals(2, backends.catalog().activeReferenceRoots("tenant-a").size());
     }
 
+    @Test void generationReleaseDispatchesOnlyToParticipatingBackends() {
+        StrictLifecycleStore legacy = new StrictLifecycleStore("test.legacy");
+        StrictLifecycleStore cas = new StrictLifecycleStore("test.cas");
+        var compatible = new CompatibleSnapshotArtifactStore(
+                CompatibleSnapshotArtifactStore.WriterMode.CAS,
+                legacy, legacy, cas, cas);
+        String legacyReference = "cas:sha256:" + "a".repeat(64);
+        String casReference = "cas://sha256/" + "b".repeat(64) + "/10";
+
+        SnapshotPorts.ArtifactRetention legacyOnly =
+                compatible.retainSnapshotGeneration(
+                        RESOURCE, "snapshot-legacy", List.of(legacyReference));
+        compatible.releaseSnapshotGeneration(RESOURCE, legacyOnly);
+        compatible.releaseSnapshotGeneration(RESOURCE, legacyOnly);
+        assertEquals(List.of("snapshot-legacy", "snapshot-legacy"), legacy.released);
+        assertTrue(cas.released.isEmpty());
+
+        SnapshotPorts.ArtifactRetention casOnly =
+                compatible.retainSnapshotGeneration(
+                        RESOURCE, "snapshot-cas", List.of(casReference));
+        compatible.releaseSnapshotGeneration(RESOURCE, casOnly);
+        compatible.releaseSnapshotGeneration(RESOURCE, casOnly);
+        assertEquals(List.of("snapshot-cas", "snapshot-cas"), cas.released);
+        assertEquals(List.of("snapshot-legacy", "snapshot-legacy"), legacy.released);
+
+        SnapshotPorts.ArtifactRetention mixed =
+                compatible.retainSnapshotGeneration(
+                        RESOURCE, "snapshot-mixed",
+                        List.of(legacyReference, casReference));
+        compatible.releaseSnapshotGeneration(RESOURCE, mixed);
+        compatible.releaseSnapshotGeneration(RESOURCE, mixed);
+        assertEquals(List.of("snapshot-legacy", "snapshot-legacy",
+                "snapshot-mixed", "snapshot-mixed"), legacy.released);
+        assertEquals(List.of("snapshot-cas", "snapshot-cas",
+                "snapshot-mixed", "snapshot-mixed"), cas.released);
+    }
+
     private Backends backends() {
         var legacy = new LocalContentAddressedArtifactStore(
                 temporary.resolve("legacy"), 64L * 1024 * 1024);
@@ -125,6 +164,35 @@ class CompatibleSnapshotArtifactStoreTest {
         CompatibleSnapshotArtifactStore compatible(
                 CompatibleSnapshotArtifactStore.WriterMode mode) {
             return new CompatibleSnapshotArtifactStore(mode, legacy, legacy, cas, cas);
+        }
+    }
+
+    private static final class StrictLifecycleStore implements
+            SnapshotPorts.ArtifactStore, SnapshotPorts.ArtifactReader {
+        private final String generationName;
+        private final List<String> released = new ArrayList<>();
+        private StrictLifecycleStore(String generationName) {
+            this.generationName = generationName;
+        }
+        @Override public String putIfAbsent(SnapshotPorts.ArtifactResourceContext resource,
+                String sha256, long size, java.io.InputStream content, String mediaType) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public java.io.InputStream open(
+                SnapshotPorts.ArtifactResourceContext resource, String reference) {
+            throw new UnsupportedOperationException();
+        }
+        @Override public SnapshotPorts.ArtifactRetention retainSnapshotGeneration(
+                SnapshotPorts.ArtifactResourceContext resource, String snapshotId,
+                List<String> references) {
+            return new SnapshotPorts.ArtifactRetention(
+                    snapshotId, Map.of(generationName, 1L));
+        }
+        @Override public void releaseSnapshotGeneration(
+                SnapshotPorts.ArtifactResourceContext resource,
+                SnapshotPorts.ArtifactRetention retention) {
+            retention.requireGeneration(generationName);
+            released.add(retention.snapshotId());
         }
     }
 }

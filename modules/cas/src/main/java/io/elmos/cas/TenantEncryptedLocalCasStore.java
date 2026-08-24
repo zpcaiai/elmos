@@ -61,7 +61,7 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
 
     @Override
     public String atRestProtection() {
-        return "TENANT_AES_256_GCM";
+        return encryption.atRestProtection();
     }
 
     @Override
@@ -152,7 +152,17 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
             byte[] encoded;
             try {
                 long physicalSize = Files.size(path);
-                if (physicalSize < MAGIC.length + 4L || physicalSize > digest.sizeBytes() + 1024L) {
+                long maximumPhysicalSize;
+                long maximumEnvelopeOverhead = encryption.maximumEnvelopeOverheadBytes();
+                try {
+                    maximumPhysicalSize = Math.addExact(
+                            digest.sizeBytes(), maximumEnvelopeOverhead);
+                } catch (ArithmeticException invalidBound) {
+                    throw new IllegalStateException("encrypted envelope size bound overflow", invalidBound);
+                }
+                if (maximumEnvelopeOverhead < 64L
+                        || physicalSize < MAGIC.length + 4L
+                        || physicalSize > maximumPhysicalSize) {
                     quarantine(digest, path, "invalid-size");
                     throw new CasExceptions.CasCorruptionException(name(), digest,
                             CasDigest.ofUtf8("invalid encrypted envelope size"));
@@ -182,7 +192,12 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
                 }
                 return plaintext;
             } catch (CasExceptions.CasAccessDeniedException keyFailure) {
-                if (!"TENANT_CIPHERTEXT_AUTHENTICATION_FAILED".equals(keyFailure.reason())) {
+                boolean ciphertextIntegrityFailure = Set.of(
+                                "TENANT_CIPHERTEXT_AUTHENTICATION_FAILED",
+                                "TENANT_KMS_ENVELOPE_MALFORMED",
+                                "TENANT_KMS_ENVELOPE_KEY_MISMATCH")
+                        .contains(keyFailure.reason());
+                if (!ciphertextIntegrityFailure) {
                     // Missing/revoked versions, unsafe permissions, or key-provider I/O are
                     // authorization/availability events. They say nothing about the immutable
                     // ciphertext and must never move it out of the live namespace.

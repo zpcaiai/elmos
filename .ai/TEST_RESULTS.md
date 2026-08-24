@@ -1097,3 +1097,36 @@ workspace-service legacy-only materializer, production KMS/key rotation, live
 PostgreSQL and real shared-tier evidence, ActionCache execution wiring and trust
 revalidation, and the portfolio process-local key→digest index. The configured
 mode remains default-off `SINGLE_HOST / NOT_CERTIFIED`.
+
+### 2026-08-24 CAS / Snapshot / EI focused and live closure
+
+```text
+Java focused regression (34 classes)                     197 passed, 0 failed/error/skipped
+JdbcCasCatalogLiveTest (PostgreSQL 17)                    10 passed, 0 failed/error/skipped
+JdbcSnapshotLifecycleAdapterLiveTest (PostgreSQL 17)       5 passed, 0 failed/error/skipped
+Flyway in final snapshot live run                          71/71 migrations applied
+CAS external-MinIO two-process probe                       PASS
+  writer PID 35250 / reader PID 35273 / same SHA-256 / 75 bytes
+EI package suite                                           299 passed, 11 skipped
+EI PostgreSQL store conformance                            22 passed, 0 skipped
+EI Ruff / strict MyPy                                      PASS / PASS (28 source files)
+EI installed wheel resources                               PASS (25 schemas / 7 config / 2 templates)
+EI valid-thin-evidence negative control                    BLOCK, make exit 2
+scoped git diff --check / bash -n runtime role             PASS / PASS
+ArkUI hdc                                                  NOT_RUN (command unavailable)
+```
+
+The 11 skips in the general EI invocation are precisely the PostgreSQL parameter set when no
+DSN is supplied; the separately provisioned PostgreSQL 17 run executed the same conformance file
+with both backends and reported 22 passes with no skip. The fail-closed EI control used a
+schema-valid calibration artifact with only 3 samples and no independent provenance; it reported
+`BLOCK (pass 1 / fail 2 / not executed 5)`. An empty evidence directory separately reported
+`NOT_CERTIFIED (pass 0 / fail 0 / not executed 8)`, preserving the distinction between failure and
+absence of evidence.
+
+The shared-tier receipt is
+`.ai/cas-two-process-shared-tier-20260824T070853Z/probe-summary.json`. It proves two distinct local
+JVM processes and external MinIO persistence, not two hosts or a production topology. Production
+KMS/HSM, external trust and revocation, global snapshot reconciliation, real GitHub webhook traffic,
+and ArkUI device evidence remain unexecuted. Final posture stays CAS
+`SINGLE_HOST / NOT_CERTIFIED`, EI `BLOCK / NOT_CERTIFIED`.

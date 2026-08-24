@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "operation": "write",
+  "process_id": 35250,
+  "observed_at": "2026-08-24T07:09:38.923804Z",
+  "endpoint": "http://127.0.0.1:32768",
+  "bucket": "elmos-cas-two-process",
+  "digest": "sha256:a5f0c1b47f09bc1dcdd8d090143d9d2cef194ace81a91173e49690a214842c09/75",
+  "size_bytes": 75,
+  "verified": true
+}

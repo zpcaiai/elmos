@@ -330,4 +330,43 @@ class CasBackedArtifactStoreTest {
                 () -> CasBackedArtifactStore.parse(
                         "cas://sha256/" + digest.hex() + "/0" + digest.sizeBytes()));
     }
+
+    @Test void delayedGenerationReleaseCannotHideAReactivatedSnapshotRoot() {
+        java.util.concurrent.atomic.AtomicLong clock =
+                new java.util.concurrent.atomic.AtomicLong(NOW);
+        var artifacts = new CasBackedArtifactStore(
+                store, catalog, "cn-east",
+                CasAccessPolicy.SecurityTier.CONFIDENTIAL,
+                64L * 1024 * 1024, clock::get);
+        byte[] archive = bytes("generation archive");
+        byte[] manifest = bytes("generation manifest");
+        String archiveReference = artifacts.putIfAbsent(
+                TENANT_A, CasDigest.of(archive).hex(), archive.length,
+                new ByteArrayInputStream(archive), "application/zstd");
+        String manifestReference = artifacts.putIfAbsent(
+                TENANT_A, CasDigest.of(manifest).hex(), manifest.length,
+                new ByteArrayInputStream(manifest), "application/json");
+
+        SnapshotPorts.ArtifactRetention oldGeneration =
+                artifacts.retainSnapshotGeneration(TENANT_A, "snapshot-generation",
+                        List.of(archiveReference, manifestReference));
+        artifacts.releaseSnapshotGeneration(TENANT_A, oldGeneration);
+        // Re-acquire through a new adapter after its clock moved backwards. Generation authority
+        // must live in the shared catalogue, not in process memory or wall-clock monotonicity.
+        clock.set(NOW - 10_000L);
+        var restartedArtifacts = new CasBackedArtifactStore(
+                store, catalog, "cn-east",
+                CasAccessPolicy.SecurityTier.CONFIDENTIAL,
+                64L * 1024 * 1024, clock::get);
+        SnapshotPorts.ArtifactRetention newGeneration =
+                restartedArtifacts.retainSnapshotGeneration(TENANT_A, "snapshot-generation",
+                        List.of(archiveReference, manifestReference));
+
+        artifacts.releaseSnapshotGeneration(TENANT_A, oldGeneration);
+
+        assertEquals(2, catalog.activeReferenceRoots("tenant-a").size(),
+                "a delayed old attempt must leave the new generation active");
+        assertTrue(newGeneration.requireGeneration(CasBackedArtifactStore.ROOT_GENERATION)
+                > oldGeneration.requireGeneration(CasBackedArtifactStore.ROOT_GENERATION));
+    }
 }

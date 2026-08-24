@@ -189,7 +189,7 @@ public final class InMemoryCasCatalog implements CasCatalog {
     }
 
     @Override
-    public synchronized void addReferenceRoots(List<ReferenceRoot> requestedRoots) {
+    public synchronized long addReferenceRoots(List<ReferenceRoot> requestedRoots) {
         ReferenceRoot first = requireOneRootSet(requestedRoots);
         Map<String, ReferenceRoot> requestedByHex = new LinkedHashMap<>();
         for (ReferenceRoot root : requestedRoots) {
@@ -198,9 +198,25 @@ public final class InMemoryCasCatalog implements CasCatalog {
                 throw new IllegalArgumentException("one digest hex cannot carry two sizes in a root set");
             }
         }
+        boolean hasHistory = false;
+        boolean hasActive = false;
+        long historicalGeneration = -1;
+        long activeGeneration = -1;
         for (Map.Entry<RootObjectKey, ReferenceRoot> existing : roots.entrySet()) {
             RootObjectKey key = existing.getKey();
             if (sameRootIdentity(key, first)) {
+                hasHistory = true;
+                historicalGeneration = Math.max(
+                        historicalGeneration, existing.getValue().createdAtEpochMillis());
+                if (!releasedRoots.containsKey(key)) {
+                    long generation = existing.getValue().createdAtEpochMillis();
+                    if (hasActive && activeGeneration != generation) {
+                        throw new IllegalStateException(
+                                "active reference root spans multiple generations");
+                    }
+                    hasActive = true;
+                    activeGeneration = generation;
+                }
                 ReferenceRoot requested = requestedByHex.get(key.digestHex());
                 if (requested != null && !requested.digest().equals(existing.getValue().digest())) {
                     throw new IllegalStateException("reference root digest size conflicts with history");
@@ -210,7 +226,21 @@ public final class InMemoryCasCatalog implements CasCatalog {
                 }
             }
         }
-        for (ReferenceRoot root : requestedByHex.values()) {
+        long requestedGeneration = requestedByHex.values().stream()
+                .mapToLong(ReferenceRoot::createdAtEpochMillis)
+                .max().orElseThrow();
+        long publicationGeneration = requestedGeneration;
+        if (hasActive) {
+            publicationGeneration = activeGeneration;
+        } else if (hasHistory) {
+            publicationGeneration = Math.max(
+                    requestedGeneration, Math.addExact(historicalGeneration, 1L));
+        }
+        for (ReferenceRoot requested : requestedByHex.values()) {
+            ReferenceRoot root = hasActive || hasHistory
+                    ? new ReferenceRoot(requested.tenantId(), requested.kind(),
+                    requested.rootId(), requested.digest(), publicationGeneration)
+                    : requested;
             RootObjectKey key = rootKey(root);
             if (!roots.containsKey(key) || releasedRoots.containsKey(key)) {
                 // A reactivated logical root is a new lifecycle generation. Keeping the original
@@ -219,6 +249,12 @@ public final class InMemoryCasCatalog implements CasCatalog {
             }
             releasedRoots.remove(key);
         }
+        return roots.entrySet().stream()
+                .filter(entry -> sameRootIdentity(entry.getKey(), first))
+                .filter(entry -> !releasedRoots.containsKey(entry.getKey()))
+                .mapToLong(entry -> entry.getValue().createdAtEpochMillis())
+                .max().orElseThrow(() -> new IllegalStateException(
+                        "reference root publication produced no active generation"));
     }
 
     @Override

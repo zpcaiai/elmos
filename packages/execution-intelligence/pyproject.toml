@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elmos-execution-intelligence"
-version = "1.0.0"
+version = "1.1.0"
 description = "Token, cost, autonomous-runtime and human-baseline forecasting for elmos project generation and conversion."
 requires-python = ">=3.10"
 authors = [{ name = "Elmos Project" }]
-dependencies = []
+dependencies = ["cryptography>=42"]
 
 [project.optional-dependencies]
 tokenizer = ["tiktoken>=0.7"]
@@ -23,6 +23,11 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.data-files]
+"share/elmos-execution-intelligence/schemas" = ["schemas/*.json"]
+"share/elmos-execution-intelligence/config" = ["config/*.json"]
+"share/elmos-execution-intelligence/templates" = ["templates/*.tmpl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

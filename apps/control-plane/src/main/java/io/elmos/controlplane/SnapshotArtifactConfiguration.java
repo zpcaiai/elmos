@@ -3,9 +3,11 @@ package io.elmos.controlplane;
 import io.elmos.cas.CasAccessPolicy;
 import io.elmos.cas.DirectoryTenantEncryption;
 import io.elmos.cas.JdbcCasCatalog;
+import io.elmos.cas.KmsTenantEncryption;
 import io.elmos.cas.LocalDiskCasStore;
 import io.elmos.cas.TenantCasStore;
 import io.elmos.cas.TenantEncryptedLocalCasStore;
+import io.elmos.cas.TenantEncryption;
 import io.elmos.integrations.CasBackedArtifactStore;
 import io.elmos.integrations.CompatibleSnapshotArtifactStore;
 import io.elmos.integrations.LocalContentAddressedArtifactStore;
@@ -87,6 +89,8 @@ class SnapshotArtifactConfiguration {
             "(${elmos.snapshot.cas.enabled:false} or "
                     + "${elmos.snapshot.cas.compatibility-read-enabled:false}) and "
                     + "${elmos.snapshot.cas.encryption.enabled:false}")
+    @ConditionalOnProperty(name = "elmos.snapshot.cas.encryption.provider",
+            havingValue = "DIRECTORY", matchIfMissing = true)
     DirectoryTenantEncryption snapshotTenantEncryption(
             @Value("${elmos.snapshot.cas.encryption.key-directory:}") String keyDirectory
     ) {
@@ -102,21 +106,38 @@ class SnapshotArtifactConfiguration {
             "(${elmos.snapshot.cas.enabled:false} or "
                     + "${elmos.snapshot.cas.compatibility-read-enabled:false}) and "
                     + "${elmos.snapshot.cas.encryption.enabled:false}")
+    @ConditionalOnProperty(name = "elmos.snapshot.cas.encryption.provider", havingValue = "KMS")
+    KmsTenantEncryption snapshotKmsTenantEncryption(
+            KmsTenantEncryption.KeyManagementProvider provider
+    ) {
+        return new KmsTenantEncryption(provider);
+    }
+
+    @Bean
+    @ConditionalOnExpression(
+            "(${elmos.snapshot.cas.enabled:false} or "
+                    + "${elmos.snapshot.cas.compatibility-read-enabled:false}) and "
+                    + "${elmos.snapshot.cas.encryption.enabled:false}")
     TenantEncryptedLocalCasStore encryptedSnapshotTenantCasStore(
-            DirectoryTenantEncryption encryption,
+            TenantEncryption encryption,
             @Value("${elmos.snapshot.cas.root:}") String casRoot,
             @Value("${elmos.snapshot.cas.store-name:snapshot-local}") String storeName,
-            @Value("${elmos.snapshot.cas.encryption.key-directory:}") String keyDirectory
+            @Value("${elmos.snapshot.cas.encryption.key-directory:}") String keyDirectory,
+            @Value("${elmos.snapshot.cas.encryption.provider:DIRECTORY}") String provider
     ) {
         if (casRoot.isBlank()) {
             throw new IllegalStateException(
                     "snapshot CAS root is required when snapshot CAS encryption is enabled");
         }
         Path storage = Path.of(casRoot).toAbsolutePath().normalize();
-        Path keys = Path.of(keyDirectory).toAbsolutePath().normalize();
-        if (storage.startsWith(keys) || keys.startsWith(storage)) {
-            throw new IllegalStateException(
-                    "snapshot CAS key directory and ciphertext root must be disjoint");
+        if ("DIRECTORY".equals(provider)) {
+            Path keys = Path.of(keyDirectory).toAbsolutePath().normalize();
+            if (storage.startsWith(keys) || keys.startsWith(storage)) {
+                throw new IllegalStateException(
+                        "snapshot CAS key directory and ciphertext root must be disjoint");
+            }
+        } else if (!"KMS".equals(provider)) {
+            throw new IllegalStateException("snapshot CAS encryption provider is invalid");
         }
         return new TenantEncryptedLocalCasStore(storeName, storage, encryption);
     }
@@ -205,7 +226,7 @@ class SnapshotArtifactConfiguration {
                 "CONFIGURED_LOCAL_ONLY", "CAS_WRITE_DUAL_READ", "JDBC_POSTGRESQL",
                 "SINGLE_HOST", store.physicalNamespace(), "LEGACY_AND_CAS",
                 "MIXED_LEGACY_UNSCOPED", "ACTIVE_DUAL_READ",
-                store.atRestProtection(), "CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED",
+                store.atRestProtection(), "CAPTURE_ARCHIVE_RECONCILIATION_WIRED",
                 true, false);
     }
 
@@ -218,7 +239,7 @@ class SnapshotArtifactConfiguration {
                 "ROLLBACK_COMPATIBILITY", "LEGACY_WRITE_DUAL_READ", "JDBC_POSTGRESQL",
                 "SINGLE_HOST", store.physicalNamespace(), "LEGACY_AND_CAS",
                 "MIXED_LEGACY_UNSCOPED", "CAS_ROLLBACK_DUAL_READ",
-                store.atRestProtection(), "CAPTURE_REGISTERED_DELETE_RELEASE_NOT_WIRED",
+                store.atRestProtection(), "CAPTURE_ARCHIVE_RECONCILIATION_WIRED",
                 true, false);
     }
 

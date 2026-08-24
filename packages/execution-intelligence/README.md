@@ -2,7 +2,8 @@
 
 项目生成/转换的执行智能：Token、费用、系统自主运行时、人工基线、双时间线对比、持久执行与恢复、模型路由、结果封存、生产就绪评估、Chaos 验证。
 
-纯标准库，Python ≥ 3.10，无网络依赖，可在 elmos 现有的 symlink-free 钉版工具链下直接运行。
+Python ≥ 3.10，无运行时网络调用。核心估算与持久执行使用标准库；生产就绪评估使用声明的
+`cryptography` 依赖做 Ed25519 验签，可在 elmos 现有的 symlink-free 钉版工具链下运行。
 
 ## 五条不可违反的口径（结构上强制，不靠约定）
 
@@ -51,13 +52,14 @@
 | 计数校准 | `config/token-count-calibration.json` | 启发式对真实 BPE 的实测偏差，`scan-tokens` 默认应用 |
 | PostgreSQL 后端 | `postgres.py` | 同一份契约在包内 PostgreSQL 目标 schema 上的实现 |
 | 参考 HTTP 服务器 | `server.py` | 让 `openapi/` 的重连与幂等契约能被 curl 真的验证 |
+| 双签证据来源 | `provenance.py` | read-once 字节快照、Ed25519 executor/verifier 双签、外置信任根与撤销/过期校验 |
 
 ## 目录
 
 ```text
 src/elmos_execution_intelligence/   实现
 config/                             估算默认值、人工基线、价格模板、分解模型、能力矩阵
-schemas/                            23 个 JSON Schema（全部被执行校验）
+schemas/                            25 个 JSON Schema（全部被执行校验）
 sql/                                PostgreSQL 持久执行表结构（生产目标）
 openapi/                            异步任务 API 与 Last-Event-ID 重连契约
 references/                         架构、状态机、失败分类、持久执行、估算方法、验收标准
@@ -66,6 +68,9 @@ profiles/elmos/                     elmos 自身的项目画像与任务 DAG
 tests/                              单元与端到端测试
 estimation/                         本地输出目录（默认被 Git 忽略）
 ```
+
+`schemas/`、`config/` 与 `templates/` 同时作为 wheel data 安装；CLI 通过
+distribution RECORD 定位它们，不依赖当前工作目录或仅在源码 checkout 中成立的相对路径。
 
 ## 完整链路
 
@@ -81,7 +86,7 @@ make execute     # 08-12 持久执行（模拟执行器，只产出合成遥测�
 make route       # 14 模型路由优化
 make chaos       # 17 Chaos 与恢复验证
 make calibrate   # 13 用执行遥测校准
-make certify     # 16 门禁式生产就绪评估
+make certify     # 16 门禁式生产就绪评估；没有外置双签信任链时 fail closed
 make advise      # 超重 SKILL.md 的拆分建议
 make anchor      # 从 git 历史推人工基线锚点（需先导出 git log）
 make mix         # 预测假设的 token 分类占比 vs 真实会话实测占比
@@ -137,9 +142,36 @@ PostgreSQL + Temporal 后仍需重新验证相同契约，不能从 SQLite harne
 
 - `execute`、内存 `chaos` 和 CI 中手工生成的会话均为工程 harness；它们不能替代真实 Runner、
   生产故障演练、客户验收或独立验证。
-- `certify` 会让 `block` 与 `not_certified` 返回非零，但当前本地 JSON 证据没有签名、授权者、
-  独立验证者或可信采集链。即使本地文件被编辑到 `release`，也只能视为本地规则评估，不能视为
-  生产批准或认证。
+- `certify` 会让 `block` 与 `not_certified` 返回非零。只要目录中已有证据，缺少
+  `evidence-provenance.json`、外置 trust store 或 trust-store SHA-256 pin 就是 `FAIL/BLOCK`；空目录才是
+  `NOT_EXECUTED/NOT_CERTIFIED`。旧版手写 JSON 即使所有业务字段都改成通过，也不能再得到 `release`。
+- 证据先通过 `O_NOFOLLOW` regular-file 检查和 16 MiB/file 上限捕获为单次字节快照；门禁解析、SHA-256/
+  byte-size 对照和签名校验只消费同一快照，避免评估一份内容、验签另一份内容的 TOCTOU 窗口。
+- 同一快照中的每个已知 artifact 还必须通过仓库正式 Schema；缺字段、错误类型、重复 JSON key、无效
+  UTF-8 或 Schema 本身无法被完整执行都会形成必需的 `evidence-schema-valid=FAIL` 并 `BLOCK`，不会以异常
+  跳过报告。`certify` 不接受调用者替换 Schema 目录；细粒度业务门禁可继续给出诊断，但不能覆盖这个
+  必需失败。
+- `evidence-provenance.json` 必须绑定所有实际出现的已知证据输入、当前 policy version 和至少 20 个校准
+  样本，并带精确两个 Ed25519 签名。executor 与 independent verifier 的 key、principal、organization
+  和 authority 都必须不同；key role 不匹配、撤销、过期、未来时间、签名错误或证据字节变化均 BLOCK。
+- trust store 必须由调用者显式选择、位于 evidence 目录外，并用调用者提供的 lowercase SHA-256 固定。
+  典型调用为：
+
+  ```bash
+  make certify OUT=/governed/evidence \
+    TRUST_STORE=/operator-config/ei-trust-store.json \
+    TRUST_STORE_SHA256=<64-hex-digest>
+  ```
+
+  trust-store schema 只存 Ed25519 公钥和治理身份，不存私钥。私钥生成、保管与签署在外部 KMS/HSM 或
+  受管签名流程完成；本包只定义 canonical JSON 签名 payload 并验签。
+- `evidence-manifest.json` 已升级为 `2.0.0`，记录用于决策的 read-once snapshot digest、完整 Schema
+  校验结果、每条引用是否受 provenance 约束、签署方与无效门禁。readiness、manifest 与嵌入式
+  provenance 输出 Schema 都拒绝未声明字段。旧 manifest 可留作历史记录，但不能作为新 certifier 的
+  输入或自动迁移成可信证据。
+- 代码实现的是本地 fail-closed 验证能力，不会制造生产信任：只有部署方真正钉住独立组织维护的 trust
+  store、从真实执行收集证据并由独立 authority 签署，才可能得到本地 `release`。即便如此也不是外部
+  认证，当前仓库状态仍应保持 `NOT_CERTIFIED`，直到治理和外部证据实际存在。
 - `estimation/` 是默认被 Git 忽略的生成输出，可能含 session 路径、仓库清单、作者聚合和真实遥测。
   若必须保留证据，应先脱敏并复制到受治理的证据区，绑定来源、授权、哈希与独立验证；原始 Agent
   transcript、数据库、日志、缓存和任何含绝对用户路径或密钥的材料都不得提交。
@@ -203,6 +235,6 @@ make test        # 全量测试
 python3 -m pytest -q tests
 ```
 
-纯 Python、无网络、无外部工具链依赖。`test_contracts.py` 里 OpenAPI 相关用例需要 PyYAML，
-缺失时自动跳过；其余全部无依赖。跳过不是通过，CI 的 PostgreSQL conformance 步骤会显式拒绝
-把 skipped 用例当成绿色证据。
+纯 Python、无运行时网络调用；Ed25519 门禁需要 `cryptography`，PostgreSQL conformance 需要
+`pg8000`，OpenAPI 相关用例需要 PyYAML。缺失的可选集成不能被解释为通过，CI 的 PostgreSQL
+conformance 步骤会显式拒绝把 skipped 用例当成绿色证据。

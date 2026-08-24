@@ -3,6 +3,7 @@ package io.elmos.snapshot;
 import io.elmos.scm.EphemeralCredential;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.List;
 import java.util.Objects;
@@ -15,26 +16,38 @@ public final class SnapshotCaptureService {
     private static final int SCHEMA_VERSION = 1;
     private final SnapshotPorts.RepositoryCredentialBroker credentials; private final SnapshotPorts.RefResolver refs;
     private final SnapshotPorts.SourceFetcher fetcher; private final DeterministicSnapshotArchiver archiver;
-    private final SnapshotPorts.ArtifactStore artifacts; private final SnapshotPorts.SnapshotStore snapshots; private final Clock clock;
+    private final SnapshotPorts.ArtifactStore artifacts; private final SnapshotPorts.SnapshotStore snapshots;
+    private final SnapshotLifecyclePorts.SnapshotCommitCoordinator commits;
+    private final SnapshotLifecyclePorts.RootReconciliationJournal reconciliations;
+    private final Clock clock;
 
     public SnapshotCaptureService(SnapshotPorts.RepositoryCredentialBroker credentials, SnapshotPorts.RefResolver refs,
             SnapshotPorts.SourceFetcher fetcher, DeterministicSnapshotArchiver archiver,
-            SnapshotPorts.ArtifactStore artifacts, SnapshotPorts.SnapshotStore snapshots, Clock clock) {
+            SnapshotPorts.ArtifactStore artifacts, SnapshotPorts.SnapshotStore snapshots,
+            SnapshotLifecyclePorts.SnapshotCommitCoordinator commits,
+            SnapshotLifecyclePorts.RootReconciliationJournal reconciliations,
+            Clock clock) {
         this.credentials = Objects.requireNonNull(credentials); this.refs = Objects.requireNonNull(refs); this.fetcher = Objects.requireNonNull(fetcher);
         this.archiver = Objects.requireNonNull(archiver); this.artifacts = Objects.requireNonNull(artifacts);
-        this.snapshots = Objects.requireNonNull(snapshots); this.clock = Objects.requireNonNull(clock);
+        this.snapshots = Objects.requireNonNull(snapshots);
+        this.commits = Objects.requireNonNull(commits);
+        this.reconciliations = Objects.requireNonNull(reconciliations);
+        this.clock = Objects.requireNonNull(clock);
     }
 
     public SnapshotModel.RepositorySnapshot capture(CaptureRequest request) {
         validate(request);
+        var resource = new SnapshotPorts.ArtifactResourceContext(
+                request.organizationId(), request.repositoryId());
         try (EphemeralCredential credential = credentials.issue(
                 request.organizationId(), request.repositoryId(),
                 request.repositoryExternalId(), request.installationExternalId())) {
-            SnapshotPorts.ResolvedRef resolved = refs.resolve(request.repositoryId(), request.requestedRef(), credential);
+            SnapshotPorts.ResolvedRef resolved = refs.resolve(
+                    resource, request.requestedRef(), credential);
             if (resolved.commitSha() == null || !resolved.commitSha().matches("[0-9a-f]{40}")) throw new SecurityException("SCM did not resolve an immutable commit SHA");
-            var resource = new SnapshotPorts.ArtifactResourceContext(
-                    request.organizationId(), request.repositoryId());
-            SnapshotModel.RepositorySnapshot reusable = snapshots.findReusable(request.repositoryId(), resolved.commitSha(), SCHEMA_VERSION);
+            SnapshotModel.RepositorySnapshot reusable = snapshots.findReusable(
+                    request.organizationId(), request.repositoryId(),
+                    resolved.commitSha(), SCHEMA_VERSION);
             if (reusable != null) {
                 if (reusable.status() != SnapshotModel.Status.AVAILABLE) throw new IllegalStateException("matching snapshot is not available");
                 requireOwnedBy(resource, reusable);
@@ -42,10 +55,12 @@ public final class SnapshotCaptureService {
                 // Older snapshots may predate the CAS root lifecycle. Re-registering the
                 // deterministic owner is idempotent and repairs that reachability gap before the
                 // snapshot is handed to a caller.
-                artifacts.retainSnapshot(resource, reusable.snapshotId(), references(reusable));
+                artifacts.retainSnapshotGeneration(
+                        resource, reusable.snapshotId(), references(reusable));
                 return reusable;
             }
-            try (SnapshotPorts.FetchedSource source = fetcher.fetch(request.repositoryId(), resolved, credential)) {
+            try (SnapshotPorts.FetchedSource source = fetcher.fetch(
+                    resource, resolved, credential)) {
                 String treeSha = source.treeSha() == null ? resolved.treeSha() : source.treeSha();
                 if (treeSha == null || !treeSha.matches("[0-9a-f]{40}")) throw new SecurityException("SCM did not prove the snapshot tree SHA");
                 var context = new DeterministicSnapshotArchiver.SnapshotContext("GITHUB", request.repositoryId(), request.repositoryFullName(),
@@ -66,16 +81,42 @@ public final class SnapshotCaptureService {
                 // retainSnapshot is an all-or-none contract. A rejected batch leaves no partial
                 // roots for the caller to clean up (and therefore cannot accidentally release a
                 // pre-existing idempotent root with the same owner).
-                artifacts.retainSnapshot(resource, snapshotId, references);
+                SnapshotPorts.ArtifactRetention retention = artifacts.retainSnapshotGeneration(
+                        resource, snapshotId, references);
+                SnapshotRootReconciliation reconciliation =
+                        new SnapshotRootReconciliation(
+                                reconciliationId(resource, snapshotId),
+                                logicalOperationId(request),
+                                SnapshotRootReconciliation.Kind.CAPTURE_COMMIT,
+                                SnapshotRootReconciliation.Phase.PENDING,
+                                snapshot, retention, null, clock.instant());
+                try {
+                    reconciliations.recordPending(reconciliation);
+                } catch (RuntimeException journalFailure) {
+                    try {
+                        artifacts.releaseSnapshotGeneration(resource, retention);
+                    } catch (RuntimeException releaseFailure) {
+                        journalFailure.addSuppressed(releaseFailure);
+                    }
+                    throw journalFailure;
+                }
 
                 SnapshotModel.RepositorySnapshot stored;
                 try {
-                    stored = snapshots.saveAvailable(snapshot);
+                    // The coordinator must persist the snapshot and advance the journal to
+                    // DATABASE_COMMITTED in one transaction. A timeout can therefore be resolved
+                    // from the journal without guessing whether the database committed.
+                    stored = commits.saveAvailable(reconciliation);
                 } catch (RuntimeException failure) {
-                    // A thrown database call does not prove the commit failed: the server may
-                    // have committed and the acknowledgement may have been lost. Keep the
-                    // provisional root for reconciliation. A bounded storage leak is safer than
-                    // making a durable snapshot reference collectable.
+                    try {
+                        // This conditional transition serializes with the coordinator's journal
+                        // update. A committed database transaction wins; a rolled-back one becomes
+                        // explicitly releasable by the reconciler.
+                        reconciliations.markCommitFailed(
+                                resource.organizationId(), reconciliation.reconciliationId());
+                    } catch (RuntimeException journalFailure) {
+                        failure.addSuppressed(journalFailure);
+                    }
                     throw failure;
                 }
 
@@ -85,36 +126,67 @@ public final class SnapshotCaptureService {
                     // winner under its durable owner before releasing our provisional owner.
                     // If this step fails, deliberately keep the provisional root: leaking bytes
                     // is safer than allowing GC to delete artifacts now referenced by the DB.
-                    artifacts.retainSnapshot(resource, stored.snapshotId(), references(stored));
-                    artifacts.releaseSnapshot(resource, snapshotId);
+                    artifacts.retainSnapshotGeneration(
+                            resource, stored.snapshotId(), references(stored));
+                    artifacts.releaseSnapshotGeneration(resource, retention);
                 }
+                reconciliations.markResolved(
+                        resource.organizationId(), reconciliation.reconciliationId());
                 return stored;
             } catch (RuntimeException failure) { throw failure; }
             catch (Exception failure) { throw new IllegalStateException("snapshot staging cleanup failed", failure); }
         }
     }
 
-    private static List<String> references(SnapshotModel.RepositorySnapshot snapshot) {
+    static List<String> references(SnapshotModel.RepositorySnapshot snapshot) {
         return List.of(snapshot.archiveArtifactRef(), snapshot.manifestArtifactRef());
     }
 
-    private static void requireOwnedBy(SnapshotPorts.ArtifactResourceContext resource,
-                                       SnapshotModel.RepositorySnapshot snapshot) {
+    static String reconciliationId(SnapshotPorts.ArtifactResourceContext resource,
+                                   String snapshotId) {
+        String preimage = "elmos-snapshot-root-reconciliation/1\n"
+                + resource.organizationId() + "\n" + resource.repositoryId() + "\n"
+                + snapshotId;
+        return "snapshot-root-" + UUID.nameUUIDFromBytes(
+                preimage.getBytes(StandardCharsets.UTF_8));
+    }
+
+    static String logicalOperationId(CaptureRequest request) {
+        String preimage = "elmos-snapshot-capture-operation/1\n"
+                + request.organizationId() + "\n" + request.repositoryId() + "\n"
+                + request.idempotencyKey();
+        return "snapshot-capture-" + UUID.nameUUIDFromBytes(
+                preimage.getBytes(StandardCharsets.UTF_8));
+    }
+
+    static void requireOwnedBy(SnapshotPorts.ArtifactResourceContext resource,
+                               SnapshotModel.RepositorySnapshot snapshot) {
         if (!resource.organizationId().equals(snapshot.organizationId())
                 || !resource.repositoryId().equals(snapshot.repositoryId())) {
             throw new SecurityException("reusable snapshot belongs to another resource context");
         }
     }
 
-    private static void requirePersistedEquivalent(SnapshotModel.RepositorySnapshot intended,
-                                                   SnapshotModel.RepositorySnapshot stored) {
+    static void requirePersistedEquivalent(SnapshotModel.RepositorySnapshot intended,
+                                           SnapshotModel.RepositorySnapshot stored) {
+        requirePersistedContentEquivalent(intended, stored);
+        if (stored.status() != SnapshotModel.Status.AVAILABLE) {
+            throw new SecurityException("snapshot store returned a non-available snapshot");
+        }
+    }
+
+    static void requirePersistedContentEquivalent(
+            SnapshotModel.RepositorySnapshot intended,
+            SnapshotModel.RepositorySnapshot stored
+    ) {
         Objects.requireNonNull(stored, "snapshot store returned null");
         requireOwnedBy(new SnapshotPorts.ArtifactResourceContext(
                 intended.organizationId(), intended.repositoryId()), stored);
         requireArtifactReferences(stored);
-        if (stored.status() != SnapshotModel.Status.AVAILABLE
+        if ((stored.status() != SnapshotModel.Status.AVAILABLE
+                && stored.status() != SnapshotModel.Status.ARCHIVED)
                 || !stored.resolvedCommitSha().equals(intended.resolvedCommitSha())
-                || !stored.treeSha().equals(intended.treeSha())
+                || !Objects.equals(stored.treeSha(), intended.treeSha())
                 || stored.snapshotSchemaVersion() != intended.snapshotSchemaVersion()
                 || !stored.archiveSha256().equals(intended.archiveSha256())
                 || stored.archiveSize() != intended.archiveSize()
@@ -123,7 +195,7 @@ public final class SnapshotCaptureService {
         }
     }
 
-    private static void requireArtifactReferences(SnapshotModel.RepositorySnapshot snapshot) {
+    static void requireArtifactReferences(SnapshotModel.RepositorySnapshot snapshot) {
         requireReferenceIdentity(snapshot.archiveArtifactRef(), snapshot.archiveSha256(),
                 snapshot.archiveSize(), "archive");
         requireReferenceIdentity(snapshot.manifestArtifactRef(), snapshot.manifestSha256(),
@@ -165,5 +237,8 @@ public final class SnapshotCaptureService {
                 || request.repositoryFullName() == null || !request.repositoryFullName().matches("[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
                 || request.requestedRef() == null || request.requestedRef().isBlank() || request.correlationId() == null || request.correlationId().isBlank()
                 || request.idempotencyKey() == null || request.idempotencyKey().isBlank()) throw new IllegalArgumentException("snapshot capture identity is incomplete");
+        // Validate the trusted tenant/resource binding before issuing a credential lease.
+        new SnapshotPorts.ArtifactResourceContext(
+                request.organizationId(), request.repositoryId());
     }
 }

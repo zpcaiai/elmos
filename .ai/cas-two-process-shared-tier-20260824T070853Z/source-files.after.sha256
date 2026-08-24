@@ -1,0 +1,8 @@
+4ebbde355b2ea12dba66c652ae2686c53004f3d22b78f8bb99b52e6b22f93489  modules/cas/src/main/java/io/elmos/cas/CasDigest.java
+99f4fe729cc7bc6dbd2af3063c60049a810f9aa57332c813313a08020817c488  modules/cas/src/main/java/io/elmos/cas/CasExceptions.java
+962a8b5b382eaa236d0f79da2c0406c065d0946c0f53bb44f0b38a706f6ecc0c  modules/cas/src/main/java/io/elmos/cas/CasStore.java
+1626e37c706cdca5e6e53830cade156f20516770ae59fe69567a8805e550f74d  modules/cas/src/main/java/io/elmos/cas/CasText.java
+92cff3abedaa08de30af753ca6eb8fa8d8a737abee306ed33219d5b6f5459fd8  modules/cas/src/main/java/io/elmos/cas/S3CasStore.java
+78665cd682fcf532dbe87c79cb68dcb8269c87b56cec08d456a40b338834d766  modules/cas/src/test/java/io/elmos/cas/S3CasStoreProcessProbe.java
+7eea7fd9438a63a22b8dc59d6b48897ac90e7de79ffa7aff90e898bd1c92f05d  modules/object-storage/src/main/java/io/elmos/storage/SigV4Presigner.java
+7615e9c216003b1ec700e5ca6f401b2f44c1db128f38eb870cca7a598dfaf387  scripts/cas/run-two-process-shared-tier-probe.sh

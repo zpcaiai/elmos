@@ -29,9 +29,10 @@ class ActionCacheTest {
     }
 
     private ActionCache cache(ActionCacheIndex index) {
-        return new ActionCache(store, new CasAccessPolicy(), ActionCache.FailureCachePolicy.none(),
-                ActionCache.SampleRecomputePolicy.disabled(), clock::get, metrics, index,
-                CasTelemetry.noop());
+        return new ActionCache(TenantCasStore.global(store), new CasAccessPolicy(),
+                ActionCache.FailureCachePolicy.none(), ActionCache.SampleRecomputePolicy.disabled(),
+                clock::get, metrics, index, CasTelemetry.noop(),
+                ActionCache.TrustRevalidator.persistedDecisionCompatibility());
     }
 
     private ActionCache cache() {

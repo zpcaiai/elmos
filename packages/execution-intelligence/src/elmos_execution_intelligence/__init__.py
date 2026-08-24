@@ -1,10 +1,10 @@
 """Elmos execution intelligence: token, cost, runtime, and human-baseline forecasting.
 
-The package is deliberately dependency-free (standard library only) so it can run
-inside the same pinned, symlink-free toolchain the rest of elmos uses.
+The core remains network-free. Certification additionally uses the declared
+``cryptography`` dependency for Ed25519 evidence verification.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 SCHEMA_VERSION = "1.0.0"
 
 __all__ = ["__version__", "SCHEMA_VERSION"]

@@ -8,9 +8,11 @@ import io.elmos.cas.InMemoryCasStore;
 import io.elmos.scm.EphemeralCredential;
 import io.elmos.snapshot.DeterministicSnapshotArchiver;
 import io.elmos.snapshot.SnapshotCaptureService;
+import io.elmos.snapshot.SnapshotLifecyclePorts;
 import io.elmos.snapshot.SnapshotMaterializationService;
 import io.elmos.snapshot.SnapshotModel;
 import io.elmos.snapshot.SnapshotPorts;
+import io.elmos.snapshot.SnapshotRootReconciliation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -19,6 +21,7 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +49,8 @@ class CasBackedSnapshotRoundTripTest {
         SnapshotPorts.SnapshotStore snapshots = new SnapshotPorts.SnapshotStore() {
             @Override
             public SnapshotModel.RepositorySnapshot findReusable(
-                    String repositoryId, String commitSha, int schemaVersion
+                    String organizationId, String repositoryId, String commitSha,
+                    int schemaVersion
             ) {
                 return null;
             }
@@ -59,6 +63,35 @@ class CasBackedSnapshotRoundTripTest {
                 return snapshot;
             }
         };
+        var journalRecord = new AtomicReference<SnapshotRootReconciliation>();
+        SnapshotLifecyclePorts.RootReconciliationJournal journal =
+                new SnapshotLifecyclePorts.RootReconciliationJournal() {
+                    @Override public void recordPending(SnapshotRootReconciliation value) {
+                        journalRecord.set(value);
+                    }
+                    @Override public void markDatabaseCommitted(
+                            String organizationId, String id, String durableId) {
+                        journalRecord.updateAndGet(value -> value.committed(durableId));
+                    }
+                    @Override public void markCommitFailed(String organizationId, String id) {
+                        journalRecord.updateAndGet(SnapshotRootReconciliation::failed);
+                    }
+                    @Override public void markResolved(String organizationId, String id) {
+                        journalRecord.updateAndGet(SnapshotRootReconciliation::resolved);
+                    }
+                    @Override public List<SnapshotRootReconciliation> pending(
+                            String organizationId, int limit) {
+                        return List.of(journalRecord.get());
+                    }
+                };
+        SnapshotLifecyclePorts.SnapshotCommitCoordinator commits = reconciliation -> {
+            SnapshotModel.RepositorySnapshot stored = snapshots.saveAvailable(
+                    reconciliation.snapshot());
+            journal.markDatabaseCommitted(
+                    reconciliation.snapshot().organizationId(),
+                    reconciliation.reconciliationId(), stored.snapshotId());
+            return stored;
+        };
         var capture = new SnapshotCaptureService(
                 (organization, repository, external, installation) ->
                         new EphemeralCredential("short-lived-token".toCharArray()),
@@ -67,6 +100,7 @@ class CasBackedSnapshotRoundTripTest {
                 (repository, resolvedRef, credential) ->
                         new SnapshotPorts.FetchedSource(source, () -> { }),
                 new DeterministicSnapshotArchiver(), artifacts, snapshots,
+                commits, journal,
                 Clock.fixed(Instant.parse("2026-08-20T00:00:00Z"), ZoneOffset.UTC));
 
         SnapshotModel.RepositorySnapshot snapshot = capture.capture(

@@ -6,26 +6,118 @@ overall decision is never ``release`` while any required gate is unproven.
 """
 from __future__ import annotations
 
-import json
+import hashlib
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from .io_utils import markdown_table
+from .jsonschema_lite import Validator
+from .provenance import (
+    ProvenanceError,
+    capture_evidence_snapshot,
+    load_strict_json_bytes,
+    verify_evidence_provenance,
+)
+from .resource_paths import SCHEMA_DIR
 
 # Gate verdicts, not credentials (ruff's S105 heuristic sees the word "PASS").
 PASS = "PASS"  # noqa: S105
 FAIL = "FAIL"
 NOT_EXECUTED = "NOT_EXECUTED"
 
+MIN_CALIBRATION_SAMPLES = 20
+EVIDENCE_INPUT_FILES = (
+    "project-forecast.json",
+    "risk-and-gap-register.json",
+    "calibration.json",
+    "chaos-test-report.json",
+    "result-manifest.json",
+    "model-routing-plan.json",
+    "token-mix-comparison.json",
+)
+EVIDENCE_ARTIFACT_SCHEMAS = {
+    "project-forecast.json": "project-forecast.schema.json",
+    "risk-and-gap-register.json": "risk-and-gap-register.schema.json",
+    "calibration.json": "calibration.schema.json",
+    "chaos-test-report.json": "chaos-test-report.schema.json",
+    "result-manifest.json": "result-manifest.schema.json",
+    "model-routing-plan.json": "model-routing-plan.schema.json",
+    "token-mix-comparison.json": "token-mix-comparison.schema.json",
+    "evidence-provenance.json": "evidence-provenance.schema.json",
+}
+DEFAULT_SCHEMA_DIR = SCHEMA_DIR
 
-def _load(path: Path) -> dict[str, Any] | None:
-    if not path.exists():
-        return None
-    try:
-        loaded = json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return None
-    return loaded if isinstance(loaded, dict) else None
+
+def _validate_snapshot_inputs(
+    snapshot: dict[str, bytes],
+    snapshot_errors: list[str],
+    schema_dir: str | Path,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """Strict-parse and formally validate the exact bytes used by every gate.
+
+    Parsed objects remain available for bounded diagnostic gates even when their
+    schema is invalid, but the required ``evidence-schema-valid`` gate makes that
+    state unreleasable. This preserves useful failure detail without ever
+    treating a fragment or malformed artifact as certification evidence.
+    """
+    validator = Validator(schema_dir)
+    parsed: dict[str, dict[str, Any]] = {}
+    records: list[dict[str, Any]] = []
+    errors = list(snapshot_errors)
+
+    for name, schema_name in EVIDENCE_ARTIFACT_SCHEMAS.items():
+        content = snapshot.get(name)
+        if content is None:
+            continue
+        file_errors: list[str] = []
+        try:
+            value = load_strict_json_bytes(content, name)
+            parsed[name] = value
+        except (ProvenanceError, RecursionError) as exc:
+            file_errors.append(str(exc))
+        else:
+            try:
+                file_errors.extend(validator.validate(value, schema_name))
+            except (OSError, TypeError, ValueError, RecursionError) as exc:
+                file_errors.append(f"cannot enforce {schema_name}: {exc}")
+
+        status = "INVALID" if file_errors else "VALID"
+        records.append({
+            "path": name,
+            "schema": schema_name,
+            "status": status,
+            "errors": file_errors,
+        })
+        errors.extend(f"{name}: {error}" for error in file_errors)
+
+    if errors:
+        status = "INVALID"
+    elif records:
+        status = "VALID"
+    else:
+        status = "NOT_EXECUTED"
+    return parsed, {"status": status, "errors": errors, "files": records}
+
+
+def _mapping(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _records(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, dict)]
+
+
+def _integer(value: Any, default: int = 0) -> int:
+    return value if isinstance(value, int) and not isinstance(value, bool) else default
+
+
+def _number(value: Any, default: float = 0.0) -> float:
+    if isinstance(value, int | float) and not isinstance(value, bool):
+        return float(value)
+    return default
 
 
 def _gate(gate_id: str, title: str, required: bool, status: str, detail: str,
@@ -70,15 +162,15 @@ def supported_confidence(
     earned: dict[str, float] = {}
     withheld: list[str] = []
 
-    runtime_samples = int((calibration or {}).get("runtime_samples", 0))
-    token_samples = int((calibration or {}).get("token_samples", 0))
+    runtime_samples = _integer((calibration or {}).get("runtime_samples"))
+    token_samples = _integer((calibration or {}).get("token_samples"))
     blocking = [
-        gap for gap in (register or {}).get("gaps", []) if gap.get("needs_human_input")
+        gap for gap in _records((register or {}).get("gaps")) if gap.get("needs_human_input")
     ] if register else None
-    chaos_ok = bool(chaos and chaos.get("scenarios") and chaos.get("passed"))
+    chaos_ok = bool(chaos and _records(chaos.get("scenarios")) and chaos.get("passed"))
+    models = _records(_mapping(forecast.get("costs")).get("models"))
     billable = [
-        model for model in forecast.get("costs", {}).get("models", [])
-        if not model.get("not_for_billing")
+        model for model in models if not model.get("not_for_billing")
     ]
 
     checks = {
@@ -111,29 +203,66 @@ def supported_confidence(
     }
 
 
-def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dict[str, Any]:
+def evaluate(
+    evidence_dir: str | Path,
+    min_calibration_samples: int = MIN_CALIBRATION_SAMPLES,
+    trust_store: str | Path | None = None,
+    trust_store_sha256: str | None = None,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     root = Path(evidence_dir)
-    forecast = _load(root / "project-forecast.json")
-    register = _load(root / "risk-and-gap-register.json")
-    calibration = _load(root / "calibration.json")
-    chaos = _load(root / "chaos-test-report.json")
-    manifest = _load(root / "result-manifest.json")
-    routing = _load(root / "model-routing-plan.json")
-    token_mix = _load(root / "token-mix-comparison.json")
+    # This threshold is a policy floor, not a convenience knob. A caller can
+    # demand more samples, but can never turn a thin sample into a release by
+    # passing a smaller integer on the command line.
+    effective_min_samples = max(MIN_CALIBRATION_SAMPLES, int(min_calibration_samples))
+    snapshot, snapshot_errors = capture_evidence_snapshot(
+        root,
+        (*EVIDENCE_INPUT_FILES, "evidence-provenance.json"),
+    )
+    parsed, evidence_schema = _validate_snapshot_inputs(
+        snapshot,
+        snapshot_errors,
+        DEFAULT_SCHEMA_DIR,
+    )
+    forecast = parsed.get("project-forecast.json")
+    register = parsed.get("risk-and-gap-register.json")
+    calibration = parsed.get("calibration.json")
+    chaos = parsed.get("chaos-test-report.json")
+    manifest = parsed.get("result-manifest.json")
+    routing = parsed.get("model-routing-plan.json")
+    token_mix = parsed.get("token-mix-comparison.json")
 
     gates: list[dict[str, Any]] = []
+    schema_status = {
+        "VALID": PASS,
+        "INVALID": FAIL,
+        "NOT_EXECUTED": NOT_EXECUTED,
+    }[evidence_schema["status"]]
+    if schema_status == PASS:
+        schema_detail = f"{len(evidence_schema['files'])} 个 read-once artifact 均通过正式 Schema"
+    elif schema_status == FAIL:
+        schema_detail = "；".join(evidence_schema["errors"])
+    else:
+        schema_detail = "没有可执行正式 Schema 校验的证据 artifact"
+    gates.append(_gate(
+        "evidence-schema-valid",
+        "同一 read-once 证据快照符合正式 artifact Schema",
+        True,
+        schema_status,
+        schema_detail,
+    ))
 
     if forecast is None:
         gates.append(_gate("forecast-present", "存在可读的项目预测", True, NOT_EXECUTED,
                            "project-forecast.json 不存在"))
     else:
-        tokens = forecast.get("tokens", {})
+        tokens = _mapping(forecast.get("tokens"))
         ok = tokens.get("category_sum_equals_total") is True
         gates.append(_gate("forecast-present", "存在可读的项目预测", True,
                            PASS if ok else FAIL,
                            "token 分类互斥且 total 为分类之和" if ok else "token 分类核算不成立",
                            "project-forecast.json"))
-        confidence = float(forecast.get("project", {}).get("confidence", 0.0))
+        confidence = _number(_mapping(forecast.get("project")).get("confidence"))
         supported = supported_confidence(forecast, register, calibration, chaos, token_mix)
         gates.append(_gate(
             "confidence-is-supported", "声明的置信度不高于证据支撑的上限", True,
@@ -149,9 +278,9 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
         if calibration is None:
             missing_evidence.append("没有校准记录")
         else:
-            if int(calibration.get("token_samples", 0)) == 0:
+            if _integer(calibration.get("token_samples")) == 0:
                 missing_evidence.append("token 维度从未用真实用量校准")
-            if int(calibration.get("runtime_samples", 0)) == 0:
+            if _integer(calibration.get("runtime_samples")) == 0:
                 missing_evidence.append("运行时维度从未用真实耗时校准")
         detail = f"confidence={confidence}（门槛 0.6）"
         if confidence < 0.6 and missing_evidence:
@@ -160,12 +289,16 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
             "forecast-confidence", "预测置信度达到发布门槛", True,
             PASS if confidence >= 0.6 else FAIL,
             detail, "project-forecast.json"))
-        excludes = forecast.get("system_runtime", {}).get("excludes", [])
+        excludes_value = _mapping(forecast.get("system_runtime")).get("excludes")
+        excludes = excludes_value if isinstance(excludes_value, list) else []
         gates.append(_gate(
             "eta-scope", "系统 ETA 明文排除人工等待", True,
             PASS if excludes else FAIL,
             f"排除项 {len(excludes)} 条", "project-forecast.json"))
-        billable = [m for m in forecast.get("costs", {}).get("models", []) if not m.get("not_for_billing")]
+        billable = [
+            model for model in _records(_mapping(forecast.get("costs")).get("models"))
+            if not model.get("not_for_billing")
+        ]
         gates.append(_gate(
             "verified-rates", "费用基于已核验费率", False,
             PASS if billable else FAIL,
@@ -176,11 +309,14 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
         gates.append(_gate("scope-gaps", "范围缺口已清零或已决策", True, NOT_EXECUTED,
                            "risk-and-gap-register.json 不存在"))
     else:
-        blocking = [gap for gap in register.get("gaps", []) if gap.get("needs_human_input")]
+        blocking = [
+            gap for gap in _records(register.get("gaps")) if gap.get("needs_human_input")
+        ]
         gates.append(_gate(
             "scope-gaps", "范围缺口已清零或已决策", True,
             PASS if not blocking else FAIL,
-            f"{len(blocking)} 个缺口仍需人工决策：{', '.join(g['id'] for g in blocking[:5])}"
+            f"{len(blocking)} 个缺口仍需人工决策："
+            + ", ".join(str(gap.get("id", "<missing-id>")) for gap in blocking[:5])
             if blocking else "无待决缺口",
             "risk-and-gap-register.json"))
 
@@ -188,28 +324,29 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
         gates.append(_gate("calibrated", "预测已用真实遥测校准", True, NOT_EXECUTED,
                            "calibration.json 不存在；未校准的预测不构成承诺"))
     else:
-        samples = int(calibration.get("valid_samples", 0))
+        samples = _integer(calibration.get("valid_samples"))
         gates.append(_gate(
             "calibrated", "预测已用真实遥测校准", True,
-            PASS if samples >= min_calibration_samples else FAIL,
-            f"{samples} 个有效样本（门槛 {min_calibration_samples}）", "calibration.json"))
+            PASS if samples >= effective_min_samples else FAIL,
+            f"{samples} 个有效样本（门槛 {effective_min_samples}）", "calibration.json"))
 
     if chaos is None:
         gates.append(_gate("chaos-recovery", "Chaos 与恢复验证通过", True, NOT_EXECUTED,
                            "chaos-test-report.json 不存在"))
     else:
-        failed = [s for s in chaos.get("scenarios", []) if not s.get("passed")]
+        scenarios = _records(chaos.get("scenarios"))
+        failed = [scenario for scenario in scenarios if not scenario.get("passed")]
         gates.append(_gate(
             "chaos-recovery", "Chaos 与恢复验证通过", True,
-            PASS if chaos.get("scenarios") and not failed else FAIL,
-            f"{len(chaos.get('scenarios', []))} 个场景，{len(failed)} 个失败", "chaos-test-report.json"))
+            PASS if scenarios and not failed else FAIL,
+            f"{len(scenarios)} 个场景，{len(failed)} 个失败", "chaos-test-report.json"))
 
     if manifest is None:
         gates.append(_gate("artifacts-sealed", "结果 Manifest 已封存", True, NOT_EXECUTED,
                            "result-manifest.json 不存在"))
     else:
         sealed = bool(manifest.get("sealed"))
-        count = int(manifest.get("artifact_count", 0))
+        count = _integer(manifest.get("artifact_count"))
         gates.append(_gate(
             "artifacts-sealed", "结果 Manifest 已封存", True,
             PASS if sealed and count else FAIL,
@@ -226,19 +363,25 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
             "token-mix-comparison.json 不存在；分类占比从未与真实用量对照过，"
             "而费用完全取决于这个占比"))
     else:
-        sessions = int((token_mix.get("observed") or {}).get("sessions", 0))
+        sessions = _integer(_mapping(token_mix.get("observed")).get("sessions"))
         # Prefer the depth curve over the headline range: the headline is the
         # full-session factor, which reads as a flat multiplier and is not one.
-        depths = token_mix.get("cost_by_session_depth") or []
+        depths = _records(token_mix.get("cost_by_session_depth"))
         factor = token_mix.get("overstatement_factor_range")
-        if depths and depths[0].get("overstatement_factor") and depths[-1].get("overstatement_factor"):
+        first_factor = _number(depths[0].get("overstatement_factor")) if depths else 0.0
+        last_factor = _number(depths[-1].get("overstatement_factor")) if depths else 0.0
+        if first_factor and last_factor:
             spread = (
-                f"，当前假设使费用偏离 {depths[0]['overstatement_factor']:.2f} 倍"
-                f"（{depths[0]['turns']} 轮任务）到 {depths[-1]['overstatement_factor']:.2f} 倍"
-                f"（{depths[-1]['turns']} 轮），随任务长度变化"
+                f"，当前假设使费用偏离 {first_factor:.2f} 倍"
+                f"（{_integer(depths[0].get('turns'))} 轮任务）到 {last_factor:.2f} 倍"
+                f"（{_integer(depths[-1].get('turns'))} 轮），随任务长度变化"
             )
-        elif factor:
-            spread = f"，当前假设使费用偏离最多 {factor[1]:.2f} 倍（整场会话口径）"
+        elif (
+            isinstance(factor, list)
+            and len(factor) == 2
+            and all(isinstance(item, int | float) and not isinstance(item, bool) for item in factor)
+        ):
+            spread = f"，当前假设使费用偏离最多 {float(factor[1]):.2f} 倍（整场会话口径）"
         else:
             spread = ""
         gates.append(_gate(
@@ -248,12 +391,59 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
             "token-mix-comparison.json"))
 
     if routing is not None:
-        unroutable = routing.get("unroutable_tasks", [])
+        unroutable_value = routing.get("unroutable_tasks")
+        unroutable = unroutable_value if isinstance(unroutable_value, list) else []
         gates.append(_gate(
             "routing-complete", "每个任务都有可用模型", False,
             PASS if not unroutable else FAIL,
             f"{len(unroutable)} 个任务无可用模型" if unroutable else "全部任务可路由",
             "model-routing-plan.json"))
+
+    present_inputs = sorted(name for name in EVIDENCE_INPUT_FILES if name in snapshot)
+    provenance_bytes = snapshot.get("evidence-provenance.json")
+    if not present_inputs and provenance_bytes is None and not snapshot_errors:
+        provenance: dict[str, Any] = {
+            "status": "NOT_EXECUTED",
+            "errors": ["没有可验证的证据输入或 evidence-provenance.json"],
+            "files": [],
+            "signers": [],
+        }
+        provenance_status = NOT_EXECUTED
+        provenance_detail = provenance["errors"][0]
+    else:
+        provenance = verify_evidence_provenance(
+            root,
+            trust_store,
+            trust_store_sha256,
+            present_inputs,
+            effective_min_samples,
+            {name: snapshot[name] for name in present_inputs},
+            provenance_bytes,
+            snapshot_errors,
+            now=now,
+        )
+        provenance_status = PASS if provenance["status"] == "VERIFIED" else FAIL
+        if provenance_status == PASS:
+            signers = provenance.get("signers", [])
+            provenance_detail = (
+                f"证据集 {provenance.get('evidence_set_id')} 已由 "
+                + "、".join(
+                    f"{item['role']}={item['principal_id']}@{item['organization_id']}"
+                    f"/{item['authority_id']}({item['key_id']})"
+                    for item in signers
+                )
+                + " 独立签署；文件字节、策略和外置信任库摘要一致"
+            )
+        else:
+            provenance_detail = "；".join(str(item) for item in provenance.get("errors", []))
+    gates.append(_gate(
+        "evidence-provenance",
+        "证据字节具备独立、有效且未撤销的双签来源",
+        True,
+        provenance_status,
+        provenance_detail,
+        "evidence-provenance.json",
+    ))
 
     required = [gate for gate in gates if gate["required"]]
     failed_required = [gate for gate in required if gate["status"] == FAIL]
@@ -271,6 +461,20 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
         "artifact": "production-readiness",
         "evidence_dir": str(root),
         "decision": decision,
+        "evidence_snapshot": {
+            "status": "FAILED" if snapshot_errors else "CAPTURED",
+            "errors": snapshot_errors,
+            "files": [
+                {
+                    "path": name,
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                    "size_bytes": len(content),
+                }
+                for name, content in sorted(snapshot.items())
+            ],
+        },
+        "evidence_schema": evidence_schema,
+        "evidence_provenance": provenance,
         "supported_confidence": (
             supported_confidence(forecast, register, calibration, chaos, token_mix)
             if forecast else None
@@ -283,40 +487,67 @@ def evaluate(evidence_dir: str | Path, min_calibration_samples: int = 20) -> dic
         },
         "rule": (
             "A gate with no evidence is NOT_EXECUTED, never PASS. 'release' requires every required gate "
-            "to have executed and passed; anything else is 'not_certified' or 'block'."
+            "to have executed and passed against one read-once byte snapshot with valid executor and "
+            "organizationally independent verifier attestations; anything else is 'not_certified' or 'block'."
         ),
     }
 
 
 def build_evidence_manifest(report: dict[str, Any], evidence_dir: str | Path) -> dict[str, Any]:
-    import hashlib
-
     root = Path(evidence_dir)
     files = []
+    provenance = report.get("evidence_provenance") or {}
+    snapshot_entries = {
+        item.get("path"): item
+        for item in (report.get("evidence_snapshot") or {}).get("files", [])
+        if isinstance(item, dict)
+    }
+    bound_paths = {
+        item.get("path") for item in provenance.get("files", []) if isinstance(item, dict)
+    }
     for gate in report["gates"]:
         name = gate.get("evidence")
         if not name:
             continue
-        path = root / name
-        if not path.exists():
+        captured = snapshot_entries.get(name)
+        if captured is None:
             continue
-        content = path.read_bytes()
         entry = {
             "path": name,
-            "sha256": hashlib.sha256(content).hexdigest(),
-            "size_bytes": len(content),
+            "sha256": captured["sha256"],
+            "size_bytes": captured["size_bytes"],
             "supports_gate": gate["id"],
+            "provenance_bound": name in bound_paths,
         }
         if entry not in files:
             files.append(entry)
+    represented_paths = {entry["path"] for entry in files}
+    for name, captured in sorted(snapshot_entries.items()):
+        if name in represented_paths:
+            continue
+        files.append({
+            "path": name,
+            "sha256": captured["sha256"],
+            "size_bytes": captured["size_bytes"],
+            "supports_gate": (
+                "evidence-provenance" if name == "evidence-provenance.json"
+                else "evidence-schema-valid"
+            ),
+            "provenance_bound": name in bound_paths,
+        })
     return {
-        "schema_version": "1.0.0",
+        "schema_version": "2.0.0",
         "artifact": "evidence-manifest",
         "evidence_dir": str(root),
         "decision": report["decision"],
         "files": files,
+        "provenance": provenance,
+        "schema_validation": report["evidence_schema"],
         "missing_evidence": [
             gate["id"] for gate in report["gates"] if gate["status"] == "NOT_EXECUTED"
+        ],
+        "invalid_evidence": [
+            gate["id"] for gate in report["gates"] if gate["required"] and gate["status"] == "FAIL"
         ],
     }
 
@@ -338,6 +569,8 @@ def render_report(report: dict[str, Any]) -> str:
         "",
         f"- 证据目录：`{report['evidence_dir']}`",
         f"- 结论：{decision_text}",
+        f"- 正式 Schema：`{report['evidence_schema']['status']}`",
+        f"- 证据来源：`{report['evidence_provenance']['status']}`",
         f"- 通过 {report['counts']['pass']} · 失败 {report['counts']['fail']} · "
         f"未执行 {report['counts']['not_executed']}",
         "",
