@@ -32,7 +32,7 @@ class SnapshotMaterializationServiceTest {
         Map<String, byte[]> content = new HashMap<>();
         content.put("archive", archive.archive());
         content.put("manifest", archive.manifest());
-        SnapshotPorts.ArtifactReader reader = reference ->
+        SnapshotPorts.ArtifactReader reader = (resource, reference) ->
                 new ByteArrayInputStream(content.get(reference));
         var snapshot = snapshot(archive);
         var service = new SnapshotMaterializationService(
@@ -57,7 +57,7 @@ class SnapshotMaterializationServiceTest {
         var archive = new DeterministicSnapshotArchiver().archive(source, context);
         byte[] tampered = archive.archive();
         tampered[tampered.length - 1] ^= 1;
-        SnapshotPorts.ArtifactReader tamperedReader = reference ->
+        SnapshotPorts.ArtifactReader tamperedReader = (resource, reference) ->
                 new ByteArrayInputStream("archive".equals(reference)
                         ? tampered : archive.manifest());
         var service = new SnapshotMaterializationService(
@@ -79,7 +79,7 @@ class SnapshotMaterializationServiceTest {
                 "manifest", submoduleArchive.manifest());
         var submoduleService = new SnapshotMaterializationService(
                 temporary.resolve("submodule-materialized"),
-                reference -> new ByteArrayInputStream(submoduleContent.get(reference)),
+                (resource, reference) -> new ByteArrayInputStream(submoduleContent.get(reference)),
                 new ObjectMapper());
         SecurityException rejection = assertThrows(SecurityException.class,
                 () -> submoduleService.materialize(

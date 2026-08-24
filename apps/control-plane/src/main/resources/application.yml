@@ -20,6 +20,9 @@ spring:
     problemdetails:
       enabled: true
 elmos:
+  action-cache:
+    enabled: ${ELMOS_ACTION_CACHE_ENABLED:false}
+    sample-recompute-one-in-n: ${ELMOS_ACTION_CACHE_SAMPLE_RECOMPUTE_ONE_IN_N:0}
   database-data-preflight:
     enabled: ${ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED:false}
     engine-base-url: ${ELMOS_DATABASE_DATA_ENGINE_BASE_URL:http://database-data-engine-worker:8089}
@@ -99,6 +102,16 @@ elmos:
     artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
     materialized-root: ${ELMOS_SNAPSHOT_MATERIALIZED_ROOT:}
     max-artifact-bytes: ${ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES:1073741824}
+    cas:
+      enabled: ${ELMOS_SNAPSHOT_CAS_ENABLED:false}
+      compatibility-read-enabled: ${ELMOS_SNAPSHOT_CAS_COMPATIBILITY_READ_ENABLED:false}
+      root: ${ELMOS_SNAPSHOT_CAS_ROOT:}
+      store-name: ${ELMOS_SNAPSHOT_CAS_STORE_NAME:snapshot-local}
+      data-residency: ${ELMOS_SNAPSHOT_CAS_DATA_RESIDENCY:}
+      security-tier: ${ELMOS_SNAPSHOT_CAS_SECURITY_TIER:CONFIDENTIAL}
+      encryption:
+        enabled: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_ENABLED:false}
+        key-directory: ${ELMOS_SNAPSHOT_CAS_TENANT_KEY_DIRECTORY:}
 management:
   endpoint:
     health:

@@ -4,6 +4,7 @@
   <parent><groupId>io.elmos</groupId><artifactId>elmos-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../pom.xml</relativePath></parent>
   <artifactId>elmos-portfolio-scale</artifactId>
   <dependencies>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-cas</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
   </dependencies>
 </project>

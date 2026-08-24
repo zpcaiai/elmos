@@ -4,6 +4,7 @@
   <parent><groupId>io.elmos</groupId><artifactId>elmos-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../pom.xml</relativePath></parent>
   <artifactId>elmos-persistence</artifactId>
   <dependencies>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-cas</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-commercial-operations</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-application</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-workflow</artifactId><version>${project.version}</version></dependency>

@@ -85,6 +85,9 @@ public final class SnapshotMaterializationService {
             throw new SecurityException("only an available immutable snapshot may be materialized");
         }
         requireIdentifier(snapshot.snapshotId(), "snapshot");
+        requireIdentifier(snapshot.repositoryId(), "repository");
+        var resource = new SnapshotPorts.ArtifactResourceContext(
+                trustedOrganizationId, snapshot.repositoryId());
 
         Path organizationRoot = confined(root.resolve(trustedOrganizationId));
         Path target = confined(organizationRoot.resolve(snapshot.snapshotId()));
@@ -96,7 +99,7 @@ public final class SnapshotMaterializationService {
             }
 
             byte[] manifestBytes;
-            try (InputStream input = artifacts.open(snapshot.manifestArtifactRef())) {
+            try (InputStream input = artifacts.open(resource, snapshot.manifestArtifactRef())) {
                 manifestBytes = readBounded(input, MAX_MANIFEST_BYTES);
             }
             requireDigest(manifestBytes, snapshot.manifestSha256(), "snapshot manifest");
@@ -106,7 +109,7 @@ public final class SnapshotMaterializationService {
 
             Path temporary = Files.createTempDirectory(organizationRoot, ".materialize-");
             try {
-                extract(snapshot, manifest, temporary);
+                extract(resource, snapshot, manifest, temporary);
                 writeMarker(temporary, snapshot);
                 makeReadOnly(temporary);
                 try {
@@ -133,6 +136,7 @@ public final class SnapshotMaterializationService {
     }
 
     private void extract(
+            SnapshotPorts.ArtifactResourceContext resource,
             SnapshotModel.RepositorySnapshot snapshot,
             DeterministicSnapshotArchiver.SnapshotManifest manifest,
             Path temporary
@@ -154,7 +158,7 @@ public final class SnapshotMaterializationService {
         }
 
         Set<String> observed = new HashSet<>();
-        try (InputStream raw = artifacts.open(snapshot.archiveArtifactRef());
+        try (InputStream raw = artifacts.open(resource, snapshot.archiveArtifactRef());
              VerifiedInputStream verified = new VerifiedInputStream(
                      raw, snapshot.archiveSize(), snapshot.archiveSha256());
              ZstdInputStream zstd = new ZstdInputStream(verified);
