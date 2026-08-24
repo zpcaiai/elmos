@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Revenue Margin Ledger"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-revenue-margin-ledger to execute its scoped workflow with fail-closed evidence."

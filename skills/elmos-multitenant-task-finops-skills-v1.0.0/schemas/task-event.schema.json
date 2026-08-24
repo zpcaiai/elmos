@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/task-event.schema.json",
+  "title": "Elmos Task Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "transition_id",
+    "tenant_id",
+    "account_id",
+    "task_id",
+    "task_run_id",
+    "sequence_no",
+    "event_type",
+    "occurred_at",
+    "actor_type",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "transition_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "account_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "sequence_no": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "event_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "node_key": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "node_attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "checkpoint_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "old_state": {
+      "anyOf": [
+        {
+          "enum": [
+            "CREATED",
+            "WAITING_FOR_SLOT",
+            "ADMITTED",
+            "STARTING",
+            "RUNNING",
+            "PAUSE_REQUESTED",
+            "PAUSING",
+            "PAUSED",
+            "RETRY_WAIT",
+            "CANCEL_REQUESTED",
+            "CANCELLING",
+            "UNKNOWN_RESULT",
+            "RECONCILING",
+            "MANUAL_RECOVERY",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "new_state": {
+      "anyOf": [
+        {
+          "enum": [
+            "CREATED",
+            "WAITING_FOR_SLOT",
+            "ADMITTED",
+            "STARTING",
+            "RUNNING",
+            "PAUSE_REQUESTED",
+            "PAUSING",
+            "PAUSED",
+            "RETRY_WAIT",
+            "CANCEL_REQUESTED",
+            "CANCELLING",
+            "UNKNOWN_RESULT",
+            "RECONCILING",
+            "MANUAL_RECOVERY",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor_type": {
+      "enum": [
+        "USER",
+        "CONTROL_API",
+        "WORKFLOW",
+        "WORKER",
+        "RUNNER",
+        "SCHEDULER",
+        "FINOPS",
+        "BILLING",
+        "SYSTEM",
+        "ADMIN"
+      ]
+    },
+    "actor_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "trace_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "request_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

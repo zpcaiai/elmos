@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "task_id": "33333333-3333-4333-8333-333333333333",
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "reporting_currency": "USD",
+  "as_of": "2026-08-19T16:05:01+08:00",
+  "cost": {
+    "estimated": "12.10",
+    "reserved": "15.00",
+    "posted_actual": "11.74",
+    "final_actual": null,
+    "human_review_cost": "0.00",
+    "status": "POSTING"
+  },
+  "revenue": {
+    "net_billed": "20.00",
+    "recognized": "20.00",
+    "collected_cash": "20.00",
+    "refunds": "0.00",
+    "credits": "0.00",
+    "payment_fees": "0.58",
+    "taxes": "0.00",
+    "status": "FINAL"
+  },
+  "gross_profit": "8.26",
+  "gross_margin": "0.4130",
+  "reconciliation_status": "USAGE_POSTING"
+}

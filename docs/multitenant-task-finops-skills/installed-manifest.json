@@ -1,0 +1,83 @@
+{
+  "archive_sha256": "aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
+  "certification_status": "NOT_CERTIFIED",
+  "compiled_manifest": {
+    "path": "docs/multitenant-task-finops-skills/compiled-manifest.json",
+    "sha256": "499f0a905ce0529a4d692e7cf534416e9daf92d20e876a124694d9f854567bd6"
+  },
+  "external_dependency_status": "DECLARED_UNRESOLVED",
+  "external_evidence_status": "NOT_RUN",
+  "implementation_matrix": {
+    "path": "docs/multitenant-task-finops-skills/implementation-matrix.json",
+    "sha256": "02a75afd40bbc3030fc880dd4c62766921fa8c54f9f163032f52ffa9fb00dcf7",
+    "task_count": 144,
+    "task_execution_status": "NOT_RUN"
+  },
+  "installations": [
+    {
+      "root": ".agents/skills",
+      "skill_count": 12,
+      "skill_tree_sha256": {
+        "elmos-account-concurrency-admission": "abe6375fae942ebe9182ed19a1aba3f55cd5beed8dd43f986966c4217a4a37fe",
+        "elmos-checkpoint-recovery": "3984340f063b1c69fc355b7910828ff58b5b9389374b585d683c0aa4dd9c788e",
+        "elmos-concurrency-recovery-finops-certification": "327eb9546da8e1fea05087d8d7fcdeaca1fd9d4e975d1381dd91832d9940b69d",
+        "elmos-multitenant-task-finops-orchestrator": "ec768db089b35d3f17c5814fc4fc4fd96c2f20a50276b524a32413643a5a0067",
+        "elmos-revenue-margin-ledger": "bcb0656fd7cc2901f3a40fec9a255fbd7946ac2ea397228e8542b92ff88ab789",
+        "elmos-task-financial-analytics": "844bb7c71679ae9fe81c593cb088452689be3d58582529dda4f36cdaf226795e",
+        "elmos-task-io-artifact-archive": "ba8f45af6e193619ab203df73207411fd5f6be65a2dfc14d96e1e4c591640705",
+        "elmos-task-lifecycle-temporal": "387467fffe891fb68d02700b41c842ac173118ce26ca39da33642a4d8950f324",
+        "elmos-task-progress-journal": "5c7d3b757623193e7747584de0ab123c16b7a8ac3285552c833c74bfb5056cac",
+        "elmos-tenant-identity-rls": "8b9d525ccf459efdd05630cadd1f5aa9ecb6d60cb9b0b4e3f3e2eeb1f35e234c",
+        "elmos-usage-metering-cost-ledger": "1b7ba2d5d332ab1a54a751b402cf43f5cc83f0ff86f927899af34b632ef42220",
+        "elmos-workload-aware-scheduler": "cc6125449c7f3da19bcce5741dfac04f2c4c5da4e5d1f5e07ab5b11d4aeaf9d1"
+      }
+    },
+    {
+      "root": "agent-skills/runtime",
+      "skill_count": 12,
+      "skill_tree_sha256": {
+        "elmos-account-concurrency-admission": "abe6375fae942ebe9182ed19a1aba3f55cd5beed8dd43f986966c4217a4a37fe",
+        "elmos-checkpoint-recovery": "3984340f063b1c69fc355b7910828ff58b5b9389374b585d683c0aa4dd9c788e",
+        "elmos-concurrency-recovery-finops-certification": "327eb9546da8e1fea05087d8d7fcdeaca1fd9d4e975d1381dd91832d9940b69d",
+        "elmos-multitenant-task-finops-orchestrator": "ec768db089b35d3f17c5814fc4fc4fd96c2f20a50276b524a32413643a5a0067",
+        "elmos-revenue-margin-ledger": "bcb0656fd7cc2901f3a40fec9a255fbd7946ac2ea397228e8542b92ff88ab789",
+        "elmos-task-financial-analytics": "844bb7c71679ae9fe81c593cb088452689be3d58582529dda4f36cdaf226795e",
+        "elmos-task-io-artifact-archive": "ba8f45af6e193619ab203df73207411fd5f6be65a2dfc14d96e1e4c591640705",
+        "elmos-task-lifecycle-temporal": "387467fffe891fb68d02700b41c842ac173118ce26ca39da33642a4d8950f324",
+        "elmos-task-progress-journal": "5c7d3b757623193e7747584de0ab123c16b7a8ac3285552c833c74bfb5056cac",
+        "elmos-tenant-identity-rls": "8b9d525ccf459efdd05630cadd1f5aa9ecb6d60cb9b0b4e3f3e2eeb1f35e234c",
+        "elmos-usage-metering-cost-ledger": "1b7ba2d5d332ab1a54a751b402cf43f5cc83f0ff86f927899af34b632ef42220",
+        "elmos-workload-aware-scheduler": "cc6125449c7f3da19bcce5741dfac04f2c4c5da4e5d1f5e07ab5b11d4aeaf9d1"
+      }
+    }
+  ],
+  "integration_readme": {
+    "path": "docs/multitenant-task-finops-skills/README.md",
+    "sha256": "3060ca61919e453151288b13d3ef4b50965fb37d5af9f5c64b384600bfe548c2"
+  },
+  "kind": "elmos.multitenant-task-finops.installed-manifest",
+  "package": {
+    "name": "elmos-multitenant-task-finops-skills",
+    "version": "1.0.0"
+  },
+  "package_scripts_executed": false,
+  "reference_material_application_status": "NOT_APPLIED",
+  "schema_version": "1.0.0",
+  "source": {
+    "immutable_by_digest": true,
+    "path": "skills/elmos-multitenant-task-finops-skills-v1.0.0",
+    "supply_chain": {
+      "archive_digest_meaning": "BYTE_IDENTITY_ONLY",
+      "license": "ABSENT",
+      "provenance_attestation": "ABSENT",
+      "sbom": "ABSENT",
+      "signature": "ABSENT"
+    },
+    "tree_sha256": "6b2278c955e7172fea4eb367f6b531c5f8301c48b62d3d5bb2dcbbf579689822"
+  },
+  "source_risk_register": {
+    "adoption_gate": "BLOCKED",
+    "path": "docs/multitenant-task-finops-skills/source-risk-register.json",
+    "sha256": "f47aac37ba1717d0f5d7382aba36f97fc7199e2076f2bc7b849c3f85ccbd315f"
+  }
+}

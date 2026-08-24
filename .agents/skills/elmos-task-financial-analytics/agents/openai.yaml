@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Task Financial Analytics"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-task-financial-analytics to execute its scoped workflow with fail-closed evidence."

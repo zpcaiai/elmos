@@ -1,0 +1,16 @@
+{
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "project_id": null,
+  "task_type": "PROJECT_GENERATION",
+  "title": "Generate a production-grade Java service",
+  "priority": "NORMAL",
+  "workload_class": "CODE_GENERATION",
+  "input": {
+    "requirements": "Generate the service and all tests."
+  },
+  "input_artifact_ids": [],
+  "budget": {
+    "max_cost_amount": "25.00",
+    "currency": "USD"
+  }
+}

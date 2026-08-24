@@ -387,3 +387,8 @@ uir-j2p-evidence:
 uir-j2p-gate: uir-j2p-test uir-j2p-mutation
 
 .PHONY: uir-j2p-deps uir-j2p-test uir-j2p-mutation uir-j2p-survey uir-j2p-survey-noindex uir-j2p-evidence uir-j2p-gate
+
+.PHONY: multitenant-task-finops-skills
+multitenant-task-finops-skills:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multitenant_task_finops_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/multitenant-task-finops -p 'test_*.py'

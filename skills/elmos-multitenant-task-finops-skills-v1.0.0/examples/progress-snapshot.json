@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "task_id": "33333333-3333-4333-8333-333333333333",
+  "task_run_id": "44444444-4444-4444-8444-444444444444",
+  "event_sequence_watermark": 42,
+  "state": "RUNNING",
+  "current_node_key": "verify",
+  "progress": 0.72,
+  "elapsed_ms": 360000,
+  "eta_p50_ms": 120000,
+  "eta_p90_ms": 240000,
+  "node_counts": {
+    "SUCCEEDED": 5,
+    "RUNNING": 1,
+    "PLANNED": 2
+  },
+  "retry_count": 1,
+  "recovery_count": 0,
+  "latest_checkpoint_id": "66666666-6666-4666-8666-666666666666",
+  "weight_model_version": "node-duration-v1",
+  "as_of": "2026-08-19T16:00:00+08:00"
+}
