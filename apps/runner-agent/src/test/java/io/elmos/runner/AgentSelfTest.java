@@ -38,6 +38,7 @@ public final class AgentSelfTest {
 
             endToEndSuccess(scratch);
             cancellationKillsTheContainer(scratch);
+            pauseStopsWorkloadAndPreservesCheckpoint(scratch);
             stolenLeaseIsAbandonedWithoutReporting(scratch);
             drainStopsClaiming(scratch);
             workspaceAccessIsProvenAtStartup(scratch);
@@ -340,6 +341,34 @@ public final class AgentSelfTest {
             check("cancellation status is CANCELLED",
                     plane.completions.get(0).status().equals("CANCELLED"));
             check("cancelled job publishes nothing", plane.published.isEmpty());
+        }
+    }
+
+    static void pauseStopsWorkloadAndPreservesCheckpoint(Path scratch) throws Exception {
+        try (FakeControlPlane plane = new FakeControlPlane()) {
+            plane.pauseRequested.set(true);
+            Path work = Files.createTempDirectory(scratch, "e2e-pause");
+            Path engine = fakeEngine(scratch, "engine-pause.sh", 60, 0);
+            AgentConfig config = engineConfig(plane.baseUrl(), work, engine);
+            Map<String, Object> checkpoint = Map.of("cursor", "checkpoint-17");
+
+            long started = System.currentTimeMillis();
+            JobExecutor.Outcome outcome = executor(config, plane).execute(
+                    plane.lease("job-pause", "lease-pause", pinned(), 600, checkpoint));
+            long elapsed = System.currentTimeMillis() - started;
+
+            check("paused job reports PAUSED", outcome == JobExecutor.Outcome.PAUSED);
+            check("pause is observed within one heartbeat interval", elapsed < 20_000);
+            check("pause reported once", plane.completions.size() == 1);
+            check("pause completion status is PAUSED",
+                    plane.completions.get(0).status().equals("PAUSED"));
+            check("pause completion result remains NOT_RUN",
+                    plane.completions.get(0).resultStatus().equals("NOT_RUN"));
+            check("paused job publishes nothing", plane.published.isEmpty());
+            check("pause heartbeat preserves the resume checkpoint",
+                    !plane.heartbeats.isEmpty()
+                            && Json.object(plane.heartbeats.get(0), "checkpoint").equals(checkpoint));
+            check("paused job cleans its active workspace", !Files.exists(work.resolve("job-pause")));
         }
     }
 

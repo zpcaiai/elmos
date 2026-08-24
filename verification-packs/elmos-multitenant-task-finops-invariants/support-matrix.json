@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "pack_key": "elmos-multitenant-task-finops-invariants",
+  "capabilities": [
+    {
+      "key": "canonical-account-isolation",
+      "status": "experimental",
+      "owner": "elmos-task-finops-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json",
+        "certification/target-source-manifest.json"
+      ],
+      "limitations": [
+        "Local OIDC fixtures and disposable PostgreSQL only; external IdP, production roles and independent penetration evidence are NOT_RUN."
+      ]
+    },
+    {
+      "key": "three-slot-generation-fenced-runtime",
+      "status": "experimental",
+      "owner": "elmos-workflow-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Single-process disposable fixture only; multi-replica high-contention and lease-loss campaigns are NOT_RUN."
+      ]
+    },
+    {
+      "key": "exact-decimal-finops",
+      "status": "experimental",
+      "owner": "elmos-product-finance-engineering",
+      "evidence_refs": [
+        "certification/local-test-result.json"
+      ],
+      "limitations": [
+        "Provider bills, invoice reconciliation, payment, tax, signature verification and independent accounting review are NOT_RUN."
+      ]
+    },
+    {
+      "key": "production-certification",
+      "status": "blocked",
+      "owner": "external-qualified-verifier-unassigned",
+      "evidence_refs": [],
+      "limitations": [
+        "NOT_CERTIFIED; independent holdout, representative workloads and external evidence are absent."
+      ]
+    }
+  ]
+}

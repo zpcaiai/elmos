@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-multitenant-task-finops",
+  "metrics": {
+    "canonical_ir_coverage": 1.0,
+    "local_migration_pass_rate": 1.0,
+    "product_task_execution_pass_rate": 0.0,
+    "external_evidence_pass_rate": 0.0,
+    "representative_workload_pass_rate": 0.0
+  },
+  "critical_unknowns": 4,
+  "critical_security_regressions": 0,
+  "critical_transaction_regressions": 0,
+  "critical_data_differences": 0,
+  "critical_precision_loss": 0,
+  "silent_database_drops": 0,
+  "test_integrity_violations": 0,
+  "evidence_refs": [],
+  "notes": [
+    "Local engineering commands are reported in repository documentation, not promoted to product task execution evidence.",
+    "Four exact external dependencies remain UNRESOLVED.",
+    "External and production evidence remain NOT_RUN."
+  ]
+}

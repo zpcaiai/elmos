@@ -25,7 +25,8 @@ import java.util.function.Supplier;
 /**
  * PostgreSQL 17 adapter for {@link ExecutionJobPort}.
  *
- * <p>Every state transition delegates to the Flyway V57 functions. That is
+ * <p>Every state transition delegates to the repository-owned Flyway V73
+ * compatibility wrappers. That is
  * deliberate: the claim is a {@code FOR UPDATE ... SKIP LOCKED} loop with
  * per-tenant fairness, and expressing it in Java would either need a table lock
  * or would race two schedulers against each other.</p>
@@ -54,16 +55,23 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     @Override
     public String enqueue(EnqueueCommand command) {
         requireIdentifier(command.organizationId(), "organizationId");
+        requireIdentifier(command.accountId(), "accountId");
         requireIdentifier(command.jobId(), "jobId");
-        return inTenant(command.organizationId(), () -> mapDomainErrors(() ->
+        requireValue(command.actorId(), 128, "ACTOR_ID");
+        requireValue(command.requestId(), 160, "REQUEST_ID");
+        requireWorkload(command.workloadClass(), command.resourceUnits());
+        return inTaskContext(command, () -> mapDomainErrors(() ->
                 jdbc.sql("""
-                        SELECT elmos_enqueue_execution_job(
-                            :jobId, :organizationId, :actorId, :businessLine, :jobKind,
+                        SELECT elmos_mtf_enqueue_execution_job(
+                            :jobId, :organizationId, :accountId, :actorId,
+                            :businessLine, :jobKind,
                             :idempotencyKey, :requestDigest, cast(:payload AS jsonb),
-                            :capability, :image, :priority, :budget, :maxAttempts)
+                            :capability, :image, :priority, :budget, :maxAttempts,
+                            :requestId, :workloadClass, :resourceUnits)
                         """)
                         .param("jobId", command.jobId())
                         .param("organizationId", command.organizationId())
+                        .param("accountId", command.accountId())
                         .param("actorId", command.actorId())
                         .param("businessLine", command.businessLine().name())
                         .param("jobKind", command.jobKind())
@@ -75,30 +83,55 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
                         .param("priority", command.priority())
                         .param("budget", command.budgetWallSeconds())
                         .param("maxAttempts", command.maxAttempts())
+                        .param("requestId", command.requestId())
+                        .param("workloadClass", command.workloadClass())
+                        .param("resourceUnits", command.resourceUnits())
                         .query(String.class).single()));
     }
 
     @Override
-    public Optional<JobView> find(String organizationId, String jobId) {
-        requireIdentifier(organizationId, "organizationId");
-        return inTenant(organizationId, () ->
-                jdbc.sql("SELECT * FROM execution_jobs WHERE job_id = :jobId")
+    public Optional<JobView> find(AuthenticatedContext context, String jobId) {
+        requireContext(context);
+        requireIdentifier(jobId, "jobId");
+        return inIdentityContext(context, () ->
+                jdbc.sql("""
+                        SELECT job.*,
+                               elmos_mtf_queue_position(job.job_id) AS queue_position
+                          FROM execution_jobs job
+                         WHERE job.organization_id = :organizationId
+                           AND job.account_id = :accountId
+                           AND job.job_id = :jobId
+                        """)
+                        .param("organizationId", context.organizationId())
+                        .param("accountId", context.accountId())
                         .param("jobId", jobId)
                         .query(this::readJob)
                         .optional());
     }
 
     @Override
-    public List<JobView> list(String organizationId, BusinessLine businessLine, int limit, int offset) {
-        requireIdentifier(organizationId, "organizationId");
+    public List<JobView> list(
+            AuthenticatedContext context,
+            BusinessLine businessLine,
+            int limit,
+            int offset
+    ) {
+        requireContext(context);
         int boundedLimit = Math.min(Math.max(limit, 1), 100);
-        return inTenant(organizationId, () ->
+        return inIdentityContext(context, () ->
                 jdbc.sql("""
-                        SELECT * FROM execution_jobs
-                         WHERE (:businessLine IS NULL OR business_line = :businessLine)
-                         ORDER BY created_at DESC
+                        SELECT job.*,
+                               elmos_mtf_queue_position(job.job_id) AS queue_position
+                          FROM execution_jobs job
+                         WHERE job.organization_id = :organizationId
+                           AND job.account_id = :accountId
+                           AND (cast(:businessLine AS varchar) IS NULL
+                                OR job.business_line = cast(:businessLine AS varchar))
+                         ORDER BY job.created_at DESC
                          LIMIT :limit OFFSET :offset
                         """)
+                        .param("organizationId", context.organizationId())
+                        .param("accountId", context.accountId())
                         .param("businessLine", businessLine == null ? null : businessLine.name())
                         .param("limit", boundedLimit)
                         .param("offset", Math.max(offset, 0))
@@ -107,14 +140,36 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     @Override
-    public Status requestCancel(String organizationId, String jobId, String actorId) {
-        requireIdentifier(organizationId, "organizationId");
-        return inTenant(organizationId, () -> mapDomainErrors(() -> Status.valueOf(
-                jdbc.sql("SELECT elmos_request_execution_cancel(:organizationId, :jobId, :actorId)")
-                        .param("organizationId", organizationId)
+    public Status requestCancel(AuthenticatedContext context, String jobId) {
+        requireContext(context);
+        requireIdentifier(jobId, "jobId");
+        return inIdentityContext(context, () -> {
+            jdbc.sql("""
+                    SELECT job.job_id
+                      FROM execution_jobs job
+                     WHERE job.organization_id = :organizationId
+                       AND job.account_id = :accountId
+                       AND job.job_id = :jobId
+                     FOR UPDATE
+                    """)
+                    .param("organizationId", context.organizationId())
+                    .param("accountId", context.accountId())
+                    .param("jobId", jobId)
+                    .query(String.class)
+                    .optional()
+                    .orElseThrow(() -> new ExecutionStateException(
+                            "ELMOS_EXECUTION_JOB_UNKNOWN"));
+            return Status.valueOf(
+                    jdbc.sql("""
+                            SELECT elmos_mtf_request_execution_cancel(
+                                :organizationId, :accountId, :jobId, :actorId)
+                            """)
+                        .param("organizationId", context.organizationId())
+                        .param("accountId", context.accountId())
                         .param("jobId", jobId)
-                        .param("actorId", actorId)
-                        .query(String.class).single())));
+                        .param("actorId", context.actorId())
+                        .query(String.class).single());
+        });
     }
 
     // ---- runner facing -----------------------------------------------------
@@ -138,7 +193,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
 
         return transactions.execute(status -> mapDomainErrors(() -> {
             List<LeaseGrant> grants = jdbc.sql("""
-                    SELECT * FROM elmos_claim_execution_jobs(
+                    SELECT * FROM elmos_mtf_claim_execution_jobs(
                         :runnerNodeId, cast(:capabilities AS text[]), :limit, :leaseSeconds,
                         cast(:leaseIds AS text[]), cast(:tokenHashes AS text[]))
                     """)
@@ -184,7 +239,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     public HeartbeatResult heartbeat(HeartbeatCommand command) {
         return transactions.execute(status -> mapDomainErrors(() ->
                 jdbc.sql("""
-                        SELECT * FROM elmos_heartbeat_execution_lease(
+                        SELECT * FROM elmos_mtf_heartbeat_execution_lease(
                             :leaseId, :runnerNodeId, :tokenHash, :stage, :progress,
                             cast(:checkpoint AS jsonb), :leaseSeconds)
                         """)
@@ -197,6 +252,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
                         .param("leaseSeconds", command.leaseSeconds())
                         .query((ResultSet rs, int row) -> new HeartbeatResult(
                                 rs.getBoolean("cancel_requested"),
+                                rs.getBoolean("pause_requested"),
                                 rs.getObject("lease_expires_at", java.time.OffsetDateTime.class).toInstant()))
                         .single()));
     }
@@ -205,7 +261,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     public boolean complete(CompletionCommand command) {
         return transactions.execute(status -> mapDomainErrors(() ->
                 jdbc.sql("""
-                        SELECT elmos_complete_execution_job(
+                        SELECT elmos_mtf_complete_execution_job(
                             :leaseId, :runnerNodeId, :tokenHash, :status, :resultStatus, :failureCode)
                         """)
                         .param("leaseId", command.leaseId())
@@ -220,27 +276,58 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     @Override
     public int reapExpiredLeases() {
         return transactions.execute(status ->
-                jdbc.sql("SELECT elmos_reap_execution_leases()").query(Integer.class).single());
+                jdbc.sql("SELECT elmos_mtf_reap_execution_leases()").query(Integer.class).single());
     }
 
     // ---- infrastructure ----------------------------------------------------
 
-    private <T> T inTenant(String organizationId, Supplier<T> work) {
+    private <T> T inIdentityContext(AuthenticatedContext context, Supplier<T> work) {
+        return transactions.execute(status -> mapDomainErrors(() -> {
+            jdbc.sql("""
+                    SELECT elmos_mtf_bind_identity(
+                        cast(:organizationId AS varchar), cast(:accountId AS varchar),
+                        cast(:actorId AS varchar), cast(:requestId AS varchar))
+                    """)
+                    .param("organizationId", context.organizationId())
+                    .param("accountId", context.accountId())
+                    .param("actorId", context.actorId())
+                    .param("requestId", context.requestId())
+                    .query()
+                    .singleRow();
+            return work.get();
+        }));
+    }
+
+    private <T> T inTaskContext(EnqueueCommand command, Supplier<T> work) {
         return transactions.execute(status -> {
-            jdbc.sql("SELECT set_config('app.organization_id', :organization, true)")
-                    .param("organization", organizationId).query(String.class).single();
+            setLocal("app.organization_id", command.organizationId());
+            setLocal("app.account_id", command.accountId());
+            setLocal("app.actor_id", command.actorId());
+            setLocal("app.request_id", command.requestId());
+            setLocal("app.workload_class", command.workloadClass());
             return work.get();
         });
+    }
+
+    private void setLocal(String setting, String value) {
+        jdbc.sql("SELECT set_config(:setting, :value, true)")
+                .param("setting", setting)
+                .param("value", value)
+                .query(String.class)
+                .single();
     }
 
     private JobView readJob(ResultSet rs, int rowNum) throws SQLException {
         return new JobView(
                 rs.getString("job_id"),
                 rs.getString("organization_id"),
+                rs.getString("account_id"),
                 rs.getString("actor_id"),
                 BusinessLine.valueOf(rs.getString("business_line")),
                 rs.getString("job_kind"),
                 Status.valueOf(rs.getString("status")),
+                rs.getString("admission_state"),
+                rs.getObject("queue_position", Integer.class),
                 rs.getString("stage"),
                 rs.getShort("progress"),
                 ResultStatus.valueOf(rs.getString("result_status")),
@@ -260,7 +347,7 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     /**
-     * Translates the {@code ELMOS_*} exceptions raised by the V57 functions into a
+     * Translates the {@code ELMOS_*} exceptions raised by the V73 wrappers into a
      * typed domain failure. The raw PostgreSQL message never leaves this method, so
      * a public API response cannot leak schema or query text.
      */
@@ -272,8 +359,18 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
             int marker = message == null ? -1 : message.indexOf("ELMOS_");
             if (marker >= 0) {
                 String tail = message.substring(marker);
-                int end = tail.indexOf(' ');
-                throw new ExecutionStateException(end > 0 ? tail.substring(0, end) : tail);
+                int end = 0;
+                while (end < tail.length()) {
+                    char character = tail.charAt(end);
+                    if (!(character == '_'
+                            || character >= 'A' && character <= 'Z'
+                            || character >= '0' && character <= '9')) {
+                        break;
+                    }
+                    end++;
+                }
+                throw new ExecutionStateException(
+                        end > 0 ? tail.substring(0, end) : "ELMOS_EXECUTION_STATE_INVALID");
             }
             throw ex;
         }
@@ -337,6 +434,30 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     private static void requireIdentifier(String value, String field) {
         if (value == null || value.isBlank() || value.length() > 96) {
             throw new ExecutionStateException("ELMOS_EXECUTION_" + field.toUpperCase(Locale.ROOT) + "_INVALID");
+        }
+    }
+
+    private static void requireContext(AuthenticatedContext context) {
+        if (context == null) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_IDENTITY_CONTEXT_INVALID");
+        }
+        requireIdentifier(context.organizationId(), "organizationId");
+        requireIdentifier(context.accountId(), "accountId");
+        requireValue(context.actorId(), 128, "ACTOR_ID");
+        requireValue(context.requestId(), 160, "REQUEST_ID");
+    }
+
+    private static void requireValue(String value, int max, String field) {
+        if (value == null || value.isBlank() || value.length() > max) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_" + field + "_INVALID");
+        }
+    }
+
+    private static void requireWorkload(String workloadClass, int resourceUnits) {
+        if (!List.of("PARSING", "GENERATION", "CONVERSION", "VALIDATION", "RENDERING", "MODEL_GPU")
+                .contains(workloadClass)
+                || resourceUnits < 1 || resourceUnits > 64) {
+            throw new ExecutionStateException("ELMOS_EXECUTION_WORKLOAD_PROFILE_INVALID");
         }
     }
 }

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "owner": "ELMOS Database Platform",
+  "strategy": "forward-only-expand-with-unambiguous-backfill",
+  "source": {
+    "engine": "postgresql",
+    "versions": ["17.5"],
+    "dialect": "postgresql",
+    "edition": "community",
+    "timezone": "UTC",
+    "charset": "UTF8",
+    "collation": "environment-bound",
+    "extensions": [],
+    "driver_versions": ["postgresql-jdbc-42.7.7"]
+  },
+  "target": {
+    "engine": "postgresql",
+    "versions": ["17.5"],
+    "dialect": "postgresql",
+    "edition": "community",
+    "timezone": "UTC",
+    "charset": "UTF8",
+    "collation": "environment-bound",
+    "extensions": [],
+    "driver_versions": ["postgresql-jdbc-42.7.7"]
+  },
+  "backfill": {
+    "strategy": "identity-exact-only",
+    "idempotent": true,
+    "ambiguous_rows": "leave-account-null-and-block-mtf-runtime"
+  },
+  "cdc": {"status": "NOT_RUN", "reason": "No engine-to-engine cutover is performed."},
+  "authority": {
+    "before_cutover": "existing-repository-aggregates",
+    "after_cutover": "existing-repository-aggregates-extended-by-v73",
+    "production_cutover": "NOT_RUN"
+  },
+  "reconciliation": {
+    "grain": "account-task-ledger-entry",
+    "keys": ["organization_id", "account_id", "job_id", "idempotency_key"],
+    "required_difference_count": 0,
+    "external_invoice_reconciliation": "NOT_RUN"
+  },
+  "rollback": {
+    "strategy": "forward-fix-only-after-apply",
+    "production_rehearsal": "NOT_RUN",
+    "reason": "Flyway migration is append-only and no destructive down migration is authorized."
+  },
+  "privacy": {
+    "test_data": "synthetic",
+    "production_data": false,
+    "tenant_context": "authenticated-membership-bound"
+  }
+}

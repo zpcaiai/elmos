@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-multitenant-task-finops",
+  "capabilities": [
+    {
+      "id": "postgresql-17-5-empty-schema-flyway-replay",
+      "status": "experimental",
+      "owner": "ELMOS Database Platform",
+      "evidence_refs": [
+        "modules/persistence/src/test/java/io/elmos/persistence/FlywayMigrationTest.java"
+      ],
+      "reason": "Local disposable PostgreSQL only; independent and production migration remain NOT_RUN."
+    },
+    {
+      "id": "account-three-slot-and-generation-fencing",
+      "status": "experimental",
+      "owner": "ELMOS Task FinOps Runtime",
+      "evidence_refs": [
+        "modules/persistence/src/main/resources/db/migration/V73__account_task_control_and_finops_runtime.sql"
+      ],
+      "reason": "Repository implementation is present; high-contention representative execution remains NOT_RUN."
+    },
+    {
+      "id": "exact-decimal-cost-revenue-conservation",
+      "status": "experimental",
+      "owner": "ELMOS Product Finance Data Owner",
+      "evidence_refs": [
+        "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPolicy.java"
+      ],
+      "reason": "Local invariants do not resolve provider invoices, settlements, tax, or external review."
+    },
+    {
+      "id": "production-cutover-and-rollback",
+      "status": "blocked",
+      "owner": "ELMOS Database Platform",
+      "evidence_refs": [],
+      "reason": "No production database, approved window, rollback authorization, or independent verifier is in scope."
+    }
+  ]
+}

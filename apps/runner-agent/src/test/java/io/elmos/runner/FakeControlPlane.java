@@ -36,11 +36,13 @@ public final class FakeControlPlane implements AutoCloseable {
     public final List<Completion> completions = new CopyOnWriteArrayList<>();
     public final List<PublishedArtifact> published = new CopyOnWriteArrayList<>();
     public final List<byte[]> uploads = new CopyOnWriteArrayList<>();
+    public final List<Map<String, Object>> heartbeats = new CopyOnWriteArrayList<>();
     public final AtomicInteger heartbeatCount = new AtomicInteger();
     public final AtomicInteger claimCount = new AtomicInteger();
     public final AtomicInteger registrationCount = new AtomicInteger();
 
     public final AtomicBoolean cancelRequested = new AtomicBoolean(false);
+    public final AtomicBoolean pauseRequested = new AtomicBoolean(false);
     public final AtomicBoolean drainRequested = new AtomicBoolean(false);
     /** When true every lease heartbeat answers 409, simulating a lease taken over. */
     public final AtomicBoolean leaseStolen = new AtomicBoolean(false);
@@ -85,12 +87,14 @@ public final class FakeControlPlane implements AutoCloseable {
 
             if (path.endsWith("/heartbeat")) {
                 heartbeatCount.incrementAndGet();
+                heartbeats.add(Json.parseObject(body));
                 if (leaseStolen.get()) {
                     respond(exchange, 409, Map.of("status", "ERROR", "code", "ELMOS_LEASE_NOT_ACTIVE"));
                     return;
                 }
                 respond(exchange, 200, Map.of(
                         "cancelRequested", cancelRequested.get(),
+                        "pauseRequested", pauseRequested.get(),
                         "leaseExpiresAt", "2030-01-01T00:00:00Z"));
                 return;
             }
@@ -158,8 +162,18 @@ public final class FakeControlPlane implements AutoCloseable {
     }
 
     public ControlPlaneClient.Lease lease(String jobId, String leaseId, String image, int wallSeconds) {
+        return lease(jobId, leaseId, image, wallSeconds, Map.of());
+    }
+
+    public ControlPlaneClient.Lease lease(
+            String jobId,
+            String leaseId,
+            String image,
+            int wallSeconds,
+            Map<String, Object> checkpoint
+    ) {
         return new ControlPlaneClient.Lease(jobId, leaseId, "token-" + leaseId, "GENERATION",
-                "project-synthesis", image, wallSeconds, 2000, 2048, 1, Map.of(),
+                "project-synthesis", image, wallSeconds, 2000, 2048, 1, checkpoint,
                 Map.of("targets", List.of("java")));
     }
 

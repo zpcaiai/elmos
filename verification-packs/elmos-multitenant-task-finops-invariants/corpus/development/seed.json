@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "corpus": "development",
+  "cases": [
+    {"id": "half-even-positive-even-tie", "value": "1.2345665", "scale": 6, "expected": "1.234566"},
+    {"id": "half-even-positive-odd-tie", "value": "1.2345675", "scale": 6, "expected": "1.234568"},
+    {"id": "half-even-negative-even-tie", "value": "-1.2345665", "scale": 6, "expected": "-1.234566"},
+    {"id": "half-even-negative-odd-tie", "value": "-1.2345675", "scale": 6, "expected": "-1.234568"},
+    {"id": "three-slots", "root_jobs": 4, "expected_active": 3, "expected_waiting": 1}
+  ]
+}

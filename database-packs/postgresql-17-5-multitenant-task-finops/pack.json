@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-multitenant-task-finops",
+  "version": "1.0.0",
+  "mode": "modernization",
+  "status": "experimental",
+  "owner": "ELMOS Task FinOps Runtime",
+  "maintenance_owner": "ELMOS Database Platform",
+  "data_owner": "ELMOS Product Finance Data Owner",
+  "review_by": "2026-10-26",
+  "source": {
+    "engine": "postgresql",
+    "versions": ["17.5"],
+    "dialect": "postgresql",
+    "edition": "community",
+    "timezone": "UTC",
+    "charset": "UTF8",
+    "collation": "environment-bound",
+    "extensions": [],
+    "driver_versions": ["postgresql-jdbc-42.7.7"]
+  },
+  "target": {
+    "engine": "postgresql",
+    "versions": ["17.5"],
+    "dialect": "postgresql",
+    "edition": "community",
+    "timezone": "UTC",
+    "charset": "UTF8",
+    "collation": "environment-bound",
+    "extensions": [],
+    "driver_versions": ["postgresql-jdbc-42.7.7"]
+  },
+  "scope": {
+    "schemas": ["public"],
+    "objects": [
+      "execution_jobs",
+      "execution_account_slots",
+      "task_checkpoint_manifests",
+      "task_side_effect_receipts",
+      "task_finops_price_books",
+      "task_finops_fx_snapshots",
+      "usage_events",
+      "task_revenue_ledger_entries",
+      "task_revenue_allocations"
+    ],
+    "workload_classes": [
+      "canonical-identity",
+      "three-slot-admission",
+      "generation-fenced-lease",
+      "append-only-progress",
+      "exact-decimal-finops",
+      "tenant-rls-negative"
+    ]
+  },
+  "paths": {
+    "canonical_ir": "canonical-ir/model.json",
+    "certification": "certification",
+    "fingerprint": "source-fingerprint",
+    "migration_plan": "migration/data-migration-plan.json",
+    "target_profile": "target-profile/profile.json"
+  },
+  "gates": {
+    "canonical_ir_coverage": 0.95,
+    "p0_correctness": 1.0,
+    "tenant_isolation": 1.0,
+    "money_conservation": 1.0,
+    "representative_workload": 1.0
+  }
+}

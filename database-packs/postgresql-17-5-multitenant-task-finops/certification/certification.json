@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-multitenant-task-finops",
+  "status": "experimental",
+  "owner": "ELMOS Database Platform",
+  "external_certification": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED",
+  "metrics": {
+    "canonical_ir_coverage": 1.0,
+    "local_migration_pass_rate": 1.0,
+    "product_task_execution_pass_rate": 0.0,
+    "external_evidence_pass_rate": 0.0,
+    "representative_workload_pass_rate": 0.0
+  },
+  "evidence_refs": [],
+  "limitations": [
+    "V100-V102 reference SQL remains NOT_APPLIED.",
+    "All 144 source product task execution states remain NOT_RUN.",
+    "Four exact dependencies remain UNRESOLVED.",
+    "Provider, invoice, payment, tax, production, cutover, rollback, and independent evidence remain NOT_RUN."
+  ]
+}

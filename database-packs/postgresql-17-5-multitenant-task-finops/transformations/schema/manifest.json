@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "kind": "repository-owned-forward-migration",
+  "target_path": "modules/persistence/src/main/resources/db/migration/V73__account_task_control_and_finops_runtime.sql",
+  "target_sha256": "sha256:2295158db327cacd270e8212eda3377a43062a2a5176cac2fd28fa3f4cbe98e0",
+  "source_reference_application_status": "NOT_APPLIED",
+  "source_reference_versions": ["V100", "V101", "V102"]
+}

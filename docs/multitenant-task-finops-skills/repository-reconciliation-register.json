@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "elmos.multitenant-task-finops.repository-reconciliation-register",
+  "package": {
+    "name": "elmos-multitenant-task-finops-skills",
+    "version": "1.0.0"
+  },
+  "source_risk_register": {
+    "path": "docs/multitenant-task-finops-skills/source-risk-register.json",
+    "sha256": "sha256:f47aac37ba1717d0f5d7382aba36f97fc7199e2076f2bc7b849c3f85ccbd315f"
+  },
+  "direct_source_adoption_status": "NOT_APPLIED",
+  "source_adoption_gate": "BLOCKED",
+  "summary": {
+    "total": 11,
+    "NOT_EVALUATED": 11
+  },
+  "findings": [
+    {
+      "finding_id": "MTF-SRC-001",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["CANONICAL_TYPED_CONTRACT_RECONCILIATION_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-002",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["APPEND_ONLY_PROVENANCE_AND_CORRECTION_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-003",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["REVENUE_PROJECTION_AND_ALLOCATION_INVARIANTS_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-004",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["USAGE_DECIMAL_AND_CORRECTION_PROVENANCE_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-005",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["POSTGRESQL_SLOT_LEASE_FENCING_RACE_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-006",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["TASK_EVENT_CANONICAL_IDENTITY_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-007",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["AUTHENTICATED_MEMBERSHIP_AND_RLS_NEGATIVE_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-008",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["CANONICAL_RELATIONSHIP_AND_IDEMPOTENCY_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-009",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["EXACT_DECIMAL_FINALITY_AND_INDEPENDENT_RECONCILIATION_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-010",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["TENANT_BOUND_OBJECT_IDENTITY_AND_INTEGRITY_EVIDENCE_NOT_EXECUTED"]
+    },
+    {
+      "finding_id": "MTF-SRC-011",
+      "severity": "CRITICAL",
+      "source_status": "OPEN",
+      "repository_resolution_state": "NOT_EVALUATED",
+      "evidence_state": "NONE",
+      "implementation_bindings": [],
+      "evidence_receipts": [],
+      "blockers": ["ACYCLIC_CORRECTION_AND_SEGREGATION_OF_DUTIES_EVIDENCE_NOT_EXECUTED"]
+    }
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "production_certification": "NOT_CERTIFIED"
+}

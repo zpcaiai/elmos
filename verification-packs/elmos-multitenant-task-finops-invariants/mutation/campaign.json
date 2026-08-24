@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.task-finops-not-run",
+  "owner": "elmos-verification-engineering",
+  "target_scope": [
+    "modules/workflow/src/main/java/io/elmos/workflow/TaskFinopsPolicy.java",
+    "modules/persistence/src/main/resources/db/migration/V73__account_task_control_and_finops_runtime.sql"
+  ],
+  "operators": [
+    {
+      "key": "negate-condition",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 0,
+    "max_minutes": 0
+  },
+  "required_tests": [
+    "NOT_RUN"
+  ],
+  "equivalent_mutant_policy": "NOT_RUN-independent-review-required"
+}

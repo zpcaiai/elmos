@@ -14,6 +14,7 @@ import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Closes the seam between the Runner Agent and object storage.
@@ -144,7 +145,13 @@ public class ArtifactController {
                 tenants.actorId(),
                 permissionFor(role));
 
-        Optional<ExecutionJobPort.JobView> job = jobs.find(organizationId, jobId);
+        Optional<ExecutionJobPort.JobView> job = jobs.find(
+                new ExecutionJobPort.AuthenticatedContext(
+                        organizationId,
+                        principal.accountId(),
+                        principal.actorId(),
+                        "artifact-api-" + UUID.randomUUID()),
+                jobId);
         if (job.isEmpty()) {
             // 404 rather than 403: a tenant must not be able to probe for the
             // existence of another tenant's job.
