@@ -5,7 +5,22 @@
 > layered on the retained `elmos-build-cache-staging-sota` v1.1.0 foundation.
 > Companion files: `BUILD_CACHE_IMPLEMENTATION_STATUS.md`,
 > `BUILD_CACHE_TEST_RESULTS.md`, `BUILD_CACHE_EVIDENCE.md`,
-> `BUILD_CACHE_HANDOFF.md`.
+> `BUILD_CACHE_HANDOFF.md`. The authoritative live task ledger is
+> `BUILD_CACHE_PROGRESS.md`.
+
+## Live synchronization snapshot — 2026-08-24
+
+- Pushed implementation SHA:
+  `73c68c0776031a8082a4feed7e1a598b71b330c2` (local/tracking/remote matched).
+- The package/import work and most local v1.2 runtime surfaces are complete.
+- Durable SLO control and five-layer composition are code-present but have no
+  post-change targeted test evidence.
+- Provider production routes, prompt-safe durable idempotent replay and the
+  two additional OpenAPI operations remain partial.
+- External evidence is `NOT_RUN`; v1.2 remains `NOT_CERTIFIED`.
+- See `BUILD_CACHE_PROGRESS.md` rows BC-01 through BC-19 for every task and its
+  exact remaining work. This synchronization itself is after the pushed
+  implementation commit and awaits the next authorized scoped Git window.
 
 - **Started:** 2026-08-19
 - **Second pass:** 2026-08-19 (closing the seven `PARTIAL` rows)

@@ -2,14 +2,37 @@
 
 > Read this before touching `engines/build-cache-engine/`.
 > Companions: `BUILD_CACHE_TASK.md`, `BUILD_CACHE_IMPLEMENTATION_STATUS.md`,
-> `BUILD_CACHE_TEST_RESULTS.md`, `BUILD_CACHE_EVIDENCE.md`.
+> `BUILD_CACHE_TEST_RESULTS.md`, `BUILD_CACHE_EVIDENCE.md`. The authoritative
+> live per-task ledger is `BUILD_CACHE_PROGRESS.md`.
 
-- **Last updated:** 2026-08-20 (pass 5, v1.2 parity upgrade)
+- **Last updated:** 2026-08-24 (post-commit task synchronization)
 - **Written by:** Claude for passes 1–4; Codex for pass 5
-- **Current overall status:** v1.2 local implementation complete;
-  external/provider/production evidence `NOT_RUN`; `NOT_CERTIFIED`.
+- **Pushed implementation SHA:**
+  `73c68c0776031a8082a4feed7e1a598b71b330c2`; local/tracking/remote matched
+- **Current overall status:** `PARTIAL`; package import and most local runtime
+  surfaces are complete, BC-13 and BC-14 are implemented but unverified, BC-15
+  provider production composition remains partial, external evidence is
+  `NOT_RUN`, and certification is `NOT_CERTIFIED`.
   The v1.1 `CERTIFIED_IN_SANDBOX` result below is retained as historical
   evidence and does not certify the v1.2 parity scope.
+
+## Current handoff order — 2026-08-24
+
+1. Add and run the BC-13 SLO service transition/concurrency/isolation/migration
+   tests.
+2. Add and run the BC-14 five-layer composition authorization/deadline/
+   lookup/restore/populate/outcome tests; only an exact Action hit may skip
+   execution.
+3. Complete BC-15 `CacheControlPlane` provider wiring, two OpenAPI operations,
+   pre-idempotency project ownership and prompt-safe durable replay.
+4. Run the current-HEAD focused pack and write one immutable receipt without
+   summing overlapping historical counts.
+5. Keep provider, live PostgreSQL, image/fleet, independent corpus and rollout
+   evidence `NOT_RUN`, and keep certification `NOT_CERTIFIED`.
+
+This progress-only documentation change is after the pushed implementation
+commit and is intentionally not staged while another task owns the shared Git
+window.
 
 ## 0. What landed in pass 5
 

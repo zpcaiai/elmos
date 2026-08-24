@@ -11,6 +11,24 @@
 > pass-5 addendum for the v1.2 local implementation matrix and its
 > `NOT_RUN` / `NOT_CERTIFIED` evidence boundary.
 
+## Live synchronization snapshot — 2026-08-24
+
+`BUILD_CACHE_PROGRESS.md` is the authoritative per-task status ledger. The
+pushed implementation SHA is
+`73c68c0776031a8082a4feed7e1a598b71b330c2`. The current v1.2 implementation
+state is `PARTIAL`, not a blanket "local implementation complete" claim:
+
+- BC-13 durable SLO service and migration mirrors are
+  `IMPLEMENTED_NOT_VERIFIED`;
+- BC-14 five-layer composition is `IMPLEMENTED_NOT_VERIFIED`;
+- BC-15 provider production API/privacy/idempotency composition is `PARTIAL`;
+- BC-18 external execution is `NOT_RUN`; and
+- BC-19 certification is `NOT_CERTIFIED`.
+
+The historical working-tree notes below describe their original pass and are
+not current Git status. Local/tracking/remote matched at the pushed SHA; this
+progress-only documentation update awaits a later authorized Git window.
+
 - **Audit date:** 2026-08-20 (pass 4 — the v1.1.0 SOTA package)
 - **Auditor:** Claude (Cowork cloud session)
 - **Working tree:** passes 1 and 2 are committed; **pass 3 is still

@@ -5,6 +5,25 @@
 > separate narrow-run ledger at the end; its overlapping counts are not summed,
 > and external v1.2 evidence remains `NOT_RUN`.
 
+## Live synchronization snapshot — 2026-08-24
+
+The task-level source of truth is `BUILD_CACHE_PROGRESS.md`. Since the latest
+pushed implementation SHA
+`73c68c0776031a8082a4feed7e1a598b71b330c2`:
+
+- trusted harness service: **4 passed**, Ruff clean, strict mypy clean;
+- staged Python syntax: **0 errors**;
+- staged JSON parsing: **0 errors**;
+- staged protected-path violations: **0**;
+- BC-13 SLO service targeted suite: `NOT_RUN`;
+- BC-14 composition targeted suite: `NOT_RUN`;
+- BC-15 provider control-plane integration suite: `NOT_RUN`; and
+- the current-HEAD combined v1.2 suite: `NOT_RUN` after those additions.
+
+The earlier narrow checkpoints below remain valid only for their exact source
+state and scope. They must not be summed or used to mark BC-13 through BC-15 as
+verified.
+
 - **Date:** 2026-08-20 (pass 4)
 - **Platform:** Linux x86_64, cloud sandbox (not the Mac)
 - **Python:** 3.12.3

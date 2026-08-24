@@ -17,6 +17,25 @@
 > pass-4/v1.1 history. The v1.2 parity decision is in the final section of this
 > file: external evidence is `NOT_RUN` and certification is `NOT_CERTIFIED`.
 
+## Live synchronization snapshot — 2026-08-24
+
+See `BUILD_CACHE_PROGRESS.md` for the authoritative BC-01 through BC-19 ledger.
+The pushed implementation SHA is
+`73c68c0776031a8082a4feed7e1a598b71b330c2`, but a pushed file is not by itself
+verification evidence. In particular:
+
+- BC-12 has observed local harness-service tests, lint and type evidence;
+- BC-13 and BC-14 currently have static parse evidence only and remain
+  `IMPLEMENTED_NOT_VERIFIED`;
+- BC-15 remains `PARTIAL` until the provider routes, project preflight,
+  prompt-safe idempotency and OpenAPI/tests are closed;
+- live PostgreSQL/provider/image/fleet/corpus/rollout evidence remains
+  `NOT_RUN`; and
+- the v1.2 certification result remains `NOT_CERTIFIED`.
+
+No historical v1.1 sandbox verdict or local v1.2 test may override these
+boundaries.
+
 | ID | Required result | Implementation | Test | Verdict |
 | --- | --- | --- | --- | --- |
 | SNAP-001 | Same logical repository → same canonical root digest | `snapshot.take_snapshot` (path-independent, **logical paths composed to NFC**, sorted Merkle) + `portability_findings` | `test_snap_001_same_repository_different_absolute_paths`, `test_snap_001_windows_style_separators_normalise`, `test_this_host_agrees_with_every_platform_ever_recorded`, `test_a_decomposed_filename_snapshots_as_the_composed_one` | **PASS** — one fixture, identical root digest on Linux/ext4 and on a real macOS APFS volume; native Darwin and Windows captures `NOT EXECUTED` and named in a skip |
