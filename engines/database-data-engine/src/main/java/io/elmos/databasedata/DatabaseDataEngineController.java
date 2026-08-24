@@ -73,30 +73,31 @@ public final class DatabaseDataEngineController {
     }
 
     @GetMapping(value = "/sql-preflight/capabilities", produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonNode sqlPreflightCapabilities() {
-        return sqlPreflight.capabilities();
+    public ResponseEntity<JsonNode> sqlPreflightCapabilities() {
+        return ResponseEntity.ok()
+                .header("Cache-Control", "private, no-store")
+                .body(sqlPreflight.capabilities());
     }
 
     @PostMapping(
             value = "/sql-preflight/assess",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public JsonNode assessSql(
+    public ResponseEntity<JsonNode> assessSql(
             @RequestHeader("X-ELMOS-Organization-ID") String organizationId,
             @RequestHeader("X-ELMOS-Actor-ID") String actorId,
             @RequestBody byte[] request
     ) {
-        return sqlPreflight.assess(request, organizationId, actorId);
+        return ResponseEntity.ok()
+                .header("Cache-Control", "private, no-store")
+                .body(sqlPreflight.assess(request, organizationId, actorId));
     }
 
     @ExceptionHandler(ChinaDbSqlPreflightFailure.class)
     ResponseEntity<Map<String, Object>> sqlPreflightFailure(ChinaDbSqlPreflightFailure error) {
-        return ResponseEntity.status(error.status()).body(Map.of(
-                "status", "BLOCKED",
-                "errorCode", error.errorCode(),
-                "message", error.safeMessage(),
-                "retryable", error.retryable(),
-                "certification", "NOT_CERTIFIED"));
+        return ResponseEntity.status(error.status())
+                .header("Cache-Control", "private, no-store")
+                .body(error.body());
     }
 
     @ExceptionHandler(EngineApi.JobNotFoundException.class)

@@ -24,8 +24,10 @@ class ChinaDbSqlPreflightConfiguration {
     }
 
     @Bean
-    FilterRegistrationBean<ChinaDbSqlPreflightBodyLimitFilter> chinaDbSqlPreflightBodyLimit() {
-        var registration = new FilterRegistrationBean<>(new ChinaDbSqlPreflightBodyLimitFilter());
+    FilterRegistrationBean<ChinaDbSqlPreflightBodyLimitFilter> chinaDbSqlPreflightBodyLimit(
+            ObjectMapper json
+    ) {
+        var registration = new FilterRegistrationBean<>(new ChinaDbSqlPreflightBodyLimitFilter(json));
         registration.addUrlPatterns("/api/v1/database-data/sql-preflight/assess");
         registration.setOrder(Integer.MIN_VALUE + 110);
         return registration;

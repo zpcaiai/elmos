@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MigrationEvidence",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "route_id",
+    "kind",
+    "timestamp",
+    "tool_version",
+    "inputs_fingerprint",
+    "result"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "route_id": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "static",
+        "compile",
+        "data",
+        "behavior",
+        "performance",
+        "repair",
+        "cutover",
+        "security",
+        "certification"
+      ]
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "tool_version": {
+      "type": "string"
+    },
+    "inputs_fingerprint": {
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "pass",
+        "fail",
+        "warning",
+        "waived"
+      ]
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

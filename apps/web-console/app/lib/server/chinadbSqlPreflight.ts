@@ -14,8 +14,10 @@ import {
 import {
   AccountSessionError,
   accountSessionFromRequest,
+  type AccountPermission,
 } from "./accountSession";
 import { resolveChinaDbSqlPreflightBaseUrl } from "./chinadbSqlUpstreamPolicy";
+import { parseStrictJson } from "./strictJson";
 
 const CAPABILITIES_PATH = "/api/v1/database-data/sql-preflight/capabilities";
 const ASSESS_PATH = "/api/v1/database-data/sql-preflight/assess";
@@ -24,6 +26,7 @@ const UPSTREAM_TIMEOUT_MS = 15_000;
 export const chinaDbSqlPrivateHeaders = {
   "Cache-Control": "private, no-store, max-age=0",
   Vary: "Cookie, Authorization",
+  "X-ELMOS-ChinaDB-Fail-Closed": "1",
 } as const;
 
 export type ChinaDbSqlContext = {
@@ -35,12 +38,14 @@ export type ChinaDbSqlContext = {
 export type ChinaDbSqlFailure = {
   status: number;
   body: {
+    schemaVersion: "1.0";
     status: "BLOCKED";
     errorCode: string;
     message: string;
-    externalExecution: "NOT_RUN";
-    certification: "NOT_CERTIFIED";
+    retryable: boolean;
     targetSql: null;
+    verification: Record<keyof ChinaDbSqlPreflightResult["verification"], "NOT_RUN">;
+    certification: "NOT_CERTIFIED";
   };
 };
 
@@ -48,8 +53,11 @@ function fail(status: number, errorCode: string, message: string): never {
   throw new ChinaDbSqlPolicyError(status, errorCode, message);
 }
 
-export function chinaDbSqlContext(request: NextRequest): ChinaDbSqlContext {
-  const session = accountSessionFromRequest(request, "translation:execute");
+export function chinaDbSqlContext(
+  request: NextRequest,
+  permission: AccountPermission,
+): ChinaDbSqlContext {
+  const session = accountSessionFromRequest(request, permission);
   return {
     organizationId: session.principal.organizationId,
     actorId: session.principal.actorId,
@@ -63,6 +71,7 @@ function upstreamHeaders(
 ): Record<string, string> {
   return {
     Accept: "application/json",
+    "Accept-Encoding": "identity",
     Authorization: `Bearer ${context.accessToken}`,
     "X-ELMOS-Organization-ID": context.organizationId,
     "X-ELMOS-Actor-ID": context.actorId,
@@ -75,6 +84,11 @@ async function readBoundedUpstreamJson(response: Response): Promise<unknown> {
   if (mediaType !== "application/json") {
     await response.body?.cancel();
     fail(502, "CHINADB_SQL_UPSTREAM_MEDIA_TYPE_INVALID", "ChinaDB SQL 上游响应类型无效。");
+  }
+  const contentEncoding = response.headers.get("content-encoding")?.trim().toLowerCase();
+  if (contentEncoding && contentEncoding !== "identity") {
+    await response.body?.cancel();
+    fail(502, "CHINADB_SQL_UPSTREAM_CONTENT_ENCODING_INVALID", "ChinaDB SQL 上游响应编码无效。");
   }
   const declared = response.headers.get("content-length");
   if (declared !== null) {
@@ -114,9 +128,12 @@ async function readBoundedUpstreamJson(response: Response): Promise<unknown> {
     bytes.set(chunk, offset);
     offset += chunk.byteLength;
   }
+  if (declared !== null && Number(declared) !== total) {
+    fail(502, "CHINADB_SQL_UPSTREAM_LENGTH_MISMATCH", "ChinaDB SQL 上游响应长度不匹配。");
+  }
   try {
     const decoded = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-    return JSON.parse(decoded) as unknown;
+    return parseStrictJson(decoded);
   } catch {
     fail(502, "CHINADB_SQL_UPSTREAM_JSON_INVALID", "ChinaDB SQL 上游响应不是有效 JSON。");
   }
@@ -126,6 +143,7 @@ async function callUpstream(
   context: ChinaDbSqlContext,
   path: typeof CAPABILITIES_PATH | typeof ASSESS_PATH,
   body?: ChinaDbSqlPreflightRequest,
+  callerSignal?: AbortSignal,
 ): Promise<unknown> {
   const baseUrl = resolveChinaDbSqlPreflightBaseUrl();
   let response: Response;
@@ -136,7 +154,9 @@ async function callUpstream(
       body: body ? JSON.stringify(body) : undefined,
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      signal: callerSignal
+        ? AbortSignal.any([callerSignal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)])
+        : AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     });
   } catch (error) {
     const timeout = error instanceof Error
@@ -149,7 +169,16 @@ async function callUpstream(
   }
   if (!response.ok) {
     await response.body?.cancel();
-    const status = response.status === 429 ? 429 : response.status === 503 ? 503 : 502;
+    if (response.status === 409) {
+      fail(409, "CHINADB_SQL_CAPABILITY_SNAPSHOT_STALE", "ChinaDB SQL 能力快照已经变化，请刷新后重试。");
+    }
+    if (response.status === 400 || response.status === 422) {
+      fail(400, "CHINADB_SQL_UPSTREAM_REQUEST_REJECTED", "ChinaDB SQL 上游拒绝了请求契约。");
+    }
+    if (response.status === 413) {
+      fail(413, "CHINADB_SQL_REQUEST_TOO_LARGE", "ChinaDB SQL 请求超过大小上限。");
+    }
+    const status = [429, 503, 504].includes(response.status) ? response.status : 502;
     fail(status, "CHINADB_SQL_UPSTREAM_REJECTED", "ChinaDB SQL 上游拒绝了本次请求。");
   }
   return readBoundedUpstreamJson(response);
@@ -157,18 +186,20 @@ async function callUpstream(
 
 export async function fetchChinaDbSqlCapabilities(
   context: ChinaDbSqlContext,
+  signal?: AbortSignal,
 ): Promise<ChinaDbSqlCapabilities> {
-  return parseChinaDbSqlCapabilities(await callUpstream(context, CAPABILITIES_PATH));
+  return parseChinaDbSqlCapabilities(await callUpstream(context, CAPABILITIES_PATH, undefined, signal));
 }
 
 export async function assessChinaDbSql(
   context: ChinaDbSqlContext,
   request: ChinaDbSqlPreflightRequest,
   capabilities: ChinaDbSqlCapabilities,
+  signal?: AbortSignal,
 ): Promise<ChinaDbSqlPreflightResult> {
   bindChinaDbSqlRequestToCapabilities(request, capabilities);
   const expectedSourceDigest = `sha256:${createHash("sha256").update(request.sql, "utf8").digest("hex")}`;
-  const response = await callUpstream(context, ASSESS_PATH, request);
+  const response = await callUpstream(context, ASSESS_PATH, request, signal);
   return parseChinaDbSqlPreflightResult(
     response,
     request,
@@ -178,41 +209,39 @@ export async function assessChinaDbSql(
 }
 
 export function chinaDbSqlFailure(error: unknown): ChinaDbSqlFailure {
+  const body = (errorCode: string, message: string, retryable: boolean) => ({
+    schemaVersion: "1.0" as const,
+    status: "BLOCKED" as const,
+    errorCode,
+    message,
+    retryable,
+    targetSql: null,
+    verification: {
+      sourceParse: "NOT_RUN" as const,
+      targetAdapter: "NOT_RUN" as const,
+      targetEmit: "NOT_RUN" as const,
+      targetReparse: "NOT_RUN" as const,
+      sourceExecution: "NOT_RUN" as const,
+      targetExecution: "NOT_RUN" as const,
+      resultEquivalence: "NOT_RUN" as const,
+      externalExecution: "NOT_RUN" as const,
+    },
+    certification: "NOT_CERTIFIED" as const,
+  });
   if (error instanceof AccountSessionError) {
     return {
       status: error.status,
-      body: {
-        status: "BLOCKED",
-        errorCode: error.code,
-        message: error.message,
-        externalExecution: "NOT_RUN",
-        certification: "NOT_CERTIFIED",
-        targetSql: null,
-      },
+      body: body(error.code, error.message, false),
     };
   }
   if (error instanceof ChinaDbSqlPolicyError) {
     return {
       status: error.status,
-      body: {
-        status: "BLOCKED",
-        errorCode: error.errorCode,
-        message: error.message,
-        externalExecution: "NOT_RUN",
-        certification: "NOT_CERTIFIED",
-        targetSql: null,
-      },
+      body: body(error.errorCode, error.message, [429, 503, 504].includes(error.status)),
     };
   }
   return {
     status: 503,
-    body: {
-      status: "BLOCKED",
-      errorCode: "CHINADB_SQL_PREFLIGHT_UNAVAILABLE",
-      message: "ChinaDB SQL 预检当前不可用。",
-      externalExecution: "NOT_RUN",
-      certification: "NOT_CERTIFIED",
-      targetSql: null,
-    },
+    body: body("CHINADB_SQL_PREFLIGHT_UNAVAILABLE", "ChinaDB SQL 预检当前不可用。", true),
   };
 }

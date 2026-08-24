@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class DatabaseDataEngineControllerTest {
     private final DatabaseDataEngineController controller =
-            new DatabaseDataEngineController(new DatabaseDataEngineService());
+            new DatabaseDataEngineController(
+                    new DatabaseDataEngineService(), mock(ChinaDbSqlPreflightGateway.class));
 
     @Test void exposesSharedEngineContractAndFailsClosed() {
         assertEquals("ELMOS_DATABASE_DATA", controller.capabilities().engineName());

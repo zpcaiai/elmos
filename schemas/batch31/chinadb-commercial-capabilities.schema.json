@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/batch31/chinadb-commercial-capabilities.schema.json",
+  "title": "ELMOS ChinaDB commercial SQL capability snapshot",
+  "description": "Specification-only inventory for the 13 ChinaDB targets and 78 planned source-to-target routes. This document is not runtime or certification evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "package",
+    "version",
+    "capabilitySnapshotDigest",
+    "targetCount",
+    "plannedRouteCount",
+    "targets",
+    "plannedRoutes",
+    "excludedTargets",
+    "implementationStatus",
+    "externalExecution",
+    "certification",
+    "boundaries"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "package": {
+      "const": "chinadb-commercial-migration-skills"
+    },
+    "version": {
+      "const": "1.0.0"
+    },
+    "capabilitySnapshotDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "targetCount": {
+      "const": 13
+    },
+    "plannedRouteCount": {
+      "const": 78
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/target"
+      }
+    },
+    "plannedRoutes": {
+      "type": "array",
+      "minItems": 78,
+      "maxItems": 78,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/plannedRoute"
+      }
+    },
+    "excludedTargets": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/excludedTarget"
+      }
+    },
+    "implementationStatus": {
+      "const": "SPEC_ONLY"
+    },
+    "externalExecution": {
+      "const": "NOT_RUN"
+    },
+    "certification": {
+      "const": "NOT_CERTIFIED"
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exactCommercialTargetProfilesRegistered",
+        "verifiedTargetRenderers",
+        "productionDatabaseAccess",
+        "targetSqlMayBeEmitted",
+        "claim"
+      ],
+      "properties": {
+        "exactCommercialTargetProfilesRegistered": {
+          "const": false
+        },
+        "verifiedTargetRenderers": {
+          "const": 0
+        },
+        "productionDatabaseAccess": {
+          "const": false
+        },
+        "targetSqlMayBeEmitted": {
+          "const": false
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "targetId": {
+      "enum": [
+        "dm8",
+        "kingbasees",
+        "opengauss",
+        "tidb",
+        "gbase-8s",
+        "gbase-8c",
+        "gbase-8a",
+        "highgo-hgdb",
+        "oceanbase-oracle",
+        "oceanbase-mysql",
+        "gaussdb-oracle",
+        "gaussdb-m",
+        "goldendb"
+      ]
+    },
+    "sourceFamily": {
+      "enum": [
+        "Oracle",
+        "SQL Server",
+        "PostgreSQL",
+        "MySQL/MariaDB",
+        "DB2 LUW",
+        "Sybase ASE"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "adapterId",
+        "versionRequirement",
+        "compatibilityModeRequirement",
+        "implementationStatus",
+        "externalExecution",
+        "certification"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/targetId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "adapterId": {
+          "type": "string",
+          "pattern": "^chinadb\\.[a-z0-9][a-z0-9-]*\\.target-adapter\\.v1$"
+        },
+        "versionRequirement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "compatibilityModeRequirement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "implementationStatus": {
+          "const": "SPEC_ONLY"
+        },
+        "externalExecution": {
+          "const": "NOT_RUN"
+        },
+        "certification": {
+          "const": "NOT_CERTIFIED"
+        }
+      }
+    },
+    "plannedRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sourceFamily",
+        "targetId",
+        "priority",
+        "state",
+        "externalExecution",
+        "certification"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(oracle|sql-server|postgresql|mysql-mariadb|db2-luw|sybase-ase)--to--(dm8|kingbasees|opengauss|tidb|gbase-8s|gbase-8c|gbase-8a|highgo-hgdb|oceanbase-oracle|oceanbase-mysql|gaussdb-oracle|gaussdb-m|goldendb)$"
+        },
+        "sourceFamily": {
+          "$ref": "#/$defs/sourceFamily"
+        },
+        "targetId": {
+          "$ref": "#/$defs/targetId"
+        },
+        "priority": {
+          "enum": [
+            "T1",
+            "T2",
+            "ANALYTICAL"
+          ]
+        },
+        "state": {
+          "const": "SPEC_ONLY"
+        },
+        "externalExecution": {
+          "const": "NOT_RUN"
+        },
+        "certification": {
+          "const": "NOT_CERTIFIED"
+        }
+      }
+    },
+    "excludedTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "reason"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "polardb",
+            "polardb-x",
+            "tdsql"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    }
+  }
+}

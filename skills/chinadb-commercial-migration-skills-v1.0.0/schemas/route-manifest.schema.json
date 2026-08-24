@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MigrationRouteManifest",
+  "type": "object",
+  "required": [
+    "route_id",
+    "source",
+    "target",
+    "app_stacks",
+    "gates"
+  ],
+  "properties": {
+    "route_id": {
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/db"
+    },
+    "target": {
+      "$ref": "#/$defs/db"
+    },
+    "app_stacks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gates": {
+      "type": "object"
+    },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "db": {
+      "type": "object",
+      "required": [
+        "engine",
+        "version"
+      ],
+      "properties": {
+        "engine": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "compatibility_mode": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

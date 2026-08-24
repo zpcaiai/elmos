@@ -1,0 +1,22 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "OceanBase MySQL mode",
+  "discovery_required": true,
+  "preferred_sources": [
+    "MySQL",
+    "PostgreSQL-class via rewrite"
+  ],
+  "native_tool_hooks": [
+    "OMS",
+    "DBCAT"
+  ],
+  "procedural_policy": "mysql_mode_rules",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}

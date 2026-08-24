@@ -12,6 +12,7 @@ import {
   chinaDbSqlFailure,
   chinaDbSqlPrivateHeaders,
   fetchChinaDbSqlCapabilities,
+  type ChinaDbSqlContext,
 } from "../../../lib/server/chinadbSqlPreflight";
 import { withBusinessAudit } from "../../../lib/server/operationsProxy";
 
@@ -30,15 +31,15 @@ function blocked(error: unknown): NextResponse {
 }
 
 export async function POST(request: NextRequest) {
-  let context;
+  let context: ChinaDbSqlContext;
   try {
-    context = chinaDbSqlContext(request);
+    context = chinaDbSqlContext(request, "translation:execute");
   } catch (error) {
     return blocked(error);
   }
 
   try {
-    return await withBusinessAudit(
+    const response = await withBusinessAudit(
       request,
       {
         action: "DATABASE_SQL_PREFLIGHT_ASSESS",
@@ -52,16 +53,30 @@ export async function POST(request: NextRequest) {
             request,
             chinaDbSqlRequestLimitBytes,
             "CHINADB_SQL_REQUEST_TOO_LARGE",
+            true,
           );
           const preflightRequest = parseChinaDbSqlPreflightRequest(raw);
-          const capabilities = await fetchChinaDbSqlCapabilities(context);
-          const result = await assessChinaDbSql(context, preflightRequest, capabilities);
+          const capabilities = await fetchChinaDbSqlCapabilities(context, request.signal);
+          const result = await assessChinaDbSql(
+            context,
+            preflightRequest,
+            capabilities,
+            request.signal,
+          );
           return NextResponse.json(result, { headers: chinaDbSqlPrivateHeaders });
         } catch (error) {
           return blocked(error);
         }
       },
     );
+    if (!response.ok && response.headers.get("X-ELMOS-ChinaDB-Fail-Closed") !== "1") {
+      return blocked(new ChinaDbSqlPolicyError(
+        503,
+        "BUSINESS_AUDIT_COMPLETION_UNAVAILABLE",
+        "SQL 预检完成审计当前不可用。",
+      ));
+    }
+    return response;
   } catch {
     return blocked(new ChinaDbSqlPolicyError(
       503,

@@ -1,0 +1,79 @@
+source,target,priority,package_scope,release_condition
+Oracle,DM8,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,DM8,T1,planned_by_skills,requires exact version/mode certification
+PostgreSQL,DM8,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,DM8,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,DM8,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,DM8,T2,planned_by_skills,requires exact version/mode certification
+Oracle,KingbaseES,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,KingbaseES,T1,planned_by_skills,requires exact version/mode certification
+PostgreSQL,KingbaseES,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,KingbaseES,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,KingbaseES,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,KingbaseES,T2,planned_by_skills,requires exact version/mode certification
+Oracle,openGauss,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,openGauss,T1,planned_by_skills,requires exact version/mode certification
+PostgreSQL,openGauss,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,openGauss,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,openGauss,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,openGauss,T2,planned_by_skills,requires exact version/mode certification
+Oracle,TiDB,T2,planned_by_skills,requires exact version/mode certification
+SQL Server,TiDB,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,TiDB,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,TiDB,T1,planned_by_skills,requires exact version/mode certification
+DB2 LUW,TiDB,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,TiDB,T2,planned_by_skills,requires exact version/mode certification
+Oracle,GBase 8s,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,GBase 8s,T1,planned_by_skills,requires exact version/mode certification
+PostgreSQL,GBase 8s,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,GBase 8s,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,GBase 8s,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,GBase 8s,T2,planned_by_skills,requires exact version/mode certification
+Oracle,GBase 8c,T2,planned_by_skills,requires exact version/mode certification
+SQL Server,GBase 8c,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,GBase 8c,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,GBase 8c,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,GBase 8c,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,GBase 8c,T2,planned_by_skills,requires exact version/mode certification
+Oracle,GBase 8a,ANALYTICAL,planned_by_skills,requires exact version/mode certification
+SQL Server,GBase 8a,ANALYTICAL,planned_by_skills,requires exact version/mode certification
+PostgreSQL,GBase 8a,ANALYTICAL,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,GBase 8a,ANALYTICAL,planned_by_skills,requires exact version/mode certification
+DB2 LUW,GBase 8a,ANALYTICAL,planned_by_skills,requires exact version/mode certification
+Sybase ASE,GBase 8a,ANALYTICAL,planned_by_skills,requires exact version/mode certification
+Oracle,HighGo/HGDB,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,HighGo/HGDB,T1,planned_by_skills,requires exact version/mode certification
+PostgreSQL,HighGo/HGDB,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,HighGo/HGDB,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,HighGo/HGDB,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,HighGo/HGDB,T2,planned_by_skills,requires exact version/mode certification
+Oracle,OceanBase Oracle,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,OceanBase Oracle,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,OceanBase Oracle,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,OceanBase Oracle,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,OceanBase Oracle,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,OceanBase Oracle,T2,planned_by_skills,requires exact version/mode certification
+Oracle,OceanBase MySQL,T2,planned_by_skills,requires exact version/mode certification
+SQL Server,OceanBase MySQL,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,OceanBase MySQL,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,OceanBase MySQL,T1,planned_by_skills,requires exact version/mode certification
+DB2 LUW,OceanBase MySQL,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,OceanBase MySQL,T2,planned_by_skills,requires exact version/mode certification
+Oracle,GaussDB Oracle,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,GaussDB Oracle,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,GaussDB Oracle,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,GaussDB Oracle,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,GaussDB Oracle,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,GaussDB Oracle,T2,planned_by_skills,requires exact version/mode certification
+Oracle,GaussDB M,T2,planned_by_skills,requires exact version/mode certification
+SQL Server,GaussDB M,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,GaussDB M,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,GaussDB M,T1,planned_by_skills,requires exact version/mode certification
+DB2 LUW,GaussDB M,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,GaussDB M,T2,planned_by_skills,requires exact version/mode certification
+Oracle,GoldenDB,T1,planned_by_skills,requires exact version/mode certification
+SQL Server,GoldenDB,T2,planned_by_skills,requires exact version/mode certification
+PostgreSQL,GoldenDB,T2,planned_by_skills,requires exact version/mode certification
+MySQL/MariaDB,GoldenDB,T2,planned_by_skills,requires exact version/mode certification
+DB2 LUW,GoldenDB,T2,planned_by_skills,requires exact version/mode certification
+Sybase ASE,GoldenDB,T2,planned_by_skills,requires exact version/mode certification

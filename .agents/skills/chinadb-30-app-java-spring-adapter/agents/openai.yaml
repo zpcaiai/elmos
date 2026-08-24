@@ -1,0 +1,4 @@
+interface:
+  display_name: "ChinaDB 30 App Java Spring Adapter"
+  short_description: "Run this ChinaDB migration Skill with evidence controls"
+  default_prompt: "Use $chinadb-30-app-java-spring-adapter as a SPEC_ONLY ChinaDB migration contract; preserve exact route semantics and fail closed while real evidence is NOT_RUN."

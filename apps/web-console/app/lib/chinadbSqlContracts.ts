@@ -1,7 +1,8 @@
 export const chinaDbSqlRequestLimitBytes = 1_310_720;
 export const chinaDbSqlInputLimitBytes = 256 * 1024;
 export const chinaDbSqlParameterLimit = 256;
-export const chinaDbSqlResponseLimitBytes = 8 * 1024 * 1024;
+export const chinaDbSqlStatementLimit = 256;
+export const chinaDbSqlResponseLimitBytes = 4 * 1024 * 1024;
 
 export const chinaDbSqlTargetIds = [
   "dm8",
@@ -156,13 +157,18 @@ export type ChinaDbSqlPreflightResult = {
 };
 
 export class ChinaDbSqlPolicyError extends Error {
+  readonly status: number;
+  readonly errorCode: string;
+
   constructor(
-    readonly status: number,
-    readonly errorCode: string,
+    status: number,
+    errorCode: string,
     message = errorCode,
   ) {
     super(message);
     this.name = "ChinaDbSqlPolicyError";
+    this.status = status;
+    this.errorCode = errorCode;
   }
 }
 
@@ -231,10 +237,25 @@ function boundedText(
     || value.length > maximum
     || value.trim() !== value
     || /[\0\r\n]/.test(value)
+    || hasUnpairedSurrogate(value)
   ) {
     fail(status, code);
   }
   return value;
+}
+
+function hasUnpairedSurrogate(value: string): boolean {
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = value.charCodeAt(index + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) return true;
+      index += 1;
+    } else if (code >= 0xdc00 && code <= 0xdfff) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function digest(value: unknown, code: string, status = 502): string {
@@ -272,7 +293,7 @@ function exactToken(
   return token;
 }
 
-function exactLiteral<T extends string | number | boolean>(
+function exactLiteral<T extends string | number | boolean | null>(
   value: unknown,
   expected: T,
   code: string,
@@ -332,8 +353,8 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
       id,
       label: boundedText(item.label, 128, `CHINADB_SQL_TARGET_${index}_LABEL_INVALID`),
       adapterId,
-      versionRequirement: boundedText(item.versionRequirement, 500, "CHINADB_SQL_TARGET_REQUIREMENT_INVALID"),
-      compatibilityModeRequirement: boundedText(item.compatibilityModeRequirement, 500, "CHINADB_SQL_TARGET_REQUIREMENT_INVALID"),
+      versionRequirement: boundedText(item.versionRequirement, 256, "CHINADB_SQL_TARGET_REQUIREMENT_INVALID"),
+      compatibilityModeRequirement: boundedText(item.compatibilityModeRequirement, 256, "CHINADB_SQL_TARGET_REQUIREMENT_INVALID"),
       implementationStatus: exactLiteral(item.implementationStatus, "SPEC_ONLY", "CHINADB_SQL_TARGET_STATE_INVALID"),
       externalExecution: exactLiteral(item.externalExecution, "NOT_RUN", "CHINADB_SQL_TARGET_STATE_INVALID"),
       certification: exactLiteral(item.certification, "NOT_CERTIFIED", "CHINADB_SQL_TARGET_STATE_INVALID"),
@@ -399,7 +420,7 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
     return {
       id,
       label: boundedText(item.label, 128, "CHINADB_SQL_EXCLUSION_INVALID"),
-      reason: boundedText(item.reason, 1000, "CHINADB_SQL_EXCLUSION_INVALID"),
+      reason: boundedText(item.reason, 512, "CHINADB_SQL_EXCLUSION_INVALID"),
     };
   });
 
@@ -430,7 +451,7 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
       verifiedTargetRenderers: exactLiteral(boundaries.verifiedTargetRenderers, 0, "CHINADB_SQL_BOUNDARIES_INVALID"),
       productionDatabaseAccess: exactLiteral(boundaries.productionDatabaseAccess, false, "CHINADB_SQL_BOUNDARIES_INVALID"),
       targetSqlMayBeEmitted: exactLiteral(boundaries.targetSqlMayBeEmitted, false, "CHINADB_SQL_BOUNDARIES_INVALID"),
-      claim: boundedText(boundaries.claim, 1000, "CHINADB_SQL_BOUNDARIES_INVALID"),
+      claim: boundedText(boundaries.claim, 1024, "CHINADB_SQL_BOUNDARIES_INVALID"),
     },
   };
 }
@@ -459,7 +480,12 @@ export function parseChinaDbSqlPreflightRequest(value: unknown): ChinaDbSqlPrefl
   }
   const parsedSourceProfile = sourceProfile(root.sourceProfile);
   const parsedTargetId = targetId(root.targetId, "CHINADB_SQL_TARGET_ID_INVALID", 400);
-  if (typeof root.sql !== "string" || !root.sql.trim() || root.sql.includes("\0")) {
+  if (
+    typeof root.sql !== "string"
+    || !root.sql.trim()
+    || root.sql.includes("\0")
+    || hasUnpairedSurrogate(root.sql)
+  ) {
     fail(400, "CHINADB_SQL_INPUT_INVALID");
   }
   if (new TextEncoder().encode(root.sql).byteLength > chinaDbSqlInputLimitBytes) {
@@ -513,6 +539,40 @@ export function bindChinaDbSqlRequestToCapabilities(
 
 export function expectedChinaDbSqlRouteId(request: ChinaDbSqlPreflightRequest): string {
   return `${routeSlugBySourceProfile[request.sourceProfile]}--to--${request.targetId}`;
+}
+
+function assertAstBudget(root: unknown): void {
+  const stack: Array<{ value: unknown; depth: number }> = [{ value: root, depth: 0 }];
+  const encoder = new TextEncoder();
+  let nodes = 0;
+  let textBytes = 0;
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) break;
+    nodes += 1;
+    if (nodes > 50_000 || current.depth > 64) {
+      fail(502, "CHINADB_SQL_RESPONSE_AST_BUDGET_EXCEEDED");
+    }
+    if (typeof current.value === "string") {
+      if (hasUnpairedSurrogate(current.value)) {
+        fail(502, "CHINADB_SQL_RESPONSE_AST_INVALID");
+      }
+      textBytes += encoder.encode(current.value).byteLength;
+    } else if (Array.isArray(current.value)) {
+      current.value.forEach((value) => stack.push({ value, depth: current.depth + 1 }));
+    } else if (isRecord(current.value)) {
+      for (const [key, value] of Object.entries(current.value)) {
+        if (["__proto__", "prototype", "constructor"].includes(key)) {
+          fail(502, "CHINADB_SQL_RESPONSE_AST_INVALID");
+        }
+        textBytes += encoder.encode(key).byteLength;
+        stack.push({ value, depth: current.depth + 1 });
+      }
+    }
+    if (textBytes > 2 * 1024 * 1024) {
+      fail(502, "CHINADB_SQL_RESPONSE_AST_BUDGET_EXCEEDED");
+    }
+  }
 }
 
 export function parseChinaDbSqlPreflightResult(
@@ -574,7 +634,7 @@ export function parseChinaDbSqlPreflightResult(
   exactLiteral(target.adapterId, snapshotTarget.adapterId, "CHINADB_SQL_RESPONSE_ADAPTER_MISMATCH");
   exactLiteral(target.implementationStatus, "SPEC_ONLY", "CHINADB_SQL_RESPONSE_TARGET_STATE_INVALID");
 
-  if (!Array.isArray(root.statements) || root.statements.length > 4096) {
+  if (!Array.isArray(root.statements) || root.statements.length > chinaDbSqlStatementLimit) {
     fail(502, "CHINADB_SQL_RESPONSE_STATEMENTS_INVALID");
   }
   const statements = root.statements.map((entry, index): ChinaDbSqlStatement => {
@@ -587,7 +647,12 @@ export function parseChinaDbSqlPreflightResult(
     const validAst = (isRecord(item.sourceAst) && Object.keys(item.sourceAst).length > 0)
       || (Array.isArray(item.sourceAst) && item.sourceAst.length > 0);
     if (!validAst) fail(502, "CHINADB_SQL_RESPONSE_AST_INVALID");
-    if (!Array.isArray(item.obligations) || item.obligations.length < 1) {
+    assertAstBudget(item.sourceAst);
+    if (
+      !Array.isArray(item.obligations)
+      || item.obligations.length < 1
+      || item.obligations.length > 256
+    ) {
       fail(502, "CHINADB_SQL_RESPONSE_OBLIGATIONS_INVALID");
     }
     const obligations = item.obligations.map((obligation) => (
@@ -631,6 +696,9 @@ export function parseChinaDbSqlPreflightResult(
       message: boundedText(item.message, 2048, "CHINADB_SQL_RESPONSE_BLOCKER_MESSAGE_INVALID"),
     };
   });
+  if (!blockers.some((blocker) => blocker.severity === "ERROR")) {
+    fail(502, "CHINADB_SQL_RESPONSE_ERROR_BLOCKER_REQUIRED");
+  }
 
   const verification = record(root.verification, "CHINADB_SQL_RESPONSE_VERIFICATION_INVALID");
   exactKeys(verification, [

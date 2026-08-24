@@ -1,0 +1,4 @@
+interface:
+  display_name: "ChinaDB 61 Fixture Corpus and Mutation Tests"
+  short_description: "Run this ChinaDB migration Skill with evidence controls"
+  default_prompt: "Use $chinadb-61-fixture-corpus-and-mutation-tests as a SPEC_ONLY ChinaDB migration contract; preserve exact route semantics and fail closed while real evidence is NOT_RUN."

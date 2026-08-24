@@ -1,0 +1,4 @@
+interface:
+  display_name: "ChinaDB 01 Estate Inventory Assessment"
+  short_description: "Run this ChinaDB migration Skill with evidence controls"
+  default_prompt: "Use $chinadb-01-estate-inventory-assessment as a SPEC_ONLY ChinaDB migration contract; preserve exact route semantics and fail closed while real evidence is NOT_RUN."

@@ -75,21 +75,21 @@ services:
     expose: ["8101"]
     networks: [chinadb-preflight]
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/health', timeout=2).read()"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/readyz', timeout=2).read()"]
       interval: 10s
       timeout: 3s
       retries: 10
       start_period: 10s
     deploy:
       resources:
-        limits: { cpus: "1.0", memory: 512m }
+        limits: { cpus: "1.0", memory: 512m, pids: 64 }
   database-data-engine-worker:
     build: { context: ../.., dockerfile: engines/database-data-engine/Dockerfile }
     environment:
       ELMOS_DATABASE_DATA_PORT: "8089"
       ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED: "true"
       ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL: http://chinadb-sql-preflight:8101
-    ports: ["8089:8089"]
+    ports: ["127.0.0.1:8089:8089"]
     networks: [default, chinadb-preflight]
     depends_on:
       chinadb-sql-preflight: { condition: service_healthy }

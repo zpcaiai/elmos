@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RepairPlan",
+  "type": "object",
+  "required": [
+    "repair_id",
+    "trigger_evidence",
+    "patches",
+    "verification_plan",
+    "risk"
+  ],
+  "properties": {
+    "repair_id": {
+      "type": "string"
+    },
+    "trigger_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "patches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "patch_kind"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "patch_kind": {
+            "enum": [
+              "sql",
+              "ddl",
+              "pl",
+              "application",
+              "config",
+              "test"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "verification_plan": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "requires_human_approval": {
+      "type": "boolean"
+    }
+  }
+}

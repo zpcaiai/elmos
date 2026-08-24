@@ -1,0 +1,20 @@
+{
+  "baseline_as_of": "2026-08-13",
+  "status": "implementation-planning baseline, not runtime proof",
+  "target": "GaussDB Oracle-compatible",
+  "discovery_required": true,
+  "preferred_sources": [
+    "Oracle"
+  ],
+  "native_tool_hooks": [
+    "UGO"
+  ],
+  "procedural_policy": "ugo_hints_plus_independent_verification",
+  "strategy_values": [
+    "NATIVE",
+    "REWRITE",
+    "LIFT_TO_APP",
+    "EMULATE_WITH_APPROVAL",
+    "UNSUPPORTED"
+  ]
+}
