@@ -1,0 +1,126 @@
+{
+  "project_id": "demo-iot-realtime",
+  "tenant_id": "tenant-demo-c",
+  "business_goal": "接入工厂设备遥测，秒级检测异常并保留两年历史，支持设备状态 API、实时大屏和根因分析。",
+  "project_types": [
+    "iot-timeseries",
+    "realtime-analytics",
+    "observability"
+  ],
+  "sources": [
+    {
+      "id": "opcua-gateways",
+      "kind": "industrial-gateway",
+      "technology": "OPC UA",
+      "estimated_volume_gb": null,
+      "change_mode": "stream",
+      "owner": "ot"
+    },
+    {
+      "id": "mqtt-brokers",
+      "kind": "event-stream",
+      "technology": "MQTT",
+      "estimated_volume_gb": null,
+      "change_mode": "stream",
+      "owner": "iot"
+    },
+    {
+      "id": "asset-master",
+      "kind": "relational-database",
+      "technology": "PostgreSQL",
+      "estimated_volume_gb": 30,
+      "change_mode": "cdc",
+      "owner": "maintenance"
+    }
+  ],
+  "consumers": [
+    {
+      "id": "alarm-engine",
+      "kind": "stream-alerting",
+      "freshness_ms": 1000,
+      "query_pattern": "event-time rules and windows",
+      "owner": "sre"
+    },
+    {
+      "id": "device-api",
+      "kind": "online-api",
+      "freshness_ms": 2000,
+      "query_pattern": "latest state by site and device",
+      "owner": "operations"
+    },
+    {
+      "id": "plant-dashboard",
+      "kind": "realtime-dashboard",
+      "freshness_ms": 3000,
+      "query_pattern": "time bucket aggregation",
+      "owner": "management"
+    },
+    {
+      "id": "root-cause",
+      "kind": "analytical-query",
+      "freshness_ms": 60000,
+      "query_pattern": "time range scans and correlation",
+      "owner": "engineering"
+    }
+  ],
+  "data_characteristics": {
+    "volume_tb": 18.0,
+    "growth_tb_per_month": 3.5,
+    "peak_events_per_second": 260000,
+    "average_event_bytes": 420,
+    "variety": [
+      "structured",
+      "semi-structured",
+      "time-series"
+    ],
+    "retention_days": 730,
+    "late_data_max_seconds": 300,
+    "skew_risk": "high"
+  },
+  "slo": {
+    "p95_read_ms": 10,
+    "p95_write_ms": 50,
+    "freshness_ms": 1000,
+    "availability_percent": 99.99,
+    "rpo_seconds": 10,
+    "rto_seconds": 300
+  },
+  "consistency": {
+    "model": "mixed",
+    "transactions": "single-record",
+    "ordering_scope": "site_id + device_id",
+    "delivery_semantics": "at-least-once"
+  },
+  "security": {
+    "classification": [
+      "industrial-confidential"
+    ],
+    "contains_pii": false,
+    "data_residency": [
+      "CN"
+    ],
+    "tenant_isolation": "database-per-tenant",
+    "audit_required": true
+  },
+  "constraints": {
+    "deployment": [
+      "edge",
+      "private-cloud"
+    ],
+    "budget_tier": "high",
+    "operations_maturity": "high",
+    "preferred_open_source": true,
+    "must_have": [
+      "open-source",
+      "on-prem"
+    ],
+    "forbidden": []
+  },
+  "assumptions": [
+    {
+      "statement": "边缘网关可持久缓冲断网期间的数据并保持每设备顺序。",
+      "confidence": 0.68,
+      "validation": "运行 24 小时断网与重连回放测试。"
+    }
+  ]
+}

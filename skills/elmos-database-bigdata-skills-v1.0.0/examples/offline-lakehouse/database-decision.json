@@ -1,0 +1,269 @@
+{
+  "decision_id": "database-decision:demo-offline-lakehouse:1.0.0",
+  "selector_version": "1.0.0",
+  "project_id": "demo-offline-lakehouse",
+  "roles": [
+    {
+      "role": "lakehouse",
+      "selected": [
+        "apache_iceberg"
+      ],
+      "alternatives": [
+        "delta_lake",
+        "apache_hudi"
+      ],
+      "rationale": [
+        "apache_iceberg has the highest seed score (4.54/5) after hard constraints and declared adjustments.",
+        "Selection is provisional until representative benchmark, TCO, recovery and security evidence pass."
+      ],
+      "constraints": [
+        "open-source",
+        "on-prem",
+        "strict-reconciliation",
+        "regulatory-batch-baseline",
+        "data-fabric"
+      ],
+      "top_candidates": [
+        {
+          "technology": "apache_iceberg",
+          "name": "Apache Iceberg",
+          "score_0_to_5": 4.54,
+          "components_0_to_5": {
+            "lakehouse": 5.0,
+            "analytical_scan": 5.0,
+            "federation": 5.0,
+            "write_throughput": 4.0,
+            "transactions": 4.0,
+            "operational_simplicity": 2.0,
+            "cost_efficiency": 5.0
+          },
+          "adjustments": [
+            "open-source preference bonus: +0.05",
+            "unverified adapter penalty: -0.15"
+          ],
+          "adapter_status": "catalog-only",
+          "best_for": [
+            "open lakehouse",
+            "schema/partition evolution",
+            "multi-engine reads"
+          ],
+          "avoid_for": [
+            "sub-millisecond serving",
+            "small OLTP"
+          ],
+          "official_evidence": "https://iceberg.apache.org/docs/latest/"
+        },
+        {
+          "technology": "delta_lake",
+          "name": "Delta Lake",
+          "score_0_to_5": 4.41,
+          "components_0_to_5": {
+            "lakehouse": 5.0,
+            "analytical_scan": 5.0,
+            "federation": 4.0,
+            "write_throughput": 4.0,
+            "transactions": 5.0,
+            "operational_simplicity": 2.0,
+            "cost_efficiency": 4.0
+          },
+          "adjustments": [
+            "open-source preference bonus: +0.05",
+            "unverified adapter penalty: -0.15"
+          ],
+          "adapter_status": "catalog-only",
+          "best_for": [
+            "Spark-centric lakehouse",
+            "ACID tables",
+            "batch/stream tables"
+          ],
+          "avoid_for": [
+            "low-latency serving",
+            "non-compatible engines without validation"
+          ],
+          "official_evidence": "https://docs.delta.io/"
+        },
+        {
+          "technology": "apache_hudi",
+          "name": "Apache Hudi",
+          "score_0_to_5": 4.35,
+          "components_0_to_5": {
+            "lakehouse": 5.0,
+            "analytical_scan": 5.0,
+            "federation": 4.0,
+            "write_throughput": 5.0,
+            "transactions": 4.0,
+            "operational_simplicity": 1.0,
+            "cost_efficiency": 4.0
+          },
+          "adjustments": [
+            "open-source preference bonus: +0.05",
+            "unverified adapter penalty: -0.15"
+          ],
+          "adapter_status": "catalog-only",
+          "best_for": [
+            "incremental lakehouse",
+            "upsert/change streams"
+          ],
+          "avoid_for": [
+            "simple append-only lake when operational simplicity dominates"
+          ],
+          "official_evidence": "https://hudi.apache.org/docs/"
+        }
+      ],
+      "candidate_count": 3
+    },
+    {
+      "role": "batch-processing",
+      "selected": [
+        "apache_spark"
+      ],
+      "alternatives": [
+        "apache_flink"
+      ],
+      "rationale": [
+        "apache_spark has the highest seed score (4.2/5) after hard constraints and declared adjustments.",
+        "Selection is provisional until representative benchmark, TCO, recovery and security evidence pass."
+      ],
+      "constraints": [
+        "open-source",
+        "on-prem",
+        "strict-reconciliation",
+        "regulatory-batch-baseline",
+        "data-fabric"
+      ],
+      "top_candidates": [
+        {
+          "technology": "apache_spark",
+          "name": "Apache Spark",
+          "score_0_to_5": 4.2,
+          "components_0_to_5": {
+            "analytical_scan": 5.0,
+            "horizontal_scale": 5.0,
+            "lakehouse": 5.0,
+            "write_throughput": 4.0,
+            "operational_simplicity": 1.0,
+            "cost_efficiency": 4.0,
+            "ecosystem": 3.0
+          },
+          "adjustments": [
+            "open-source preference bonus: +0.05",
+            "unverified adapter penalty: -0.15"
+          ],
+          "adapter_status": "catalog-only",
+          "best_for": [
+            "large-scale batch",
+            "SQL/dataframes",
+            "ML",
+            "micro-batch streaming"
+          ],
+          "avoid_for": [
+            "ultra-low-latency continuous processing without validation"
+          ],
+          "official_evidence": "https://spark.apache.org/docs/latest/"
+        },
+        {
+          "technology": "apache_flink",
+          "name": "Apache Flink",
+          "score_0_to_5": 3.85,
+          "components_0_to_5": {
+            "analytical_scan": 4.0,
+            "horizontal_scale": 5.0,
+            "lakehouse": 4.0,
+            "write_throughput": 5.0,
+            "operational_simplicity": 1.0,
+            "cost_efficiency": 4.0,
+            "ecosystem": 3.0
+          },
+          "adjustments": [
+            "open-source preference bonus: +0.05",
+            "unverified adapter penalty: -0.15"
+          ],
+          "adapter_status": "catalog-only",
+          "best_for": [
+            "stateful event-time streaming",
+            "unified bounded/unbounded processing"
+          ],
+          "avoid_for": [
+            "persistent serving database"
+          ],
+          "official_evidence": "https://nightlies.apache.org/flink/flink-docs-stable/"
+        }
+      ],
+      "candidate_count": 2
+    },
+    {
+      "role": "federated-query",
+      "selected": [
+        "trino"
+      ],
+      "alternatives": [],
+      "rationale": [
+        "trino has the highest seed score (4.42/5) after hard constraints and declared adjustments.",
+        "Selection is provisional until representative benchmark, TCO, recovery and security evidence pass."
+      ],
+      "constraints": [
+        "open-source",
+        "on-prem",
+        "strict-reconciliation",
+        "regulatory-batch-baseline",
+        "data-fabric"
+      ],
+      "top_candidates": [
+        {
+          "technology": "trino",
+          "name": "Trino",
+          "score_0_to_5": 4.42,
+          "components_0_to_5": {
+            "federation": 5.0,
+            "analytical_scan": 5.0,
+            "horizontal_scale": 5.0,
+            "operational_simplicity": 2.0,
+            "cost_efficiency": 4.0
+          },
+          "adjustments": [
+            "open-source preference bonus: +0.05",
+            "unverified adapter penalty: -0.15"
+          ],
+          "adapter_status": "catalog-only",
+          "best_for": [
+            "distributed SQL across heterogeneous sources",
+            "lakehouse interactive query"
+          ],
+          "avoid_for": [
+            "OLTP storage",
+            "unbounded source scans without pushdown"
+          ],
+          "official_evidence": "https://trino.io/docs/current/"
+        }
+      ],
+      "candidate_count": 1
+    }
+  ],
+  "rejected": [],
+  "confidence": 0.53,
+  "evidence": [
+    {
+      "kind": "capability-registry",
+      "reference": "catalog/database-capabilities.json#2026-08-19.1",
+      "as_of": "2026-08-19"
+    },
+    {
+      "kind": "project-requirement",
+      "reference": "project_id:demo-offline-lakehouse",
+      "as_of": "2026-08-19"
+    }
+  ],
+  "sensitivity": {
+    "status": "not-run-by-reference-selector",
+    "required_next": "Run representative benchmark and weight perturbation before production certification."
+  },
+  "assumptions": [
+    "对象存储支持所选表格式所需的一致性语义。"
+  ],
+  "warnings": [
+    "Scores are heuristic seeds, not production benchmarks.",
+    "A selected portfolio still needs a complexity penalty review, representative benchmark, cost model and ADR.",
+    "A technology appearing in the catalog does not prove an executable provider integration.",
+    "Derived stores require one authoritative source, idempotent synchronization, deletion propagation and rebuild procedures."
+  ]
+}

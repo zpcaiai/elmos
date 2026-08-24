@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Data Quality Observability"
+  short_description: "Run this database and Big Data Skill with evidence controls"
+  default_prompt: "Use $elmos-data-quality-observability with the pinned ELMOS database and Big Data contracts; keep catalog and runtime evidence distinct and fail closed on unknowns."

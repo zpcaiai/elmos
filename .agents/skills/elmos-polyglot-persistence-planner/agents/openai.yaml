@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Polyglot Persistence Planner"
+  short_description: "Run this database and Big Data Skill with evidence controls"
+  default_prompt: "Use $elmos-polyglot-persistence-planner with the pinned ELMOS database and Big Data contracts; keep catalog and runtime evidence distinct and fail closed on unknowns."

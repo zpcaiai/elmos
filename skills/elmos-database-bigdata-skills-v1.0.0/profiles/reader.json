@@ -1,0 +1,11 @@
+{
+  "profile": "reader",
+  "version": "1.0.0",
+  "skills": [
+    "elmos-data-requirement-intake",
+    "elmos-workload-profiler",
+    "elmos-database-capability-registry",
+    "elmos-metadata-catalog-lineage"
+  ],
+  "dependency_policy": "installer expands transitive dependencies"
+}

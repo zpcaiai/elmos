@@ -1,0 +1,210 @@
+{
+  "catalog_version": "2026-08-19.1",
+  "status_notice": "Entries are generation blueprints. They do not prove provider integration until repository-specific tests pass.",
+  "adapters": [
+    {
+      "role": "ingestion-cdc",
+      "options": [
+        "Debezium",
+        "Flink CDC",
+        "Kafka Connect",
+        "Canal"
+      ],
+      "required_checks": [
+        "source version",
+        "privileges",
+        "snapshot semantics",
+        "offset recovery",
+        "schema changes"
+      ]
+    },
+    {
+      "role": "batch-ingestion",
+      "options": [
+        "DataX",
+        "Apache SeaTunnel",
+        "Apache NiFi",
+        "Airbyte-compatible adapter"
+      ],
+      "required_checks": [
+        "incremental key",
+        "rate limits",
+        "checkpoint",
+        "data types",
+        "deletes"
+      ]
+    },
+    {
+      "role": "event-backbone",
+      "options": [
+        "Apache Kafka",
+        "Apache Pulsar",
+        "Redpanda-compatible adapter"
+      ],
+      "required_checks": [
+        "retention",
+        "partitions",
+        "ordering",
+        "transactions",
+        "schema registry"
+      ]
+    },
+    {
+      "role": "stream-processing",
+      "options": [
+        "Apache Flink",
+        "Kafka Streams",
+        "Spark Structured Streaming",
+        "Apache Beam"
+      ],
+      "required_checks": [
+        "event time",
+        "state",
+        "checkpoint",
+        "sink semantics",
+        "upgrade"
+      ]
+    },
+    {
+      "role": "batch-processing",
+      "options": [
+        "Apache Spark",
+        "Flink Batch",
+        "Apache Beam",
+        "dbt/SQL"
+      ],
+      "required_checks": [
+        "incremental",
+        "atomic commit",
+        "skew",
+        "backfill",
+        "lineage"
+      ]
+    },
+    {
+      "role": "lakehouse-table",
+      "options": [
+        "Apache Iceberg",
+        "Delta Lake",
+        "Apache Hudi"
+      ],
+      "required_checks": [
+        "engine compatibility",
+        "catalog",
+        "concurrency",
+        "schema evolution",
+        "maintenance"
+      ]
+    },
+    {
+      "role": "query-engine",
+      "options": [
+        "Trino",
+        "Spark SQL",
+        "DuckDB for local"
+      ],
+      "required_checks": [
+        "connector pushdown",
+        "resource groups",
+        "security",
+        "fault tolerance"
+      ]
+    },
+    {
+      "role": "olap-serving",
+      "options": [
+        "ClickHouse",
+        "Apache Doris",
+        "StarRocks",
+        "Apache Druid",
+        "Apache Pinot",
+        "cloud warehouse adapter"
+      ],
+      "required_checks": [
+        "ingest/query concurrency",
+        "updates",
+        "materialized views",
+        "tenant isolation",
+        "benchmark"
+      ]
+    },
+    {
+      "role": "orchestration",
+      "options": [
+        "Apache Airflow",
+        "Dagster",
+        "Temporal for Elmos control plane"
+      ],
+      "required_checks": [
+        "idempotency",
+        "backfill",
+        "event trigger",
+        "resumability",
+        "external task handling"
+      ]
+    },
+    {
+      "role": "catalog-lineage",
+      "options": [
+        "OpenLineage",
+        "OpenMetadata",
+        "DataHub",
+        "Apache Atlas"
+      ],
+      "required_checks": [
+        "entity naming",
+        "column lineage",
+        "permissions",
+        "coverage",
+        "version compatibility"
+      ]
+    },
+    {
+      "role": "quality",
+      "options": [
+        "dbt tests",
+        "Great Expectations-compatible adapter",
+        "Soda-compatible adapter",
+        "OpenMetadata quality"
+      ],
+      "required_checks": [
+        "freshness",
+        "volume",
+        "schema",
+        "business invariants",
+        "alert routing"
+      ]
+    },
+    {
+      "role": "feature-store",
+      "options": [
+        "Feast",
+        "custom compatible interface"
+      ],
+      "required_checks": [
+        "point-in-time correctness",
+        "offline/online parity",
+        "TTL",
+        "registry",
+        "materialization"
+      ]
+    },
+    {
+      "role": "visualization",
+      "options": [
+        "ECharts",
+        "Apache Superset",
+        "Grafana",
+        "Tableau adapter",
+        "Power BI adapter"
+      ],
+      "required_checks": [
+        "metric semantics",
+        "freshness",
+        "permissions",
+        "query load",
+        "export control"
+      ]
+    }
+  ]
+}

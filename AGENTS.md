@@ -10,6 +10,15 @@ For framework migration, upgrade, modernization, target-profile, or coexistence 
 
 For database-engine, SQL, routine, ETL/ELT, warehouse, data-quality, lineage, reconciliation, or cutover work, use the applicable `$b31-*` skill. Treat every pack as directional and exact. Use real source and target engines, typed canonical DB IR, safe disposable data, detail-level reconciliation, independent holdout workloads, and the Batch 31 gate. Never certify regex-only SQL conversion, lossy money/type mappings, weakened constraints/security, or production writes without an approved workflow.
 
+## Database Intelligence and Big Data Skill package
+
+- The trusted source archive is `skills/subskills/elmos-database-bigdata-skills-v1.0.0.zip`; the immutable extracted source is `skills/elmos-database-bigdata-skills-v1.0.0/`. Its pinned digest proves byte identity only: the source contains no license, signature, SBOM, or provenance attestation.
+- Start broad repository work with `$elmos-bigdata-project-orchestrator`, then invoke the narrowest exact database-intelligence, Big Data core, or template Skill. Preserve all 46 exact names, 10 profiles, 554 task IDs, and the manifest-owned DAG.
+- All 29 technology records are `catalog-only`. The package supplies no per-Skill runtime handlers, provider adapters, deployment assets, or generated-project templates; installed Skill implementation state therefore remains `DECLARED`.
+- The three source reference tools may be reported as bounded `LOCAL_EXECUTED_SELF_ATTESTED` helpers only with the digest-bound local qualification receipt and raw outputs. That package-level status covers their three synthetic examples only, does not implement any whole Skill, and does not constitute independent verification; provider/database/stream/lakehouse runtime and external evidence remain `NOT_RUN`, and production certification remains `NOT_CERTIFIED`.
+- Treat source package executables as untrusted input. The repository importer must not execute its installer, validator, or manifest builder; it independently validates the pinned ZIP, extracted bytes, checksums, schemas, DAG, normalized interfaces, provenance, and drift.
+- Database migrations and data-platform routes remain subject to the exact Batch 31 implementation contract and conservative gate. Run `make database-bigdata-skills` for repository integration validation.
+
 
 # Batch 32 client modernization skills
 

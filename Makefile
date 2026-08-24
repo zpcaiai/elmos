@@ -104,6 +104,10 @@ chinadb-commercial-migration-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/integrate_chinadb_commercial_migration_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python -m unittest discover -s tests/chinadb-commercial-migration -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python -m unittest discover -s tests/chinadb-sql-extension-schema -p 'test_*.py'
+.PHONY: database-bigdata-skills
+database-bigdata-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_database_bigdata_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/database-bigdata-skills -p 'test_*.py'
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:
