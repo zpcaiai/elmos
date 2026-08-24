@@ -214,6 +214,36 @@ BEGIN
   );
 END;
 $$;
+
+-- V72 keeps snapshot materialization leases and the global reconciliation queue private.
+-- The runtime role receives only the six fenced SECURITY DEFINER entry points, and a
+-- partially migrated database fails closed instead of silently omitting a grant.
+DO $$
+DECLARE
+  function_signature text;
+  required_functions text[] := ARRAY[
+    'public.elmos_acquire_snapshot_materialization_lease(varchar,varchar,varchar,varchar,varchar,integer)',
+    'public.elmos_renew_snapshot_materialization_lease(varchar,varchar,varchar,varchar,varchar,bigint,integer)',
+    'public.elmos_require_active_snapshot_materialization_lease(varchar,varchar,varchar,varchar,varchar,bigint)',
+    'public.elmos_release_snapshot_materialization_lease(varchar,varchar,varchar,varchar,varchar,bigint)',
+    'public.elmos_claim_snapshot_reconciliation_work(varchar,integer,integer)',
+    'public.elmos_complete_snapshot_reconciliation_work(varchar,varchar,bigint,boolean,integer)'
+  ];
+BEGIN
+  FOREACH function_signature IN ARRAY required_functions
+  LOOP
+    IF to_regprocedure(function_signature) IS NULL THEN
+      RAISE EXCEPTION 'required snapshot lease/scheduler function is missing: %',
+        function_signature;
+    END IF;
+    EXECUTE format(
+      'GRANT EXECUTE ON FUNCTION %s TO %I',
+      function_signature,
+      current_setting('elmos.runtime_role')
+    );
+  END LOOP;
+END;
+$$;
 COMMIT;
 SQL
 

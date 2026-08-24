@@ -53,13 +53,14 @@ Python ≥ 3.10，无运行时网络调用。核心估算与持久执行使用�
 | PostgreSQL 后端 | `postgres.py` | 同一份契约在包内 PostgreSQL 目标 schema 上的实现 |
 | 参考 HTTP 服务器 | `server.py` | 让 `openapi/` 的重连与幂等契约能被 curl 真的验证 |
 | 双签证据来源 | `provenance.py` | read-once 字节快照、Ed25519 executor/verifier 双签、外置信任根与撤销/过期校验 |
+| 外部信任机构 | `external_trust.py` | digest-pin authority root、签名 epoch/ETag snapshot、在线/缓存撤销状态与回滚拒绝 |
 
 ## 目录
 
 ```text
 src/elmos_execution_intelligence/   实现
 config/                             估算默认值、人工基线、价格模板、分解模型、能力矩阵
-schemas/                            25 个 JSON Schema（全部被执行校验）
+schemas/                            28 个 JSON Schema（本地产物与外部信任契约均有正式 Schema）
 sql/                                PostgreSQL 持久执行表结构（生产目标）
 openapi/                            异步任务 API 与 Last-Event-ID 重连契约
 references/                         架构、状态机、失败分类、持久执行、估算方法、验收标准
@@ -165,6 +166,35 @@ PostgreSQL + Temporal 后仍需重新验证相同契约，不能从 SQLite harne
 
   trust-store schema 只存 Ed25519 公钥和治理身份，不存私钥。私钥生成、保管与签署在外部 KMS/HSM 或
   受管签名流程完成；本包只定义 canonical JSON 签名 payload 并验签。
+- production-facing 模式不把 trust store 内的 `revoked` 布尔值当作实时吊销机构。调用者还必须提供
+  digest-pin 的 `evidence-trust-authority-root`，并从根中钉住的 URL 获取（或用 SHA-256 精确固定后重放）
+  `external-evidence-trust-snapshot`。该 snapshot 由独立 Ed25519 authority 签名，绑定 issuer/key-id、
+  单调 epoch、强 ETag、有效期、canonical trust-store digest，以及每个 key 的 `GOOD/REVOKED/UNKNOWN`
+  状态、`checked_at` 和 `next_update`。`UNKNOWN`、超时且无新鲜缓存、过期、签名错误、ETag/digest 不符、
+  epoch 回退/同 epoch 不同字节、authority 与 executor/verifier authority 重合都会 BLOCK。
+- `TRUST_EPOCH_STATE` 是外部 authority 模式的必需输入；没有可持久化的单调高水位就不能证明没有回滚，
+  因而不能以「当前 snapshot 尚未过期」代替 epoch 防回放。authority root、snapshot、cache 与 epoch state
+  必须是四个不同路径，且全部位于 evidence 目录外；epoch state 所在目录及锁/状态文件不得允许 group/
+  world 写入。
+- 在线模式只接受 HTTPS（回放测试允许 loopback HTTP），拒绝 URL credentials/query/fragment 和重定向。
+  bearer token 只能通过环境变量名传入，留在进程内存，不写入 snapshot、缓存、epoch state、报告或命令行。
+  缓存只保存已签名的公开 snapshot 字节；epoch state 只保存 issuer/key-id、epoch、ETag 和 digest，并在
+  文件锁下原子更新。同一台主机的可重放集成调用示例：
+
+  ```bash
+  make certify OUT=/governed/evidence \
+    TRUST_AUTHORITY_ROOT=/operator-config/ei-authority-root.json \
+    TRUST_AUTHORITY_ROOT_SHA256=<root-sha256> \
+    TRUST_AUTHORITY_SNAPSHOT=/governed/replay/external-evidence-trust-snapshot.json \
+    TRUST_SNAPSHOT_SHA256=<snapshot-sha256> \
+    TRUST_SNAPSHOT_ETAG='"epoch-42"' \
+    TRUST_EPOCH_STATE=/operator-state/ei-trust-epoch.json
+  ```
+
+  将 `TRUST_AUTHORITY_SNAPSHOT` 换成根文件精确声明的 `TRUST_AUTHORITY_URL`，再配置
+  `TRUST_AUTHORITY_CACHE`，即可执行 200/strong-ETag、304 revalidation 和有效期内 outage fallback。
+  这仍只是本包可重放的 integration harness；仓库没有真实外部 authority、根轮换仪式、在线吊销 SLA
+  或独立运营证据，因此当前 EI 仍为 `BLOCK / NOT_CERTIFIED`。
 - `evidence-manifest.json` 已升级为 `2.0.0`，记录用于决策的 read-once snapshot digest、完整 Schema
   校验结果、每条引用是否受 provenance 约束、签署方与无效门禁。readiness、manifest 与嵌入式
   provenance 输出 Schema 都拒绝未声明字段。旧 manifest 可留作历史记录，但不能作为新 certifier 的

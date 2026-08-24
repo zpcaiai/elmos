@@ -10,6 +10,7 @@ import io.elmos.scm.GitHubInstallationTokenBroker;
 import io.elmos.snapshot.DeterministicSnapshotArchiver;
 import io.elmos.snapshot.SnapshotArchiveService;
 import io.elmos.snapshot.SnapshotCaptureService;
+import io.elmos.snapshot.SnapshotMaterializationLeaseCoordinator;
 import io.elmos.snapshot.SnapshotMaterializationService;
 import io.elmos.snapshot.SnapshotPorts;
 import io.elmos.snapshot.SnapshotProvisionalRootReconciler;
@@ -248,13 +249,14 @@ class GithubSnapshotConfiguration {
     @Bean SnapshotMaterializationService snapshotMaterializationService(
             SnapshotPorts.ArtifactReader artifacts,
             ObjectMapper mapper,
+            SnapshotMaterializationLeaseCoordinator leases,
             @Value("${elmos.snapshot.materialized-root:}") String materializedRoot
     ) {
         if (materializedRoot.isBlank()) {
             throw new IllegalStateException("snapshot materialized root is required");
         }
         return new SnapshotMaterializationService(
-                Path.of(materializedRoot), artifacts, mapper);
+                Path.of(materializedRoot), artifacts, mapper, leases);
     }
 
     private static char[] readOwnerOnlySecret(Path rawPath) {

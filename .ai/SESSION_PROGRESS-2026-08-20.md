@@ -185,10 +185,13 @@ provider 验证仍为 `NOT_RUN`，不能从本地单进程测试推导。
 - tenant envelope encryption 接入 production-facing KMS provider 端口，启动时缺 provider 即拒绝；
   本地测试只使用受控 provider，**没有生产 KMS/HSM、密钥托管或轮换证据**。
 - ActionCache 持久索引保存 detached signature bytes，并在每次命中重新执行当前 key/trust/revocation
-  判定；`CachedActionExecutor` 已成为生产调用切片。真实外部 trust/revocation authority 仍缺失。
+  判定；控制面新增显式 opt-in 绑定，只有 current-trust provider、authorizer、同步 runner 各且仅各
+  一个时才创建 `CachedActionExecutor`，否则启动失败。仓库仍没有真实生产执行服务适配器，外部
+  trust/revocation authority 也仍缺失。
 - snapshot archive/root release 与 crash-stale PENDING reconciliation 已接入；DB lifecycle 为
-  append-preserving，只有 `AVAILABLE -> ARCHIVED`。读取 lease 与并发 archive/GC 的生产协调、
-  全租户 scheduler/reconciler 仍未证明。
+  append-preserving，只有 `AVAILABLE -> ARCHIVED`。V72 新增 materialization fenced lease、心跳、
+  失效接管和有界 tenant-fair `SKIP LOCKED` reconciliation queue；生产部署中的稳定 holder、全局
+  scheduler 选举、所有 archive/GC worker 协调仍未证明。
 - snapshot capture 的 organization/repository/installation 来自受 RLS 保护的数据库绑定；Git clone
   限制为精确 credential-free HTTPS origin/path 并禁止实例级 redirect。
 - V70 对历史 SCM/snapshot tenant 冲突和非法 snapshot status 先 fail closed，再建立复合 FK、CHECK
@@ -196,8 +199,9 @@ provider 验证仍为 `NOT_RUN`，不能从本地单进程测试推导。
 - V71 为已验签 GitHub webhook 建立无直接 runtime table 权限的 installation/repository tenant route，
   delivery/outbox 显式写 tenant；未知、失活、payload 不同的 duplicate 与跨租户资源组合均拒绝。
 
-当前实测：Java focused **197/197 PASS**（34 个测试类）；真实 PostgreSQL 17
-上 CAS 10/10、snapshot/RLS/reconciliation/webhook 5/5，Flyway **71/71**；外部 MinIO 的两个独立
+当前实测：既有 Java focused **197/197 PASS**（34 个测试类）；本轮新增 CAS/KMS/lease/scheduler/
+caller focused **34/34 PASS**。真实 PostgreSQL 17.5 上 CAS 10/10、snapshot materialization
+lease/scheduler 3/3，Flyway **72/72**；外部 MinIO 的两个独立
 JVM（PID 35250/35273）完成同 digest 读回。该 MinIO 证据仍是同一宿主机，明确标记
 `SINGLE_HOST_EXTERNAL_PROCESS / LOCAL_EXECUTED_SELF_ATTESTED / NOT_CERTIFIED`。
 
@@ -205,10 +209,15 @@ EI 当前源码：`299 passed, 11 skipped`；把生产 schema 应用到独立 Po
 conformance `22 passed, 0 skipped`；Ruff 与 strict MyPy（28 个源码文件）通过；安装 wheel 在源码
 目录外读回 25 schemas / 7 config / 2 templates。有效但仅 3 个样本且无双签 provenance 的受控
 负例使真实入口返回 `BLOCK`/make exit 2；空 evidence 返回 `NOT_CERTIFIED`，没有把未执行伪装成
-失败或通过。EI 运营口径继续 `BLOCK / NOT_CERTIFIED`。
+失败或通过。新增外部 trust/revocation adapter 的 focused pytest **48/48**、Ruff 与 strict MyPy
+（29 个源码文件）通过；没有真实独立 authority endpoint，所以 EI 运营口径继续
+`BLOCK / NOT_CERTIFIED`。
 
-仍需保留的外部/生产阻塞：真实多主机共享 tier、生产 KMS、独立 trust/revocation authority、
-snapshot 读 lease 与 GC 原子协调、全租户 reconciliation 调度、已有 V9 前 audit row 的受控升级
-bootstrap、真实 GitHub App/webhook、ArkUI/Harmony 设备运行。`hdc` 当前不可用，设备证据为
-`NOT_RUN`。因此 CAS 仍严格是 `SINGLE_HOST / NOT_CERTIFIED`，EI 仍是
+GitHub App 证据 harness 的 17 个 unittest 与 Ruff 通过，但没有 App 私钥、真实 delivery/redelivery
+或生产 RLS 数据库；Kubernetes 多主机 probe 的 bash/static 与缺配置负例通过，但没有可用的双节点
+上下文。仍需保留的外部/生产阻塞：真实多主机共享 tier、生产 KMS/HSM、独立
+trust/revocation authority、生产 snapshot holder/scheduler/archive-GC 协调、已有 V9 前 audit row 的
+受控升级 bootstrap、真实 GitHub App/webhook、ArkUI/Harmony 设备运行。`hdc` 3.2.0b 已发现，
+但 `hdc list targets -v` 返回 `[Empty]`，设备证据为 `NOT_RUN`。因此 CAS 仍严格是
+`SINGLE_HOST / NOT_CERTIFIED`，EI 仍是
 `BLOCK / NOT_CERTIFIED`。

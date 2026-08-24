@@ -1113,7 +1113,7 @@ EI Ruff / strict MyPy                                      PASS / PASS (28 sourc
 EI installed wheel resources                               PASS (25 schemas / 7 config / 2 templates)
 EI valid-thin-evidence negative control                    BLOCK, make exit 2
 scoped git diff --check / bash -n runtime role             PASS / PASS
-ArkUI hdc                                                  NOT_RUN (command unavailable)
+ArkUI hdc (historical line; corrected below)               NOT_RUN
 ```
 
 The 11 skips in the general EI invocation are precisely the PostgreSQL parameter set when no
@@ -1130,3 +1130,48 @@ JVM processes and external MinIO persistence, not two hosts or a production topo
 KMS/HSM, external trust and revocation, global snapshot reconciliation, real GitHub webhook traffic,
 and ArkUI device evidence remain unexecuted. Final posture stays CAS
 `SINGLE_HOST / NOT_CERTIFIED`, EI `BLOCK / NOT_CERTIFIED`.
+
+### 2026-08-24 post-extension final-current verification
+
+```text
+CAS/KMS/lease/scheduler/caller focused Maven             34 passed, 0 failed/error/skipped
+JdbcSnapshotLeaseAndSchedulerLiveTest (PostgreSQL 17.5)   3 passed, 0 failed/error/skipped
+JdbcCasCatalogLiveTest (PostgreSQL 17.5)                 10 passed, 0 failed/error/skipped
+Flyway in both final live runs                            72/72 migrations validated/applied
+EI external-trust focused pytest                         48 passed
+EI external-trust Ruff / strict MyPy                     PASS / PASS (29 source files)
+GitHub App evidence harness unittest / Ruff              17 passed / PASS
+Kubernetes multi-host probe bash -n / shellcheck         PASS / PASS
+Kubernetes multi-host missing-config negative control    expected exit 2, no cluster mutation
+ArkUI hdc version / target inventory                      3.2.0b / [Empty]
+```
+
+The ActionCache application binding is now an explicit opt-in seam. Enabling it requires exactly
+one current-trust revalidator, one authorizer and one synchronous action runner; missing or
+ambiguous ports fail application startup. No repository production execution service supplies
+those three deployment-owned ports yet, so this is not a production caller execution result.
+
+V72 adds fenced materialization leases and a bounded, tenant-fair PostgreSQL reconciliation queue.
+The live tests exercised acquisition, renewal/fencing, contention, recovery and queue claiming on a
+disposable PostgreSQL 17.5 container. They are local engineering evidence, not evidence that the
+production control plane has deployed a stable holder identity, elected the global scheduler or
+coordinated every archive/GC worker.
+
+The KMS broker adapter requires HTTPS, workload-bound mTLS and opaque secret references, and the
+control-plane configuration refuses incomplete enablement. It was exercised only against the local
+test broker. No production KMS/HSM, key custody, rotation, revocation or disaster-recovery operation
+was run.
+
+The GitHub harness covers JWT-only App authentication, exact delivery binding, explicit redelivery,
+read-only tenant-RLS PostgreSQL verification, ambiguous/unknown reconciliation and atomic sanitized
+receipts. No real GitHub App, webhook delivery, redelivery POST or production database was supplied,
+so that external evidence remains `NOT_RUN / NOT_CERTIFIED`.
+
+The Kubernetes probe cannot run without an exact context, namespace, digest-pinned image, existing
+immutable secret and two independently attested nodes; the empty-environment negative control
+failed before any cluster call. No usable two-node context exists on this host. ArkUI tooling is
+installed, but `hdc list targets -v` returned `[Empty]`, so device/runtime evidence remains
+`NOT_RUN / NOT_CERTIFIED`.
+
+Final posture is unchanged: CAS `SINGLE_HOST / NOT_CERTIFIED`, EI
+`BLOCK / NOT_CERTIFIED`, ArkUI `NOT_RUN / NOT_CERTIFIED`.

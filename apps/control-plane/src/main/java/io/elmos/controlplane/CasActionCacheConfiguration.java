@@ -5,6 +5,7 @@ import io.elmos.cas.ActionCacheIndex;
 import io.elmos.cas.CasAccessPolicy;
 import io.elmos.cas.CasMetrics;
 import io.elmos.cas.CasTelemetry;
+import io.elmos.cas.CachedActionExecutor;
 import io.elmos.cas.JdbcActionCacheIndex;
 import io.elmos.cas.TenantCasStore;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,14 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.util.Map;
 
-/** Wires the durable ActionCache index and current-trust port without claiming caller binding. */
+/**
+ * Wires the durable ActionCache index and its opt-in production execution seam.
+ *
+ * <p>The caller is deliberately absent unless the deployment explicitly enables it and supplies
+ * exactly one current-trust provider, authorizer and synchronous action runner. This prevents a
+ * partially configured cache from silently becoming an execution authority. The application does
+ * not provide a permissive default for any of those deployment-owned ports.</p>
+ */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "elmos.action-cache.enabled", havingValue = "true")
 class CasActionCacheConfiguration {
@@ -50,13 +58,39 @@ class CasActionCacheConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(
+            name = "elmos.action-cache.execution-caller-enabled", havingValue = "true")
+    CachedActionExecutor cachedActionExecutor(
+            ActionCache cache,
+            ObjectProvider<ActionCache.TrustRevalidator> trustProviders,
+            ObjectProvider<CachedActionExecutor.Authorizer> authorizers,
+            ObjectProvider<CachedActionExecutor.ActionRunner> runners
+    ) {
+        requireSingleDeploymentPort(trustProviders,
+                "current ActionCache trust provider");
+        return new CachedActionExecutor(
+                cache,
+                requireSingleDeploymentPort(authorizers, "ActionCache authorizer"),
+                requireSingleDeploymentPort(runners, "ActionCache synchronous action runner"));
+    }
+
+    @Bean
     ActionCacheStatus actionCacheStatus(TenantCasStore store,
-                                        ObjectProvider<ActionCache.TrustRevalidator> trustProviders) {
+                                        ObjectProvider<ActionCache.TrustRevalidator> trustProviders,
+                                        ObjectProvider<CachedActionExecutor> callers) {
         ActionCache.TrustRevalidator trustRevalidator =
                 resolveTrustRevalidator(trustProviders);
+        java.util.List<CachedActionExecutor> configuredCallers =
+                callers.orderedStream().toList();
+        if (configuredCallers.size() > 1) {
+            throw new IllegalStateException(
+                    "exactly one ActionCache execution caller is permitted");
+        }
         return new ActionCacheStatus(
                 "JDBC_POSTGRESQL", "JDBC_INDEX_CONFIGURED_OBJECT_TIER_DEPENDENT",
-                "TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE",
+                configuredCallers.isEmpty()
+                        ? "TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE"
+                        : "OPT_IN_CALLER_BOUND_TO_EXPLICIT_AUTHORIZER_AND_RUNNER",
                 trustRevalidator.mode(),
                 store.physicalNamespace(), store.atRestProtection(), false);
     }
@@ -72,6 +106,18 @@ class CasActionCacheConfiguration {
         if (candidates.size() != 1) {
             throw new IllegalStateException(
                     "exactly one current ActionCache trust provider is required");
+        }
+        return candidates.get(0);
+    }
+
+    private static <T> T requireSingleDeploymentPort(
+            ObjectProvider<T> providers, String description
+    ) {
+        java.util.List<T> candidates = providers.orderedStream().toList();
+        if (candidates.size() != 1) {
+            throw new IllegalStateException(
+                    "exactly one " + description + " is required when the ActionCache "
+                            + "execution caller is enabled");
         }
         return candidates.get(0);
     }

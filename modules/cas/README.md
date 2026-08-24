@@ -29,7 +29,7 @@ of cross-instance portfolio-cache hits.
 | `TieredCasStore` | read-through, best-effort vs durable writes, LRU eviction that never drops a not-yet-durable object |
 | `ResumableUploadService` | direct + multipart upload, per-chunk digests, resume offset, conflict detection, quarantine |
 | `TransferPolicy` | compression decision, deflate codec, token-bucket bandwidth limiter |
-| `TenantEncryption`, `DirectoryTenantEncryption`, `KmsTenantEncryption`, `TenantEncryptedLocalCasStore` | versioned per-tenant AES-GCM envelopes, operator-mounted keyring or external KMS data-key provider, rotation/revocation and tenant-namespaced ciphertext on local disk |
+| `TenantEncryption`, `DirectoryTenantEncryption`, `KmsTenantEncryption`, `HttpKmsBrokerProvider`, `TenantEncryptedLocalCasStore` | versioned per-tenant AES-GCM envelopes, operator-mounted keyring or an HTTPS/mTLS KMS/HSM broker, workload identity plus opaque Secret References, rotation/revocation and tenant-namespaced ciphertext on local disk |
 | `ActionKeyBuilder`, `ActionKey` | exact action key + component diffing for miss explanation |
 | `ActionResultRecord` | `action-result.schema.json` shape, with the failure taxonomy |
 | `LogRedaction` | secret removal before a log is cached and replayed |
@@ -110,19 +110,22 @@ These are real boundaries, not oversights. Do not read a green test run as cover
   cryptographically reverify every hit against current key validity and revocation. The
   control-plane default is deliberately `FAIL_CLOSED_CURRENT_TRUST_NOT_CONFIGURED`; an operator
   must supply and validate the non-local trust/revocation provider before hits are enabled.
-- **A continuously operated snapshot lifecycle reconciler.** Capture and archive now record exact
-  root generations in the V68 journal, expose archive/reconciliation APIs, and retain ambiguous
-  roots. Running the reconciler as a production schedule, proving crash recovery under load, and
-  authorizing destructive snapshot policy are still external operational work.
+- **A continuously operated snapshot lifecycle reconciler.** V72 now adds durable tenant work,
+  fenced `SKIP LOCKED` leases, bounded cross-tenant scheduling, and materialization leases that
+  serialize artifact reads with archive/GC. Production wiring is disabled until an operator sets
+  a stable worker identity. A real multi-replica soak, crash/recovery drill, operational ownership,
+  and authorization for destructive snapshot policy remain external `NOT_RUN` evidence.
 - **An atomic production legal-hold/deletion coordinator.** Catalogue loads now preserve the
   authoritative hold bit and the collector always checks it before tenant deletion. A hold applied
   after that load can still race the later object-store delete because no production GC epoch/row
   lock spans both systems. Executing collection remains unsupported until that handoff is atomic.
-- **A production KMS provider and custody ceremony.** `KmsTenantEncryption` implements provider
-  data-key envelopes, context binding, rotation/revocation, outage fail-closed behavior and exact
-  plaintext-key zeroization. The control plane can select `provider=KMS` only with an explicit
-  provider bean. No cloud/HSM provider, production credentials, operator ceremony, recovery drill
-  or independent custody evidence is bundled here.
+- **A deployed production KMS/HSM and custody ceremony.** `KmsTenantEncryption` implements data-key
+  envelopes, context binding, rotation/revocation, outage fail-closed behavior and exact plaintext
+  key zeroization. `HttpKmsBrokerProvider` adds a dependency-free HTTPS/mTLS production boundary
+  with a SPIFFE workload identity, opaque Secret References, version binding, bounded timeouts,
+  redirect refusal and zeroizable binary DEK responses. It accepts no bearer token, PIN or private
+  key value. No real broker/HSM endpoint, production identity material, operator ceremony,
+  recovery drill or independent custody evidence is bundled or executed; those remain `NOT_RUN`.
 - **Production PostgreSQL evidence.** Real PostgreSQL/Testcontainers harnesses cover migrations,
   forced RLS and JDBC readback when Docker is available. Their exact run status belongs in
   `.ai/TEST_RESULTS.md`; a local disposable database is not production availability, backup,

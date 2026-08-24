@@ -403,24 +403,25 @@ mvn -q -pl modules/cas -am test
 - legacy `cas:sha256:` / sized CAS verified dual-read 与显式迁移模式
 - tenant envelope encryption 的 KMS provider 端口及缺 provider 的启动拒绝
 - JDBC metadata 完整读回
-- ActionCache 生产 caller、detached signature 持久化、跨实例 JDBC 命中与当前 trust 重验
-- snapshot archive/root release、stale-PENDING reconciliation、不可变 DB lifecycle
+- ActionCache detached signature 持久化、跨实例 JDBC 命中、当前 trust 重验及 fail-closed opt-in caller 绑定端口
+- snapshot archive/root release、stale-PENDING reconciliation、不可变 DB lifecycle、fenced materialization lease 与有界全局队列
 - snapshot repository/installation/tenant 复合绑定
 - 已验签 GitHub webhook 的 pre-principal tenant routing 与 tenant-bound outbox
-- EI read-once schema validation、digest-bound 双签 provenance/trust-store 合同及 wheel resources
+- EI read-once schema validation、digest-bound 双签 provenance/trust-store 合同、外部 trust snapshot adapter 及 wheel resources
 
 仍未闭合，状态不得上调：
 
 1. **真实多主机** shared tier、故障切换和并发跨实例压力；现有 MinIO 是同主机两个 JVM。
 2. 生产 KMS/HSM、密钥创建/托管/轮换/吊销和灾备；本地 provider 测试不替代它。
-3. 外部且独立治理的 ActionCache/EI trust、key revocation 与 verifier；本地 key registry 不独立。
-4. snapshot read/materialization lease 与 archive/GC delete 的原子协调，以及全租户 scheduler。
-5. V9 前已有 `audit_events` 的受控 pre-migration bootstrap；不可用 `repair` 掩盖 checksum/顺序。
-6. V69/V70 大表 backfill/FK/索引的在线 rollout、锁/WAL 容量与维护窗口证据。
-7. 真实 GitHub App installation/webhook/redelivery/revocation 与 provider outage reconciliation。
-8. ArkUI/Harmony 真实设备；本机无 `hdc`，继续 `NOT_RUN`。
-9. portfolio `TenantContentAddressedCache` 的 key→digest 索引仍是进程内状态。
+3. 外部且独立治理的 ActionCache/EI trust、key revocation 与 verifier；本地 key registry/loopback authority 不独立。
+4. ActionCache 的真实生产 execution-service authorizer/runner adapter；当前只完成默认关闭、缺任一端口即启动失败的绑定边界。
+5. snapshot materialization lease 与全租户 scheduler 的生产部署、稳定 holder/election、archive/GC worker 协调；本地 PostgreSQL 证明不替代它。
+6. V9 前已有 `audit_events` 的受控 pre-migration bootstrap；不可用 `repair` 掩盖 checksum/顺序。
+7. V69/V70/V72 大表 backfill/FK/索引/队列的在线 rollout、锁/WAL 容量与维护窗口证据。
+8. 真实 GitHub App installation/webhook/redelivery/revocation 与 provider outage reconciliation；本地 17-test harness 不替代它。
+9. ArkUI/Harmony 真实设备；`hdc` 3.2.0b 已安装但 inventory 为 `[Empty]`，继续 `NOT_RUN`。
+10. portfolio `TenantContentAddressedCache` 的 key→digest 索引仍是进程内状态。
 
 当前判定固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`。
-本地 71-migration PostgreSQL、双进程 MinIO 和全部 focused pass 只能减少代码级 backlog，
+本地 72-migration PostgreSQL、双进程 MinIO 和全部 focused pass 只能减少代码级 backlog，
 不能替代上述外部、生产、多主机、设备或独立认证证据。

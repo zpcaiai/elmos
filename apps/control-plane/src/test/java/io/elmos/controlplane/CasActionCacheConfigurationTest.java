@@ -2,6 +2,8 @@ package io.elmos.controlplane;
 
 import io.elmos.cas.ActionCache;
 import io.elmos.cas.ActionCacheIndex;
+import io.elmos.cas.ActionResultRecord;
+import io.elmos.cas.CachedActionExecutor;
 import io.elmos.cas.InMemoryCasStore;
 import io.elmos.cas.JdbcActionCacheIndex;
 import io.elmos.cas.TenantCasStore;
@@ -99,6 +101,62 @@ class CasActionCacheConfigurationTest {
                                     CasActionCacheConfiguration.ActionCacheStatus.class)
                             .trustDecisionReadback());
                 });
+    }
+
+    @Test void executionCallerEnablementFailsClosedWithoutDeploymentPorts() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(CasActionCacheConfiguration.class)
+                .withBean(DataSource.class, () -> mock(DataSource.class))
+                .withBean(Clock.class, Clock::systemUTC)
+                .withBean(TenantCasStore.class,
+                        () -> TenantCasStore.global(new InMemoryCasStore("action-output")))
+                .withPropertyValues(
+                        "elmos.action-cache.enabled=true",
+                        "elmos.action-cache.execution-caller-enabled=true")
+                .run(context -> {
+                    assertNotNull(context.getStartupFailure());
+                    assertEquals(
+                            "exactly one current ActionCache trust provider is required when "
+                                    + "the ActionCache execution caller is enabled",
+                            rootCause(context.getStartupFailure()).getMessage());
+                });
+    }
+
+    @Test void executionCallerBindsOnlyWithExactTrustAuthorizationAndRunnerPorts() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(CasActionCacheConfiguration.class)
+                .withBean(DataSource.class, () -> mock(DataSource.class))
+                .withBean(Clock.class, Clock::systemUTC)
+                .withBean(TenantCasStore.class,
+                        () -> TenantCasStore.global(new InMemoryCasStore("action-output")))
+                .withBean(ActionCache.TrustRevalidator.class,
+                        CasActionCacheConfigurationTest::currentTrust)
+                .withBean(CachedActionExecutor.Authorizer.class,
+                        () -> (request, operation) ->
+                                CachedActionExecutor.AuthorizationDecision.allow(
+                                        "TEST_" + operation.name()))
+                .withBean(CachedActionExecutor.ActionRunner.class,
+                        () -> request -> mock(ActionResultRecord.class))
+                .withPropertyValues(
+                        "elmos.action-cache.enabled=true",
+                        "elmos.action-cache.execution-caller-enabled=true")
+                .run(context -> {
+                    assertNotNull(context.getBean(CachedActionExecutor.class));
+                    assertEquals("OPT_IN_CALLER_BOUND_TO_EXPLICIT_AUTHORIZER_AND_RUNNER",
+                            context.getBean(CasActionCacheConfiguration.ActionCacheStatus.class)
+                                    .executionCaller());
+                    assertFalse(context.getBean(
+                            CasActionCacheConfiguration.ActionCacheStatus.class)
+                            .productionCertified());
+                });
+    }
+
+    private static Throwable rootCause(Throwable failure) {
+        Throwable current = failure;
+        while (current.getCause() != null) {
+            current = current.getCause();
+        }
+        return current;
     }
 
     private static ActionCache.TrustRevalidator currentTrust() {

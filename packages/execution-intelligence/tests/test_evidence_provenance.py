@@ -1,9 +1,12 @@
 import base64
 import hashlib
+import http.server
 import json
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import pytest
 from conftest import PROJECT_PATH, ROOT
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -13,6 +16,12 @@ from elmos_execution_intelligence.certifier import (
     EVIDENCE_INPUT_FILES,
     build_evidence_manifest,
     evaluate,
+)
+from elmos_execution_intelligence.external_trust import (
+    ExternalTrustError,
+    ExternalTrustOptions,
+    external_trust_signature_payload,
+    load_external_trust,
 )
 from elmos_execution_intelligence.jsonschema_lite import Validator
 from elmos_execution_intelligence.provenance import attestation_payload
@@ -262,6 +271,93 @@ def _sign_evidence(
     return hashlib.sha256(trust_store.read_bytes()).hexdigest()
 
 
+def _external_trust_options(
+    trust_store: Path,
+    root_path: Path,
+    snapshot_path: Path,
+    epoch_state: Path,
+    now: datetime,
+    *,
+    issuer_id: str = "external-trust-governance",
+    epoch: int = 42,
+    unknown_key: str | None = None,
+    revoked_key: str | None = None,
+    authority_url: str | None = None,
+    cache_path: Path | None = None,
+) -> ExternalTrustOptions:
+    authority_key = Ed25519PrivateKey.generate()
+    authority_key_id = "external-authority-key"
+    root = {
+        "schema_version": "1.0.0",
+        "artifact": "evidence-trust-authority-root",
+        "issuer_id": issuer_id,
+        "key_id": authority_key_id,
+        "algorithm": "Ed25519",
+        "public_key_base64": _public_key(authority_key),
+        "not_before": _timestamp(now - timedelta(days=1)),
+        "expires_at": _timestamp(now + timedelta(days=1)),
+        "authority_url": authority_url,
+        "minimum_epoch": 1,
+        "max_snapshot_lifetime_seconds": 3600,
+        "max_revocation_age_seconds": 900,
+        "separate_from_evidence_authorities": True,
+    }
+    _write_json(root_path, root)
+    trust = json.loads(trust_store.read_text(encoding="utf-8"))
+    canonical_trust = json.dumps(
+        trust,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    key_ids = sorted(str(item["key_id"]) for item in trust["keys"])
+    payload = {
+        "schema_version": "1.0.0",
+        "artifact": "external-evidence-trust-snapshot",
+        "issuer_id": issuer_id,
+        "issuer_key_id": authority_key_id,
+        "snapshot_id": f"snapshot-{epoch}",
+        "epoch": epoch,
+        "issued_at": _timestamp(now - timedelta(minutes=1)),
+        "expires_at": _timestamp(now + timedelta(minutes=30)),
+        "etag": f'"epoch-{epoch}"',
+        "trust_store_sha256": hashlib.sha256(canonical_trust).hexdigest(),
+        "trust_store": trust,
+        "revocations": [
+            {
+                "key_id": key_id,
+                "status": (
+                    "UNKNOWN"
+                    if key_id == unknown_key
+                    else "REVOKED" if key_id == revoked_key else "GOOD"
+                ),
+                "checked_at": _timestamp(now - timedelta(seconds=30)),
+                "next_update": _timestamp(now + timedelta(minutes=5)),
+            }
+            for key_id in key_ids
+        ],
+    }
+    signature = authority_key.sign(external_trust_signature_payload(payload))
+    _write_json(snapshot_path, {
+        "payload": payload,
+        "signature": {
+            "algorithm": "Ed25519",
+            "signature_base64": base64.b64encode(signature).decode("ascii"),
+        },
+    })
+    return ExternalTrustOptions(
+        authority_root_path=root_path,
+        authority_root_sha256=hashlib.sha256(root_path.read_bytes()).hexdigest(),
+        snapshot_path=snapshot_path if authority_url is None else None,
+        source_url=authority_url,
+        cache_path=cache_path,
+        expected_snapshot_sha256=hashlib.sha256(snapshot_path.read_bytes()).hexdigest(),
+        expected_etag=f'"epoch-{epoch}"',
+        epoch_state_path=epoch_state,
+    )
+
+
 def test_valid_digest_bound_dual_signature_can_reach_release(tmp_path):
     evidence = tmp_path / "evidence"
     trust_store = tmp_path / "trust-store.json"
@@ -486,3 +582,181 @@ def test_duplicate_json_keys_are_refused_before_signature_verification(tmp_path)
 
     assert report["decision"] == "block"
     assert "duplicate JSON key" in report["evidence_provenance"]["errors"][0]
+
+
+def test_external_authority_snapshot_can_drive_provenance_verification(tmp_path):
+    evidence = tmp_path / "evidence"
+    trust_store = tmp_path / "trust-store.json"
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    _full_evidence(evidence)
+    _sign_evidence(evidence, trust_store, now)
+    options = _external_trust_options(
+        trust_store,
+        tmp_path / "authority-root.json",
+        tmp_path / "trust-snapshot.json",
+        tmp_path / "epoch-state.json",
+        now,
+    )
+
+    report = evaluate(evidence, external_trust_options=options, now=now)
+
+    assert report["decision"] == "release"
+    authority = report["evidence_provenance"]["trust_authority"]
+    assert authority["issuer_id"] == "external-trust-governance"
+    assert authority["epoch"] == 42
+    assert authority["source"] == "replay-file"
+    assert authority["revocation_status_count"] == 2
+
+
+def test_external_authority_unknown_revocation_fails_closed(tmp_path):
+    evidence = tmp_path / "evidence"
+    trust_store = tmp_path / "trust-store.json"
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    _full_evidence(evidence)
+    _sign_evidence(evidence, trust_store, now)
+    options = _external_trust_options(
+        trust_store,
+        tmp_path / "authority-root.json",
+        tmp_path / "trust-snapshot.json",
+        tmp_path / "epoch-state.json",
+        now,
+        unknown_key="verifier-key",
+    )
+
+    report = evaluate(evidence, external_trust_options=options, now=now)
+
+    assert report["decision"] == "block"
+    assert "returned UNKNOWN" in report["evidence_provenance"]["errors"][0]
+
+
+def test_external_authority_cannot_be_the_verifier_authority(tmp_path):
+    evidence = tmp_path / "evidence"
+    trust_store = tmp_path / "trust-store.json"
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    _full_evidence(evidence)
+    _sign_evidence(evidence, trust_store, now)
+    options = _external_trust_options(
+        trust_store,
+        tmp_path / "authority-root.json",
+        tmp_path / "trust-snapshot.json",
+        tmp_path / "epoch-state.json",
+        now,
+        issuer_id="assurance-authority",
+    )
+
+    report = evaluate(evidence, external_trust_options=options, now=now)
+
+    assert report["decision"] == "block"
+    assert "separate from every evidence authority" in report["evidence_provenance"]["errors"][0]
+
+
+def test_external_authority_revocation_blocks_a_valid_evidence_signature(tmp_path):
+    evidence = tmp_path / "evidence"
+    trust_store = tmp_path / "trust-store.json"
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    _full_evidence(evidence)
+    _sign_evidence(evidence, trust_store, now)
+    options = _external_trust_options(
+        trust_store,
+        tmp_path / "authority-root.json",
+        tmp_path / "trust-snapshot.json",
+        tmp_path / "epoch-state.json",
+        now,
+        revoked_key="executor-key",
+    )
+
+    report = evaluate(evidence, external_trust_options=options, now=now)
+
+    assert report["decision"] == "block"
+    assert "revoked key: executor-key" in report["evidence_provenance"]["errors"][0]
+
+
+def test_online_snapshot_revalidates_and_uses_only_fresh_signed_cache(tmp_path):
+    class SnapshotHandler(http.server.BaseHTTPRequestHandler):
+        snapshot = b""
+        etag = '"epoch-42"'
+
+        def do_GET(self):
+            if self.headers.get("If-None-Match") == self.etag:
+                self.send_response(304)
+                self.send_header("ETag", self.etag)
+                self.end_headers()
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "application/trust+json")
+            self.send_header("ETag", self.etag)
+            self.send_header("Content-Length", str(len(self.snapshot)))
+            self.end_headers()
+            self.wfile.write(self.snapshot)
+
+        def log_message(self, format, *args):
+            return
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), SnapshotHandler)
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    try:
+        evidence = tmp_path / "evidence"
+        trust_store = tmp_path / "trust-store.json"
+        snapshot_path = tmp_path / "trust-snapshot.json"
+        cache_path = tmp_path / "trust-cache.json"
+        now = datetime.now(timezone.utc).replace(microsecond=0)
+        _full_evidence(evidence)
+        _sign_evidence(evidence, trust_store, now)
+        host, port = server.server_address
+        authority_url = f"http://{host}:{port}/v1/trust-snapshot"
+        options = _external_trust_options(
+            trust_store,
+            tmp_path / "authority-root.json",
+            snapshot_path,
+            tmp_path / "epoch-state.json",
+            now,
+            authority_url=authority_url,
+            cache_path=cache_path,
+        )
+        SnapshotHandler.snapshot = snapshot_path.read_bytes()
+
+        online = load_external_trust(options, now=now, forbidden_root=evidence)
+        revalidated = load_external_trust(options, now=now, forbidden_root=evidence)
+
+        assert online.receipt["source"] == "online"
+        assert revalidated.receipt["source"] == "cache-revalidated"
+        assert cache_path.read_bytes() == snapshot_path.read_bytes()
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(timeout=2)
+
+    cached = load_external_trust(options, now=now, forbidden_root=evidence)
+    assert cached.receipt["source"] == "cache-fallback"
+
+
+def test_external_trust_epoch_state_rejects_rollback(tmp_path):
+    evidence = tmp_path / "evidence"
+    trust_store = tmp_path / "trust-store.json"
+    root_path = tmp_path / "authority-root.json"
+    snapshot_path = tmp_path / "trust-snapshot.json"
+    epoch_state = tmp_path / "epoch-state.json"
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    _full_evidence(evidence)
+    _sign_evidence(evidence, trust_store, now)
+    current = _external_trust_options(
+        trust_store,
+        root_path,
+        snapshot_path,
+        epoch_state,
+        now,
+        epoch=42,
+    )
+    load_external_trust(current, now=now, forbidden_root=evidence)
+    rollback = _external_trust_options(
+        trust_store,
+        root_path,
+        snapshot_path,
+        epoch_state,
+        now,
+        epoch=41,
+    )
+
+    with pytest.raises(ExternalTrustError, match="epoch rollback"):
+        load_external_trust(rollback, now=now, forbidden_root=evidence)

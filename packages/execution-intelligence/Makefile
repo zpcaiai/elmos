@@ -15,8 +15,26 @@ GIT_LOG ?= /tmp/git.log
 GIT_SCOPE ?= engines/polyglot-route-engine
 TRUST_STORE ?=
 TRUST_STORE_SHA256 ?=
+TRUST_AUTHORITY_URL ?=
+TRUST_AUTHORITY_SNAPSHOT ?=
+TRUST_AUTHORITY_ROOT ?=
+TRUST_AUTHORITY_ROOT_SHA256 ?=
+TRUST_AUTHORITY_CACHE ?=
+TRUST_SNAPSHOT_SHA256 ?=
+TRUST_SNAPSHOT_ETAG ?=
+TRUST_EPOCH_STATE ?=
+TRUST_AUTHORITY_TOKEN_ENV ?=
 CERTIFY_TRUST_ARGS = $(if $(TRUST_STORE),--trust-store "$(TRUST_STORE)",) \
-	$(if $(TRUST_STORE_SHA256),--trust-store-sha256 "$(TRUST_STORE_SHA256)",)
+	$(if $(TRUST_STORE_SHA256),--trust-store-sha256 "$(TRUST_STORE_SHA256)",) \
+	$(if $(TRUST_AUTHORITY_URL),--trust-authority-url "$(TRUST_AUTHORITY_URL)",) \
+	$(if $(TRUST_AUTHORITY_SNAPSHOT),--trust-authority-snapshot "$(TRUST_AUTHORITY_SNAPSHOT)",) \
+	$(if $(TRUST_AUTHORITY_ROOT),--trust-authority-root "$(TRUST_AUTHORITY_ROOT)",) \
+	$(if $(TRUST_AUTHORITY_ROOT_SHA256),--trust-authority-root-sha256 "$(TRUST_AUTHORITY_ROOT_SHA256)",) \
+	$(if $(TRUST_AUTHORITY_CACHE),--trust-authority-cache "$(TRUST_AUTHORITY_CACHE)",) \
+	$(if $(TRUST_SNAPSHOT_SHA256),--trust-snapshot-sha256 "$(TRUST_SNAPSHOT_SHA256)",) \
+	$(if $(TRUST_SNAPSHOT_ETAG),--trust-snapshot-etag '$(TRUST_SNAPSHOT_ETAG)',) \
+	$(if $(TRUST_EPOCH_STATE),--trust-epoch-state "$(TRUST_EPOCH_STATE)",) \
+	$(if $(TRUST_AUTHORITY_TOKEN_ENV),--trust-authority-token-env "$(TRUST_AUTHORITY_TOKEN_ENV)",)
 
 .PHONY: lint test scan audit dag validate forecast plan execute route chaos calibrate certify schemas pg-conformance ingest advise anchor mix durations serve all clean-outputs
 

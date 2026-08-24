@@ -18,7 +18,10 @@ import stat
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .external_trust import VerifiedExternalTrust
 
 ED25519 = "Ed25519"
 SIGNATURE_DOMAIN = "elmos.execution-intelligence.evidence-provenance.v1"
@@ -334,6 +337,8 @@ def verify_evidence_provenance(
     provenance_bytes: bytes | None,
     snapshot_errors: Sequence[str] = (),
     now: datetime | None = None,
+    external_trust: VerifiedExternalTrust | None = None,
+    external_trust_error: str | None = None,
 ) -> dict[str, Any]:
     """Verify digest-bound executor and independent-verifier attestations.
 
@@ -355,22 +360,32 @@ def verify_evidence_provenance(
             raise ProvenanceError("; ".join(snapshot_errors))
         if provenance_bytes is None:
             raise ProvenanceError("evidence-provenance.json is required")
-        if trust_store_path is None:
-            raise ProvenanceError("an external trust store is required")
-        trust_path = Path(trust_store_path).resolve(strict=True)
-        try:
-            trust_path.relative_to(root)
-        except ValueError:
-            pass
+        if external_trust_error is not None:
+            raise ProvenanceError(f"external trust authority failed closed: {external_trust_error}")
+        if external_trust is not None:
+            if trust_store_path is not None or trust_store_sha256 is not None:
+                raise ProvenanceError(
+                    "static trust-store inputs cannot be combined with an external trust authority"
+                )
+            trust_store = external_trust.trust_store
+            trust_digest = external_trust.trust_store_sha256
         else:
-            raise ProvenanceError("the trust store must be outside the evidence directory")
-        trust_bytes = read_regular_file_once(trust_path)
-        if trust_store_sha256 is None or not SHA256_PATTERN.fullmatch(trust_store_sha256):
-            raise ProvenanceError("an exact lowercase SHA-256 trust-store pin is required")
-        trust_digest = hashlib.sha256(trust_bytes).hexdigest()
-        if trust_digest != trust_store_sha256:
-            raise ProvenanceError("trust-store digest does not match the caller-provided pin")
-        trust_store = load_strict_json_bytes(trust_bytes, str(trust_path))
+            if trust_store_path is None:
+                raise ProvenanceError("an external trust store is required")
+            trust_path = Path(trust_store_path).resolve(strict=True)
+            try:
+                trust_path.relative_to(root)
+            except ValueError:
+                pass
+            else:
+                raise ProvenanceError("the trust store must be outside the evidence directory")
+            trust_bytes = read_regular_file_once(trust_path)
+            if trust_store_sha256 is None or not SHA256_PATTERN.fullmatch(trust_store_sha256):
+                raise ProvenanceError("an exact lowercase SHA-256 trust-store pin is required")
+            trust_digest = hashlib.sha256(trust_bytes).hexdigest()
+            if trust_digest != trust_store_sha256:
+                raise ProvenanceError("trust-store digest does not match the caller-provided pin")
+            trust_store = load_strict_json_bytes(trust_bytes, str(trust_path))
         keys = _trust_key_map(trust_store)
         provenance = load_strict_json_bytes(provenance_bytes, "evidence-provenance.json")
         _require_exact_fields(
@@ -423,6 +438,20 @@ def verify_evidence_provenance(
                 raise ProvenanceError(f"attestation role does not match trusted key role: {key_id}")
             if key.get("revoked") is True:
                 raise ProvenanceError(f"attestation key is revoked: {key_id}")
+            if external_trust is not None:
+                revocation = external_trust.revocations.get(key_id)
+                if revocation is None:
+                    raise ProvenanceError(
+                        f"external revocation authority returned no status for key: {key_id}"
+                    )
+                revocation_status = revocation.get("status")
+                if revocation_status == "REVOKED":
+                    raise ProvenanceError(f"external revocation authority revoked key: {key_id}")
+                if revocation_status != "GOOD":
+                    raise ProvenanceError(
+                        f"external revocation status is not GOOD for key {key_id}: "
+                        f"{revocation_status}"
+                    )
             signed_at = _timestamp(raw_attestation.get("signed_at"), f"attestation {index}.signed_at")
             key_not_before = _timestamp(key.get("not_before"), f"trust key {key_id}.not_before")
             key_expires_at = _timestamp(key.get("expires_at"), f"trust key {key_id}.expires_at")
@@ -458,6 +487,13 @@ def verify_evidence_provenance(
                 raise ProvenanceError(
                     "executor and independent verifier must have different " + field
                 )
+        if external_trust is not None:
+            trust_authority = external_trust.receipt["issuer_id"]
+            signer_authorities = {record["authority_id"] for record in signer_records}
+            if trust_authority in signer_authorities:
+                raise ProvenanceError(
+                    "external trust authority must be separate from executor and verifier authorities"
+                )
         result.update({
             "status": "VERIFIED",
             "errors": [],
@@ -469,6 +505,8 @@ def verify_evidence_provenance(
             "files": bound_files,
             "signers": sorted(signer_records, key=lambda item: item["role"]),
         })
+        if external_trust is not None:
+            result["trust_authority"] = external_trust.receipt
     except (OSError, ProvenanceError) as exc:
         result["errors"] = [str(exc)]
     return result

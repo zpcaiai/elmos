@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,7 @@ from .comparison import compare
 from .cost import estimate_costs
 from .decompose import critical_path_seed, decompose, estimation_seed_rows
 from .durable import DurableStore, StoreUnavailable, recovery_aware_eta
+from .external_trust import ExternalTrustOptions
 from .human_anchor import GIT_LOG_COMMAND, anchor_from_log, compare_to_forecast, parse_git_log, render_anchor
 from .io_utils import load_json, read_jsonl, write_json, write_text
 from .jsonschema_lite import Validator
@@ -61,6 +63,9 @@ ARTIFACT_SCHEMAS = {
     "evidence-manifest.json": "evidence-manifest.schema.json",
     "evidence-provenance.json": "evidence-provenance.schema.json",
     "evidence-trust-store.json": "evidence-trust-store.schema.json",
+    "evidence-trust-authority-root.json": "evidence-trust-authority-root.schema.json",
+    "external-evidence-trust-snapshot.json": "external-evidence-trust-snapshot.schema.json",
+    "external-trust-epoch-state.json": "external-trust-epoch-state.schema.json",
     "recovery-eta-update.json": "recovery-eta-update.schema.json",
     "telemetry-ingest.json": "telemetry-ingest.schema.json",
     "calibration.json": "calibration.schema.json",
@@ -748,11 +753,58 @@ def command_chaos(args: argparse.Namespace) -> int:
 
 
 def command_certify(args: argparse.Namespace) -> int:
+    trust_source_configured = bool(args.trust_authority_url or args.trust_authority_snapshot)
+    external_trust_options = None
+    if trust_source_configured:
+        if args.trust_store or args.trust_store_sha256:
+            raise Blocked(
+                "BLOCKED — static trust-store inputs cannot be combined with an external trust authority"
+            )
+        if not args.trust_authority_root or not args.trust_authority_root_sha256:
+            raise Blocked(
+                "BLOCKED — external trust requires a digest-pinned authority root"
+            )
+        bearer_token = None
+        if args.trust_authority_token_env:
+            bearer_token = os.environ.get(args.trust_authority_token_env)
+            if bearer_token is None:
+                raise Blocked(
+                    "BLOCKED — the configured trust-authority credential environment variable is absent"
+                )
+        external_trust_options = ExternalTrustOptions(
+            authority_root_path=args.trust_authority_root,
+            authority_root_sha256=args.trust_authority_root_sha256,
+            snapshot_path=args.trust_authority_snapshot,
+            source_url=args.trust_authority_url,
+            cache_path=args.trust_authority_cache,
+            expected_snapshot_sha256=args.trust_snapshot_sha256,
+            expected_etag=args.trust_snapshot_etag,
+            epoch_state_path=args.trust_epoch_state,
+            timeout_seconds=args.trust_authority_timeout,
+            bearer_token=bearer_token,
+        )
+    elif any(
+        value is not None
+        for value in (
+            args.trust_authority_root,
+            args.trust_authority_root_sha256,
+            args.trust_authority_cache,
+            args.trust_snapshot_sha256,
+            args.trust_snapshot_etag,
+            args.trust_epoch_state,
+            args.trust_authority_token_env,
+        )
+    ):
+        raise Blocked(
+            "BLOCKED — trust-authority options require --trust-authority-url or "
+            "--trust-authority-snapshot"
+        )
     report = evaluate(
         args.evidence,
         min_calibration_samples=args.min_calibration_samples,
         trust_store=args.trust_store,
         trust_store_sha256=args.trust_store_sha256,
+        external_trust_options=external_trust_options,
     )
     manifest = build_evidence_manifest(report, args.evidence)
     output = Path(args.output or args.evidence)
@@ -997,6 +1049,49 @@ def build_parser() -> argparse.ArgumentParser:
     certify_parser.add_argument(
         "--trust-store-sha256",
         help="Lowercase SHA-256 pin for the exact external trust-store bytes",
+    )
+    trust_source = certify_parser.add_mutually_exclusive_group()
+    trust_source.add_argument(
+        "--trust-authority-url",
+        help="Pinned authority URL for an online signed trust/revocation snapshot",
+    )
+    trust_source.add_argument(
+        "--trust-authority-snapshot",
+        help="Replay file containing an external signed trust/revocation snapshot",
+    )
+    certify_parser.add_argument(
+        "--trust-authority-root",
+        help="Operator-owned authority root JSON outside the evidence directory",
+    )
+    certify_parser.add_argument(
+        "--trust-authority-root-sha256",
+        help="Lowercase SHA-256 pin for the exact authority-root bytes",
+    )
+    certify_parser.add_argument(
+        "--trust-authority-cache",
+        help="Cache for signed public snapshot bytes; credentials are never cached",
+    )
+    certify_parser.add_argument(
+        "--trust-snapshot-sha256",
+        help="Exact snapshot pin (required for replay files, optional for online fetch)",
+    )
+    certify_parser.add_argument(
+        "--trust-snapshot-etag",
+        help="Optional strong ETag pin that must match the signed snapshot payload",
+    )
+    certify_parser.add_argument(
+        "--trust-epoch-state",
+        help="Required operator state file used to reject snapshot epoch rollback and equivocation",
+    )
+    certify_parser.add_argument(
+        "--trust-authority-timeout",
+        type=float,
+        default=5.0,
+        help="Online trust-authority timeout in seconds, capped at 30",
+    )
+    certify_parser.add_argument(
+        "--trust-authority-token-env",
+        help="Name of an environment variable holding an in-memory bearer credential",
     )
     certify_parser.add_argument("--output")
     certify_parser.set_defaults(func=command_certify)

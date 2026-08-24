@@ -265,6 +265,9 @@ runtime evidence remains `NOT_RUN`; this result does not change certification.
 
 ### Snapshot CAS slice
 
+> Historical pre-closure baseline. The final-current results and corrected posture are recorded in
+> the 2026-08-24 correction below; `NOT_RUN` statements in this subsection are not current.
+
 - Current source implements capture-time archive/manifest roots as one atomic,
   generation-safe set; resource bindings separate immutable object metadata
   from repository/project ownership; and verified dual-read accepts legacy
@@ -308,24 +311,35 @@ external verification, customer evidence, production evidence, or
 | Evidence | Result | Supported claim |
 | --- | --- | --- |
 | Java focused Maven scope | 197/197 PASS across 34 classes | current task-owned Java contracts compile and pass locally |
-| PostgreSQL 17 / Flyway | V71 reached; 71/71 applied | fresh-schema migration is executable locally; not a historical production upgrade proof |
+| PostgreSQL 17 / Flyway | V72 reached; 72/72 validated and applied in both final live runs | fresh-schema migration is executable locally; not a historical production upgrade proof |
 | CAS JDBC live | 10/10 PASS, no skip | catalog metadata, roots, durable ActionCache and current-trust invalidation work on a real local PostgreSQL |
 | Snapshot/RLS/webhook live | 5/5 PASS, no skip | tenant context resets, immutable lifecycle, stale reconciliation and signed-webhook tenant routing work on a real local PostgreSQL |
+| Snapshot lease/scheduler live | 3/3 PASS, no skip | fenced lease contention/recovery and bounded tenant-fair queue claiming work on a disposable PostgreSQL 17.5 instance |
 | MinIO process probe | PASS, PIDs 35250/35273, digest `a5f0c1b47f09bc1dcdd8d090143d9d2cef194ace81a91173e49690a214842c09`, 75 bytes | two distinct JVMs share an external object tier on one host |
 | EI package | 299 pass / 11 skip; PG conformance 22 pass / 0 skip | local code plus real local PostgreSQL backend contract |
 | EI static/install | Ruff PASS; strict MyPy PASS over 28 sources; wheel 25/7/2 resources PASS | source and installed-package engineering integrity |
+| EI external trust | focused pytest 48/48; Ruff PASS; strict MyPy PASS over 29 sources | digest-pinned authority root, signed monotonic trust snapshot and fresh revocation cache fail closed locally |
 | EI gate | schema-valid thin evidence -> `BLOCK`, exit 2; empty evidence -> `NOT_CERTIFIED` | failure and missing evidence both fail closed without conflation |
-| ArkUI/Harmony | `hdc` unavailable | `NOT_RUN`, no device evidence |
+| GitHub App evidence harness | unittest 17/17; Ruff PASS | local request/receipt/reconciliation contract only; no real App, delivery, redelivery or production DB |
+| Multi-host Kubernetes probe | bash/static PASS; missing-config negative exit 2 | fail-closed harness only; no cluster was contacted and no two-host evidence exists |
+| ArkUI/Harmony | `hdc` 3.2.0b; `hdc list targets -v` -> `[Empty]` | `NOT_RUN`, no device evidence |
 
 MinIO raw receipt directory:
 `.ai/cas-two-process-shared-tier-20260824T070853Z/`. Its own summary says
 `SINGLE_HOST_EXTERNAL_PROCESS`, `LOCAL_EXECUTED_SELF_ATTESTED`, and `NOT_CERTIFIED`.
 
 The local KMS tests validate provider binding, AAD, zeroization and startup refusal when no provider
-exists; they do not exercise a production KMS/HSM. The local detached-signature tests and live
-ActionCache revalidation do not supply an external, independently governed trust/revocation source.
-The webhook run uses seeded signed-resource bindings rather than real GitHub delivery. A fresh
-71-migration database does not cure the pre-existing V9 ordering hazard for a database containing
+exists; they do not exercise a production KMS/HSM. ActionCache now has an opt-in application bean
+that refuses to start unless exactly one current-trust provider, authorizer and synchronous runner
+are supplied. The repository supplies no real production execution adapter for that seam, and the
+local detached-signature/live revalidation evidence does not supply an independently governed
+trust/revocation source.
+
+V72 provides fenced materialization leases and a bounded global reconciliation queue, with exact
+runtime-role function grants. Its disposable PostgreSQL tests do not establish deployment of stable
+holder identities, scheduler election, production archive/GC participation or cross-host behavior.
+The GitHub evidence collector has fail-closed local tests, but no real App or delivery was used. A
+fresh 72-migration database does not cure the pre-existing V9 ordering hazard for a database containing
 historical `audit_events`; that needs a controlled pre-V9 bootstrap, not Flyway `repair`.
 
 Supported status therefore remains exactly:

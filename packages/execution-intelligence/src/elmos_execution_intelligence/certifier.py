@@ -11,6 +11,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .external_trust import (
+    ExternalTrustError,
+    ExternalTrustOptions,
+    VerifiedExternalTrust,
+    load_external_trust,
+)
 from .io_utils import markdown_table
 from .jsonschema_lite import Validator
 from .provenance import (
@@ -209,6 +215,7 @@ def evaluate(
     trust_store: str | Path | None = None,
     trust_store_sha256: str | None = None,
     now: datetime | None = None,
+    external_trust_options: ExternalTrustOptions | None = None,
 ) -> dict[str, Any]:
     root = Path(evidence_dir)
     # This threshold is a policy floor, not a convenience knob. A caller can
@@ -399,6 +406,18 @@ def evaluate(
             f"{len(unroutable)} 个任务无可用模型" if unroutable else "全部任务可路由",
             "model-routing-plan.json"))
 
+    external_trust: VerifiedExternalTrust | None = None
+    external_trust_error: str | None = None
+    if external_trust_options is not None:
+        try:
+            external_trust = load_external_trust(
+                external_trust_options,
+                now=now,
+                forbidden_root=root,
+            )
+        except ExternalTrustError as exc:
+            external_trust_error = str(exc)
+
     present_inputs = sorted(name for name in EVIDENCE_INPUT_FILES if name in snapshot)
     provenance_bytes = snapshot.get("evidence-provenance.json")
     if not present_inputs and provenance_bytes is None and not snapshot_errors:
@@ -421,10 +440,20 @@ def evaluate(
             provenance_bytes,
             snapshot_errors,
             now=now,
+            external_trust=external_trust,
+            external_trust_error=external_trust_error,
         )
         provenance_status = PASS if provenance["status"] == "VERIFIED" else FAIL
         if provenance_status == PASS:
             signers = provenance.get("signers", [])
+            trust_authority = provenance.get("trust_authority")
+            authority_detail = ""
+            if isinstance(trust_authority, dict):
+                authority_detail = (
+                    f"；外部 trust authority={trust_authority.get('issuer_id')}"
+                    f"/{trust_authority.get('issuer_key_id')} epoch={trust_authority.get('epoch')} "
+                    f"source={trust_authority.get('source')}，撤销状态新鲜且 ETag/digest 已绑定"
+                )
             provenance_detail = (
                 f"证据集 {provenance.get('evidence_set_id')} 已由 "
                 + "、".join(
@@ -433,6 +462,7 @@ def evaluate(
                     for item in signers
                 )
                 + " 独立签署；文件字节、策略和外置信任库摘要一致"
+                + authority_detail
             )
         else:
             provenance_detail = "；".join(str(item) for item in provenance.get("errors", []))

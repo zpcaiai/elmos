@@ -194,6 +194,7 @@
         "evidence_set_id": { "type": "string", "minLength": 1 },
         "trust_store_id": { "type": "string", "minLength": 1 },
         "trust_store_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "trust_authority": { "$ref": "#/$defs/trustAuthorityReceipt" },
         "expires_at": { "type": "string", "pattern": "Z$" },
         "policy": { "$ref": "#/$defs/policy" },
         "files": { "type": "array", "items": { "$ref": "#/$defs/contentFile" } },
@@ -234,6 +235,38 @@
           }
         }
       ]
+    },
+    "trustAuthorityReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer_id",
+        "issuer_key_id",
+        "snapshot_id",
+        "epoch",
+        "issued_at",
+        "expires_at",
+        "etag",
+        "snapshot_sha256",
+        "authority_root_sha256",
+        "trust_store_sha256",
+        "source",
+        "revocation_status_count"
+      ],
+      "properties": {
+        "issuer_id": { "type": "string", "minLength": 1 },
+        "issuer_key_id": { "type": "string", "minLength": 1 },
+        "snapshot_id": { "type": "string", "minLength": 1 },
+        "epoch": { "type": "integer", "minimum": 1 },
+        "issued_at": { "type": "string", "pattern": "Z$" },
+        "expires_at": { "type": "string", "pattern": "Z$" },
+        "etag": { "type": "string", "minLength": 3 },
+        "snapshot_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "authority_root_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "trust_store_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "source": { "enum": ["online", "cache-revalidated", "cache-fallback", "replay-file"] },
+        "revocation_status_count": { "type": "integer", "minimum": 1 }
+      }
     },
     "supportedConfidence": {
       "type": "object",
