@@ -217,3 +217,88 @@ Primary threads for the active task:
 
 417 rollout files exist in total; ~30 of the most recent were filtered by `cwd`
 to isolate the elmos-scoped ones rather than loading the archive wholesale.
+
+---
+
+## 2026-08-20 current-session evidence ledger
+
+### Python local binding frontend
+
+| Evidence | Current result |
+| --- | --- |
+| `python_analyzer.py` | `ast.AnnAssign` emits typed IR `let`; bare/unbound/non-canonical forms fail with explicit source codes |
+| `discovery.py` | new Python/LET source-domain rejections classify as `UNSUPPORTED`, not `NOT_RUN` |
+| Atomic tests | 116 collected, exit 0 |
+| Ruff / strict MyPy | PASS / PASS on the task-owned Python source scope |
+| Real repository | clean LangGraph `49ae27c2ae983cfb92091b0dea9f7bc37a716479`: 447 tracked `.py`, 2 structural candidates, 0 analyzer READY |
+| Measurement artifact | `.ai/python-let-real-repository-measurement-2026-08-20.json`, SHA-256 `8bf904c0792daaa591d5c4e5caa0a2f686beaa96ef0d6d45dcf23ab5ddc3d19e` |
+| Decision | observed gain 0; keep profile v1; `NOT_CERTIFIED` |
+
+The final four-file scope committed as `a1d842042` (and unchanged at
+`fe836aab9`) has these SHA-256 values:
+
+```text
+discovery.py                     6b0daffc3fceeb1fc886d3d8619726e6971f54fc95cb6a4db2dc82bad288d9a7
+python_analyzer.py               5b4247d1616b5b6afc09cd89b3a01670a6a0b2aa3b13eab5523f8238c362a3cf
+test_repository_pipeline.py      034938a5196aed8dc0801e9cabcb5500144b9ab543262b455de5d8fe95d3bd5e
+test_python_local_bindings.py     70d3e582ecea4f3989b7092206386a6428a4985d9cd82135c6b9416b3209c461
+```
+
+The matrix owner reported the sole `fixed2` repository matrix **223/223 PASS**,
+the post-freeze set **503/503 PASS**, and pushed `a1d842042` plus `fe836aab9`
+with local/tracking/remote SHA equality and an empty index. ArkUI/Harmony device
+runtime evidence remains `NOT_RUN`; this result does not change certification.
+
+### Execution Intelligence
+
+- `make certify`, `make all`, and the CI readiness entrypoint are coded to
+  propagate a nonzero decision instead of suppressing it.
+- This protects only the command exit boundary. The local JSON/synthetic harness
+  can still be authored by the same executor and lacks digest-bound signed
+  provenance plus an independent verifier.
+- Current-source local evidence: entrypoint regression `3 passed`; package
+  tests `280 passed / 18 skipped`; Ruff, strict MyPy over 26 source files, and
+  workflow YAML parsing passed. A fresh real `make certify` returned exit 2 and
+  `BLOCK (pass 9 / fail 2 / not executed 0)` as required by the evidence floor.
+- Readiness remains `BLOCK / NOT_CERTIFIED`; no local synthetic result is
+  external, production, customer, or certification evidence.
+
+### Snapshot CAS slice
+
+- Current source implements capture-time archive/manifest roots as one atomic,
+  generation-safe set; resource bindings separate immutable object metadata
+  from repository/project ownership; and verified dual-read accepts legacy
+  `cas:sha256:` and sized `cas://sha256/...` references under explicit modes.
+- JDBC catalog rows now preserve labels and exact provenance digest size.
+  Default-off tenant-local AES-GCM uses fresh nonces and tenant/key/digest-bound
+  AAD. This is a local encrypted tier, not production KMS or rotation evidence.
+- A durable JDBC ActionCache index now stores reconstructable metadata plus
+  invalidation/quarantine state. The v2 signature subject covers the complete
+  key/result/producer/risk/writer, and verified receipts/JDBC readback bind and
+  recompute its envelope digest. Current focused negative tests passed;
+  persisted trust decisions are still not cryptographically reverified against
+  signature bytes, key policy or current revocation state on lookup.
+- Current-source local evidence: full `modules/cas` tests and focused
+  catalog/GC, ActionCache/encryption, snapshot/integrations, persistence
+  migration and portfolio tests passed; control-plane main compile/package and
+  task-scoped static checks passed. The ordinary control-plane testCompile is
+  `BLOCKED_BY_UNRELATED_TEST_COMPILE` by the out-of-scope ChinaDB test constructor.
+  Live PostgreSQL, Docker/provider validation and a real two-process shared tier
+  remain `NOT_RUN`.
+- Still unresolved: snapshot delete/release caller, commit-unknown root
+  reconciliation, tenant-unscoped legacy reads, the workspace-service legacy-only path,
+  production KMS/key rotation, live PostgreSQL, a real shared object tier,
+  ActionCache execution wiring and trust revalidation, and the portfolio
+  process-local key→digest index.
+- The collector now treats missing/unreadable/substituted roots and unknown or malformed
+  manifests as unresolved and blocks the entire sweep; no production collector/delete caller
+  or complete retention/deletion lifecycle has been evidenced. Catalogue loads preserve legal
+  hold, but a hold applied after load can still race the later store delete without an atomic
+  production GC epoch/lock.
+- Runtime posture remains default-off `SINGLE_HOST / NOT_CERTIFIED`; no
+  cross-instance, at-rest production, GC-complete, or certification claim is
+  supported.
+
+No local result in this section changes R10 independent-client evidence,
+external verification, customer evidence, production evidence, or
+`certified_route_count=0`.

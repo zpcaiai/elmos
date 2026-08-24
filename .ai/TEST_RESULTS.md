@@ -939,3 +939,161 @@ single `matrix182-owned-run.log` process alone.
   still `[Empty]`); its 16 associated routes keep device/runtime `NOT_RUN`.
 - K10 (engine Ruff `S105`), K11 (`sql-dialect-engine` venv), K12 (duplicate
   sanitiser) are untouched and still open.
+
+---
+
+## Session 2026-08-20 — Python `let`, fail-closed EI, and local CAS slice
+
+### Python `AnnAssign` → IR `let`
+
+Exact atomic command (cwd `engines/polyglot-route-engine`):
+
+```text
+uv run --locked --group dev pytest -q \
+  tests/test_python_local_bindings.py \
+  tests/test_type_semantics.py \
+  tests/test_local_bindings.py \
+  tests/test_repository_pipeline.py::test_analyzer_failure_classifier_uses_primary_language_owned_code \
+  --tb=short
+```
+
+Result: **116 collected, exit 0**. The output contained 116 pass marks and no
+failure/error mark. Static checks:
+
+```text
+Ruff: discovery.py, python_analyzer.py, test_python_local_bindings.py,
+      test_repository_pipeline.py                              PASS
+strict MyPy: discovery.py + python_analyzer.py                 PASS
+scoped git diff --check                                        PASS
+```
+
+Real-repository measurement: clean LangGraph commit
+`49ae27c2ae983cfb92091b0dea9f7bc37a716479`, 447 tracked Python files,
+2 structural local-binding candidates, **0 complete analyzer READY**. Durable
+artifact: `.ai/python-let-real-repository-measurement-2026-08-20.json`, SHA-256
+`8bf904c0792daaa591d5c4e5caa0a2f686beaa96ef0d6d45dcf23ab5ddc3d19e`.
+Decision: keep `typed-pure-function-v1`; certification remains `NOT_CERTIFIED`.
+
+Two pre-existing duplicate full-suite attempts are not acceptance evidence.
+The durable one stopped at 55% after multiple F/E marks, had no summary/status,
+and its retained log SHA-256 was
+`3faebea221bfce325db4807c1051207f6aeb764c08ba284be617deca7b8802c5`.
+Per cross-task ownership, this session did not restart full pytest or the
+repository language matrix.
+
+The matrix owner subsequently reported the sole `fixed2` repository matrix
+**223/223 PASS** (`19699.03s`), post-freeze **503/503 PASS**, and pushed the
+Python scope plus matrix closure as `a1d842042` and `fe836aab9`. ArkUI/Harmony
+device runtime remains `NOT_RUN`; these repository results are not device,
+external, customer, or certification evidence.
+
+### Execution Intelligence fail-closed entrypoints
+
+Current-source local engineering evidence:
+
+```text
+tests/test_fail_closed_entrypoints.py                         3 passed
+packages/execution-intelligence/tests                        280 passed, 18 skipped
+targeted Ruff                                                 PASS
+strict MyPy over 26 source files                               PASS
+workflow YAML parse                                            PASS
+fresh readiness decision                                      BLOCK (pass 9 / fail 2)
+```
+
+The two failures are real evidence floors: runtime calibration 3/20 and token
+mix 1/20. `make certify`, `make all`, and CI now propagate that nonzero result.
+Real command `make certify PY=../../engines/polyglot-route-engine/.venv/bin/python
+OUT=estimation/elmos` returned make exit **2** after the CLI returned failure and
+printed `Decision: BLOCK (pass 9 · fail 2 · not executed 0)`.
+No samples were fabricated. `make lint` passed targeted Ruff and strict MyPy
+over all 26 package source files; `make test` returned
+`280 passed, 18 skipped in 7.89s`; the entrypoint regression independently
+returned `3 passed in 0.15s`.
+
+The code makes the entrypoint propagate a nonzero decision, but its local JSON
+and synthetic harness remain hand-writable and lack digest-bound signed
+provenance plus an independent verifier. The only supported readiness posture
+is `BLOCK / NOT_CERTIFIED`; these local counts are not production, customer,
+external, or certification evidence.
+
+### Snapshot local CAS engineering slice
+
+Current-source local engineering evidence:
+
+```text
+mvn -q -pl modules/cas -am \
+  -Dtest=CasCatalogTest,CasLabelsJsonTest,JdbcCasCatalogMetadataReadTest,\
+JdbcCasCatalogTenantScopeTest,CasGarbageCollectorTest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+  exit 0; 46 tests, 0 failure, 0 error, 0 skip
+
+mvn -q -pl modules/cas -am \
+  -Dtest=ActionCacheTest,CasManifestAndSecurityTest,\
+JdbcActionCacheIndexTenantScopeTest,DirectoryTenantEncryptionTest,\
+TenantEncryptedLocalCasStoreTest,ResultSignatureTest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+  exit 0
+
+mvn -q -pl modules/cas -am test
+  exit 0
+
+mvn -q -pl modules/cas,modules/snapshot,modules/integrations -am \
+  -Dtest=SnapshotCaptureServiceTest,SnapshotMaterializationServiceTest,\
+LocalContentAddressedArtifactStoreTest,CasBackedArtifactStoreTest,\
+CasBackedSnapshotRoundTripTest,CompatibleSnapshotArtifactStoreTest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+  exit 0
+
+mvn -q -pl modules/persistence -am \
+  -Dtest=CasMigrationContractTest,ActionCacheMigrationContractTest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+  exit 0
+
+mvn -q -pl modules/portfolio-scale -am \
+  -Dtest=TenantContentAddressedCacheTest \
+  -Dsurefire.failIfNoSpecifiedTests=false test
+  exit 0
+
+mvn -q -pl apps/control-plane -am -Dmaven.test.skip=true package
+  exit 0
+
+task-scoped diff/XML/YAML/JSON static validation
+  PASS
+```
+
+The current 2026-08-22 Surefire report window contains 33 suites / 276 tests,
+with 0 failures, 0 errors, and 0 skips: CAS 230, snapshot 8, integrations 20,
+persistence migration contracts 11, and portfolio 7. These report files are
+local engineering evidence and do not include live PostgreSQL or a shared
+object tier.
+
+The ordinary control-plane targeted Maven invocation did not reach this test:
+unrelated ChinaDB changes left `DatabaseDataControllerTest` calling an obsolete
+constructor, so testCompile exited 1. This is recorded as
+`BLOCKED_BY_UNRELATED_TEST_COMPILE`, not as a control-plane module pass.
+
+The current source corrects the old “six blockers all unimplemented” statement:
+
+- snapshot capture roots are an atomic generation-safe set; unresolved full
+  reference graphs still block a full sweep fail-closed
+- repository/project `ResourceBinding` supports same-tenant multi-repository
+  bindings independently of immutable object metadata
+- legacy and sized CAS references have verified dual-read/explicit migration
+  modes
+- JDBC metadata reads preserve labels and exact provenance digest size
+- a default-off tenant-local AES-GCM tier uses fresh nonces and bound AAD
+- a durable JDBC ActionCache index persists reconstructable metadata plus
+  invalidation/quarantine state
+
+ActionCache v2 signature subject now binds the complete key/result/producer/risk/writer,
+and JDBC readback recomputes its envelope digest; its focused negative tests passed.
+Live PostgreSQL, Docker/provider validation, and a real two-process shared object tier
+remain **NOT_RUN**; local in-memory/JDBC contract tests do not substitute for them.
+
+Unresolved production boundaries are the snapshot delete/release caller,
+commit-unknown root reconciliation (the collector itself now blocks the whole sweep on any
+unresolved graph), the post-load legal-hold versus object-store-delete race, tenant-unscoped legacy reads, the
+workspace-service legacy-only materializer, production KMS/key rotation, live
+PostgreSQL and real shared-tier evidence, ActionCache execution wiring and trust
+revalidation, and the portfolio process-local key→digest index. The configured
+mode remains default-off `SINGLE_HOST / NOT_CERTIFIED`.

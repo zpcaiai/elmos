@@ -225,7 +225,7 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 
 ---
 
-## #10 CAS 与 Action Cache — `DONE`（已接线；待 Mac 复验）
+## #10 CAS 与 Action Cache — `IN-PROGRESS`（底层已验证，生产闭环未完成）
 
 来源不是 polyglot 评估，是 `elmos-infrastructure-foundation-skills-v1.0.0` 的
 `elmos-content-addressed-cache`（P0/G3，42 条带 ID 的验收点）。动手前核对：全仓唯一的
@@ -242,7 +242,7 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 2. **UTF-16 排序会让两台 runner 算出不同 root digest** —— 目录项用 `String.compareTo` 排序时，
    补充平面字符排在部分 BMP 字符之前，与 UTF-8 字节序相反。已改为按字节比。
 
-### 第二轮（同日下午）：把 6 个缺口和「零调用者」全关掉
+### 第二轮（同日下午）：底层能力补齐；「零调用者」只完成本机试验切片
 
 `modules/cas` 现在 **6860 行主代码（36 文件）/ 3404 行测试（19 文件）/ 177 条测试**，云端全绿。
 
@@ -258,24 +258,51 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 | OpenTelemetry | `CasTelemetry` + `OtlpExporter`（OTLP/HTTP JSON），埋点接进 `ActionCache` 与 `TieredCasStore` |
 | 告警 | `CasAlerting` 六条规则，按不可恢复性定级，按规则+key 节流，webhook 投递 |
 | Runbook | `docs/runbooks/cas.md`，八个场景 + 升级矩阵 |
-| **零调用者** | `io.elmos.integrations.CasBackedArtifactStore` 实现 `SnapshotPorts.ArtifactStore/ArtifactReader`；`TenantContentAddressedCache` 改为委托 `modules/cas` |
+| **调用切片** | `io.elmos.integrations.CasBackedArtifactStore` 实现 `SnapshotPorts.ArtifactStore/ArtifactReader`；快照新增默认关闭的本机 CAS 条件装配；`TenantContentAddressedCache` 的 blob 委托 `modules/cas`，但 portfolio key→digest 仍是进程内索引 |
 
 合计 **193 条测试 + 45 项数据库约束检查**，全部执行过。三个 pom 加了 `elmos-cas` 依赖。
 
-**仍然未闭合，别写成别的**：生产命中率数字（基准是合成负载 + 模拟执行）；
-证书签发/轮换、私钥托管、在线吊销；`JdbcCasCatalog` **编译过但没执行过**
-（云端无 PostgreSQL JDBC 驱动，`JdbcCasCatalogLiveTest` 要 Docker）；
-`SnapshotMaterializationService` 的装配点**还没改**成 `CasBackedArtifactStore`——
-接口满足了，生产路径上还没人构造它。
+2026-08-20 当前源码已实现上一轮六项结构性缺口中的本地工程部分：
 
-**你需要在 Mac 上做的**：
+- capture-time archive/manifest roots 使用 generation-safe 原子批次；root reactivation
+  不会被旧 generation 的延迟 release 隐藏
+- immutable catalog metadata 与 repository/project `ResourceBinding` 分离，支持同租户多仓绑定
+- legacy `cas:sha256:` 与 sized `cas://sha256/...` verified dual-read/显式迁移模式
+- JDBC 精确读回 labels 与 provenance digest size
+- 默认关闭的 tenant-local AES-GCM 本机层（fresh nonce + tenant/key/digest AAD）
+- durable JDBC `ActionCacheIndex` 持久化可重建 metadata、隔离与失效状态
+
+共享 223-node 矩阵释放后，当前源码已通过 `modules/cas` 全模块测试，以及 catalog/GC、
+ActionCache/encryption、snapshot/integrations、persistence migration、portfolio 的 focused
+Maven 验证和 task-scoped 静态检查。ActionCache v2 subject/envelope 已覆盖完整
+key/result/producer/risk/writer 并在 JDBC 读回重算 digest，focused 负例已通过。live
+PostgreSQL、Docker/provider 与真实双进程共享 object tier 仍为 `NOT_RUN`；上面的 193+45
+是历史工程证据，不能替代这些尚未执行的生产等价验证。
+
+**仍然未闭合，别写成别的**：
+
+- snapshot delete/archive caller 未接 root release，commit-unknown provisional roots 没有
+  reconciliation；collector 已在未解析完整引用图时阻断 full sweep 且 load 保留 legal hold，
+  但缺生产调用者和跨 catalog-check/object-delete 的原子 hold 协调
+- legacy reader 仍 tenant-unscoped，workspace-service materializer 仍只接受 legacy 路径
+- tenant AES-GCM 默认关闭且只是本机 key-directory 方案；生产 KMS、密钥托管/轮换证据缺失
+- 缺 live PostgreSQL 与真实两进程共享 object tier 的重启/跨实例命中证据
+- `ActionCache` 仍无 execution caller；persisted signature/attestation trust decision 未按最新
+  trust/revocation 状态重新验证
+- `TenantContentAddressedCache` portfolio key→digest 仍是进程内索引
+- 生产命中率数字、证书签发/轮换、私钥托管、在线吊销仍没有证据
+
+因此 2026-08-20 的条件装配仍只允许报告默认关闭的
+`SINGLE_HOST / NOT_CERTIFIED`；durable JDBC index 的存在不等于已有共享 object tier 或
+真实跨实例命中。
+
+**共享矩阵释放后已执行及仍待执行的验证边界**：
 
 ```bash
 cd /Users/stephen/DevProjects/AIProjects/elmos
 mvn -q -pl modules/cas -am test
-mvn -q -pl modules/integrations,modules/portfolio-scale -am test
-mvn -q -pl modules/persistence -am test          # 需要 Docker
-bash scripts/cas/finish-mac-verification.sh      # 包含 Docker 那半边，并自己选一个能装上 pgserver 的解释器
+# 已通过：另有 integrations/snapshot、persistence migration、portfolio focused tests
+# NOT_RUN：live PostgreSQL、真实双进程共享 object tier、Docker/provider verification
 ```
 
 详见 `FINDINGS-2026-08-19-cas-action-cache.md`（第一轮）与
@@ -313,10 +340,14 @@ bash scripts/cas/finish-mac-verification.sh      # 包含 Docker 那半边，并
 ```
 #1  DONE  PHP 模块枚举
 #5b DONE  Go/Rust else-if + 修 Go emitter 语法缺陷
-#10 DONE  CAS 与 Action Cache（**未接调用链，对生产状态贡献为 0**）
+#10 IN-PROGRESS  CAS 本地结构已补 capture roots/resource bindings/dual-read/metadata/
+                 tenant-local encryption/durable JDBC index；仍 SINGLE_HOST / NOT_CERTIFIED
 
 下一步，按「不阻塞」排序：
-  #10a 把 CAS 接进 snapshot + Java 闭环   ← 让 #10 真正生效，优先级最高
+  #10a 接 snapshot delete/release 与 commit-unknown reconciliation，证明 unresolved graph
+       的 full sweep fail-closed
+  #10b 接 ActionCache execution caller、命中时签名/attestation trust 重验与真实共享 object tier
+  #10c 替换 portfolio 进程内 key→digest；接生产 KMS/rotation 与 workspace-service CAS 路径
   #2a  Kotlin 发射侧（纯 Python，不需要 kotlinc）
   #5a  单文件多函数
   #7   先回答「六个骨架引擎是否该合并」再动手

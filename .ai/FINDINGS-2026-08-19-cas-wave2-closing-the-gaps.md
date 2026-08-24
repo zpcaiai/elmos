@@ -1,5 +1,24 @@
 # FINDINGS 2026-08-19（第二轮）— 把 CAS 的 6 个缺口和「零调用者」逐条关掉
 
+> **2026-08-20 二次更正：标题仍是历史目标，但“六项全未实现”已经不准确。** 当前
+> 源码已实现 capture-time GC roots 的 generation-safe 原子批次、多仓
+> `ResourceBinding`、legacy/CAS verified dual-read、JDBC labels + provenance size 精确
+> 读回、默认关闭的 tenant-local AES-GCM，以及 durable JDBC `ActionCacheIndex`。
+> ActionCache v2 subject/envelope 已覆盖完整 key/result/producer/risk/writer，receipt/JDBC
+> 读回会绑定并重算 envelope digest。共享 223-node 矩阵释放后，这一版源码的 CAS 全模块、
+> focused catalog/GC、ActionCache/encryption、snapshot/integrations、persistence migration、
+> portfolio 与 task-scoped static 验证均已通过；live PostgreSQL、Docker/provider 与真实双进程
+> 共享 object tier 仍为 `NOT_RUN`。
+>
+> **生产闭环仍未完成。** snapshot delete caller 与 commit-unknown reconciliation 未接；
+> unresolved reference graph 的 full sweep 必须 fail-closed；legacy 读取 tenant-unscoped；
+> workspace-service 仍只认 legacy reference；collector 虽已对 unresolved graph 整轮停止，
+> 但没有生产 delete/collector caller；生产 KMS/rotation、live PostgreSQL、真实
+> 两进程共享 object tier、ActionCache execution caller/命中时 trust 重验均缺证据；
+> portfolio key→digest 仍是进程内索引。因此条件装配继续默认关闭，只能报告
+> `SINGLE_HOST / NOT_CERTIFIED`。以下原始记录保留为当时源码的历史工程证据，不能
+> 搬作当前源码、生产、跨实例或认证结论。
+
 口径声明不变：「实现」= 真实业务逻辑 + 接进真实调用链 + 有测试覆盖行为 + **执行过并记录结果**。
 本轮的目标就是把第一轮里明确写着「没做」的那几条做掉，**包括最后那条「零调用者」**。
 
@@ -144,7 +163,9 @@ JDBC 侧 `JdbcCasCatalog` 用**纯 `java.sql`**（不引 spring-jdbc），每次
    `PortfolioScaleTest` 照样过）。改掉了三件事：cache key 变成**长度前缀**编码
    （原来 `String.join("\\0", …)` 拼 7 个摘要，任何一个字段拼出 `\\0` 就能让两组不同输入塌成一个 key，
    有专门测试锁住）；读路径由 store 校验并隔离，而不是只重算一遍还留着毒字节；
-   构造器换成 `TieredCasStore` 就直接变成跨机共享缓存。
+   构造器换成 `TieredCasStore` 只会让 blob tier 具备共享的可能；portfolio
+   key→digest 索引仍是进程内状态，没有真实共享 object tier 与双进程证据时不能声称
+   跨机共享缓存。
 
 三个 pom 加了 `elmos-cas` 依赖：integrations、portfolio-scale、persistence。
 
@@ -161,17 +182,29 @@ JDBC 侧 `JdbcCasCatalog` 用**纯 `java.sql`**（不引 spring-jdbc），每次
    在 mock 里静态关掉那个 logger，否则通过的测试输出没法读。
 6. **psycopg 的多语句 `execute` 只能 fetch 第一个结果集**，RLS 测试要拆成多次 execute。
 
-## 现在还剩什么（这一节请当真）
+## 现在还剩什么（2026-08-20 当前口径，以本节为准）
 
-- **生产命中率数字**：没有。基准是合成负载 + 模拟执行。
-- **证书签发/轮换、私钥托管、在线吊销（OCSP/CRL）**：不在本模块，也没实现。
-- **`JdbcCasCatalog` 的执行证据**：云端没有 PostgreSQL JDBC 驱动（Maven Central 403），
-  所以它**编译过但没执行过**。V65 本身在真 Postgres 上执行过 45 项检查，
-  `InMemoryCasCatalog` 按同一份契约测过 11 条——两者一致是刻意的，
-  但 `JdbcCasCatalogLiveTest` 必须在你的 Mac 上（有 Docker）跑一次才算数。
-- **端到端**：`CasBackedArtifactStore` 满足 `SnapshotPorts`，但**还没有人在生产路径上构造它**——
-  `SnapshotMaterializationService` 的装配点仍然接的是 `LocalContentAddressedArtifactStore`。
-  下一步是改装配，那属于 wiring 而不是本模块。
+当前源码已经补上 capture roots、multi-resource binding、verified dual-read、JDBC metadata
+精确读回、tenant-local encryption 与 durable JDBC ActionCache index，不能再写成六项均无
+实现。本轮当前源码的 focused/module/static 验证已通过；live PostgreSQL、Docker/provider
+与真实双进程共享 object tier 仍为 `NOT_RUN`，此前 V65/PostgreSQL 结果不自动覆盖当前版本。
+
+- **GC 生命周期**：capture root set 已原子化且 generation-safe；missing/unreadable/substituted
+  root 或未知/畸形 manifest 会阻断整个 sweep。snapshot delete/archive caller 与
+  commit-unknown provisional-root reconciliation 仍未接；load 会保留 authoritative legal hold，
+  但 load 后新增 hold 与 store delete 尚无跨系统原子锁，不能把 collector 防护等同于生命周期闭环。
+- **兼容与资源授权**：新 CAS 读取有精确 `ResourceBinding`，但 legacy reader 仍仅按
+  digest、tenant-unscoped；workspace-service materializer 仍只理解 legacy reference。
+- **静态加密**：tenant-local AES-GCM 默认关闭，仅是 operator-mounted key-directory 的
+  本机工程实现；生产 KMS、密钥托管/轮换和 provider evidence 均没有。
+- **ActionCache**：durable JDBC index 与完整 v2 subject/envelope digest 绑定已有，focused
+  负例已通过但仍无 execution caller；持久 trust decision 也没有 signature bytes/key policy，
+  未按最新吊销/信任状态重验。
+- **跨实例**：没有 live PostgreSQL + 真实两进程 + 共享 object tier 的命中/重启证据；
+  `TenantContentAddressedCache` portfolio key→digest 仍为进程内索引。
+- **生产证据**：生产命中率、证书签发/轮换、私钥托管、在线吊销（OCSP/CRL）均没有。
+
+结论保持默认关闭的 `SINGLE_HOST / NOT_CERTIFIED`。
 
 ## 第三轮修正（Mac 首跑之后）
 
