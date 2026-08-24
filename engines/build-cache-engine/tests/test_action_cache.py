@@ -14,6 +14,7 @@ from elmos_build_cache.errors import ConflictError, NondeterministicStage
 from elmos_build_cache.manifests import ActionResultManifest, ExecutionMetrics
 
 KEY = digest("7")
+OTHER_TENANT = "tenant-other"
 
 
 def commit(
@@ -36,6 +37,14 @@ def commit(
         metrics=ExecutionMetrics(wall_ms=5000, cpu_ms=4200, compiler_ms=900, model_tokens=12000),
     )
     with store.transaction():
+        store.register_artifact(
+            TENANT,
+            output,
+            size_bytes=len(payload),
+            media_type="application/octet-stream",
+            artifact_kind="stage-output",
+            validation_level=level,
+        )
         action_cache.commit(
             CommitRequest(
                 tenant_id=TENANT,
@@ -86,6 +95,14 @@ def test_cache_003_nondeterminism_quarantines_both_results(
 
     with pytest.raises(NondeterministicStage):
         with store.transaction():
+            store.register_artifact(
+                TENANT,
+                second_output,
+                size_bytes=len(b"result B"),
+                media_type="application/octet-stream",
+                artifact_kind="stage-output",
+                validation_level=ValidationLevel.TEST_VERIFIED,
+            )
             action_cache.commit(
                 CommitRequest(TENANT, KEY, manifest, validation_level=ValidationLevel.TEST_VERIFIED)
             )
@@ -99,6 +116,82 @@ def test_cache_003_nondeterminism_quarantines_both_results(
     assert cas.is_quarantined(first) is False  # the outputs themselves are untouched
     entry = store.get_action_entry(TENANT, TrustNamespace.BRANCH, KEY)
     assert entry is not None and str(entry.status) == "QUARANTINED"
+
+
+def test_commit_cannot_claim_a_foreign_tenant_cas_digest(
+    action_cache: ActionCache,
+    store: SqliteMetadataStore,
+    cas: ContentAddressableStore,
+) -> None:
+    output = cas.put_bytes(b"foreign tenant output")
+    manifest = ActionResultManifest(KEY, "target-code-generation", "1.0.0", (output,))
+    result_digest = manifest.digest()
+    with store.transaction():
+        store.register_artifact(
+            OTHER_TENANT,
+            output,
+            size_bytes=len(b"foreign tenant output"),
+            media_type="application/octet-stream",
+            artifact_kind="stage-output",
+        )
+    before_cas = cas.accounting()
+    before_rows = store.query_one("SELECT COUNT(*) FROM artifacts")
+
+    with pytest.raises(ConflictError, match="not registered"):
+        with store.transaction():
+            action_cache.commit(CommitRequest(TENANT, KEY, manifest))
+
+    assert cas.accounting() == before_cas
+    assert not cas.contains(result_digest)
+    assert store.query_one("SELECT COUNT(*) FROM artifacts") == before_rows
+    assert store.get_artifact(TENANT, output) is None
+    assert store.get_action_entry(TENANT, TrustNamespace.BRANCH, KEY) is None
+
+
+def test_semantic_nondeterminism_quarantine_does_not_move_shared_cas_bytes(
+    action_cache: ActionCache,
+    store: SqliteMetadataStore,
+    cas: ContentAddressableStore,
+) -> None:
+    commit(action_cache, store, cas, payload=b"first result")
+    first_entry = store.get_action_entry(TENANT, TrustNamespace.BRANCH, KEY)
+    assert first_entry is not None
+    first_result = first_entry.result_manifest_digest
+    with store.transaction():
+        store.register_artifact(
+            OTHER_TENANT,
+            first_result,
+            size_bytes=len(cas.get_bytes(first_result)),
+            media_type="application/json",
+            artifact_kind="action-result",
+        )
+
+    second_output = cas.put_bytes(b"second result")
+    second_manifest = ActionResultManifest(
+        KEY,
+        "target-code-generation",
+        "1.0.0",
+        (second_output,),
+    )
+    second_result = second_manifest.digest()
+    with pytest.raises(NondeterministicStage):
+        with store.transaction():
+            store.register_artifact(
+                TENANT,
+                second_output,
+                size_bytes=len(b"second result"),
+                media_type="application/octet-stream",
+                artifact_kind="stage-output",
+            )
+            action_cache.commit(CommitRequest(TENANT, KEY, second_manifest))
+
+    assert cas.contains(first_result)
+    assert cas.contains(second_result)
+    assert not cas.is_quarantined(first_result)
+    assert not cas.is_quarantined(second_result)
+    other_registration = store.get_artifact(OTHER_TENANT, first_result)
+    assert other_registration is not None
+    assert str(other_registration.storage_state) == "LOCAL"
 
 
 def test_idempotent_recommit_is_accepted(

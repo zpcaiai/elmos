@@ -90,6 +90,16 @@ def test_default_config_is_safe() -> None:
     assert config.workspace.undeclared_output_policy == "quarantine"
     assert config.security.reject_symlink_escape is True
     assert config.redis.authoritative is False
+    assert config.package_version == "1.2.0"
+    assert config.parity.claim_mode == "measured_only"
+    assert config.parity.prompt_cache.mode == "observe"
+    assert config.parity.prompt_cache.enabled is False
+    assert config.parity.environment_snapshots.enabled is False
+    assert config.parity.affinity.enabled is False
+    assert config.parity.coordinator.enabled is False
+    assert config.parity.context_ledger.append_only is True
+    assert config.parity.automatic_rollback is True
+    assert config.parity.false_hit_immediate_rollback is True
 
 
 def test_shipped_configuration_files_load(tmp_path: Path) -> None:
@@ -116,6 +126,49 @@ def test_unsafe_policy_values_are_rejected() -> None:
         load_config_mapping({"elmos": {"cache": {"workspace": {"keep_previous_published_versions": 0}}}})
     with pytest.raises(ContractViolation):
         load_config_mapping({"elmos": {"cache": {"validation": {"default_minimum": "QUARANTINED"}}}})
+
+
+@pytest.mark.parametrize(
+    "parity",
+    [
+        {"claim_mode": "marketing_claim"},
+        {"rollout_phase": "instant_full"},
+        {"automatic_rollback": False},
+        {"false_hit_immediate_rollback": False},
+        {"unknown_outcome_rate_max": 0.011},
+        {"prompt_cache": {"provider_failure_threshold": 4}},
+        {"prompt_cache": {"provider_recovery_events": 9}},
+        {"prompt_cache": {"canonical_layout": False}},
+        {"prompt_cache": {"stable_turn_cached_token_reuse_min": 0.899}},
+        {"prompt_cache": {"unexpected_full_prefix_miss_max": 0.021}},
+        {"context_ledger": {"append_only": False}},
+        {"context_ledger": {"whole_repository_reinjection": True}},
+        {"context_ledger": {"compaction_soft_limit_ratio": 0.95}},
+        {"context_ledger": {"compaction_warmup_reuse_min": 0.799}},
+        {"environment_snapshots": {"embed_secret_values": True}},
+        {"environment_snapshots": {"verify_digests_on_restore": False}},
+        {"environment_snapshots": {"hit_rate_min": 0.949}},
+        {"environment_snapshots": {"warm_start_p95_reduction_min": 0.799}},
+        {"environment_snapshots": {"default_ttl_seconds": 86_401}},
+        {"affinity": {"bounded_load_escape": False}},
+        {"affinity": {"fairness_guard": False}},
+        {"affinity": {"wrong_shard_rate_max": 0.011}},
+        {"coordinator": {"singleflight": False}},
+        {"coordinator": {"exact_action_before_model_call": False}},
+        {"coordinator": {"unified_attribution": False}},
+        {"coordinator": {"max_parallel_probes": 7}},
+        {
+            "rollout_phase": "observe",
+            "prompt_cache": {"enabled": True, "mode": "serve"},
+        },
+        {"rollout_phase": "shadow", "environment_snapshots": {"enabled": True}},
+        {"rollout_phase": "observe", "affinity": {"enabled": True}},
+        {"rollout_phase": "shadow", "coordinator": {"enabled": True}},
+    ],
+)
+def test_parity_configuration_fails_closed(parity: dict[str, object]) -> None:
+    with pytest.raises(ContractViolation):
+        load_config_mapping({"elmos": {"cache": {"parity": parity}}})
 
 
 def test_type_errors_are_rejected_not_coerced() -> None:

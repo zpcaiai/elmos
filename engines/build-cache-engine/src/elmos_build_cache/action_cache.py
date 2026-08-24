@@ -193,6 +193,35 @@ class ActionCache:
         self.negative_ttl_seconds = negative_ttl_seconds
         self.hot_index = hot_index if hot_index is not None else HotIndex()
 
+    @staticmethod
+    def _artifact_registration_is_usable(registration: Any) -> bool:
+        return bool(
+            registration is not None
+            and registration.storage_state
+            in (ArtifactStorageState.LOCAL, ArtifactStorageState.REMOTE)
+            and registration.validation_level is not ValidationLevel.QUARANTINED
+        )
+
+    def _require_owned_output(self, tenant_id: str, digest: str) -> None:
+        """Prove ownership before consulting or mutating the shared CAS.
+
+        Possessing a digest is not proof that a tenant owns the bytes behind
+        it. Output registrations therefore have to predate an Action Cache
+        commit; the commit cannot adopt a globally present digest on demand.
+        """
+
+        normalized = require_digest(digest)
+        registration = self.store.get_artifact(tenant_id, normalized)
+        if not self._artifact_registration_is_usable(registration):
+            raise ConflictError("action output is not registered and usable for this tenant")
+        try:
+            raw = self.cas.get_bytes(normalized, verify=True)
+        except Exception as exc:  # noqa: BLE001 - one non-disclosing boundary error
+            raise ConflictError("action output is not registered and usable for this tenant") from exc
+        assert registration is not None
+        if registration.tenant_id != tenant_id or registration.size_bytes != len(raw):
+            raise ConflictError("action output is not registered and usable for this tenant")
+
     # -- lookup -----------------------------------------------------------
     def lookup(self, request: LookupRequest) -> LookupResult:
         require_digest(request.action_key)
@@ -222,6 +251,12 @@ class ActionCache:
         if reasons:
             return LookupResult(False, tuple(reasons), entry=entry)
 
+        manifest_registration = self.store.get_artifact(
+            request.tenant_id, entry.result_manifest_digest
+        )
+        if not self._artifact_registration_is_usable(manifest_registration):
+            return LookupResult(False, (MissReason.ARTIFACT_MISSING,), entry=entry)
+
         try:
             document = self.cas.get_document(entry.result_manifest_digest)
         except Exception as exc:  # noqa: BLE001 - normalised into a miss reason
@@ -250,6 +285,22 @@ class ActionCache:
 
         if request.require_artifacts_present:
             outputs = document.get("output_artifacts", [])
+            registrations = {
+                digest: self.store.get_artifact(request.tenant_id, digest)
+                for digest in outputs
+            }
+            unowned = [
+                digest
+                for digest, registration in registrations.items()
+                if not self._artifact_registration_is_usable(registration)
+            ]
+            if unowned:
+                return LookupResult(
+                    False,
+                    (MissReason.ARTIFACT_MISSING,),
+                    entry=entry,
+                    detail={"missing": unowned[:10]},
+                )
             # Corruption is checked first: a quarantined object is present on
             # disk but unusable, and reporting it as "missing" would send an
             # operator looking for the wrong problem.
@@ -340,6 +391,12 @@ class ActionCache:
                 requested=request.action_key,
             )
 
+        # This pass is read-only and precedes storing the result manifest or
+        # writing any metadata edge. A foreign/unregistered digest therefore
+        # fails with zero Action Cache or CAS side effects.
+        for digest in sorted(set(request.manifest.output_artifacts)):
+            self._require_owned_output(request.tenant_id, digest)
+
         result_digest = request.manifest.store(self.cas)
         self.store.register_artifact(
             request.tenant_id,
@@ -354,19 +411,6 @@ class ActionCache:
             request.tenant_id, "action_cache", request.action_key, result_digest, "result"
         )
         for digest in request.manifest.output_artifacts:
-            # Register before referencing: an edge to an unknown artifact would
-            # make the GC reachability walk unsound.
-            if self.store.get_artifact(request.tenant_id, digest) is None:
-                info = self.cas.info(digest)
-                self.store.register_artifact(
-                    request.tenant_id,
-                    digest,
-                    size_bytes=info.size,
-                    media_type="application/octet-stream",
-                    artifact_kind="stage-output",
-                    storage_state=ArtifactStorageState.LOCAL,
-                    validation_level=request.validation_level,
-                )
             self.store.add_artifact_ref(
                 request.tenant_id, "action_result", result_digest, digest, "output"
             )
@@ -446,7 +490,9 @@ class ActionCache:
         )
         for digest in (existing.result_manifest_digest, new_result_digest):
             self.store.set_artifact_state(existing.tenant_id, digest, ArtifactStorageState.QUARANTINED)
-            self.cas.quarantine(digest, reason)
+        # This is a semantic, tenant-scoped quarantine. CAS bytes are shared
+        # by digest, so physically moving either manifest would deny service
+        # to another tenant that independently registered the same object.
         self.hot_index.invalidate(
             existing.tenant_id, str(existing.trust_namespace), existing.action_key
         )
@@ -488,6 +534,22 @@ class ActionCache:
             determinism="DETERMINISTIC",
         )
         result_digest = manifest.store(self.cas)
+        self.store.register_artifact(
+            tenant_id,
+            result_digest,
+            size_bytes=len(self.cas.get_bytes(result_digest)),
+            media_type="application/json",
+            artifact_kind="action-result",
+            storage_state=ArtifactStorageState.LOCAL,
+            validation_level=ValidationLevel.UNVERIFIED,
+        )
+        self.store.add_artifact_ref(
+            tenant_id,
+            "action_cache",
+            action_key,
+            result_digest,
+            "result",
+        )
         expires_at = self.clock.now() + (
             ttl_seconds if ttl_seconds is not None else self.negative_ttl_seconds
         )

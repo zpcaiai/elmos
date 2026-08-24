@@ -2,7 +2,7 @@ elmos:
   cache:
     enabled: true
     mode: read-write  # bypass | read-only | write-only | read-write | refresh
-    package_version: 1.1.0
+    package_version: 1.2.0
 
     local:
       root: .elmos/cache
@@ -108,3 +108,58 @@ elmos:
       prefetch_horizon: 4
       prefetch_max_in_flight: 4
       prefetch_max_bytes: 536870912
+
+    # Coding-agent cache parity is additive. New serving paths stay off while
+    # observation, exact accounting and durable context lineage are deployed.
+    # Serving wiring and asymmetric gate receipts are trusted runtime inputs;
+    # repository YAML is never allowed to assert either one.
+    parity:
+      enabled: true
+      schema_version: 1.2.0
+      claim_mode: measured_only
+      rollout_phase: observe
+      automatic_rollback: true
+      false_hit_immediate_rollback: true
+      unknown_outcome_rate_max: 0.01
+      prompt_cache:
+        enabled: false
+        mode: observe
+        compatibility_group: prompt-v1
+        providers: [openai, anthropic, self-hosted]
+        disabled_tenant_scope_digests: []
+        disabled_provider_models: []
+        disabled_request_classes: []
+        provider_failure_threshold: 3
+        provider_recovery_events: 10
+        canonical_layout: true
+        stable_turn_cached_token_reuse_min: 0.90
+        unexpected_full_prefix_miss_max: 0.02
+      context_ledger:
+        enabled: true
+        append_only: true
+        hash_chain: sha256
+        whole_repository_reinjection: false
+        compaction_enabled: true
+        compaction_soft_limit_ratio: 0.72
+        compaction_hard_limit_ratio: 0.88
+        compaction_warmup_reuse_min: 0.80
+      environment_snapshots:
+        enabled: false
+        verify_digests_on_restore: true
+        embed_secret_values: false
+        hit_rate_min: 0.95
+        warm_start_p95_reduction_min: 0.80
+        default_ttl_seconds: 86400
+      affinity:
+        enabled: false
+        routing: rendezvous
+        bounded_load_escape: true
+        fairness_guard: true
+        wrong_shard_rate_max: 0.01
+      coordinator:
+        enabled: false
+        singleflight: true
+        exact_action_before_model_call: true
+        restore_vs_recompute: cost-aware
+        unified_attribution: true
+        max_parallel_probes: 6

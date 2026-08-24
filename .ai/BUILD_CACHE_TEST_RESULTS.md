@@ -1,6 +1,9 @@
 # BUILD_CACHE_TEST_RESULTS.md
 
 > Executed results only. Anything not run here is marked `NOT EXECUTED`.
+> The opening environment and aggregate are pass-4/v1.1 history. Pass 5 is a
+> separate narrow-run ledger at the end; its overlapping counts are not summed,
+> and external v1.2 evidence remains `NOT_RUN`.
 
 - **Date:** 2026-08-20 (pass 4)
 - **Platform:** Linux x86_64, cloud sandbox (not the Mac)
@@ -249,3 +252,48 @@ recommended. A benchmark that always picks a winner is not measuring anything.
 ## Transfer verification (cloud → Mac)
 
 Recorded in `BUILD_CACHE_EVIDENCE.md` §Transfer for this pass.
+
+## Pass 5 — v1.2 narrow verification record
+
+This section records only commands/results actually observed during v1.2
+implementation. Counts from overlapping commands are intentionally not summed,
+and no new full-suite total is claimed. The long-running repository-wide test
+owned by another task was not interrupted or duplicated.
+
+| Narrow slice | Observed result | Scope |
+| --- | --- | --- |
+| Importer/package regression | **10 passed**; Ruff clean; importer second run produced no actions | Archive inventory, checksum, immutable vendor tree, 31 retained + 11 new, four-root byte identity |
+| Context ledger + compaction | **19 passed**; Ruff and mypy strict clean | Hash chain, scope, stale/reread projection, CAS-fenced prepare/warm/adopt/rollback |
+| Prompt/environment identity/affinity/miss diagnostics development slice | **38 passed**; Ruff and mypy strict clean | Pure contracts and negative paths; no real provider or image execution |
+| Prompt compiler + volatility/diff tools after provider-profile expansion | **22 passed**; mypy strict clean | Stable/append/volatile layout, capability profile, content-free accounting, dual-key migration |
+| Coordinator + parity evaluator + SLO autotuner | **52 passed**; Ruff and mypy strict clean | Exact-hit skip rule, full-identity singleflight, 20-scenario/16-metric contract, fail-closed tuning/rollback |
+| Environment snapshot CAS service | **9 passed**; Ruff and mypy strict clean | Local SQLite/CAS seal, lookup, restore cost, revoke, quarantine, idempotency and tenant/trust isolation |
+| Parity persistence | SQLite contract and reopen slices **passed**; Ruff and mypy strict clean | Durable, tenant/project-scoped, content-free records and idempotency conflict behavior |
+| Parity scenario harness | **16 passed**; Ruff and mypy strict clean | Exact corpus, raw-evidence/replay binding, timeout/blocked/not-run handling, asymmetric-signature path |
+| Parity API | **11 passed**; combined legacy API + parity store + parity API: **36 passed**; Ruff and mypy strict clean | All seven OpenAPI operations and durable repository integration |
+| v1.2 CLI | **6 passed**; Ruff and mypy strict clean | New prompt/environment/affinity/parity commands and explicit persistence |
+
+These checkpoints overlap: for example, the 22-test prompt run supersedes part
+of the earlier 38-test development slice, and the 36-test API run includes the
+parity-store tests. They must not be presented as one aggregate count.
+
+The repository contains additional v1.2 tests for contract assets,
+configuration, runtime observation and pipeline integration. Their final
+combined result belongs in a later immutable run receipt; file presence is not
+recorded as a pass.
+
+### Not executed for v1.2
+
+| Required evidence | Status | Why it matters |
+| --- | --- | --- |
+| New PostgreSQL migrations and repository contract against a live PostgreSQL server | `NOT_RUN` | SQLite behavior does not prove PostgreSQL DDL/locking/runtime behavior |
+| OpenAI/Anthropic/self-hosted provider calls with pinned SDK/model/profile/date | `NOT_RUN` | Adapter unit tests do not prove provider cache behavior or cached-token accounting |
+| Real environment image/layer build and warm restore | `NOT_RUN` | Local CAS bytes do not prove remote/distributed CAS, runner warm inventory, OCI/toolchain/image behavior or warm-start latency |
+| Exact external 20-scenario parity corpus with independent executor/verifier | `NOT_RUN` | Local fixtures cannot satisfy the parity gate |
+| Production shadow/canary/progressive rollout and rollback | `NOT_RUN` | Rollout state-machine tests are not field evidence |
+| Any v1.2 certification decision | `NOT_CERTIFIED` | Missing/blocked/not-run evidence fails closed |
+
+The checked-in config remains `measured_only` / `observe`; provider serving,
+environment restoration, affinity serving and the coordinator are off. No
+stable-turn reuse, unexpected-miss, exact-rerun, warm-start, cost-saving or
+wall-clock target is claimed as achieved by these local runs.

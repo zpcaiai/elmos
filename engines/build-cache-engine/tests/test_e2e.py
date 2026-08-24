@@ -17,7 +17,19 @@ import pytest
 
 from elmos_build_cache.cas import ContentAddressableStore
 from elmos_build_cache.clock import ManualClock
-from elmos_build_cache.config import CacheConfig, RolloutConfig
+from elmos_build_cache.config import (
+    CacheConfig,
+    CacheParityConfig,
+    CoordinatorConfig,
+    RolloutConfig,
+)
+from elmos_build_cache.coordinator import (
+    CacheLayer as CoordinatorCacheLayer,
+    LayerProbeResult,
+    MultiLayerCacheCoordinator,
+    ReuseIdentity,
+    ReuseRequest,
+)
 from elmos_build_cache.dag import ConversionDag, DagNode, EdgeKind, Granularity
 from elmos_build_cache.db import SqliteMetadataStore
 from elmos_build_cache.enums import FileClass, RunStatus, StagedFileStatus, ValidationLevel
@@ -32,6 +44,8 @@ from elmos_build_cache.pipeline import (
     StageResult,
     build_run,
 )
+from elmos_build_cache.parity_runtime import SERVING_GATE_KIND, serving_gate_statement
+from elmos_build_cache.security import Ed25519ProvenanceSigner, ProvenanceSigner, SignedStatement
 from elmos_build_cache.snapshot import Snapshot, diff_snapshots, take_snapshot
 
 TENANT = "tenant-e2e"
@@ -165,12 +179,28 @@ def fingerprints_for(
 
 
 class Harness:
-    def __init__(self, tmp_path: Path, clock: ManualClock, phase: str = "production-certified") -> None:
+    def __init__(
+        self,
+        tmp_path: Path,
+        clock: ManualClock,
+        phase: str = "production-certified",
+        *,
+        config: CacheConfig | None = None,
+        parity_serving_gate_receipt: SignedStatement | None = None,
+        parity_serving_gate_verifier: ProvenanceSigner | None = None,
+        multi_layer_coordinator: MultiLayerCacheCoordinator | None = None,
+    ) -> None:
         self.root = write_source(tmp_path / "source")
         self.base = tmp_path / "workdir"
         self.base.mkdir()
         self.clock = clock
-        self.config = dataclasses.replace(CacheConfig(), rollout=RolloutConfig(phase=phase))
+        self.config = config or dataclasses.replace(
+            CacheConfig(),
+            rollout=RolloutConfig(phase=phase),
+        )
+        self.parity_serving_gate_receipt = parity_serving_gate_receipt
+        self.parity_serving_gate_verifier = parity_serving_gate_verifier
+        self.multi_layer_coordinator = multi_layer_coordinator
         self.cas = ContentAddressableStore(self.base / ".elmos" / "cache")
         self.store = SqliteMetadataStore.open(self.base / ".elmos" / "cache" / "index.sqlite", clock)
         self.dag = build_dag()
@@ -195,9 +225,19 @@ class Harness:
         affected: Mapping[str, list[str]] | None = None,
         previous: Mapping[str, object] | None = None,
         crash_after: str | None = None,
+        minimum_validation: ValidationLevel | None = None,
     ):
         pipeline = ConversionPipeline(
-            self.config, self.store, self.cas, self.base, TENANT, PROJECT, clock=self.clock
+            self.config,
+            self.store,
+            self.cas,
+            self.base,
+            TENANT,
+            PROJECT,
+            clock=self.clock,
+            parity_serving_gate_receipt=self.parity_serving_gate_receipt,
+            parity_serving_gate_verifier=self.parity_serving_gate_verifier,
+            multi_layer_coordinator=self.multi_layer_coordinator,
         )
         snapshot = take_snapshot(self.root)
         with self.store.transaction():
@@ -211,7 +251,11 @@ class Harness:
         if previous:
             pipeline.seed_previous_fingerprints(previous)  # type: ignore[arg-type]
 
-        plan = pipeline.plan(self.dag, affected or {})
+        plan = pipeline.plan(
+            self.dag,
+            affected or {},
+            minimum_validation=minimum_validation,
+        )
         implementations = {"target-code-generation": implementation_for(self.sources(), self.calls)}
         with self.store.transaction():
             reports = pipeline.execute(
@@ -366,6 +410,11 @@ def test_staging_only_rollout_phase_never_publishes(tmp_path: Path, clock: Manua
     assert tree is not None
     assert report is not None and report.published is False
     assert report.rollout_phase == "staging-only"
+    assert report.parity is not None
+    assert not any(report.parity["serving"].values())
+    assert set(report.parity["wiring"]["layers"].values()) == {"NOT_WIRED"}
+    assert report.parity["external_provider_evidence"] == "NOT_RUN"
+    assert report.parity["certification"] == "NOT_CERTIFIED"
     # The candidate exists on disk but no pointer was flipped.
     assert (workspace.publish_root / "run-e2e-staging").is_dir()
 
@@ -420,6 +469,185 @@ def test_snapshot_diff_drives_the_closure(tmp_path: Path, clock: ManualClock) ->
     delta = diff_snapshots(before, take_snapshot(harness.root))
     assert delta.modified == ("src/main/java/com/demo/UserController.java",)
     assert delta.formatting_only == ()
+
+
+def coordinator_serving_config() -> CacheConfig:
+    return dataclasses.replace(
+        CacheConfig(),
+        rollout=RolloutConfig(phase="production-certified"),
+        parity=dataclasses.replace(
+            CacheParityConfig(),
+            rollout_phase="internal",
+            coordinator=CoordinatorConfig(enabled=True),
+        ),
+    )
+
+
+def coordinator_gate(
+    config: CacheConfig,
+    clock: ManualClock,
+) -> tuple[SignedStatement, ProvenanceSigner]:
+    signer = Ed25519ProvenanceSigner.generate("pipeline-coordinator-gate")
+    receipt = signer.sign_statement(
+        SERVING_GATE_KIND,
+        serving_gate_statement(
+            config.parity,
+            TENANT,
+            PROJECT,
+            ("multi_layer_coordinator",),
+            issued_at=clock.now(),
+            expires_at=clock.now() + 3_600,
+        ),
+    )
+    return receipt, Ed25519ProvenanceSigner.verifier(signer.public_keyset())
+
+
+def test_v12_coordinator_gate_drives_real_exact_action_restore(
+    tmp_path: Path,
+    clock: ManualClock,
+) -> None:
+    config = coordinator_serving_config()
+    receipt, verifier = coordinator_gate(config, clock)
+    harness = Harness(
+        tmp_path,
+        clock,
+        config=config,
+        parity_serving_gate_receipt=receipt,
+        parity_serving_gate_verifier=verifier,
+    )
+
+    harness.run("run-coordinator-cold")
+    calls_after_cold = tuple(harness.calls)
+    pipeline, _, _, reports, _, _, _, report = harness.run("run-coordinator-warm")
+
+    assert tuple(harness.calls) == calls_after_cold
+    assert {node.decision for node in reports} == {"RESTORE"}
+    assert len(pipeline.coordinator_plans) == 2
+    assert all(
+        plan.complete_result_layer is CoordinatorCacheLayer.ACTION
+        and plan.execution_required is False
+        and not plan.budget_usage.breaches
+        for plan in pipeline.coordinator_plans.values()
+    )
+    assert report is not None and report.parity is not None
+    assert report.parity["wiring"]["layers"]["multi_layer_coordinator"] == "WIRED"
+    assert report.parity["serving"]["multi_layer_coordinator"] is True
+    assert report.parity["wiring"]["requested_not_wired"] == []
+
+
+def test_v12_coordinator_config_without_trusted_gate_never_serves(
+    tmp_path: Path,
+    clock: ManualClock,
+) -> None:
+    harness = Harness(tmp_path, clock, config=coordinator_serving_config())
+
+    pipeline, _, _, reports, _, _, _, report = harness.run("run-coordinator-no-gate")
+
+    assert {node.decision for node in reports} == {"EXECUTE"}
+    assert pipeline.coordinator_plans == {}
+    assert report is not None and report.parity is not None
+    assert report.parity["wiring"]["layers"]["multi_layer_coordinator"] == "WIRED"
+    assert report.parity["serving"]["multi_layer_coordinator"] is False
+    assert report.parity["serving_gate_receipt"]["status"] == "MISSING"
+
+
+def test_v12_coordinator_under_validated_action_executes_instead_of_restoring(
+    tmp_path: Path,
+    clock: ManualClock,
+) -> None:
+    config = coordinator_serving_config()
+    receipt, verifier = coordinator_gate(config, clock)
+    harness = Harness(
+        tmp_path,
+        clock,
+        config=config,
+        parity_serving_gate_receipt=receipt,
+        parity_serving_gate_verifier=verifier,
+    )
+    harness.run("run-coordinator-test-verified")
+    calls_after_cold = len(harness.calls)
+
+    pipeline, _, _, reports, _, _, _, _ = harness.run(
+        "run-coordinator-production-floor",
+        minimum_validation=ValidationLevel.PRODUCTION_CERTIFIED,
+    )
+
+    assert {node.decision for node in reports} == {"EXECUTE"}
+    assert len(harness.calls) == calls_after_cold + 2
+    assert {
+        plan.layers[0].reason_code for plan in pipeline.coordinator_plans.values()
+    } == {"VALIDATION_TOO_LOW"}
+    assert all(not plan.layers[0].accepted for plan in pipeline.coordinator_plans.values())
+
+
+class UnsafeCandidateCoordinator(MultiLayerCacheCoordinator):
+    def __init__(self, *, mismatch_identity: bool) -> None:
+        super().__init__()
+        self.mismatch_identity = mismatch_identity
+
+    def plan_prevalidated(
+        self,
+        request: ReuseRequest,
+        results: Mapping[CoordinatorCacheLayer, LayerProbeResult],
+        *,
+        decision_started_monotonic: float | None = None,
+    ):
+        changed_results = dict(results)
+        changed_request = request
+        if self.mismatch_identity:
+            foreign = ReuseIdentity(
+                tenant_id=request.identity.tenant_id,
+                project_id="foreign-project",
+                authorization_digest=request.identity.authorization_digest,
+                compatibility_digest=request.identity.compatibility_digest,
+                work_digest=request.identity.work_digest,
+            )
+            changed_request = dataclasses.replace(request, identity=foreign)
+            changed_results = {
+                layer: dataclasses.replace(result, identity=foreign)
+                for layer, result in results.items()
+            }
+        else:
+            changed_results = {
+                layer: dataclasses.replace(result, authorised=False)
+                for layer, result in results.items()
+            }
+        return super().plan_prevalidated(
+            changed_request,
+            changed_results,
+            decision_started_monotonic=decision_started_monotonic,
+        )
+
+
+@pytest.mark.parametrize("mismatch_identity", [True, False])
+def test_v12_pipeline_refuses_identity_mismatch_and_unauthorized_candidate(
+    tmp_path: Path,
+    clock: ManualClock,
+    mismatch_identity: bool,
+) -> None:
+    config = coordinator_serving_config()
+    receipt, verifier = coordinator_gate(config, clock)
+    harness = Harness(
+        tmp_path,
+        clock,
+        config=config,
+        parity_serving_gate_receipt=receipt,
+        parity_serving_gate_verifier=verifier,
+    )
+    harness.run("run-coordinator-safe-seed")
+    calls_after_seed = len(harness.calls)
+    harness.multi_layer_coordinator = UnsafeCandidateCoordinator(
+        mismatch_identity=mismatch_identity
+    )
+
+    _, _, _, reports, _, _, _, report = harness.run(
+        "run-coordinator-unsafe-candidate"
+    )
+
+    assert {node.decision for node in reports} == {"EXECUTE"}
+    assert len(harness.calls) == calls_after_seed + 2
+    assert report is not None and report.parity is not None
+    assert report.parity["rollback"]["latched"] is True
 
 
 # --------------------------------------------------------------------------

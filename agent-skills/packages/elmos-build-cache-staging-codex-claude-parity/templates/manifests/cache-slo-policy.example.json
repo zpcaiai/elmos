@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.2.0",
+  "policy_id": "codex-claude-parity-default",
+  "targets": {
+    "stable_turn_cached_token_reuse_min": 0.9,
+    "unexpected_full_prefix_miss_max": 0.02,
+    "exact_rerun_weighted_reuse_min": 0.99,
+    "small_edit_weighted_reuse_min": 0.9,
+    "unnecessary_invalidation_max": 0.05,
+    "environment_snapshot_hit_min": 0.95,
+    "warm_start_p95_reduction_min": 0.8,
+    "restart_artifact_reuse_min": 0.999,
+    "stable_followup_wall_clock_saved_min": 0.7,
+    "model_input_cost_saved_min": 0.8,
+    "false_hits_max": 0
+  },
+  "error_budgets": {
+    "window": "7d",
+    "minimum_eligible_requests": 1000,
+    "unknown_outcome_max": 0.001
+  },
+  "cohort_floors": {
+    "stable_turn_cached_token_reuse_min": 0.85,
+    "small_edit_weighted_reuse_min": 0.85
+  },
+  "rollback": {
+    "automatic": true,
+    "safe_baseline_id": "s3fifo-sieve-fixed-v1",
+    "detection_window_seconds": 300
+  }
+}

@@ -1,0 +1,293 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Cache Parity Control Plane Supplement
+  version: 1.2.0
+servers:
+  - url: /v1
+security:
+  - gatewayMutualTLS: []
+components:
+  securitySchemes:
+    gatewayMutualTLS:
+      type: mutualTLS
+      description: A trusted gateway authenticates the peer and injects the server-only WSGI identity context; HTTP identity headers are not trusted.
+  parameters:
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 256 }
+    ProjectId:
+      in: query
+      name: projectId
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 128 }
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message, details]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object }
+    ContextAppendRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - project_id
+        - branch_lineage
+        - repository_snapshot_digest
+        - event_type
+        - payload
+      properties:
+        project_id: { type: string, minLength: 1, maxLength: 128 }
+        branch_lineage: { type: string, minLength: 1, maxLength: 512 }
+        repository_snapshot_digest:
+          { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        event_type:
+          enum:
+            - SNAPSHOT_BOUND
+            - FILE_READ
+            - SYMBOL_READ
+            - SUMMARY_WRITTEN
+            - CONTENT_CHANGED
+            - CONTEXT_STALE
+            - CONTENT_REREAD
+            - TOOL_OBSERVED
+            - VALIDATION_OBSERVED
+            - CONTEXT_CHECKPOINT
+            - COMPACTION_COMPLETED
+            - COMPACTION_ROLLBACK
+        payload:
+          type: object
+          description: Content-free metadata; raw prompt, source, and secret values are rejected.
+        expected_sequence: { type: integer, minimum: 0 }
+        expected_head_digest:
+          { type: [string, 'null'], pattern: '^sha256:[0-9a-f]{64}$' }
+        subject_ref: { type: [string, 'null'] }
+        supersedes_event_id: { type: [string, 'null'] }
+    ContextLedgerEventResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - stream_id
+        - sequence
+        - event_id
+        - event_type
+        - occurred_at
+        - repository_snapshot_digest
+        - subject_ref
+        - payload_digest
+        - previous_event_digest
+        - event_digest
+        - supersedes_event_id
+        - tenant_scope
+        - branch_lineage
+      properties:
+        schema_version: { type: string, const: '1.2.0' }
+        stream_id: { type: string }
+        sequence: { type: integer, minimum: 1 }
+        event_id: { type: string }
+        event_type:
+          enum:
+            - SNAPSHOT_BOUND
+            - FILE_READ
+            - SYMBOL_READ
+            - SUMMARY_WRITTEN
+            - CONTENT_CHANGED
+            - CONTEXT_STALE
+            - CONTENT_REREAD
+            - TOOL_OBSERVED
+            - VALIDATION_OBSERVED
+            - CONTEXT_CHECKPOINT
+            - COMPACTION_COMPLETED
+            - COMPACTION_ROLLBACK
+        occurred_at: { type: string, format: date-time }
+        repository_snapshot_digest:
+          { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        subject_ref: { type: [string, 'null'] }
+        payload_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        previous_event_digest:
+          oneOf:
+            - { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+            - { type: 'null' }
+        event_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        supersedes_event_id: { type: [string, 'null'] }
+        tenant_scope: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        branch_lineage: { type: string }
+    ParityReportEnvelope:
+      type: object
+      additionalProperties: false
+      required: [project_id, decision, report, certified]
+      properties:
+        project_id: { type: string }
+        decision:
+          enum: [NOT_RUN, FAILED, READY_FOR_EXTERNAL_GATE]
+        report:
+          type: object
+          description: Digest-bound measured report; never provider or certification evidence by itself.
+        provider_execution_performed: { type: boolean, const: false }
+        certified: { type: boolean, const: false }
+paths:
+  /cache/prompt-prefixes/compile:
+    post:
+      operationId: compilePromptPrefix
+      description: Compiles transient prompt bytes but persists and returns only content-free manifests and diagnostics.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [project_id, identity, segments]
+              properties:
+                project_id: { type: string }
+                identity: { type: object }
+                segments: { type: array, minItems: 1, items: { type: object } }
+                volatility_approvals: { type: array, items: { type: object } }
+      responses:
+        '200': { description: Content-free canonical layout, lint result, and PromptPrefixManifest }
+        '400': { description: Missing idempotency key }
+        '422': { description: Invalid or volatile unapproved prefix }
+        '503': { description: Persistent parity metadata repository unavailable }
+  /cache/context-ledgers/{streamId}/events:
+    post:
+      operationId: appendContextLedgerEvent
+      parameters:
+        - { in: path, name: streamId, required: true, schema: { type: string } }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ContextAppendRequest' }
+      responses:
+        '201':
+          description: Event appended to the hash-linked tenant/project stream
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ContextLedgerEventResponse' }
+        '200':
+          description: Existing identical event or global idempotent replay
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ContextLedgerEventResponse' }
+        '409': { description: Sequence, lineage, or idempotency conflict }
+        '422': { description: Raw source, prompt, secret, or invalid event rejected }
+  /cache/environments/{snapshotKey}:
+    get:
+      operationId: lookupEnvironmentSnapshot
+      description: Server-verifies the tenant-bound manifest and every immutable CAS layer, then returns an economic restore decision; executes no shell.
+      parameters:
+        - { in: path, name: snapshotKey, required: true, schema: { type: string } }
+        - $ref: '#/components/parameters/ProjectId'
+        - { in: query, name: trustNamespace, required: true, schema: { type: string } }
+        - { in: query, name: transferMs, required: true, schema: { type: number, minimum: 0 } }
+        - { in: query, name: decompressionMs, required: true, schema: { type: number, minimum: 0 } }
+        - { in: query, name: verificationMs, required: true, schema: { type: number, minimum: 0 } }
+        - { in: query, name: rebuildMs, required: true, schema: { type: number, minimum: 0 } }
+        - { in: query, name: minimumSavingsMs, required: false, schema: { type: number, minimum: 0 } }
+        - { in: query, name: maximumRestoreRatio, required: false, schema: { type: number, minimum: 0, maximum: 1 } }
+      responses:
+        '200': { description: Verified manifest and restore-or-rebuild decision }
+        '404': { description: Tenant/project-scoped miss }
+        '409': { description: Snapshot unavailable or expired }
+        '422': { description: Digest or layer verification failure }
+  /cache/affinity/decide:
+    post:
+      operationId: decideCacheAffinity
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [project_id, request_id, request]
+              properties:
+                project_id: { type: string }
+                request_id: { type: string }
+                request:
+                  type: object
+                  additionalProperties: false
+                  required: [trust_namespace, provider, model, effort_profile, tool_schema_digest, prefix_compatibility_digest, platform_digest, required_capacity]
+                  properties:
+                    tenant_scope_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$', description: Optional equality assertion; authenticated tenant/project scope remains server-owned. }
+                    authorization_scope_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$', description: Optional equality assertion; the effective authorization scope is resolved by the server PIP/PDP. }
+                    trust_namespace: { type: string }
+                    provider: { type: string, enum: [openai, anthropic, self-hosted] }
+                    model: { type: string }
+                    effort_profile: { type: string }
+                    tool_schema_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+                    prefix_compatibility_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+                    platform_digest: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+                    required_capacity: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Hard-compatible ranked targets and deterministic selected route
+          content:
+            application/json:
+              schema: { $ref: '../schemas/cache-affinity-decision.schema.json' }
+        '422': { description: Invalid identity or capacity contract }
+        '403': { description: Authenticated principal is not authorized for project routing }
+        '503': { description: Persistent metadata, authorization resolver, or attested runner registry unavailable }
+  /cache/explain/{requestId}:
+    get:
+      operationId: explainCacheOutcome
+      parameters:
+        - { in: path, name: requestId, required: true, schema: { type: string } }
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200': { description: Content-free layer outcomes, first differences, observed graph, and typed remediation codes }
+        '404': { description: Tenant/project-scoped outcome miss }
+        '422': { description: Stored outcome failed semantic validation }
+  /cache/parity/runs:
+    post:
+      operationId: startCacheParityRun
+      description: Evaluates submitted measurements and existing evidence only; performs no provider execution.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [project_id, report_id, metrics, cohorts, scenarios, binding]
+              properties:
+                project_id: { type: string }
+                report_id: { type: string }
+                metrics: { type: object }
+                cohorts: { type: object }
+                scenarios: { type: array, items: { type: object } }
+                binding: { type: object }
+                thresholds: { type: object }
+      responses:
+        '202':
+          description: Measured report accepted; maximum decision is READY_FOR_EXTERNAL_GATE
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ParityReportEnvelope' }
+        '422': { description: Invalid metrics, evidence binding, or scenario contract }
+        '503': { description: Persistent parity metadata repository unavailable }
+  /cache/parity/reports/{reportId}:
+    get:
+      operationId: getCacheParityReport
+      parameters:
+        - { in: path, name: reportId, required: true, schema: { type: string } }
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Digest-bound measured report; never a certification decision
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ParityReportEnvelope' }
+        '404': { description: Tenant/project-scoped report miss }

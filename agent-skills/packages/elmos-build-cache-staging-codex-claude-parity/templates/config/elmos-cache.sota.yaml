@@ -1,0 +1,89 @@
+elmos:
+  cache:
+    package_version: 1.2.0
+    correctness:
+      exact_action_keys: true
+      verify_cas_digest: true
+      minimum_validation_level: TEST_VERIFIED
+      semantic_similarity_direct_reuse: false
+
+    policy_engine:
+      mode: adaptive  # fixed | adaptive | shadow-only
+      epoch_minutes: 60
+      minimum_dwell_epochs: 6
+      switch_hysteresis_percent: 5
+      fallback_policy: S3_FIFO
+      low_confidence_fallback: true
+      max_hot_path_decision_us: 5
+
+      objectives:
+        profile: BALANCED
+        weights:
+          object_hit_ratio: 0.05
+          byte_hit_ratio: 0.10
+          avoided_compute: 0.25
+          avoided_model_tokens: 0.20
+          critical_path_saved: 0.25
+          restore_overhead: -0.05
+          storage_cost: -0.05
+          fairness_penalty: -0.05
+
+      tiers:
+        L0_MEMORY:
+          candidates: [W_TINY_LFU, SIEVE]
+          fixed_fallback: W_TINY_LFU
+        L1_LOCAL_CAS:
+          candidates: [S3_FIFO, SIEVE, W_TINY_LFU, GDSF]
+          experimental_candidates: [MERLIN, S4_FIFO]
+          fixed_fallback: S3_FIFO
+        L2_REMOTE_CAS:
+          candidates: [SIZE_AWARE_TINY_LFU, GDSF, S3_FIFO, SIEVE]
+          experimental_candidates: [S4_FIFO, THREE_L_CACHE]
+          fixed_fallback: SIZE_AWARE_TINY_LFU
+        STAGING:
+          candidates: [DAG_NEXT_USE_PROTECTED]
+          eviction_disabled_for_active_roots: true
+        CHECKPOINT:
+          candidates: [DAG_NEXT_USE_PROTECTED]
+          eviction_disabled_for_active_roots: true
+
+      admission:
+        doorkeeper: true
+        frequency_sketch: count-min-4bit
+        size_aware: true
+        cost_aware: true
+        reject_if_restore_slower_than_recompute: true
+
+      dag_future_reuse:
+        enabled: true
+        protect_horizon_nodes: 25
+        prefetch_horizon_nodes: 10
+        max_prefetch_bytes_per_run: 1073741824
+        max_parallel_prefetch: 4
+        min_expected_net_saving_ms: 50
+        cancel_after_branch_resolution: true
+
+      learning_control:
+        enabled: false
+        shadow_enabled: true
+        allowed_modes: [S4_FIFO_PARAMETER_TUNING, POLICY_SELECTOR]
+        feature_content: metadata-only
+        ood_fallback: S3_FIFO
+        drift_fallback: S3_FIFO
+        require_signed_model: true
+        online_auto_deploy: false
+
+      trace_replay:
+        enabled: true
+        raw_content_logging: false
+        tenant_identifier: one-way-hash
+        sampling_rate: 1.0
+        final_holdout_days: 7
+
+      certification:
+        require_equal_capacity_baselines: true
+        baselines: [LRU, SIEVE, S3_FIFO]
+        minimum_weighted_value_improvement_percent: 5
+        maximum_worst_cohort_regression_percent: 1
+        maximum_lookup_p95_regression_percent: 2
+        correctness_failures_allowed: 0

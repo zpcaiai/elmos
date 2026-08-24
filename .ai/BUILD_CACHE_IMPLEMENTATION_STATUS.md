@@ -6,6 +6,10 @@
 > P8 skills).
 > Status vocabulary is closed: `IMPLEMENTED` · `PARTIAL` · `STUB` · `MISSING` ·
 > `BROKEN` · `NOT VERIFIED`. Nothing here is a certification claim.
+>
+> **Current scope note:** these opening tables are pass-4/v1.1 history. See the
+> pass-5 addendum for the v1.2 local implementation matrix and its
+> `NOT_RUN` / `NOT_CERTIFIED` evidence boundary.
 
 - **Audit date:** 2026-08-20 (pass 4 — the v1.1.0 SOTA package)
 - **Auditor:** Claude (Cowork cloud session)
@@ -155,3 +159,60 @@ Every `PARTIAL` is explained in the row above and carries an entry in
 `BUILD_CACHE_HANDOFF.md`. No skill is claimed complete on the strength of a
 happy-path demo, and nothing that this environment could not prove is recorded
 as proven.
+
+## Pass 5 addendum — v1.2 Codex/Claude cache parity
+
+This addendum is the current status for the v1.2 scope. The v1.1 tables above
+are retained as historical evidence; their `CERTIFIED_IN_SANDBOX` language is
+not a parity decision.
+
+### Package migration
+
+| Check | Current result |
+| --- | --- |
+| Source archive | pinned to SHA-256 `dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7` |
+| Retained work | 31 v1.1 Skill bodies detected as unchanged; only v1.2 frontmatter/provenance is refreshed |
+| New work | 11 v1.2 Skills imported and implemented locally |
+| Installed total | 42 Skills, byte-identical across four install roots |
+| Import behavior | inventory/checksum/schema/DAG validation; package scripts are not executed |
+| External evidence | `NOT_RUN` |
+| Certification | `NOT_CERTIFIED` |
+
+### New Skill implementation matrix
+
+| Skill | Production-code surface | Local implementation status | Evidence boundary |
+| --- | --- | --- | --- |
+| `elmos-provider-prompt-cache-adapters` | `prompt_cache.py` | **IMPLEMENTED** | Real provider/SDK/model calls `NOT_RUN` |
+| `elmos-canonical-prompt-prefix-layout` | `prompt_cache.py`, `prompt_tools.py` | **IMPLEMENTED** | Provider-side hit ratios `NOT_RUN` |
+| `elmos-append-only-repository-context-ledger` | `context_ledger.py`, both-dialect ledger migrations | **IMPLEMENTED** | New PostgreSQL migration live run `NOT_RUN` |
+| `elmos-cache-preserving-context-compaction` | `context_compaction.py` | **IMPLEMENTED** | Long-session representative corpus `NOT_RUN` |
+| `elmos-environment-snapshot-cache` | `environment_cache.py`, `environment_service.py`, CAS and parity metadata | **IMPLEMENTED** | Real image/toolchain warm restore `NOT_RUN` |
+| `elmos-cache-affinity-routing` | `affinity.py` | **IMPLEMENTED** | Production scheduler/fleet routing `NOT_RUN` |
+| `elmos-multi-layer-cache-coordinator` | `coordinator.py` | **IMPLEMENTED** | Distributed contention/scale `NOT_RUN` |
+| `elmos-cache-miss-diagnostics` | `miss_diagnostics.py`, `parity_runtime.py` | **IMPLEMENTED** | Production miss budget `NOT_RUN` |
+| `elmos-codex-claude-parity-benchmark` | `parity.py`, `parity_harness.py` | **IMPLEMENTED** | Independent real parity corpus `NOT_RUN` |
+| `elmos-cache-hit-slo-autotuning` | `slo_autotune.py` | **IMPLEMENTED** | Canary/progressive production rollout `NOT_RUN` |
+| `elmos-codex-claude-cache-parity-rollout` | `parity_api.py`, `parity_store.py`, `api.py`, `cli.py`, `pipeline.py` | **IMPLEMENTED** | External gate and production rollout `NOT_RUN` |
+
+### Durable and public surfaces
+
+- SQLite migrations `0003_context_ledger.sql` and `0004_cache_parity.sql`, and
+  PostgreSQL migrations `0005_context_ledger.sql` and `0006_cache_parity.sql`,
+  are mirrored byte-for-byte under `_data/migrations/`.
+- `parity_store.ParityMetadataRepository` stores tenant/project-scoped prompt
+  manifests, provider usage, immutable environment manifests plus append-only
+  status, outcome events, affinity decisions and immutable parity reports. It
+  rejects raw prompt/source/secret fields and detects idempotency drift.
+- `cache-parity-control-plane.openapi.yaml` defines seven operations, all
+  implemented by `ParityApiService` and wired into `CacheControlPlane`.
+- The CLI exposes `cache explain`, `prompt compile/diff`, `environment
+  inspect`, `affinity decide`, and `parity status/evaluate/report`. Persistence
+  is explicit and requires an idempotency key.
+- `ConversionPipeline` emits optional `RunReport.parity` observations from the
+  real Action Cache lookup path. A telemetry-store failure degrades observation
+  only; it cannot change the action result or publication path.
+
+The local maximum remains `READY_FOR_EXTERNAL_GATE`, and only after every
+required scenario has immutable raw evidence, replay metadata, authorization
+and an independent verifier. The current repository state does not meet that
+condition and remains `NOT_CERTIFIED`.

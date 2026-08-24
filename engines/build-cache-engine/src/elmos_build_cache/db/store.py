@@ -15,7 +15,7 @@ import threading
 import uuid
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -39,7 +39,9 @@ from ..enums import (
 )
 from ..errors import (
     ConflictError,
+    ContractViolation,
     IdempotencyConflict,
+    IdempotencyOutcomeUnknown,
     InvalidTransition,
     NotFound,
     StaleLease,
@@ -78,6 +80,24 @@ def _unjson(value: Any) -> Any:
 
 def new_id(prefix: str) -> str:
     return f"{prefix}_{uuid.uuid4().hex}"
+
+
+@dataclass(frozen=True)
+class IdempotencyClaim:
+    """Durable ownership or an exact completed replay for one request."""
+
+    disposition: str
+    owner_token: str | None
+    fence: int
+    response: Any | None = None
+
+    @property
+    def claimed(self) -> bool:
+        return self.disposition == "CLAIMED"
+
+    @property
+    def replayed(self) -> bool:
+        return self.disposition == "REPLAY"
 
 
 class MetadataStore:
@@ -141,13 +161,50 @@ class MetadataStore:
             (tenant_id, iso(self.now())),
         )
 
+    def list_tenant_ids(self) -> list[str]:
+        """Return exact persisted tenant identities for global safety checks.
+
+        Request-serving code must not expose this inventory.  It exists for
+        storage-wide operations such as deciding whether a shared CAS object
+        may be physically deleted.
+        """
+
+        return [str(row[0]) for row in self.query("SELECT tenant_id FROM tenants ORDER BY tenant_id")]
+
     def ensure_project(self, tenant_id: str, project_id: str, name: str | None = None) -> None:
+        existing = self.query_one(
+            "SELECT tenant_id FROM projects WHERE project_id=?",
+            (project_id,),
+        )
+        if existing is not None:
+            actual_tenant = str(existing[0])
+            if actual_tenant != tenant_id:
+                raise ConflictError(
+                    "project tenant scope conflict",
+                    project_id=project_id,
+                )
+            return
         self.ensure_tenant(tenant_id)
         self.execute(
             "INSERT INTO projects (project_id, tenant_id, name, created_at) VALUES (?, ?, ?, ?) "
             "ON CONFLICT DO NOTHING",
             (project_id, tenant_id, name or project_id, iso(self.now())),
         )
+        # Another connection may have won the globally unique ``project_id``
+        # race after the read above.  Never interpret its conflict as evidence
+        # that this tenant owns the project.
+        persisted = self.query_one(
+            "SELECT tenant_id FROM projects WHERE project_id=?",
+            (project_id,),
+        )
+        if persisted is None:
+            raise ConflictError("project was not persisted", project_id=project_id)
+        actual_tenant = str(persisted[0])
+        if actual_tenant != tenant_id:
+            raise ConflictError(
+                "project tenant scope conflict",
+                project_id=project_id,
+            )
 
     def record_snapshot(
         self,
@@ -194,10 +251,11 @@ class MetadataStore:
         trust_namespace: TrustNamespace = TrustNamespace.BRANCH,
     ) -> RunRecord:
         stamp = iso(self.now())
-        self.execute(
+        cursor = self.execute(
             "INSERT INTO runs (run_id, tenant_id, project_id, snapshot_id, pipeline_version,"
             " source_profile, target_profile, trust_namespace, status, version, journal_sequence,"
-            " created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)",
+            " created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)"
+            " ON CONFLICT (run_id) DO NOTHING",
             (
                 run_id,
                 tenant_id,
@@ -212,7 +270,9 @@ class MetadataStore:
                 stamp,
             ),
         )
-        return self.get_run(run_id)
+        if int(cursor.rowcount) != 1:
+            raise ConflictError("run identifier is unavailable")
+        return self.get_run_for_tenant(tenant_id, run_id)
 
     def get_run(self, run_id: str) -> RunRecord:
         row = self.query_one(
@@ -238,6 +298,17 @@ class MetadataStore:
             published_tree_digest=row[11],
             evidence_bundle_digest=row[12],
         )
+
+    def get_run_for_tenant(self, tenant_id: str, run_id: str) -> RunRecord:
+        """Resolve a globally unique run ID without disclosing foreign rows."""
+
+        row = self.query_one(
+            "SELECT 1 FROM runs WHERE tenant_id=? AND run_id=?",
+            (tenant_id, run_id),
+        )
+        if row is None:
+            raise NotFound("run does not exist")
+        return self.get_run(run_id)
 
     def transition_run(self, run_id: str, target: RunStatus, expected_version: int) -> RunRecord:
         current = self.get_run(run_id)
@@ -520,6 +591,32 @@ class MetadataStore:
             metadata=_unjson(row[7]) or {},
         )
 
+    def artifact_tenants(self, digest: str) -> list[str]:
+        """Tenants with a live logical registration for one shared CAS key."""
+
+        require_digest(digest)
+        return [
+            str(row[0])
+            for row in self.query(
+                "SELECT tenant_id FROM artifacts WHERE digest=? AND storage_state<>?"
+                " ORDER BY tenant_id",
+                (digest, str(ArtifactStorageState.DELETED)),
+            )
+        ]
+
+    def artifact_ref_tenants(self, digest: str) -> list[str]:
+        """Tenants whose metadata graph contains an edge to this CAS key."""
+
+        require_digest(digest)
+        return [
+            str(row[0])
+            for row in self.query(
+                "SELECT DISTINCT tenant_id FROM artifact_refs WHERE target_digest=?"
+                " ORDER BY tenant_id",
+                (digest,),
+            )
+        ]
+
     def set_artifact_state(self, tenant_id: str, digest: str, state: ArtifactStorageState) -> None:
         self.execute(
             "UPDATE artifacts SET storage_state=? WHERE tenant_id=? AND digest=?",
@@ -781,6 +878,22 @@ class MetadataStore:
             secret_scan_status=SecretScanStatus(row[26]),
             quarantine_reason=row[27],
         )
+
+    def get_staged_file_for_tenant(
+        self,
+        tenant_id: str,
+        run_id: str,
+        staged_file_id: str,
+    ) -> StagedFileRecord:
+        """Resolve a staged-file ID only inside its owning run and tenant."""
+
+        row = self.query_one(
+            "SELECT 1 FROM staged_files WHERE tenant_id=? AND run_id=? AND staged_file_id=?",
+            (tenant_id, run_id, staged_file_id),
+        )
+        if row is None:
+            raise NotFound("staged file does not exist")
+        return self.get_staged_file(staged_file_id)
 
     def list_staged_files(
         self, run_id: str, statuses: Sequence[StagedFileStatus] | None = None
@@ -1286,6 +1399,14 @@ class MetadataStore:
             "applied_at": row[5],
         }
 
+    def get_gc_plan_for_tenant(self, tenant_id: str, plan_id: str) -> dict[str, Any]:
+        """Resolve a plan without distinguishing a foreign ID from absence."""
+
+        record = self.get_gc_plan(plan_id)
+        if record is None or record["tenant_id"] != tenant_id:
+            raise NotFound("gc plan does not exist")
+        return record
+
     def set_gc_plan_status(self, plan_id: str, status: str, applied_at: float | None = None) -> None:
         self.execute(
             "UPDATE gc_plans SET status=?, applied_at=? WHERE plan_id=?", (status, applied_at, plan_id)
@@ -1307,29 +1428,201 @@ class MetadataStore:
         ]
 
     # -- idempotency and outbox ------------------------------------------
+    def claim_idempotent(
+        self,
+        tenant_id: str,
+        key: str,
+        operation: str,
+        request: Any,
+    ) -> IdempotencyClaim:
+        """Atomically claim one request before its side effect is attempted.
+
+        The caller must commit this claim before executing the operation. A
+        matching ``PENDING`` row is never treated as a retry opportunity: the
+        previous owner may have crashed after the external effect, so the only
+        safe result is ``OUTCOME_UNKNOWN`` until explicit reconciliation.
+        """
+
+        if not tenant_id or not key or not operation:
+            raise ContractViolation("idempotency tenant, key and operation are required")
+        request_digest = digest_of(request)
+        owner_token = new_id("idem_owner")
+        stamp = self.now()
+        self.execute(
+            "INSERT INTO idempotency_records (tenant_id, idempotency_key, operation,"
+            " request_digest, response, created_at, state, owner_token, fence, updated_at)"
+            " VALUES (?, ?, ?, ?, ?, ?, 'PENDING', ?, 1, ?)"
+            " ON CONFLICT (tenant_id, idempotency_key) DO NOTHING",
+            (
+                tenant_id,
+                key,
+                operation,
+                request_digest,
+                _json(None),
+                stamp,
+                owner_token,
+                stamp,
+            ),
+        )
+        row = self.query_one(
+            "SELECT operation, request_digest, response, state, owner_token, fence"
+            " FROM idempotency_records WHERE tenant_id=? AND idempotency_key=?",
+            (tenant_id, key),
+        )
+        if row is None:  # pragma: no cover - INSERT/SELECT invariant
+            raise ContractViolation("idempotency claim was not persisted", key=key)
+        if str(row[0]) != operation or str(row[1]) != request_digest:
+            raise IdempotencyConflict("idempotency key reused for a different request", key=key)
+        state = str(row[3])
+        fence = int(row[5])
+        if state == "COMPLETE":
+            return IdempotencyClaim("REPLAY", None, fence, _unjson(row[2]))
+        if state != "PENDING":
+            raise ContractViolation("unknown idempotency state", key=key, state=state)
+        if str(row[4]) == owner_token:
+            return IdempotencyClaim("CLAIMED", owner_token, fence)
+        raise IdempotencyOutcomeUnknown(
+            "idempotent operation is pending and must be reconciled before retry",
+            key=key,
+            state="PENDING",
+            fence=fence,
+        )
+
+    def complete_idempotent(
+        self,
+        tenant_id: str,
+        key: str,
+        operation: str,
+        request: Any,
+        owner_token: str,
+        fence: int,
+        response: Any,
+    ) -> Any:
+        """Publish the full response only for the exact claim owner/fence."""
+
+        request_digest = digest_of(request)
+        stamp = self.now()
+        cursor = self.execute(
+            "UPDATE idempotency_records SET state='COMPLETE', response=?, updated_at=?,"
+            " completed_at=? WHERE tenant_id=? AND idempotency_key=? AND operation=?"
+            " AND request_digest=? AND state='PENDING' AND owner_token=? AND fence=?",
+            (
+                _json(response),
+                stamp,
+                stamp,
+                tenant_id,
+                key,
+                operation,
+                request_digest,
+                owner_token,
+                fence,
+            ),
+        )
+        if int(cursor.rowcount) == 1:
+            return response
+        row = self.query_one(
+            "SELECT operation, request_digest, response, state, fence"
+            " FROM idempotency_records WHERE tenant_id=? AND idempotency_key=?",
+            (tenant_id, key),
+        )
+        if row is None:
+            raise IdempotencyOutcomeUnknown(
+                "idempotency claim is missing; outcome cannot be inferred",
+                key=key,
+                state="MISSING",
+            )
+        if str(row[0]) != operation or str(row[1]) != request_digest:
+            raise IdempotencyConflict("idempotency key reused for a different request", key=key)
+        if str(row[3]) == "COMPLETE":
+            return _unjson(row[2])
+        raise IdempotencyOutcomeUnknown(
+            "idempotency owner or fence is stale; outcome must be reconciled",
+            key=key,
+            state=str(row[3]),
+            fence=int(row[4]),
+        )
+
+    def reconcile_idempotent(
+        self,
+        tenant_id: str,
+        key: str,
+        operation: str,
+        request: Any,
+        response: Any,
+        *,
+        reconciler_identity: str,
+    ) -> Any:
+        """Explicitly resolve a PENDING claim from authoritative evidence.
+
+        This primitive never runs automatically and never guesses success. The
+        caller supplies the exact response and an accountable identity after
+        independently reconciling the external system.
+        """
+
+        if not reconciler_identity:
+            raise ContractViolation("idempotency reconciliation identity is required")
+        request_digest = digest_of(request)
+        row = self.query_one(
+            "SELECT operation, request_digest, response, state, fence"
+            " FROM idempotency_records WHERE tenant_id=? AND idempotency_key=?",
+            (tenant_id, key),
+        )
+        if row is None:
+            raise NotFound("idempotency claim does not exist", key=key)
+        if str(row[0]) != operation or str(row[1]) != request_digest:
+            raise IdempotencyConflict("idempotency key reused for a different request", key=key)
+        if str(row[3]) == "COMPLETE":
+            return _unjson(row[2])
+        if str(row[3]) != "PENDING":
+            raise ContractViolation("unknown idempotency state", key=key, state=str(row[3]))
+        previous_fence = int(row[4])
+        stamp = self.now()
+        cursor = self.execute(
+            "UPDATE idempotency_records SET state='COMPLETE', response=?, owner_token=?,"
+            " fence=fence+1, updated_at=?, completed_at=?, reconciled_by=?"
+            " WHERE tenant_id=? AND idempotency_key=? AND operation=? AND request_digest=?"
+            " AND state='PENDING' AND fence=?",
+            (
+                _json(response),
+                new_id("idem_reconciler"),
+                stamp,
+                stamp,
+                reconciler_identity,
+                tenant_id,
+                key,
+                operation,
+                request_digest,
+                previous_fence,
+            ),
+        )
+        if int(cursor.rowcount) != 1:
+            raise IdempotencyOutcomeUnknown(
+                "idempotency reconciliation raced with another owner",
+                key=key,
+                state="OUTCOME_UNKNOWN",
+            )
+        return response
+
     def remember_idempotent(
         self, tenant_id: str, key: str, operation: str, request: Any, response: Any
     ) -> Any:
-        request_digest = digest_of(request)
-        row = self.query_one(
-            "SELECT operation, request_digest, response FROM idempotency_records"
-            " WHERE tenant_id=? AND idempotency_key=?",
-            (tenant_id, key),
+        claim = self.claim_idempotent(tenant_id, key, operation, request)
+        if claim.replayed:
+            return claim.response
+        assert claim.owner_token is not None
+        return self.complete_idempotent(
+            tenant_id,
+            key,
+            operation,
+            request,
+            claim.owner_token,
+            claim.fence,
+            response,
         )
-        if row is not None:
-            if row[0] != operation or row[1] != request_digest:
-                raise IdempotencyConflict("idempotency key reused for a different request", key=key)
-            return _unjson(row[2])
-        self.execute(
-            "INSERT INTO idempotency_records (tenant_id, idempotency_key, operation, request_digest,"
-            " response, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-            (tenant_id, key, operation, request_digest, _json(response), self.now()),
-        )
-        return response
 
     def replay_idempotent(self, tenant_id: str, key: str, operation: str, request: Any) -> Any | None:
         row = self.query_one(
-            "SELECT operation, request_digest, response FROM idempotency_records"
+            "SELECT operation, request_digest, response, state, fence FROM idempotency_records"
             " WHERE tenant_id=? AND idempotency_key=?",
             (tenant_id, key),
         )
@@ -1337,6 +1630,13 @@ class MetadataStore:
             return None
         if row[0] != operation or row[1] != digest_of(request):
             raise IdempotencyConflict("idempotency key reused for a different request", key=key)
+        if str(row[3]) != "COMPLETE":
+            raise IdempotencyOutcomeUnknown(
+                "idempotent operation is pending and must be reconciled before retry",
+                key=key,
+                state=str(row[3]),
+                fence=int(row[4]),
+            )
         return _unjson(row[2])
 
     #: SQLite exposes the generated key through ``lastrowid``; PostgreSQL needs
@@ -1386,7 +1686,38 @@ class MetadataStore:
 SQLITE_MIGRATIONS: tuple[str, ...] = (
     "0001_init.sql",
     "0002_saved_compiler_ms.sql",
+    "0003_context_ledger.sql",
+    "0004_cache_parity.sql",
+    "0005_idempotency_claims.sql",
+    "0006_project_tenant_scope.sql",
+    "0007_slo_control.sql",
 )
+
+
+def _sqlite_statements(script: str) -> Iterator[str]:
+    """Yield complete SQLite statements without splitting trigger bodies.
+
+    ``str.split(';')`` corrupts ``CREATE TRIGGER ... BEGIN ... END`` and
+    ``executescript`` commits implicitly. Feeding complete statements through
+    ``Connection.execute`` is what lets DDL and the migration-ledger insert
+    share one explicit transaction.
+    """
+
+    buffer: list[str] = []
+    for character in script:
+        buffer.append(character)
+        if character != ";":
+            continue
+        candidate = "".join(buffer)
+        if sqlite3.complete_statement(candidate):
+            if candidate.strip():
+                yield candidate
+            buffer.clear()
+    trailing = "".join(buffer)
+    if trailing.strip():
+        # SQLite accepts a trailing comment. Any actual incomplete statement
+        # is rejected by ``execute`` inside the migration transaction.
+        yield trailing
 
 
 class SqliteMetadataStore(MetadataStore):
@@ -1400,7 +1731,11 @@ class SqliteMetadataStore(MetadataStore):
         for pragma in SQLITE_PRAGMAS:
             connection.execute(pragma)
         store = cls(connection, clock)
-        store.migrate()
+        try:
+            store.migrate()
+        except BaseException:
+            connection.close()
+            raise
         return store
 
     def migrate(self) -> None:
@@ -1409,28 +1744,43 @@ class SqliteMetadataStore(MetadataStore):
         ``ALTER TABLE ADD COLUMN`` is not idempotent, so which migrations have
         run has to be recorded rather than inferred.
         """
-        self._connection.executescript(
-            "CREATE TABLE IF NOT EXISTS schema_migrations ("
-            " name TEXT PRIMARY KEY, applied_at TEXT NOT NULL);"
-        )
-        applied = {
-            str(row[0]) for row in self._connection.execute("SELECT name FROM schema_migrations")
-        }
-        for name in SQLITE_MIGRATIONS:
-            if name in applied:
-                continue
-            script = (MIGRATIONS_DIR / "sqlite" / name).read_text(encoding="utf-8")
-            self._connection.executescript(script)
-            self._connection.execute(
-                "INSERT INTO schema_migrations (name, applied_at) VALUES (?, ?)",
-                (name, iso(self.now())),
-            )
-        # ``executescript`` commits, but the ledger INSERT opens a transaction
-        # of its own; leaving it open would block the PRAGMAs the caller sets.
-        self._connection.commit()
+        with self._lock:
+            try:
+                self._connection.execute(
+                    "CREATE TABLE IF NOT EXISTS schema_migrations ("
+                    " name TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
+                )
+                self._connection.commit()
+            except BaseException:
+                self._connection.rollback()
+                raise
+            for name in SQLITE_MIGRATIONS:
+                try:
+                    self._connection.execute("BEGIN IMMEDIATE")
+                    row = self._connection.execute(
+                        "SELECT 1 FROM schema_migrations WHERE name=?", (name,)
+                    ).fetchone()
+                    if row is None:
+                        script = (MIGRATIONS_DIR / "sqlite" / name).read_text(
+                            encoding="utf-8"
+                        )
+                        for statement in _sqlite_statements(script):
+                            self._connection.execute(statement)
+                        self._after_sqlite_migration_statements(name)
+                        self._connection.execute(
+                            "INSERT INTO schema_migrations (name, applied_at) VALUES (?, ?)",
+                            (name, iso(self.now())),
+                        )
+                    self._connection.commit()
+                except BaseException:
+                    self._connection.rollback()
+                    raise
         for pragma in SQLITE_PRAGMAS:
             self._connection.execute(pragma)
         self._connection.commit()
+
+    def _after_sqlite_migration_statements(self, name: str) -> None:
+        """Fault-injection seam immediately before the ledger insert."""
 
 
 POSTGRES_MIGRATIONS: tuple[str, ...] = (
@@ -1438,7 +1788,161 @@ POSTGRES_MIGRATIONS: tuple[str, ...] = (
     "0002_elmos_extensions.sql",
     "0003_column_types.sql",
     "0004_saved_compiler_ms.sql",
+    "0005_context_ledger.sql",
+    "0006_cache_parity.sql",
+    "0007_idempotency_claims.sql",
+    "0008_project_tenant_scope.sql",
+    "0009_slo_control.sql",
 )
+
+# One transaction-scoped advisory lock serialises both legacy baselining and
+# every migration across processes.  The value is a stable signed-bigint-safe
+# encoding of ``ELMOSCAC`` rather than Python's process-randomised ``hash``.
+POSTGRES_MIGRATION_LOCK_ID = 0x454C4D4F53434143
+
+_POSTGRES_V1_TABLES = frozenset(
+    {
+        "tenants",
+        "projects",
+        "snapshots",
+        "runs",
+        "run_nodes",
+        "artifacts",
+        "artifact_refs",
+        "action_cache_entries",
+        "staged_files",
+        "checkpoints",
+        "side_effect_receipts",
+        "cache_events",
+        "pins",
+        "outbox_events",
+    }
+)
+_POSTGRES_V2_TABLES = frozenset(
+    {
+        "file_trees",
+        "certificates",
+        "revocations",
+        "gc_plans",
+        "gc_receipts",
+        "idempotency_records",
+    }
+)
+_POSTGRES_V2_COLUMNS = frozenset(
+    {
+        ("runs", "trust_namespace"),
+        ("runs", "journal_sequence"),
+        ("run_nodes", "heartbeat_at"),
+        ("run_nodes", "retries"),
+        ("run_nodes", "retry_budget"),
+        ("run_nodes", "outcome"),
+        ("action_cache_entries", "entry_kind"),
+        ("action_cache_entries", "failure_code"),
+        ("action_cache_entries", "saved_wall_ms"),
+        ("action_cache_entries", "quarantine_reason"),
+        ("staged_files", "overwrite_policy"),
+        ("staged_files", "ownership"),
+        ("staged_files", "mode"),
+        ("outbox_events", "tenant_id"),
+        ("outbox_events", "attempts"),
+    }
+)
+_POSTGRES_V3_COLUMN_TYPES = {
+    ("snapshots", "snapshot_id"): "text",
+    ("runs", "snapshot_id"): "text",
+    ("staged_files", "staged_file_id"): "text",
+    ("checkpoints", "checkpoint_id"): "text",
+    ("cache_events", "event_id"): "text",
+    ("pins", "pin_id"): "text",
+    ("run_nodes", "lease_expires_at"): "double precision",
+    ("run_nodes", "heartbeat_at"): "double precision",
+    ("action_cache_entries", "expires_at"): "double precision",
+    ("pins", "expires_at"): "double precision",
+    ("outbox_events", "created_at"): "double precision",
+    ("outbox_events", "published_at"): "double precision",
+}
+_POSTGRES_V4_COLUMNS = frozenset({("action_cache_entries", "saved_compiler_ms")})
+
+
+def _postgres_applied_prefix(applied: set[str]) -> tuple[str, ...]:
+    unknown = applied.difference(POSTGRES_MIGRATIONS)
+    if unknown:
+        raise ContractViolation(
+            "PostgreSQL migration ledger contains unknown entries",
+            migrations=sorted(unknown),
+        )
+    prefix: list[str] = []
+    missing_seen = False
+    for name in POSTGRES_MIGRATIONS:
+        if name in applied:
+            if missing_seen:
+                raise ContractViolation(
+                    "PostgreSQL migration ledger is not a contiguous prefix",
+                    migration=name,
+                )
+            prefix.append(name)
+        else:
+            missing_seen = True
+    return tuple(prefix)
+
+
+def _postgres_preledger_baseline(cursor: Any) -> tuple[str, ...]:
+    """Return the safely observed legacy migration prefix.
+
+    Before v1.2 the PostgreSQL path had no migration ledger and executed the
+    first four migrations as one startup batch.  Migration 0001 contains plain
+    ``CREATE TABLE`` statements, so re-running it against such a database is
+    unsafe.  Inventory the actual schema and baseline only a complete,
+    contiguous prefix; partial or contradictory state fails closed.
+    """
+
+    cursor.execute(
+        "SELECT table_name FROM information_schema.tables "
+        "WHERE table_schema=current_schema()"
+    )
+    tables = {str(row[0]) for row in cursor.fetchall()}
+    cursor.execute(
+        "SELECT table_name, column_name, data_type, column_default "
+        "FROM information_schema.columns WHERE table_schema=current_schema()"
+    )
+    columns = {
+        (str(row[0]), str(row[1])): (str(row[2]), None if row[3] is None else str(row[3]))
+        for row in cursor.fetchall()
+    }
+
+    present_v1 = tables.intersection(_POSTGRES_V1_TABLES)
+    if not present_v1:
+        return ()
+    missing_v1 = _POSTGRES_V1_TABLES.difference(tables)
+    if missing_v1:
+        raise ContractViolation(
+            "pre-ledger PostgreSQL schema has a partial 0001 migration",
+            missing_tables=sorted(missing_v1),
+        )
+
+    v2_complete = _POSTGRES_V2_TABLES.issubset(tables) and _POSTGRES_V2_COLUMNS.issubset(
+        columns
+    )
+    v3_complete = all(
+        columns.get(column, (None, None))[0] == expected_type
+        for column, expected_type in _POSTGRES_V3_COLUMN_TYPES.items()
+    )
+    v4_complete = _POSTGRES_V4_COLUMNS.issubset(columns)
+    completion = (True, v2_complete, v3_complete, v4_complete)
+    # A later completed migration with an earlier gap cannot be safely
+    # reconstructed.  Do not manufacture ledger entries for an ambiguous DB.
+    gap_seen = False
+    for complete in completion:
+        if complete and gap_seen:
+            raise ContractViolation("pre-ledger PostgreSQL schema is not a contiguous prefix")
+        if not complete:
+            gap_seen = True
+    count = 0
+    for complete in completion:
+        if not complete:
+            break
+        count += 1
+    return POSTGRES_MIGRATIONS[:count]
 
 
 class PostgresMetadataStore(MetadataStore):
@@ -1458,11 +1962,65 @@ class PostgresMetadataStore(MetadataStore):
         return store
 
     def migrate(self) -> None:
-        for name in POSTGRES_MIGRATIONS:
-            script = (MIGRATIONS_DIR / "postgres" / name).read_text(encoding="utf-8")
+        """Apply pending PostgreSQL migrations once, one transaction at a time.
+
+        The advisory transaction lock protects separate application processes,
+        while the local lock protects threads sharing this store.  A migration
+        and its ledger insert commit together; any exception rolls both back.
+        """
+
+        with self._lock:
+            self._initialise_postgres_migration_ledger()
+            for name in POSTGRES_MIGRATIONS:
+                self._apply_postgres_migration(name)
+
+    def _initialise_postgres_migration_ledger(self) -> None:
+        try:
             with self._connection.cursor() as cursor:
-                cursor.execute(script)
-        self._connection.commit()
+                cursor.execute(
+                    "SELECT pg_advisory_xact_lock(%s)",
+                    (POSTGRES_MIGRATION_LOCK_ID,),
+                )
+                cursor.execute(
+                    "CREATE TABLE IF NOT EXISTS schema_migrations ("
+                    "name text PRIMARY KEY, applied_at timestamptz NOT NULL)"
+                )
+                cursor.execute("SELECT name FROM schema_migrations ORDER BY name")
+                applied = {str(row[0]) for row in cursor.fetchall()}
+                _postgres_applied_prefix(applied)
+                if not applied:
+                    for name in _postgres_preledger_baseline(cursor):
+                        cursor.execute(
+                            "INSERT INTO schema_migrations (name, applied_at) VALUES (%s, %s)",
+                            (name, iso(self.now())),
+                        )
+            self._connection.commit()
+        except BaseException:
+            self._connection.rollback()
+            raise
+
+    def _apply_postgres_migration(self, name: str) -> None:
+        if name not in POSTGRES_MIGRATIONS:
+            raise ContractViolation("unknown PostgreSQL migration", migration=name)
+        try:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT pg_advisory_xact_lock(%s)",
+                    (POSTGRES_MIGRATION_LOCK_ID,),
+                )
+                cursor.execute("SELECT 1 FROM schema_migrations WHERE name=%s", (name,))
+                already_applied = cursor.fetchone() is not None
+                if not already_applied:
+                    script = (MIGRATIONS_DIR / "postgres" / name).read_text(encoding="utf-8")
+                    cursor.execute(script)
+                    cursor.execute(
+                        "INSERT INTO schema_migrations (name, applied_at) VALUES (%s, %s)",
+                        (name, iso(self.now())),
+                    )
+            self._connection.commit()
+        except BaseException:
+            self._connection.rollback()
+            raise
 
     def execute(self, statement: str, params: Sequence[Any] = ()) -> Any:
         cursor = self._connection.cursor()
@@ -1476,6 +2034,17 @@ class PostgresMetadataStore(MetadataStore):
     def reset(self) -> None:
         """Drop every table this schema owns. Used by contract tests only."""
         tables = [
+            "schema_migrations",
+            "cache_parity_reports_v12",
+            "cache_affinity_decisions_v12",
+            "cache_outcome_events_v12",
+            "environment_snapshot_status_events",
+            "environment_snapshot_manifests",
+            "provider_cache_usage",
+            "prompt_prefix_manifests",
+            "context_checkpoints",
+            "context_ledger_events",
+            "context_ledger_streams",
             "gc_receipts",
             "gc_plans",
             "idempotency_records",
@@ -1511,6 +2080,7 @@ def open_store(target: str | Path, clock: Clock = SYSTEM_CLOCK) -> MetadataStore
 
 
 __all__ = [
+    "IdempotencyClaim",
     "MetadataStore",
     "PostgresMetadataStore",
     "SqliteMetadataStore",

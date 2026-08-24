@@ -1,7 +1,7 @@
 [project]
 name = "elmos-build-cache"
-version = "1.1.0"
-description = "ELMOS build cache, generated-file staging, checkpoint/recovery and atomic publication subsystem"
+version = "1.2.0"
+description = "ELMOS deterministic build, agent-context, environment and provider-prefix cache subsystem"
 requires-python = ">=3.11"
 dependencies = [
   "jsonschema==4.25.1",
@@ -44,6 +44,7 @@ packages = ["src/elmos_build_cache"]
 [tool.hatch.build.targets.wheel.force-include]
 "schemas" = "elmos_build_cache/_data/schemas"
 "migrations" = "elmos_build_cache/_data/migrations"
+"openapi" = "elmos_build_cache/_data/openapi"
 
 [tool.pytest.ini_options]
 addopts = "-q --strict-markers"

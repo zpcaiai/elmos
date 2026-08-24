@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/context-checkpoint.schema.json",
+  "title": "Context Checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "checkpoint_id",
+    "stream_id",
+    "ledger_sequence",
+    "repository_snapshot_digest",
+    "sections",
+    "checkpoint_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "checkpoint_id": {
+      "type": "string"
+    },
+    "stream_id": {
+      "type": "string"
+    },
+    "ledger_sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "repository_snapshot_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "compatibility_group": {
+      "type": "string"
+    },
+    "source_event_range": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "sections": {
+      "type": "object",
+      "required": [
+        "task_contract",
+        "repository_state",
+        "decisions",
+        "unresolved",
+        "run_state",
+        "validation"
+      ],
+      "properties": {
+        "task_contract": {
+          "type": "object"
+        },
+        "repository_state": {
+          "type": "object"
+        },
+        "decisions": {
+          "type": "array"
+        },
+        "unresolved": {
+          "type": "array"
+        },
+        "run_state": {
+          "type": "object"
+        },
+        "validation": {
+          "type": "object"
+        },
+        "external_artifact_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "checkpoint_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

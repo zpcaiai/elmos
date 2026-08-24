@@ -1,10 +1,14 @@
 # ELMOS Build Cache, Generated-File Staging and Recovery Engine
 
-Implements the `elmos-build-cache-staging-sota` skills package (31 skills,
-phases P0–P8) as production code inside this repository. Phases P0–P7 are the
-correctness engine; P8 adds the SOTA cache-policy plane -- admission, eviction,
-prefetch, adaptive selection, learning-augmented tuning and certification -- on
-top of it without being allowed to touch it.
+Implements the 31-skill `elmos-build-cache-staging-sota` v1.1 foundation and
+the additive 11-skill
+`elmos-build-cache-staging-codex-claude-parity` v1.2 upgrade (42 Skills in
+total). Phases P0–P7 are the correctness engine and the v1.1 P8 Skills are the
+cache-policy plane. The v1.2 package spans its exact
+`P8-parity-foundation` through `P13-parity-rollout` phases: canonical provider
+prefixes, append-only repository context, environment snapshots, cache
+affinity, multi-layer coordination, diagnostics, parity evaluation and guarded
+tuning. These additions may not weaken the existing correctness/policy path.
 
 The subsystem gives ELMOS deterministic cache reuse and durable execution
 without weakening correctness. Its central rule is that **file existence never
@@ -16,15 +20,14 @@ a validated whole-tree manifest, and published by an atomic pointer switch.
 
 ```text
 engines/build-cache-engine/
-├── src/elmos_build_cache/     implementation (43 modules, mypy --strict clean)
+├── src/elmos_build_cache/     correctness, policy and parity implementation
 │   ├── _data/                 packaged JSON Schemas, SQL migrations, OpenAPI
 │   └── db/                    SQLite (local) and PostgreSQL (production) store
-├── tests/                     933 tests mapped to the acceptance matrix
+├── tests/                     legacy and v1.2 narrow/contract suites
 ├── config/                    elmos-cache.yaml, elmos-cache.local.yaml
-├── migrations/                postgres/0001_init.sql, 0002_elmos_extensions.sql
-│                              sqlite/0001_init.sql
-├── openapi/                   cache-control-plane.openapi.yaml
-├── schemas/                   the ten contract schemas
+├── migrations/                PostgreSQL 0001–0006; SQLite 0001–0004
+├── openapi/                   legacy plus v1.2 parity control planes
+├── schemas/                   19 contract schemas
 └── docs/                      spec, acceptance matrix, recovery runbook,
                                miss-reason taxonomy, storage layout, CLI contract
 ```
@@ -68,6 +71,17 @@ asserts the two are byte-identical, so they cannot drift.
 | P8 | `elmos-adaptive-cache-policy-orchestrator` | `policy_orchestrator` |
 | P8 | `elmos-learning-augmented-cache-control` | `learned_control` |
 | P8 | `elmos-cache-autotuning-certification` | `policy_certification` |
+| P8 parity foundation | `elmos-provider-prompt-cache-adapters` | `prompt_cache`, `prompt_tools` |
+| P8 parity foundation | `elmos-canonical-prompt-prefix-layout` | `prompt_cache`, `prompt_tools` |
+| P9 context runtime | `elmos-append-only-repository-context-ledger` | `context_ledger` |
+| P9 context runtime | `elmos-cache-preserving-context-compaction` | `context_compaction` |
+| P10 environment/affinity | `elmos-environment-snapshot-cache` | `environment_cache`, `environment_service` |
+| P10 environment/affinity | `elmos-cache-affinity-routing` | `affinity` |
+| P11 parity control plane | `elmos-multi-layer-cache-coordinator` | `coordinator` |
+| P11 parity control plane | `elmos-cache-miss-diagnostics` | `miss_diagnostics`, `parity_runtime` |
+| P12 parity certification | `elmos-codex-claude-parity-benchmark` | `parity`, `parity_harness` |
+| P12 parity certification | `elmos-cache-hit-slo-autotuning` | `slo_autotune` |
+| P13 parity rollout | `elmos-codex-claude-cache-parity-rollout` | `parity_api`, `parity_store`, `pipeline` |
 
 ### The policy plane
 
@@ -108,6 +122,78 @@ separate tests, and every crossing is one-way:
 - **Recommendations are end-of-run.** A replacement policy that changes
   half-way through a run makes every number collected during that run
   uninterpretable, so the orchestrator never switches a live policy.
+
+### The v1.2 parity plane
+
+The v1.2 work is additive and observe-first. `config/elmos-cache.yaml` ships
+`parity.claim_mode: measured_only` and `parity.rollout_phase: observe`.
+Provider serving, environment restoration, affinity routing and coordinator
+serving remain disabled until real workload evidence supports a later rollout
+step. The append-only context ledger is enabled because it records durable
+lineage; it does not make a reuse or certification decision.
+
+- `prompt_cache` and `prompt_tools` compile a stable → append → volatile
+  prompt layout, reject volatile data before the stable boundary, keep provider
+  request/usage accounting behind adapters, and emit content-free diagnostics.
+  A provider prefix hit only avoids prefix processing; it is never an exact
+  model-output hit.
+- `context_ledger` stores tenant/project/stream/branch/snapshot-scoped,
+  hash-chained events. `context_compaction` creates source-linked checkpoints
+  through compare-and-swap prepare/warm/adopt/rollback transitions. Changed
+  files append stale/reread facts instead of rewriting history.
+- `environment_cache` derives an exact key from image, bootstrap, lockfile,
+  toolchain, platform and approved-environment inputs. `environment_service`
+  seals layers into CAS, verifies them before reuse and quarantines corruption;
+  secret values are excluded from manifests.
+- `affinity` applies hard compatibility and trust filters before rendezvous
+  ranking and bounded-load/fairness handling. `coordinator` probes cache layers
+  concurrently, uses a full-identity singleflight key and attributes saved work
+  once. Only an exact checkpoint or Action Cache hit may skip execution.
+- `miss_diagnostics` owns the closed reason taxonomy and first differing
+  identity dimension. `parity_runtime` observes real Action Cache lookups and
+  can persist content-free outcome events without making pipeline correctness
+  depend on telemetry availability.
+- `parity_harness` owns the exact scenario corpus and requires raw evidence plus
+  replay metadata for a passing scenario. `parity` evaluates measured metrics;
+  missing evidence stays `NOT_RUN`. `slo_autotune` may tune performance knobs in
+  shadow/canary rollout, but a false hit triggers immediate rollback.
+- `parity_store` persists prompt manifests, provider usage, environment
+  manifests/status events, outcomes, affinity decisions and parity reports with
+  tenant/project scope and exact idempotent replay. SQLite migrations
+  `0003_context_ledger.sql` / `0004_cache_parity.sql` and PostgreSQL migrations
+  `0005_context_ledger.sql` / `0006_cache_parity.sql` carry this state.
+
+The v1.2 control plane adds seven OpenAPI operations: compile a prompt prefix,
+append a context event, inspect an environment snapshot, decide affinity,
+explain a cache outcome, start a measured parity run and fetch an immutable
+report. The corresponding CLI surfaces are:
+
+```bash
+elmos-cache cache explain <request-id>
+elmos-cache prompt compile --input prompt.json
+elmos-cache prompt diff --previous old.json --current new.json
+elmos-cache --project <project-id> environment inspect <snapshot-key> \
+  --trust-namespace <trust-namespace> \
+  --transfer-ms <measured-ms> --decompression-ms <measured-ms> \
+  --verification-ms <measured-ms> --rebuild-ms <measured-ms> \
+  --minimum-savings-ms <policy-ms> --maximum-restore-ratio <0-to-1>
+elmos-cache affinity decide --input request.json
+elmos-cache parity status
+elmos-cache parity evaluate --input measurements.json
+elmos-cache parity report <report-id>
+```
+
+Mutating CLI commands require `--persist --idempotency-key <key>`; without
+`--persist` the commands are read-only evaluations. Raw prompts, source text and
+secret values are neither response fields nor parity metadata.
+
+The local implementation, Schema/OpenAPI copies, migrations and narrow tests
+are engineering evidence only. Live PostgreSQL for the new tables, real
+provider/SDK/model behavior, real environment images, an independently
+executed parity corpus and production rollout are currently `NOT_RUN`.
+Therefore the v1.2 result is `NOT_CERTIFIED`; no package threshold is claimed
+as achieved. See `docs/build-cache-staging-parity/` and the scoped
+`.ai/BUILD_CACHE_*.md` files for the migration ledger and evidence boundary.
 
 ## Storage model
 
@@ -192,15 +278,27 @@ pipeline = ConversionPipeline(config, store, cas, Path("."), "tenant", "project"
 ## Verification
 
 ```bash
-PYTHONPATH=src pytest tests -q          # 933 tests
+PYTHONPATH=src pytest tests -q
 ruff check src tests
 mypy src/elmos_build_cache              # strict
+
+# v1.2-only narrow regression slice
+PYTHONPATH=src pytest -q \
+  tests/test_prompt_cache.py tests/test_prompt_tools.py \
+  tests/test_context_ledger.py tests/test_context_compaction.py \
+  tests/test_environment_cache.py tests/test_environment_service.py \
+  tests/test_affinity.py tests/test_coordinator.py \
+  tests/test_miss_diagnostics.py tests/test_parity_runtime.py \
+  tests/test_parity_store.py tests/test_parity_harness.py \
+  tests/test_parity_api.py tests/test_parity_cli.py tests/test_parity.py
 ```
 
 Tests are named after the acceptance matrix in
 `docs/cache-staging-acceptance-matrix.md` (`SNAP-`, `KEY-`, `CAS-`, `CACHE-`,
 `STAGE-`, `PUB-`, `DAG-`, `CHECK-`, `JOURNAL-`, `LEASE-`, `REMOTE-`, `SEC-`,
-`GC-`, `OBS-`, `PERF-`, `CHAOS-`, `CERT-`, `E2E-`, `SOTA-`).
+`GC-`, `OBS-`, `PERF-`, `CHAOS-`, `CERT-`, `E2E-`, `SOTA-`). The v1.2
+parity tests are local engineering qualification. Do not translate their pass
+count into a provider, workload, external-readiness or certification claim.
 
 ## Optional extras
 

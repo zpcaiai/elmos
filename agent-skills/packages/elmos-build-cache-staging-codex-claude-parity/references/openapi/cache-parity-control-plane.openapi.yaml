@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Cache Parity Control Plane Supplement
+  version: 1.2.0
+servers:
+  - url: /v1
+paths:
+  /cache/prompt-prefixes/compile:
+    post:
+      operationId: compilePromptPrefix
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: Canonical provider request and PromptPrefixManifest }
+  /cache/context-ledgers/{streamId}/events:
+    post:
+      operationId: appendContextLedgerEvent
+      parameters:
+        - { in: path, name: streamId, required: true, schema: { type: string } }
+        - { in: header, name: Idempotency-Key, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "../schemas/context-ledger-event.schema.json" }
+      responses:
+        "201": { description: Appended }
+        "200": { description: Existing identical event }
+        "409": { description: Sequence or lineage conflict }
+  /cache/environments/{snapshotKey}:
+    get:
+      operationId: lookupEnvironmentSnapshot
+      parameters:
+        - { in: path, name: snapshotKey, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Snapshot lookup and restore estimate }
+        "404": { description: Miss }
+  /cache/affinity/decide:
+    post:
+      operationId: decideCacheAffinity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: Compatible ranked targets and selected route }
+  /cache/explain/{requestId}:
+    get:
+      operationId: explainCacheOutcome
+      parameters:
+        - { in: path, name: requestId, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Layer outcomes, first differences, causal invalidation graph, and remediation }
+  /cache/parity/runs:
+    post:
+      operationId: startCacheParityRun
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "202": { description: Benchmark accepted }
+  /cache/parity/reports/{reportId}:
+    get:
+      operationId: getCacheParityReport
+      parameters:
+        - { in: path, name: reportId, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Signed parity report
+          content:
+            application/json:
+              schema: { $ref: "../schemas/cache-parity-report.schema.json" }

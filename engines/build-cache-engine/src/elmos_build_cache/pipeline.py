@@ -24,17 +24,32 @@ shared read, limited write, production. The kill switch collapses to
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-from .action_cache import ActionCache, CommitRequest, HotIndex, LookupRequest
+from .action_cache import ActionCache, CommitRequest, HotIndex, LookupRequest, LookupResult
 from .cache_trace import Access, Tier
+from .canonical import digest_of
 from .cas import ContentAddressableStore
 from .checkpoint import CheckpointService, CompatibilityProfile
 from .clock import SYSTEM_CLOCK, Clock
 from .config import CacheConfig, RolloutConfig
+from .coordinator import (
+    CacheLayer as CoordinatorCacheLayer,
+)
+from .coordinator import (
+    LayerProbeResult,
+    MultiLayerCacheCoordinator,
+    ProbeOutcome,
+    ReuseBudgets,
+    ReuseDecision,
+    ReuseIdentity,
+    ReusePlan,
+    ReuseRequest,
+)
 from .dag import CacheProbe, ConversionDag, DagNode, ExecutionPlan, NodeDecision, ProbeResult
 from .dag_prefetch import Artifact
 from .db import MetadataStore
@@ -48,14 +63,16 @@ from .enums import (
     TrustNamespace,
     ValidationLevel,
 )
-from .errors import ContractViolation, ElmosCacheError, NotFound
+from .errors import ContractViolation, ElmosCacheError, NotFound, PermissionDenied
 from .fingerprint import Fingerprint, FingerprintInputs, build_action_key, explain_miss
 from .journal import LeaseManager, RunCoordinator, RunJournal
 from .manifests import ActionResultManifest, EvidenceBundle, ExecutionMetrics, FileTreeManifest
 from .observability import CacheAccounting, MetricsRegistry, PerformanceGate, Tracer, summarize_run
+from .parity_runtime import ParityRuntime
+from .parity_store import ParityMetadataRepository
 from .policy_plane import PolicyPlane
 from .publish import PublishResult, TreePublisher
-from .security import ProvenanceSigner, SecurityGate
+from .security import ProvenanceSigner, SecurityGate, SignedStatement
 from .snapshot import Snapshot, SnapshotPolicy, take_snapshot
 from .stage_contract import StageContract, StageContractRegistry, default_registry
 from .staging import Workspace
@@ -139,6 +156,9 @@ class RunReport:
     #: What the policy plane did this run, and what it advises for the next.
     #: A recommendation, never an applied change -- see ``PolicyPlane``.
     policy: dict[str, Any] | None = None
+    #: Observation-first v1.2 parity state. External/provider evidence remains
+    #: explicit and no partial layer is allowed to authorise publication.
+    parity: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -154,6 +174,7 @@ class RunReport:
             "shadow": self.shadow,
             "failures": list(self.failures),
             "policy": self.policy,
+            "parity": self.parity,
         }
 
     def unjustified_skips(self) -> list[str]:
@@ -218,6 +239,21 @@ class RolloutController:
         }
 
 
+class _CoordinatorServingControl:
+    """Runtime-owned rollback latch for the production coordinator seam."""
+
+    def __init__(self) -> None:
+        self._serving = True
+        self.reason_code: str | None = None
+
+    def is_serving(self) -> bool:
+        return self._serving
+
+    def latch_rollback(self, reason_code: str) -> None:
+        self._serving = False
+        self.reason_code = reason_code
+
+
 class ConversionPipeline:
     """Wires contracts, DAG, cache, staging, checkpoints and publication."""
 
@@ -234,6 +270,9 @@ class ConversionPipeline:
         trust_namespace: TrustNamespace = TrustNamespace.BRANCH,
         producer_identity: str = "elmos-worker",
         signer: ProvenanceSigner | None = None,
+        parity_serving_gate_receipt: SignedStatement | None = None,
+        parity_serving_gate_verifier: ProvenanceSigner | None = None,
+        multi_layer_coordinator: MultiLayerCacheCoordinator | None = None,
     ) -> None:
         self.config = config
         self.store = store
@@ -264,6 +303,32 @@ class ConversionPipeline:
             trace_salt=project_id,
             signer=signer,
         )
+        self.multi_layer_cache_coordinator = multi_layer_coordinator or MultiLayerCacheCoordinator(
+            max_parallel_probes=config.parity.coordinator.max_parallel_probes
+        )
+        self._coordinator_serving_control = (
+            _CoordinatorServingControl() if config.parity.coordinator.enabled else None
+        )
+        coordinator_controls = (
+            {"multi_layer_coordinator": self._coordinator_serving_control}
+            if self._coordinator_serving_control is not None
+            else {}
+        )
+        self._parity_serving_gate_receipt = parity_serving_gate_receipt
+        self.parity_runtime = ParityRuntime(
+            config.parity,
+            tenant_id,
+            project_id,
+            sink=ParityMetadataRepository(store) if config.parity.enabled else None,
+            clock=clock,
+            # Only the exact Action Cache coordinator is a production path in
+            # this pipeline. Other optional v1.2 layers remain explicitly
+            # unwired rather than being represented by configuration booleans.
+            serving_controls=coordinator_controls,
+            serving_gate_receipt=parity_serving_gate_receipt,
+            serving_gate_verifier=parity_serving_gate_verifier,
+        )
+        self._coordinator_plans: dict[str, ReusePlan] = {}
         self._fingerprints: dict[str, Fingerprint] = {}
         self._previous_fingerprints: dict[str, Fingerprint] = {}
         self._node_outputs: dict[str, dict[str, Any]] = {}
@@ -317,16 +382,76 @@ class ConversionPipeline:
             if fingerprint is None:
                 return ProbeResult(False, None, (MissReason.NO_ENTRY,))
             mode = self.rollout.cache_mode(node.cache_mode)
+            required_validation = max(
+                minimum,
+                node.validation_floor,
+                key=lambda value: value.rank,
+            )
+            authorization_digest = self._coordinator_authorization_digest()
+            coordinator_started = time.monotonic() if authorization_digest is not None else None
+            lookup_started = time.monotonic()
             with self.tracer.span("elmos.cache.lookup", stage_id=node.stage_id):
                 result = self.action_cache.lookup(
                     LookupRequest(
                         tenant_id=self.tenant_id,
                         action_key=fingerprint.action_key,
                         trust_namespace=self.trust_namespace,
-                        minimum_validation=max(minimum, node.validation_floor, key=lambda v: v.rank),
+                        minimum_validation=required_validation,
                         mode=mode,
+                        estimated_recompute_ms=(
+                            float(node.estimated_cost_ms)
+                            if authorization_digest is not None
+                            else None
+                        ),
                     )
                 )
+            lookup_ms = max(0.0, (time.monotonic() - lookup_started) * 1_000.0)
+            effective_hit = result.hit
+            effective_reasons = result.reasons
+            restore_ms = float(result.detail.get("restore_ms", 0.0) or 0.0)
+            # A coordinator safety failure latches rollback for the whole
+            # pipeline instance.  Subsequent nodes must recompute rather than
+            # silently falling back to a cache restore after the new serving
+            # path has declared the run unsafe.  A merely absent serving gate
+            # does not set this latch, so the established Action Cache path is
+            # left unchanged when the optional coordinator is not authorized.
+            if (
+                self._coordinator_serving_control is not None
+                and self._coordinator_serving_control.reason_code is not None
+            ):
+                effective_hit = False
+                effective_reasons = (MissReason.POLICY_BYPASS,)
+            if authorization_digest is not None and coordinator_started is not None:
+                try:
+                    reuse_plan, identity, restore_ms = self._coordinate_action_lookup(
+                        node,
+                        fingerprint,
+                        result,
+                        required_validation,
+                        authorization_digest,
+                        lookup_ms,
+                        coordinator_started,
+                    )
+                    self._coordinator_plans[node.node_id] = reuse_plan
+                    effective_hit = self._coordinator_authorizes_restore(
+                        reuse_plan,
+                        identity,
+                        result,
+                    )
+                    if result.hit and not effective_hit:
+                        safety_failure = self._coordinator_safety_failure(
+                            reuse_plan,
+                            identity,
+                        )
+                        if safety_failure is not None:
+                            self.parity_runtime.latch_rollback(safety_failure)
+                        effective_reasons = (
+                            self._coordinator_rejection_reason(reuse_plan),
+                        )
+                except Exception:  # noqa: BLE001 - optional planner must fail to recompute
+                    self.parity_runtime.latch_rollback("COORDINATOR_PLANNING_FAILED")
+                    effective_hit = False
+                    effective_reasons = (MissReason.POLICY_BYPASS,)
             # Capture the access as the policy plane sees it. This is the
             # real lookup path, so a captured trace describes decisions the
             # deployment actually took rather than a replay of a guess.
@@ -334,26 +459,206 @@ class ConversionPipeline:
                 action_key=fingerprint.action_key,
                 tier=Tier.L1_LOCAL_CAS,
                 access=Access.GET,
-                hit=result.hit,
+                hit=effective_hit,
                 size_bytes=int(result.detail.get("size_bytes", 0) or 0),
                 stage_class=node.stage_id,
                 recompute_ms=float(node.estimated_cost_ms),
-                restore_ms=float(result.detail.get("restore_ms", 0.0) or 0.0),
+                restore_ms=restore_ms,
                 model_tokens=result.entry.saved_model_tokens if result.entry else 0,
                 validation_level=(
                     str(result.entry.validation_level) if result.entry else "UNVERIFIED"
                 ),
                 trust_namespace=str(self.trust_namespace),
             )
-            if result.hit:
+            if self.config.parity.enabled:
+                self.parity_runtime.observe_action(
+                    node_id=node.node_id,
+                    action_key=fingerprint.action_key,
+                    hit=effective_hit,
+                    miss_reasons=effective_reasons,
+                )
+            if effective_hit:
                 return ProbeResult(True, fingerprint.action_key, ())
-            reasons = result.reasons
+            reasons = effective_reasons
             previous = self._previous_fingerprints.get(node.node_id)
             if previous is not None:
-                reasons = tuple(explain_miss(fingerprint, previous, result.reasons).reasons)
+                reasons = tuple(explain_miss(fingerprint, previous, effective_reasons).reasons)
             return ProbeResult(False, fingerprint.action_key, reasons)
 
         return dag.plan(affected, CacheProbe(probe))
+
+    @property
+    def coordinator_plans(self) -> Mapping[str, ReusePlan]:
+        """Plans that actually participated in this pipeline instance."""
+
+        return dict(self._coordinator_plans)
+
+    def _coordinator_authorization_digest(self) -> str | None:
+        if not self.config.parity.coordinator.enabled:
+            return None
+        try:
+            self.parity_runtime.authorize_serving(
+                "multi_layer_coordinator",
+                self.tenant_id,
+                self.project_id,
+            )
+        except PermissionDenied:
+            return None
+        receipt = self._parity_serving_gate_receipt
+        if receipt is None:
+            # ``authorize_serving`` cannot legally succeed without this, but
+            # keep the composition boundary fail closed if that invariant ever
+            # regresses.
+            self.parity_runtime.latch_rollback("COORDINATOR_AUTHORIZATION_MISSING")
+            return None
+        return digest_of(receipt.to_dict())
+
+    def _coordinate_action_lookup(
+        self,
+        node: DagNode,
+        fingerprint: Fingerprint,
+        result: LookupResult,
+        minimum_validation: ValidationLevel,
+        authorization_digest: str,
+        lookup_ms: float,
+        decision_started: float,
+    ) -> tuple[ReusePlan, ReuseIdentity, float]:
+        contract = self.registry.get(node.stage_id)
+        identity = ReuseIdentity(
+            tenant_id=self.tenant_id,
+            project_id=self.project_id,
+            authorization_digest=authorization_digest,
+            compatibility_digest=digest_of(
+                {
+                    "stage_id": node.stage_id,
+                    "stage_version": contract.stage_version,
+                    "stage_contract_digest": contract.digest(),
+                    "trust_namespace": str(self.trust_namespace),
+                    "result_schema": "elmos.action-result/v1",
+                }
+            ),
+            work_digest=fingerprint.action_key,
+        )
+        restore_ms = float(result.detail.get("restore_ms", 0.0) or 0.0)
+        if result.hit:
+            if result.entry is None or result.result is None or result.result_digest is None:
+                raise ContractViolation("authoritative Action Cache hit is incomplete")
+            artifacts = result.result.get("output_artifacts", ())
+            if not isinstance(artifacts, list):
+                raise ContractViolation("Action Result outputs must be a list")
+            restore_ms = self._estimated_restore_ms(tuple(str(item) for item in artifacts))
+            layer_result = LayerProbeResult(
+                layer=CoordinatorCacheLayer.ACTION,
+                outcome=ProbeOutcome.HIT,
+                reason_code="HIT",
+                identity=identity,
+                artifact_digest=result.result_digest,
+                validation_level=result.entry.validation_level,
+                verified=True,
+                authorised=True,
+                compatible=True,
+                complete_result=True,
+                lookup_ms=lookup_ms,
+                restore_ms=restore_ms,
+                recompute_ms=float(node.estimated_cost_ms),
+                avoided_work_ids=(node.node_id,),
+            )
+        else:
+            reason = result.reasons[0].value if result.reasons else MissReason.NO_ENTRY.value
+            layer_result = LayerProbeResult(
+                layer=CoordinatorCacheLayer.ACTION,
+                outcome=ProbeOutcome.MISS,
+                reason_code=reason,
+                identity=identity,
+                validation_level=(
+                    result.entry.validation_level
+                    if result.entry is not None
+                    else ValidationLevel.UNVERIFIED
+                ),
+                lookup_ms=lookup_ms,
+                recompute_ms=float(node.estimated_cost_ms),
+            )
+        request = ReuseRequest(
+            request_id="action-" + fingerprint.action_key.removeprefix("sha256:")[:32],
+            identity=identity,
+            minimum_validation=minimum_validation,
+            allow_provider_prefix=False,
+            budgets=ReuseBudgets(
+                max_probes=self.config.parity.coordinator.max_parallel_probes,
+            ),
+        )
+        plan = self.multi_layer_cache_coordinator.plan_prevalidated(
+            request,
+            {CoordinatorCacheLayer.ACTION: layer_result},
+            decision_started_monotonic=decision_started,
+        )
+        return plan, identity, restore_ms
+
+    @staticmethod
+    def _coordinator_authorizes_restore(
+        plan: ReusePlan,
+        identity: ReuseIdentity,
+        result: LookupResult,
+    ) -> bool:
+        action_layers = [layer for layer in plan.layers if layer.layer is CoordinatorCacheLayer.ACTION]
+        return (
+            result.hit
+            and result.result_digest is not None
+            and plan.identity_digest == identity.singleflight_key
+            and plan.complete_result_layer is CoordinatorCacheLayer.ACTION
+            and not plan.execution_required
+            and ReuseDecision.REUSE_EXACT_RESULT in plan.decisions
+            and not plan.budget_usage.breaches
+            and len(action_layers) == 1
+            and action_layers[0].accepted
+            and action_layers[0].complete_result
+            and action_layers[0].artifact_digest == result.result_digest
+        )
+
+    @staticmethod
+    def _coordinator_rejection_reason(plan: ReusePlan) -> MissReason:
+        action = next(
+            (layer for layer in plan.layers if layer.layer is CoordinatorCacheLayer.ACTION),
+            None,
+        )
+        reason = action.reason_code if action is not None else "POLICY_BYPASS"
+        if reason == "VALIDATION_TOO_LOW":
+            return MissReason.VALIDATION_TOO_LOW
+        if reason == "IDENTITY_MISMATCH":
+            return MissReason.TENANT_MISMATCH
+        if reason in {"AUTHORIZATION_DENIED", "UNVERIFIED_MATERIAL"}:
+            return MissReason.PROVENANCE_INVALID
+        if reason in {
+            "COMPATIBILITY_MISMATCH",
+            "BOUNDARY_DEPENDENCY_MISMATCH",
+            "BOUNDARY_GRAPH_MISSING",
+        }:
+            return MissReason.SCHEMA_INCOMPATIBLE
+        if reason in {
+            "RESTORE_MORE_EXPENSIVE_THAN_RECOMPUTE",
+            "RESTORE_BUDGET_EXCEEDED",
+        }:
+            return MissReason.RESTORE_COST_EXCEEDS_RECOMPUTE
+        return MissReason.POLICY_BYPASS
+
+    @staticmethod
+    def _coordinator_safety_failure(
+        plan: ReusePlan,
+        identity: ReuseIdentity,
+    ) -> str | None:
+        if plan.identity_digest != identity.singleflight_key:
+            return "COORDINATOR_IDENTITY_MISMATCH"
+        action = next(
+            (layer for layer in plan.layers if layer.layer is CoordinatorCacheLayer.ACTION),
+            None,
+        )
+        if action is not None and action.reason_code in {
+            "AUTHORIZATION_DENIED",
+            "COMPATIBILITY_MISMATCH",
+            "UNVERIFIED_MATERIAL",
+        }:
+            return "COORDINATOR_UNSAFE_CANDIDATE"
+        return None
 
     # -- execution --------------------------------------------------------
     def execute(
@@ -804,6 +1109,7 @@ class ConversionPipeline:
             shadow=shadow,
             failures=tuple(failures),
             policy=self.policy_report(),
+            parity=self.parity_runtime.report(),
         )
         unjustified = report.unjustified_skips()
         if unjustified:

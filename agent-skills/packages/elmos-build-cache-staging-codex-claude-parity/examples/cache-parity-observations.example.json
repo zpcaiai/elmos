@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.2.0",
+  "subject": {
+    "name": "illustrative-reference-fixture",
+    "note": "This is not an ELMOS production measurement."
+  },
+  "metrics": {
+    "stable_turn_cached_token_reuse": 0.93,
+    "unexpected_full_prefix_miss": 0.01,
+    "exact_rerun_weighted_reuse": 0.995,
+    "small_edit_weighted_reuse": 0.92,
+    "unnecessary_invalidation": 0.03,
+    "environment_snapshot_hit": 0.97,
+    "warm_start_p95_reduction": 0.84,
+    "restart_artifact_reuse": 0.9995,
+    "stable_followup_wall_clock_saved": 0.74,
+    "model_input_cost_saved": 0.83,
+    "long_session_cached_token_reuse": 0.82,
+    "false_hits": 0,
+    "cross_tenant_hits": 0,
+    "corrupt_executions": 0,
+    "under_validated_publications": 0
+  }
+}

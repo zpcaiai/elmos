@@ -4,7 +4,13 @@ info:
   version: 1.0.0
 servers:
   - url: /v1
+security:
+  - gatewayMutualTLS: []
 components:
+  securitySchemes:
+    gatewayMutualTLS:
+      type: mutualTLS
+      description: A trusted gateway authenticates the peer and injects the server-only WSGI identity context; HTTP identity headers are not trusted.
   schemas:
     Error:
       type: object
@@ -13,6 +19,8 @@ components:
         code:
           type: string
           enum:
+            - AUTHENTICATION_REQUIRED
+            - PERMISSION_DENIED
             - NOT_FOUND
             - DIGEST_MISMATCH
             - STALE_LEASE

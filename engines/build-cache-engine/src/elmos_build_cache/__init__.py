@@ -22,6 +22,8 @@ from __future__ import annotations
 
 __all__ = ["__version__", "PACKAGE_VERSION", "SCHEMA_VERSION"]
 
-__version__ = "1.0.0"
-PACKAGE_VERSION = "1.0.0"
-SCHEMA_VERSION = "1.0.0"
+__version__ = "1.2.0"
+PACKAGE_VERSION = "1.2.0"
+# Existing v1.0/v1.1 manifests retain their own schema versions; this is the
+# current package-level contract and the new parity contracts are v1.2.0.
+SCHEMA_VERSION = "1.2.0"

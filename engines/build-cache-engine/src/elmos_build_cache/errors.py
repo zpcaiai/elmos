@@ -32,6 +32,7 @@ class ErrorCode:
     CORRUPT_OBJECT = "CORRUPT_OBJECT"
     REMOTE_UNAVAILABLE = "REMOTE_UNAVAILABLE"
     IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
+    OUTCOME_UNKNOWN = "OUTCOME_UNKNOWN"
     VERSION_CONFLICT = "VERSION_CONFLICT"
     CERTIFICATE_INVALID = "CERTIFICATE_INVALID"
     UNSUPPORTED = "UNSUPPORTED"
@@ -157,6 +158,17 @@ class RemoteUnavailable(ElmosCacheError):
 
 class IdempotencyConflict(ElmosCacheError):
     code = ErrorCode.IDEMPOTENCY_CONFLICT
+    http_status = 409
+
+
+class IdempotencyOutcomeUnknown(ElmosCacheError):
+    """A claimed operation may already have produced its external effect.
+
+    Automatic retry is forbidden. An operator must reconcile the durable
+    PENDING record with authoritative external evidence.
+    """
+
+    code = ErrorCode.OUTCOME_UNKNOWN
     http_status = 409
 
 

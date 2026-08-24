@@ -4,13 +4,93 @@
 > Companions: `BUILD_CACHE_TASK.md`, `BUILD_CACHE_IMPLEMENTATION_STATUS.md`,
 > `BUILD_CACHE_TEST_RESULTS.md`, `BUILD_CACHE_EVIDENCE.md`.
 
-- **Last updated:** 2026-08-20 (pass 4)
-- **Written by:** Claude (Cowork cloud session)
-- **Overall status:** `CERTIFIED_IN_SANDBOX` — 31/31 skills implemented,
-  **933 tests (926 pass, 7 skip)**, 1 skill `PARTIAL` and only because two
-  toolchains do not exist for this platform.
+- **Last updated:** 2026-08-20 (pass 5, v1.2 parity upgrade)
+- **Written by:** Claude for passes 1–4; Codex for pass 5
+- **Current overall status:** v1.2 local implementation complete;
+  external/provider/production evidence `NOT_RUN`; `NOT_CERTIFIED`.
+  The v1.1 `CERTIFIED_IN_SANDBOX` result below is retained as historical
+  evidence and does not certify the v1.2 parity scope.
 
-## 0. What landed in pass 4
+## 0. What landed in pass 5
+
+The input is
+`skills/subskills/elmos-build-cache-staging-codex-claude-parity-skills-v1.2.0.zip`
+(SHA-256
+`dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7`).
+It retains the 31 v1.1 Skills and adds 11 parity Skills. The importer detects
+the retained bodies, leaves their implementation behavior intact, installs the
+11 deltas, and validates four-root byte identity. It never executes package
+scripts. The immutable vendored package and install ledger are:
+
+```text
+agent-skills/packages/elmos-build-cache-staging-codex-claude-parity/
+docs/build-cache-staging-parity/installed-manifest.json
+```
+
+New engine modules:
+
+| Path | Responsibility |
+| --- | --- |
+| `prompt_cache.py`, `prompt_tools.py` | Stable/append/volatile prompt compilation, provider profiles/accounting, volatility lint and prefix diff |
+| `context_ledger.py`, `context_compaction.py` | Scoped hash-chained history and CAS-fenced checkpoint adoption/rollback |
+| `environment_cache.py`, `environment_service.py` | Exact environment identity, CAS-sealed layers, restore economics, verification, quarantine and revoke |
+| `affinity.py`, `coordinator.py` | Compatibility/trust filters, rendezvous/fairness and full-identity singleflight multi-layer planning |
+| `miss_diagnostics.py`, `parity_runtime.py` | Closed outcome taxonomy, first-difference diagnosis and content-free observation of real Action Cache lookups |
+| `parity.py`, `parity_harness.py` | Exact 20-scenario/16-metric evaluation and evidence/replay-bound execution harness |
+| `parity_store.py` | Durable tenant/project-scoped parity metadata and exact idempotent replay |
+| `parity_api.py` | Seven-operation production control-plane service |
+| `slo_autotune.py` | Performance-only tuning proposals, rollout ladder and immediate safety rollback |
+
+Changed integration surfaces:
+
+- `config/elmos-cache.yaml` and `CacheConfig` are version 1.2.0. The parity
+  plane is `measured_only` / `observe`; new serving paths remain off.
+- `pipeline.ConversionPipeline` observes real Action Cache results and exposes
+  optional `RunReport.parity`; telemetry persistence cannot alter correctness.
+- `api.CacheControlPlane` delegates all seven parity OpenAPI operations to the
+  durable service. Mutations preserve `Idempotency-Key` behavior.
+- `cli.py` adds `cache explain`, `prompt compile/diff`, `environment inspect`,
+  `affinity decide`, and `parity status/evaluate/report`. Persistence is
+  explicit (`--persist`) and requires an idempotency key.
+- Human and packaged contracts now include 19 Schemas, the parity OpenAPI
+  overlay, and SQLite migrations 0003/0004 plus PostgreSQL 0005/0006.
+
+Operational invariants:
+
+- A prompt-prefix hit is never an exact output hit. Only an exact validated
+  checkpoint/Action result may skip model/compiler/test execution.
+- Tenant, project, trust, provider/model/tool profile and full reuse identity
+  are mandatory. Missing identity fails closed.
+- Raw prompt/source/secret values do not enter parity metadata or diagnostics.
+- Environment corruption quarantines the CAS object and appends an environment
+  status event. Revocation is one-way.
+- Missing, blocked or unverifiable scenario evidence remains `NOT_RUN` and can
+  never pass the parity gate.
+
+Do not use the historical commit instructions later in this file in the shared
+dirty worktree. This pass intentionally did not switch branches, commit or
+stage unrelated files.
+
+### v1.2 ordered continuation
+
+1. Run the combined v1.2 narrow suite in
+   `docs/build-cache-staging-parity/RUNBOOK.md`, then capture one immutable
+   command/result receipt. Do not manufacture a total by adding the overlapping
+   development checkpoints in `BUILD_CACHE_TEST_RESULTS.md`.
+2. Apply the v1.2 migrations to a disposable live PostgreSQL instance and run
+   the same repository-contract and reopen/idempotency cases used for SQLite.
+3. Bind provider tests to exact SDK/API/model/profile/date tuples and use only
+   provider-reported token accounting. Bind environment tests to exact image,
+   bootstrap, lockfile, toolchain, platform and approved-environment digests.
+4. Execute all 20 parity scenarios over independent development, negative,
+   holdout and representative corpora with raw evidence, replay metadata,
+   authorization and separate executor/verifier identities.
+5. Only if the measured gate allows it, progress observe → shadow → canary
+   → progressive. Any false/cross-tenant/corrupt/under-validated hit is an
+   immediate rollback. Certification remains external and is not produced by
+   this repository.
+
+## Historical: what landed in pass 4
 
 Passes 1 and 2 are committed. **Pass 3 was delivered but never committed** —
 `git status` still shows `elmos_route_stages.py`, `tools/`, `tests/fixtures/`,

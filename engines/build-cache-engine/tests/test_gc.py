@@ -10,7 +10,7 @@ from elmos_build_cache.clock import ManualClock
 from elmos_build_cache.db import SqliteMetadataStore
 from elmos_build_cache.db.records import CheckpointRecord
 from elmos_build_cache.enums import CheckpointStatus, FileClass, ValidationLevel
-from elmos_build_cache.errors import ConflictError, PermissionDenied
+from elmos_build_cache.errors import ConflictError, NotFound, PermissionDenied
 from elmos_build_cache.gc import GarbageCollector, RetentionPolicy, explain_retention
 from elmos_build_cache.journal import RunCoordinator
 from elmos_build_cache.manifests import EvidenceBundle
@@ -18,6 +18,7 @@ from elmos_build_cache.publish import TreePublisher
 from elmos_build_cache.staging import Workspace, stage_all
 
 POLICY = RetentionPolicy(grace_hours=1, quota_bytes=1024**3)
+OTHER_TENANT = "tenant-other"
 
 
 def register(store: SqliteMetadataStore, cas: ContentAddressableStore, payload: bytes, **metadata):
@@ -194,7 +195,100 @@ def test_orphan_reconciliation_reports_both_directions(
     cas.delete(tracked)
     orphans = collector(store, cas, clock).reconcile_orphans()
     assert tracked in orphans["orphan_metadata"]
-    assert len(orphans["orphan_blobs"]) == 1
+    # A physical blob without a tenant registration cannot be attributed to
+    # this tenant and must not disclose the shared CAS inventory.
+    assert orphans["orphan_blobs"] == []
+
+
+def test_gc_plan_ids_are_exactly_tenant_scoped_with_zero_denied_side_effects(
+    store: SqliteMetadataStore,
+    cas: ContentAddressableStore,
+    clock: ManualClock,
+) -> None:
+    with store.transaction():
+        store.ensure_tenant(OTHER_TENANT)
+    foreign = GarbageCollector(store, cas, OTHER_TENANT, POLICY, clock)
+    current = collector(store, cas, clock)
+    with store.transaction():
+        foreign_plan = foreign.plan()
+    before_status = store.get_gc_plan(foreign_plan.plan_id)
+    before_receipts = store.query_one("SELECT COUNT(*) FROM gc_receipts")
+    before_cas = cas.accounting()
+
+    with pytest.raises(PermissionDenied), store.transaction():
+        current.apply(foreign_plan.plan_id, principal_can_gc=False)
+    with pytest.raises(NotFound) as foreign_error, store.transaction():
+        current.approve(foreign_plan.plan_id)
+    with pytest.raises(NotFound) as absent_error, store.transaction():
+        current.approve("gcp_absent")
+
+    assert type(foreign_error.value) is type(absent_error.value)
+    assert str(foreign_error.value) == str(absent_error.value)
+    assert store.get_gc_plan(foreign_plan.plan_id) == before_status
+    assert store.query_one("SELECT COUNT(*) FROM gc_receipts") == before_receipts
+    assert cas.accounting() == before_cas
+
+
+def test_gc_logical_eviction_never_deletes_shared_or_foreign_rooted_cas_bytes(
+    store: SqliteMetadataStore,
+    cas: ContentAddressableStore,
+    clock: ManualClock,
+) -> None:
+    shared = register(store, cas, b"shared registration")
+    foreign_root = register(store, cas, b"foreign root only")
+    foreign_ref = register(store, cas, b"foreign reference only")
+    with store.transaction():
+        store.ensure_tenant(OTHER_TENANT)
+        store.register_artifact(
+            OTHER_TENANT,
+            shared,
+            size_bytes=len(b"shared registration"),
+            media_type="application/octet-stream",
+            artifact_kind="blob",
+        )
+        store.register_artifact(
+            OTHER_TENANT,
+            foreign_ref,
+            size_bytes=len(b"foreign reference only"),
+            media_type="application/octet-stream",
+            artifact_kind="blob",
+        )
+        store.add_pin(OTHER_TENANT, "artifact", foreign_root, "foreign tenant hold")
+        store.add_artifact_ref(
+            OTHER_TENANT,
+            "foreign_metadata",
+            "foreign-source",
+            foreign_ref,
+            "content",
+        )
+
+    gc = collector(store, cas, clock)
+    with store.transaction():
+        plan = gc.plan()
+        gc.approve(plan.plan_id)
+    assert {shared, foreign_root, foreign_ref}.issubset(
+        {candidate.digest for candidate in plan.candidates}
+    )
+    clock.advance(3700)
+    with store.transaction():
+        outcome = gc.apply(plan.plan_id)
+
+    assert outcome["deleted"] == 3
+    assert outcome["freed_bytes"] == 0
+    assert outcome["logically_released_bytes"] == sum(
+        len(payload)
+        for payload in (
+            b"shared registration",
+            b"foreign root only",
+            b"foreign reference only",
+        )
+    )
+    assert all(cas.contains(item) for item in (shared, foreign_root, foreign_ref))
+    assert all(store.get_artifact(TENANT, item) is None for item in (shared, foreign_root, foreign_ref))
+    assert store.get_artifact(OTHER_TENANT, shared) is not None
+    receipts = store.gc_receipts(plan.plan_id)
+    assert {receipt["outcome"] for receipt in receipts} == {"DELETED"}
+    assert all("shared CAS bytes retained" in str(receipt["detail"]) for receipt in receipts)
 
 
 def test_quarantine_retention_is_separate_from_gc(

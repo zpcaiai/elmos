@@ -123,6 +123,33 @@ class GarbageCollector:
     #: that disagrees with the root set loses.
     replacement: CachePolicy | None = None
 
+    def _owned_plan(self, plan_id: str) -> dict[str, Any]:
+        return self.store.get_gc_plan_for_tenant(self.tenant_id, plan_id)
+
+    def _foreign_live_digests(self) -> set[str]:
+        """CAS keys rooted by any other tenant's metadata graph."""
+
+        protected: set[str] = set()
+        for tenant_id in self.store.list_tenant_ids():
+            if tenant_id == self.tenant_id:
+                continue
+            collector = GarbageCollector(
+                self.store,
+                self.cas,
+                tenant_id,
+                self.policy,
+                self.clock,
+            )
+            protected.update(collector.reachable(collector.live_roots()))
+        return protected
+
+    def _physical_delete_is_safe(self, digest: str, foreign_roots: set[str]) -> bool:
+        """A logical tenant eviction is not automatically a physical delete."""
+
+        other_registrations = set(self.store.artifact_tenants(digest)) - {self.tenant_id}
+        other_references = set(self.store.artifact_ref_tenants(digest)) - {self.tenant_id}
+        return not other_registrations and not other_references and digest not in foreign_roots
+
     # -- root set ---------------------------------------------------------
     def live_roots(self) -> list[RootReason]:
         """Everything that must survive, with the reason it survives."""
@@ -339,9 +366,7 @@ class GarbageCollector:
         )
 
     def approve(self, plan_id: str) -> None:
-        record = self.store.get_gc_plan(plan_id)
-        if record is None:
-            raise NotFound("gc plan does not exist", plan_id=plan_id)
+        record = self._owned_plan(plan_id)
         if record["status"] not in ("DRY_RUN", "APPROVED"):
             raise ConflictError("gc plan is not approvable", plan_id=plan_id, status=record["status"])
         self.store.set_gc_plan_status(plan_id, "APPROVED")
@@ -353,9 +378,7 @@ class GarbageCollector:
         """Delete with receipts. Re-running after an interruption is a no-op."""
         if not principal_can_gc:
             raise PermissionDenied("garbage collection requires an authorised principal")
-        record = self.store.get_gc_plan(plan_id)
-        if record is None:
-            raise NotFound("gc plan does not exist", plan_id=plan_id)
+        record = self._owned_plan(plan_id)
         if record["status"] not in ("APPROVED", "APPLIED"):
             raise ConflictError("gc plan has not been approved", plan_id=plan_id, status=record["status"])
 
@@ -369,11 +392,13 @@ class GarbageCollector:
 
         # Re-derive protection at apply time: a run may have started since.
         protected = self.reachable(self.live_roots())
+        foreign_roots = self._foreign_live_digests()
         already = {receipt["digest"] for receipt in self.store.gc_receipts(plan_id)}
 
         deleted = 0
         skipped = 0
         freed = 0
+        logically_released = 0
         candidates = record["payload"]["candidates"]
         for candidate in candidates if limit is None else candidates[:limit]:
             digest = candidate["digest"]
@@ -383,16 +408,44 @@ class GarbageCollector:
                 self.store.add_gc_receipt(plan_id, digest, "PROTECTED", "became reachable after planning")
                 skipped += 1
                 continue
+            artifact = self.store.get_artifact(self.tenant_id, digest)
+            if artifact is None:
+                # A stale or tampered plan cannot turn a globally known digest
+                # into physical-delete authority.
+                self.store.add_gc_receipt(
+                    plan_id,
+                    digest,
+                    "PROTECTED",
+                    "candidate is not registered to the plan tenant",
+                )
+                skipped += 1
+                continue
             # Invalidate cache visibility before deleting bytes, never after.
             self.store.set_artifact_state(self.tenant_id, digest, ArtifactStorageState.DELETING)
-            removed = self.cas.delete(digest)
+            physical_delete = self._physical_delete_is_safe(digest, foreign_roots)
+            removed = self.cas.delete(digest) if physical_delete else False
             self.store.set_artifact_state(self.tenant_id, digest, ArtifactStorageState.DELETED)
             self.store.delete_artifact_row(self.tenant_id, digest)
+            outcome = (
+                "DELETED"
+                if removed
+                else "ALREADY_ABSENT"
+                if physical_delete
+                else "DELETED"
+            )
+            detail = candidate["reason"]
+            if not physical_delete:
+                detail = f"tenant metadata released; shared CAS bytes retained: {detail}"
             self.store.add_gc_receipt(
-                plan_id, digest, "DELETED" if removed else "ALREADY_ABSENT", candidate["reason"]
+                plan_id,
+                digest,
+                outcome,
+                detail,
             )
             deleted += 1
-            freed += int(candidate["size_bytes"])
+            logically_released += artifact.size_bytes
+            if removed:
+                freed += artifact.size_bytes
 
         self.store.set_gc_plan_status(plan_id, "APPLIED", now)
         return {
@@ -400,19 +453,28 @@ class GarbageCollector:
             "deleted": deleted,
             "skipped_protected": skipped,
             "freed_bytes": freed,
+            "logically_released_bytes": logically_released,
             "receipts": len(self.store.gc_receipts(plan_id)),
         }
 
     def abandon(self, plan_id: str) -> None:
+        self._owned_plan(plan_id)
         self.store.set_gc_plan_status(plan_id, "ABANDONED")
 
     # -- reconciliation ---------------------------------------------------
     def reconcile_orphans(self) -> dict[str, list[str]]:
-        """Blobs with no metadata row, and rows with no blob. Reported, not deleted."""
+        """Report only tenant-attributable drift, never the shared CAS inventory.
+
+        An unregistered physical blob has no tenant identity. Exposing it from
+        a tenant-scoped collector would either mislabel another tenant's bytes
+        as an orphan or reveal a storage-wide object, so only missing bytes for
+        this tenant's own registrations are returned here.
+        """
+
         known = {artifact.digest for artifact in self.store.list_artifacts(self.tenant_id)}
         on_disk = set(self.cas.iter_digests())
         return {
-            "orphan_blobs": sorted(on_disk - known),
+            "orphan_blobs": [],
             "orphan_metadata": sorted(known - on_disk),
         }
 
@@ -430,6 +492,7 @@ class GarbageCollector:
     def report(self) -> dict[str, Any]:
         artifacts = self.store.list_artifacts(self.tenant_id)
         protected = self.reachable(self.live_roots())
+        present = [artifact for artifact in artifacts if self.cas.contains(artifact.digest)]
         by_reason: dict[str, int] = {}
         for root in protected.values():
             by_reason[root.kind] = by_reason.get(root.kind, 0) + 1
@@ -439,7 +502,16 @@ class GarbageCollector:
             "artifact_bytes": sum(artifact.size_bytes for artifact in artifacts),
             "protected": len(protected),
             "protected_by_reason": dict(sorted(by_reason.items())),
-            "cas": self.cas.accounting(),
+            "cas": {
+                "object_count": len(present),
+                "logical_bytes": sum(artifact.size_bytes for artifact in present),
+                "quarantined_count": sum(
+                    1
+                    for artifact in artifacts
+                    if artifact.storage_state is ArtifactStorageState.QUARANTINED
+                    or self.cas.is_quarantined(artifact.digest)
+                ),
+            },
             "orphans": {key: len(value) for key, value in self.reconcile_orphans().items()},
             "quota_bytes": self.policy.quota_bytes,
         }

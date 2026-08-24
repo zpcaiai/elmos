@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/cache/v1.2/cache-outcome-event.schema.json",
+  "title": "Cache Outcome Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "request_id",
+    "layer",
+    "outcome",
+    "reason_code",
+    "eligible",
+    "occurred_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.2.0"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "layer": {
+      "enum": [
+        "PROMPT",
+        "ACTION",
+        "CAS_LOCAL",
+        "CAS_REMOTE",
+        "CONTEXT",
+        "ENVIRONMENT",
+        "NATIVE_BUILD",
+        "CHECKPOINT",
+        "COORDINATOR"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "HIT",
+        "NECESSARY_MISS",
+        "UNEXPECTED_MISS",
+        "BYPASS",
+        "RESTORE_FAILURE",
+        "LOOKUP_ERROR"
+      ]
+    },
+    "reason_code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eligible": {
+      "type": "boolean"
+    },
+    "identity_digest": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "first_difference": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "avoided_or_lost_value": {
+      "type": "object",
+      "properties": {
+        "compute_ms": {
+          "type": "number"
+        },
+        "model_tokens": {
+          "type": "integer"
+        },
+        "bytes": {
+          "type": "integer"
+        },
+        "critical_path_ms": {
+          "type": "number"
+        },
+        "monetary_micros": {
+          "type": "integer"
+        }
+      }
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

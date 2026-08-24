@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.2.0",
+  "snapshot_id": "env-example-001",
+  "snapshot_key": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+  "platform": {
+    "os": "linux",
+    "arch": "amd64",
+    "libc": "glibc"
+  },
+  "base_image_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+  "setup_script_digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+  "maintenance_script_digest": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+  "lockfile_digests": [
+    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "toolchain_digests": [
+    "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  ],
+  "approved_environment_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "secret_reference_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "layers": [
+    {
+      "layer_type": "BASE",
+      "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "size_bytes": 100000000
+    },
+    {
+      "layer_type": "DEPENDENCIES",
+      "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "size_bytes": 250000000
+    }
+  ],
+  "trust_namespace": "tenant-example/project-example",
+  "status": "AVAILABLE",
+  "created_at": "2026-08-20T00:00:00Z",
+  "expires_at": null
+}

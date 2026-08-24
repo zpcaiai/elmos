@@ -15,12 +15,19 @@ from .records import (
     RunRecord,
     StagedFileRecord,
 )
-from .store import MetadataStore, PostgresMetadataStore, SqliteMetadataStore, open_store
+from .store import (
+    IdempotencyClaim,
+    MetadataStore,
+    PostgresMetadataStore,
+    SqliteMetadataStore,
+    open_store,
+)
 
 __all__ = [
     "ActionCacheRecord",
     "ArtifactRecord",
     "CheckpointRecord",
+    "IdempotencyClaim",
     "MetadataStore",
     "NodeRecord",
     "PostgresMetadataStore",

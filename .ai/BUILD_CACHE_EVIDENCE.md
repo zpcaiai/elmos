@@ -12,6 +12,10 @@
 > engine in the run. A row without an executed command is marked
 > `NOT EXECUTED`. Nothing here is a certification claim beyond what the
 > commands showed.
+>
+> **Current scope note:** the paragraph above and the acceptance rows below are
+> pass-4/v1.1 history. The v1.2 parity decision is in the final section of this
+> file: external evidence is `NOT_RUN` and certification is `NOT_CERTIFIED`.
 
 | ID | Required result | Implementation | Test | Verdict |
 | --- | --- | --- | --- | --- |
@@ -247,3 +251,53 @@ Where each switch now takes effect:
 With every switch off, `PolicyPlane.active` is `False` and `RunReport.policy`
 is `None` — a report from a deployment that has not opted in is byte-identical
 to one produced before the plane existed.
+
+## Pass 5 evidence ledger — v1.2 parity
+
+The v1.2 source archive is immutable and identified by
+`sha256:dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7`.
+The importer inspected its inventory, checksums and contracts without executing
+package scripts. The vendored tree and
+`docs/build-cache-staging-parity/installed-manifest.json` record 42 Skills: 31
+retained v1.1 bodies plus 11 new v1.2 contracts. The installed files are
+byte-identical across all four supported roots.
+
+### Local engineering evidence
+
+| Evidence item | Evidence location | Result and limit |
+| --- | --- | --- |
+| Delta-aware import | `tooling/import_build_cache_parity_skills.py`, `tests/build-cache-staging-parity/test_import_build_cache_parity_skills.py` | **PASS** locally; proves structure/provenance/idempotent import, not runtime behavior |
+| Contract assets | 19 files under `schemas/` and `_data/schemas/`; parity OpenAPI under `openapi/` and `_data/openapi/` | Root/packaged copies are exact. The engine OpenAPI is a documented production overlay; the canonical ZIP remains unchanged |
+| Append-only context | `context_ledger.py`, `context_compaction.py`, SQLite 0003, PostgreSQL 0005 | Local SQLite/narrow tests **PASS**; live v1.2 PostgreSQL path `NOT_RUN` |
+| Durable parity metadata | `parity_store.py`, SQLite 0004, PostgreSQL 0006 | Local SQLite/reopen/idempotency/tenant checks **PASS**; live v1.2 PostgreSQL path `NOT_RUN` |
+| Provider prefix | `prompt_cache.py`, `prompt_tools.py` | Compiler, volatility, exact-profile and content-free accounting tests **PASS**; provider calls and provider-reported hit ratios `NOT_RUN` |
+| Environment snapshots | `environment_cache.py`, `environment_service.py` | 9 local SQLite/CAS service tests **PASS**; remote/distributed CAS, runner inventory and real rebuild/restore `NOT_RUN` |
+| Affinity/coordinator/diagnostics | `affinity.py`, `coordinator.py`, `miss_diagnostics.py`, `parity_runtime.py` | Pure/local and pipeline-observation behavior covered; production scheduler/fleet and scale `NOT_RUN` |
+| Parity corpus/evaluator | `parity.py`, `parity_harness.py` | Exact 20-scenario/16-metric shape and fail-closed evidence rules covered; independent real corpus `NOT_RUN` |
+| Rollout | `slo_autotune.py`, `config/elmos-cache.yaml` | Shadow/canary/progressive/rollback state logic covered; field rollout `NOT_RUN` |
+| Public surface | `parity_api.py`, `api.py`, `cli.py`, parity OpenAPI | Seven API operations and new CLI commands covered locally; no external control-plane deployment |
+
+The source package's OpenAPI description was not copied blindly into the
+production surface. The engine overlay adds the missing mutation idempotency
+headers and an append-context payload that matches the implemented event
+contract. This is an intentional, tested overlay stored only under the engine;
+the canonical ZIP is left byte-for-byte intact.
+
+### Claim boundary
+
+| Claim | Current state |
+| --- | --- |
+| Source package imported without overwriting completed v1.1 behavior | local engineering evidence available |
+| All 11 new contracts have concrete engine modules and narrow tests | local engineering evidence available |
+| Real provider prompt-prefix reuse | `NOT_RUN` |
+| Real environment warm-start reuse | `NOT_RUN` |
+| Real long-session compaction/restart behavior | `NOT_RUN` |
+| Independent representative parity corpus | `NOT_RUN` |
+| Production PostgreSQL/fleet/rollout evidence | `NOT_RUN` |
+| Package numerical parity thresholds achieved | no claim |
+| v1.2 certification | `NOT_CERTIFIED` |
+
+Local tests may support implementation readiness, but they cannot produce a
+Codex/Claude-equivalence claim. A future report must bind the exact source,
+configuration, provider/model/tool profile, date, platform, corpus, raw
+evidence, replay command, authorization, executor and separate verifier.
