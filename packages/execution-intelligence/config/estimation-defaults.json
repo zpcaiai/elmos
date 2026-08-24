@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "monte_carlo_runs": 5000,
+  "seed": 42,
+  "system": {
+    "workers": 8,
+    "worker_availability": 0.92,
+    "parallel_efficiency": 0.68,
+    "model_concurrency_factor": 0.85,
+    "code_conflict_factor": 0.9,
+    "global_overhead_ratio": 0.08,
+    "worst_case_quantile": 0.99
+  },
+  "human": {
+    "work_hours_per_day": 8,
+    "work_days_per_week": 5,
+    "focus_ratio": 0.68,
+    "review_overhead_ratio": 0.15,
+    "coordination_overhead_ratio": 0.12,
+    "rework_overhead_ratio": 0.25,
+    "month_working_days": 20
+  },
+  "forecast": {
+    "warn_confidence_below": 0.6,
+    "reforecast_after_completed_fraction": 0.05,
+    "delay_alert_ratio": 0.1
+  },
+  "notes": [
+    "These are starting points, not measurements. Replace them with calibrate output as soon as real telemetry exists.",
+    "parallel_efficiency and code_conflict_factor exist because agent workers contend on the same tree; do not set them to 1.0 without evidence."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/critical-path-seed.schema.json",
+  "title": "critical-path-seed",
+  "type": "object",
+  "required": ["schema_version", "artifact", "critical_path", "critical_path_minutes", "task_count", "interpretation"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "artifact": { "const": "critical-path-seed" },
+    "dag_id": { "type": ["string", "null"] },
+    "critical_path": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "critical_path_minutes": { "type": "number", "minimum": 0 },
+    "critical_path_hours": { "type": "number", "minimum": 0 },
+    "task_count": { "type": "integer", "minimum": 1 },
+    "total_task_minutes": { "type": "number", "minimum": 0 },
+    "median_task_minutes": { "type": "number", "minimum": 0 },
+    "max_theoretical_speedup": { "type": ["number", "null"] },
+    "interpretation": { "type": "string" }
+  }
+}

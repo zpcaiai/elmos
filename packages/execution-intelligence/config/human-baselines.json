@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "roles": {
+    "architect": { "headcount": 1, "hourly_cost": null, "currency": "CONFIGURE" },
+    "backend": { "headcount": 3, "hourly_cost": null, "currency": "CONFIGURE" },
+    "frontend": { "headcount": 2, "hourly_cost": null, "currency": "CONFIGURE" },
+    "compiler": { "headcount": 2, "hourly_cost": null, "currency": "CONFIGURE" },
+    "qa": { "headcount": 2, "hourly_cost": null, "currency": "CONFIGURE" },
+    "devops": { "headcount": 1, "hourly_cost": null, "currency": "CONFIGURE" },
+    "security": { "headcount": 1, "hourly_cost": null, "currency": "CONFIGURE" },
+    "product": { "headcount": 1, "hourly_cost": null, "currency": "CONFIGURE" }
+  },
+  "notes": [
+    "hourly_cost is null on purpose: the deploying organisation fills it in, this package never invents labour rates.",
+    "headcount is capacity available to the project, not a claim that everyone is full-time on it."
+  ]
+}

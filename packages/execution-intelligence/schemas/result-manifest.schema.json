@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/result-manifest.schema.json",
+  "title": "result-manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact",
+    "run_id",
+    "sealed",
+    "artifacts",
+    "manifest_sha256",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "artifact": {
+      "const": "result-manifest"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "run_state": {
+      "type": "string"
+    },
+    "sealed": {
+      "type": "boolean"
+    },
+    "seal_refused_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifact_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "logical_name",
+          "version",
+          "sha256",
+          "size_bytes",
+          "storage_uri"
+        ],
+        "properties": {
+          "logical_name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "media_type": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "storage_uri": {
+            "type": "string"
+          },
+          "git_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "superseded_logical_names": {
+      "type": "array"
+    },
+    "git_checkpoints": {
+      "type": "array"
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "verification": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/envelope.schema.json",
+  "title": "Probabilistic envelope",
+  "description": "Every forecast quantity in this package is a distribution, never a point estimate.",
+  "type": "object",
+  "required": ["mean", "p50", "p80", "p90", "worst_case", "minimum", "maximum"],
+  "properties": {
+    "mean": { "type": "number" },
+    "p50": { "type": "number" },
+    "p80": { "type": "number" },
+    "p90": { "type": "number" },
+    "worst_case": { "type": "number" },
+    "minimum": { "type": "number" },
+    "maximum": { "type": "number" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/execution-intelligence/project-profile.schema.json",
+  "title": "Project profile",
+  "type": "object",
+  "required": [
+    "project_id",
+    "mode",
+    "definition_of_done",
+    "simulation",
+    "system",
+    "human"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "generation",
+        "conversion",
+        "modernization",
+        "migration",
+        "verification"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "definition_of_done": {
+      "type": "object",
+      "required": [
+        "level",
+        "checks"
+      ],
+      "properties": {
+        "level": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "simulation": {
+      "type": "object",
+      "required": [
+        "runs"
+      ],
+      "properties": {
+        "runs": {
+          "type": "integer",
+          "minimum": 100
+        },
+        "seed": {
+          "type": "integer"
+        }
+      }
+    },
+    "system": {
+      "type": "object",
+      "required": [
+        "workers",
+        "worker_availability",
+        "parallel_efficiency",
+        "model_concurrency_factor",
+        "code_conflict_factor"
+      ],
+      "properties": {
+        "workers": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "worker_availability": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "parallel_efficiency": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "model_concurrency_factor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "code_conflict_factor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "global_overhead_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "worst_case_quantile": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 1
+        },
+        "start_at": {
+          "type": "string"
+        },
+        "continuous_24x7": {
+          "type": "boolean"
+        },
+        "workers_raised_for_widest_task": {
+          "type": "number"
+        }
+      }
+    },
+    "human": {
+      "type": "object",
+      "required": [
+        "roles"
+      ],
+      "properties": {
+        "work_hours_per_day": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "work_days_per_week": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "focus_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "review_overhead_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "coordination_overhead_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rework_overhead_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "month_working_days": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "roles": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "headcount"
+            ],
+            "properties": {
+              "headcount": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "human_assisted": {
+      "type": "object",
+      "properties": {
+        "review_person_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "approval_wait_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "external_wait_hours": {
+          "type": "number",
+          "minimum": 0
+        },
+        "review_parallel_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seed_provenance": {
+      "type": "object"
+    }
+  }
+}

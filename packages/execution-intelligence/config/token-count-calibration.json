@@ -1,0 +1,40 @@
+{
+  "version": "2026-08-19",
+  "artifact": "token-count-calibration",
+  "what_this_is": [
+    "The scanner's fallback counter is a heuristic: one token per CJK codepoint, one per four other characters. This file records how far off that heuristic actually is, measured rather than assumed.",
+    "Factors are heuristic_tokens / real_tokens. To correct a heuristic count, DIVIDE by the factor.",
+    "A factor below 1.0 means the heuristic undercounts."
+  ],
+  "method": {
+    "sample": "414 files drawn from the elmos corpus, stratified by extension proportionally to file count, seed 20260819",
+    "compared_files": 413,
+    "heuristic_tokens": 814732,
+    "real_tokens": 985964,
+    "reference_tokenizer": {
+      "name": "legacy Claude BPE tokenizer",
+      "vocab_size": 65000,
+      "obtained_from": "anthropic==0.21.3, anthropic/tokenizer.json (the last release that bundled it)",
+      "caveat": "This is NOT the tokenizer of any current model. It is a real BPE tokenizer of the right family and rough vocabulary scale, which makes it a far better yardstick than the 4-characters-per-token rule -- but it is a yardstick, not ground truth. Billing-grade counts still require the target provider's own counting endpoint."
+    },
+    "measured_at": "2026-08-19"
+  },
+  "global_factor": 0.8263,
+  "global_interpretation": "corpus-weighted, the heuristic undercounts by 17.4%",
+  "minimum_sample_files": 5,
+  "minimum_sample_tokens": 5000,
+  "by_extension": {
+    ".json": { "factor": 0.7504, "files": 188, "real_tokens": 635362 },
+    ".md": { "factor": 1.0174, "files": 103, "real_tokens": 140893 },
+    ".py": { "factor": 1.023, "files": 24, "real_tokens": 82256 },
+    ".ts": { "factor": 0.926, "files": 6, "real_tokens": 32259 },
+    ".java": { "factor": 1.0772, "files": 10, "real_tokens": 26322 },
+    ".yaml": { "factor": 0.6036, "files": 52, "real_tokens": 20700 }
+  },
+  "excluded_from_by_extension": "Every other extension in the sample had fewer than 5 files or fewer than 5000 real tokens. Their observed factors ranged from 0.52 to 1.13, which on one file is noise, not a measurement. They fall back to the global factor.",
+  "reading_the_numbers": [
+    "Structured data is where the heuristic is worst: YAML 0.60 and JSON 0.75. Punctuation-dense text tokenises into many short tokens, and the four-characters rule cannot see that.",
+    "Prose and mainstream code are close to right: Markdown 1.02, Python 1.02, Java 1.08.",
+    "So a repository's error depends on its file mix. Re-measure after the mix changes materially."
+  ]
+}

@@ -1,0 +1,27 @@
+# TASK_EXECUTION_PLAN — {{project_id}}
+
+- Run ID：`{{run_id}}`
+- DAG：`{{dag_id}}`，任务数 {{task_count}}
+- 有效并行容量：{{effective_capacity}}（配置 Worker {{configured_workers}}）
+- 完成定义：`{{dod_level}}`
+- 生成时间：{{generated_at}}
+
+## 执行波次
+
+{{wave_table}}
+
+## 关键路径
+
+{{critical_path}}
+
+关键路径长度（P50 口径）：{{critical_path_minutes}} 分钟。加人不能压缩这条链。
+
+## 每个任务的恢复策略
+
+{{recovery_table}}
+
+## 明确排除
+
+{{excludes}}
+
+> 本计划只描述机器自主执行。人工审批与验收时间不在其中。

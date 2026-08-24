@@ -1,0 +1,433 @@
+openapi: 3.1.0
+info:
+  title: Elmos Execution Intelligence — Task Execution API
+  version: 1.0.0
+  description: |
+    Asynchronous run submission, reconnectable progress, checkpoint-based
+    recovery and immutable result publication.
+
+    Three contract rules the transport does not get to break:
+
+    * **The client connection is not the execution host.** Closing the browser,
+      the terminal or the WebSocket does not stop a run. Progress is recovered by
+      reconnecting, never by re-submitting.
+    * **Every event carries a monotonic, gapless `seq` scoped to the run.** A
+      client reconnects with `Last-Event-ID` and is replayed exactly what it
+      missed. Polling `GET /runs/{runId}/events` with `afterSeq` is the fallback
+      when SSE is unavailable, and returns the same rows.
+    * **Every state-changing request takes an `Idempotency-Key`.** Replaying a
+      request returns the original response. Reusing a key with a different body
+      is a client bug and gets 409, not the old response.
+
+servers:
+  - url: https://{host}/api/v1
+    variables:
+      host:
+        default: execution-intelligence.internal
+
+security:
+  - bearerAuth: []
+
+paths:
+  /runs:
+    post:
+      operationId: createRun
+      summary: Submit a task DAG for durable execution
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateRunRequest' }
+      responses:
+        '201':
+          description: Run accepted and persisted. Execution proceeds server-side.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Run' }
+        '200':
+          description: |
+            Idempotent replay. The original response is returned verbatim; no new
+            run was created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Run' }
+        '409':
+          description: The idempotency key was reused with a different request body.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422':
+          $ref: '#/components/responses/Blocked'
+    get:
+      operationId: listRuns
+      summary: List runs for the calling tenant
+      parameters:
+        - name: state
+          in: query
+          schema: { $ref: '#/components/schemas/RunState' }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        '200':
+          description: Page of runs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [runs]
+                properties:
+                  runs:
+                    type: array
+                    items: { $ref: '#/components/schemas/Run' }
+
+  /runs/{runId}:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    get:
+      operationId: getRun
+      summary: Current run state, task states and live ETA
+      responses:
+        '200':
+          description: Run snapshot
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunDetail' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /runs/{runId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    post:
+      operationId: cancelRun
+      summary: Request cancellation
+      description: |
+        Cancellation is cooperative. In-flight attempts are asked to stop at
+        their next checkpoint; already-committed side effects are not rolled
+        back. The run reaches `cancelled` only after every attempt has settled.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Cancellation requested
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Run' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /runs/{runId}/events:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    get:
+      operationId: streamRunEvents
+      summary: Reconnectable event stream (SSE) or polling fallback
+      description: |
+        With `Accept: text/event-stream` the server streams SSE frames whose
+        `id:` field is the run-scoped `seq`. Reconnect with `Last-Event-ID: <seq>`
+        and every event after that seq is replayed in order before live events
+        resume.
+
+        With `Accept: application/json` the same rows are returned as a page,
+        selected by `afterSeq`. Both paths read the same append-only table, so a
+        client may switch between them without gaps or duplicates.
+      parameters:
+        - name: Last-Event-ID
+          in: header
+          description: Highest seq the client has already processed.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: afterSeq
+          in: query
+          description: Polling equivalent of Last-Event-ID.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 1000, default: 500 }
+      responses:
+        '200':
+          description: Event stream or event page
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  SSE frames. Each frame is `id: <seq>`, `event: <eventType>`,
+                  `data: <RunEvent JSON>`.
+            application/json:
+              schema:
+                type: object
+                required: [events, lastSeq]
+                properties:
+                  events:
+                    type: array
+                    items: { $ref: '#/components/schemas/RunEvent' }
+                  lastSeq: { type: integer, format: int64 }
+                  hasMore: { type: boolean }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /runs/{runId}/eta:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    get:
+      operationId: getRunEta
+      summary: Recovery-aware ETA recomputed from executed telemetry
+      responses:
+        '200':
+          description: |
+            The ETA covers machine-autonomous execution only. Human approval,
+            human acceptance and credential waits are reported separately and are
+            never folded into `wallClockHours`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EtaUpdate' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /runs/{runId}/checkpoints:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    get:
+      operationId: listCheckpoints
+      summary: Checkpoints available for recovery
+      responses:
+        '200':
+          description: Checkpoint list, newest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [checkpoints]
+                properties:
+                  checkpoints:
+                    type: array
+                    items: { $ref: '#/components/schemas/Checkpoint' }
+
+  /runs/{runId}/artifacts:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    get:
+      operationId: listArtifacts
+      summary: Immutable result manifest
+      responses:
+        '200':
+          description: |
+            Artifacts are content-addressed. A given `(logicalName, sha256)` pair
+            appears once; different bytes under the same logical name take the
+            next `version`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ResultManifest' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  parameters:
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Stable key chosen by the client. Replays return the original response.
+      schema: { type: string, minLength: 8, maxLength: 255 }
+
+  responses:
+    NotFound:
+      description: No such run for this tenant
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Blocked:
+      description: |
+        BLOCKED. A required input is missing or inconsistent. The response names
+        every missing item; the server does not guess past it.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    RunState:
+      type: string
+      enum: [pending, running, paused, recovering, succeeded, failed, cancelled]
+
+    TaskState:
+      type: string
+      enum: [pending, ready, running, blocked, succeeded, failed, skipped, cancelled]
+
+    FailureClass:
+      type: string
+      description: |
+        Retry policy is chosen by class, never by exception text. Transient
+        failures retry with backoff; permanent failures do not retry; business
+        conflicts need a decision, not a retry.
+      enum: [transient, permanent, business_conflict, lost_worker]
+
+    CreateRunRequest:
+      type: object
+      required: [projectProfile, taskDag]
+      properties:
+        projectProfile:
+          type: object
+          description: Conforms to schemas/project-profile.schema.json
+        taskDag:
+          type: object
+          description: Conforms to schemas/task-dag.schema.json
+        pricingRegistry:
+          type: object
+          description: Conforms to schemas/pricing-registry.schema.json
+        workspace:
+          type: object
+          properties:
+            gitRemote: { type: string }
+            baseRef: { type: string }
+
+    Run:
+      type: object
+      required: [runId, tenantId, projectId, state, createdAt, lastEventSeq]
+      properties:
+        runId: { type: string, format: uuid }
+        tenantId: { type: string }
+        projectId: { type: string }
+        dagId: { type: string }
+        state: { $ref: '#/components/schemas/RunState' }
+        createdAt: { type: string, format: date-time }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time }
+        lastEventSeq: { type: integer, format: int64 }
+
+    RunDetail:
+      allOf:
+        - $ref: '#/components/schemas/Run'
+        - type: object
+          required: [tasks, eta]
+          properties:
+            tasks:
+              type: array
+              items: { $ref: '#/components/schemas/TaskStatus' }
+            eta: { $ref: '#/components/schemas/EtaUpdate' }
+
+    TaskStatus:
+      type: object
+      required: [taskId, state, attemptCount]
+      properties:
+        taskId: { type: string }
+        name: { type: string }
+        state: { $ref: '#/components/schemas/TaskState' }
+        attemptCount: { type: integer, minimum: 0 }
+        lastFailureClass: { $ref: '#/components/schemas/FailureClass' }
+        lastCheckpointId: { type: string, format: uuid }
+
+    RunEvent:
+      type: object
+      required: [seq, runId, eventType, createdAt, payload]
+      properties:
+        seq:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Run-scoped, monotonic and gapless. This is the SSE `id`.
+        runId: { type: string, format: uuid }
+        taskId: { type: string }
+        eventType:
+          type: string
+          enum:
+            - run.created
+            - run.started
+            - run.state_changed
+            - task.ready
+            - task.started
+            - task.checkpointed
+            - task.succeeded
+            - task.failed
+            - task.retry_scheduled
+            - task.recovered
+            - usage.recorded
+            - artifact.published
+            - eta.updated
+            - run.finished
+        createdAt: { type: string, format: date-time }
+        payload: { type: object }
+
+    Checkpoint:
+      type: object
+      required: [checkpointId, kind, createdAt]
+      properties:
+        checkpointId: { type: string, format: uuid }
+        taskId: { type: string }
+        kind:
+          type: string
+          enum: [workspace, git, object-store, state]
+        gitCommit: { type: string }
+        gitBranch: { type: string }
+        workspaceUri: { type: string }
+        workspaceDigest:
+          type: string
+          description: |
+            Compared against the restored tree before a retry is scheduled. A
+            mismatch means restore first; it does not mean re-run.
+        createdAt: { type: string, format: date-time }
+
+    EtaUpdate:
+      type: object
+      required: [wallClockHours, basis, excludes]
+      properties:
+        wallClockHours:
+          type: object
+          required: [p50, p80, p90]
+          properties:
+            p50: { type: number }
+            p80: { type: number }
+            p90: { type: number }
+            worstCase: { type: number }
+        completedFraction: { type: number, minimum: 0, maximum: 1 }
+        recoveryHoursIncluded: { type: number, minimum: 0 }
+        basis:
+          type: string
+          enum: [forecast_only, forecast_plus_telemetry, telemetry_dominant]
+        calibrationSamples: { type: integer, minimum: 0 }
+        excludes:
+          type: array
+          minItems: 1
+          items: { type: string }
+          description: Always includes human approval, acceptance and credential waits.
+
+    ResultManifest:
+      type: object
+      required: [runId, artifacts, sealed]
+      properties:
+        runId: { type: string, format: uuid }
+        sealed:
+          type: boolean
+          description: A sealed manifest is immutable; further publication creates a new version.
+        artifacts:
+          type: array
+          items:
+            type: object
+            required: [logicalName, version, sha256, sizeBytes, storageUri]
+            properties:
+              logicalName: { type: string }
+              version: { type: integer, minimum: 1 }
+              mediaType: { type: string }
+              sizeBytes: { type: integer, minimum: 0 }
+              sha256: { type: string, minLength: 64, maxLength: 64 }
+              storageUri: { type: string }
+              gitRef: { type: string }
+
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        missing:
+          type: array
+          items: { type: string }
+          description: Named missing inputs for a BLOCKED response.

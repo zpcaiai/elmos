@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-execution-intelligence"
+version = "1.0.0"
+description = "Token, cost, autonomous-runtime and human-baseline forecasting for elmos project generation and conversion."
+requires-python = ">=3.10"
+authors = [{ name = "Elmos Project" }]
+dependencies = []
+
+[project.optional-dependencies]
+tokenizer = ["tiktoken>=0.7"]
+postgres = ["pg8000>=1.31"]
+dev = ["pytest>=8.0", "pg8000>=1.31", "PyYAML>=6.0"]
+
+[project.scripts]
+elmos-ei = "elmos_execution_intelligence.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# Same gate the route engine runs under, so this package is held to the
+# repository's standard rather than to a looser one of its own.
+[tool.ruff]
+line-length = 120
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests are supposed to assert.
+"tests/*" = ["S101"]
+
+[tool.mypy]
+strict = true
+packages = ["elmos_execution_intelligence"]
+mypy_path = "src"
