@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "elmos-database-bigdata"
+version = "0.1.0"
+description = "Fail-closed bounded planning runtime for the ELMOS database and Big Data Skill package"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/elmos_database_bigdata"]

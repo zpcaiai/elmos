@@ -55,6 +55,9 @@ SOURCE_RELATIVE = Path("skills") / PACKAGE_DIRECTORY
 RUNTIME_RELATIVE = Path("agent-skills/runtime")
 WORKSPACE_RELATIVE = Path(".agents/skills")
 DOC_RELATIVE = Path("docs/database-bigdata-skills")
+ENGINE_RELATIVE = Path("engines/database-bigdata-engine")
+ENGINE_PACKAGE_RELATIVE = ENGINE_RELATIVE / "src/elmos_database_bigdata"
+ENGINE_CATALOG_RELATIVE = ENGINE_PACKAGE_RELATIVE / "catalog.py"
 INSTALL_MANIFEST_NAME = "installed-manifest.json"
 QUALIFICATION_NAME = "local-reference-tool-qualification.json"
 QUALIFICATION_EVIDENCE_DIRECTORY = "local-reference-tool-evidence"
@@ -80,6 +83,12 @@ EXPECTED_SOURCE_BYTES = 497_188
 EXPECTED_MANIFEST_SHA256 = (
     "285164d0264b2d5e141fd98c8a1ce3578bafdd5470463485ee1e8cb429ea5115"
 )
+# Exact repository integration manifest from the previously committed structural
+# install. This pin authorizes one byte-identical, tree-verified migration;
+# arbitrary or self-edited manifests remain unowned.
+PINNED_PREVIOUS_INSTALL_MANIFEST_SHA256S = (
+    "d84690edbbbdad007eb98c5b739e296cfc3124badeaebb817a2d87d85ecdc585",
+)
 EXPECTED_CHECKSUM_ENTRIES = 96
 EXPECTED_SKILLS = 46
 EXPECTED_PROFILES = 10
@@ -95,6 +104,30 @@ EXPECTED_GROUP_COUNTS = {
     "database-intelligence": 13,
     "orchestration": 1,
 }
+GROUP_HANDLER_MODULES = {
+    "bigdata-core": "bigdata_core.py",
+    "bigdata-templates": "templates.py",
+    "database-intelligence": "database_intelligence.py",
+    "orchestration": "orchestration.py",
+}
+ENGINE_REQUIRED_FILES = (
+    "README.md",
+    "launcher.py",
+    "pyproject.toml",
+    "src/elmos_database_bigdata/__init__.py",
+    "src/elmos_database_bigdata/bootstrap.py",
+    "src/elmos_database_bigdata/canonical.py",
+    "src/elmos_database_bigdata/catalog.py",
+    "src/elmos_database_bigdata/cli.py",
+    "src/elmos_database_bigdata/contracts.py",
+    "src/elmos_database_bigdata/runtime.py",
+    "src/elmos_database_bigdata/handlers/__init__.py",
+    "src/elmos_database_bigdata/handlers/bigdata_core.py",
+    "src/elmos_database_bigdata/handlers/common.py",
+    "src/elmos_database_bigdata/handlers/database_intelligence.py",
+    "src/elmos_database_bigdata/handlers/orchestration.py",
+    "src/elmos_database_bigdata/handlers/templates.py",
+)
 EXPECTED_CHECKSUM_EXCLUSIONS = [
     "**/*.pyc",
     "**/__pycache__/**",
@@ -256,7 +289,10 @@ def read_regular_file_once(
         if len(content) != before.st_size:
             fail(f"{label} read was incomplete: {confined}")
         path_metadata = os.lstat(confined)
-        if (path_metadata.st_dev, path_metadata.st_ino) != (before.st_dev, before.st_ino):
+        if (path_metadata.st_dev, path_metadata.st_ino) != (
+            before.st_dev,
+            before.st_ino,
+        ):
             fail(f"{label} path changed while it was being read: {confined}")
         assert_repository_path(repository_root, confined, label)
         return content
@@ -349,7 +385,9 @@ def mutation_lock(repository_root: Path):
         try:
             fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            fail(f"another database/Big Data importer mutation is active: {repository_root}")
+            fail(
+                f"another database/Big Data importer mutation is active: {repository_root}"
+            )
     except BaseException:
         if "descriptor" in locals():
             os.close(descriptor)
@@ -372,6 +410,23 @@ def sha256_bytes(value: bytes) -> str:
 
 def digest(value: bytes) -> str:
     return "sha256:" + sha256_bytes(value)
+
+
+def repository_handler_id(skill_name: str) -> str:
+    """Return the exact repository-owned bounded planner handler identity."""
+
+    if SAFE_NAME.fullmatch(skill_name) is None:
+        fail(f"cannot derive a runtime handler for unsafe Skill name: {skill_name}")
+    return "handle_" + skill_name.replace("-", "_")
+
+
+def repository_handler_path(group: str) -> str:
+    """Return the repository path for one source group's bounded handlers."""
+
+    module = GROUP_HANDLER_MODULES.get(group)
+    if module is None:
+        fail(f"cannot derive a runtime module for unknown Skill group: {group}")
+    return (ENGINE_PACKAGE_RELATIVE / "handlers" / module).as_posix()
 
 
 def sha256_file(path: Path) -> str:
@@ -413,7 +468,9 @@ def source_files(source: Path) -> list[Path]:
     if not source.is_dir() or source.is_symlink():
         fail(f"canonical source must be a real directory: {source}")
     entries = list(source.rglob("*"))
-    symlinks = [entry.relative_to(source).as_posix() for entry in entries if entry.is_symlink()]
+    symlinks = [
+        entry.relative_to(source).as_posix() for entry in entries if entry.is_symlink()
+    ]
     if symlinks:
         fail(f"canonical source may not contain symbolic links: {symlinks[:5]}")
     files: list[Path] = []
@@ -475,14 +532,18 @@ def read_archive(
             for info in entries:
                 name = info.filename
                 if getattr(info, "orig_filename", name) != name:
-                    fail(f"archive entry name was NUL-truncated or normalized: {name!r}")
+                    fail(
+                        f"archive entry name was NUL-truncated or normalized: {name!r}"
+                    )
                 if name in seen:
                     fail(f"duplicate archive entry: {name}")
                 seen.add(name)
                 if info.flag_bits & 0x1:
                     fail(f"encrypted archive entries are not allowed: {name}")
                 if info.compress_type not in {zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED}:
-                    fail(f"archive entry uses an unsupported compression method: {name}")
+                    fail(
+                        f"archive entry uses an unsupported compression method: {name}"
+                    )
                 if name.endswith("/"):
                     normalized = name[:-1]
                     if not normalized:
@@ -618,7 +679,9 @@ def extract_canonical_source(repository_root: Path = ROOT) -> Path:
             return source
         archive_files, archive_modes = read_archive(archive, repository_root)
         source.parent.mkdir(parents=True, mode=DIRECTORY_MODE, exist_ok=True)
-        assert_repository_path(repository_root, source.parent, "canonical source parent")
+        assert_repository_path(
+            repository_root, source.parent, "canonical source parent"
+        )
         staged = assert_repository_path(
             repository_root,
             source.parent / f".{PACKAGE_DIRECTORY}.extract.{uuid.uuid4().hex}",
@@ -639,7 +702,9 @@ def extract_canonical_source(repository_root: Path = ROOT) -> Path:
                 key=lambda path: path.as_posix(),
             ):
                 if directory.is_symlink():
-                    fail(f"canonical source staging contains a symbolic link: {directory}")
+                    fail(
+                        f"canonical source staging contains a symbolic link: {directory}"
+                    )
                 directory.chmod(DIRECTORY_MODE)
             validate_extracted_tree(
                 repository_root,
@@ -735,7 +800,9 @@ def validate_skills(source: Path, manifest: Mapping[str, Any]) -> list[dict[str,
         if path.is_file() and path.name != "SKILL.md"
     )
     if unexpected_skill_files:
-        fail(f"source Skill directories contain unexpected files: {unexpected_skill_files}")
+        fail(
+            f"source Skill directories contain unexpected files: {unexpected_skill_files}"
+        )
 
     records: list[dict[str, Any]] = []
     graph: dict[str, list[str]] = {}
@@ -773,9 +840,13 @@ def validate_skills(source: Path, manifest: Mapping[str, Any]) -> list[dict[str,
                 or len(value) != len(set(value))
             ):
                 fail(f"source Skill {label} are invalid: {path}")
-        missing_sections = [section for section in REQUIRED_SKILL_SECTIONS if section not in body]
+        missing_sections = [
+            section for section in REQUIRED_SKILL_SECTIONS if section not in body
+        ]
         if missing_sections:
-            fail(f"source Skill is missing required sections: {path}: {missing_sections}")
+            fail(
+                f"source Skill is missing required sections: {path}: {missing_sections}"
+            )
         task_ids = TASK_ID.findall(body)
         if len(task_ids) < 6:
             fail(f"source Skill has too few stable task IDs: {path}")
@@ -796,6 +867,7 @@ def validate_skills(source: Path, manifest: Mapping[str, Any]) -> list[dict[str,
                 "dependencies": list(dependencies),
                 "triggers": list(triggers),
                 "outputs": list(outputs),
+                "task_ids": list(task_ids),
                 "source_path": path.relative_to(source).as_posix(),
                 "source_sha256": digest(path.read_bytes()),
                 "source_tree_sha256": "sha256:" + directory_digest(path.parent),
@@ -841,7 +913,9 @@ def validate_skills(source: Path, manifest: Mapping[str, Any]) -> list[dict[str,
     return records
 
 
-def expand_dependencies(requested: Iterable[str], graph: Mapping[str, Sequence[str]]) -> set[str]:
+def expand_dependencies(
+    requested: Iterable[str], graph: Mapping[str, Sequence[str]]
+) -> set[str]:
     expanded: set[str] = set()
 
     def visit(name: str) -> None:
@@ -856,7 +930,9 @@ def expand_dependencies(requested: Iterable[str], graph: Mapping[str, Sequence[s
     return expanded
 
 
-def validate_profiles(source: Path, skills: Sequence[Mapping[str, Any]], manifest: Mapping[str, Any]) -> list[dict[str, Any]]:
+def validate_profiles(
+    source: Path, skills: Sequence[Mapping[str, Any]], manifest: Mapping[str, Any]
+) -> list[dict[str, Any]]:
     graph = {str(item["name"]): list(item["dependencies"]) for item in skills}
     paths = sorted((source / "profiles").glob("*.json"))
     if len(paths) != EXPECTED_PROFILES:
@@ -892,7 +968,9 @@ def validate_profiles(source: Path, skills: Sequence[Mapping[str, Any]], manifes
     if set(by_name["full"]["declared_skills"]) != set(graph):
         fail("full profile does not declare all source Skills")
     manifest_profiles = manifest.get("profiles")
-    if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(by_name):
+    if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(
+        by_name
+    ):
         fail("source manifest profile inventory is invalid")
     for name, item in by_name.items():
         expected = {
@@ -904,9 +982,13 @@ def validate_profiles(source: Path, skills: Sequence[Mapping[str, Any]], manifes
     return records
 
 
-def validate_catalogs(source: Path, skills: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+def validate_catalogs(
+    source: Path, skills: Sequence[Mapping[str, Any]]
+) -> dict[str, int]:
     skill_names = {str(item["name"]) for item in skills}
-    database = load_json(source / "catalog/database-capabilities.json", "technology catalog")
+    database = load_json(
+        source / "catalog/database-capabilities.json", "technology catalog"
+    )
     technologies = database.get("technologies") if isinstance(database, dict) else None
     if not isinstance(technologies, list) or len(technologies) != EXPECTED_TECHNOLOGIES:
         fail("technology catalog count is invalid")
@@ -920,25 +1002,39 @@ def validate_catalogs(source: Path, skills: Sequence[Mapping[str, Any]]) -> dict
     if len(technology_ids) != len(set(technology_ids)):
         fail("technology catalog IDs are not unique")
 
-    architecture = load_json(source / "catalog/architecture-patterns.json", "architecture catalog")
+    architecture = load_json(
+        source / "catalog/architecture-patterns.json", "architecture catalog"
+    )
     patterns = architecture.get("patterns") if isinstance(architecture, dict) else None
     if not isinstance(patterns, list) or len(patterns) != EXPECTED_PATTERNS:
         fail("architecture pattern count is invalid")
     pattern_ids = [item.get("id") for item in patterns if isinstance(item, dict)]
-    if len(pattern_ids) != EXPECTED_PATTERNS or len(pattern_ids) != len(set(pattern_ids)):
+    if len(pattern_ids) != EXPECTED_PATTERNS or len(pattern_ids) != len(
+        set(pattern_ids)
+    ):
         fail("architecture pattern IDs are invalid")
 
-    templates = load_json(source / "catalog/project-templates.json", "project template catalog")
+    templates = load_json(
+        source / "catalog/project-templates.json", "project template catalog"
+    )
     template_items = templates.get("templates") if isinstance(templates, dict) else None
-    if not isinstance(template_items, list) or len(template_items) != EXPECTED_TEMPLATES:
+    if (
+        not isinstance(template_items, list)
+        or len(template_items) != EXPECTED_TEMPLATES
+    ):
         fail("project template count is invalid")
     for item in template_items:
         if not isinstance(item, dict) or item.get("skill") not in skill_names:
             fail(f"project template references an unknown Skill: {item}")
 
-    adapters = load_json(source / "catalog/technology-adapters.json", "adapter blueprints")
+    adapters = load_json(
+        source / "catalog/technology-adapters.json", "adapter blueprints"
+    )
     adapter_items = adapters.get("adapters") if isinstance(adapters, dict) else None
-    if not isinstance(adapter_items, list) or len(adapter_items) != EXPECTED_ADAPTER_BLUEPRINTS:
+    if (
+        not isinstance(adapter_items, list)
+        or len(adapter_items) != EXPECTED_ADAPTER_BLUEPRINTS
+    ):
         fail("technology adapter blueprint count is invalid")
     roles = [item.get("role") for item in adapter_items if isinstance(item, dict)]
     if len(roles) != EXPECTED_ADAPTER_BLUEPRINTS or len(roles) != len(set(roles)):
@@ -976,7 +1072,9 @@ def validate_schemas_and_examples(source: Path) -> dict[str, int]:
         "architecture-decision.json": "architecture-pattern-decision.schema.json",
         "cost-and-eta.json": "cost-and-eta.schema.json",
     }
-    example_dirs = sorted(path for path in (source / "examples").iterdir() if path.is_dir())
+    example_dirs = sorted(
+        path for path in (source / "examples").iterdir() if path.is_dir()
+    )
     if len(example_dirs) != 3:
         fail(f"expected 3 source examples; found {len(example_dirs)}")
     validated = 0
@@ -993,7 +1091,11 @@ def validate_schemas_and_examples(source: Path) -> dict[str, int]:
                     f"{directory.name}/{filename}: {errors[0].message}"
                 )
             validated += 1
-    return {"schemas": len(schemas), "examples": len(example_dirs), "artifacts": validated}
+    return {
+        "schemas": len(schemas),
+        "examples": len(example_dirs),
+        "artifacts": validated,
+    }
 
 
 def validate_reference_tool_contract(
@@ -1024,7 +1126,9 @@ def validate_reference_tool_contract(
             fail(f"reference tool must be a pinned regular file: {tool_path}")
         assert_inside(source, tool_path, "reference tool")
         try:
-            syntax = ast.parse(tool_path.read_text(encoding="utf-8"), filename=str(tool_path))
+            syntax = ast.parse(
+                tool_path.read_text(encoding="utf-8"), filename=str(tool_path)
+            )
         except (OSError, UnicodeError, SyntaxError) as exc:
             fail(f"reference tool cannot be parsed safely: {tool_path}: {exc}")
         banned_imports = {
@@ -1059,14 +1163,19 @@ def validate_reference_tool_contract(
             fail(f"reference tool has invalid related Skills: {name}")
         if item["mapping_basis"] != "repository-inference":
             fail(f"reference tool mapping basis must remain explicit: {name}")
-        if not isinstance(item["qualified_subcapability"], str) or not item[
-            "qualified_subcapability"
-        ]:
+        if (
+            not isinstance(item["qualified_subcapability"], str)
+            or not item["qualified_subcapability"]
+        ):
             fail(f"reference tool subcapability is empty: {name}")
-        for example in sorted(path for path in (source / "examples").iterdir() if path.is_dir()):
+        for example in sorted(
+            path for path in (source / "examples").iterdir() if path.is_dir()
+        ):
             expected_output = example / str(item["expected"])
             if not expected_output.is_file() or expected_output.is_symlink():
-                fail(f"reference tool expected artifact is missing: {name}/{example.name}")
+                fail(
+                    f"reference tool expected artifact is missing: {name}/{example.name}"
+                )
         records.append(
             {
                 "name": name,
@@ -1114,7 +1223,10 @@ def validate_source(repository_root: Path = ROOT) -> dict[str, Any]:
     manifest = load_json(manifest_path, "source manifest")
     if not isinstance(manifest, dict):
         fail("source manifest is not an object")
-    if manifest.get("package") != PACKAGE_NAME or manifest.get("package_version") != PACKAGE_VERSION:
+    if (
+        manifest.get("package") != PACKAGE_NAME
+        or manifest.get("package_version") != PACKAGE_VERSION
+    ):
         fail("source package identity or version is invalid")
     if manifest.get("skill_count") != EXPECTED_SKILLS:
         fail("source manifest Skill count is invalid")
@@ -1138,7 +1250,10 @@ def validate_source(repository_root: Path = ROOT) -> dict[str, Any]:
     if list(checksums) != sorted(checksums):
         fail("source manifest checksums are not deterministically ordered")
     inventory_by_path = {str(item["path"]): item for item in inventory}
-    expected_covered = set(inventory_by_path) - {"MANIFEST.json", "VALIDATION-REPORT.md"}
+    expected_covered = set(inventory_by_path) - {
+        "MANIFEST.json",
+        "VALIDATION-REPORT.md",
+    }
     if set(checksums) != expected_covered:
         fail("source manifest checksum coverage is not exact")
     for relative, expected_digest in checksums.items():
@@ -1167,7 +1282,9 @@ def validate_source(repository_root: Path = ROOT) -> dict[str, Any]:
 def expected_reference_runs(summary: Mapping[str, Any]) -> list[dict[str, Any]]:
     source = Path(summary["source"])
     runs: list[dict[str, Any]] = []
-    example_dirs = sorted(path for path in (source / "examples").iterdir() if path.is_dir())
+    example_dirs = sorted(
+        path for path in (source / "examples").iterdir() if path.is_dir()
+    )
     for tool_name, tool in REFERENCE_TOOLS.items():
         for directory in example_dirs:
             input_path = directory / "requirements.json"
@@ -1182,7 +1299,9 @@ def expected_reference_runs(summary: Mapping[str, Any]) -> list[dict[str, Any]]:
                     "example": directory.name,
                     "input_path": input_path.relative_to(source).as_posix(),
                     "input_sha256": digest(input_path.read_bytes()),
-                    "expected_output_path": expected_path.relative_to(source).as_posix(),
+                    "expected_output_path": expected_path.relative_to(
+                        source
+                    ).as_posix(),
                     "expected_output_sha256": digest(expected_path.read_bytes()),
                     "raw_stdout_path": (
                         f"{QUALIFICATION_EVIDENCE_DIRECTORY}/{tool_name}--"
@@ -1241,7 +1360,12 @@ def validate_qualification(
         repository_root / DOC_RELATIVE / QUALIFICATION_EVIDENCE_DIRECTORY,
         "local reference-tool evidence",
     )
-    if receipt.exists() or receipt.is_symlink() or evidence.exists() or evidence.is_symlink():
+    if (
+        receipt.exists()
+        or receipt.is_symlink()
+        or evidence.exists()
+        or evidence.is_symlink()
+    ):
         fail(
             "persisted local reference-tool evidence is not accepted while "
             "sandboxed qualification execution is disabled"
@@ -1353,7 +1477,9 @@ def _validate_disabled_qualification_receipt(
         repository_root / str(driver_path),
         "local qualification driver",
     )
-    driver_bytes, _ = read_stable_regular_path(driver_file, "local qualification driver")
+    driver_bytes, _ = read_stable_regular_path(
+        driver_file, "local qualification driver"
+    )
     actual_driver_digest = digest(driver_bytes)
     if driver_digest != actual_driver_digest:
         fail("local qualification driver digest drifted")
@@ -1375,7 +1501,9 @@ def _validate_disabled_qualification_receipt(
         or not Path(python_info["resolved_executable"]).is_absolute()
         or not isinstance(python_info.get("executable_bytes"), int)
         or python_info["executable_bytes"] <= 0
-        or re.fullmatch(r"sha256:[0-9a-f]{64}", str(python_info.get("executable_sha256")))
+        or re.fullmatch(
+            r"sha256:[0-9a-f]{64}", str(python_info.get("executable_sha256"))
+        )
         is None
     ):
         fail("local qualification Python evidence is invalid")
@@ -1431,7 +1559,9 @@ def _validate_disabled_qualification_receipt(
             )
         for key, value in expected.items():
             if actual.get(key) != value:
-                fail(f"local qualification run field drifted: {expected['tool']}: {key}")
+                fail(
+                    f"local qualification run field drifted: {expected['tool']}: {key}"
+                )
         expected_argv = [
             python_info["resolved_executable"],
             "-I",
@@ -1456,20 +1586,29 @@ def _validate_disabled_qualification_receipt(
             try:
                 value = datetime.fromisoformat(str(actual.get(time_field)))
             except ValueError as exc:
-                fail(f"local qualification {time_field} is invalid: {expected['tool']}: {exc}")
-            if value.tzinfo is None or value.utcoffset() != timezone.utc.utcoffset(value):
+                fail(
+                    f"local qualification {time_field} is invalid: {expected['tool']}: {exc}"
+                )
+            if value.tzinfo is None or value.utcoffset() != timezone.utc.utcoffset(
+                value
+            ):
                 fail(f"local qualification {time_field} is not UTC: {expected['tool']}")
             parsed_times[time_field] = value
         if parsed_times["finished_at"] < parsed_times["started_at"]:
             fail(f"local qualification timestamps are reversed: {expected['tool']}")
         if last_finished is not None and parsed_times["started_at"] < last_finished:
-            fail(f"local qualification runs overlap or are reordered: {expected['tool']}")
+            fail(
+                f"local qualification runs overlap or are reordered: {expected['tool']}"
+            )
         last_finished = parsed_times["finished_at"]
         if not isinstance(actual.get("duration_ms"), int) or actual["duration_ms"] < 0:
             fail(f"local qualification duration is invalid: {expected['tool']}")
         for field in ("stdout_sha256", "stderr_sha256"):
             value = actual.get(field)
-            if not isinstance(value, str) or re.fullmatch(r"sha256:[0-9a-f]{64}", value) is None:
+            if (
+                not isinstance(value, str)
+                or re.fullmatch(r"sha256:[0-9a-f]{64}", value) is None
+            ):
                 fail(f"local qualification run has invalid {field}: {expected['tool']}")
         if actual["stdout_sha256"] != expected["expected_output_sha256"]:
             fail(f"local qualification stdout is not byte-bound: {expected['tool']}")
@@ -1489,7 +1628,8 @@ def _validate_disabled_qualification_receipt(
         if (
             actual.get("stdout_bytes") != len(stdout_bytes)
             or actual["stdout_sha256"] != digest(stdout_bytes)
-            or stdout_bytes != (Path(summary["source"]) / expected["expected_output_path"]).read_bytes()
+            or stdout_bytes
+            != (Path(summary["source"]) / expected["expected_output_path"]).read_bytes()
         ):
             fail(f"local qualification raw stdout drifted: {expected['tool']}")
         if (
@@ -1520,14 +1660,16 @@ def _validate_disabled_qualification_receipt(
     expected_evidence_directories = {
         parent.as_posix()
         for relative in expected_evidence_paths
-        for parent in PurePosixPath(relative).relative_to(
-            QUALIFICATION_EVIDENCE_DIRECTORY
-        ).parents
+        for parent in PurePosixPath(relative)
+        .relative_to(QUALIFICATION_EVIDENCE_DIRECTORY)
+        .parents
         if parent.as_posix() not in {"", "."}
     }
     if evidence_directories != expected_evidence_directories:
         fail("local qualification raw evidence directory inventory is not exact")
-    if receipt.get("raw_evidence_tree_sha256") != tree_digest({"evidence": actual_evidence}):
+    if receipt.get("raw_evidence_tree_sha256") != tree_digest(
+        {"evidence": actual_evidence}
+    ):
         fail("local qualification raw evidence tree digest drifted")
     return receipt
 
@@ -1549,6 +1691,11 @@ def render_skill(skill: Mapping[str, Any]) -> bytes:
         f"  normalized_namespace: {skill_creator_tools.yaml_quote(NAMESPACE)}",
         '  installation_state: "INSTALLED"',
         '  skill_implementation_state: "DECLARED"',
+        '  repository_runtime_binding: "BOUNDED_PLAN_SKELETON"',
+        f"  repository_handler_id: {skill_creator_tools.yaml_quote(repository_handler_id(name))}",
+        f"  repository_handler_path: {skill_creator_tools.yaml_quote(repository_handler_path(str(skill['group'])))}",
+        '  repository_handler_runtime_evidence: "NOT_RUN"',
+        '  whole_skill_implementation_effect: "NONE"',
         '  reference_tool_state: "NOT_APPLICABLE_TO_WHOLE_SKILL"',
         '  provider_runtime_evidence: "NOT_RUN"',
         '  external_evidence_status: "NOT_RUN"',
@@ -1567,21 +1714,30 @@ def render_skill(skill: Mapping[str, Any]) -> bytes:
     dependencies = json.dumps(skill["dependencies"], ensure_ascii=False)
     triggers = json.dumps(skill["triggers"], ensure_ascii=False)
     outputs = json.dumps(skill["outputs"], ensure_ascii=False)
+    task_ids = json.dumps(skill["task_ids"], ensure_ascii=False)
     boundary_lines = [
         "",
         "## Repository Integration Boundary",
         "",
         f"- Provenance is pinned to `{PACKAGE_NAME}` `{PACKAGE_VERSION}`, source `{(SOURCE_RELATIVE / str(skill['source_path'])).as_posix()}`, and `{skill['source_sha256']}`.",
-        f"- Source group: `{skill['group']}`. Dependencies: `{dependencies}`. Triggers: `{triggers}`. Declared outputs: `{outputs}`.",
-        "- This normalized Skill is installed and invocable, but its implementation state remains `DECLARED`; the package contains no per-Skill runtime handler, provider adapter, or project-generation assets.",
+        f"- Source group: `{skill['group']}`. Dependencies: `{dependencies}`. Triggers: `{triggers}`. Declared outputs: `{outputs}`. Stable task IDs: `{task_ids}`.",
+        f"- This normalized Skill is installed and invocable. The repository binds `{repository_handler_id(name)}` in `{repository_handler_path(str(skill['group']))}` as a bounded plan-skeleton entry point; the reviewed code declares no database, provider, network, deployment, benchmark, mutation, or certification operation.",
+        "- The plan skeleton makes every stable task ID, declared output, and missing evidence gate machine-readable. It does not implement the whole Skill, execute any source task, or generate the declared artifacts. `skill_implementation_state` therefore remains `DECLARED`, all runtime evidence remains `NOT_RUN`, and its whole-Skill implementation effect is `NONE`.",
+        "- The source package itself contains no per-Skill runtime handler, provider adapter, or project-generation assets; repository planner code is independently owned and must not execute package code.",
         "- The source archive has no license, signature, SBOM, or provenance attestation. Its pinned digest proves byte identity only, not publisher identity, legal approval, or supply-chain certification.",
         "- All 29 technology entries are `catalog-only`. A catalog match, heuristic score, reference plan, or generated file is not proof of provider integration, engine behavior, performance, recovery, security, or production readiness.",
         "- Unknown requirements remain unknown; hard constraints must not be relaxed silently. Exact engine/provider/version/edition/region/runtime identities and representative evidence are required before a concrete recommendation or release claim.",
-        "- Tenant, authorization, data residency, secrets, production writes, infrastructure changes, deployments, and destructive operations require their own explicit scope and least-privileged workflow.",
+        "- Tenant/project/actor/idempotency values accepted by the skeleton are caller-asserted and unverified. They are digest-bound only; no authentication binding, authorization decision, or replay store exists. Tenant, data residency, secrets, production writes, infrastructure changes, deployments, and destructive operations require their own explicit scope and least-privileged workflow.",
         "- Package-level reference-tool qualification, when present, is self-attested local engineering evidence for deterministic outputs from three checked-in synthetic examples. It does not change this whole-Skill state. Provider/runtime and external evidence remain `NOT_RUN`; production certification remains `NOT_CERTIFIED`.",
         "- Database migration or data-platform certification remains subject to the applicable Batch 31 implementation contract and conservative gate; static Skill/package validation cannot raise that status.",
     ]
-    return (frontmatter + str(skill["body"]).rstrip() + "\n" + "\n".join(boundary_lines) + "\n").encode("utf-8")
+    return (
+        frontmatter
+        + str(skill["body"]).rstrip()
+        + "\n"
+        + "\n".join(boundary_lines)
+        + "\n"
+    ).encode("utf-8")
 
 
 def render_interface(name: str) -> bytes:
@@ -1622,6 +1778,270 @@ def tree_digest(trees: Mapping[str, Mapping[str, bytes]]) -> str:
     return "sha256:" + value.hexdigest()
 
 
+def validate_repository_runtime(
+    repository_root: Path,
+    skills: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Statically bind the repository planner without importing or executing it."""
+
+    repository_root = resolved_repository_root(repository_root)
+    engine_root = assert_repository_path(
+        repository_root,
+        repository_root / ENGINE_RELATIVE,
+        "database/Big Data bounded runtime",
+    )
+    if not engine_root.is_dir() or engine_root.is_symlink():
+        fail(f"database/Big Data bounded runtime is missing: {engine_root}")
+
+    runtime_paths = list(engine_root.rglob("*"))
+    bytecode_paths = sorted(
+        path.relative_to(engine_root).as_posix()
+        for path in runtime_paths
+        if "__pycache__" in path.parts or path.suffix in {".pyc", ".pyo"}
+    )
+    if bytecode_paths:
+        fail(
+            "database/Big Data bounded runtime contains forbidden bytecode: "
+            f"{bytecode_paths}"
+        )
+    actual_files = sorted(
+        path.relative_to(engine_root).as_posix()
+        for path in runtime_paths
+        if path.is_file()
+    )
+    if len(actual_files) != len(ENGINE_REQUIRED_FILES) or set(actual_files) != set(
+        ENGINE_REQUIRED_FILES
+    ):
+        fail(
+            "database/Big Data bounded runtime inventory differs: "
+            f"missing={sorted(set(ENGINE_REQUIRED_FILES) - set(actual_files))} "
+            f"extra={sorted(set(actual_files) - set(ENGINE_REQUIRED_FILES))}"
+        )
+
+    files: dict[str, bytes] = {}
+    parsed: dict[str, ast.Module] = {}
+    for relative in ENGINE_REQUIRED_FILES:
+        path = assert_repository_path(
+            repository_root,
+            engine_root / relative,
+            "database/Big Data bounded runtime file",
+        )
+        content, mode = read_stable_regular_path(
+            path,
+            "database/Big Data bounded runtime file",
+        )
+        if mode != FILE_MODE:
+            fail(f"database/Big Data bounded runtime file mode is unsafe: {path}")
+        files[relative] = content
+        if relative.endswith(".py"):
+            try:
+                parsed[relative] = ast.parse(
+                    content.decode("utf-8"),
+                    filename=str(path),
+                )
+            except (UnicodeError, SyntaxError) as exc:
+                fail(
+                    f"database/Big Data bounded runtime cannot be parsed: {path}: {exc}"
+                )
+
+    allowed_import_roots = {
+        "__future__",
+        "argparse",
+        "collections",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "pathlib",
+        "re",
+        "sys",
+        "types",
+        "typing",
+    }
+    banned_builtin_calls = {
+        "__import__",
+        "breakpoint",
+        "compile",
+        "eval",
+        "exec",
+        "input",
+        "open",
+    }
+    banned_attribute_calls = {
+        "chmod",
+        "connect",
+        "fork",
+        "hardlink_to",
+        "mkdir",
+        "open",
+        "popen",
+        "remove",
+        "rename",
+        "rmdir",
+        "send",
+        "spawn",
+        "symlink_to",
+        "system",
+        "touch",
+        "unlink",
+        "urlopen",
+        "write_bytes",
+        "write_text",
+    }
+    for relative, syntax in parsed.items():
+        for node in ast.walk(syntax):
+            if isinstance(node, ast.Import):
+                imported = {alias.name.split(".", 1)[0] for alias in node.names}
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                imported = {node.module.split(".", 1)[0]}
+            else:
+                imported = set()
+            file_allowed_imports = set(allowed_import_roots)
+            if relative == "launcher.py":
+                file_allowed_imports.add("importlib")
+            unexpected = sorted(imported - file_allowed_imports)
+            if unexpected:
+                fail(
+                    "database/Big Data bounded runtime imports modules outside "
+                    f"the static allowlist: {relative}: {unexpected}"
+                )
+            if isinstance(node, ast.Call):
+                if (
+                    isinstance(node.func, ast.Name)
+                    and node.func.id in banned_builtin_calls
+                    and not (
+                        relative == "launcher.py"
+                        and node.func.id in {"compile", "exec"}
+                    )
+                ):
+                    fail(
+                        "database/Big Data bounded runtime contains a dynamic or "
+                        f"interactive call: {relative}: {node.func.id}"
+                    )
+                if (
+                    isinstance(node.func, ast.Attribute)
+                    and node.func.attr in banned_attribute_calls
+                ):
+                    fail(
+                        "database/Big Data bounded runtime contains a forbidden "
+                        f"side-effect call: {relative}: {node.func.attr}"
+                    )
+    launcher_body = parsed["launcher.py"].body
+    first_nonbuiltin_import = next(
+        (
+            index
+            for index, node in enumerate(launcher_body)
+            if (
+                isinstance(node, ast.Import)
+                and any(alias.name != "sys" for alias in node.names)
+            )
+            or (isinstance(node, ast.ImportFrom) and node.module != "__future__")
+        ),
+        -1,
+    )
+    isolated_rejections = sum(
+        1
+        for node in ast.walk(
+            ast.Module(
+                body=(
+                    launcher_body[:first_nonbuiltin_import]
+                    if first_nonbuiltin_import >= 0
+                    else launcher_body
+                ),
+                type_ignores=[],
+            )
+        )
+        if isinstance(node, ast.Raise)
+        and isinstance(node.exc, ast.Call)
+        and isinstance(node.exc.func, ast.Name)
+        and node.exc.func.id == "SystemExit"
+    )
+    if first_nonbuiltin_import < 0 or isolated_rejections != 2:
+        fail(
+            "database/Big Data verified launcher must reject interpreter flags "
+            "and sys.path before importing non-builtin modules"
+        )
+    launcher_dynamic_calls = [
+        node.func.id
+        for node in ast.walk(parsed["launcher.py"])
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id in {"compile", "exec"}
+    ]
+    if sorted(launcher_dynamic_calls) != ["compile", "exec"]:
+        fail(
+            "database/Big Data verified launcher must contain one controlled "
+            "compile/exec source-loader pair"
+        )
+
+    by_group: dict[str, list[Mapping[str, Any]]] = {
+        group: [] for group in EXPECTED_GROUP_COUNTS
+    }
+    for skill in skills:
+        by_group[str(skill["group"])].append(skill)
+    handler_files: dict[str, dict[str, Any]] = {}
+    for group, module_name in GROUP_HANDLER_MODULES.items():
+        relative = f"src/elmos_database_bigdata/handlers/{module_name}"
+        syntax = parsed[relative]
+        actual_handlers = {
+            node.name
+            for node in syntax.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name.startswith("handle_elmos_")
+        }
+        expected_handlers = {
+            repository_handler_id(str(skill["name"])) for skill in by_group[group]
+        }
+        if actual_handlers != expected_handlers:
+            fail(
+                f"database/Big Data handler inventory differs for {group}: "
+                f"missing={sorted(expected_handlers - actual_handlers)} "
+                f"extra={sorted(actual_handlers - expected_handlers)}"
+            )
+        handler_files[group] = {
+            "path": (ENGINE_RELATIVE / relative).as_posix(),
+            "sha256": digest(files[relative]),
+            "handler_count": len(actual_handlers),
+        }
+
+    runtime_text = "\n".join(
+        content.decode("utf-8")
+        for relative, content in files.items()
+        if relative.endswith(".py")
+    )
+    source_execution_markers = (
+        "skills/elmos-database-bigdata-skills-v1.0.0/scripts",
+        "skills/elmos-database-bigdata-skills-v1.0.0/tools",
+        "runpy",
+    )
+    if any(marker in runtime_text for marker in source_execution_markers):
+        fail(
+            "database/Big Data bounded runtime contains a source-package execution path"
+        )
+    return {
+        "path": ENGINE_RELATIVE.as_posix(),
+        "file_count": len(files),
+        "tree_sha256": tree_digest({"database-bigdata-engine": files}),
+        "catalog_path": ENGINE_CATALOG_RELATIVE.as_posix(),
+        "catalog_sha256": digest(files["src/elmos_database_bigdata/catalog.py"]),
+        "handler_count": sum(item["handler_count"] for item in handler_files.values()),
+        "handler_files": handler_files,
+        "files": [
+            {
+                "path": relative,
+                "bytes": len(files[relative]),
+                "sha256": digest(files[relative]),
+            }
+            for relative in sorted(files)
+        ],
+        "digest_algorithm": "elmos-tree-digest-v2",
+        "validation_state": "STATIC_PLAN_SKELETON_BEST_EFFORT",
+        "preimport_check": "ISOLATED_DIRECT_LAUNCHER_VERIFIED_SOURCE_LOADER",
+        "runtime_evidence": "NOT_RUN",
+        "external_effects_declared": False,
+        "whole_skill_implementation_effect": "NONE",
+    }
+
+
 def render_readme(qualification: Mapping[str, Any] | None) -> bytes:
     reference_state = "LOCAL_EXECUTED_SELF_ATTESTED" if qualification else "NOT_RUN"
     return f"""# Database and Big Data Skills Integration
@@ -1631,6 +2051,7 @@ This directory records the repository integration of `{PACKAGE_NAME}` version `{
 - Trusted source archive: `{ARCHIVE_RELATIVE.as_posix()}` (`sha256:{EXPECTED_ARCHIVE_SHA256}`)
 - Immutable extracted source: `{SOURCE_RELATIVE.as_posix()}/`
 - Installed Skills: {EXPECTED_SKILLS} exact names under both `agent-skills/runtime/` and `.agents/skills/`
+- Repository plan-skeleton bindings: {EXPECTED_SKILLS} exact handlers under `{ENGINE_RELATIVE.as_posix()}/`
 - Source profiles / schemas / technologies: {EXPECTED_PROFILES} / {EXPECTED_SCHEMAS} / {EXPECTED_TECHNOLOGIES}
 - Skill implementation state: `DECLARED`
 - Bounded reference-tool state: `{reference_state}`
@@ -1640,7 +2061,11 @@ This directory records the repository integration of `{PACKAGE_NAME}` version `{
 
 The importer does not execute the source package installer, validator, or manifest builder. It independently pins the ZIP, compares every extracted byte, verifies exact checksum coverage, validates the 46-Skill DAG and 554 stable task IDs, checks profiles/catalogs/Schemas/examples, and generates Codex-compatible interfaces with provenance.
 
-The source package includes three deterministic reference tools, but no per-Skill handlers, provider adapters, infrastructure templates, or generated-project assets. Local qualification of those three helpers against the three synthetic examples is self-attested engineering evidence only; it does not implement a whole Skill or validate any database, connector, engine, cloud, deployment, migration, benchmark, recovery path, or customer workload.
+The source package includes three deterministic reference tools, but no per-Skill handlers, provider adapters, infrastructure templates, or generated-project assets. The repository-owned bounded runtime emits typed plan skeletons containing identities, declared outputs, and explicit evidence gaps for every exact Skill and all {EXPECTED_TASK_IDS} task IDs. It does not execute any source task or generate the declared artifacts. Whole-Skill implementation therefore remains `DECLARED`, all runtime evidence remains `NOT_RUN`, and certification remains `NOT_CERTIFIED`.
+
+The authoritative repository CLI is `python3 -I -S -B engines/database-bigdata-engine/launcher.py`. The launcher refuses any weaker interpreter flags before importing non-builtin modules; isolated mode removes the script/current directory, ignores environment path injection, disables site customization, and suppresses bytecode writes. That package-external launcher rejects bytecode caches, checks every engine source file against the repository-owned manifest, and loads the package only from those verified source bytes. Each process retains that immutable byte snapshot and rejects repository drift before and after dispatch. Direct package imports are trusted-code library use, report `DIRECT_IMPORT_TRUSTED_CODE_ONLY`, and do not claim the launcher's pre-import boundary. The reviewed launcher and checked-in manifest are repository trust roots; digest checks prove local byte identity only and are not a signature, provenance attestation, or independent verification. Accepted tenant/project/actor/idempotency identifiers are caller-asserted and unverified, with digest binding only and no replay store.
+
+Local qualification of the three source helpers, if separately sandboxed in the future, would be self-attested engineering evidence only; it would not validate any database, connector, engine, cloud, deployment, migration, benchmark, recovery path, or customer workload.
 
 Run the repository-owned checks with:
 
@@ -1653,6 +2078,7 @@ make database-bigdata-skills
 def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
     repository_root = resolved_repository_root(repository_root)
     summary = validate_source(repository_root)
+    repository_runtime = validate_repository_runtime(repository_root, summary["skills"])
     qualification = validate_qualification(repository_root, summary, required=False)
     trees: dict[str, dict[str, bytes]] = {}
     records: list[dict[str, Any]] = []
@@ -1673,20 +2099,36 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
                 "name": name,
                 "source_group": skill["group"],
                 "source_dependencies": skill["dependencies"],
+                "source_outputs": skill["outputs"],
+                "source_task_ids": skill["task_ids"],
                 "source_path": (SOURCE_RELATIVE / str(skill["source_path"])).as_posix(),
                 "source_sha256": skill["source_sha256"],
                 "source_tree_sha256": skill["source_tree_sha256"],
                 "runtime_skill_path": (RUNTIME_RELATIVE / name / "SKILL.md").as_posix(),
                 "runtime_skill_sha256": digest(tree["SKILL.md"]),
-                "runtime_interface_path": (RUNTIME_RELATIVE / name / "agents/openai.yaml").as_posix(),
+                "runtime_interface_path": (
+                    RUNTIME_RELATIVE / name / "agents/openai.yaml"
+                ).as_posix(),
                 "runtime_interface_sha256": digest(tree["agents/openai.yaml"]),
-                "workspace_skill_path": (WORKSPACE_RELATIVE / name / "SKILL.md").as_posix(),
+                "workspace_skill_path": (
+                    WORKSPACE_RELATIVE / name / "SKILL.md"
+                ).as_posix(),
                 "workspace_skill_sha256": digest(tree["SKILL.md"]),
-                "workspace_interface_path": (WORKSPACE_RELATIVE / name / "agents/openai.yaml").as_posix(),
+                "workspace_interface_path": (
+                    WORKSPACE_RELATIVE / name / "agents/openai.yaml"
+                ).as_posix(),
                 "workspace_interface_sha256": digest(tree["agents/openai.yaml"]),
                 "installed_tree_sha256": tree_digest({name: tree}),
                 "installation_state": "INSTALLED",
                 "skill_implementation_state": "DECLARED",
+                "repository_runtime_binding": "BOUNDED_PLAN_SKELETON",
+                "repository_handler_id": repository_handler_id(name),
+                "repository_handler_path": repository_handler_path(str(skill["group"])),
+                "repository_handler_file_sha256": repository_runtime["handler_files"][
+                    str(skill["group"])
+                ]["sha256"],
+                "repository_handler_runtime_evidence": "NOT_RUN",
+                "whole_skill_implementation_effect": "NONE",
                 "related_reference_tools": related_tools,
                 "reference_tool_mapping_basis": (
                     "repository-inference" if related_tools else "NOT_APPLICABLE"
@@ -1707,7 +2149,9 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
         for run in expected_reference_runs(summary):
             for key in ("raw_stdout_path", "raw_stderr_path"):
                 relative = str(run[key])
-                qualification_files[relative] = (repository_root / DOC_RELATIVE / relative).read_bytes()
+                qualification_files[relative] = (
+                    repository_root / DOC_RELATIVE / relative
+                ).read_bytes()
     source_inventory = [
         {**item, "path": (SOURCE_RELATIVE / str(item["path"])).as_posix()}
         for item in summary["inventory"]
@@ -1739,6 +2183,21 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
         "adapter_blueprint_count": EXPECTED_ADAPTER_BLUEPRINTS,
         "provider_adapter_implementation_count": 0,
         "stable_task_id_count": EXPECTED_TASK_IDS,
+        "repository_bounded_handler_count": EXPECTED_SKILLS,
+        "repository_bounded_handler_state": "BOUND_PLAN_SKELETON_ONLY",
+        "repository_runtime_path": repository_runtime["path"],
+        "repository_runtime_file_count": repository_runtime["file_count"],
+        "repository_runtime_tree_sha256": repository_runtime["tree_sha256"],
+        "repository_runtime_digest_algorithm": repository_runtime["digest_algorithm"],
+        "repository_runtime_files": repository_runtime["files"],
+        "repository_runtime_static_validation": repository_runtime["validation_state"],
+        "repository_runtime_preimport_check": repository_runtime["preimport_check"],
+        "repository_external_effects_declared": repository_runtime[
+            "external_effects_declared"
+        ],
+        "repository_runtime_catalog_path": ENGINE_CATALOG_RELATIVE.as_posix(),
+        "repository_runtime_catalog_sha256": repository_runtime["catalog_sha256"],
+        "repository_handler_runtime_evidence": "NOT_RUN",
         "runtime_root": RUNTIME_RELATIVE.as_posix(),
         "workspace_root": WORKSPACE_RELATIVE.as_posix(),
         "runtime_tree_sha256": tree_digest(trees),
@@ -1777,7 +2236,9 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
         "skills": records,
         "profiles": summary["profiles"],
     }
-    manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode(
+        "utf-8"
+    )
     return {
         "summary": summary,
         "qualification": qualification,
@@ -1787,6 +2248,7 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
         "manifest_bytes": manifest_bytes,
         "qualification_bytes": qualification_bytes,
         "qualification_files": qualification_files,
+        "repository_runtime": repository_runtime,
     }
 
 
@@ -1842,7 +2304,9 @@ def read_tree(root: Path) -> dict[str, bytes]:
     return read_tree_details(root)[0]
 
 
-def validate_normalized_skills(repository_root: Path, expected: Mapping[str, Any]) -> None:
+def validate_normalized_skills(
+    repository_root: Path, expected: Mapping[str, Any]
+) -> None:
     for relative_root in (RUNTIME_RELATIVE, WORKSPACE_RELATIVE):
         for name in sorted(expected["trees"]):
             ok, message = skill_creator_tools.validate_skill(
@@ -1962,11 +2426,33 @@ def load_previous_install(
         fail(f"invalid previous installed manifest: {manifest_path}: {exc}")
     if not isinstance(previous, dict):
         fail("previous installed manifest is not an object")
-    if previous != expected["manifest"] or manifest_bytes != expected["manifest_bytes"]:
+    exact_current = (
+        previous == expected["manifest"]
+        and manifest_bytes == expected["manifest_bytes"]
+    )
+    exact_legacy = (
+        sha256_bytes(manifest_bytes) in PINNED_PREVIOUS_INSTALL_MANIFEST_SHA256S
+    )
+    if not exact_current and not exact_legacy:
         fail(
             "refusing to grant ownership from a manifest that is not the exact "
             "independently rendered installation manifest"
         )
+    if exact_legacy:
+        required_legacy = {
+            "schema_version": "1.0",
+            "namespace": NAMESPACE,
+            "source_archive_sha256": f"sha256:{EXPECTED_ARCHIVE_SHA256}",
+            "canonical_manifest_sha256": f"sha256:{EXPECTED_MANIFEST_SHA256}",
+            "skill_count": EXPECTED_SKILLS,
+            "stable_task_id_count": EXPECTED_TASK_IDS,
+            "skill_implementation_state": "DECLARED",
+            "provider_runtime_evidence": "NOT_RUN",
+            "external_evidence_status": "NOT_RUN",
+            "production_certification": "NOT_CERTIFIED",
+        }
+        if any(previous.get(key) != value for key, value in required_legacy.items()):
+            fail("pinned legacy installation manifest has invalid boundary fields")
     return previous
 
 
@@ -2065,7 +2551,9 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
             allowed_existing_docs.update({README_NAME, INSTALL_MANIFEST_NAME})
         if doc_root.exists() or doc_root.is_symlink():
             if not doc_root.is_dir() or doc_root.is_symlink():
-                fail(f"refusing to overwrite a non-directory documentation path: {doc_root}")
+                fail(
+                    f"refusing to overwrite a non-directory documentation path: {doc_root}"
+                )
             existing_docs, existing_doc_dirs = read_tree_details(
                 doc_root,
                 "existing integration documentation",
@@ -2104,9 +2592,13 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                 )
                 if destination.exists() or destination.is_symlink():
                     if name not in owned:
-                        fail(f"refusing to overwrite unowned {label} Skill: {destination}")
+                        fail(
+                            f"refusing to overwrite unowned {label} Skill: {destination}"
+                        )
                     if destination.is_symlink() or not destination.is_dir():
-                        fail(f"owned {label} Skill is not a real directory: {destination}")
+                        fail(
+                            f"owned {label} Skill is not a real directory: {destination}"
+                        )
 
         staged: list[dict[str, Any]] = []
         operations: list[dict[str, Any]] = []
@@ -2114,7 +2606,9 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
         def present(path: Path) -> bool:
             return path.exists() or path.is_symlink()
 
-        def read_operation_value(operation: Mapping[str, Any], path: Path) -> bytes | dict[str, bytes]:
+        def read_operation_value(
+            operation: Mapping[str, Any], path: Path
+        ) -> bytes | dict[str, bytes]:
             if operation["is_directory"]:
                 return read_tree(path)
             content, mode = read_stable_regular_path(path, "installed documentation")
@@ -2130,7 +2624,9 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                     "Skill installation root",
                 )
                 install_root.mkdir(parents=True, mode=DIRECTORY_MODE, exist_ok=True)
-                assert_repository_path(repository_root, install_root, "Skill installation root")
+                assert_repository_path(
+                    repository_root, install_root, "Skill installation root"
+                )
                 for name in sorted(aliases):
                     destination = assert_repository_path(
                         repository_root,
@@ -2147,7 +2643,7 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                         "stage": stage,
                         "is_directory": True,
                         "had_previous": name in owned,
-                        "old_value": expected["trees"][name] if name in owned else None,
+                        "old_value": read_tree(destination) if name in owned else None,
                         "new_value": expected["trees"][name],
                     }
                     staged.append(staged_item)
@@ -2157,7 +2653,9 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
 
             doc_root.mkdir(parents=True, mode=DIRECTORY_MODE, exist_ok=True)
             doc_root.chmod(DIRECTORY_MODE)
-            assert_repository_path(repository_root, doc_root, "integration documentation")
+            assert_repository_path(
+                repository_root, doc_root, "integration documentation"
+            )
             for filename, content in (
                 (README_NAME, expected["readme_bytes"]),
                 (INSTALL_MANIFEST_NAME, expected["manifest_bytes"]),
@@ -2178,7 +2676,11 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                     "stage": stage,
                     "is_directory": False,
                     "had_previous": previous is not None,
-                    "old_value": content if previous is not None else None,
+                    "old_value": (
+                        read_operation_value({"is_directory": False}, destination)
+                        if previous is not None
+                        else None
+                    ),
                     "new_value": content,
                 }
                 staged.append(staged_item)
@@ -2194,12 +2696,19 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
             for item in staged:
                 destination = item["destination"]
                 stage = item["stage"]
-                assert_repository_path(repository_root, destination, "install destination")
+                assert_repository_path(
+                    repository_root, destination, "install destination"
+                )
                 assert_repository_path(repository_root, stage, "install staging")
                 if present(destination) != item["had_previous"]:
                     fail(f"install destination changed after preflight: {destination}")
-                if item["had_previous"] and read_operation_value(item, destination) != item["old_value"]:
-                    fail(f"owned install destination drifted before commit: {destination}")
+                if (
+                    item["had_previous"]
+                    and read_operation_value(item, destination) != item["old_value"]
+                ):
+                    fail(
+                        f"owned install destination drifted before commit: {destination}"
+                    )
                 backup_parent = (
                     doc_root.parent
                     if destination.parent == doc_root
@@ -2211,7 +2720,12 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                     / f".database-bigdata-{destination.name}.backup.{uuid.uuid4().hex}",
                     "install backup",
                 )
-                operation = {**item, "backup": backup, "backed_up": False, "published": False}
+                operation = {
+                    **item,
+                    "backup": backup,
+                    "backed_up": False,
+                    "published": False,
+                }
                 operations.append(operation)
                 if item["had_previous"]:
                     os.replace(destination, backup)
@@ -2242,7 +2756,9 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                         ):
                             old_destination_is_intact = True
                         elif current_value != operation["new_value"]:
-                            fail(f"published destination drifted before rollback: {destination}")
+                            fail(
+                                f"published destination drifted before rollback: {destination}"
+                            )
                         else:
                             discard = assert_repository_path(
                                 repository_root,
@@ -2254,11 +2770,21 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                             discarded.append(discard)
                     if operation["had_previous"] and not old_destination_is_intact:
                         if not present(backup):
-                            fail(f"install backup is unavailable during rollback: {destination}")
-                        if read_operation_value(operation, backup) != operation["old_value"]:
-                            fail(f"install backup drifted before rollback: {destination}")
+                            fail(
+                                f"install backup is unavailable during rollback: {destination}"
+                            )
+                        if (
+                            read_operation_value(operation, backup)
+                            != operation["old_value"]
+                        ):
+                            fail(
+                                f"install backup drifted before rollback: {destination}"
+                            )
                         os.replace(backup, destination)
-                        if read_operation_value(operation, destination) != operation["old_value"]:
+                        if (
+                            read_operation_value(operation, destination)
+                            != operation["old_value"]
+                        ):
                             fail(f"restored install destination differs: {destination}")
                 except BaseException as rollback_exc:
                     rollback_failures.append(f"{destination}: {rollback_exc}")
@@ -2279,7 +2805,9 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
                     elif present(discard):
                         discard.unlink()
                 except OSError as cleanup_exc:
-                    rollback_failures.append(f"discard cleanup {discard}: {cleanup_exc}")
+                    rollback_failures.append(
+                        f"discard cleanup {discard}: {cleanup_exc}"
+                    )
             if rollback_failures:
                 remaining_backups = [
                     str(operation["backup"])
@@ -2368,7 +2896,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--write", action="store_true", help="install normalized Skills")
-    mode.add_argument("--check", action="store_true", help="fail on source or installation drift")
+    mode.add_argument(
+        "--check", action="store_true", help="fail on source or installation drift"
+    )
     mode.add_argument(
         "--extract-source",
         action="store_true",

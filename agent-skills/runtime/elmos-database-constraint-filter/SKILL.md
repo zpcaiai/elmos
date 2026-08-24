@@ -10,6 +10,11 @@ metadata:
   normalized_namespace: "elmos-database-bigdata-v1"
   installation_state: "INSTALLED"
   skill_implementation_state: "DECLARED"
+  repository_runtime_binding: "BOUNDED_PLAN_SKELETON"
+  repository_handler_id: "handle_elmos_database_constraint_filter"
+  repository_handler_path: "engines/database-bigdata-engine/src/elmos_database_bigdata/handlers/database_intelligence.py"
+  repository_handler_runtime_evidence: "NOT_RUN"
+  whole_skill_implementation_effect: "NONE"
   reference_tool_state: "NOT_APPLICABLE_TO_WHOLE_SKILL"
   provider_runtime_evidence: "NOT_RUN"
   external_evidence_status: "NOT_RUN"
@@ -83,11 +88,13 @@ metadata:
 ## Repository Integration Boundary
 
 - Provenance is pinned to `elmos-database-bigdata-skills` `1.0.0`, source `skills/elmos-database-bigdata-skills-v1.0.0/skills/elmos-database-constraint-filter/SKILL.md`, and `sha256:5a3c579f5cc8766bbb2bdbc4b2c429008968604a7ec3462896fa1a6ec2a0f4cb`.
-- Source group: `database-intelligence`. Dependencies: `["elmos-data-requirement-intake", "elmos-workload-profiler", "elmos-database-capability-registry"]`. Triggers: `["已获得需求 IR 和注册表", "需要候选集", "存在合规或部署硬约束"]`. Declared outputs: `["feasible-candidates.json", "rejected-candidates.json", "constraint-proof.json"]`.
-- This normalized Skill is installed and invocable, but its implementation state remains `DECLARED`; the package contains no per-Skill runtime handler, provider adapter, or project-generation assets.
+- Source group: `database-intelligence`. Dependencies: `["elmos-data-requirement-intake", "elmos-workload-profiler", "elmos-database-capability-registry"]`. Triggers: `["已获得需求 IR 和注册表", "需要候选集", "存在合规或部署硬约束"]`. Declared outputs: `["feasible-candidates.json", "rejected-candidates.json", "constraint-proof.json"]`. Stable task IDs: `["FILTER-001", "FILTER-002", "FILTER-003", "FILTER-004", "FILTER-005", "FILTER-006", "FILTER-007", "FILTER-008", "FILTER-009", "FILTER-010", "FILTER-011", "FILTER-012"]`.
+- This normalized Skill is installed and invocable. The repository binds `handle_elmos_database_constraint_filter` in `engines/database-bigdata-engine/src/elmos_database_bigdata/handlers/database_intelligence.py` as a bounded plan-skeleton entry point; the reviewed code declares no database, provider, network, deployment, benchmark, mutation, or certification operation.
+- The plan skeleton makes every stable task ID, declared output, and missing evidence gate machine-readable. It does not implement the whole Skill, execute any source task, or generate the declared artifacts. `skill_implementation_state` therefore remains `DECLARED`, all runtime evidence remains `NOT_RUN`, and its whole-Skill implementation effect is `NONE`.
+- The source package itself contains no per-Skill runtime handler, provider adapter, or project-generation assets; repository planner code is independently owned and must not execute package code.
 - The source archive has no license, signature, SBOM, or provenance attestation. Its pinned digest proves byte identity only, not publisher identity, legal approval, or supply-chain certification.
 - All 29 technology entries are `catalog-only`. A catalog match, heuristic score, reference plan, or generated file is not proof of provider integration, engine behavior, performance, recovery, security, or production readiness.
 - Unknown requirements remain unknown; hard constraints must not be relaxed silently. Exact engine/provider/version/edition/region/runtime identities and representative evidence are required before a concrete recommendation or release claim.
-- Tenant, authorization, data residency, secrets, production writes, infrastructure changes, deployments, and destructive operations require their own explicit scope and least-privileged workflow.
+- Tenant/project/actor/idempotency values accepted by the skeleton are caller-asserted and unverified. They are digest-bound only; no authentication binding, authorization decision, or replay store exists. Tenant, data residency, secrets, production writes, infrastructure changes, deployments, and destructive operations require their own explicit scope and least-privileged workflow.
 - Package-level reference-tool qualification, when present, is self-attested local engineering evidence for deterministic outputs from three checked-in synthetic examples. It does not change this whole-Skill state. Provider/runtime and external evidence remain `NOT_RUN`; production certification remains `NOT_CERTIFIED`.
 - Database migration or data-platform certification remains subject to the applicable Batch 31 implementation contract and conservative gate; static Skill/package validation cannot raise that status.
