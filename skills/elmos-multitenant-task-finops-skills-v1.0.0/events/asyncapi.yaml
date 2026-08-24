@@ -1,0 +1,272 @@
+asyncapi: 2.6.0
+info:
+  title: Elmos Multi-Tenant Task Control & FinOps Events
+  version: 1.0.0
+  description: >-
+    Versioned event contracts for account admission, task lifecycle, progress,
+    checkpoints, usage cost, revenue, and task profitability projections.
+defaultContentType: application/json
+servers:
+  production:
+    url: event-bus.internal:9092
+    protocol: kafka-secure
+    description: Logical production event bus; deployment-specific endpoints are injected at runtime.
+channels:
+  elmos.task.lifecycle.v1:
+    description: Durable task and run state transitions.
+    publish:
+      operationId: publishTaskLifecycle
+      message:
+        $ref: '#/components/messages/TaskLifecycleEvent'
+  elmos.task.progress.v1:
+    description: Coalescible progress, node heartbeat, and ETA updates.
+    publish:
+      operationId: publishTaskProgress
+      message:
+        $ref: '#/components/messages/TaskProgressEvent'
+  elmos.task.checkpoint.v1:
+    description: Durable checkpoint creation and recovery decisions.
+    publish:
+      operationId: publishTaskCheckpoint
+      message:
+        $ref: '#/components/messages/TaskCheckpointEvent'
+  elmos.task.slot.v1:
+    description: Account slot claim, renewal, release, expiry, and queue promotion.
+    publish:
+      operationId: publishTaskSlot
+      message:
+        $ref: '#/components/messages/TaskSlotEvent'
+  elmos.usage.recorded.v1:
+    description: Immutable provider, model, compute, storage, network, and third-party usage entries.
+    publish:
+      operationId: publishUsageRecorded
+      message:
+        $ref: '#/components/messages/UsageRecordedEvent'
+  elmos.revenue.posted.v1:
+    description: Immutable charge, credit, refund, recognition, collection, fee, and tax entries.
+    publish:
+      operationId: publishRevenuePosted
+      message:
+        $ref: '#/components/messages/RevenuePostedEvent'
+  elmos.task.financial.updated.v1:
+    description: Rebuildable task cost, revenue, gross-profit, and reconciliation projection changes.
+    publish:
+      operationId: publishTaskFinancialUpdated
+      message:
+        $ref: '#/components/messages/TaskFinancialUpdatedEvent'
+components:
+  correlationIds:
+    TraceId:
+      description: OpenTelemetry-compatible trace correlation.
+      location: $message.header#/trace_id
+  messageTraits:
+    StandardEnvelope:
+      headers:
+        type: object
+        additionalProperties: false
+        required: [event_id, event_type, schema_version, occurred_at, trace_id]
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+          schema_version:
+            const: '1.0'
+          occurred_at:
+            type: string
+            format: date-time
+          trace_id:
+            type: string
+          tenant_id:
+            type: [string, 'null']
+            format: uuid
+          account_id:
+            type: [string, 'null']
+            format: uuid
+      correlationId:
+        $ref: '#/components/correlationIds/TraceId'
+  messages:
+    TaskLifecycleEvent:
+      name: TaskLifecycleEvent
+      title: Task lifecycle event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/TaskLifecyclePayload'
+    TaskProgressEvent:
+      name: TaskProgressEvent
+      title: Task progress event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/TaskProgressPayload'
+    TaskCheckpointEvent:
+      name: TaskCheckpointEvent
+      title: Task checkpoint event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/TaskCheckpointPayload'
+    TaskSlotEvent:
+      name: TaskSlotEvent
+      title: Account task-slot event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/TaskSlotPayload'
+    UsageRecordedEvent:
+      name: UsageRecordedEvent
+      title: Usage ledger event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/UsageRecordedPayload'
+    RevenuePostedEvent:
+      name: RevenuePostedEvent
+      title: Revenue ledger event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/RevenuePostedPayload'
+    TaskFinancialUpdatedEvent:
+      name: TaskFinancialUpdatedEvent
+      title: Task financial projection event
+      traits:
+        - $ref: '#/components/messageTraits/StandardEnvelope'
+      payload:
+        $ref: '#/components/schemas/TaskFinancialUpdatedPayload'
+  schemas:
+    TaskIdentity:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, account_id, task_id, task_run_id]
+      properties:
+        tenant_id: {type: string, format: uuid}
+        account_id: {type: string, format: uuid}
+        project_id: {type: [string, 'null'], format: uuid}
+        task_id: {type: string, format: uuid}
+        task_run_id: {type: string, format: uuid}
+    TaskLifecyclePayload:
+      allOf:
+        - $ref: '#/components/schemas/TaskIdentity'
+        - type: object
+          additionalProperties: false
+          required: [transition_id, sequence_no, old_state, new_state, actor_type]
+          properties:
+            transition_id: {type: string}
+            sequence_no: {type: integer, minimum: 1}
+            old_state: {type: [string, 'null']}
+            new_state: {type: string}
+            node_key: {type: [string, 'null']}
+            checkpoint_id: {type: [string, 'null'], format: uuid}
+            actor_type: {type: string}
+            actor_id: {type: [string, 'null']}
+            details: {type: object}
+    TaskProgressPayload:
+      allOf:
+        - $ref: '#/components/schemas/TaskIdentity'
+        - type: object
+          additionalProperties: false
+          required: [event_sequence_watermark, state, progress, elapsed_ms, retry_count, recovery_count, as_of]
+          properties:
+            event_sequence_watermark: {type: integer, minimum: 0}
+            state: {type: string}
+            current_node_key: {type: [string, 'null']}
+            progress: {type: number, minimum: 0, maximum: 1}
+            elapsed_ms: {type: integer, minimum: 0}
+            eta_p50_ms: {type: [integer, 'null'], minimum: 0}
+            eta_p90_ms: {type: [integer, 'null'], minimum: 0}
+            node_counts: {type: object, additionalProperties: {type: integer, minimum: 0}}
+            retry_count: {type: integer, minimum: 0}
+            recovery_count: {type: integer, minimum: 0}
+            as_of: {type: string, format: date-time}
+    TaskCheckpointPayload:
+      allOf:
+        - $ref: '#/components/schemas/TaskIdentity'
+        - type: object
+          additionalProperties: false
+          required: [checkpoint_id, node_key, sequence_no, checkpoint_type, state_hash, policy_version]
+          properties:
+            checkpoint_id: {type: string, format: uuid}
+            node_key: {type: string}
+            sequence_no: {type: integer, minimum: 1}
+            checkpoint_type: {type: string}
+            object_uri: {type: [string, 'null']}
+            object_sha256: {type: [string, 'null'], pattern: '^[a-f0-9]{64}$'}
+            state_hash: {type: string, pattern: '^[a-f0-9]{64}$'}
+            committed_side_effect_receipts:
+              type: array
+              items: {type: string, format: uuid}
+            next_node_key: {type: [string, 'null']}
+            policy_version: {type: string}
+    TaskSlotPayload:
+      type: object
+      additionalProperties: false
+      required: [account_id, slot_no, action, lease_generation]
+      properties:
+        tenant_id: {type: [string, 'null'], format: uuid}
+        account_id: {type: string, format: uuid}
+        task_id: {type: [string, 'null'], format: uuid}
+        slot_no: {type: integer, minimum: 1, maximum: 3}
+        action: {enum: [CLAIMED, RENEWED, RELEASED, EXPIRED, RECONCILING, QUEUE_PROMOTED]}
+        lease_generation: {type: integer, minimum: 0}
+        lease_expires_at: {type: [string, 'null'], format: date-time}
+        reason: {type: [string, 'null']}
+    UsageRecordedPayload:
+      allOf:
+        - $ref: '#/components/schemas/TaskIdentity'
+        - type: object
+          additionalProperties: false
+          required: [usage_event_id, idempotency_key, provider, sku, usage_type, unit, quantity, base_currency, base_cost, cost_status]
+          properties:
+            usage_event_id: {type: string, format: uuid}
+            idempotency_key: {type: string}
+            provider: {type: string}
+            sku: {type: string}
+            usage_type: {type: string}
+            unit: {type: string}
+            quantity: {type: number}
+            price_book_version: {type: string}
+            original_currency: {type: string, pattern: '^[A-Z]{3}$'}
+            original_cost: {type: string}
+            base_currency: {type: string, pattern: '^[A-Z]{3}$'}
+            fx_rate: {type: string}
+            base_cost: {type: string}
+            cost_status: {enum: [ESTIMATE, POSTED, FINAL, CORRECTION]}
+            provider_receipt_id: {type: [string, 'null']}
+    RevenuePostedPayload:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, revenue_entry_id, kind, billing_mode, amount, currency, base_amount, base_currency, status]
+      properties:
+        tenant_id: {type: string, format: uuid}
+        account_id: {type: [string, 'null'], format: uuid}
+        project_id: {type: [string, 'null'], format: uuid}
+        task_id: {type: [string, 'null'], format: uuid}
+        task_run_id: {type: [string, 'null'], format: uuid}
+        revenue_entry_id: {type: string, format: uuid}
+        kind: {enum: [QUOTE, CHARGE, CREDIT, REFUND, RECOGNITION, COLLECTION, PAYMENT_FEE, TAX, ADJUSTMENT]}
+        billing_mode: {enum: [PREPAID_CREDIT, PAY_AS_YOU_GO, SUBSCRIPTION, FIXED_PROJECT, DEDICATED_TENANT, PRIVATE_DEPLOYMENT, OFFLINE_LICENSE]}
+        amount: {type: string}
+        currency: {type: string, pattern: '^[A-Z]{3}$'}
+        base_amount: {type: string}
+        base_currency: {type: string, pattern: '^[A-Z]{3}$'}
+        status: {enum: [PENDING, POSTED, VOIDED, FINAL]}
+    TaskFinancialUpdatedPayload:
+      type: object
+      additionalProperties: false
+      required: [tenant_id, task_id, reporting_currency, as_of, posted_actual_cost, recognized_revenue, gross_profit, reconciliation_status]
+      properties:
+        tenant_id: {type: string, format: uuid}
+        account_id: {type: [string, 'null'], format: uuid}
+        project_id: {type: [string, 'null'], format: uuid}
+        task_id: {type: string, format: uuid}
+        reporting_currency: {type: string, pattern: '^[A-Z]{3}$'}
+        as_of: {type: string, format: date-time}
+        posted_actual_cost: {type: string}
+        recognized_revenue: {type: string}
+        collected_cash: {type: string}
+        gross_profit: {type: string}
+        gross_margin: {type: [string, 'null']}
+        reconciliation_status: {type: string}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Account Concurrency Admission"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-account-concurrency-admission to execute its scoped workflow with fail-closed evidence."

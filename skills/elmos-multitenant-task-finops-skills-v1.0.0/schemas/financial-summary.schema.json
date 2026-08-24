@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/financial-summary.schema.json",
+  "title": "Elmos Task Financial Summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "tenant_id",
+    "reporting_currency",
+    "as_of",
+    "cost",
+    "revenue",
+    "gross_profit",
+    "gross_margin",
+    "reconciliation_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "reporting_currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimated",
+        "reserved",
+        "posted_actual",
+        "final_actual",
+        "status"
+      ],
+      "properties": {
+        "estimated": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "reserved": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "posted_actual": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "final_actual": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "human_review_cost": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "status": {
+          "enum": [
+            "ESTIMATED",
+            "POSTING",
+            "PARTIAL_PROVIDER_DATA",
+            "UNRECONCILED",
+            "COMPLETE",
+            "FINAL",
+            "MANUAL_REVIEW"
+          ]
+        }
+      }
+    },
+    "revenue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "net_billed",
+        "recognized",
+        "collected_cash",
+        "refunds",
+        "credits",
+        "payment_fees",
+        "taxes",
+        "status"
+      ],
+      "properties": {
+        "net_billed": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "recognized": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "collected_cash": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "refunds": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "credits": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "payment_fees": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "taxes": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "status": {
+          "enum": [
+            "POSTING",
+            "UNRECONCILED",
+            "COMPLETE",
+            "FINAL",
+            "MANUAL_REVIEW"
+          ]
+        }
+      }
+    },
+    "gross_profit": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "gross_margin": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reconciliation_status": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

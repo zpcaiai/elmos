@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Usage Metering Cost Ledger"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-usage-metering-cost-ledger to execute its scoped workflow with fail-closed evidence."

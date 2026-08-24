@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Task Progress Journal"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-task-progress-journal to execute its scoped workflow with fail-closed evidence."

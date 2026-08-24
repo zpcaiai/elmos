@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    participant R as Runner/Worker
+    participant DB as PostgreSQL
+    participant OS as Object Storage
+    participant WF as Temporal Workflow
+    participant RC as Reconciler
+
+    R->>DB: renew attempt + slot lease generation
+    R->>OS: write checkpoint payload atomically
+    OS-->>R: object URI + SHA-256
+    R->>DB: insert checkpoint + side-effect receipts
+    R->>DB: append monotonic checkpoint event
+    Note over R,DB: process crashes or connection is lost
+    DB-->>RC: expired lease detected
+    RC->>DB: state=UNKNOWN_RESULT then RECONCILING
+    RC->>DB: inspect receipts, event watermark, checkpoint
+    RC->>OS: verify object digest and availability
+    alt side effect completed
+        RC->>DB: mark node/task completed idempotently
+    else resumable from checkpoint
+        RC->>WF: signal/update resume from checkpoint
+        WF->>R: start new attempt with new generation
+    else ambiguous
+        RC->>DB: state=MANUAL_RECOVERY
+    end

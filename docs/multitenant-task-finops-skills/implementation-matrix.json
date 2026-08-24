@@ -1,0 +1,1461 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multitenant-task-finops.implementation-matrix",
+  "package": {
+    "name": "elmos-multitenant-task-finops-skills",
+    "version": "1.0.0"
+  },
+  "schema_version": "1.0.0",
+  "status_semantics": {
+    "NOT_RUN": "No repository-specific implementation evidence is bound to this task.",
+    "PASS": "Reserved for future digest-bound, independently verifiable repository evidence."
+  },
+  "summary": {
+    "NOT_RUN": 144,
+    "PASS": 0,
+    "total": 144
+  },
+  "tasks": [
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-001",
+      "skill_name": "elmos-multitenant-task-finops-orchestrator",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-001-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-002",
+      "skill_name": "elmos-tenant-identity-rls",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-002-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-003",
+      "skill_name": "elmos-account-concurrency-admission",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-003-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-004",
+      "skill_name": "elmos-workload-aware-scheduler",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-004-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-005",
+      "skill_name": "elmos-task-lifecycle-temporal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-005-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-006",
+      "skill_name": "elmos-task-progress-journal",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-006-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-007",
+      "skill_name": "elmos-checkpoint-recovery",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-007-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-008",
+      "skill_name": "elmos-task-io-artifact-archive",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-008-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-009",
+      "skill_name": "elmos-usage-metering-cost-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-009-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-010",
+      "skill_name": "elmos-revenue-margin-ledger",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-010-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P1",
+      "skill_id": "ELMOS-MTF-011",
+      "skill_name": "elmos-task-financial-analytics",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-011-T12"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T01"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T02"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T03"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T04"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T05"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T06"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T07"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T08"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T09"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T10"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T11"
+    },
+    {
+      "evidence": [],
+      "evidence_required": true,
+      "gate": "required",
+      "priority": "P0",
+      "skill_id": "ELMOS-MTF-012",
+      "skill_name": "elmos-concurrency-recovery-finops-certification",
+      "status": "NOT_RUN",
+      "task_id": "ELMOS-MTF-012-T12"
+    }
+  ]
+}

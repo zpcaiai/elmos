@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Multitenant Task FinOps Orchestrator"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-multitenant-task-finops-orchestrator to execute its scoped workflow with fail-closed evidence."
