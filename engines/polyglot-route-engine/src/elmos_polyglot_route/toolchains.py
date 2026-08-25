@@ -3606,27 +3606,43 @@ def _php() -> ExactToolchain:
 # they are pinned the probe fails closed with EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED
 # rather than accepting whatever `kotlinc` happens to be on PATH.
 _KOTLIN_VERSION_VARIABLE = "ELMOS_KOTLIN_VERSION"
-_EXPECTED_KOTLIN_VERSION = ''
-#: Empty until pinned. `Path('')` is `Path('.')`, which is not a Kotlin install
-#: on any host -- deliberately so, because the placeholder must not accidentally
-#: name something real. Nothing below dereferences it: the not-pinned guard in
-#: `_kotlin` runs before the first filesystem touch.
-_EXPECTED_KOTLIN_ROOT = Path('')
-_EXPECTED_KOTLIN_ANCHOR = Path('')
+_EXPECTED_KOTLIN_VERSION = "kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+
+
+def configured_polyglot_toolchain_root() -> Path:
+    """Return the exact shared route/synthesis toolchain installation root."""
+
+    project = os.environ.get("ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT", "").strip()
+    route = os.environ.get("ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT", "").strip()
+    if project and route and project != route:
+        raise RouteError("EXACT_TOOLCHAIN_ROOT_CONFLICT")
+    candidate = Path(route or project or "~/.local/share/elmos/toolchains").expanduser()
+    normalized = Path(os.path.normpath(str(candidate)))
+    if (
+        not candidate.is_absolute()
+        or candidate != normalized
+        or candidate in {Path("/"), Path.home()}
+    ):
+        raise RouteError(f"EXACT_TOOLCHAIN_ROOT_UNSAFE:{candidate}")
+    return candidate
+
+
+_EXPECTED_KOTLIN_ANCHOR = configured_polyglot_toolchain_root() / "kotlin"
+_EXPECTED_KOTLIN_ROOT = _EXPECTED_KOTLIN_ANCHOR / "2.2.20"
 _EXPECTED_KOTLINC_EXECUTABLE = _EXPECTED_KOTLIN_ROOT / "bin" / "kotlinc"
-_EXPECTED_KOTLINC_EXECUTABLE_SHA256 = ''
-_EXPECTED_KOTLINC_EXECUTABLE_BYTES = 0
+_EXPECTED_KOTLINC_EXECUTABLE_SHA256 = "90750c977cc043dd2b05c69dd4e052c10377554925dd5a155e74ef732be28c7d"
+_EXPECTED_KOTLINC_EXECUTABLE_BYTES = 3120
 _EXPECTED_KOTLIN_COMPILER_JAR = _EXPECTED_KOTLIN_ROOT / "lib" / "kotlin-compiler.jar"
-_EXPECTED_KOTLIN_COMPILER_JAR_SHA256 = ''
-_EXPECTED_KOTLIN_COMPILER_JAR_BYTES = 0
+_EXPECTED_KOTLIN_COMPILER_JAR_SHA256 = "8546feb440ec2d59e00d475936523fcd3f528e21c7e8eb8a95e6de5044a6d496"
+_EXPECTED_KOTLIN_COMPILER_JAR_BYTES = 58338619
 _EXPECTED_KOTLIN_STDLIB_JAR = _EXPECTED_KOTLIN_ROOT / "lib" / "kotlin-stdlib.jar"
-_EXPECTED_KOTLIN_STDLIB_JAR_SHA256 = ''
-_EXPECTED_KOTLIN_STDLIB_JAR_BYTES = 0
-_EXPECTED_KOTLIN_TREE_SHA256 = ''
-_EXPECTED_KOTLIN_TREE_RECORD_COUNT = 0
-_EXPECTED_KOTLIN_TREE_FILE_COUNT = 0
-_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT = 0
-_EXPECTED_KOTLIN_TREE_BYTES = 0
+_EXPECTED_KOTLIN_STDLIB_JAR_SHA256 = "8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7"
+_EXPECTED_KOTLIN_STDLIB_JAR_BYTES = 1761444
+_EXPECTED_KOTLIN_TREE_SHA256 = "0f6e2cea7d2dd94f63e84a3f4be5c8252cb3a53f2abbd19fa4165fc2665082b8"
+_EXPECTED_KOTLIN_TREE_RECORD_COUNT = 123
+_EXPECTED_KOTLIN_TREE_FILE_COUNT = 118
+_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT = 5
+_EXPECTED_KOTLIN_TREE_BYTES = 85861305
 #: Symlinks whose target resolves *inside* the install root, as name -> raw link
 #: text. Part of the tree's identity for the same reason PHP's are: the link is
 #: what the distribution ships, and repointing one is drift.
@@ -3641,7 +3657,7 @@ _EXPECTED_KOTLIN_TREE_SYMLINKS: dict[str, str] = {}
 _EXPECTED_KOTLIN_TREE_UNBOUND_SYMLINKS: dict[str, str] = {}
 #: Contents of `build.txt`: Kotlin's own build identity, and the one field that
 #: separates two distributions reporting the same marketing version.
-_EXPECTED_KOTLIN_BUILD_NUMBER = ''
+_EXPECTED_KOTLIN_BUILD_NUMBER = "2.2.20-release-333"
 #: `bin/kotlin`, the runtime launcher, reported as the toolchain's auxiliary
 #: executable. It gets no digest constant of its own because the pin script
 #: emits none: its bytes are covered by the tree manifest like every other file
@@ -3922,6 +3938,251 @@ def _kotlin() -> ExactToolchain:
     )
 
 
+_EXPECTED_FLUTTER_ROOT = Path("/opt/homebrew/share/flutter")
+_EXPECTED_FLUTTER_EXECUTABLE = _EXPECTED_FLUTTER_ROOT / "bin" / "flutter"
+_EXPECTED_FLUTTER_EXECUTABLE_SHA256 = "7d486c33b30a0cf1ea5146231c68bb8f966cdb4e087c5cd8b37e14513f536e7d"
+_EXPECTED_FLUTTER_EXECUTABLE_BYTES = 2_385
+_EXPECTED_FLUTTER_VERSION_FILE = _EXPECTED_FLUTTER_ROOT / "bin" / "cache" / "flutter.version.json"
+_EXPECTED_FLUTTER_VERSION_FILE_SHA256 = "cd7d9dfc4e3c94acfd5b2c38b7afa6df2cb230843fdae864cec392a3a34d66ca"
+_EXPECTED_FLUTTER_VERSION_FILE_BYTES = 559
+_EXPECTED_FLUTTER_DART = _EXPECTED_FLUTTER_ROOT / "bin" / "cache" / "dart-sdk" / "bin" / "dart"
+_EXPECTED_FLUTTER_DART_SHA256 = "657c6a1779596306b30c59e589762287ad75b5fd8f008c7873864622a8865152"
+_EXPECTED_FLUTTER_DART_BYTES = 3_884_832
+_EXPECTED_FLUTTER_VERSION_FIELDS = (
+    "3.44.1",
+    "924134a44c189315be2148659913dda1671cbe99",
+    "c416acfeb8126e097f758c664aaa3da929e27da0",
+    "3.12.1",
+)
+_EXPECTED_FLUTTER_DART_VERSION = (
+    'Dart SDK version: 3.12.1 (stable) (Tue May 26 01:02:21 2026 -0700) on "macos_arm64"'
+)
+
+# Repository-build closure for the deliberately import-free pure-Dart subset
+# emitted by the Flutter route. The AST frontend has a separate analyzer
+# package closure in dart_analyzer.py. Repository assembly uses only the Dart
+# SDK bundled inside the exact Flutter distribution; it does not invoke the
+# ambient Flutter CLI/cache updater or claim Flutter framework/UI semantics.
+_EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA = "v1"
+_EXPECTED_FLUTTER_DART_SDK_ROOT = _EXPECTED_FLUTTER_ROOT / "bin" / "cache" / "dart-sdk"
+_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256 = (
+    "37a612c64172042f2386954429584d6c75edacff3097443d5b372ac5c9870f0e"
+)
+_EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT = 1124
+_EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT = 1012
+_EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT = 112
+_EXPECTED_FLUTTER_DART_SDK_TREE_BYTES = 607_877_856
+
+
+def _expected_flutter_build_closure() -> dict[str, object]:
+    return {
+        "schema": _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA,
+        "trees": {
+            "dart_sdk": {
+                "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
+                "sha256": _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
+                "record_count": _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
+                "file_count": _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
+                "directory_count": _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
+                "bytes": _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
+            },
+        },
+    }
+
+
+def _flutter_build_closure_sha256() -> str:
+    return hashlib.sha256(
+        json.dumps(
+            _expected_flutter_build_closure(),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+        ).encode("ascii")
+    ).hexdigest()
+
+
+def _flutter_build_tree_identities() -> dict[str, dict[str, object]]:
+    dart_sdk = _qualified_tree_manifest(
+        _EXPECTED_FLUTTER_DART_SDK_ROOT,
+        _EXPECTED_FLUTTER_ROOT,
+        "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_UNSAFE",
+    )
+    _verify_qualified_tree_manifest(
+        dart_sdk,
+        expected_root=_EXPECTED_FLUTTER_DART_SDK_ROOT,
+        expected_sha256=_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
+        expected_record_count=_EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
+        expected_file_count=_EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
+        expected_directory_count=_EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
+        expected_bytes=_EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
+        failure="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
+    )
+    return {"dart_sdk": dart_sdk}
+
+
+def _flutter() -> ExactToolchain:
+    """Bind Flutter to its bundled Dart SDK before the AST frontend executes."""
+
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:flutter:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    paths = (
+        (_EXPECTED_FLUTTER_EXECUTABLE, _EXPECTED_FLUTTER_EXECUTABLE_BYTES, _EXPECTED_FLUTTER_EXECUTABLE_SHA256),
+        (_EXPECTED_FLUTTER_DART, _EXPECTED_FLUTTER_DART_BYTES, _EXPECTED_FLUTTER_DART_SHA256),
+        (
+            _EXPECTED_FLUTTER_VERSION_FILE,
+            _EXPECTED_FLUTTER_VERSION_FILE_BYTES,
+            _EXPECTED_FLUTTER_VERSION_FILE_SHA256,
+        ),
+    )
+
+    def bindings() -> tuple[dict[str, str | int], ...]:
+        observed = tuple(
+            _qualified_file_record(path, _EXPECTED_FLUTTER_ROOT, "EXACT_TOOLCHAIN_FLUTTER_CHANGED")
+            for path, _, _ in paths
+        )
+        if any(
+            record.get("bytes") != expected_bytes or record.get("sha256") != expected_digest
+            for record, (_, expected_bytes, expected_digest) in zip(observed, paths, strict=True)
+        ):
+            raise RouteError("EXACT_TOOLCHAIN_FLUTTER_CHANGED")
+        return observed
+
+    before = bindings()
+    try:
+        version = json.loads(_EXPECTED_FLUTTER_VERSION_FILE.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_VERSION_INVALID") from error
+    fields = (
+        version.get("flutterVersion") if isinstance(version, dict) else None,
+        version.get("frameworkRevision") if isinstance(version, dict) else None,
+        version.get("engineRevision") if isinstance(version, dict) else None,
+        version.get("dartSdkVersion") if isinstance(version, dict) else None,
+    )
+    observed_dart = _output([str(_EXPECTED_FLUTTER_DART), "--version"])
+    after = bindings()
+    if before != after or fields != _EXPECTED_FLUTTER_VERSION_FIELDS or observed_dart != _EXPECTED_FLUTTER_DART_VERSION:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_MISMATCH:flutter:expected=Flutter-3.44.1/Dart-3.12.1:"
+            f"observed={fields[0]}/{fields[3]}"
+        )
+    return ExactToolchain(
+        "flutter",
+        "Flutter 3.44.1 / Dart 3.12.1",
+        str(_EXPECTED_FLUTTER_EXECUTABLE),
+        str(_EXPECTED_FLUTTER_DART),
+        profile=(
+            "platform=Darwin/arm64",
+            f"flutter-root={_EXPECTED_FLUTTER_ROOT}",
+            f"flutter-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[1]}",
+            f"flutter-engine-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[2]}",
+            f"flutter-build-closure-schema={_EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA}",
+            f"flutter-build-closure-sha256={_flutter_build_closure_sha256()}",
+            f"flutter-dart-sdk-tree-sha256={_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256}",
+            "dart-analyzer=10.1.0",
+            "_fe_analyzer_shared=95.0.0",
+            "repository-build=pure-dart-import-free",
+            "flutter-ui-semantics=UNSUPPORTED",
+        ),
+        executable_sha256=_EXPECTED_FLUTTER_EXECUTABLE_SHA256,
+        auxiliary_sha256=_EXPECTED_FLUTTER_DART_SHA256,
+    )
+
+
+def verify_flutter_build_toolchain(toolchain: ExactToolchain) -> dict[str, object]:
+    """Freshly bind the bundled Dart SDK used by repository assembly.
+
+    The base selector stays cheap enough for each AST lift. Repository assembly
+    calls this stronger verifier immediately before and after analyze, compile,
+    and execution. No Flutter CLI/cache updater or external package resolver is
+    part of the bounded import-free build path.
+    """
+
+    if (
+        toolchain.language != "flutter"
+        or toolchain.auxiliary != str(_EXPECTED_FLUTTER_DART)
+        or toolchain.executable != str(_EXPECTED_FLUTTER_EXECUTABLE)
+        or toolchain != exact_toolchain("flutter")
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_IDENTITY_MISMATCH")
+    trees = _flutter_build_tree_identities()
+    if toolchain != exact_toolchain("flutter"):
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_CHANGED_DURING_VERIFICATION")
+    profile_sha256 = hashlib.sha256(
+        json.dumps(
+            list(toolchain.profile),
+            ensure_ascii=True,
+            separators=(",", ":"),
+        ).encode("ascii")
+    ).hexdigest()
+    return {
+        "schema_version": 1,
+        "kind": "elmos.flutter-dart-build-toolchain-receipt",
+        "language": "flutter",
+        "version": toolchain.version,
+        "closure_sha256": _flutter_build_closure_sha256(),
+        "profile_sha256": profile_sha256,
+        "trees": trees,
+    }
+
+
+def flutter_build_command(toolchain: ExactToolchain, *arguments: str) -> list[str]:
+    """Run the exact bundled Dart command for the pure-Dart Flutter subset.
+
+    The caller never invokes ``bin/flutter`` or its mutable universal-cache
+    updater. The complete Dart SDK is bound by
+    ``verify_flutter_build_toolchain`` before and after the build.
+    """
+
+    if (
+        toolchain.language != "flutter"
+        or toolchain.auxiliary != str(_EXPECTED_FLUTTER_DART)
+        or toolchain != exact_toolchain("flutter")
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_IDENTITY_MISMATCH")
+    if not arguments or any(not argument for argument in arguments):
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_ARGUMENTS_INVALID")
+    return [str(_EXPECTED_FLUTTER_DART), *arguments]
+
+
+def _react() -> ExactToolchain:
+    """Bind the React framework identity to Node, TS and package closure."""
+
+    typescript = _typescript()
+    # Lazy import avoids a module-initialization cycle: react_analyzer consumes
+    # ExactToolchain, while this selector reuses its single package-closure
+    # verifier only after toolchains.py has finished importing.
+    from .react_analyzer import react_dependency_receipt
+
+    receipt = react_dependency_receipt()
+    portable = tuple(
+        {key: value for key, value in identity.items() if key != "runtime_entry"}
+        for identity in receipt
+    )
+    digest = hashlib.sha256(
+        json.dumps(portable, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    ).hexdigest()
+    return ExactToolchain(
+        "react",
+        "React 19.2.7 / React DOM 19.2.7 / TypeScript 5.9.2 / Node 26.0.0",
+        typescript.executable,
+        typescript.auxiliary,
+        profile=(
+            *typescript.profile,
+            "react=19.2.7",
+            "react-dom=19.2.7",
+            "@types/react=19.1.10",
+            "@types/react-dom=19.1.7",
+            f"react-dependency-profile-sha256={digest}",
+            "react-ui-semantics=UNSUPPORTED",
+        ),
+        executable_sha256=typescript.executable_sha256,
+        auxiliary_sha256=typescript.auxiliary_sha256,
+    )
+
+
 def exact_toolchain(language: Language) -> ExactToolchain:
     """Resolve one language's pinned toolchain, or fail with a code.
 
@@ -3946,6 +4207,8 @@ def exact_toolchain(language: Language) -> ExactToolchain:
         "swift": _swift,
         "php": _php,
         "kotlin": _kotlin,
+        "react": _react,
+        "flutter": _flutter,
     }
     try:
         selector = selectors[language]

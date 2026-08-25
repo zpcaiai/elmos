@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 11
+name: elmos-markdown-text-log-parser
+title: Markdown、TXT 与日志解析
+objective: 保留 Markdown 语义和纯文本行号，对日志、配置和结构化文本做可逆的类型推断。
+dependencies:
+- elmos-source-anchor-and-provenance
+inputs:
+- Markdown、TXT、LOG 资产、编码提示
+outputs:
+- ParsedDocument、LogEvent、ConfigBlock
+responsibilities:
+- 解析 front matter、标题、表格、链接、任务列表、代码块、Mermaid 和 MDX 边界
+- 识别 UTF-8、UTF-16、GBK 等编码并保留原始字节哈希
+- 识别日志时间戳、级别、堆栈、重复模式和相关 ID
+- 对 JSON、YAML、XML、CSV 式文本做安全结构推断但不执行内容
+deliverables:
+- TextParser/LogParser 适配器
+- line-range 来源锚点与日志事件模型
+- 多编码、超大文件、混合日志和恶意 Markdown 测试
+acceptance:
+- 所有文本块保留行号范围
+- 代码块不会被当作系统命令执行
+- 重复日志可聚合但原始行仍可回查
+- 流式解析受内存上限约束
+data_entities:
+- text_blocks
+- log_events
+- log_patterns
+events:
+- text.parsed
+- log.pattern.detected
+- text.encoding.uncertain
+metrics:
+- line_anchor_coverage
+- encoding_detection_accuracy
+failure_modes:
+- 混合编码
+- 超长行
+- 无时间戳日志
+- 截断文件
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

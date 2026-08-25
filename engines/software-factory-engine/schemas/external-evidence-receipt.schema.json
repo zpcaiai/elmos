@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/software-factory/external-evidence-receipt/1.0",
+  "title": "Untrusted external evidence receipt for local quarantine",
+  "type": "object",
+  "required": [
+    "schema_version", "receipt_id", "evidence_kind", "scope", "target_artifact_digest",
+    "environment_digest", "corpus_digest", "authorization_digest", "replay_digest",
+    "raw_evidence", "author", "executor", "verifier", "execution_state",
+    "signature_state", "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "receipt_id": {"$ref": "#/$defs/token"},
+    "evidence_kind": {"$ref": "#/$defs/token"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "target_artifact_digest": {"$ref": "#/$defs/digest"},
+    "environment_digest": {"$ref": "#/$defs/digest"},
+    "corpus_digest": {"$ref": "#/$defs/digest"},
+    "authorization_digest": {"$ref": "#/$defs/digest"},
+    "replay_digest": {"$ref": "#/$defs/digest"},
+    "raw_evidence": {
+      "type": "object",
+      "required": ["path", "sha256", "size_bytes", "media_type"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]{1,1024}$"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 0, "maximum": 8388608},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 128}
+      },
+      "additionalProperties": false
+    },
+    "author": {"$ref": "#/$defs/role"},
+    "executor": {"$ref": "#/$defs/role"},
+    "verifier": {"$ref": "#/$defs/role"},
+    "execution_state": {"enum": ["PASSED", "FAILED", "UNKNOWN", "INCONCLUSIVE", "NOT_RUN"]},
+    "signature_state": {"const": "UNVERIFIED_CALLER_ASSERTION"},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "role": {
+      "type": "object",
+      "required": ["principal_id", "organization_id"],
+      "properties": {
+        "principal_id": {"$ref": "#/$defs/token"},
+        "organization_id": {"$ref": "#/$defs/token"}
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "tenant_id", "project_id", "campaign_id", "policy_revision", "source_revision"
+      ],
+      "properties": {
+        "tenant_id": {"$ref": "#/$defs/token"},
+        "project_id": {"$ref": "#/$defs/token"},
+        "campaign_id": {"$ref": "#/$defs/token"},
+        "policy_revision": {"$ref": "#/$defs/token"},
+        "source_revision": {"$ref": "#/$defs/token"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

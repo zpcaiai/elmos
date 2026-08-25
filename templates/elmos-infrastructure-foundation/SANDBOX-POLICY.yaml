@@ -1,0 +1,29 @@
+schema_version: "1.0"
+policy_id: private-source-untrusted-build-v1
+tier: S2
+filesystem:
+  root_read_only: true
+  writable_paths: [/workspace, /tmp]
+  host_mounts_allowed: false
+  max_files: 100000
+network:
+  default_deny: true
+  allow: []
+  deny_cloud_metadata: true
+resources:
+  cpu_millis: 4000
+  memory_mb: 8192
+  disk_mb: 20480
+  pids: 512
+  wall_seconds: 3600
+secrets:
+  short_lived: true
+  redact_logs: true
+  scan_outputs: true
+outputs:
+  declared_only: true
+  max_bytes: 1073741824
+audit:
+  record_denials: true
+  record_egress: true
+  record_cleanup: true

@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","scopeId":"orders-integration-wave-1","decision":"BLOCKED","producerStatus":"READY","consumerStatus":"UNKNOWN_CONSUMER","partnerStatus":"READY","workflowStatus":"READY","backlogStatus":"NOT_CLEARED","rollbackFeasible":true,"evidenceRefs":["evidence://cutover/orders"]}

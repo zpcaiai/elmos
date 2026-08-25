@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "corpus_key": "build-cache-tenant-isolation-representative-v1",
+  "classification": "representative-workloads",
+  "execution_status": "NOT_RUN",
+  "workloads": [
+    {
+      "workload_id": "REP-LOCAL-WSGI-SQLITE",
+      "environment": "environment/local-validation-environment.json",
+      "scope": "two-tenant authenticated WSGI/API/CLI plus SQLite metadata and local CAS",
+      "evidence_class": "local-engineering-only"
+    },
+    {
+      "workload_id": "REP-POSTGRES-SERVICE",
+      "environment": "production-equivalent PostgreSQL service",
+      "scope": "concurrent two-tenant metadata operations and migration constraints",
+      "evidence_class": "NOT_RUN"
+    },
+    {
+      "workload_id": "REP-PROVIDER-RUNNER-FLEET",
+      "environment": "authorized provider sandboxes and attested runner fleet",
+      "scope": "provider cache, affinity, environment restore, parity harness, and rollout",
+      "evidence_class": "NOT_RUN"
+    }
+  ],
+  "production_data_used": false
+}

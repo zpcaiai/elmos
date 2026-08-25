@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/account-concurrency-status.schema.json",
+  "title": "Elmos Account Concurrency Status",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "account_id",
+    "active_slots",
+    "maximum_slots",
+    "queued_count",
+    "occupied",
+    "as_of"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "account_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "active_slots": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "maximum_slots": {
+      "const": 3
+    },
+    "queued_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "next_queue_position": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "occupied": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slot_no",
+          "tenant_id",
+          "task_id",
+          "lease_generation",
+          "lease_expires_at"
+        ],
+        "properties": {
+          "slot_no": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "task_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lease_generation": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lease_expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

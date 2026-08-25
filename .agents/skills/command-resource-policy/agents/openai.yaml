@@ -1,0 +1,4 @@
+interface:
+  display_name: "Command Resource Policy"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $command-resource-policy for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

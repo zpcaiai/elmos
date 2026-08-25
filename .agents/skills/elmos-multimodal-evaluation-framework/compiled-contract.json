@@ -1,0 +1,140 @@
+{
+  "acceptance": [
+    {
+      "criterion": "每个核心技能至少有正向、边界、失败和安全用例",
+      "evidence": [],
+      "id": "S24-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "模型或解析器升级必须跑兼容评测",
+      "evidence": [],
+      "id": "S24-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "评测数据不含未经授权生产隐私",
+      "evidence": [],
+      "id": "S24-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "回归超过阈值会阻止发布或要求批准",
+      "evidence": [],
+      "id": "S24-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "每个核心技能至少有正向、边界、失败和安全用例",
+      "模型或解析器升级必须跑兼容评测",
+      "评测数据不含未经授权生产隐私",
+      "回归超过阈值会阻止发布或要求批准"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "eval_datasets",
+      "eval_runs",
+      "eval_scores"
+    ],
+    "deliverables": [
+      "EvalRunner 与数据集清单",
+      "确定性检查和 rubric grader",
+      "CI 报告、基线和回归阈值"
+    ],
+    "dependencies": [],
+    "events": [
+      "eval.completed",
+      "eval.regression.detected"
+    ],
+    "failure_modes": [
+      "评测泄漏",
+      "标签错误",
+      "非确定性波动"
+    ],
+    "inputs": [
+      "测试数据、期望输出、运行配置"
+    ],
+    "metrics": [
+      "benchmark_coverage",
+      "regression_count"
+    ],
+    "name": "elmos-multimodal-evaluation-framework",
+    "objective": "把准确率、流程遵循、安全和效率变成可自动执行的基准，而不是凭主观感觉验收。",
+    "ordinal": 24,
+    "outputs": [
+      "EvalRun、MetricScore、RegressionDecision"
+    ],
+    "responsibilities": [
+      "建立带授权和版本的 gold datasets、fixtures",
+      "定义 OCR CER、ASR WER、布局、表格、图关系、需求和检索指标",
+      "同时评估结果、流程、安全和成本",
+      "支持 provider、model、config A/B 与回归门禁"
+    ],
+    "schema_version": "1.0.0",
+    "title": "多模态评测框架"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-multimodal-evaluation-framework/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-multimodal-evaluation-framework/SKILL.md": {
+        "bytes": 2750,
+        "mode": "0644",
+        "sha256": "886865beebcabbda9d978eaa1bb0ab1f128ca5004b6b38ad7f1d4a9320e23537"
+      },
+      "skills/elmos-multimodal-evaluation-framework/references/contract.yaml": {
+        "bytes": 1451,
+        "mode": "0644",
+        "sha256": "ab935dd117800c15fbc6f930421d10d7a24370b032a6a8a879923f32f7fe24ea"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-multimodal-evaluation-framework/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_multimodal_evaluation_framework",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "evaluation",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "为 OCR、ASR、版面、UI、图表、需求提取、检索和上下文保持建立可重复评测；当需要验证质量、回归或 provider 更换时使用。",
+    "name": "elmos-multimodal-evaluation-framework",
+    "ordinal": 24,
+    "title": "多模态评测框架"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "ab935dd117800c15fbc6f930421d10d7a24370b032a6a8a879923f32f7fe24ea",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "886865beebcabbda9d978eaa1bb0ab1f128ca5004b6b38ad7f1d4a9320e23537"
+  }
+}

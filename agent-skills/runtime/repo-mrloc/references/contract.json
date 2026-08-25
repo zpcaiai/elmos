@@ -1,0 +1,68 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-017",
+  "name": "repo-mrloc",
+  "title": "Migration-Relevant LOC",
+  "description": "区分 Gross、First-party、Production、Test、Config、Generated/Vendor 并计算 MRLOC。",
+  "batch": "13",
+  "batch_slug": "repository-scale-standard",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/repo-mrloc/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "spring-source-profile"
+  ],
+  "outputs": [
+    "repository-profile.json",
+    "loc-by-category.csv",
+    "exclusion-evidence.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "代码/测试/配置/SQL/构建脚本纳入",
+    "vendor/generated/build outputs/docs 排除",
+    "分类置信度与审计",
+    "独立重算"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "generated/vendor/build output 不得进入 MRLOC",
+    "ERSS 边界值测试",
+    "RCS 每一维可追踪事实",
+    "fork/branch 家族重复检测"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: repository-profile.json, loc-by-category.csv, exclusion-evidence.json"
+  ],
+  "stop_conditions": [
+    "大体量目录来源不明且影响 Benchmark",
+    "MRLOC audit_required",
+    "unowned semantic changes 存在"
+  ],
+  "definition_of_done": [
+    "MRLOC 可由独立工具重算并在容许误差内",
+    "ERSS/RCS/Surface 均带版本和证据",
+    "大型案例满足 Strong Large 附加条件"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

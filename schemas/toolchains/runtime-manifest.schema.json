@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "$schema",
     "schema_version",
     "manifest_id",
     "description",
@@ -16,7 +17,7 @@
     "batch_bindings"
   ],
   "properties": {
-    "$schema": {"type": "string"},
+    "$schema": {"const": "../schemas/toolchains/runtime-manifest.schema.json"},
     "schema_version": {"const": "1.0.0"},
     "manifest_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
     "description": {"type": "string", "minLength": 1},
@@ -40,7 +41,17 @@
     "profiles": {
       "type": "object",
       "required": ["core", "synthesis", "routes-macos", "b66-80", "spring-legacy", "frontend-native", "language-packs", "all"],
-      "additionalProperties": {"$ref": "#/$defs/profile"}
+      "additionalProperties": false,
+      "properties": {
+        "core": {"$ref": "#/$defs/profile"},
+        "synthesis": {"$ref": "#/$defs/profile"},
+        "routes-macos": {"$ref": "#/$defs/profile"},
+        "b66-80": {"$ref": "#/$defs/profile"},
+        "spring-legacy": {"$ref": "#/$defs/profile"},
+        "frontend-native": {"$ref": "#/$defs/profile"},
+        "language-packs": {"$ref": "#/$defs/profile"},
+        "all": {"$ref": "#/$defs/profile"}
+      }
     },
     "runtimes": {
       "type": "array",
@@ -52,8 +63,8 @@
       "additionalProperties": false,
       "required": ["b66-80", "b81-95"],
       "properties": {
-        "b66-80": {"$ref": "#/$defs/batchBindings"},
-        "b81-95": {"$ref": "#/$defs/batchBindings"}
+        "b66-80": {"$ref": "#/$defs/batchBindings66To80"},
+        "b81-95": {"$ref": "#/$defs/batchBindings81To95"}
       }
     }
   },
@@ -78,6 +89,12 @@
       "type": "array",
       "uniqueItems": true,
       "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]+$"}
+    },
+    "nonEmptyRuntimeIds": {
+      "allOf": [
+        {"$ref": "#/$defs/runtimeIds"},
+        {"minItems": 1}
+      ]
     },
     "probe": {
       "type": "object",
@@ -130,10 +147,19 @@
         }
       }
     },
-    "batchBindings": {
+    "batchBindings66To80": {
       "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {"$ref": "#/$defs/runtimeIds"}
+      "minProperties": 15,
+      "maxProperties": 15,
+      "propertyNames": {"pattern": "^(6[6-9]|7[0-9]|80)$"},
+      "additionalProperties": {"$ref": "#/$defs/nonEmptyRuntimeIds"}
+    },
+    "batchBindings81To95": {
+      "type": "object",
+      "minProperties": 15,
+      "maxProperties": 15,
+      "propertyNames": {"pattern": "^(8[1-9]|9[0-5])$"},
+      "additionalProperties": {"$ref": "#/$defs/nonEmptyRuntimeIds"}
     }
   }
 }

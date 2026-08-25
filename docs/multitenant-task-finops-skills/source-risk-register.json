@@ -1,0 +1,167 @@
+{
+  "adoption_gate": "BLOCKED",
+  "archive_sha256": "aa08e08a83dbfcef06119a8973b81be1af1bfa9c32cef6c94f0210ef62628d7b",
+  "assessment_scope": "static cross-contract audit of immutable source material",
+  "finding_count": 11,
+  "findings": [
+    {
+      "detail": "Revenue allocation, side-effect receipt, and task-input fields or states do not map one-to-one between the packaged schemas/examples and SQL.",
+      "id": "MTF-SRC-001",
+      "required_resolution": "Freeze one canonical typed contract before any migration adoption.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "schemas/revenue-allocation.schema.json",
+        "schemas/side-effect-receipt.schema.json",
+        "schemas/task-input-manifest.schema.json",
+        "sql/V100__multitenant_task_finops.sql"
+      ],
+      "status": "OPEN",
+      "title": "JSON and SQL domain contracts diverge"
+    },
+    {
+      "detail": "The reference SQL lacks an immutable-write enforcement contract and signature/provenance fields sufficient to support the source claim.",
+      "id": "MTF-SRC-002",
+      "required_resolution": "Add database enforcement, provenance, and correction semantics.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "docs/COST-REVENUE-MODEL.md"
+      ],
+      "status": "OPEN",
+      "title": "Append-only and signed-ledger claims are not enforced"
+    },
+    {
+      "detail": "Projection views do not consistently gate entry status; refund and credit signs, allocation totals, currencies, and nullable uniqueness need exact rules.",
+      "id": "MTF-SRC-003",
+      "required_resolution": "Define and test decimal, currency, status, correction, and allocation invariants.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "sql/V102__views_and_rollups.sql",
+        "schemas/revenue-entry.schema.json",
+        "schemas/revenue-allocation.schema.json"
+      ],
+      "status": "OPEN",
+      "title": "Revenue projections and allocation invariants are ambiguous"
+    },
+    {
+      "detail": "Source schemas permit unsafe negative quantities or non-canonical JSON numbers without precision and scale bounds, and do not require a correction source plus a governed approval relationship.",
+      "id": "MTF-SRC-004",
+      "required_resolution": "Use exact decimal quantities and versioned correction provenance.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "schemas/usage-event.schema.json",
+        "sql/V100__multitenant_task_finops.sql"
+      ],
+      "status": "OPEN",
+      "title": "Usage and correction constraints are incomplete"
+    },
+    {
+      "detail": "Reference functions do not fully bound renewal duration or prove that a claimed task belongs to the account owning the selected global slot.",
+      "id": "MTF-SRC-005",
+      "required_resolution": "Enforce task-account binding, lease bounds, fencing, and race tests in PostgreSQL.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "sql/V101__rls_policies.sql"
+      ],
+      "status": "OPEN",
+      "title": "Slot lease and account binding require stronger enforcement"
+    },
+    {
+      "detail": "The reference event append path does not fully enforce consistent task, run, account, tenant, and idempotency scope relationships.",
+      "id": "MTF-SRC-006",
+      "required_resolution": "Bind event identity to canonical foreign keys and scoped idempotency constraints.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "sql/V101__rls_policies.sql",
+        "schemas/task-event.schema.json"
+      ],
+      "status": "OPEN",
+      "title": "Task event identifiers can be mutually inconsistent"
+    },
+    {
+      "detail": "Reference policies trust transaction-local tenant and account settings without binding them to verified identity, current membership, the addressed resource, or concrete least-privilege application and workflow roles.",
+      "id": "MTF-SRC-007",
+      "required_resolution": "Derive fail-closed database context from authenticated identity and authoritative membership, then prove role grants and cross-tenant negative cases.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V101__rls_policies.sql",
+        "api/openapi.yaml"
+      ],
+      "status": "OPEN",
+      "title": "RLS session context is not bound to authenticated membership"
+    },
+    {
+      "detail": "Task, run, node, attempt, checkpoint, usage, revenue, and account relationships are not all constrained through one canonical tenant/account chain. Several idempotency keys are global or are not bound to a canonical request payload digest.",
+      "id": "MTF-SRC-008",
+      "required_resolution": "Add composite canonical foreign keys and tenant/account/purpose/payload-bound idempotency constraints, then test conflicting replay attempts.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "sql/V101__rls_policies.sql",
+        "events/asyncapi.yaml"
+      ],
+      "status": "OPEN",
+      "title": "Relationship chains and replay keys are systemically under-scoped"
+    },
+    {
+      "detail": "Money and quantity columns do not define a single minor-unit, scale, rounding, FX, and equation policy. Rollups can project FINAL or COMPLETE from partial or unreconciled rows without an independently evidenced close condition.",
+      "id": "MTF-SRC-009",
+      "required_resolution": "Freeze exact-decimal arithmetic and finality rules, preserve unreconciled states, and prove conservation equations with independent bill and settlement evidence.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "sql/V102__views_and_rollups.sql",
+        "config/pricing-policy.example.yaml",
+        "config/revenue-recognition.example.yaml"
+      ],
+      "status": "OPEN",
+      "title": "Exact-decimal and financial finality invariants are incomplete"
+    },
+    {
+      "detail": "Object URIs, hashes, encryption-key references, and manifests are not constrained to an authorized tenant/resource namespace or proven against object-store identity.",
+      "id": "MTF-SRC-010",
+      "required_resolution": "Use opaque tenant-bound object identifiers, authorized lookup, digest verification, and cross-tenant negative tests rather than trusting stored URIs.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "schemas/artifact-manifest.schema.json",
+        "examples/artifact-manifest.json"
+      ],
+      "status": "OPEN",
+      "title": "Object references are not tenant-bound by construction"
+    },
+    {
+      "detail": "Usage, revenue, refund, allocation, and settlement corrections lack a complete acyclic source chain, reason/effective-time rules, actor authority, independent approval, and segregation-of-duties enforcement.",
+      "id": "MTF-SRC-011",
+      "required_resolution": "Implement immutable versioned corrections with exact source links, scoped approval, executor/approver separation, and independently reconciled close evidence.",
+      "severity": "CRITICAL",
+      "source_locations": [
+        "sql/V100__multitenant_task_finops.sql",
+        "schemas/usage-event.schema.json",
+        "schemas/revenue-entry.schema.json",
+        "schemas/revenue-allocation.schema.json"
+      ],
+      "status": "OPEN",
+      "title": "Correction chains lack approval and segregation-of-duties integrity"
+    }
+  ],
+  "kind": "elmos.multitenant-task-finops.source-risk-register",
+  "open_zero_tolerance_findings": 11,
+  "package": {
+    "name": "elmos-multitenant-task-finops-skills",
+    "version": "1.0.0"
+  },
+  "reference_material_application_status": "NOT_APPLIED",
+  "schema_version": "1.0.0",
+  "source_scripts_executed": false,
+  "supply_chain": {
+    "archive_digest_meaning": "BYTE_IDENTITY_ONLY",
+    "license": "ABSENT",
+    "provenance_attestation": "ABSENT",
+    "sbom": "ABSENT",
+    "signature": "ABSENT"
+  }
+}

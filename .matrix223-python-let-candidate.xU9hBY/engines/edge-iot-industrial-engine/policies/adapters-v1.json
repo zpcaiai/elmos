@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "adapters": {
+    "OPCUA": "NOT_CONFIGURED",
+    "MQTT": "NOT_CONFIGURED",
+    "SPARKPLUG": "NOT_CONFIGURED",
+    "MODBUS": "NOT_CONFIGURED",
+    "INDUSTRIAL_PROTOCOLS": "NOT_CONFIGURED",
+    "ECLIPSE_DITTO": "NOT_CONFIGURED",
+    "KUBEEDGE": "NOT_CONFIGURED",
+    "HISTORIAN": "NOT_CONFIGURED",
+    "OTA": "NOT_CONFIGURED",
+    "EDGE_AI": "NOT_CONFIGURED",
+    "VENDOR_PLC": "NOT_CONFIGURED"
+  },
+  "tokenPolicy": "SHORT_LIVED_SCOPED",
+  "discoveryDefault": "READ_ONLY"
+}

@@ -23,7 +23,7 @@
         "certification/local-runtime-test-result.json"
       ],
       "limitations": [
-        "40 focused local tests passed, but the evidence is self-attested and not an independent holdout, representative workload, or certification result."
+        "92 focused local tests passed, but the evidence is self-attested and not an independent holdout, representative workload, or certification result."
       ]
     },
     {
@@ -40,12 +40,57 @@
       ]
     },
     {
+      "key": "archive-script-safe-reimplementation",
+      "status": "experimental",
+      "owner": "elmos-software-factory-engineering",
+      "evidence_refs": [
+        "artifacts/source-archives.json",
+        "certification/local-evidence/archive-contract-inspection.json",
+        "certification/local-runtime-test-result.json"
+      ],
+      "limitations": [
+        "The archive scripts were not imported, compiled, or executed by the repository importer or recorded qualification run; no historical or manual-execution claim is made. Repository-owned code reimplements bounded structural checks only; the source layout remains incompatible with the archive validator's assumed root."
+      ]
+    },
+    {
+      "key": "local-evidence-campaigns-and-replay",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "campaigns/local-holdout-v1.json",
+        "campaigns/provider-contract-simulation-v1.json",
+        "campaigns/production-like-canary-rehearsal-v1.json",
+        "certification/local-evidence/local-holdout-receipt.json",
+        "certification/local-evidence/local-holdout-replay.json",
+        "certification/local-evidence/provider-contract-simulation-receipt.json",
+        "certification/local-evidence/provider-contract-simulation-replay.json",
+        "certification/local-evidence/production-like-rehearsal-receipt.json",
+        "certification/local-evidence/production-like-rehearsal-replay.json"
+      ],
+      "limitations": [
+        "The local holdout is self-attested, provider evidence is fixture-only, and the production-like rehearsal is synthetic with zero side effects. Independent holdout, real provider, and production execution remain NOT_RUN."
+      ]
+    },
+    {
+      "key": "external-evidence-quarantine-and-preflight",
+      "status": "experimental",
+      "owner": "elmos-verification-engineering",
+      "evidence_refs": [
+        "campaigns/local-evidence-intake-policy-v1.json",
+        "certification/local-runtime-test-result.json"
+      ],
+      "limitations": [
+        "No external trust root is configured. Local policy admission cannot establish signature validity, independent verification, execution, approval, or certification."
+      ]
+    },
+    {
       "key": "installed-canonical-and-dual-root-state",
       "status": "experimental",
       "owner": "elmos-software-factory-engineering",
       "evidence_refs": [
         "artifacts/target-artifacts.json",
         "certification/local-installation-validation.json",
+        "certification/raw/target-artifact-verification.txt",
         "certification/raw/install-check.txt",
         "certification/raw/skill-creator-validation.txt"
       ],

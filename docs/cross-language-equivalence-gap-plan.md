@@ -1,5 +1,7 @@
 # ELMOS 跨语言仓库级转换 —— 语义 / 语义块 / 特殊语法 / 行为等价 补齐计划
 
+> **历史基线说明（2026-08-24）：** 本文保留 2026-08-06 的 30/72 路线差距分析作为修复依据，不再描述当前活动矩阵。当前权威面为 13 种活动语言、156 个有向 Route Pack；JavaScript 已退役到只读历史分区，Kotlin/React/Flutter 新增的 66 条路线保持 `research / NOT_RUN / NOT_CERTIFIED`。请以 `routes/inventory.json` 与 `docs/batch29/ROUTE_MATRIX.md` 为准。
+
 > 基线核对日期：2026-08-06
 > 核对对象：`routes/`（30 条有向路线）、`engines/polyglot-route-engine/`、`modules/{uir,semantic,lowering,behavior-equivalence}/`
 > 本文只依据仓库内实际代码与证据文件，不采信 README 的叙述性描述。

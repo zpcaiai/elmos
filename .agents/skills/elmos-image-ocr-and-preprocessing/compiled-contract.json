@@ -1,0 +1,143 @@
+{
+  "acceptance": [
+    {
+      "criterion": "OCR 块可精确回到原图 bounding box",
+      "evidence": [],
+      "id": "S06-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "大图切片后坐标可还原到全图",
+      "evidence": [],
+      "id": "S06-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "低置信度和不可读区域显式呈现",
+      "evidence": [],
+      "id": "S06-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "预处理不会覆盖不可变原始资产",
+      "evidence": [],
+      "id": "S06-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "OCR 块可精确回到原图 bounding box",
+      "大图切片后坐标可还原到全图",
+      "低置信度和不可读区域显式呈现",
+      "预处理不会覆盖不可变原始资产"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "ocr_blocks",
+      "image_preprocess_runs"
+    ],
+    "deliverables": [
+      "ImagePreprocessor/OCRProvider 接口",
+      "OCRDocument 数据模型和纠错 API",
+      "清晰、模糊、旋转、长截图和表格图片评测"
+    ],
+    "dependencies": [
+      "elmos-provider-routing-and-fallback",
+      "elmos-source-anchor-and-provenance"
+    ],
+    "events": [
+      "image.ocr.completed",
+      "image.region.unreadable"
+    ],
+    "failure_modes": [
+      "超大图",
+      "损坏图像",
+      "低分辨率",
+      "OCR provider 故障"
+    ],
+    "inputs": [
+      "图片资产、OCR 语言、预处理策略"
+    ],
+    "metrics": [
+      "ocr_character_accuracy",
+      "layout_order_accuracy"
+    ],
+    "name": "elmos-image-ocr-and-preprocessing",
+    "objective": "从图片中提取带坐标、阅读顺序、置信度和版面信息的文本，同时保留原图证据。",
+    "ordinal": 6,
+    "outputs": [
+      "OCRDocument、VisualRegion、质量报告"
+    ],
+    "responsibilities": [
+      "自动旋转、倾斜/透视校正、降噪、增强和大图切片",
+      "检测文本区域、表格、图注和多栏阅读顺序",
+      "输出字符、词、行、块层级坐标与置信度",
+      "提供区域重识别和用户修正闭环"
+    ],
+    "schema_version": "1.0.0",
+    "title": "图片 OCR 与预处理"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-image-ocr-and-preprocessing/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-image-ocr-and-preprocessing/SKILL.md": {
+        "bytes": 2721,
+        "mode": "0644",
+        "sha256": "c2cb9402bf8edf38deb1792ea86cadfed71291a854a5bce9f7c83882cae38c0c"
+      },
+      "skills/elmos-image-ocr-and-preprocessing/references/contract.yaml": {
+        "bytes": 1530,
+        "mode": "0644",
+        "sha256": "2f963e9dc4170e6e5329de7165a20f2c3422d20232e5bfcd41657e0074d9d05f"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-image-ocr-and-preprocessing/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_image_ocr_and_preprocessing",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "secure-intake",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "实现图片旋转、校正、增强、切片和 OCR；当任务涉及扫描件、截图、照片、手写文字或图像文本提取时使用。",
+    "name": "elmos-image-ocr-and-preprocessing",
+    "ordinal": 6,
+    "title": "图片 OCR 与预处理"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "2f963e9dc4170e6e5329de7165a20f2c3422d20232e5bfcd41657e0074d9d05f",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "c2cb9402bf8edf38deb1792ea86cadfed71291a854a5bce9f7c83882cae38c0c"
+  }
+}

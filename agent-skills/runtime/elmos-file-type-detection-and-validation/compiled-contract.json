@@ -1,0 +1,140 @@
+{
+  "acceptance": [
+    {
+      "criterion": "仅改扩展名无法绕过识别",
+      "evidence": [],
+      "id": "S03-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "未知格式不会被错误交给宽松解析器",
+      "evidence": [],
+      "id": "S03-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "识别结果包含依据、置信度和注册表版本",
+      "evidence": [],
+      "id": "S03-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "检测过程有资源上限且不会执行文件内容",
+      "evidence": [],
+      "id": "S03-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "仅改扩展名无法绕过识别",
+      "未知格式不会被错误交给宽松解析器",
+      "识别结果包含依据、置信度和注册表版本",
+      "检测过程有资源上限且不会执行文件内容"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "file_type_registry",
+      "file_type_detections"
+    ],
+    "deliverables": [
+      "FileTypeDetector 接口与适配器",
+      "格式注册表和决策规则",
+      "伪扩展名、截断文件和 polyglot 文件测试"
+    ],
+    "dependencies": [],
+    "events": [
+      "asset.type.detected",
+      "asset.type.conflict",
+      "asset.type.unknown"
+    ],
+    "failure_modes": [
+      "伪扩展名",
+      "多格式冲突",
+      "文件头损坏"
+    ],
+    "inputs": [
+      "原始字节头、元数据、文件名"
+    ],
+    "metrics": [
+      "type_detection_accuracy",
+      "unknown_rate"
+    ],
+    "name": "elmos-file-type-detection-and-validation",
+    "objective": "在任何解析或解压前可靠识别真实文件类型，并给出可审计的置信度、冲突和处理决策。",
+    "ordinal": 3,
+    "outputs": [
+      "DetectedFileType、风险标签、解析器候选"
+    ],
+    "responsibilities": [
+      "组合扩展名、Content-Type、magic bytes 和内容探测",
+      "对多态格式与容器格式进行二级识别",
+      "维护可版本化的格式注册表与解析器能力表",
+      "将不一致、未知和高风险格式路由到隔离或人工复核"
+    ],
+    "schema_version": "1.0.0",
+    "title": "文件类型识别与验证"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-file-type-detection-and-validation/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-file-type-detection-and-validation/SKILL.md": {
+        "bytes": 2763,
+        "mode": "0644",
+        "sha256": "15f1d936feb655d7705244f198968dc8ff036d9a49e27c69bd0d249ca88afdaa"
+      },
+      "skills/elmos-file-type-detection-and-validation/references/contract.yaml": {
+        "bytes": 1511,
+        "mode": "0644",
+        "sha256": "70c6c2e60e4dec7d6077de2bb62960d9aeb29bdb32151a311aa1dd7d0b6c0a77"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-file-type-detection-and-validation/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_file_type_detection_and_validation",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "secure-intake",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "实现扩展名、MIME、文件魔数和内容特征联合识别；当任务涉及文件格式验证、伪装文件阻止或解析器选择时使用。",
+    "name": "elmos-file-type-detection-and-validation",
+    "ordinal": 3,
+    "title": "文件类型识别与验证"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "70c6c2e60e4dec7d6077de2bb62960d9aeb29bdb32151a311aa1dd7d0b6c0a77",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "15f1d936feb655d7705244f198968dc8ff036d9a49e27c69bd0d249ca88afdaa"
+  }
+}

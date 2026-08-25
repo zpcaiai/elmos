@@ -49,6 +49,10 @@ export type AccountPermission =
   | "translation:execute"
   | "generation:execute"
   | "modernization:execute"
+  | "intake:read"
+  | "intake:write"
+  | "intake:review"
+  | "intake:admin"
   | "repository:read"
   | "repository:write"
   | "repository:commit"
@@ -67,6 +71,10 @@ const knownPermissions = new Set<AccountPermission>([
   "translation:execute",
   "generation:execute",
   "modernization:execute",
+  "intake:read",
+  "intake:write",
+  "intake:review",
+  "intake:admin",
   "repository:read",
   "repository:write",
   "repository:commit",
@@ -81,13 +89,15 @@ const knownPermissions = new Set<AccountPermission>([
 ]);
 
 const rolePermissions: Record<AccountRole, AccountPermission[]> = {
-  VIEWER: ["workspace:view", "repository:read", "usage:read"],
+  VIEWER: ["workspace:view", "intake:read", "repository:read", "usage:read"],
   DEVELOPER: [
     "workspace:view",
     "spring:execute",
     "translation:execute",
     "generation:execute",
     "modernization:execute",
+    "intake:read",
+    "intake:write",
     "repository:read",
     "repository:write",
     "repository:commit",
@@ -99,6 +109,9 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "translation:execute",
     "generation:execute",
     "modernization:execute",
+    "intake:read",
+    "intake:write",
+    "intake:review",
     "repository:read",
     "repository:write",
     "repository:commit",
@@ -113,6 +126,9 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "translation:execute",
     "generation:execute",
     "modernization:execute",
+    "intake:read",
+    "intake:write",
+    "intake:review",
     "repository:read",
     "repository:write",
     "repository:commit",
@@ -129,6 +145,9 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
     "translation:execute",
     "generation:execute",
     "modernization:execute",
+    "intake:read",
+    "intake:write",
+    "intake:review",
     "repository:read",
     "repository:write",
     "repository:commit",

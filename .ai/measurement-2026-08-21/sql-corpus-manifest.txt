@@ -1,0 +1,25 @@
+# External SQL corpus — source URLs and SHA-256 (fetched 2026-08-21)
+
+e3fde5c1a5b51a2a91429a702c9ca6e69ba56e6c7f5e112724d70c3d03db695e  chinook-postgres.sql
+cfe3f89f7b21326c516ba65d253e35e795877e9bb60c388520d915f348403a9a  employees-mysql.sql
+0ee30c01ba282f7194f38bf7f99cd6be0470b7ee5f67d0f7ca41fb058d735e0c  northwind-postgres.sql
+ef59bb380f3c88a1dbc8bc7e38179680056ae26ca711371463796a68c71f5bb6  osticket-mysql.sql
+071ee940a73c8f4fad2997185788065291607e2c55559e3747959e8275391536  pagila-postgres.sql
+f2c41c3bf6d6c239941b4f98fb37afad21f6be12b82bf586202529a793ccc2ee  sakila-mysql.sql
+eaa8cfc2fd358e70617d31ed3638196982944749929f02e90b980457855bfa48  sakila-postgres.sql
+93ee08d4584d15a23b0cc08e903dfed50818f559e4a66642a756cc204fbb8d37  synapse-postgres.sql
+
+Source URLs (raw.githubusercontent.com, unmodified):
+  pagila-postgres.sql   devrimgunduz/pagila@master  pagila-schema.sql
+  sakila-postgres.sql   jOOQ/sakila@main            postgres-sakila-db/postgres-sakila-schema.sql
+  sakila-mysql.sql      jOOQ/sakila@main            mysql-sakila-db/mysql-sakila-schema.sql
+  northwind-postgres.sql pthom/northwind_psql@master northwind.sql
+  chinook-postgres.sql  lerocha/chinook-database@master ChinookDatabase/DataSources/Chinook_PostgreSql.sql
+  synapse-postgres.sql  element-hq/synapse@develop  synapse/storage/schema/main/full_schemas/72/full.sql.postgres
+  osticket-mysql.sql    osTicket/osTicket@develop   setup/inc/streams/core/install-mysql.sql
+  employees-mysql.sql   datacharmer/test_db@master  employees.sql
+
+TPC-H queries: dragansah/tpch-dbgen@master tpch-queries/{1..22}.sql
+  Cleaning applied: comment lines, ':x'/':o' psql directives and backslash
+  directives removed; numbered substitution points ':N' bound to literal 1;
+  Q15's stream-numbered view name 'revenue:s' bound to 'revenue0'.

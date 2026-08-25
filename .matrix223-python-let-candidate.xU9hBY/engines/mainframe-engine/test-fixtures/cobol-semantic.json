@@ -1,0 +1,1 @@
+{"programId":"PAYMENT1","sourceVersion":"git:abc","sections":["MAIN","POST-PAYMENT"],"calls":[{"kind":"DYNAMIC_CALL_VARIABLE","target":"PAYMENT-HANDLER","confidence":0.72}],"copybookRefs":["copybook://PAYREC/v4"],"sourceRefs":["pds://APP.COBOL/PAYMENT1"]}

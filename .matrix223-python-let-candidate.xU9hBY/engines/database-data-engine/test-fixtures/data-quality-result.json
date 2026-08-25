@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-fixture",
+  "ruleId": "orders-total-non-negative",
+  "assetId": "orders",
+  "ruleOwner": "finance-domain",
+  "status": "PASS_WITH_BASELINE_DEFECTS",
+  "evaluatedRows": 100000,
+  "failedRows": 2,
+  "defectClass": "SOURCE_DEFECT_PRESERVED",
+  "evidenceRefs": ["artifact://quality/orders"]
+}

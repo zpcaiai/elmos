@@ -1,0 +1,56 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "major modules and cross-boundary dependencies represented"
+    ],
+    "guardrails": [
+      "Prefer structural summaries over dumping entire files."
+    ],
+    "inputs": [
+      "repo profile",
+      "source tree"
+    ],
+    "outputs": [
+      "component index",
+      "dependency edges",
+      "entry-point map",
+      "data-flow hints"
+    ],
+    "triggers": [
+      "repo intake complete"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-repo-intake"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.semantic-index",
+    "handler": "architecture_indexer",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-architecture-indexer",
+    "ordinal": 3,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/03-architecture-indexer/SKILL.md",
+    "sha256": "sha256:e6643ee25fbc5800d976c6e514cad9d4bd974d518b0e769b8a48b2e07770638d",
+    "version": "1.0.0"
+  }
+}

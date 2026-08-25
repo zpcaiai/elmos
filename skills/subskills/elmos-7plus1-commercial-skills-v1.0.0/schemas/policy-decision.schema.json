@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/policy-decision/1.0",
+  "title": "Policy Decision",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "subject",
+    "action",
+    "resource",
+    "outcome",
+    "policy_revision",
+    "reasons"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "object"
+    },
+    "action": {
+      "type": "string"
+    },
+    "resource": {
+      "type": "object"
+    },
+    "context": {
+      "type": "object"
+    },
+    "outcome": {
+      "enum": [
+        "allow",
+        "ask",
+        "deny"
+      ]
+    },
+    "policy_revision": {
+      "type": "string"
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "hard_deny": {
+      "type": "boolean"
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,34 @@
+name: full-repository-cost-optimized-run
+steps:
+- skill: elmos-model-selection-controller
+- skill: elmos-requirement-normalizer
+- skill: elmos-repo-intake
+- skill: elmos-architecture-indexer
+- skill: elmos-change-impact-analyzer
+- skill: elmos-task-decomposer
+- skill: elmos-atomicity-validator
+- skill: elmos-task-dag-builder
+- foreach_task:
+  - skill: elmos-contract-boundary-generator
+  - skill: elmos-complexity-estimator
+  - skill: elmos-risk-classifier
+  - skill: elmos-context-slicer
+  - skill: elmos-cost-performance-router
+- skill: elmos-budget-planner
+- skill: elmos-eta-estimator
+- waves:
+  - skill: elmos-wave-scheduler
+  - per_task:
+    - skill: elmos-worktree-manager
+    - skill: elmos-worker-prompt-builder
+    - skill: elmos-worker-executor
+    - skill: elmos-deterministic-validator
+    - on_failure:
+      - skill: elmos-failure-classifier
+      - skill: elmos-retry-escalation-controller
+    - when_review_required:
+      - skill: elmos-patch-reviewer
+  - skill: elmos-integration-manager
+  - skill: elmos-incremental-regression-gate
+- skill: elmos-repository-certifier
+- skill: elmos-telemetry-learner

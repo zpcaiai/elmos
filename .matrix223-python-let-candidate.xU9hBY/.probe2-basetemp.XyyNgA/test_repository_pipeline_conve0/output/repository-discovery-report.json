@@ -1,0 +1,311 @@
+{
+  "candidate_obligation_count": 3,
+  "certification_status": "NOT_CERTIFIED",
+  "coverage_blocker_count": 3,
+  "coverage_subject_count": 3,
+  "discovered_count": 3,
+  "discovered_file_count": 3,
+  "execution_status": "NOT_RUN",
+  "external_verification_status": "NOT_RUN",
+  "kind": "elmos.repository-discovery-report",
+  "limitations": [
+    "Discovery classifies eligibility only; no translation is executed.",
+    "A READY verdict still requires an independent behavior-case corpus per unit.",
+    "Every compiler-indexed declaration or module effect requires a READY/PASSED unit or an explicit blocker.",
+    "Repository-wide success cannot be inferred from per-unit eligibility."
+  ],
+  "module_inventories": [
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "EXACT_TOOLCHAIN_MISMATCH:swift:expected=Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)/Target: arm64-apple-macosx26.0/swiftc-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb/swift-driver-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89f"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "add.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "99c2aae6e8134b896f1ad346ace220300c80096dc8598fc1f58c7a577e1b4985",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:8624f9b05978b2526dc7cf79fe3d6467bd4936a92e566cf13ecac33a9b93b04c",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "add.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "add.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    },
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "EXACT_TOOLCHAIN_MISMATCH:swift:expected=Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)/Target: arm64-apple-macosx26.0/swiftc-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb/swift-driver-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89f"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "multiply.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "634f42ecc415a24e5b4c8c1238534af70240d29c6a766acb4f8c380b034d0558",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:aa5a663295d7d30c2465640a581ff703d70408cb492ab1c8d482ff6941e4748a",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "multiply.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "multiply.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    },
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "EXACT_TOOLCHAIN_MISMATCH:swift:expected=Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)/Target: arm64-apple-macosx26.0/swiftc-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb/swift-driver-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89f"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "subtract.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "98357dfe56078cadd0f2a9e9f7f5e81de58a44cd31ff1efb78eafcad1fa1e6f9",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:6c4d2af418dc2a57169e8950b0f384e0530eb8451ac5cc41774a4eb08ef37ac2",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "subtract.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "subtract.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    }
+  ],
+  "module_inventory_count": 3,
+  "module_inventory_status_counts": {
+    "FAILED": 0,
+    "NOT_RUN": 3,
+    "PASSED": 0
+  },
+  "planned_file_count": 3,
+  "profile": "typed-pure-function-v1",
+  "ready_count": 0,
+  "repository_limits": {
+    "maximum_bytes_per_file": 2097152,
+    "maximum_source_bytes": 67108864,
+    "maximum_source_files": 5000
+  },
+  "repository_ref": "local:functional-matrix/swift-to-java",
+  "repository_scale": "small",
+  "results": [
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:8624f9b05978b2526dc7cf79fe3d6467bd4936a92e566cf13ecac33a9b93b04c",
+      "declared_sha256": "99c2aae6e8134b896f1ad346ace220300c80096dc8598fc1f58c7a577e1b4985",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00001-F001",
+      "observed_sha256": "99c2aae6e8134b896f1ad346ace220300c80096dc8598fc1f58c7a577e1b4985",
+      "parent_work_unit_id": "WU-00001",
+      "profile": "typed-pure-function-v1",
+      "reason": "add.swift compiler-backed module enumeration did not run: EXACT_TOOLCHAIN_MISMATCH:swift:expected=Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)/Target: arm64-apple-macosx26.0/swiftc-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb/swift-driver-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89f",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "add.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:8624f9b05978b2526dc7cf79fe3d6467bd4936a92e566cf13ecac33a9b93b04c",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "add.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "add.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    },
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:aa5a663295d7d30c2465640a581ff703d70408cb492ab1c8d482ff6941e4748a",
+      "declared_sha256": "634f42ecc415a24e5b4c8c1238534af70240d29c6a766acb4f8c380b034d0558",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00002-F001",
+      "observed_sha256": "634f42ecc415a24e5b4c8c1238534af70240d29c6a766acb4f8c380b034d0558",
+      "parent_work_unit_id": "WU-00002",
+      "profile": "typed-pure-function-v1",
+      "reason": "multiply.swift compiler-backed module enumeration did not run: EXACT_TOOLCHAIN_MISMATCH:swift:expected=Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)/Target: arm64-apple-macosx26.0/swiftc-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb/swift-driver-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89f",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "multiply.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:aa5a663295d7d30c2465640a581ff703d70408cb492ab1c8d482ff6941e4748a",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "multiply.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "multiply.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    },
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:6c4d2af418dc2a57169e8950b0f384e0530eb8451ac5cc41774a4eb08ef37ac2",
+      "declared_sha256": "98357dfe56078cadd0f2a9e9f7f5e81de58a44cd31ff1efb78eafcad1fa1e6f9",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00003-F001",
+      "observed_sha256": "98357dfe56078cadd0f2a9e9f7f5e81de58a44cd31ff1efb78eafcad1fa1e6f9",
+      "parent_work_unit_id": "WU-00003",
+      "profile": "typed-pure-function-v1",
+      "reason": "subtract.swift compiler-backed module enumeration did not run: EXACT_TOOLCHAIN_MISMATCH:swift:expected=Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)/Target: arm64-apple-macosx26.0/swiftc-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb/swift-driver-sha256=2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89f",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "subtract.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:6c4d2af418dc2a57169e8950b0f384e0530eb8451ac5cc41774a4eb08ef37ac2",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "subtract.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "subtract.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    }
+  ],
+  "route_id": "swift-to-java",
+  "schema_version": "1.0.0",
+  "snapshot_sha256": "d32e03d1a1dae462330944251227bb2631b3d000139832468fc69472e340fa85",
+  "source_language": "swift",
+  "status": "DISCOVERED",
+  "target_language": "java",
+  "verdict_counts": {
+    "NOT_RUN": 3
+  },
+  "work_unit_count": 3
+}

@@ -437,7 +437,7 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
     }
 
 
-def test_fresh_child_selects_all_ten_language_ids_with_a_sanitized_path() -> None:
+def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_path() -> None:
     runtime = _runtime()
 
     assert (
@@ -449,6 +449,7 @@ def main() -> int:
     if sys.argv[1:] != ["--selector-smoke"]:
         raise SystemExit("focused fresh-child fixture received unexpected arguments")
     from elmos_polyglot_route import toolchains
+    from elmos_polyglot_route.models import DEPRECATED_LANGUAGES, ROUTED_LANGUAGES
     from elmos_polyglot_route.toolchains import ExactToolchain
 
     selectors = {
@@ -456,13 +457,19 @@ def main() -> int:
         "python": "_python",
         "csharp": "_csharp",
         "typescript": "_typescript",
-        "javascript": "_javascript",
         "go": "_go",
         "rust": "_rust",
         "cpp": "_cpp",
         "objc": "_objc",
         "swift": "_swift",
+        "php": "_php",
+        "kotlin": "_kotlin",
+        "react": "_react",
+        "flutter": "_flutter",
     }
+    assert tuple(selectors) == tuple(ROUTED_LANGUAGES)
+    assert tuple(DEPRECATED_LANGUAGES) == ("javascript",)
+    assert callable(toolchains._javascript)
     for language, selector in selectors.items():
         setattr(
             toolchains,

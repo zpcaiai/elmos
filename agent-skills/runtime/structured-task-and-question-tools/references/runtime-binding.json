@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "structured-task-and-question-tools",
+  "source_contract_sha256": "sha256:e78115ef1d0823959c9a47af3d85a465846ed7d62e838c57b5b34d27a885f08f",
+  "source_id": "FOUNDATION-08-structured-task-and-question-tools",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

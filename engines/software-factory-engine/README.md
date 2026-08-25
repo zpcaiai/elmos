@@ -29,6 +29,62 @@ any emitted dependency receipt without copying the request into the envelope.
 External evidence remains `NOT_RUN`, certification remains
 `NOT_CERTIFIED`, and no local result is certification.
 
+## Local qualification campaigns
+
+The repository-owned evidence runner now implements three deterministic,
+replayable profiles without accepting commands, plugins, credentials, network
+access, providers, or production writes:
+
+- `local-holdout` runs an immutable local case corpus against exact Skill
+  bindings and rejects overlap with declared development-case digests. It may
+  report `LOCAL_HOLDOUT_EXECUTED_SELF_ATTESTED`; independent holdout remains
+  `NOT_RUN`.
+- `provider-contract-simulation` validates request/response digests, exact
+  adapter fields, provider error mappings, and asserts that the real runtime
+  remains `REQUIRES_ADAPTER`. Real provider execution remains `NOT_RUN`.
+- `production-like-rehearsal` evaluates synthetic Canary outcomes and requires
+  byte-equivalent rollback to the initial state with zero population, zero
+  network/provider calls, and zero production writes. Production execution
+  remains `NOT_RUN`.
+
+Every campaign must provide content references for its target, environment, and
+immutable input corpus under an explicitly approved evidence root. The runner
+opens those files without following the final symlink, checks byte counts and
+SHA-256, verifies every target-manifest file beneath that root, enforces exact
+tenant/project/campaign/policy/source scope, and then issues a receipt binding
+the complete manifest, target artifact, environment, corpus, every case result,
+runtime/registry identities where applicable, and a deterministic replay
+contract. Campaign execution additionally requires the target manifest to bind
+the exact 15 Python modules and three registry resources used by this package.
+It verifies the loaded dispatcher, engine, handler, and registry-loader source
+identities before and after every campaign, and includes that runtime binding in
+the execution digest. Environment and corpus manifests must carry the same
+tenant/project/policy/source scope and conservative local-only state.
+
+The external
+evidence intake path performs bounded no-follow content reads, exact scope and
+digest checks, role separation, revocation, organization policy, and explicit
+receipt allowlisting. Its maximum state is
+`EXTERNAL_RECEIPT_POLICY_ADMITTED`: without an external signature trust root it
+is still unverified and cannot change any external evidence state.
+
+The `external-preflight` path validates production-shaped adapter, holdout,
+representative-workload, HSM reference, Canary, rollback, and authorization
+bindings. It never executes them and can reach only
+`STRUCTURALLY_READY_FOR_EXTERNAL_TRUST_VERIFICATION` locally.
+
+## Archive-script safety
+
+The two supplied Python scripts remain untrusted source material. The importer
+materializes them as `_neutralized-executable-data/**/*.source-data` with mode
+`0644`, while preserving their original `0755` mode and SHA-256 in the logical
+source mapping. `archive-inspect` is a repository-owned bounded reimplementation
+of their useful readiness, Schema/config/example, frontmatter, Markdown-fence,
+and manifest-count checks. It never imports, compiles, or executes either source
+script. The supplied logical union lacks the root files required by the original
+validator, so that incompatibility remains explicit rather than being patched
+over or reported as a source pass.
+
 Requests use this shape:
 
 ```json
@@ -58,10 +114,20 @@ python -m elmos_software_factory execute \
 python -m elmos_software_factory registry
 python -m elmos_software_factory methods
 python -m elmos_software_factory digest --request request.json
+python -m elmos_software_factory archive-inspect --source-root canonical-source
+python -m elmos_software_factory campaign-run \
+  --manifest campaign.json --evidence-root .
+python -m elmos_software_factory campaign-replay \
+  --manifest campaign.json --receipt receipt.json --evidence-root .
+python -m elmos_software_factory evidence-ingest \
+  --receipt receipt.json --policy policy.json --evidence-root evidence
+python -m elmos_software_factory external-preflight --config preflight.json
 ```
 
-Request paths are stat-checked as regular files and size-checked before a
-bounded read. Standard input is also bounded to the canonical JSON limit.
+Request paths are opened once with `O_NOFOLLOW` and `O_NONBLOCK`, checked from
+the open descriptor as regular files, and size-checked before a bounded read.
+Platforms missing either safety flag fail closed. Standard input is also
+bounded to the canonical JSON limit.
 
 Dependency receipts emitted by successful local results are content-integrity
 records, not signatures or external attestations. An external observation must
@@ -70,10 +136,16 @@ addressed. Its authorization and verification booleans remain caller assertions;
 even a structurally valid observation cannot turn an unresolved external action
 into local success.
 
-The four JSON Schemas under `schemas/` cover requests, results, dependency
-receipts, and external observations. Run the dependency-free test suite with:
+The JSON Schemas under `schemas/` cover requests/results, dependency and caller
+observations, campaign manifests/receipts, safe archive inspection, external
+receipt quarantine, intake policy/decision, and structural preflight. Run the
+dependency-free test suite with:
 
 ```bash
 PYTHONPATH=engines/software-factory-engine/src \
   python3 -m unittest discover -s engines/software-factory-engine/tests -v
+
+/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 \
+  env PYTHONPATH=engines/software-factory-engine/src \
+  python -m unittest discover -s engines/software-factory-engine/tests -v
 ```

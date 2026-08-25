@@ -1,0 +1,64 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "patch exists or failure classified",
+      "execution record complete"
+    ],
+    "guardrails": [
+      "No direct integration-branch write.",
+      "No model outside allowlist.",
+      "No primary-model substitution in manual strict mode."
+    ],
+    "inputs": [
+      "worker prompt",
+      "worktree",
+      "model alias",
+      "model_selection"
+    ],
+    "outputs": [
+      "patch",
+      "execution record",
+      "worker evidence"
+    ],
+    "triggers": [
+      "task dispatched"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-model-registry-guard",
+      "elmos-cost-performance-router",
+      "elmos-worktree-manager",
+      "elmos-worker-prompt-builder",
+      "elmos-model-selection-controller"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "provider",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.model-gateway",
+    "handler": "worker_executor",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-worker-executor",
+    "ordinal": 20,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/20-worker-executor/SKILL.md",
+    "sha256": "sha256:5f40feba6802620b1466f02bf08ec6aeb5709dcb8bb02330210559d3945708a0",
+    "version": "1.1.0"
+  }
+}

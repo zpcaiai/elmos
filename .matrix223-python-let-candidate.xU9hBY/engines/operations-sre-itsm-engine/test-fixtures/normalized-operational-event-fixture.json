@@ -1,0 +1,9 @@
+{
+  "eventId": "eventId-fixture",
+  "eventType": "eventType-fixture",
+  "timestamp": "timestamp-fixture",
+  "source": "source-fixture",
+  "serviceRef": "serviceRef-fixture",
+  "severity": "severity-fixture",
+  "state": "state-fixture"
+}

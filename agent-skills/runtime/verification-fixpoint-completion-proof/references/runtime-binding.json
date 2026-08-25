@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "verification-fixpoint-completion-proof",
+  "source_contract_sha256": "sha256:44e7802d092f1567cd88d5a630bd2c6673ba1c937e5b7490882ece4c6fcebc60",
+  "source_id": "FOUNDATION-10-verification-fixpoint-completion-proof",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

@@ -1,0 +1,5065 @@
+{
+  "$id": "https://elmos.local/schemas/multimodal-operation-input-contracts-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "inspect"
+          },
+          "skill": {
+            "const": "elmos-archive-bomb-and-path-traversal-defense"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "entries": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-audio-asr-and-diarization"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-audio-asr-and-diarization"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "check"
+          },
+          "skill": {
+            "const": "elmos-codex-context-capacity-parity"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "capability_snapshot": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "calculate"
+          },
+          "skill": {
+            "const": "elmos-context-budget-manager"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "capability_snapshot": {},
+              "reserved_output_tokens": {},
+              "safety_headroom_tokens": {},
+              "task_id": {},
+              "usage": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "create"
+          },
+          "skill": {
+            "const": "elmos-context-checkpoint-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "cost_cursor": {},
+              "input_tokens": {},
+              "model_snapshot_id": {},
+              "output_tokens": {},
+              "package_version": {},
+              "payload": {},
+              "raw_history": {},
+              "rollback_checkpoint_id": {},
+              "side_effect_cursor": {},
+              "state": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "diff"
+          },
+          "skill": {
+            "const": "elmos-context-checkpoint-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "left_checkpoint_id": {},
+              "right_checkpoint_id": {},
+              "task_id": {}
+            },
+            "required": [
+              "left_checkpoint_id",
+              "right_checkpoint_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "list"
+          },
+          "skill": {
+            "const": "elmos-context-checkpoint-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "restore"
+          },
+          "skill": {
+            "const": "elmos-context-checkpoint-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "checkpoint_id": {},
+              "task_id": {}
+            },
+            "required": [
+              "checkpoint_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rollback"
+          },
+          "skill": {
+            "const": "elmos-context-checkpoint-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "checkpoint_id": {},
+              "task_id": {}
+            },
+            "required": [
+              "checkpoint_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "verify"
+          },
+          "skill": {
+            "const": "elmos-context-integrity-and-loss-detection"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "after": {},
+              "before": {},
+              "checkpoint_id": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "monitor"
+          },
+          "skill": {
+            "const": "elmos-context-pressure-monitor"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "effective_input_budget": {},
+              "forecast_horizon": {},
+              "next_turn_tokens": {},
+              "pending_test_log_tokens": {},
+              "pending_tool_tokens": {},
+              "previous_state": {},
+              "task_id": {},
+              "used_tokens": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rehydrate"
+          },
+          "skill": {
+            "const": "elmos-context-rehydration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "remaining_budget_tokens": {},
+              "source_ids": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "delete"
+          },
+          "skill": {
+            "const": "elmos-data-retention-and-governance"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "delete_status"
+          },
+          "skill": {
+            "const": "elmos-data-retention-and-governance"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "job_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "evaluate"
+          },
+          "skill": {
+            "const": "elmos-data-retention-and-governance"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "export"
+          },
+          "skill": {
+            "const": "elmos-data-retention-and-governance"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "provider_access"
+          },
+          "skill": {
+            "const": "elmos-data-retention-and-governance"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-diagram-and-architecture-understanding"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-diagram-and-architecture-understanding"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "understand"
+          },
+          "skill": {
+            "const": "elmos-diagram-and-architecture-understanding"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "detect_conflicts"
+          },
+          "skill": {
+            "const": "elmos-document-version-and-conflict-detection"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claims": {},
+              "package_version": {},
+              "projection_key": {},
+              "task_id": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "build_context"
+          },
+          "skill": {
+            "const": "elmos-downstream-agent-integration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "source_receipt_ids": {},
+              "subject_id": {},
+              "task_id": {},
+              "tool_receipt_ids": {}
+            },
+            "required": [
+              "package_version",
+              "source_receipt_ids",
+              "subject_id",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "get_context"
+          },
+          "skill": {
+            "const": "elmos-downstream-agent-integration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "context_id": {}
+            },
+            "required": [
+              "context_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "get_grant"
+          },
+          "skill": {
+            "const": "elmos-downstream-agent-integration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "context_id": {},
+              "grant_id": {}
+            },
+            "required": [
+              "context_id",
+              "grant_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "link_result"
+          },
+          "skill": {
+            "const": "elmos-downstream-agent-integration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "context_id": {},
+              "grant_id": {},
+              "result_receipt_id": {}
+            },
+            "required": [
+              "context_id",
+              "grant_id",
+              "result_receipt_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "list_result_links"
+          },
+          "skill": {
+            "const": "elmos-downstream-agent-integration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "context_id": {}
+            },
+            "required": [
+              "context_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "revoke_grant"
+          },
+          "skill": {
+            "const": "elmos-downstream-agent-integration"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "context_id": {},
+              "grant_id": {},
+              "reason": {}
+            },
+            "required": [
+              "context_id",
+              "grant_id",
+              "reason"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "get_task_state"
+          },
+          "skill": {
+            "const": "elmos-durable-processing-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "list_outbox"
+          },
+          "skill": {
+            "const": "elmos-durable-processing-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "aggregate_id": {},
+              "aggregate_type": {},
+              "limit": {},
+              "published": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "mark_outbox_published"
+          },
+          "skill": {
+            "const": "elmos-durable-processing-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {},
+              "publisher_capability": {},
+              "transport_receipt": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_durable_transition"
+          },
+          "skill": {
+            "const": "elmos-durable-processing-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "attempted_effect_receipts": {},
+              "checkpoint_digest": {},
+              "current_state": {},
+              "payload": {},
+              "recorded_effect_receipts": {},
+              "target_state": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "transition"
+          },
+          "skill": {
+            "const": "elmos-durable-processing-and-recovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "attempted_effect_receipts": {},
+              "checkpoint_digest": {},
+              "current_state": {},
+              "payload": {},
+              "recorded_effect_receipts": {},
+              "target_state": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "inspect"
+          },
+          "skill": {
+            "const": "elmos-file-type-detection-and-validation"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-file-type-detection-and-validation"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "append"
+          },
+          "skill": {
+            "const": "elmos-folder-tree-input"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "chunk_index": {},
+              "entries": {},
+              "session_id": {}
+            },
+            "required": [
+              "chunk_index",
+              "entries",
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "begin"
+          },
+          "skill": {
+            "const": "elmos-folder-tree-input"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_entry_count": {},
+              "session_id": {}
+            },
+            "required": [
+              "expected_entry_count"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "finalize"
+          },
+          "skill": {
+            "const": "elmos-folder-tree-input"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "session_id": {}
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "page"
+          },
+          "skill": {
+            "const": "elmos-folder-tree-input"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {},
+              "limit": {},
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-folder-tree-input"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "session_id": {}
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "approve"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claim_fence": {},
+              "claim_token": {},
+              "expected_version": {},
+              "reason": {},
+              "task_id": {}
+            },
+            "required": [
+              "claim_fence",
+              "claim_token",
+              "expected_version",
+              "reason",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "claim"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claim_token": {},
+              "expected_version": {},
+              "lease_seconds": {},
+              "task_id": {}
+            },
+            "required": [
+              "claim_token",
+              "expected_version",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "correct"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "content_id": {},
+              "expected_digest": {},
+              "expected_version": {},
+              "reason": {},
+              "value": {}
+            },
+            "required": [
+              "content_id",
+              "expected_version",
+              "reason",
+              "value"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "current_correction"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "task_id": {}
+            },
+            "required": [
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "edit"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claim_fence": {},
+              "claim_token": {},
+              "correction": {},
+              "expected_correction_version": {},
+              "expected_version": {},
+              "task_id": {}
+            },
+            "required": [
+              "claim_fence",
+              "claim_token",
+              "correction",
+              "expected_correction_version",
+              "expected_version",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "enqueue"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "content_id": {},
+              "expected_asset_version": {},
+              "expected_head_value_digest": {},
+              "expected_head_version": {},
+              "expected_snapshot_digest": {},
+              "expected_snapshot_id": {},
+              "original_value_digest": {},
+              "reason": {},
+              "target_digest": {},
+              "target_kind": {}
+            },
+            "required": [
+              "content_id",
+              "expected_asset_version",
+              "expected_head_value_digest",
+              "expected_head_version",
+              "expected_snapshot_digest",
+              "expected_snapshot_id",
+              "original_value_digest",
+              "reason",
+              "target_digest",
+              "target_kind"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "enqueue_execute"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "recovery_handle": {}
+            },
+            "required": [
+              "recovery_handle"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "enqueue_prepare"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "content_id": {},
+              "execute_idempotency_key": {},
+              "expected_asset_version": {},
+              "expected_head_value_digest": {},
+              "expected_head_version": {},
+              "expected_snapshot_digest": {},
+              "expected_snapshot_id": {},
+              "original_value_digest": {},
+              "reason": {},
+              "recovery_handle": {},
+              "target_digest": {},
+              "target_kind": {}
+            },
+            "required": [
+              "content_id",
+              "execute_idempotency_key",
+              "expected_asset_version",
+              "expected_head_value_digest",
+              "expected_head_version",
+              "expected_snapshot_digest",
+              "expected_snapshot_id",
+              "original_value_digest",
+              "reason",
+              "recovery_handle",
+              "target_digest",
+              "target_kind"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "get"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "task_id": {}
+            },
+            "required": [
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "list"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "confidence_lte": {},
+              "cursor": {},
+              "kinds": {},
+              "limit": {},
+              "states": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "propagation_claim"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "lease_seconds": {},
+              "owner_token": {},
+              "propagation_id": {}
+            },
+            "required": [
+              "owner_token",
+              "propagation_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "propagation_complete"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claim_fence": {},
+              "failure_code": {},
+              "outcome": {},
+              "owner_token": {},
+              "propagation_id": {},
+              "result": {}
+            },
+            "required": [
+              "claim_fence",
+              "outcome",
+              "owner_token",
+              "propagation_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "propagation_dispatch"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claim_fence": {},
+              "owner_token": {},
+              "propagation_id": {}
+            },
+            "required": [
+              "claim_fence",
+              "owner_token",
+              "propagation_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "propagation_reconcile"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "failure_code": {},
+              "outcome": {},
+              "propagation_id": {},
+              "result": {}
+            },
+            "required": [
+              "outcome",
+              "propagation_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "propagation_status"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "task_id": {}
+            },
+            "required": [
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "reject"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "claim_fence": {},
+              "claim_token": {},
+              "expected_version": {},
+              "reason": {},
+              "task_id": {}
+            },
+            "required": [
+              "claim_fence",
+              "claim_token",
+              "expected_version",
+              "reason",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "reopen"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_version": {},
+              "reason": {},
+              "task_id": {}
+            },
+            "required": [
+              "expected_version",
+              "reason",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "reservation_status"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "task_id": {}
+            },
+            "required": [
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "revert"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_version": {},
+              "reason": {},
+              "task_id": {}
+            },
+            "required": [
+              "expected_version",
+              "reason",
+              "task_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "source_get"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "content_id": {},
+              "expected_asset_version": {},
+              "expected_head_version": {},
+              "target_digest": {},
+              "target_kind": {}
+            },
+            "required": [
+              "content_id",
+              "expected_asset_version",
+              "expected_head_version",
+              "target_digest",
+              "target_kind"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "source_list"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "content_id": {},
+              "cursor": {},
+              "expected_asset_version": {},
+              "kinds": {},
+              "limit": {}
+            },
+            "required": [
+              "content_id",
+              "expected_asset_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "source_register"
+          },
+          "skill": {
+            "const": "elmos-human-review-and-correction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "confidence": {},
+              "content_id": {},
+              "expected_asset_version": {},
+              "original_value": {},
+              "provenance": {},
+              "target": {},
+              "target_kind": {}
+            },
+            "required": [
+              "confidence",
+              "content_id",
+              "expected_asset_version",
+              "original_value",
+              "provenance",
+              "target",
+              "target_kind"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rebuild"
+          },
+          "skill": {
+            "const": "elmos-ignore-generated-vendored-file-classification"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "source_input": {}
+            },
+            "required": [
+              "package_version",
+              "source_input"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rollback"
+          },
+          "skill": {
+            "const": "elmos-ignore-generated-vendored-file-classification"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_version": {},
+              "package_version": {}
+            },
+            "required": [
+              "artifact_version",
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-ignore-generated-vendored-file-classification"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-image-ocr-and-preprocessing"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-image-ocr-and-preprocessing"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "build_contract"
+          },
+          "skill": {
+            "const": "elmos-ingestion-api-and-sdk"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "capabilities"
+          },
+          "skill": {
+            "const": "elmos-ingestion-api-and-sdk"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "describe"
+          },
+          "skill": {
+            "const": "elmos-ingestion-api-and-sdk"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "health"
+          },
+          "skill": {
+            "const": "elmos-ingestion-api-and-sdk"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "pack"
+          },
+          "skill": {
+            "const": "elmos-long-context-packing-and-ranking"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "candidates": {},
+              "effective_input_budget": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "inspect"
+          },
+          "skill": {
+            "const": "elmos-malware-quarantine-and-sandbox"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-malware-quarantine-and-sandbox"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-markdown-text-log-parser"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-markdown-text-log-parser"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "discover"
+          },
+          "skill": {
+            "const": "elmos-model-capability-discovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "observation": {},
+              "previous_snapshot": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "history"
+          },
+          "skill": {
+            "const": "elmos-model-capability-discovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "model_id": {},
+              "provider": {}
+            },
+            "required": [
+              "model_id",
+              "provider"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rollback"
+          },
+          "skill": {
+            "const": "elmos-model-capability-discovery"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "snapshot_id": {}
+            },
+            "required": [
+              "snapshot_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "fuse"
+          },
+          "skill": {
+            "const": "elmos-multi-asset-content-fusion"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "assets": {},
+              "package_version": {},
+              "projection_key": {},
+              "task_id": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "catalog"
+          },
+          "skill": {
+            "const": "elmos-multimodal-evaluation-framework"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "evaluate"
+          },
+          "skill": {
+            "const": "elmos-multimodal-evaluation-framework"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "evidence": {},
+              "subject": {}
+            },
+            "required": [
+              "evidence",
+              "subject"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "get_run"
+          },
+          "skill": {
+            "const": "elmos-multimodal-evaluation-framework"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {}
+            },
+            "required": [
+              "run_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "verify"
+          },
+          "skill": {
+            "const": "elmos-multimodal-evaluation-framework"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {}
+            },
+            "required": [
+              "run_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "bootstrap_project"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-orchestrator"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "cancel_job"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-orchestrator"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "job_id": {}
+            },
+            "required": [
+              "job_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "create_session"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-orchestrator"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "requested_role": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "get_session"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-orchestrator"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "session_id": {}
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_session"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-orchestrator"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_asset_generation_digest": {},
+              "max_attempts": {},
+              "session_id": {}
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "resume_job"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-orchestrator"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "job_id": {}
+            },
+            "required": [
+              "job_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "build_preview"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-workbench-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "entries": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "capabilities"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-workbench-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "describe"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-workbench-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "health"
+          },
+          "skill": {
+            "const": "elmos-multimodal-input-workbench-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "observe"
+          },
+          "skill": {
+            "const": "elmos-multimodal-observability"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "events": {},
+              "trace_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "extract"
+          },
+          "skill": {
+            "const": "elmos-multimodal-requirement-extraction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "projection_key": {},
+              "sources": {},
+              "task_id": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "account"
+          },
+          "skill": {
+            "const": "elmos-multimodal-token-accounting"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "current_window_output_reserved_tokens": {},
+              "estimator_version": {},
+              "items": {},
+              "model_id": {},
+              "model_snapshot_id": {},
+              "model_version": {},
+              "task_id": {},
+              "tokenizer_id": {},
+              "tokenizer_version": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-pdf-layout-table-parser"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-pdf-layout-table-parser"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "estimate"
+          },
+          "skill": {
+            "const": "elmos-processing-cost-and-eta-estimation"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "currency": {},
+              "history": {},
+              "prices": {},
+              "stages": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "delete"
+          },
+          "skill": {
+            "const": "elmos-project-memory-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "package_version": {},
+              "source_digest": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "query"
+          },
+          "skill": {
+            "const": "elmos-project-memory-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "limit": {},
+              "package_version": {},
+              "query": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rebuild_status"
+          },
+          "skill": {
+            "const": "elmos-project-memory-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "limit": {},
+              "package_version": {},
+              "status": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "repair"
+          },
+          "skill": {
+            "const": "elmos-project-memory-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "package_version": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "write"
+          },
+          "skill": {
+            "const": "elmos-project-memory-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "confidence": {},
+              "expected_version": {},
+              "memory_key": {},
+              "memory_kind": {},
+              "package_version": {},
+              "required_permissions": {},
+              "semantic_state": {},
+              "source_anchor": {},
+              "source_digest": {},
+              "value": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "diff"
+          },
+          "skill": {
+            "const": "elmos-project-package-manifest"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "new_version": {},
+              "old_version": {}
+            },
+            "required": [
+              "new_version",
+              "old_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "finalize"
+          },
+          "skill": {
+            "const": "elmos-project-package-manifest"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "session_id": {}
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "page"
+          },
+          "skill": {
+            "const": "elmos-project-package-manifest"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {},
+              "limit": {},
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "override"
+          },
+          "skill": {
+            "const": "elmos-project-package-preview-and-review-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "expected_override_version": {},
+              "model_read_allowed": {},
+              "package_version": {},
+              "path": {},
+              "reason": {},
+              "role": {}
+            },
+            "required": [
+              "expected_override_version",
+              "package_version",
+              "path",
+              "reason"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "page"
+          },
+          "skill": {
+            "const": "elmos-project-package-preview-and-review-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {},
+              "limit": {},
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "undo"
+          },
+          "skill": {
+            "const": "elmos-project-package-preview-and-review-ui"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "audit_id": {},
+              "expected_override_version": {},
+              "package_version": {},
+              "path": {},
+              "reason": {}
+            },
+            "required": [
+              "audit_id",
+              "expected_override_version",
+              "package_version",
+              "path",
+              "reason"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "diff"
+          },
+          "skill": {
+            "const": "elmos-project-package-version-and-incremental-update"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "new_version": {},
+              "old_version": {}
+            },
+            "required": [
+              "new_version",
+              "old_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rebuild"
+          },
+          "skill": {
+            "const": "elmos-project-root-language-framework-detection"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "source_input": {}
+            },
+            "required": [
+              "package_version",
+              "source_input"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rollback"
+          },
+          "skill": {
+            "const": "elmos-project-root-language-framework-detection"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_version": {},
+              "package_version": {}
+            },
+            "required": [
+              "artifact_version",
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-project-root-language-framework-detection"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "evaluate"
+          },
+          "skill": {
+            "const": "elmos-prompt-injection-defense"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "requested_tools": {},
+              "text": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "route"
+          },
+          "skill": {
+            "const": "elmos-provider-routing-and-fallback"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "data_classification": {},
+              "modality": {},
+              "parameters": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rebuild"
+          },
+          "skill": {
+            "const": "elmos-repository-context-map"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "source_input": {}
+            },
+            "required": [
+              "package_version",
+              "source_input"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rollback"
+          },
+          "skill": {
+            "const": "elmos-repository-context-map"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_version": {},
+              "package_version": {}
+            },
+            "required": [
+              "artifact_version",
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-repository-context-map"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rebuild"
+          },
+          "skill": {
+            "const": "elmos-repository-map-and-symbol-indexing"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {},
+              "source_input": {}
+            },
+            "required": [
+              "package_version",
+              "source_input"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rollback"
+          },
+          "skill": {
+            "const": "elmos-repository-map-and-symbol-indexing"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_version": {},
+              "package_version": {}
+            },
+            "required": [
+              "artifact_version",
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-repository-map-and-symbol-indexing"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "package_version": {}
+            },
+            "required": [
+              "package_version"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "confirm_part"
+          },
+          "skill": {
+            "const": "elmos-resumable-multi-file-folder-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "byte_count": {},
+              "data_base64": {},
+              "part_digest": {},
+              "part_number": {},
+              "path": {},
+              "session_id": {}
+            },
+            "required": [
+              "byte_count",
+              "data_base64",
+              "part_digest",
+              "part_number",
+              "path",
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "negotiate"
+          },
+          "skill": {
+            "const": "elmos-resumable-multi-file-folder-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "byte_count": {},
+              "content_digest": {},
+              "part_size": {},
+              "path": {},
+              "session_id": {}
+            },
+            "required": [
+              "byte_count",
+              "content_digest",
+              "path",
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-resumable-multi-file-folder-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "path": {},
+              "session_id": {}
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "abort"
+          },
+          "skill": {
+            "const": "elmos-secure-resumable-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "upload_id": {},
+              "upload_session_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "commit"
+          },
+          "skill": {
+            "const": "elmos-secure-resumable-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "upload_id": {},
+              "upload_session_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "start"
+          },
+          "skill": {
+            "const": "elmos-secure-resumable-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "declared_media_type": {},
+              "display_name": {},
+              "expected_sha256": {},
+              "expected_size": {},
+              "part_size": {},
+              "session_id": {},
+              "ttl_seconds": {}
+            },
+            "required": [
+              "declared_media_type",
+              "display_name",
+              "expected_sha256",
+              "expected_size",
+              "session_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "status"
+          },
+          "skill": {
+            "const": "elmos-secure-resumable-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "upload_id": {},
+              "upload_session_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "upload_part"
+          },
+          "skill": {
+            "const": "elmos-secure-resumable-upload"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "byte_offset": {},
+              "bytes_b64": {},
+              "data_b64": {},
+              "part_number": {},
+              "part_sha256": {},
+              "sha256": {},
+              "upload_id": {},
+              "upload_session_id": {}
+            },
+            "required": [
+              "byte_offset",
+              "part_number"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "expand_nested"
+          },
+          "skill": {
+            "const": "elmos-secure-zip-tar-extraction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "archive_bytes_b64": {},
+              "archive_parent": {},
+              "format": {},
+              "output_name": {},
+              "password_handle": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "extract"
+          },
+          "skill": {
+            "const": "elmos-secure-zip-tar-extraction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "archive_bytes_b64": {},
+              "archive_parent": {},
+              "format": {},
+              "output_name": {},
+              "password_handle": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "publish"
+          },
+          "skill": {
+            "const": "elmos-secure-zip-tar-extraction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "archive_bytes_b64": {},
+              "archive_parent": {},
+              "format": {},
+              "output_name": {},
+              "password_handle": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "anchor"
+          },
+          "skill": {
+            "const": "elmos-source-anchor-and-provenance"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "anchors": {},
+              "critical_item_ids": {},
+              "derivations": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "delete"
+          },
+          "skill": {
+            "const": "elmos-storage-index-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "package_version": {},
+              "source_digest": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "query"
+          },
+          "skill": {
+            "const": "elmos-storage-index-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "limit": {},
+              "package_version": {},
+              "query": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rebuild_status"
+          },
+          "skill": {
+            "const": "elmos-storage-index-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "limit": {},
+              "package_version": {},
+              "status": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "repair"
+          },
+          "skill": {
+            "const": "elmos-storage-index-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "package_version": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "upsert"
+          },
+          "skill": {
+            "const": "elmos-storage-index-and-retrieval"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {},
+              "confidence": {},
+              "content_digest": {},
+              "document_id": {},
+              "expected_version": {},
+              "package_version": {},
+              "required_permissions": {},
+              "source_anchor": {},
+              "source_digest": {},
+              "text": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "compact"
+          },
+          "skill": {
+            "const": "elmos-structured-context-compaction"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "cost_cursor": {},
+              "input_tokens": {},
+              "model_snapshot_id": {},
+              "output_tokens": {},
+              "package_version": {},
+              "raw_history": {},
+              "rollback_checkpoint_id": {},
+              "side_effect_cursor": {},
+              "source_history_digest": {},
+              "state": {},
+              "task_id": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "normalize"
+          },
+          "skill": {
+            "const": "elmos-unified-multimodal-content-ir"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "blocks": {},
+              "document_id": {},
+              "relations": {},
+              "source_schema_version": {}
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-visual-ui-understanding"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-visual-ui-understanding"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "understand"
+          },
+          "skill": {
+            "const": "elmos-visual-ui-understanding"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "parse"
+          },
+          "skill": {
+            "const": "elmos-word-document-parser"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "process_asset"
+          },
+          "skill": {
+            "const": "elmos-word-document-parser"
+          }
+        },
+        "required": [
+          "skill",
+          "operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "input": {
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {},
+              "revision_mode": {}
+            },
+            "required": [
+              "asset_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ]
+      }
+    }
+  ],
+  "title": "ELMOS multimodal exact operation input fields",
+  "type": "object",
+  "x-elmos-operation-count": 147,
+  "x-elmos-operation-registry-digest": "4eeeeb5d921048a8c3dad6964956cf6fa171f4b13c3ffa711584ce4c08443eaa"
+}

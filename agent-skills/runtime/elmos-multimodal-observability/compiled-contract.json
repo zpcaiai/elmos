@@ -1,0 +1,140 @@
+{
+  "acceptance": [
+    {
+      "criterion": "单个任务可从上传追踪到下游交付",
+      "evidence": [],
+      "id": "S23-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "日志不包含密码、密钥或未经批准的原文",
+      "evidence": [],
+      "id": "S23-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "失败可按阶段、provider、文件类型聚合",
+      "evidence": [],
+      "id": "S23-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "高基数标签受控且不拖垮监控系统",
+      "evidence": [],
+      "id": "S23-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "单个任务可从上传追踪到下游交付",
+      "日志不包含密码、密钥或未经批准的原文",
+      "失败可按阶段、provider、文件类型聚合",
+      "高基数标签受控且不拖垮监控系统"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "trace_spans",
+      "audit_events",
+      "slo_burn_records"
+    ],
+    "deliverables": [
+      "Telemetry 规范与 instrumentation",
+      "告警、SLO 规则和仪表盘定义",
+      "链路完整性与日志泄露测试"
+    ],
+    "dependencies": [],
+    "events": [
+      "slo.breached",
+      "security.log_redaction_failed"
+    ],
+    "failure_modes": [
+      "采样丢链",
+      "高基数爆炸",
+      "日志敏感信息泄漏"
+    ],
+    "inputs": [
+      "业务事件、运行时遥测、审计事件"
+    ],
+    "metrics": [
+      "trace_completeness",
+      "error_budget_burn"
+    ],
+    "name": "elmos-multimodal-observability",
+    "objective": "提供跨服务、跨资产、跨 provider 的端到端可观测性，同时避免在日志中泄露原文、密码和密钥。",
+    "ordinal": 23,
+    "outputs": [
+      "Trace、Metric、Log、Alert"
+    ],
+    "responsibilities": [
+      "统一 trace_id、task_id、session_id、asset_id、tenant_id 关联",
+      "定义关键 span、指标、结构化日志和错误分类",
+      "实现敏感字段脱敏、采样和审计日志隔离",
+      "提供 SLO、队列、成本、质量和安全仪表盘数据"
+    ],
+    "schema_version": "1.0.0",
+    "title": "多模态可观测性"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-multimodal-observability/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-multimodal-observability/SKILL.md": {
+        "bytes": 2778,
+        "mode": "0644",
+        "sha256": "57a4ae6103c533c0bf1dc1c2e52bdd60373b67f7c576d6a582707f28b48288c2"
+      },
+      "skills/elmos-multimodal-observability/references/contract.yaml": {
+        "bytes": 1490,
+        "mode": "0644",
+        "sha256": "fcf736053c72a9158d511c1ec0e7f8720553069e83ab4d680376c8bf25282afb"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-multimodal-observability/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_multimodal_observability",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "evaluation",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "为上传、扫描、解析、融合、索引、上下文和下游调用建立统一 Trace、Metrics、Logs；当任务涉及排障、SLO、成本或审计时使用。",
+    "name": "elmos-multimodal-observability",
+    "ordinal": 23,
+    "title": "多模态可观测性"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "fcf736053c72a9158d511c1ec0e7f8720553069e83ab4d680376c8bf25282afb",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "57a4ae6103c533c0bf1dc1c2e52bdd60373b67f7c576d6a582707f28b48288c2"
+  }
+}

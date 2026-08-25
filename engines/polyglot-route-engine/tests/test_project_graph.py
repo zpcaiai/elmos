@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -215,7 +216,9 @@ def test_real_format_parse_does_not_claim_unsupported_build_schema_semantics(tmp
     assert any(item["code"] == "BUILD_DESCRIPTOR_SEMANTIC_INDEX_NOT_RUN" for item in _diagnostics(graph))
 
 
-def test_eight_non_python_languages_are_classified_but_semantics_stay_not_run(tmp_path: Path) -> None:
+def test_thirteen_non_python_languages_are_classified_but_semantics_stay_not_run(
+    tmp_path: Path,
+) -> None:
     repository = tmp_path / "repository"
     repository.mkdir()
     sources = {
@@ -223,25 +226,74 @@ def test_eight_non_python_languages_are_classified_but_semantics_stay_not_run(tm
         "Sample.cs": "class Sample {}",
         "sample.go": "package sample",
         "Sample.java": "class Sample {}",
+        "sample.js": "export function sample() {}",
+        "sample.kt": "fun sample() {}",
         "sample.m": "int sample(void) { return 0; }",
+        "sample.php": "<?php function sample(): void {}",
         "sample.rs": "fn sample() {}",
         "sample.swift": "func sample() {}",
         "sample.ts": "export function sample(): void {}",
+        "sample.tsx": "export function sample(): void {}",
+        "sample.dart": "void sample() {}",
     }
     for filename, content in sources.items():
         (repository / filename).write_text(content, encoding="utf-8")
 
-    graph = build_project_graph(repository, "local:nine-language-boundary")
+    graph = build_project_graph(repository, "local:fourteen-language-boundary")
 
     assert set(graph["supported_languages"]) == set(SUPPORTED_LANGUAGES)
     assert graph["repository_complete"] is False
     modules = [node for node in _nodes(graph) if node["kind"] == "module"]
-    assert len(modules) == 8
+    assert len(modules) == 13
     assert {node["language"] for node in modules} == set(SUPPORTED_LANGUAGES) - {"python"}
     assert all(node["attributes"]["semantic_index_status"] == EvidenceStatus.NOT_RUN for node in modules)
     obligations = [item for item in _diagnostics(graph) if item["code"] == "COMPILER_SEMANTIC_INDEX_NOT_RUN"]
-    assert len(obligations) == 8
+    assert len(obligations) == 13
     assert {item["verification_status"] for item in obligations} == {EvidenceStatus.NOT_RUN}
+    other_languages = graph["indexers"]["other_languages"]
+    assert other_languages["status"] == EvidenceStatus.NOT_RUN
+    assert other_languages["module_inventory_count"] == 0
+    assert other_languages["required_module_inventory_count"] == 13
+    assert other_languages["inventory_coverage_complete"] is False
+
+
+def test_supplied_non_python_inventory_must_cover_every_matching_source_file(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    first_content = "package sample\n\nfunc First(value int64) int64 { return value }\n"
+    second_content = "package sample\n\nfunc Second(value int64) int64 { return value }\n"
+    (repository / "first.go").write_text(first_content, encoding="utf-8")
+    (repository / "second.go").write_text(second_content, encoding="utf-8")
+    discovery = {
+        "kind": "elmos.repository-discovery-report",
+        "repository_ref": "local:partial-go-inventory",
+        "profile": "typed-pure-function-v1",
+        "source_language": "go",
+        "module_inventories": [
+            {
+                "path": "first.go",
+                "language": "go",
+                "source_sha256": hashlib.sha256(first_content.encode("utf-8")).hexdigest(),
+                "profile": "typed-pure-module-v1",
+                "enumeration_status": "PASSED",
+                "analyzer": "go/parser+go/types",
+                "subjects": [],
+                "diagnostics": [],
+            }
+        ],
+    }
+
+    with pytest.raises(
+        ProjectGraphError,
+        match=r"^SEMANTIC_DISCOVERY_INVENTORY_COVERAGE_INVALID$",
+    ):
+        build_project_graph(
+            repository,
+            "local:partial-go-inventory",
+            discovery,
+        )
 
 
 def test_test_resource_and_unknown_files_have_explicit_typed_edges_and_unknown_blocks(tmp_path: Path) -> None:

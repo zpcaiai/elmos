@@ -4,6 +4,7 @@ import importlib.util
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -42,6 +43,19 @@ class QualificationEffectGuardTests(unittest.TestCase):
         )
         self.assertEqual(len(receipt["results"]), 50)
         self.assertTrue(all(item["status"] == "PASSED" for item in receipt["results"]))
+
+    def test_failed_handler_contract_cannot_write_or_report_pass(self) -> None:
+        failure = qualifier.QualificationContractError("forced qualification failure")
+        with (
+            patch.object(
+                qualifier,
+                "validate_qualification_result",
+                side_effect=failure,
+            ),
+            patch.object(qualifier, "write_receipt") as write_receipt,
+        ):
+            self.assertEqual(qualifier.main(["--write"]), 1)
+        write_receipt.assert_not_called()
 
 
 if __name__ == "__main__":

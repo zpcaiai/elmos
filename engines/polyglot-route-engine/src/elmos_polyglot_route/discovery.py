@@ -24,8 +24,12 @@ from collections import Counter
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
-from .native import analyze_many, inventory_module
+from .models import (
+    REPOSITORY_SURFACE_LANGUAGES,
+    Language,
+    RouteError,
+    repository_language_lifecycle,
+)
 from .project_graph import (
     PythonCoverageSubject,
     SourceLocation,
@@ -33,7 +37,12 @@ from .project_graph import (
     semantic_coverage_key,
     verified_java_structural_wrapper,
 )
+from .react_repository import (
+    react_project_descriptor,
+    verify_react_repository_project,
+)
 from .repository import javascript_esm_descriptor
+from .source_analyzer import analyze_many, inventory_module
 
 SCHEMA_VERSION = "1.0.0"
 PROFILE = "typed-pure-function-v1"
@@ -57,12 +66,26 @@ _DECLARATION_PATTERNS: dict[str, re.Pattern[str]] = {
         r"^\s*(?:export\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(",
         re.MULTILINE,
     ),
+    "react": re.compile(
+        r"^\s*(?:export\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(",
+        re.MULTILINE,
+    ),
     "javascript": re.compile(
         r"^\s*export\s+function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(",
         re.MULTILINE,
     ),
     "go": re.compile(
         r"^\s*func\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE,
+    ),
+    "kotlin": re.compile(
+        r"^\s*(?:(?:public|internal|private|protected|tailrec|operator|infix)\s+)*"
+        r"fun\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        re.MULTILINE,
+    ),
+    "flutter": re.compile(
+        r"^\s*(?:(?:external)\s+)?(?:int|double|bool|String)\s+"
+        r"([A-Za-z_][A-Za-z0-9_]*)\s*\(",
         re.MULTILINE,
     ),
     "rust": re.compile(
@@ -160,12 +183,24 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
     "python": frozenset(
         {
             "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "CONDITION_MUST_BE_BOOLEAN",
+            "DUPLICATE_PARAMETER",
+            "LET_NAME_ALREADY_BOUND",
+            "LET_TYPE_MISMATCH",
+            "OPERAND_TYPE_MISMATCH",
+            "PYTHON_ANNOTATED_DECLARATION_WITHOUT_VALUE",
+            "PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
             "PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET",
             "PYTHON_PARAMETER_TYPE_REQUIRED",
             "PYTHON_RETURN_TYPE_REQUIRED",
             "PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET",
+            "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "PYTHON_UNSUPPORTED_EXPRESSION",
+            "PYTHON_UNSUPPORTED_LOCAL_TYPE",
             "PYTHON_UNSUPPORTED_STATEMENT",
+            "RETURN_TYPE_MISMATCH",
+            "STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET",
+            "UNDECLARED_NAME",
         }
     ),
     "java": frozenset(
@@ -174,24 +209,12 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "JAVA_EXACT_ARITHMETIC_TYPE_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_FLOAT_PRECISION_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET",
-            "CONDITION_MUST_BE_BOOLEAN",
-            "DUPLICATE_PARAMETER",
-            "LET_NAME_ALREADY_BOUND",
-            "LET_TYPE_MISMATCH",
-            "OPERAND_TYPE_MISMATCH",
-            "PYTHON_ANNOTATED_DECLARATION_WITHOUT_VALUE",
-            "PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_INTERFACE_STRING_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_METHOD_SHAPE_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
-            "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "JAVA_UNSUPPORTED_EXPRESSION",
-            "PYTHON_UNSUPPORTED_LOCAL_TYPE",
             "JAVA_UNSUPPORTED_OPERATOR",
-            "RETURN_TYPE_MISMATCH",
-            "STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET",
-            "UNDECLARED_NAME",
             "JAVA_UNSUPPORTED_STATEMENT",
             "JAVA_UNSUPPORTED_TYPE",
         }
@@ -371,6 +394,111 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
             "PHP_UNSUPPORTED_STATEMENT",
             "PHP_UNSUPPORTED_TYPE",
             "PHP_VARIADIC_PARAMETER_OUTSIDE_CERTIFIED_SUBSET",
+        }
+    ),
+    "kotlin": frozenset(
+        {
+            "KOTLIN_BLOCK_BODY_REQUIRED",
+            "KOTLIN_DEFAULT_ARGUMENT_UNSUPPORTED",
+            "KOTLIN_DELEGATED_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_EXPLICIT_TYPE_REQUIRED",
+            "KOTLIN_FUNCTION_NAME_AMBIGUOUS",
+            "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_IF_BLOCK_BODY_REQUIRED",
+            "KOTLIN_IF_CONDITION_REQUIRED",
+            "KOTLIN_IF_THEN_REQUIRED",
+            "KOTLIN_INVALID_ESCAPE",
+            "KOTLIN_INVALID_LITERAL",
+            "KOTLIN_LABELED_RETURN_UNSUPPORTED",
+            "KOTLIN_LOCAL_INITIALIZER_REQUIRED",
+            "KOTLIN_LOCAL_NAME_REQUIRED",
+            "KOTLIN_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+            "KOTLIN_NON_FINITE_LITERAL",
+            "KOTLIN_PARAMETER_NAME_REQUIRED",
+            "KOTLIN_RETURN_EXPRESSION_REQUIRED",
+            "KOTLIN_STRING_INTERPOLATION_UNSUPPORTED",
+            "KOTLIN_SUSPEND_FUNCTION_UNSUPPORTED",
+            "KOTLIN_UNSUPPORTED_EXPRESSION",
+            "KOTLIN_UNSUPPORTED_OPERATOR",
+            "KOTLIN_UNSUPPORTED_STATEMENT",
+            "KOTLIN_UNSUPPORTED_TYPE",
+            "KOTLIN_VARARG_UNSUPPORTED",
+        }
+    ),
+    "react": frozenset(
+        {
+            "FUNCTION_NOT_FOUND",
+            "REACT_COERCIVE_EQUALITY_UNSUPPORTED",
+            "REACT_COMPONENT_SEMANTICS_UNSUPPORTED",
+            "REACT_EXPLICIT_TYPE_REQUIRED",
+            "REACT_FREE_NAME_UNSUPPORTED",
+            "REACT_FUNCTION_AMBIGUOUS",
+            "REACT_FUNCTION_BODY_REQUIRED",
+            "REACT_FUNCTION_MODIFIER_UNSUPPORTED",
+            "REACT_FUNCTION_RETURN_NOT_TOTAL",
+            "REACT_FUNCTION_SHAPE_UNSUPPORTED",
+            "REACT_HOOK_SEMANTICS_UNSUPPORTED",
+            "REACT_IF_CONDITION_TYPE_MISMATCH",
+            "REACT_IMPORT_BOUND_SEMANTICS_UNSUPPORTED",
+            "REACT_MODULE_STATEMENT_UNSUPPORTED",
+            "REACT_NEGATIVE_ZERO_LITERAL_UNSUPPORTED",
+            "REACT_NON_FINITE_LITERAL_UNSUPPORTED",
+            "REACT_OPERAND_TYPE_MISMATCH",
+            "REACT_PARAMETER_NAME_DUPLICATE",
+            "REACT_PARAMETER_SHAPE_UNSUPPORTED",
+            "REACT_PARSE_ERROR",
+            "REACT_RETURN_TYPE_MISMATCH",
+            "REACT_ROUTE_PROFILE_UNSUPPORTED",
+            "REACT_UI_SEMANTICS_UNSUPPORTED",
+            "REACT_UNARY_MINUS_LITERAL_REQUIRED",
+            "REACT_UNSUPPORTED_OPERATOR",
+            "REACT_UNSUPPORTED_TYPE",
+        }
+    ),
+    "flutter": frozenset(
+        {
+            "DART_BLOCK_BODY_REQUIRED",
+            "DART_CONDITION_MUST_BE_BOOLEAN",
+            "DART_DIRECTIVE_UNSUPPORTED",
+            "DART_DUPLICATE_PARAMETER",
+            "DART_ELSE_BLOCK_BODY_REQUIRED",
+            "DART_EXPLICIT_LOCAL_TYPE_REQUIRED",
+            "DART_EXPLICIT_PARAMETER_TYPE_REQUIRED",
+            "DART_EXPLICIT_RETURN_TYPE_REQUIRED",
+            "DART_EXTERNAL_OR_AUGMENT_FUNCTION_UNSUPPORTED",
+            "DART_FUNCTION_ANNOTATION_UNSUPPORTED",
+            "DART_FUNCTION_BODY_EMPTY",
+            "DART_GENERIC_FUNCTION_UNSUPPORTED",
+            "DART_IF_BLOCK_BODY_REQUIRED",
+            "DART_IF_CASE_UNSUPPORTED",
+            "DART_INTEGER_LITERAL_OUT_OF_RANGE",
+            "DART_INTEGER_TRUE_DIVISION_OUTSIDE_CERTIFIED_SUBSET",
+            "DART_LANGUAGE_VERSION_OVERRIDE_UNSUPPORTED",
+            "DART_LOCAL_INITIALIZER_REQUIRED",
+            "DART_LOCAL_MUST_BE_FINAL",
+            "DART_LOCAL_NAME_ALREADY_BOUND",
+            "DART_LOCAL_TYPE_MISMATCH",
+            "DART_MODULE_DECLARATION_UNSUPPORTED",
+            "DART_NON_FINITE_LITERAL_UNSUPPORTED",
+            "DART_ONE_LOCAL_PER_DECLARATION_REQUIRED",
+            "DART_OPERAND_TYPE_MISMATCH",
+            "DART_PARAMETER_LIST_REQUIRED",
+            "DART_PARAMETER_NAME_REQUIRED",
+            "DART_PARAMETER_SHAPE_UNSUPPORTED",
+            "DART_PARSE_FAILED",
+            "DART_PROPERTY_FUNCTION_UNSUPPORTED",
+            "DART_RETURN_EXPRESSION_REQUIRED",
+            "DART_RETURN_TYPE_MISMATCH",
+            "DART_SCRIPT_TAG_UNSUPPORTED",
+            "DART_TRUNCATING_DIVISION_REQUIRES_INTEGER_OPERANDS",
+            "DART_UNARY_MINUS_LITERAL_REQUIRED",
+            "DART_UNDECLARED_NAME",
+            "DART_UNSUPPORTED_EXPRESSION",
+            "DART_UNSUPPORTED_OPERATOR",
+            "DART_UNSUPPORTED_STATEMENT",
+            "DART_UNSUPPORTED_TYPE",
+            "FLUTTER_UI_OR_EFFECTFUL_CALL_UNSUPPORTED",
+            "FLUTTER_UI_SEMANTICS_UNSUPPORTED",
         }
     ),
 }
@@ -662,6 +790,11 @@ def discover_unit(
             raise RouteError(f"JAVASCRIPT_ESM_DESCRIPTOR_CHANGED:{relative}")
         if descriptor is not None:
             result["javascript_esm_descriptor"] = descriptor
+    if source_language == "react":
+        descriptor = react_project_descriptor(repository_root)
+        if descriptor != unit.get("react_project_descriptor"):
+            raise RouteError(f"REACT_PROJECT_DESCRIPTOR_CHANGED:{relative}")
+        result["react_project_descriptor"] = descriptor
 
     coverage_subjects: list[dict[str, Any]] = []
     candidate_symbols: list[dict[str, Any]] = []
@@ -1072,6 +1205,12 @@ def discover_repository(
     target_language = plan.get("target_language")
     if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
+    language_lifecycle = repository_language_lifecycle(source_language, target_language)
+    if (
+        language_lifecycle is None
+        or plan.get("language_lifecycle") != language_lifecycle
+    ):
+        raise RouteError("REPOSITORY_PLAN_LANGUAGE_LIFECYCLE_INVALID")
     if plan.get("kind") != "elmos.repository-route-plan":
         raise RouteError("REPOSITORY_PLAN_KIND_INVALID")
     if plan.get("execution_status") != "NOT_RUN":
@@ -1084,6 +1223,28 @@ def discover_repository(
     root = repository_root.resolve(strict=True)
 
     selected = units if limit is None else units[:limit]
+    react_descriptor: dict[str, Any] | None = None
+    react_project_verification: dict[str, Any] | None = None
+    react_project_source_paths: list[str] | None = None
+    if source_language == "react":
+        declared_descriptor = plan.get("react_project_descriptor")
+        if not isinstance(declared_descriptor, dict):
+            raise RouteError("REACT_PROJECT_DESCRIPTOR_REQUIRED")
+        react_descriptor = react_project_descriptor(root)
+        if react_descriptor != declared_descriptor or any(
+            not isinstance(unit, dict)
+            or unit.get("react_project_descriptor") != declared_descriptor
+            for unit in units
+        ):
+            raise RouteError("REACT_PROJECT_DESCRIPTOR_CHANGED")
+        react_project_source_paths = [
+            str(unit.get("source_path", "")) for unit in selected
+        ]
+        react_project_verification = verify_react_repository_project(
+            root,
+            react_project_source_paths,
+            react_descriptor,
+        )
     file_results = [discover_unit(root, unit, source_language) for unit in selected]
     results: list[dict[str, Any]] = []
     for result in file_results:
@@ -1203,6 +1364,7 @@ def discover_repository(
         "route_id": plan.get("route_id"),
         "source_language": source_language,
         "target_language": target_language,
+        "language_lifecycle": language_lifecycle,
         "profile": PROFILE,
         "planned_file_count": len(units),
         "work_unit_count": len(results),
@@ -1216,6 +1378,9 @@ def discover_repository(
         "module_inventory_count": len(module_inventories),
         "module_inventory_status_counts": module_inventory_status_counts,
         "module_inventories": module_inventories,
+        "react_project_descriptor": react_descriptor,
+        "react_project_source_paths": react_project_source_paths,
+        "react_project_verification": react_project_verification,
         "results": results,
         # Discovery decides eligibility only. Nothing here has been translated,
         # compiled, or replayed, so every execution status stays NOT_RUN.

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "snapshotId": "python-compatibility-2026-07-21",
+  "observedAt": "2026-07-21T00:00:00Z",
+  "productionPreReleaseAllowed": false,
+  "profiles": {
+    "GENERAL": {"python": "3.14", "frameworks": {}},
+    "WEB": {"python": "3.14", "frameworks": {"DJANGO": "6.0.latest-patch", "FLASK": "3.1.latest-patch"}},
+    "DATA_PIPELINE": {"python": "3.13", "frameworks": {"AIRFLOW": "compatibility-resolved", "CELERY": "compatibility-resolved", "SPARK": "compatibility-resolved"}},
+    "AI_ML": {"python": "3.13", "frameworks": {"TENSORFLOW": "compatibility-resolved", "PYTORCH": "compatibility-resolved", "SCIKIT_LEARN": "compatibility-resolved"}},
+    "AI_ML_GPU": {"python": "3.13", "frameworks": {"TENSORFLOW": "cuda-matrix-resolved", "PYTORCH": "cuda-matrix-resolved"}}
+  },
+  "sources": [
+    "https://www.python.org/downloads/",
+    "https://docs.djangoproject.com/en/6.0/releases/6.0/",
+    "https://packaging.python.org/en/latest/specifications/pylock-toml/"
+  ],
+  "note": "Framework, wheel, GPU and private-package compatibility must be refreshed before a live target decision. Values are constraints, not approval."
+}
+

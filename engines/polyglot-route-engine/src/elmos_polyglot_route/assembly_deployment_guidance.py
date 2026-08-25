@@ -4,7 +4,7 @@ The other two ELMOS business lines (Spring modernization, multi-language
 project generation) both produce a runnable HTTP service, so their deployment
 guidance is framed around Cloud Run: build a container, expose a health
 endpoint, deploy it. An assembled polyglot-route project is not a service --
-it is a compiled library of independently certified, typed pure functions
+it is a compiled library of bounded, locally verified typed pure functions
 (see `assembly.py`). Framing its "cloud deployment" as a running container
 would misrepresent what was actually produced. The honest equivalent for a
 library is publishing a versioned package to an artifact registry, so that is
@@ -26,9 +26,11 @@ from .models import Language
 
 _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "java": {"minimum": (2, 4, 5), "recommended": (4, 8, 10)},
+    "kotlin": {"minimum": (2, 4, 5), "recommended": (4, 8, 10)},
     "python": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "csharp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
     "typescript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "react": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "javascript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "go": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "rust": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
@@ -36,13 +38,16 @@ _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "objc": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
     "swift": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
     "php": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "flutter": {"minimum": (4, 8, 12), "recommended": (8, 16, 24)},
 }
 
 _TOOLCHAIN_TEXT: dict[Language, str] = {
     "java": "OpenJDK 21.0.11 + Maven",
+    "kotlin": "Kotlin/JVM 2.2.20 standalone compiler + OpenJDK 21.0.11",
     "python": "Python 3.12.12 + setuptools",
     "csharp": ".NET SDK 10.0.301",
     "typescript": "Node.js 26.0.0 + TypeScript 5.9.2",
+    "react": "Node.js 26.0.0 + TypeScript 5.9.2 + React 19.2.7",
     "javascript": "Node.js 26.0.0 / ES2022 / ESM",
     "go": "Go 1.25.0",
     "rust": "Rust 1.89.0 + Cargo 1.89.0",
@@ -50,13 +55,16 @@ _TOOLCHAIN_TEXT: dict[Language, str] = {
     "objc": "pinned Apple clang + Foundation SDK + CMake",
     "swift": "pinned Swift 6 toolchain + Swift Package Manager",
     "php": "PHP 8.5.9 CLI (NTS, PHP_INT_SIZE=8) + Composer",
+    "flutter": "Flutter 3.44.1 + bundled Dart 3.12.1",
 }
 
 _BUILD_COMMANDS: dict[Language, list[str]] = {
     "java": ["mvn -q -DskipTests package"],
+    "kotlin": ["mkdir -p build/classes", "kotlinc @kotlinc.args"],
     "python": ["python -m build"],
     "csharp": ["dotnet pack polyglot-migrated-library.csproj -c Release"],
     "typescript": ["npm install", "npx tsc -p tsconfig.json"],
+    "react": ["npm install --ignore-scripts", "npx tsc -p tsconfig.json"],
     "javascript": ["find src/generated -name '*.mjs' -type f -exec node --check {} \\;"],
     "go": ["go test ./..."],
     "rust": ["cargo check --offline"],
@@ -65,13 +73,20 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     "swift": ["swift build -c release --disable-sandbox"],
     "php": ["composer install --no-dev --optimize-autoloader",
             "find src -name '*.php' -type f -exec php -l {} \\;"],
+    "flutter": [
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics analyze --format=json --fatal-infos --fatal-warnings --packages=.dart_tool/package_config.json --sdk-path=$FLUTTER_ROOT/bin/cache/dart-sdk lib",
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics compile kernel --packages=.dart_tool/package_config.json --verbosity=error --link-platform --no-embed-sources --output=build/elmos_repository.dill lib/main.dart",
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --packages=.dart_tool/package_config.json build/elmos_repository.dill",
+    ],
 }
 
 _PACKAGE_FORMAT: dict[Language, str] = {
     "java": "Maven",
+    "kotlin": "Kotlin/JVM compiled class-directory artifact",
     "python": "PyPI (pip)",
     "csharp": "NuGet",
     "typescript": "npm",
+    "react": "npm",
     "javascript": "npm",
     "go": "Go module",
     "rust": "Cargo crate",
@@ -79,10 +94,11 @@ _PACKAGE_FORMAT: dict[Language, str] = {
     "objc": "CMake static libraries",
     "swift": "Swift Package",
     "php": "Composer package (Packagist layout)",
+    "flutter": "Flutter/Dart source package and debug kernel bundle",
 }
 
 _CODEARTIFACT_NATIVE_LANGUAGES: frozenset[Language] = frozenset(
-    {"java", "python", "csharp", "typescript", "javascript"}
+    {"java", "python", "csharp", "typescript", "react", "javascript"}
 )
 
 _PUBLISH_PLATFORMS = [
@@ -129,7 +145,7 @@ def _local_markdown(target_language: Language, included_unit_count: int) -> str:
     return f"""# 本地构建配置与步骤
 
 本文档对应一次真实的 `assemble_project` + `verify_assembled_project` 运行产物：
-一个由 {included_unit_count} 个已通过 `typed-pure-function-v1` 剖面认证的翻译单元
+一个由 {included_unit_count} 个已通过 `typed-pure-function-v1` 有界本地验证、但尚未认证的翻译单元
 组成的 {target_language} 库工程。这是一个**库**，不是一个服务——本地"运行"指的是
 构建、类型检查和单元验证，不存在需要监听的端口或健康检查地址。
 

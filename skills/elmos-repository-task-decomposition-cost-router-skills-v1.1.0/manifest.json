@@ -1,0 +1,36 @@
+{
+  "package": "elmos-repository-task-decomposition-cost-router-skills",
+  "version": "1.1.0",
+  "skills_count": 37,
+  "hard_model_allowlist": [
+    "gpt-5.6-sol-max",
+    "claude-opus-5-max",
+    "claude-fable-5",
+    "grok-4.6",
+    "kimi-k3-max",
+    "glm-5.3-max",
+    "qwen3.8-max",
+    "deepseek-v4-pro-0813",
+    "gemini-3.7-flash-high",
+    "claude-sonnet-5"
+  ],
+  "entry_skill": "skills/00-repository-orchestrator/SKILL.md",
+  "compatibility": [
+    "Codex AGENTS.md workflow",
+    "Claude Code CLAUDE.md workflow",
+    "provider-neutral orchestrator"
+  ],
+  "features": [
+    "atomic task DAG",
+    "risk-aware model routing",
+    "expected completed-task cost optimization",
+    "isolated worktrees",
+    "bounded retry/escalation",
+    "repository certification",
+    "durable resume",
+    "telemetry learning",
+    "Smart/manual UI model selection",
+    "manual strict or allowlisted smart fallback",
+    "auditable planned-versus-actual model usage"
+  ]
+}

@@ -28,7 +28,7 @@ from typing import Any
 import pytest
 
 from elmos_polyglot_route.emitter import emit
-from elmos_polyglot_route.models import RouteError, SemanticIR
+from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError, SemanticIR
 from elmos_polyglot_route.python_analyzer import analyze_python
 
 
@@ -173,13 +173,13 @@ def test_numeric_equality_is_untouched_in_java() -> None:
     assert "(a == b)" in emit(_ir(function), "java").content
 
 
-def test_string_ordering_fails_closed() -> None:
+@pytest.mark.parametrize("language", ROUTED_LANGUAGES)
+def test_string_ordering_fails_closed(language: Language) -> None:
     # Java orders by UTF-16 code unit and Python by code point: the two
     # disagree above the BMP, so no emitted comparison is faithful in both.
     function = _function("before", [("a", "string"), ("b", "string")], "boolean", _binary("<", _name("a"), _name("b")))
-    for language in ("java", "python", "csharp", "typescript"):
-        with pytest.raises(RouteError, match="STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET"):
-            emit(_ir(function), language)
+    with pytest.raises(RouteError, match="STRING_ORDERING_OUTSIDE_CERTIFIED_SUBSET"):
+        emit(_ir(function), language)
 
 
 # --------------------------------------------------------------------------
@@ -205,20 +205,20 @@ def test_integer_literal_beyond_the_typescript_safe_range_fails_closed() -> None
     assert "9007199254740991" in emit(_constant(2**53 - 1, "integer"), "typescript").content
 
 
-@pytest.mark.parametrize("language", ["java", "python", "csharp", "typescript"])
-def test_integer_literal_beyond_int64_fails_closed(language: str) -> None:
+@pytest.mark.parametrize("language", ROUTED_LANGUAGES)
+def test_integer_literal_beyond_int64_fails_closed(language: Language) -> None:
     with pytest.raises(RouteError, match="INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE"):
         emit(_constant(2**63, "integer"), language)
 
 
-@pytest.mark.parametrize("language", ["java", "python", "csharp", "typescript"])
-def test_non_finite_float_literal_fails_closed(language: str) -> None:
+@pytest.mark.parametrize("language", ROUTED_LANGUAGES)
+def test_non_finite_float_literal_fails_closed(language: Language) -> None:
     with pytest.raises(RouteError, match="NON_FINITE_LITERAL_OUTSIDE_CERTIFIED_SUBSET"):
         emit(_constant(float("inf"), "number"), language)
 
 
-@pytest.mark.parametrize("language", ["typescript", "javascript"])
-def test_node_negative_zero_semantic_literal_fails_closed(language: str) -> None:
+@pytest.mark.parametrize("language", ["typescript", "react", "javascript"])
+def test_node_negative_zero_semantic_literal_fails_closed(language: Language) -> None:
     with pytest.raises(RouteError, match=rf"{language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED"):
         emit(_constant(-0.0, "number"), language)
 

@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 27
+name: elmos-data-retention-and-governance
+title: 数据保留与治理
+objective: 让数据用途、驻留、第三方模型发送、保留期限和删除传播可配置、可证明。
+dependencies:
+- elmos-storage-index-and-retrieval
+inputs:
+- 数据分类、租户策略、资产和派生关系
+outputs:
+- PolicyDecision、DeletionProof、ExportPackage
+responsibilities:
+- 定义数据分类、租户策略、合法用途和 provider 发送边界
+- 实施对象存储、数据库、索引、缓存和备份的保留、删除传播
+- 提供用户导出、项目归档、法律保留和删除证明
+- 记录访问、共享、模型调用和管理员操作审计
+deliverables:
+- GovernancePolicyEngine
+- retention、delete、export workflows
+- 删除传播、法律保留和跨租户测试
+acceptance:
+- 用户删除请求能覆盖所有派生副本或明确受法律保留限制
+- 未经许可的资产不发送第三方模型
+- 租户可配置保留期限且新策略可追踪
+- 审计日志防篡改并与业务内容隔离
+data_entities:
+- retention_policies
+- deletion_jobs
+- data_access_audit
+events:
+- retention.expired
+- deletion.completed
+- governance.policy.denied
+metrics:
+- deletion_sla
+- orphan_derivative_count
+failure_modes:
+- 索引残留
+- 备份删除延迟
+- 法律保留冲突
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

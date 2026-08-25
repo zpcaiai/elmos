@@ -1,0 +1,77 @@
+schema_version: 1.0.0
+policy_id: elmos-context-default
+version: 1.0.0
+dated_compatibility_fixture:
+  as_of: '2026-08-19'
+  parity_target: Codex
+  context_window_tokens: 1050000
+  max_output_tokens: 128000
+  use_as_runtime_source_of_truth: false
+runtime_source_of_truth: model_capability_snapshot
+unknown_capability_behavior: CONSERVATIVE_BLOCK_OR_ADMIN_REVIEW
+capacity_domains:
+  raw_corpus: TENANT_STORAGE_AND_PROCESSING_QUOTA
+  active_context: MODEL_CAPABILITY_AND_CONTEXT_BUDGET
+  project_memory: RETENTION_AND_INDEX_QUOTA
+non_evictable_priorities:
+- P0_SYSTEM_SAFETY
+- P0_TENANT_POLICY
+- P1_CURRENT_USER_INSTRUCTION
+- P1_HARD_CONSTRAINT
+- P1_ACCEPTANCE_CRITERIA
+reserves:
+  output_tokens_strategy: TASK_AND_MODEL_AWARE
+  minimum_output_reserve_tokens: 8192
+  future_tool_result_reserve_ratio: 0.03
+  reasoning_reserve_ratio: 0.03
+  safety_headroom_ratio: 0.05
+pressure:
+  normal_upper_exclusive: 0.65
+  elevated_upper_exclusive: 0.8
+  high_upper_exclusive: 0.9
+  critical_upper_exclusive: 1.0
+  hysteresis_ratio: 0.03
+  on_elevated:
+  - DEDUPLICATE
+  - EXTERNALIZE_LARGE_TOOL_RESULTS
+  on_high:
+  - STRUCTURED_COMPACTION
+  - SAVE_CHECKPOINT
+  - REPACK
+  on_critical:
+  - STOP_CONTEXT_GROWTH
+  - SAVE_CHECKPOINT
+  - COMPACT_OR_PARTITION
+  - RUN_INTEGRITY_GATE
+  on_overflow:
+  - REJECT_REQUEST
+  - NO_SILENT_TRUNCATION
+packing:
+  hybrid_ranking: true
+  source_diversity: true
+  semantic_deduplication: true
+  version_freshness_required: true
+  explain_inclusion_and_exclusion: true
+compaction:
+  freeform_summary_only_allowed: false
+  structured_checkpoint_required: true
+  preserve_original_history_externally: true
+  critical_fact_retention_target: 1.0
+  source_anchor_retention_target: 1.0
+  check_semantic_drift: true
+rehydration:
+  prefer_exact_anchor: true
+  validate_acl_version_hash: true
+  allow_summary_to_substitute_missing_original: false
+  recalculate_budget_after_load: true
+integrity:
+  gate_on_compaction: true
+  gate_on_model_switch: true
+  gate_on_recovery: true
+  gate_on_rehydration: true
+  block_high_risk_tools_on_failure: true
+truncation:
+  silent: false
+  drop_oldest: false
+  drop_tail: false
+  record_every_eviction: true

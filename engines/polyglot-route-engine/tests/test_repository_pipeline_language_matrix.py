@@ -22,7 +22,7 @@ from typing import Any, cast
 
 import pytest
 
-from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, Language
+from elmos_polyglot_route.models import SUPPORTED_LANGUAGES, Language
 from elmos_polyglot_route.pipeline import (
     ARTIFACT_MANIFEST_NAME,
     ARTIFACT_NAME,
@@ -31,11 +31,11 @@ from elmos_polyglot_route.pipeline import (
 )
 
 DIRECTED_LANGUAGE_PAIRS: tuple[tuple[Language, Language], ...] = tuple(
-    (source, target) for source, target in product(REPOSITORY_SURFACE_LANGUAGES, repeat=2) if source != target
+    (source, target) for source, target in product(SUPPORTED_LANGUAGES, repeat=2) if source != target
 )
 MEDIUM_LANGUAGE_RING: tuple[tuple[Language, Language], ...] = tuple(
-    (source, REPOSITORY_SURFACE_LANGUAGES[(index + 1) % len(REPOSITORY_SURFACE_LANGUAGES)])
-    for index, source in enumerate(REPOSITORY_SURFACE_LANGUAGES)
+    (source, SUPPORTED_LANGUAGES[(index + 1) % len(SUPPORTED_LANGUAGES)])
+    for index, source in enumerate(SUPPORTED_LANGUAGES)
 )
 
 _SMALL_MAXIMUM_BYTES = 8 * 1024 * 1024
@@ -45,6 +45,7 @@ _MEDIUM_COMMENT_BYTES_PER_FILE = 1_700_000
 _PHP_PROFILE_PREAMBLE = "<?php\n\ndeclare(strict_types=1);\n\n"
 _ASSEMBLY_AUXILIARY_INPUTS: dict[Language, tuple[str, ...]] = {
     "python": ("src/elmos_generated/__init__.py",),
+    "flutter": ("lib/main.dart",),
 }
 
 _BEHAVIOR_CASES: tuple[list[dict[str, object]], ...] = (
@@ -313,6 +314,48 @@ _SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
             "function subtract(int $left, int $right): int { return $left - $right; }\n",
         ),
     ),
+    "kotlin": (
+        (
+            "add.kt",
+            "fun add(left: Long, right: Long): Long {\n    return left + right\n}\n",
+        ),
+        (
+            "multiply.kt",
+            "fun multiply(left: Long, right: Long): Long {\n    return left * right\n}\n",
+        ),
+        (
+            "subtract.kt",
+            "fun subtract(left: Long, right: Long): Long {\n    return left - right\n}\n",
+        ),
+    ),
+    "react": (
+        (
+            "add.tsx",
+            "export function add(left: number, right: number): number {\n  return left + right\n}\n",
+        ),
+        (
+            "multiply.tsx",
+            "export function multiply(left: number, right: number): number {\n  return left * right\n}\n",
+        ),
+        (
+            "subtract.tsx",
+            "export function subtract(left: number, right: number): number {\n  return left - right\n}\n",
+        ),
+    ),
+    "flutter": (
+        (
+            "add.dart",
+            "int add(int left, int right) => left + right;\n",
+        ),
+        (
+            "multiply.dart",
+            "int multiply(int left, int right) => left * right;\n",
+        ),
+        (
+            "subtract.dart",
+            "int subtract(int left, int right) => left - right;\n",
+        ),
+    ),
 }
 
 _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
@@ -486,6 +529,48 @@ _MEDIUM_EXTRA_SOURCE_FILES: dict[Language, tuple[tuple[str, str], ...]] = {
             "    if left < right { return left }\n"
             "    return right\n"
             "}\n",
+        ),
+    ),
+    "kotlin": (
+        (
+            "Maximum.kt",
+            "fun maximum(left: Long, right: Long): Long {\n"
+            "    if (left > right) { return left }\n"
+            "    return right\n"
+            "}\n",
+        ),
+        (
+            "Minimum.kt",
+            "fun minimum(left: Long, right: Long): Long {\n"
+            "    if (left < right) { return left }\n"
+            "    return right\n"
+            "}\n",
+        ),
+    ),
+    "react": (
+        (
+            "maximum.tsx",
+            "export function maximum(left: number, right: number): number {\n"
+            "  if (left > right) { return left }\n"
+            "  return right\n"
+            "}\n",
+        ),
+        (
+            "minimum.tsx",
+            "export function minimum(left: number, right: number): number {\n"
+            "  if (left < right) { return left }\n"
+            "  return right\n"
+            "}\n",
+        ),
+    ),
+    "flutter": (
+        (
+            "maximum.dart",
+            "int maximum(int left, int right) => left > right ? left : right;\n",
+        ),
+        (
+            "minimum.dart",
+            "int minimum(int left, int right) => left < right ? left : right;\n",
         ),
     ),
     "php": (
@@ -1123,28 +1208,28 @@ def _assert_artifact_closure(
 
 
 def test_directed_language_pair_matrix_contains_every_ordered_pair_once() -> None:
-    # 11, not 13.  This suite drives real repository execution, so it is
-    # parametrised over REPOSITORY_SURFACE_LANGUAGES -- the languages that have
-    # an analyzer, a placer and a build file.  The route matrix is wider (13
-    # languages, 156 directions); test_language_set.py owns that number.
-    assert len(REPOSITORY_SURFACE_LANGUAGES) == 11
-    assert len(DIRECTED_LANGUAGE_PAIRS) == 110
-    assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 110
+    # Live repository execution is exactly the governed active matrix. The
+    # lower-level repository inventory surface retains JavaScript only for
+    # explicit archived replay and must never expand this executable matrix.
+    assert len(SUPPORTED_LANGUAGES) == 13
+    assert "javascript" not in SUPPORTED_LANGUAGES
+    assert len(DIRECTED_LANGUAGE_PAIRS) == 156
+    assert len(set(DIRECTED_LANGUAGE_PAIRS)) == 156
     assert set(DIRECTED_LANGUAGE_PAIRS) == {
         (source, target)
-        for source in REPOSITORY_SURFACE_LANGUAGES
-        for target in REPOSITORY_SURFACE_LANGUAGES
+        for source in SUPPORTED_LANGUAGES
+        for target in SUPPORTED_LANGUAGES
         if source != target
     }
     _assert_javascript_typescript_fixture_contract()
 
 
 def test_medium_language_ring_covers_every_source_and_target_once() -> None:
-    assert len(MEDIUM_LANGUAGE_RING) == 11
-    assert len(set(MEDIUM_LANGUAGE_RING)) == 11
+    assert len(MEDIUM_LANGUAGE_RING) == 13
+    assert len(set(MEDIUM_LANGUAGE_RING)) == 13
     assert all(source != target for source, target in MEDIUM_LANGUAGE_RING)
-    assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(REPOSITORY_SURFACE_LANGUAGES)
-    assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert {source for source, _ in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
+    assert {target for _, target in MEDIUM_LANGUAGE_RING} == set(SUPPORTED_LANGUAGES)
     content = _SOURCE_FILES["php"][0][1]
     source = _medium_source_with_filler("php", content)
 
@@ -1282,25 +1367,24 @@ def test_repository_pipeline_converts_medium_repository_for_every_directed_pair(
     _assert_artifact_closure(output, report, assembly)
 
 
-def test_pending_analyzer_languages_are_refused_by_the_repository_surface(tmp_path: Path) -> None:
+def test_repository_pending_languages_are_refused_by_the_repository_surface(tmp_path: Path) -> None:
     """Declared in the matrix, refused here -- and refused on both sides.
 
-    Without this, "kotlin is in the route matrix" and "kotlin can be run" are
-    indistinguishable from the outside, which is exactly the confusion
-    PENDING_ANALYZER_LANGUAGES exists to prevent.
+    Single-unit analyzer readiness and whole-repository readiness are separate
+    axes. This assertion prevents the former from silently promoting the latter.
     """
 
     from elmos_polyglot_route.models import (
-        PENDING_ANALYZER_LANGUAGES,
+        PENDING_REPOSITORY_LANGUAGES,
         RouteError,
         is_routed_pair,
     )
     from elmos_polyglot_route.repository import plan_repository
 
-    assert not set(PENDING_ANALYZER_LANGUAGES) & set(REPOSITORY_SURFACE_LANGUAGES)
+    assert not set(PENDING_REPOSITORY_LANGUAGES) & set(REPOSITORY_SURFACE_LANGUAGES)
     repository = tmp_path / "repository"
     repository.mkdir()
-    for language in PENDING_ANALYZER_LANGUAGES:
+    for language in PENDING_REPOSITORY_LANGUAGES:
         # Routed at the matrix level ...
         assert is_routed_pair(language, "python")
         assert is_routed_pair("python", language)

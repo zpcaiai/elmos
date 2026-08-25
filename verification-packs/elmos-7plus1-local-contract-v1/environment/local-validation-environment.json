@@ -2,15 +2,21 @@
   "schema_version": 1,
   "environment_key": "elmos-7plus1-local-pack-validation-macos-arm64-v1",
   "operating_system": "macOS-arm64",
-  "python": "CPython 3.12.14 via uv",
+  "python": "CPython 3.12.12 via uv for engine tests; CPython 3.14.6 via Homebrew for importer tests",
   "jsonschema": "4.25.1",
   "network_required": false,
   "production_access": false,
   "provider_access": false,
   "authorized_scope": "read-only Batch 35 pack validation plus focused standard-library importer and runtime unit/integration tests",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
   "local_test_commands": [
-    "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src python3 -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v",
-    "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v"
+    "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src /opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 --python 3.12 python -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v",
+    "PYTHONDONTWRITEBYTECODE=1 /opt/homebrew/bin/python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v"
   ],
   "limitations": [
     "The local commands are self-attested engineering execution only and do not attest an independent verifier, holdout, representative, provider, or production environment."

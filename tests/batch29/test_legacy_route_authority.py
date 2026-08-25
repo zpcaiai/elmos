@@ -14,9 +14,14 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from route_sets import (  # noqa: E402
+    ALL_DECLARED_ROUTE_KEYS,
     COMPLETE_ROUTE_KEYS,
     CORE_ROUTE_KEYS,
+    EXECUTABLE_ROUTE_SETS,
+    PREPARABLE_ROUTE_SETS,
+    READ_ONLY_ROUTE_SETS,
     ROUTE_PROVENANCE_PARTITIONS,
+    TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
 )
 
 
@@ -39,7 +44,7 @@ def _generator():
     )
 
 
-def test_route_authority_partition_is_exact_30_8_34_18() -> None:
+def test_route_authority_partition_preserves_history_and_covers_all_declared() -> None:
     assert {
         name: len(route_keys)
         for name, route_keys in ROUTE_PROVENANCE_PARTITIONS.items()
@@ -48,14 +53,17 @@ def test_route_authority_partition_is_exact_30_8_34_18() -> None:
         "cpp-objc-swift-java-exact-8": 8,
         "nine-language-completion-34": 34,
         "javascript-node26-completion-18": 18,
+        "php-php85-completion-20": 20,
+        "kotlin-react-flutter-completion-66": 66,
     }
     flattened = [
         route_key
         for route_keys in ROUTE_PROVENANCE_PARTITIONS.values()
         for route_key in route_keys
     ]
-    assert len(flattened) == len(set(flattened)) == 90
-    assert set(flattened) == set(COMPLETE_ROUTE_KEYS)
+    assert len(flattened) == len(set(flattened)) == 176
+    assert set(flattened) == set(ALL_DECLARED_ROUTE_KEYS)
+    assert len(COMPLETE_ROUTE_KEYS) == 156
 
 
 def test_legacy_campaign_authority_binds_campaign_schema_validator_and_method() -> None:
@@ -97,12 +105,13 @@ def test_default_runner_verifies_legacy_read_only_without_execute_or_inventory()
         assert runner.main() == 0
 
 
-def test_complete_90_execution_skips_immutable_legacy_30() -> None:
+def test_historical_complete_90_is_exposed_only_as_read_only_verification() -> None:
     runner = _runner()
-    executed: list[str] = []
-
-    def record_execute(_repo: Path, _fixtures: Path, source: str, target: str) -> None:
-        executed.append(f"{source}-to-{target}")
+    assert "ten-language-complete-90" not in EXECUTABLE_ROUTE_SETS
+    assert "ten-language-complete-90" not in PREPARABLE_ROUTE_SETS
+    assert READ_ONLY_ROUTE_SETS["ten-language-complete-90"] == (
+        TEN_LANGUAGE_COMPLETE_ROUTE_KEYS
+    )
 
     with (
         mock.patch.object(
@@ -112,19 +121,30 @@ def test_complete_90_execution_skips_immutable_legacy_30() -> None:
                 str(runner.__file__),
                 "--repo-root",
                 str(ROOT),
-                "--route-set",
+                "--verify-route-set",
                 "ten-language-complete-90",
             ],
         ),
-        mock.patch.object(runner, "legacy_campaign_authority"),
-        mock.patch.object(runner, "execute_route", side_effect=record_execute),
-        mock.patch.object(runner, "run_route_checks", return_value=0),
-        mock.patch.object(runner, "write_inventory"),
+        mock.patch.object(runner, "verify_route_set_read_only") as verify,
+        mock.patch.object(
+            runner,
+            "execute_route",
+            side_effect=AssertionError("historical execute forbidden"),
+        ),
+        mock.patch.object(
+            runner,
+            "write_inventory",
+            side_effect=AssertionError("historical inventory write forbidden"),
+        ),
     ):
         assert runner.main() == 0
-    assert len(executed) == 60
-    assert not set(executed) & set(CORE_ROUTE_KEYS)
-    assert set(executed) == set(COMPLETE_ROUTE_KEYS) - set(CORE_ROUTE_KEYS)
+    verify.assert_called_once_with(
+        ROOT,
+        "ten-language-complete-90",
+        TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    )
+    assert len(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS) == 90
+    assert set(CORE_ROUTE_KEYS) < set(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS)
 
 
 def test_direct_legacy_execute_fails_before_any_route_write(tmp_path: Path) -> None:

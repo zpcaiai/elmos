@@ -1,0 +1,7 @@
+{
+  "incidentId": "incidentId-fixture",
+  "severity": "severity-fixture",
+  "status": "status-fixture",
+  "affectedServiceIds": [],
+  "declaredAt": "declaredAt-fixture"
+}

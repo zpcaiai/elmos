@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "model_key": "model.multimodal-request-authorization-lifecycle",
+  "owner": "elmos-multimodal-intake-security",
+  "states": [
+    "received",
+    "parsed",
+    "authorized",
+    "denied",
+    "dispatched",
+    "completed",
+    "unknown"
+  ],
+  "initial_state": "received",
+  "commands": [
+    {
+      "command": "parse",
+      "from": [
+        "received"
+      ],
+      "to": "parsed",
+      "guard": "strict-envelope-valid",
+      "effects": [
+        "none"
+      ]
+    },
+    {
+      "command": "authorize",
+      "from": [
+        "parsed"
+      ],
+      "to": "authorized",
+      "guard": "exact-principal-resource-action-context-binding",
+      "effects": [
+        "none"
+      ]
+    },
+    {
+      "command": "deny",
+      "from": ["parsed"],
+      "to": "denied",
+      "guard": "missing-or-insufficient-trusted-authority",
+      "effects": [
+        "bounded-denial-only"
+      ]
+    },
+    {
+      "command": "dispatch",
+      "from": ["authorized"],
+      "to": "dispatched",
+      "guard": "registered-operation-and-bound-runtime",
+      "effects": [
+        "create-exactly-one-idempotent-runtime-attempt"
+      ]
+    },
+    {
+      "command": "complete",
+      "from": ["dispatched"],
+      "to": "completed",
+      "guard": "exact-response-digest-validated",
+      "effects": [
+        "persist-bounded-result"
+      ]
+    }
+  ],
+  "invariants": [
+    "denied-has-no-runtime-side-effect",
+    "dispatch-requires-prior-authorization",
+    "request-content-cannot-grant-authority",
+    "unknown-is-never-success",
+    "completed-has-digest-bound-result"
+  ],
+  "forbidden_transitions": [
+    {
+      "from": "received",
+      "event": "dispatch"
+    },
+    {
+      "from": "parsed",
+      "event": "dispatch"
+    },
+    {
+      "from": "denied",
+      "event": "dispatch"
+    }
+  ],
+  "timeouts": []
+}

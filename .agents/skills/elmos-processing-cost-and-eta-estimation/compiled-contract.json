@@ -1,0 +1,145 @@
+{
+  "acceptance": [
+    {
+      "criterion": "所有 ETA 指 Elmos 机器执行墙钟时间而非人工时间",
+      "evidence": [],
+      "id": "S22-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "进行中任务随真实进度更新 ETA",
+      "evidence": [],
+      "id": "S22-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "最终账单可按 asset、stage、provider 解释",
+      "evidence": [],
+      "id": "S22-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "估算误差被持续监控并有置信区间",
+      "evidence": [],
+      "id": "S22-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "所有 ETA 指 Elmos 机器执行墙钟时间而非人工时间",
+      "进行中任务随真实进度更新 ETA",
+      "最终账单可按 asset、stage、provider 解释",
+      "估算误差被持续监控并有置信区间"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "cost_ledger_entries",
+      "eta_predictions",
+      "eta_calibration_runs"
+    ],
+    "deliverables": [
+      "CostLedger、ETAEstimator",
+      "任务进度与成本 API",
+      "回放评估和校准报表"
+    ],
+    "dependencies": [
+      "elmos-durable-processing-and-recovery",
+      "elmos-multimodal-observability"
+    ],
+    "events": [
+      "eta.updated",
+      "cost.accrued",
+      "eta.calibration.completed"
+    ],
+    "failure_modes": [
+      "冷启动无历史",
+      "价格变化",
+      "阶段卡住",
+      "样本漂移"
+    ],
+    "inputs": [
+      "任务阶段、历史样本、资源价格"
+    ],
+    "metrics": [
+      "eta_mape",
+      "cost_estimation_error"
+    ],
+    "name": "elmos-processing-cost-and-eta-estimation",
+    "objective": "以历史遥测和实时阶段进度给出可校准 ETA，明确排除人工开发工期或人日。",
+    "ordinal": 22,
+    "outputs": [
+      "ETA、成本明细、校准记录"
+    ],
+    "responsibilities": [
+      "分阶段采集队列、CPU/GPU、I/O、模型 token 和 provider 费用",
+      "按格式、大小、页数、音频时长和复杂度建立 ETA 模型",
+      "持续更新剩余时间、置信区间和预计完成时间",
+      "对预估、实际和偏差做版本化校准"
+    ],
+    "schema_version": "1.0.0",
+    "title": "处理成本与机器 ETA"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-processing-cost-and-eta-estimation/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-processing-cost-and-eta-estimation/SKILL.md": {
+        "bytes": 2756,
+        "mode": "0644",
+        "sha256": "323b505f3689c6b5ae35e2a2877acc04f80f19f08e253502f1eab3fca2ef89e6"
+      },
+      "skills/elmos-processing-cost-and-eta-estimation/references/contract.yaml": {
+        "bytes": 1553,
+        "mode": "0644",
+        "sha256": "454dc4529e5c8fcd5aed3ff730d7dcd23150e48929eed28f7f36dc32fe5b5665"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-processing-cost-and-eta-estimation/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_processing_cost_and_eta_estimation",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "evaluation",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "估算并追踪 Elmos 自身处理任务的机器墙钟时间、资源成本和模型成本；当页面需要进度、预计完成时间或任务核算时使用。",
+    "name": "elmos-processing-cost-and-eta-estimation",
+    "ordinal": 22,
+    "title": "处理成本与机器 ETA"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "454dc4529e5c8fcd5aed3ff730d7dcd23150e48929eed28f7f36dc32fe5b5665",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "323b505f3689c6b5ae35e2a2877acc04f80f19f08e253502f1eab3fca2ef89e6"
+  }
+}

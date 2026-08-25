@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "FOUNDATION-03-semantic-template-engine",
+  "name": "semantic-template-engine",
+  "title": "Semantic Template Engine",
+  "description": "用可解析代码模板完成语义替换，而不是字符串拼接。",
+  "batch": "F03",
+  "batch_slug": "recipe-ecosystem-patterns",
+  "priority": "P1",
+  "risk": "medium",
+  "path": "skills/semantic-template-engine/SKILL.md",
+  "origin": "foundation",
+  "dependencies": [],
+  "outputs": [],
+  "sources": [
+    "openrewrite"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [],
+  "tests": [
+    "Execute target-repository tests before production claims."
+  ],
+  "evidence": [
+    "Target-repository executed Evidence required."
+  ],
+  "stop_conditions": [
+    "Stop when the Skill-specific acceptance contract cannot be proven."
+  ],
+  "definition_of_done": [
+    "Skill-specific acceptance criteria pass in the target repository."
+  ],
+  "production_claim_boundary": "Imported static Foundation Skill; not implementation evidence."
+}

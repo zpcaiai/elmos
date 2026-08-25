@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "stage_id": "target-code-generation",
+  "stage_version": "1.0.0",
+  "inputs": [
+    {
+      "name": "semantic_ir",
+      "schema": "elmos.semantic-ir/v3",
+      "required": true
+    },
+    {
+      "name": "mapping_plan",
+      "schema": "elmos.mapping-plan/v2",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "generated_tree",
+      "schema": "elmos.file-tree/v1",
+      "required": true,
+      "staging_class": "PUBLISH_CANDIDATE"
+    },
+    {
+      "name": "source_maps",
+      "schema": "elmos.source-map/v1",
+      "required": true,
+      "staging_class": "STAGED_INTERMEDIATE"
+    }
+  ],
+  "fingerprint": {
+    "include": [
+      "input_artifact_digests",
+      "target_profile",
+      "rule_pack_digest",
+      "toolchain_digest",
+      "model_profile",
+      "feature_flags"
+    ],
+    "exclude": [
+      "run_id",
+      "workspace_absolute_path",
+      "wall_clock_time"
+    ]
+  },
+  "cache_policy": {
+    "mode": "read-write",
+    "negative_cache": false,
+    "minimum_validation_level": "TEST_VERIFIED"
+  },
+  "workspace": {
+    "source": "read-only",
+    "writable_roots": [
+      "generated/pending",
+      "scratch"
+    ],
+    "undeclared_output_policy": "quarantine"
+  },
+  "determinism": "SEEDED",
+  "checkpoint_policy": {
+    "stage_boundary": true,
+    "interval_seconds": 30,
+    "partition_key": "symbol_id"
+  },
+  "side_effects": [],
+  "minimum_validation_level": "TEST_VERIFIED"
+}

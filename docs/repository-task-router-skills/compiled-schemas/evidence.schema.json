@@ -1,0 +1,67 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/evidence.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact": {
+      "oneOf": [
+        {
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bytes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "command_or_check": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "executor": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "kind": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_RUN",
+        "BLOCKED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "timestamp": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "verifier": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "kind",
+    "command_or_check",
+    "status",
+    "sha256",
+    "bytes",
+    "executor"
+  ],
+  "type": "object"
+}

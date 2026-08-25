@@ -6,7 +6,7 @@ translation.  This module deliberately limits its claims:
 * every in-scope filesystem entry is classified and content addressed;
 * Python declarations and static imports are indexed by CPython's AST;
 * JSON, TOML, and XML descriptors are parsed by real format parsers; and
-* the other eight source languages remain ``NOT_RUN`` unless a matching,
+* non-Python active source languages remain ``NOT_RUN`` unless a matching,
   compiler-backed whole-module inventory is supplied by discovery.
 
 In particular, source text is never searched with regular expressions to
@@ -28,12 +28,16 @@ import xml.etree.ElementTree as ET
 from collections import deque
 from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 from pathlib import Path, PurePosixPath
 from typing import Final, cast
 
-from .models import RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, RouteError
+from .react_repository import (
+    react_project_descriptor,
+    validate_react_repository_verification,
+)
 from .repository import javascript_esm_descriptor
 
 SCHEMA_VERSION: Final = "1.0.0"
@@ -71,19 +75,7 @@ class EvidenceStatus(StrEnum):
     NOT_RUN = "NOT_RUN"
 
 
-SUPPORTED_LANGUAGES: Final[tuple[str, ...]] = (
-    "cpp",
-    "csharp",
-    "go",
-    "java",
-    "javascript",
-    "objc",
-    "php",
-    "python",
-    "rust",
-    "swift",
-    "typescript",
-)
+SUPPORTED_LANGUAGES: Final[tuple[str, ...]] = REPOSITORY_SURFACE_LANGUAGES
 
 _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".cc": "cpp",
@@ -93,8 +85,10 @@ _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".hpp": "cpp",
     ".hxx": "cpp",
     ".cs": "csharp",
+    ".dart": "flutter",
     ".go": "go",
     ".java": "java",
+    ".kt": "kotlin",
     ".cjs": "javascript",
     ".js": "javascript",
     ".mjs": "javascript",
@@ -105,7 +99,7 @@ _SOURCE_EXTENSIONS: Final[dict[str, str]] = {
     ".rs": "rust",
     ".swift": "swift",
     ".ts": "typescript",
-    ".tsx": "typescript",
+    ".tsx": "react",
 }
 
 _IGNORED_DIRECTORIES: Final[frozenset[str]] = frozenset(
@@ -1612,7 +1606,86 @@ def _semantic_inventory_by_path(
         ):
             raise ProjectGraphError("SEMANTIC_DISCOVERY_INVENTORY_INVALID")
         inventories[path] = raw
+    if source_language != "python":
+        required_paths = {
+            file.path
+            for file in scanned
+            if file.language == source_language
+        }
+        if set(inventories) != required_paths:
+            raise ProjectGraphError("SEMANTIC_DISCOVERY_INVENTORY_COVERAGE_INVALID")
     return inventories
+
+
+def _apply_contextual_source_language(
+    scanned: Sequence[_ScannedFile],
+    semantic_discovery: Mapping[str, object] | None,
+) -> list[_ScannedFile]:
+    """Preserve React's route identity for `.ts` files in a React project."""
+
+    if semantic_discovery is None or semantic_discovery.get("source_language") != "react":
+        return list(scanned)
+    return [
+        replace(file, language="react")
+        if file.language == "typescript" and PurePosixPath(file.path).suffix.lower() == ".ts"
+        else file
+        for file in scanned
+    ]
+
+
+def _react_project_evidence(
+    root: Path,
+    semantic_discovery: Mapping[str, object] | None,
+    scanned_by_path: Mapping[str, _ScannedFile],
+    semantic_inventories: Mapping[str, Mapping[str, object]],
+) -> tuple[dict[str, Mapping[str, object]], Mapping[str, object] | None, Mapping[str, object] | None]:
+    if semantic_discovery is None or semantic_discovery.get("source_language") != "react":
+        return {}, None, None
+    raw_descriptor = semantic_discovery.get("react_project_descriptor")
+    raw_verification = semantic_discovery.get("react_project_verification")
+    if not isinstance(raw_descriptor, Mapping) or not isinstance(raw_verification, Mapping):
+        raise ProjectGraphError("REACT_PROJECT_GRAPH_EVIDENCE_REQUIRED")
+    try:
+        live_descriptor = react_project_descriptor(root)
+    except RouteError as error:
+        raise ProjectGraphError(str(error)) from error
+    if dict(raw_descriptor) != live_descriptor:
+        raise ProjectGraphError("REACT_PROJECT_GRAPH_DESCRIPTOR_MISMATCH")
+
+    descriptor_bindings: dict[str, Mapping[str, object]] = {}
+    for role in ("package", "tsconfig"):
+        binding = live_descriptor.get(role)
+        if not isinstance(binding, Mapping):
+            raise ProjectGraphError("REACT_PROJECT_GRAPH_DESCRIPTOR_INVALID")
+        path = binding.get("path")
+        scanned = scanned_by_path.get(path) if isinstance(path, str) else None
+        if (
+            scanned is None
+            or scanned.role != FileRole.BUILD_DESCRIPTOR
+            or scanned.read_status != EvidenceStatus.PASSED
+            or scanned.sha256 != binding.get("sha256")
+            or scanned.byte_count != binding.get("bytes")
+            or path in descriptor_bindings
+        ):
+            raise ProjectGraphError("REACT_PROJECT_GRAPH_DESCRIPTOR_BINDING_INVALID")
+        descriptor_bindings[path] = binding
+
+    expected_source_sha256 = {
+        path: scanned_by_path[path].sha256
+        for path in sorted(semantic_inventories)
+    }
+    if set(expected_source_sha256) != set(semantic_inventories):
+        raise ProjectGraphError("REACT_PROJECT_GRAPH_VERIFICATION_INVALID")
+    try:
+        verified = validate_react_repository_verification(
+            root,
+            sorted(expected_source_sha256),
+            dict(live_descriptor),
+            dict(raw_verification),
+        )
+    except RouteError as error:
+        raise ProjectGraphError(str(error)) from error
+    return descriptor_bindings, live_descriptor, verified
 
 
 def _inventory_source_location(subject: Mapping[str, object], path: str) -> SourceLocation:
@@ -1792,6 +1865,7 @@ def build_project_graph(
         raise ProjectGraphError("REPOSITORY_DIRECTORY_INVALID")
     root = repository.resolve(strict=True)
     scanned, inventory_issues = _walk_repository(root)
+    scanned = _apply_contextual_source_language(scanned, semantic_discovery)
     javascript_descriptors: dict[str, dict[str, object]] = {}
     scanned_by_path = {file.path: file for file in scanned}
     for file in scanned:
@@ -1813,6 +1887,16 @@ def build_project_graph(
             raise ProjectGraphError("JAVASCRIPT_ESM_DESCRIPTOR_GRAPH_BINDING_INVALID")
         javascript_descriptors[file.path] = javascript_descriptor
     semantic_inventories = _semantic_inventory_by_path(semantic_discovery, safe_ref, scanned)
+    (
+        react_descriptor_bindings,
+        react_descriptor,
+        react_verification,
+    ) = _react_project_evidence(
+        root,
+        semantic_discovery,
+        scanned_by_path,
+        semantic_inventories,
+    )
     repository_id = _stable_id("repository", safe_ref, safe_ref)
     nodes: list[dict[str, object]] = [
         _node(
@@ -1848,14 +1932,22 @@ def build_project_graph(
         }
         if file.path in javascript_descriptors:
             file_attributes["javascript_esm_descriptor"] = javascript_descriptors[file.path]
-        migration_obligation = {
-            FileRole.BUILD_DESCRIPTOR: (
-                "BUILD_DESCRIPTOR_MIGRATION_NOT_RUN",
-                "build descriptor",
-            ),
-            FileRole.RESOURCE: ("RESOURCE_MIGRATION_NOT_RUN", "resource"),
-            FileRole.TEST: ("TEST_ARTIFACT_MIGRATION_NOT_RUN", "test artifact"),
-        }.get(file.role)
+        react_binding = react_descriptor_bindings.get(file.path)
+        if react_binding is not None:
+            file_attributes["react_project_descriptor_binding"] = dict(react_binding)
+            file_attributes["migration_status"] = EvidenceStatus.PASSED
+        migration_obligation = (
+            None
+            if react_binding is not None
+            else {
+                FileRole.BUILD_DESCRIPTOR: (
+                    "BUILD_DESCRIPTOR_MIGRATION_NOT_RUN",
+                    "build descriptor",
+                ),
+                FileRole.RESOURCE: ("RESOURCE_MIGRATION_NOT_RUN", "resource"),
+                FileRole.TEST: ("TEST_ARTIFACT_MIGRATION_NOT_RUN", "test artifact"),
+            }.get(file.role)
+        )
         if migration_obligation is not None:
             file_attributes["migration_status"] = EvidenceStatus.NOT_RUN
         nodes.append(_node(file_id, "file", PurePosixPath(file.path).name, file.path, file.language, file_attributes))
@@ -2033,6 +2125,12 @@ def build_project_graph(
         location = SourceLocation(file.path)
         if file.role == FileRole.BUILD_DESCRIPTOR:
             parsed_descriptor = _parse_descriptor(file)
+            if file.path in react_descriptor_bindings:
+                parsed_descriptor = _ParsedDescriptor(
+                    parser=f"{parsed_descriptor.parser}+react-exact-project-profile",
+                    dependencies=parsed_descriptor.dependencies,
+                    issues=(),
+                )
             for node in nodes:
                 if node["id"] == file_id:
                     attributes = cast(dict[str, object], node["attributes"])
@@ -2235,6 +2333,20 @@ def build_project_graph(
     )
     snapshot_sha256 = _sha256_bytes("\n".join(snapshot_lines).encode("utf-8"))
     repository_complete = not diagnostics and len(scanned) == sum(role_counts.values())
+    required_semantic_inventory_paths = {
+        file.path
+        for file in scanned
+        if file.language is not None and file.language != "python"
+    }
+    supplied_semantic_inventory_paths = set(semantic_inventories)
+    other_language_inventory_complete = (
+        bool(required_semantic_inventory_paths)
+        and supplied_semantic_inventory_paths == required_semantic_inventory_paths
+        and all(
+            inventory.get("enumeration_status") == "PASSED"
+            for inventory in semantic_inventories.values()
+        )
+    )
     payload: dict[str, object] = {
         "schema_version": SCHEMA_VERSION,
         "kind": "elmos.content-addressed-project-graph",
@@ -2258,14 +2370,12 @@ def build_project_graph(
                 "languages": [language for language in SUPPORTED_LANGUAGES if language != "python"],
                 "status": (
                     EvidenceStatus.PASSED
-                    if semantic_inventories
-                    and all(
-                        inventory.get("enumeration_status") == "PASSED"
-                        for inventory in semantic_inventories.values()
-                    )
+                    if other_language_inventory_complete
                     else EvidenceStatus.NOT_RUN
                 ),
                 "module_inventory_count": len(semantic_inventories),
+                "required_module_inventory_count": len(required_semantic_inventory_paths),
+                "inventory_coverage_complete": other_language_inventory_complete,
             },
         },
         "repository_complete": repository_complete,
@@ -2303,6 +2413,9 @@ def build_project_graph(
             "Runtime calls, reflection, generated code, and deployment consumers require separate evidence sources.",
         ],
     }
+    if react_descriptor is not None and react_verification is not None:
+        payload["react_project_descriptor"] = dict(react_descriptor)
+        payload["react_project_verification"] = dict(react_verification)
     digest = _project_graph_digest(payload)
     return {
         **payload,

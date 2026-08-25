@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/package/P00/config/1.0",
+  "title": "P00 package configuration",
+  "type": "object",
+  "required": [
+    "package_id",
+    "version",
+    "enabled",
+    "components",
+    "policy"
+  ],
+  "properties": {
+    "package_id": {
+      "const": "P00"
+    },
+    "version": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "P00-C01",
+          "P00-C02",
+          "P00-C03",
+          "P00-C04",
+          "P00-C05",
+          "P00-C06",
+          "P00-C07",
+          "P00-C08"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "policy": {
+      "type": "object"
+    },
+    "limits": {
+      "type": "object"
+    },
+    "feature_flags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    }
+  },
+  "additionalProperties": false
+}

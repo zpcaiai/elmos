@@ -25,7 +25,8 @@
       "owner": "elmos-software-factory-engineering",
       "scope": [
         "claim.installed-contract-identity",
-        "claim.runtime-fail-closed"
+        "claim.runtime-fail-closed",
+        "claim.local-evidence-campaigns"
       ],
       "independence": "dependent",
       "trust_level": "strong",
@@ -34,7 +35,11 @@
         "models/model.json",
         "properties/sample.json",
         "artifacts/target-artifacts.json",
-        "certification/local-installation-validation.json"
+        "certification/local-installation-validation.json",
+        "campaigns/local-holdout-v1.json",
+        "campaigns/provider-contract-simulation-v1.json",
+        "campaigns/production-like-canary-rehearsal-v1.json",
+        "campaigns/local-evidence-intake-policy-v1.json"
       ],
       "limitations": [
         "Typed specifications are design inputs, not execution evidence."
@@ -45,7 +50,8 @@
       "type": "test",
       "owner": "elmos-verification-engineering",
       "scope": [
-        "claim.installed-contract-identity"
+        "claim.installed-contract-identity",
+        "claim.local-evidence-campaigns"
       ],
       "independence": "partially-independent",
       "trust_level": "supporting",
@@ -53,7 +59,13 @@
       "evidence_refs": [
         "certification/local-runtime-test-result.json",
         "certification/raw/runtime-tests.txt",
-        "certification/raw/importer-integration-tests.txt"
+        "certification/raw/importer-integration-tests.txt",
+        "certification/local-evidence/local-holdout-receipt.json",
+        "certification/local-evidence/local-holdout-replay.json",
+        "certification/local-evidence/provider-contract-simulation-receipt.json",
+        "certification/local-evidence/provider-contract-simulation-replay.json",
+        "certification/local-evidence/production-like-rehearsal-receipt.json",
+        "certification/local-evidence/production-like-rehearsal-replay.json"
       ],
       "limitations": [
         "Local test execution is supporting self-attested evidence; it is not independent verification."
@@ -87,7 +99,8 @@
       "scope": [
         "claim.archive-identity-and-nonexecution",
         "claim.installed-contract-identity",
-        "claim.runtime-fail-closed"
+        "claim.runtime-fail-closed",
+        "claim.local-evidence-campaigns"
       ],
       "independence": "independent",
       "trust_level": "authoritative",

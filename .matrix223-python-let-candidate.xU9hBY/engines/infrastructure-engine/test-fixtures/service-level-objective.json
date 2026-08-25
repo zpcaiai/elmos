@@ -1,0 +1,12 @@
+{
+  "sloId": "slo-orders",
+  "serviceId": "orders",
+  "indicatorId": "successful_requests",
+  "queryRef": "artifact://sli-query/a",
+  "target": 99.9,
+  "window": "30d",
+  "missingDataPolicy": "UNKNOWN_BLOCKS",
+  "owner": "orders-team",
+  "semanticConventionVersion": "1.38.0"
+}
+

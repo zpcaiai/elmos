@@ -29,10 +29,9 @@ TEN_LANGUAGE_MATRIX_LANGUAGES = (*NINE_LANGUAGE_MATRIX_LANGUAGES, *NODEJS_LANGUA
 #: routes' evidence is filed under it.
 ELEVEN_LANGUAGE_MATRIX_LANGUAGES = (*TEN_LANGUAGE_MATRIX_LANGUAGES, *PHP_LANGUAGES)
 
-#: Kotlin, React and Flutter.  React and Flutter are declared ahead of their
-#: analyzers -- see ``models.PENDING_ANALYZER_LANGUAGES``; Kotlin is declared
-#: ahead of its analyzer for the same reason.  Declaration is a matrix fact,
-#: not an evidence claim.
+#: Kotlin, React and Flutter. Their exact local analyzers and bounded
+#: repository inventory/build surfaces are executable; declaration still is
+#: not independent-verification or certification evidence.
 V3_LANGUAGES = ("kotlin", "react", "flutter")
 
 #: Deprecated: still declared, no longer active.  Every javascript direction is
@@ -148,6 +147,16 @@ PHP_EXACT_ROUTE_KEYS = tuple(
     if route_key not in TEN_LANGUAGE_COMPLETE_ROUTE_KEYS
 )
 
+#: The executable PHP completion selection excludes the two archived
+#: javascript directions from the immutable 20-route provenance partition.
+#: It is a runner selection, not a new evidence owner: every member remains
+#: filed under ``php-php85-completion-20``.
+PHP_ACTIVE_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in PHP_EXACT_ROUTE_KEYS
+    if route_key not in set(DEPRECATED_ROUTE_KEYS)
+)
+
 #: Exactly the 66 directions kotlin, react and flutter added to the eleven
 #: language matrix.  Derived as active-minus-eleven, so every direction naming
 #: a new language belongs here -- including the ones whose other end is
@@ -234,6 +243,33 @@ EXACT_ROUTE_SETS = {
     # 156 to "eleven-language-complete-110".
     "eleven-language-complete-110": ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     "thirteen-language-complete-156": COMPLETE_ROUTE_KEYS,
+}
+
+# CLI mutation surfaces intentionally do not expose historical sets, mixed
+# active/deprecated sets, or the V3 research-only routes as executable.  The
+# PHP 18 is an execution selection over the immutable PHP 20 provenance set.
+EXECUTABLE_ROUTE_SETS = {
+    "legacy-complete-30": CORE_ROUTE_KEYS,
+    "cpp-objc-swift-java-exact-8": SPECIALIZED_ROUTE_KEYS,
+    "nine-language-completion-34": COMPLETION_ROUTE_KEYS,
+    "nine-language-complete-72": NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    "php-php85-active-completion-18": PHP_ACTIVE_ROUTE_KEYS,
+}
+
+# Preparation may synchronize V3 research metadata, but it still cannot touch
+# a deprecated direction.  The complete active 156 is therefore preparable
+# while the frozen 90/110 and provenance PHP 20 are read-only.
+PREPARABLE_ROUTE_SETS = {
+    **EXECUTABLE_ROUTE_SETS,
+    "kotlin-react-flutter-completion-66": V3_EXACT_ROUTE_KEYS,
+    "thirteen-language-complete-156": COMPLETE_ROUTE_KEYS,
+}
+
+# Read-only verification accepts every immutable provenance/view set plus the
+# PHP active execution selection.  It never mutates route evidence.
+READ_ONLY_ROUTE_SETS = {
+    **EXACT_ROUTE_SETS,
+    "php-php85-active-completion-18": PHP_ACTIVE_ROUTE_KEYS,
 }
 EVIDENCED_ROUTE_KEYS = COMPLETE_ROUTE_KEYS
 

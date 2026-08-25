@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "matrix_key": "multimodal-intake-principal-resource-action-v1",
+  "owner": "elmos-multimodal-intake-security",
+  "decision": "fail-closed",
+  "permissions": [
+    "INTAKE_READ",
+    "INTAKE_WRITE",
+    "INTAKE_REVIEW",
+    "INTAKE_ADMIN"
+  ],
+  "rules": [
+    {
+      "resource": "intake-project",
+      "actions": ["read", "status", "progress", "preview"],
+      "required_permission": "INTAKE_READ"
+    },
+    {
+      "resource": "intake-project",
+      "actions": ["execute", "upload", "publish", "rebuild"],
+      "required_permission": "INTAKE_WRITE"
+    },
+    {
+      "resource": "intake-correction",
+      "actions": ["discover", "read", "append", "approve", "reject", "revert"],
+      "required_permission": "INTAKE_REVIEW"
+    },
+    {
+      "resource": "intake-bootstrap",
+      "actions": ["create-project", "bind-alias"],
+      "required_permission": "INTAKE_ADMIN"
+    }
+  ],
+  "required_negative_cases": [
+    {
+      "case_id": "AUTH-NEG-ANONYMOUS",
+      "input_change": "remove authenticated principal",
+      "expected_decision": "DENY",
+      "required_observation": "no receipt, child process, provider call, publication, correction, or outbox write"
+    },
+    {
+      "case_id": "AUTH-NEG-CROSS-TENANT",
+      "input_change": "substitute another tenant or tenant-bound project alias",
+      "expected_decision": "DENY",
+      "required_observation": "no cross-tenant read and no side effect"
+    },
+    {
+      "case_id": "AUTH-NEG-ESCALATION",
+      "input_change": "request review, write, or admin action with read-only authority",
+      "expected_decision": "DENY",
+      "required_observation": "permission cannot be supplied by request content"
+    },
+    {
+      "case_id": "AUTH-NEG-CONFUSED-DEPUTY",
+      "input_change": "reuse an authorized actor with an unbound project, alias, operation, or child environment",
+      "expected_decision": "DENY",
+      "required_observation": "trusted binding is re-derived before dispatch"
+    },
+    {
+      "case_id": "AUTH-NEG-UNKNOWN-OPERATION",
+      "input_change": "replace the registered Skill-operation pair",
+      "expected_decision": "DENY",
+      "required_observation": "REQUIRES_ADAPTER before runtime dispatch"
+    }
+  ],
+  "external_evidence_status": "NOT_RUN",
+  "certification_status": "NOT_CERTIFIED"
+}

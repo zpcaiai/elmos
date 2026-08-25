@@ -1,0 +1,142 @@
+{
+  "acceptance": [
+    {
+      "criterion": "客户端断开不终止服务端任务",
+      "evidence": [],
+      "id": "S21-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "worker 崩溃后从检查点继续而非全部重做",
+      "evidence": [],
+      "id": "S21-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "重复事件不会重复写入或重复收费",
+      "evidence": [],
+      "id": "S21-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "取消和超时最终收敛到明确终态",
+      "evidence": [],
+      "id": "S21-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "客户端断开不终止服务端任务",
+      "worker 崩溃后从检查点继续而非全部重做",
+      "重复事件不会重复写入或重复收费",
+      "取消和超时最终收敛到明确终态"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "processing_jobs",
+      "processing_attempts",
+      "processing_checkpoints"
+    ],
+    "deliverables": [
+      "工作流编排适配器",
+      "processing_checkpoints、attempts 数据模型",
+      "kill、restart、network partition、duplicate delivery 测试"
+    ],
+    "dependencies": [],
+    "events": [
+      "job.checkpointed",
+      "job.resumed",
+      "job.cancelled"
+    ],
+    "failure_modes": [
+      "worker 崩溃",
+      "编排器重启",
+      "消息重复",
+      "孤儿任务"
+    ],
+    "inputs": [
+      "任务定义、资产、策略"
+    ],
+    "metrics": [
+      "recovery_success_rate",
+      "duplicate_side_effect_count"
+    ],
+    "name": "elmos-durable-processing-and-recovery",
+    "objective": "确保服务端任务生命周期独立于客户端连接，并能从最近安全检查点恢复而不重复计费或副作用。",
+    "ordinal": 21,
+    "outputs": [
+      "持久结果、进度、检查点、成本记录"
+    ],
+    "responsibilities": [
+      "定义 durable workflow、activity、checkpoint 和 lease 模型",
+      "对外部写入使用幂等键、outbox 和补偿策略",
+      "记录节点输入、输出、状态、重试、成本和错误",
+      "支持暂停、取消、超时、心跳、孤儿任务回收和结果持久化"
+    ],
+    "schema_version": "1.0.0",
+    "title": "持久任务执行与恢复"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-durable-processing-and-recovery/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-durable-processing-and-recovery/SKILL.md": {
+        "bytes": 2818,
+        "mode": "0644",
+        "sha256": "fe8046da66ac46711de909cde6ec4ef211b4a09163d5d22e5606ee665b784061"
+      },
+      "skills/elmos-durable-processing-and-recovery/references/contract.yaml": {
+        "bytes": 1572,
+        "mode": "0644",
+        "sha256": "830751a815922a7591a8251050e1815491c986d76be402cfc91580d7071fc961"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-durable-processing-and-recovery/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_durable_processing_and_recovery",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "governance",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "实现长时间解析和索引任务的检查点、恢复、取消与幂等副作用；当客户端断线、服务重启或 worker 崩溃后仍需继续时使用。",
+    "name": "elmos-durable-processing-and-recovery",
+    "ordinal": 21,
+    "title": "持久任务执行与恢复"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "830751a815922a7591a8251050e1815491c986d76be402cfc91580d7071fc961",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "fe8046da66ac46711de909cde6ec4ef211b4a09163d5d22e5606ee665b784061"
+  }
+}

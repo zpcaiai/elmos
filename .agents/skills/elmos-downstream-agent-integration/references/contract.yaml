@@ -1,0 +1,51 @@
+schema_version: 1.0.0
+ordinal: 28
+name: elmos-downstream-agent-integration
+title: 下游 Agent 集成
+objective: 定义只读证据、受控工具、上下文装载和结果回写边界，防止下游重复解析或被文件内指令劫持。
+dependencies:
+- elmos-prompt-injection-defense
+- elmos-context-budget-manager
+- elmos-source-anchor-and-provenance
+inputs:
+- InputPackage、任务目标、权限
+outputs:
+- AgentContext、ToolDecision、ResultProvenance
+responsibilities:
+- 提供 InputPackage、Requirement、RepositoryMap 的稳定读取接口
+- 在任务启动时构建最小充分上下文并附 trust、provenance 元数据
+- 通过 Tool Gateway 控制下游动作、参数、审批和幂等
+- 将生成结果、决策、测试和引用回写证据图
+deliverables:
+- AgentContextBuilder 与 tool policy adapter
+- 下游工作流契约和示例
+- 需求到实现再到测试的端到端测试
+acceptance:
+- 下游 Agent 不直接调用格式专有解析器
+- 每项关键实现可追溯到需求和源文件
+- 文件内提示不能授予工具权限
+- 结果回写不会篡改原始输入
+data_entities:
+- agent_contexts
+- agent_tool_grants
+- agent_result_links
+events:
+- agent.context.built
+- agent.tool.denied
+- agent.result.recorded
+metrics:
+- context_relevance
+- unauthorized_action_count
+failure_modes:
+- 上下文不足
+- 工具越权
+- 结果无来源
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

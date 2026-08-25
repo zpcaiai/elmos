@@ -1,0 +1,68 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-005",
+  "name": "elmos-golden-route-priority",
+  "title": "Golden Route Prioritization",
+  "description": "把主要工程资源集中到 Spring 大型仓库 Golden Route，避免路线无限横向扩张。",
+  "batch": "11",
+  "batch_slug": "product-strategy-boundaries",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/elmos-golden-route-priority/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "elmos-maturity-l1-l5"
+  ],
+  "outputs": [
+    "route-scorecard.json",
+    "selected-route.md",
+    "deferred-routes.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "市场价值评分",
+    "技术可验证性评分",
+    "客户仓库可获得性",
+    "许可证与毛利评分",
+    "路线 WIP 限制"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "许可证未知时必须 fail closed",
+    "Roadmap 能力不得被 current capability 查询返回",
+    "scope change 必须触发重新评估/报价"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: route-scorecard.json, selected-route.md, deferred-routes.json"
+  ],
+  "stop_conditions": [
+    "许可证、责任或商业转售权不明确",
+    "客户请求超出认证 Route 且拒绝变更单",
+    "公开声明缺少执行 Evidence"
+  ],
+  "definition_of_done": [
+    "产品、报价、执行、验收和市场宣传使用同一版本化契约",
+    "核心自研/外部集成边界和退出计划明确",
+    "Spring Golden Route 获得 owner、预算与 L3 目标"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

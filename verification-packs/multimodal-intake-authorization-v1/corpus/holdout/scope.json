@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "kind": "independent-authorization-holdout",
+  "status": "NOT_RUN",
+  "cases": []
+}

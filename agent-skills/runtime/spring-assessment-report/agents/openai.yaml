@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spring Assessment Report"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $spring-assessment-report for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

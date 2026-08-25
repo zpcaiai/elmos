@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "FOUNDATION-06-safe-agent-role-switching",
+  "name": "safe-agent-role-switching",
+  "title": "Safe Agent Role Switching",
+  "description": "运行中切换 Agent/模型只能在安全 provider-turn 边界完成。",
+  "batch": "F06",
+  "batch_slug": "agent-runtime",
+  "priority": "P0",
+  "risk": "high",
+  "path": "skills/safe-agent-role-switching/SKILL.md",
+  "origin": "foundation",
+  "dependencies": [],
+  "outputs": [],
+  "sources": [
+    "opencode"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [],
+  "tests": [
+    "Execute target-repository tests before production claims."
+  ],
+  "evidence": [
+    "Target-repository executed Evidence required."
+  ],
+  "stop_conditions": [
+    "Stop when the Skill-specific acceptance contract cannot be proven."
+  ],
+  "definition_of_done": [
+    "Skill-specific acceptance criteria pass in the target repository."
+  ],
+  "production_claim_boundary": "Imported static Foundation Skill; not implementation evidence."
+}

@@ -3,21 +3,23 @@
   "case_key": "elmos-7plus1-local-contract-v1-assurance-v1",
   "version": 1,
   "owner": "elmos-verification-engineering",
-  "top_claim": "The pack conservatively describes the local archive-import and standard-library runtime contract without claiming execution, proof, production readiness, or certification beyond recorded evidence.",
+  "top_claim": "The pack conservatively describes the local archive-import, safe archive-contract reimplementation, standard-library runtime, and bounded local evidence campaigns without claiming independent, provider, production, proof, or certification evidence beyond recorded execution.",
   "claims": [
     {
       "claim_id": "claim.archive-identity-and-nonexecution",
-      "statement": "The exact eight archive byte identities are recorded and archive content remains untrusted data.",
+      "statement": "The exact eight archive byte identities are recorded, executable members are neutralized, archive content remains untrusted data, and useful script checks are reimplemented in repository-owned code without executing the archive scripts.",
       "status": "partially-supported",
       "evidence_refs": [
         "artifacts/source-archives.json",
+        "certification/local-evidence/archive-contract-inspection.json",
         "certification/local-runtime-test-result.json",
         "certification/raw/importer-integration-tests.txt"
       ],
       "assumptions": [],
       "limitations": [
         "Importer development and negative execution is local and self-attested, not independent evidence.",
-        "Archive byte identity does not prove provenance, license, signature, SBOM, behavior, or safety."
+        "Archive byte identity does not prove provenance, license, signature, SBOM, behavior, or safety.",
+        "The source blueprint presence score is non-authoritative and the original validator's assumed root layout is incompatible with the supplied union."
       ]
     },
     {
@@ -49,7 +51,32 @@
       ],
       "assumptions": [],
       "limitations": [
-        "Focused runtime negative tests passed locally; mutation, fuzz, formal, provider, representative, and independent review evidence remain NOT_RUN."
+        "Focused runtime negative tests passed locally; mutation, fuzz, formal, real provider, representative production-derived, and independent review evidence remain NOT_RUN."
+      ]
+    },
+    {
+      "claim_id": "claim.local-evidence-campaigns",
+      "statement": "Repository-owned local holdout, provider-contract fixture, zero-side-effect production-like rollback rehearsal, deterministic replay, receipt quarantine, and structural preflight execute with exact digest binding while external states stay non-successful.",
+      "status": "partially-supported",
+      "evidence_refs": [
+        "campaigns/local-holdout-v1.json",
+        "campaigns/provider-contract-simulation-v1.json",
+        "campaigns/production-like-canary-rehearsal-v1.json",
+        "campaigns/local-evidence-intake-policy-v1.json",
+        "certification/local-evidence/local-holdout-receipt.json",
+        "certification/local-evidence/local-holdout-replay.json",
+        "certification/local-evidence/provider-contract-simulation-receipt.json",
+        "certification/local-evidence/provider-contract-simulation-replay.json",
+        "certification/local-evidence/production-like-rehearsal-receipt.json",
+        "certification/local-evidence/production-like-rehearsal-replay.json",
+        "certification/local-runtime-test-result.json"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "The local holdout is self-attested and is not the untouched independent holdout required for certification.",
+        "The provider campaign uses offline fixtures and leaves real provider execution NOT_RUN and runtime methods adapter-bound.",
+        "The production-like campaign is synthetic and permits zero network, provider calls, production population, or production writes; production execution remains NOT_RUN.",
+        "Receipt admission lacks an external signature trust root and cannot establish independent verification."
       ]
     }
   ],
@@ -61,11 +88,21 @@
     "certification/local-pack-validation.json",
     "certification/local-runtime-test-result.json",
     "certification/local-installation-validation.json",
+    "certification/local-evidence/archive-contract-inspection.json",
+    "certification/local-evidence/local-holdout-receipt.json",
+    "certification/local-evidence/local-holdout-replay.json",
+    "certification/local-evidence/provider-contract-simulation-receipt.json",
+    "certification/local-evidence/provider-contract-simulation-replay.json",
+    "certification/local-evidence/production-like-rehearsal-receipt.json",
+    "certification/local-evidence/production-like-rehearsal-replay.json",
     "certification/raw/install-summary.txt",
     "certification/raw/install-check.txt",
     "certification/raw/skill-creator-validation.txt",
     "certification/raw/runtime-tests.txt",
     "certification/raw/importer-integration-tests.txt",
+    "certification/raw/target-artifact-verification.txt",
+    "certification/raw/pack-validation.txt",
+    "certification/raw/conservative-gate.txt",
     "certification/gate-result.json"
   ],
   "residual_risks": [
@@ -78,7 +115,7 @@
     },
     {
       "risk_id": "risk.local-evidence-independence",
-      "risk": "Development and seeded negative tests are local and self-attested; mutation, fuzz, and independent replay remain NOT_RUN.",
+      "risk": "Development, seeded negative tests, local holdout, provider fixture simulation, production-like rehearsal, and replay are local and self-attested; mutation, fuzz, independent holdout, and independent replay remain NOT_RUN.",
       "owner": "elmos-verification-engineering",
       "status": "open",
       "required_closure": "Separate authorized executor and independent verifier with signed digest-bound raw evidence"

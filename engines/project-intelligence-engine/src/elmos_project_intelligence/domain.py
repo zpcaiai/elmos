@@ -19,7 +19,7 @@ from pathlib import PurePosixPath
 import re
 from typing import Any
 
-from .canonical import canonical_digest
+from .canonical import canonical_digest, validate_digest
 
 
 JsonObject = Mapping[str, Any]
@@ -101,6 +101,232 @@ def _safe_path(value: Any) -> str:
     if parsed.is_absolute() or any(part in {"", ".", ".."} for part in parsed.parts):
         raise ValueError(f"unsafe repository-relative path: {path}")
     return parsed.as_posix()
+
+
+_MERMAID_LABEL_MAX_CHARACTERS = 160
+_MERMAID_LABEL_PUNCTUATION = frozenset(" _-.,()")
+_MARKDOWN_TEXT_MAX_CHARACTERS = 160
+_MARKDOWN_TEXT_PUNCTUATION = frozenset(" _-.,():@")
+
+_CONNECTOR_READ_SCOPE_ALLOWLIST = frozenset(
+    {
+        "read:artifacts",
+        "read:ci",
+        "read:docs",
+        "read:evidence",
+        "read:issues",
+        "read:observability",
+        "read:project",
+        "read:repository",
+    }
+)
+_DEBUG_CAPABILITY_ALLOWLIST = frozenset(
+    {
+        "breakpoints",
+        "conditional_breakpoints",
+        "console",
+        "disassembly_optional",
+        "exception_breakpoints",
+        "goroutines",
+        "hot_reload_optional",
+        "isolate_threads",
+        "line_breakpoints",
+        "logpoints",
+        "memory_optional",
+        "network_timeline",
+        "page_target",
+        "scopes",
+        "source_maps",
+        "stack",
+        "step",
+        "threads",
+        "variables",
+    }
+)
+
+_DEBUG_MAX_EVENTS = 1_000
+_DEBUG_MAX_DEPTH = 8
+_DEBUG_MAX_MAPPING_FIELDS = 128
+_DEBUG_MAX_SEQUENCE_ITEMS = 256
+_DEBUG_MAX_STRING_CHARACTERS = 4_096
+_DEBUG_SENSITIVE_KEY_MARKERS = (
+    "secret",
+    "token",
+    "password",
+    "passwd",
+    "credential",
+    "authorization",
+    "apikey",
+    "privatekey",
+    "accesskey",
+    "rawmemory",
+    "cookie",
+    "authoriz",
+    "approv",
+    "certif",
+)
+_DEBUG_INLINE_SECRET = re.compile(
+    r"(?i)\b(api[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|"
+    r"password|passwd|secret|authorization)\b(\s*[:=]\s*)"
+    r"(?:bearer\s+)?(?:[\"'][^\"'\r\n]{1,4096}[\"']|[^\s,;}\]]{8,4096})"
+)
+_DEBUG_BEARER_TOKEN = re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/=-]{8,4096}")
+_CORRELATION_EVENT_FIELDS = frozenset(
+    {
+        "event_id",
+        "sequence",
+        "kind",
+        "thread_id",
+        "frame",
+        "trace_id",
+        "correlation_id",
+        "timestamp",
+        "service",
+        "component",
+        "parent_id",
+        "span_id",
+    }
+)
+
+
+def _safe_mermaid_label(value: Any) -> tuple[str, bool]:
+    """Return a bounded label that cannot escape a quoted Mermaid node.
+
+    Mermaid flowcharts accept directives, links, and HTML-like content.  The
+    renderer therefore uses a deliberately small character allowlist instead
+    of trying to escape an evolving grammar.  Whitespace is collapsed so line
+    separators cannot create a second statement.
+    """
+
+    original = str(value)
+    allowed = "".join(
+        character
+        if character.isalnum() or character in _MERMAID_LABEL_PUNCTUATION
+        else " "
+        for character in original
+    )
+    collapsed = " ".join(allowed.split())
+    bounded = collapsed[:_MERMAID_LABEL_MAX_CHARACTERS].rstrip() or "node"
+    return bounded, bounded != original
+
+
+def _safe_markdown_text(value: Any) -> tuple[str, bool]:
+    """Return bounded plain text that cannot introduce Markdown structure."""
+
+    original = str(value)
+    allowed = "".join(
+        character
+        if character.isalnum() or character in _MARKDOWN_TEXT_PUNCTUATION
+        else " "
+        for character in original
+    )
+    collapsed = " ".join(allowed.split())
+    bounded = collapsed[:_MARKDOWN_TEXT_MAX_CHARACTERS].rstrip() or "unknown"
+    return bounded, bounded != original
+
+
+def _canonical_allowlisted_values(
+    value: Any,
+    *,
+    field_name: str,
+    allowlist: frozenset[str],
+) -> tuple[list[str], list[str]]:
+    accepted: set[str] = set()
+    rejected: set[str] = set()
+    for item in _sequence(value, field_name):
+        if not isinstance(item, str) or not item:
+            raise ValueError(f"{field_name} must contain non-empty strings")
+        canonical = item.strip().lower()
+        if item != canonical or canonical not in allowlist:
+            rejected.add(item)
+            continue
+        accepted.add(canonical)
+    return sorted(accepted), sorted(rejected)
+
+
+def _debug_key_is_sensitive(key: str) -> bool:
+    normalized = re.sub(r"[^a-z0-9]", "", key.lower())
+    return any(marker in normalized for marker in _DEBUG_SENSITIVE_KEY_MARKERS)
+
+
+def _sanitize_debug_value(
+    value: Any,
+    *,
+    depth: int,
+    stats: Counter[str],
+) -> Any:
+    if depth > _DEBUG_MAX_DEPTH:
+        raise ValueError("debug event nesting exceeds the configured limit")
+    if isinstance(value, Mapping):
+        if len(value) > _DEBUG_MAX_MAPPING_FIELDS:
+            raise ValueError("debug event mapping exceeds the configured field limit")
+        sanitized: dict[str, Any] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise ValueError("debug event mapping keys must be strings")
+            if _debug_key_is_sensitive(key):
+                stats["sensitive_fields_omitted"] += 1
+                continue
+            sanitized[key] = _sanitize_debug_value(
+                item,
+                depth=depth + 1,
+                stats=stats,
+            )
+        return sanitized
+    if isinstance(value, list):
+        if len(value) > _DEBUG_MAX_SEQUENCE_ITEMS:
+            raise ValueError("debug event sequence exceeds the configured item limit")
+        return [
+            _sanitize_debug_value(item, depth=depth + 1, stats=stats) for item in value
+        ]
+    if isinstance(value, str):
+        sanitized_text = value
+        if len(sanitized_text) > _DEBUG_MAX_STRING_CHARACTERS:
+            sanitized_text = sanitized_text[:_DEBUG_MAX_STRING_CHARACTERS]
+            stats["strings_truncated"] += 1
+        redacted_text = _DEBUG_INLINE_SECRET.sub(r"\1\2[REDACTED]", sanitized_text)
+        redacted_text = _DEBUG_BEARER_TOKEN.sub("Bearer [REDACTED]", redacted_text)
+        if redacted_text != sanitized_text:
+            stats["inline_secret_values_redacted"] += 1
+        return redacted_text
+    if value is None or isinstance(value, (bool, int)):
+        return value
+    raise ValueError(f"unsupported debug event value: {type(value).__name__}")
+
+
+def _sanitized_debug_events(
+    inputs: JsonObject,
+    *,
+    allowed_fields: frozenset[str] | None = None,
+) -> tuple[list[dict[str, Any]], Counter[str]]:
+    events = _records(inputs, "debug_events")
+    if len(events) > _DEBUG_MAX_EVENTS:
+        raise ValueError("debug event count exceeds the configured hard limit")
+    stats: Counter[str] = Counter()
+    sanitized: list[dict[str, Any]] = []
+    for event in events:
+        selected = event
+        if allowed_fields is not None:
+            selected = {
+                key: value for key, value in event.items() if key in allowed_fields
+            }
+            stats["nonessential_fields_omitted"] += len(event) - len(selected)
+        clean = _sanitize_debug_value(selected, depth=0, stats=stats)
+        if not isinstance(clean, dict):
+            raise ValueError("sanitized debug event must remain an object")
+        sanitized.append(clean)
+    return sanitized, stats
+
+
+def _debug_sanitization_warnings(stats: Counter[str]) -> tuple[str, ...]:
+    warnings: list[str] = []
+    if stats["sensitive_fields_omitted"] or stats["inline_secret_values_redacted"]:
+        warnings.append("debug-data-redacted-by-field-policy")
+    if stats["nonessential_fields_omitted"]:
+        warnings.append("nonessential-debug-fields-omitted")
+    if stats["strings_truncated"]:
+        warnings.append("debug-strings-truncated")
+    return tuple(warnings)
 
 
 def _sequence(value: Any, field_name: str) -> list[Any]:
@@ -533,7 +759,8 @@ def bind_claim_evidence(inputs: JsonObject) -> CapabilityOutcome:
             {
                 "claim_id": claim.get("id"),
                 "evidence_refs": existing,
-                "confidence": "CONFIRMED" if existing else "UNKNOWN",
+                "confidence": "REFERENCED_UNVERIFIED" if existing else "UNKNOWN",
+                "verification_state": "NOT_RUN",
             }
         )
     return _outcome(
@@ -543,6 +770,9 @@ def bind_claim_evidence(inputs: JsonObject) -> CapabilityOutcome:
             "bindings": bound,
             "unbound_claim_count": sum(not item["evidence_refs"] for item in bound),
         },
+        warnings=("caller-supplied-evidence-references-unverified",)
+        if any(item["evidence_refs"] for item in bound)
+        else (),
     )
 
 
@@ -593,8 +823,11 @@ def navigate_graph(inputs: JsonObject) -> CapabilityOutcome:
             "symbol": query,
             "definitions": definitions,
             "references": references,
-            "confidence": "CONFIRMED" if definitions else "UNKNOWN",
+            "confidence": "INFERRED" if definitions else "UNKNOWN",
         },
+        warnings=("static-or-caller-supplied-symbols-unverified",)
+        if definitions
+        else (),
     )
 
 
@@ -821,11 +1054,15 @@ def render_diagram(inputs: JsonObject) -> CapabilityOutcome:
         edges = _records(spec, "edges")
     ids: dict[str, str] = {}
     lines = ["flowchart TD"]
+    labels_normalized = False
     for index, node in enumerate(nodes):
         original = str(node.get("id", node.get("name", index)))
         identifier = f"n{index}"
         ids[original] = identifier
-        label = str(node.get("label", node.get("name", original))).replace('"', "'")
+        label, was_normalized = _safe_mermaid_label(
+            node.get("label", node.get("name", original))
+        )
+        labels_normalized = labels_normalized or was_normalized
         lines.append(f'  {identifier}["{label}"]')
     for edge in edges:
         source = ids.get(str(edge.get("from")))
@@ -842,6 +1079,7 @@ def render_diagram(inputs: JsonObject) -> CapabilityOutcome:
             "digest": canonical_digest(mermaid),
         },
         unavailable=("svg-renderer", "png-renderer"),
+        warnings=("diagram-labels-normalized",) if labels_normalized else (),
     )
 
 
@@ -881,16 +1119,28 @@ def apply_diagram_patch(inputs: JsonObject) -> CapabilityOutcome:
 
 def generate_document(inputs: JsonObject) -> CapabilityOutcome:
     nodes, edges = _graph(inputs)
+    normalized = False
+    component_lines: list[str] = []
+    for node in nodes[:50]:
+        name, name_normalized = _safe_markdown_text(node.get("name", node.get("id")))
+        kind, kind_normalized = _safe_markdown_text(node.get("kind", "component"))
+        normalized = normalized or name_normalized or kind_normalized
+        component_lines.append(f"- {name} ({kind})")
+
+    relationship_lines: list[str] = []
+    for edge in edges[:100]:
+        source, source_normalized = _safe_markdown_text(edge.get("from"))
+        target, target_normalized = _safe_markdown_text(edge.get("to"))
+        kind, kind_normalized = _safe_markdown_text(edge.get("kind", "relates"))
+        normalized = (
+            normalized or source_normalized or target_normalized or kind_normalized
+        )
+        relationship_lines.append(f"- {source} -> {target} ({kind})")
+
     lines = ["# Architecture Evidence Report", "", "## Components", ""]
-    lines.extend(
-        f"- `{node.get('name', node.get('id'))}` ({node.get('kind', 'component')})"
-        for node in nodes[:50]
-    )
+    lines.extend(component_lines)
     lines.extend(["", "## Relationships", ""])
-    lines.extend(
-        f"- `{edge.get('from')}` -> `{edge.get('to')}` ({edge.get('kind', 'relates')})"
-        for edge in edges[:100]
-    )
+    lines.extend(relationship_lines)
     lines.extend(
         [
             "",
@@ -909,6 +1159,7 @@ def generate_document(inputs: JsonObject) -> CapabilityOutcome:
             "content": content,
             "digest": canonical_digest(content),
         },
+        warnings=("markdown-fields-normalized",) if normalized else (),
     )
 
 
@@ -944,17 +1195,27 @@ def generate_presentation(inputs: JsonObject) -> CapabilityOutcome:
 
 def bundle_report(inputs: JsonObject) -> CapabilityOutcome:
     artifacts = _records(inputs, "artifacts")
-    index = sorted(
-        (
+    index: list[dict[str, Any]] = []
+    artifact_ids: set[str] = set()
+    for item in artifacts:
+        artifact_id = _identifier(item.get("artifact_id"), "artifact_id")
+        if artifact_id in artifact_ids:
+            raise ValueError("artifact_id values must be unique")
+        artifact_ids.add(artifact_id)
+        supplied_digest = item.get("digest")
+        if not isinstance(supplied_digest, str):
+            raise ValueError("artifact digest must be a canonical sha256 digest")
+        normalized_digest = validate_digest(supplied_digest)
+        if supplied_digest != normalized_digest:
+            raise ValueError("artifact digest must use canonical lowercase sha256 form")
+        index.append(
             {
-                "artifact_id": _identifier(item.get("artifact_id"), "artifact_id"),
-                "digest": _identifier(item.get("digest"), "digest"),
+                "artifact_id": artifact_id,
+                "digest": normalized_digest,
                 "media_type": str(item.get("media_type", "application/octet-stream")),
             }
-            for item in artifacts
-        ),
-        key=lambda item: item["artifact_id"],
-    )
+        )
+    index.sort(key=lambda item: item["artifact_id"])
     return _outcome(
         "LOCAL_EXECUTED",
         "REPORT_BUNDLE_INDEXED",
@@ -993,9 +1254,10 @@ def answer_project_query(inputs: JsonObject) -> CapabilityOutcome:
             "query": query,
             "matches": matches[:20],
             "answer": matches[0]["excerpt"] if matches else None,
-            "confidence": "CONFIRMED" if matches else "UNKNOWN",
+            "confidence": "LEXICAL_MATCH" if matches else "UNKNOWN",
         },
         unavailable=("semantic-vector-provider", "model-answer-adapter"),
+        warnings=("lexical-match-is-not-semantic-confirmation",) if matches else (),
     )
 
 
@@ -1157,27 +1419,39 @@ def cache_analysis_stage(inputs: JsonObject) -> CapabilityOutcome:
     )
 
 
-def version_artifact(inputs: JsonObject) -> CapabilityOutcome:
+def validate_artifact_version_proposal(inputs: JsonObject) -> CapabilityOutcome:
     artifact_id = _identifier(inputs.get("artifact_id", "artifact"), "artifact_id")
     content = inputs.get("content")
     locked = bool(inputs.get("human_locked", False))
     proposed = inputs.get("proposed_content", content)
+    previous_version = inputs.get("previous_version", 0)
+    if type(previous_version) is not int or previous_version < 0:
+        raise ValueError("previous_version must be a non-negative integer")
     if locked and proposed != content:
         return _outcome(
             "BLOCKED",
             "HUMAN_LOCK_PREVENTED_OVERWRITE",
-            {"artifact_id": artifact_id, "human_locked": True},
+            {
+                "artifact_id": artifact_id,
+                "caller_reported_human_locked": True,
+                "authoritative_lock_verified": False,
+                "version_persisted": False,
+            },
         )
-    version = int(inputs.get("previous_version", 0)) + 1
+    version = previous_version + 1
     return _outcome(
-        "LOCAL_EXECUTED",
-        "ARTIFACT_VERSION_CREATED",
+        "PARTIAL_LOCAL_EXECUTED",
+        "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
         {
             "artifact_id": artifact_id,
-            "version": version,
-            "content_digest": canonical_digest(content),
-            "human_locked": locked,
+            "proposed_version": version,
+            "content_digest": canonical_digest(proposed),
+            "caller_reported_human_locked": locked,
+            "authoritative_lock_verified": False,
+            "version_persisted": False,
         },
+        unavailable=("authoritative-human-lock-store", "artifact-version-store"),
+        warnings=("caller-supplied-lock-state-unverified",),
     )
 
 
@@ -1209,17 +1483,30 @@ def authorize_and_audit(inputs: JsonObject) -> CapabilityOutcome:
     required = {
         str(item) for item in _sequence(inputs.get("required_roles"), "required_roles")
     }
-    allowed = actor_tenant == resource_tenant and required.issubset(roles)
+    candidate_match = actor_tenant == resource_tenant and required.issubset(roles)
+    if not candidate_match:
+        return _outcome(
+            "BLOCKED",
+            "LOCAL_POLICY_DENIED",
+            {
+                "enforcement_authorized": False,
+                "simulated_tenant_match": actor_tenant == resource_tenant,
+                "simulated_missing_roles": sorted(required - roles),
+                "audit_digest": canonical_digest(inputs),
+            },
+            unavailable=("enterprise-identity-provider", "scim-adapter"),
+        )
     return _outcome(
-        "PARTIAL_LOCAL_EXECUTED" if allowed else "BLOCKED",
-        "LOCAL_POLICY_ALLOWED" if allowed else "LOCAL_POLICY_DENIED",
+        "PARTIAL_LOCAL_EXECUTED",
+        "LOCAL_POLICY_SIMULATED",
         {
-            "allowed": allowed,
-            "tenant_match": actor_tenant == resource_tenant,
-            "missing_roles": sorted(required - roles),
+            "enforcement_authorized": False,
+            "simulated_tenant_match": actor_tenant == resource_tenant,
+            "simulated_missing_roles": sorted(required - roles),
             "audit_digest": canonical_digest(inputs),
         },
         unavailable=("enterprise-identity-provider", "scim-adapter"),
+        warnings=("caller-supplied-identity-and-roles-not-enforcement-authority",),
     )
 
 
@@ -1227,22 +1514,24 @@ def validate_connector_contract(inputs: JsonObject) -> CapabilityOutcome:
     connector = inputs.get("connector")
     if not isinstance(connector, Mapping):
         raise ValueError("connector must be an object")
-    scopes = sorted(
-        str(item) for item in _sequence(connector.get("scopes"), "connector.scopes")
+    connector_id = _identifier(connector.get("id"), "connector.id")
+    scopes, forbidden = _canonical_allowlisted_values(
+        connector.get("scopes"),
+        field_name="connector.scopes",
+        allowlist=_CONNECTOR_READ_SCOPE_ALLOWLIST,
     )
-    forbidden = [
-        scope for scope in scopes if scope in {"*", "admin", "root", "write:all"}
-    ]
     return _outcome(
         "PLANNING_ONLY" if not forbidden else "BLOCKED",
         "CONNECTOR_CONTRACT_VALIDATED" if not forbidden else "CONNECTOR_SCOPE_REJECTED",
         {
-            "connector_id": connector.get("id"),
+            "connector_id": connector_id,
             "scopes": scopes,
             "forbidden_scopes": forbidden,
             "connector_called": False,
+            "enforcement_authorized": False,
         },
-        unavailable=("mcp-connector-runtime", "oauth-broker"),
+        unavailable=("mcp-connector-runtime", "oauth-broker", "scope-authority"),
+        warnings=("caller-supplied-connector-descriptor-unverified",),
     )
 
 
@@ -1251,6 +1540,21 @@ def plan_repository_shards(inputs: JsonObject) -> CapabilityOutcome:
     max_bytes = int(inputs.get("max_shard_bytes", 256 * 1024))
     if max_bytes < 1:
         raise ValueError("max_shard_bytes must be positive")
+    oversized_paths = [
+        str(file["path"]) for file in files if int(file["bytes"]) > max_bytes
+    ]
+    if oversized_paths:
+        return _outcome(
+            "BLOCKED",
+            "SHARD_SIZE_LIMIT_EXCEEDED",
+            {
+                "shards": [],
+                "total_files": len(files),
+                "oversized_paths": oversized_paths,
+                "distributed_execution": False,
+            },
+            unavailable=("oversized-file-partitioning", "distributed-runner-fleet"),
+        )
     shards: list[dict[str, Any]] = []
     current: list[str] = []
     size = 0
@@ -1265,7 +1569,12 @@ def plan_repository_shards(inputs: JsonObject) -> CapabilityOutcome:
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
         "REPOSITORY_SHARDS_PLANNED",
-        {"shards": shards, "total_files": len(files), "distributed_execution": False},
+        {
+            "shards": shards,
+            "total_files": len(files),
+            "oversized_paths": [],
+            "distributed_execution": False,
+        },
         unavailable=("distributed-runner-fleet",),
     )
 
@@ -1392,13 +1701,10 @@ def evaluate_release_readiness(inputs: JsonObject) -> CapabilityOutcome:
         for item in gates
         if item.get("required", True) and item.get("status") not in {"PASSED", "PASS"}
     ]
-    ready = (
-        bool(gates) and not failing and bool(inputs.get("independent_verifier", False))
-    )
-    decision = "READY_FOR_EXTERNAL_GATE" if ready else "BLOCKED"
+    decision = "EXTERNAL_GATE_REQUIRED" if gates and not failing else "BLOCKED"
     return _outcome(
         "PLANNING_ONLY",
-        "RELEASE_READINESS_EVALUATED",
+        "RELEASE_READINESS_PLANNED",
         {
             "decision": decision,
             "failing_gates": failing,
@@ -1406,6 +1712,7 @@ def evaluate_release_readiness(inputs: JsonObject) -> CapabilityOutcome:
             "release_authorized": False,
         },
         unavailable=("independent-certification-authority", "production-evidence"),
+        warnings=("caller-supplied-gate-statuses-unverified",),
     )
 
 
@@ -1424,12 +1731,15 @@ def evaluate_entitlement_usage(inputs: JsonObject) -> CapabilityOutcome:
         "LOCAL_ENTITLEMENT_EVALUATED",
         {
             "edition": edition,
-            "allowed_features": sorted(requested & entitled),
-            "denied_features": sorted(requested - entitled),
+            "caller_reported_entitled_features": sorted(entitled),
+            "caller_reported_allowed_features": sorted(requested & entitled),
+            "caller_reported_denied_features": sorted(requested - entitled),
+            "enforcement_authorized": False,
             "usage_record_digest": canonical_digest(inputs),
             "billing_performed": False,
         },
         unavailable=("billing-provider", "license-authority"),
+        warnings=("caller-supplied-entitlements-unverified",),
     )
 
 
@@ -1437,18 +1747,21 @@ def negotiate_debug_adapter(inputs: JsonObject) -> CapabilityOutcome:
     descriptor = inputs.get("adapter")
     if not isinstance(descriptor, Mapping):
         raise ValueError("adapter must be an object")
-    requested = {
-        str(item)
-        for item in _sequence(
-            inputs.get("requested_capabilities"), "requested_capabilities"
-        )
-    }
-    supported = {
-        str(item)
-        for item in _sequence(descriptor.get("capabilities"), "adapter.capabilities")
-    }
-    forbidden = requested & {"arbitrary-shell", "production-attach", "write-evaluate"}
-    negotiated = sorted((requested & supported) - forbidden)
+    _identifier(descriptor.get("id"), "adapter.id")
+    requested, rejected_requested = _canonical_allowlisted_values(
+        inputs.get("requested_capabilities"),
+        field_name="requested_capabilities",
+        allowlist=_DEBUG_CAPABILITY_ALLOWLIST,
+    )
+    supported, rejected_supported = _canonical_allowlisted_values(
+        descriptor.get("capabilities"),
+        field_name="adapter.capabilities",
+        allowlist=_DEBUG_CAPABILITY_ALLOWLIST,
+    )
+    requested_set = set(requested)
+    supported_set = set(supported)
+    forbidden = sorted(set(rejected_requested) | set(rejected_supported))
+    negotiated = sorted(requested_set & supported_set)
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED" if not forbidden else "BLOCKED",
         "DEBUG_CAPABILITIES_NEGOTIATED"
@@ -1456,11 +1769,13 @@ def negotiate_debug_adapter(inputs: JsonObject) -> CapabilityOutcome:
         else "DEBUG_CAPABILITY_REJECTED",
         {
             "negotiated": negotiated,
-            "unsupported": sorted(requested - supported),
-            "forbidden": sorted(forbidden),
+            "unsupported": sorted(requested_set - supported_set),
+            "forbidden": forbidden,
             "adapter_started": False,
+            "enforcement_authorized": False,
         },
-        unavailable=("dap-process-adapter",),
+        unavailable=("dap-process-adapter", "adapter-capability-attestation"),
+        warnings=("caller-supplied-adapter-capabilities-unverified",),
     )
 
 
@@ -1482,7 +1797,10 @@ def plan_debug_session(inputs: JsonObject) -> CapabilityOutcome:
 
 
 def reduce_debug_view(inputs: JsonObject) -> CapabilityOutcome:
-    events = _records(inputs, "debug_events")
+    events, sanitization = _sanitized_debug_events(
+        inputs,
+        allowed_fields=_CORRELATION_EVENT_FIELDS,
+    )
     ordered = sorted(
         events,
         key=lambda item: (int(item.get("sequence", 0)), str(item.get("event_id", ""))),
@@ -1500,6 +1818,7 @@ def reduce_debug_view(inputs: JsonObject) -> CapabilityOutcome:
         "DEBUG_VIEW_STATE_REDUCED",
         {"threads": threads, "event_count": len(ordered), "ui_rendered": False},
         unavailable=("browser-debug-workbench",),
+        warnings=_debug_sanitization_warnings(sanitization),
     )
 
 
@@ -1523,15 +1842,11 @@ def build_debug_mission(inputs: JsonObject) -> CapabilityOutcome:
 
 
 def build_replay_bundle(inputs: JsonObject) -> CapabilityOutcome:
-    events = _records(inputs, "debug_events")
+    events, sanitization = _sanitized_debug_events(inputs)
     redacted: list[dict[str, Any]] = []
     previous = None
     for event in sorted(events, key=lambda item: int(item.get("sequence", 0))):
-        clean = {
-            key: value
-            for key, value in event.items()
-            if key not in {"secret", "token", "password", "raw_memory"}
-        }
+        clean = dict(event)
         clean["previous_event_digest"] = previous
         clean["event_digest"] = canonical_digest(clean)
         previous = clean["event_digest"]
@@ -1541,6 +1856,14 @@ def build_replay_bundle(inputs: JsonObject) -> CapabilityOutcome:
         "events": redacted,
         "terminal_digest": previous,
         "native_reverse_debug": False,
+        "redaction": {
+            "policy": "recursive-field-policy-v1",
+            "sensitive_fields_omitted": sanitization["sensitive_fields_omitted"],
+            "inline_secret_values_redacted": sanitization[
+                "inline_secret_values_redacted"
+            ],
+            "strings_truncated": sanitization["strings_truncated"],
+        },
     }
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",
@@ -1551,11 +1874,15 @@ def build_replay_bundle(inputs: JsonObject) -> CapabilityOutcome:
             "r2-checkpoint-replay",
             "r3-native-reverse-debug",
         ),
+        warnings=_debug_sanitization_warnings(sanitization),
     )
 
 
 def correlate_debug_events(inputs: JsonObject) -> CapabilityOutcome:
-    events = _records(inputs, "debug_events")
+    events, sanitization = _sanitized_debug_events(
+        inputs,
+        allowed_fields=_CORRELATION_EVENT_FIELDS,
+    )
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     gaps: list[dict[str, Any]] = []
     for event in events:
@@ -1588,6 +1915,7 @@ def correlate_debug_events(inputs: JsonObject) -> CapabilityOutcome:
             "distributed_pause_performed": False,
         },
         unavailable=("distributed-debug-controller", "dual-run-runtime"),
+        warnings=_debug_sanitization_warnings(sanitization),
     )
 
 

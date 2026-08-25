@@ -1,0 +1,7 @@
+{
+  "artifactDigest": "artifactDigest-fixture",
+  "sourceStage": "sourceStage-fixture",
+  "targetStage": "targetStage-fixture",
+  "decision": "APPROVED",
+  "evidenceRefs": []
+}

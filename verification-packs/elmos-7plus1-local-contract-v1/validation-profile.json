@@ -52,6 +52,24 @@
         "negative-runtime-cases",
         "independent-review"
       ]
+    },
+    {
+      "claim_id": "claim.local-evidence-campaigns",
+      "description": "Repository-owned local holdout, provider-contract fixtures, production-like rollback rehearsal, replay, external receipt quarantine, and structural preflight execute deterministically without promoting external states.",
+      "criticality": "P1",
+      "required_oracles": [
+        "oracle.repository-contract",
+        "oracle.local-contract-tests",
+        "oracle.independent-review"
+      ],
+      "required_techniques": [
+        "local-holdout",
+        "provider-contract-simulation",
+        "production-like-rehearsal",
+        "replay",
+        "negative-runtime-cases",
+        "independent-review"
+      ]
     }
   ],
   "techniques": [
@@ -61,10 +79,17 @@
     "model",
     "negative-archive-cases",
     "negative-runtime-cases",
+    "archive-safe-reimplementation",
+    "local-holdout-self-attested",
+    "provider-contract-simulation-self-attested",
+    "production-like-rehearsal-self-attested",
+    "deterministic-replay",
+    "external-receipt-quarantine",
+    "external-preflight-structural-only",
     "mutation-not-run",
     "fuzz-not-run",
     "symbolic-smt-unsupported",
-    "holdout-not-run",
+    "independent-holdout-not-run",
     "representative-workload-not-run",
     "assurance-case"
   ],

@@ -1,0 +1,25 @@
+schema_version: "1.0"
+action_id: act-REPLACE
+tenant_id: tenant-REPLACE
+project_id: project-REPLACE
+action_digest: {algorithm: sha256, hex: REPLACE_WITH_64_HEX, size_bytes: 0}
+input_root_digest: {algorithm: sha256, hex: REPLACE_WITH_64_HEX, size_bytes: 0}
+toolchain_digest: {algorithm: sha256, hex: REPLACE_WITH_64_HEX, size_bytes: 0}
+command: [./mvnw, -q, verify]
+environment: {}
+working_directory: /workspace/source
+declared_outputs: [target, reports]
+resources:
+  cpu_millis: 4000
+  memory_mb: 8192
+  disk_mb: 20480
+  pids: 512
+  gpu_count: 0
+sandbox:
+  tier: S2
+  policy_digest: {algorithm: sha256, hex: REPLACE_WITH_64_HEX, size_bytes: 0}
+secret_refs: []
+timeout_seconds: 3600
+priority: 50
+idempotency_key: REPLACE
+data_residency: customer-private-runner

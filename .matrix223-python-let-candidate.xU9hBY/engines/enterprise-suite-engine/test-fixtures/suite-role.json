@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","mappingId":"sap-ap-clerk-to-fusion-ap","sourceTechnicalRole":"Z_AP_CLERK","businessDuties":["ENTER_SUPPLIER_INVOICE"],"targetTechnicalRole":"ORA_AP_ACCOUNTS_PAYABLE_SPECIALIST","validationStatus":"VALIDATED","sodStatus":"NO_CONFLICT","negativeTestEvidenceRefs":["evidence://role/deny-pay-vendor"]}

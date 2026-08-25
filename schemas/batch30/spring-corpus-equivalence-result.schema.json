@@ -1,0 +1,399 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/spring-corpus-equivalence-result.schema.json",
+  "title": "Batch 30 Spring corpus equivalence result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "tuple",
+    "tuple_sha256",
+    "external_intake_verification",
+    "projects",
+    "role_summaries",
+    "overall_equivalence",
+    "universal_legacy_spring_equivalence",
+    "certification"
+  ],
+  "properties": {
+    "schema_version": {"const": "elmos.spring-corpus-equivalence-result.v1"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "tuple": {"$ref": "#/$defs/exactTuple"},
+    "tuple_sha256": {"$ref": "#/$defs/digest"},
+    "external_intake_verification": {"$ref": "#/$defs/externalVerification"},
+    "projects": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/projectResult"}
+    },
+    "role_summaries": {
+      "type": "object",
+      "required": ["development", "holdout", "representative", "customer"],
+      "properties": {
+        "development": {"$ref": "#/$defs/roleSummary"},
+        "holdout": {"$ref": "#/$defs/roleSummary"},
+        "representative": {"$ref": "#/$defs/roleSummary"},
+        "customer": {"$ref": "#/$defs/roleSummary"}
+      },
+      "additionalProperties": false
+    },
+    "overall_equivalence": {"$ref": "#/$defs/overall"},
+    "universal_legacy_spring_equivalence": {
+      "type": "object",
+      "required": ["status", "percentage", "reason"],
+      "properties": {
+        "status": {"const": "NOT_EVALUATED"},
+        "percentage": {"type": "null"},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "certification": {
+      "type": "object",
+      "required": ["decision", "reason"],
+      "properties": {
+        "decision": {"const": "NOT_CERTIFYING"},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$",
+      "not": {
+        "enum": ["UNKNOWN", "NOT_RUN", "NOT_EVALUATED", "INCONCLUSIVE", "TBD", "TODO"]
+      }
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "exactVersion": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s*<>=^~|,\\[\\](){}]+$",
+      "not": {
+        "pattern": "(^|[._+\\-])(latest|current|snapshot|nightly|main|master|x)([._+\\-]|$)"
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"$ref": "#/$defs/identity"},
+        "version": {"$ref": "#/$defs/exactVersion"}
+      },
+      "additionalProperties": false
+    },
+    "side": {
+      "type": "object",
+      "required": ["framework", "runtime", "build_tool", "providers"],
+      "properties": {
+        "framework": {"$ref": "#/$defs/component"},
+        "runtime": {"$ref": "#/$defs/component"},
+        "build_tool": {"$ref": "#/$defs/component"},
+        "providers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/component"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "versionedContent": {
+      "type": "object",
+      "required": ["id", "version", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identity"},
+        "version": {"$ref": "#/$defs/exactVersion"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "exactTuple": {
+      "type": "object",
+      "required": ["route_id", "pack", "recipe", "source", "target"],
+      "properties": {
+        "route_id": {"$ref": "#/$defs/identity"},
+        "pack": {"$ref": "#/$defs/versionedContent"},
+        "recipe": {
+          "allOf": [{"$ref": "#/$defs/versionedContent"}],
+          "description": "Recipe identity inside recipes/manifest.json. version is the exact immutable pack-bundle version that owns the recipe manifest; the current manifest has no independent recipe-version field."
+        },
+        "source": {"$ref": "#/$defs/side"},
+        "target": {"$ref": "#/$defs/side"}
+      },
+      "additionalProperties": false
+    },
+    "artifactResult": {
+      "type": "object",
+      "required": ["status", "sha256", "size_bytes"],
+      "properties": {
+        "status": {"enum": ["VERIFIED", "INVALID"]},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "projectResult": {
+      "type": "object",
+      "required": [
+        "project_id",
+        "corpus_role",
+        "evaluation_scope",
+        "outcome",
+        "signed_evidence_type",
+        "signed_evidence_status",
+        "evidence_eligible",
+        "aggregate_eligible",
+        "executor_verifier_separation",
+        "artifact_verification",
+        "evidence_exclusion_reasons",
+        "aggregate_exclusion_reasons"
+      ],
+      "properties": {
+        "project_id": {"type": "string", "minLength": 1},
+        "corpus_role": {
+          "enum": ["development", "holdout", "representative", "customer"]
+        },
+        "evaluation_scope": {"enum": ["EXACT_FIXTURE", "WHOLE_REPOSITORY"]},
+        "outcome": {
+          "enum": ["EQUIVALENT", "NOT_EQUIVALENT", "INCONCLUSIVE", "NOT_RUN", "NOT_EVALUATED"]
+        },
+        "signed_evidence_type": {
+          "oneOf": [
+            {"enum": ["customer_holdout", "independent_review", "authorized_customer_repository"]},
+            {"type": "null"}
+          ]
+        },
+        "signed_evidence_status": {
+          "enum": ["VERIFIED", "INVALID", "NOT_VERIFIED", "NOT_APPLICABLE"]
+        },
+        "evidence_eligible": {"type": "boolean"},
+        "aggregate_eligible": {"type": "boolean"},
+        "executor_verifier_separation": {
+          "type": "object",
+          "required": ["signature_verified", "separate_subjects", "separate_organizations"],
+          "properties": {
+            "signature_verified": {"type": "boolean"},
+            "separate_subjects": {"type": "boolean"},
+            "separate_organizations": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "artifact_verification": {
+          "type": "object",
+          "required": ["source_snapshot", "target_snapshot", "outcome_evidence"],
+          "properties": {
+            "source_snapshot": {"$ref": "#/$defs/artifactResult"},
+            "target_snapshot": {"$ref": "#/$defs/artifactResult"},
+            "outcome_evidence": {"$ref": "#/$defs/artifactResult"}
+          },
+          "additionalProperties": false
+        },
+        "evidence_exclusion_reasons": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "aggregate_exclusion_reasons": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["aggregate_eligible"],
+            "properties": {"aggregate_eligible": {"const": true}}
+          },
+          "then": {
+            "properties": {
+              "evaluation_scope": {"const": "WHOLE_REPOSITORY"},
+              "corpus_role": {"enum": ["holdout", "representative", "customer"]},
+              "signed_evidence_status": {"const": "VERIFIED"},
+              "executor_verifier_separation": {
+                "properties": {
+                  "signature_verified": {"const": true},
+                  "separate_subjects": {"const": true},
+                  "separate_organizations": {"const": true}
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["corpus_role"],
+            "properties": {"corpus_role": {"const": "development"}}
+          },
+          "then": {
+            "properties": {
+              "signed_evidence_type": {"type": "null"},
+              "signed_evidence_status": {"const": "NOT_APPLICABLE"},
+              "aggregate_eligible": {"const": false}
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["corpus_role"],
+            "properties": {"corpus_role": {"const": "holdout"}}
+          },
+          "then": {
+            "properties": {"signed_evidence_type": {"const": "customer_holdout"}}
+          }
+        },
+        {
+          "if": {
+            "required": ["corpus_role"],
+            "properties": {"corpus_role": {"const": "representative"}}
+          },
+          "then": {
+            "properties": {"signed_evidence_type": {"const": "independent_review"}}
+          }
+        },
+        {
+          "if": {
+            "required": ["corpus_role"],
+            "properties": {"corpus_role": {"const": "customer"}}
+          },
+          "then": {
+            "properties": {
+              "signed_evidence_type": {"const": "authorized_customer_repository"}
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "externalVerification": {
+      "type": "object",
+      "required": [
+        "status",
+        "intake_content_digest",
+        "binding_digest",
+        "trust_store_digest",
+        "verified_roles",
+        "reason"
+      ],
+      "properties": {
+        "status": {"enum": ["VERIFIED", "INVALID", "NOT_RUN", "NOT_EVALUATED"]},
+        "intake_content_digest": {"$ref": "#/$defs/nullableDigest"},
+        "binding_digest": {"$ref": "#/$defs/nullableDigest"},
+        "trust_store_digest": {"$ref": "#/$defs/nullableDigest"},
+        "verified_roles": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "roleSummary": {
+      "type": "object",
+      "required": [
+        "total_projects",
+        "evidence_eligible_projects",
+        "aggregate_eligible_projects",
+        "reported_equivalent_projects",
+        "reported_not_equivalent_projects",
+        "aggregate_equivalent_projects",
+        "aggregate_not_equivalent_projects",
+        "inconclusive_or_not_evaluated_projects"
+      ],
+      "properties": {
+        "total_projects": {"type": "integer", "minimum": 0},
+        "evidence_eligible_projects": {"type": "integer", "minimum": 0},
+        "aggregate_eligible_projects": {"type": "integer", "minimum": 0},
+        "reported_equivalent_projects": {"type": "integer", "minimum": 0},
+        "reported_not_equivalent_projects": {"type": "integer", "minimum": 0},
+        "aggregate_equivalent_projects": {"type": "integer", "minimum": 0},
+        "aggregate_not_equivalent_projects": {"type": "integer", "minimum": 0},
+        "inconclusive_or_not_evaluated_projects": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "nullableNonNegativeInteger": {
+      "oneOf": [
+        {"type": "integer", "minimum": 0},
+        {"type": "null"}
+      ]
+    },
+    "nullableDigest": {
+      "oneOf": [
+        {"$ref": "#/$defs/digest"},
+        {"type": "null"}
+      ]
+    },
+    "overall": {
+      "type": "object",
+      "required": [
+        "status",
+        "scope",
+        "required_roles",
+        "covered_roles",
+        "missing_roles",
+        "eligible_conclusive_projects_observed",
+        "numerator_equivalent_projects",
+        "denominator_eligible_projects",
+        "percentage",
+        "reason"
+      ],
+      "properties": {
+        "status": {"enum": ["EVALUATED", "NOT_EVALUATED"]},
+        "scope": {
+          "const": "SIGNED_EXTERNAL_EXACT_TUPLE_INDEPENDENT_WHOLE_REPOSITORY_CORPUS_ONLY"
+        },
+        "required_roles": {
+          "const": ["holdout", "representative", "customer"]
+        },
+        "covered_roles": {
+          "type": "array",
+          "items": {"enum": ["holdout", "representative", "customer"]},
+          "uniqueItems": true
+        },
+        "missing_roles": {
+          "type": "array",
+          "items": {"enum": ["holdout", "representative", "customer"]},
+          "uniqueItems": true
+        },
+        "eligible_conclusive_projects_observed": {"type": "integer", "minimum": 0},
+        "numerator_equivalent_projects": {"$ref": "#/$defs/nullableNonNegativeInteger"},
+        "denominator_eligible_projects": {"$ref": "#/$defs/nullableNonNegativeInteger"},
+        "percentage": {
+          "oneOf": [
+            {"type": "number", "minimum": 0, "maximum": 100},
+            {"type": "null"}
+          ]
+        },
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "EVALUATED"}}},
+          "then": {
+            "properties": {
+              "covered_roles": {"const": ["customer", "holdout", "representative"]},
+              "missing_roles": {"maxItems": 0},
+              "numerator_equivalent_projects": {"type": "integer", "minimum": 0},
+              "denominator_eligible_projects": {"type": "integer", "minimum": 1},
+              "percentage": {"type": "number", "minimum": 0, "maximum": 100}
+            }
+          },
+          "else": {
+            "properties": {
+              "numerator_equivalent_projects": {"type": "null"},
+              "denominator_eligible_projects": {"type": "null"},
+              "percentage": {"type": "null"}
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

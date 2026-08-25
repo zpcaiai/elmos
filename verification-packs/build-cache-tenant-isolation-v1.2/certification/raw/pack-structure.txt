@@ -1,0 +1,6 @@
+command: engines/build-cache-engine/.venv/bin/python scripts/batch35/validate_verification_pack.py verification-packs/build-cache-tenant-isolation-v1.2
+exit_code: 0
+output:
+OK: 4 oracles
+OK: model states=5 transitions=5
+OK: verification pack build-cache-tenant-isolation-v1-2

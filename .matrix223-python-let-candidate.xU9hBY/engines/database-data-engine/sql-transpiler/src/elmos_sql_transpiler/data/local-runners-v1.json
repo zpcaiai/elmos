@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "host": {
+    "operatingSystem": "darwin",
+    "architecture": "arm64",
+    "networkPolicy": "LOOPBACK_ONLY",
+    "dataPolicy": "DISPOSABLE_SYNTHETIC_ONLY"
+  },
+  "runners": [
+    {
+      "profileId": "postgresql-17.5",
+      "state": "LOCAL_RUNNER_READY",
+      "engineVersion": "17.5",
+      "driver": "psycopg-binary-3.3.4",
+      "executableRoot": "/opt/homebrew/opt/postgresql@17/bin",
+      "provisioning": "EPHEMERAL_INITDB",
+      "storage": "TEMPORARY_DIRECTORY",
+      "network": "LOOPBACK_EPHEMERAL_PORT"
+    },
+    {
+      "profileId": "sqlite-3.53.3",
+      "state": "LOCAL_RUNNER_READY",
+      "engineVersion": "3.53.3",
+      "driver": "python-stdlib-3.14.6",
+      "executable": "/opt/homebrew/bin/python3",
+      "provisioning": "EPHEMERAL_DATABASE_FILE",
+      "storage": "TEMPORARY_DIRECTORY",
+      "network": "NONE"
+    },
+    {
+      "profileId": "duckdb-1.5.4",
+      "state": "LOCAL_RUNNER_READY",
+      "engineVersion": "1.5.4",
+      "driver": "duckdb-python-1.5.4",
+      "executable": "/opt/homebrew/bin/python3",
+      "provisioning": "EPHEMERAL_DATABASE_FILE",
+      "storage": "TEMPORARY_DIRECTORY",
+      "network": "NONE"
+    },
+    {
+      "profileId": "postgresql-18.4",
+      "state": "BLOCKED",
+      "reason": "The exact PostgreSQL 18.4 server is not installed on this host."
+    },
+    {
+      "profileId": "mysql-8.4.10-lts",
+      "state": "BLOCKED",
+      "reason": "The exact MySQL 8.4.10 server is not installed on this host."
+    },
+    {
+      "profileId": "sqlserver-2022-cu26",
+      "state": "BLOCKED",
+      "reason": "The exact licensed SQL Server runtime is unavailable on this host."
+    },
+    {
+      "profileId": "oracle-26ai-ee",
+      "state": "BLOCKED",
+      "reason": "The exact licensed Oracle runtime is unavailable on this host."
+    }
+  ]
+}

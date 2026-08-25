@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "gr-customer-data-ip",
+  "source_contract_sha256": "sha256:e59d2e766f79103b23ecb64bee92d962196cac3fd828313e153d58d59026b5be",
+  "source_id": "ELMOS-GR-086",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

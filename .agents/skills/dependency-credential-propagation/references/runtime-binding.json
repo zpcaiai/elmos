@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "dependency-credential-propagation",
+  "source_contract_sha256": "sha256:d157000519b4d44a14a07a6ac3f6f588a7a7ede7643e3c82f961f95b93ede657",
+  "source_id": "FOUNDATION-04-dependency-credential-propagation",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

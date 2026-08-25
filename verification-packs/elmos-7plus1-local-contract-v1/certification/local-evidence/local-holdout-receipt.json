@@ -1,0 +1,69 @@
+{
+  "campaign_type": "local-holdout",
+  "case_results": [
+    {
+      "case_digest": "sha256:c0582a4f591e03cb3294a5afc9929e5e87af2c5519ff2f3ad0eefab00ba563c2",
+      "case_id": "holdout-001-local-handler",
+      "observed_error_code": null,
+      "observed_result_digest": "sha256:936c709622b09da067f3490a0ea4ead91ead348ba78df9053c710a07dea565ee",
+      "observed_status": "EXECUTED",
+      "request_digest": "sha256:2b8f6587a7cdd7086b6b17608933570119cfdb2da06d67a9e5f9d68a27aed5bd",
+      "status": "PASSED"
+    },
+    {
+      "case_digest": "sha256:9f8a37b5ac39ea26acee92d6b06da48deac313d7adcf15c22e0ed1a239ea783a",
+      "case_id": "holdout-002-invalid-request",
+      "observed_error_code": "REQUEST_INVALID",
+      "observed_result_digest": "sha256:6d20ccab0287b41a8f586bf304e39e114dba94354f45cc3e0470352ebbc9f57c",
+      "observed_status": "FAILED",
+      "request_digest": "sha256:8ee075f5895ff171ddc9d65aff4024e4cdf3b28c28ea9f3bf268a1962f21954c",
+      "status": "PASSED"
+    },
+    {
+      "case_digest": "sha256:79cdc97470c550ec4032300cae0b93738a69dbb0e8803be978d40a233184688e",
+      "case_id": "holdout-003-adapter-boundary",
+      "observed_error_code": "ADAPTER_REQUIRED",
+      "observed_result_digest": "sha256:930bff9c37572ea7e6f11e821e2f54642cc2b06aa6f70cc595016d14573d1a87",
+      "observed_status": "REQUIRES_ADAPTER",
+      "request_digest": "sha256:2d21ce81a94f0982626d74402622aabcd46222a8e5429d020556384357ddc3f6",
+      "status": "PASSED"
+    }
+  ],
+  "corpus_digest": "sha256:2d62fa6039a1fb12627685785a9a344bd8ecdf6f1c07e0425e9d61c5589ca18e",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+  "evidence_state": "LOCAL_HOLDOUT_EXECUTED_SELF_ATTESTED",
+  "execution_digest": "sha256:d5ce662ca322c95e2de17a92c846903abd9de298a4a8720864b16657e1a1262a",
+  "external_states": {
+    "archive_scripts_executed": false,
+    "external_certification": "NOT_CERTIFIED",
+    "independent_holdout": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_canary": "NOT_RUN",
+    "production_deployment": "NOT_RUN",
+    "production_writes": "NOT_RUN",
+    "provider_execution": "NOT_RUN"
+  },
+  "limitations": [
+    "SELF_ATTESTED",
+    "INDEPENDENT_HOLDOUT_NOT_RUN"
+  ],
+  "manifest_digest": "sha256:fb1a5829cc36e86a7ce80f67bf03ebc89cfa7d2d399fd648ed4f6e5149728abe",
+  "receipt_digest": "sha256:205c21fa3796330ffcb923f9e41e71190b59f70fc048e0a131abe64a6ebdcf64",
+  "replay": {
+    "campaign_type": "local-holdout",
+    "expected_execution_digest": "sha256:d5ce662ca322c95e2de17a92c846903abd9de298a4a8720864b16657e1a1262a",
+    "manifest_digest": "sha256:fb1a5829cc36e86a7ce80f67bf03ebc89cfa7d2d399fd648ed4f6e5149728abe",
+    "operation": "campaign-replay"
+  },
+  "runtime_binding_digest": "sha256:7aeae6f6b4737f818241c9b65fd20ac3a5b47d68ea618e2ca106c4469a6458cc",
+  "schema_version": "1.0",
+  "scope": {
+    "campaign_id": "local-holdout-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "project_id": "elmos-7plus1",
+    "source_revision": "working-tree-qualification-v2",
+    "tenant_id": "elmos-local"
+  },
+  "status": "PASSED",
+  "target_artifact_digest": "sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4"
+}

@@ -13,7 +13,12 @@ import pytest
 import elmos_polyglot_route.discovery as discovery_module
 from elmos_polyglot_route.batch import CHECKPOINT_NAME, UnitStatus, run_batch
 from elmos_polyglot_route.discovery import Verdict, discover_repository, discover_unit, propose_candidates
-from elmos_polyglot_route.models import Language, RouteError, SemanticIR
+from elmos_polyglot_route.models import (
+    REPOSITORY_SURFACE_LANGUAGES,
+    Language,
+    RouteError,
+    SemanticIR,
+)
 from elmos_polyglot_route.project_graph import build_project_graph
 from elmos_polyglot_route.repository import plan_repository
 
@@ -103,18 +108,33 @@ def test_proposed_candidates_never_decide_eligibility() -> None:
     assert propose_candidates(b"\xff\xfe not utf-8", "python") == []
 
 
+_CANDIDATE_DISCOVERY_CASES: dict[Language, tuple[str, list[str]]] = {
+    "java": ("public static long total(long value) { return value; }", ["total"]),
+    "python": ("def total(value: int) -> int:\n    return value\n", ["total"]),
+    "csharp": ("public static long Total(long value) { return value; }", ["Total"]),
+    "typescript": ("export function total(value: number): number { return value; }", ["total"]),
+    "javascript": ("export function total(value) { return value; }", ["total"]),
+    "go": ("package sample\nfunc total(value int64) int64 { return value }", ["total"]),
+    "rust": ("pub fn total(value: i64) -> i64 { value }", ["total"]),
+    "cpp": ("std::int64_t total(std::int64_t value) { return value; }", ["total"]),
+    "objc": ("long long total(long long value) { return value; }", ["total"]),
+    "swift": ("public func total(_ value: Int) -> Int { return value }", ["total"]),
+    "php": ("<?php\nfunction total(int $value): int { return $value; }", ["total"]),
+    "kotlin": ("fun total(value: Long): Long = value", ["total"]),
+    "react": ("export function total(value: number): number { return value; }", ["total"]),
+    "flutter": ("int total(int value) => value;", ["total"]),
+}
+
+
+def test_candidate_discovery_fixtures_cover_the_repository_surface() -> None:
+    assert set(_CANDIDATE_DISCOVERY_CASES) == set(REPOSITORY_SURFACE_LANGUAGES)
+
+
 @pytest.mark.parametrize(
     ("language", "source", "expected"),
     [
-        ("java", "public static long total(long value) { return value; }", ["total"]),
-        ("python", "def total(value: int) -> int:\n    return value\n", ["total"]),
-        ("csharp", "public static long Total(long value) { return value; }", ["Total"]),
-        ("typescript", "export function total(value: number): number { return value; }", ["total"]),
-        ("go", "package sample\nfunc total(value int64) int64 { return value }", ["total"]),
-        ("rust", "pub fn total(value: i64) -> i64 { value }", ["total"]),
-        ("cpp", "std::int64_t total(std::int64_t value) { return value; }", ["total"]),
-        ("objc", "long long total(long long value) { return value; }", ["total"]),
-        ("swift", "public func total(_ value: Int) -> Int { return value }", ["total"]),
+        (language, source, expected)
+        for language, (source, expected) in _CANDIDATE_DISCOVERY_CASES.items()
     ],
 )
 def test_candidate_discovery_covers_every_repository_language(

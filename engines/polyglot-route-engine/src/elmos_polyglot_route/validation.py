@@ -14,6 +14,7 @@ from typing import Any
 
 from .emitter import EmittedFile
 from .models import Function, Language, RouteError
+from .react_analyzer import verify_react_runtime_import
 from .repository import javascript_esm_descriptor
 from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 
@@ -481,6 +482,56 @@ def _typescript_harness(
         + "}\n"
         + "\n".join(checks)
         + "\n"
+    )
+
+
+def _write_typescript_validation_project(
+    output: Path,
+    *,
+    include: list[str],
+    react: bool = False,
+) -> None:
+    compiler_options: dict[str, object] = {
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "strict": True,
+        "outDir": "dist",
+    }
+    if react:
+        compiler_options.update({"jsx": "react-jsx", "types": []})
+        (output / "package.json").write_text(
+            json.dumps(
+                {
+                    "private": True,
+                    "type": "module",
+                    "dependencies": {
+                        "react": "19.2.7",
+                        "react-dom": "19.2.7",
+                    },
+                    "devDependencies": {
+                        "@types/react": "19.1.10",
+                        "@types/react-dom": "19.1.7",
+                        "typescript": "5.9.2",
+                    },
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    (output / "tsconfig.json").write_text(
+        json.dumps(
+            {
+                "compilerOptions": compiler_options,
+                "include": include,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
     )
 
 
@@ -1164,6 +1215,105 @@ def _kotlin_harness(
     )
 
 
+def _dart_literal(value: object, value_type: str) -> str:
+    """Render one exact behavior value for bundled Dart 3.12.1."""
+
+    if value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool) or not -(2**63) <= value <= 2**63 - 1:
+            raise RouteError("DART_CASE_INTEGER_OUTSIDE_INT64")
+        return str(value)
+    if value_type == "number":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise RouteError("DART_CASE_NUMBER_REQUIRED")
+        number = float(value)
+        if math.isnan(number):
+            return "double.nan"
+        if math.isinf(number):
+            return "double.negativeInfinity" if number < 0 else "double.infinity"
+        if number == 0.0 and math.copysign(1.0, number) < 0:
+            return "-0.0"
+        rendered = repr(number)
+        return rendered if "." in rendered or "e" in rendered.lower() else rendered + ".0"
+    if value_type == "boolean":
+        if not isinstance(value, bool):
+            raise RouteError("DART_CASE_BOOLEAN_REQUIRED")
+        return "true" if value else "false"
+    if value_type == "string":
+        if not isinstance(value, str):
+            raise RouteError("DART_CASE_STRING_REQUIRED")
+        return json.dumps(value, ensure_ascii=False).replace("$", "\\$")
+    raise RouteError(f"DART_CASE_TYPE_UNSUPPORTED:{value_type}")
+
+
+def _dart_harness(function: Function, cases: list[dict[str, Any]], subject: str) -> str:
+    """Compile the exact pure-Dart subject in one runtime harness library."""
+
+    checks: list[str] = []
+    for index, case in enumerate(cases):
+        arguments = case.get("args")
+        if not isinstance(arguments, list) or len(arguments) != len(function.parameters):
+            raise RouteError("DART_CASE_ARGUMENT_COUNT_INVALID")
+        args = ", ".join(
+            _dart_literal(value, parameter.type)
+            for value, parameter in zip(arguments, function.parameters, strict=True)
+        )
+        expected = _dart_literal(_returned_case_value(case), function.return_type)
+        actual = f"actual{index}"
+        checks.append(f"  final {actual} = {function.name}({args});")
+        if function.return_type == "number":
+            checks.append(
+                f"  if (!_elmosHarnessSameFp64({actual}, {expected})) "
+                f"throw StateError('case {index}');"
+            )
+            observation = f"_elmosHarnessFp64({actual})"
+            encoding = "fp64-hex"
+        elif function.return_type == "string":
+            checks.append(f"  if ({actual} != {expected}) throw StateError('case {index}');")
+            observation = f"_elmosHarnessHexUtf8({actual})"
+            encoding = "hex-utf8"
+        else:
+            checks.append(f"  if ({actual} != {expected}) throw StateError('case {index}');")
+            observation = actual
+            encoding = "i64-dec" if function.return_type == "integer" else "bool"
+        checks.append(
+            f"  print('ELMOS_OBSERVATION\\t{index}\\t{encoding}\\t${{{observation}}}');"
+        )
+
+    imports = ""
+    helpers = ""
+    if function.return_type == "number":
+        imports = "import 'dart:typed_data';\n\n"
+        helpers = (
+            "String _elmosHarnessFp64(double value) {\n"
+            "  final data = ByteData(8)..setFloat64(0, value, Endian.big);\n"
+            "  return List<int>.generate(8, data.getUint8)\n"
+            "      .map((byte) => byte.toRadixString(16).padLeft(2, '0'))\n"
+            "      .join();\n"
+            "}\n\n"
+            "bool _elmosHarnessSameFp64(double left, double right) {\n"
+            "  return _elmosHarnessFp64(left) == _elmosHarnessFp64(right);\n"
+            "}\n\n"
+        )
+    elif function.return_type == "string":
+        imports = "import 'dart:convert';\n\n"
+        helpers = (
+            "String _elmosHarnessHexUtf8(String value) {\n"
+            "  return utf8.encode(value)\n"
+            "      .map((byte) => byte.toRadixString(16).padLeft(2, '0'))\n"
+            "      .join();\n"
+            "}\n\n"
+        )
+    return (
+        imports
+        + subject.rstrip()
+        + "\n\n"
+        + helpers
+        + "void main() {\n"
+        + "\n".join(checks)
+        + "\n}\n"
+    )
+
+
 def _go_case_literal(value: object, value_type: str, *, math_alias: str = "math") -> str:
     if value_type == "number":
         if not isinstance(value, int | float) or isinstance(value, bool) or not math.isfinite(float(value)):
@@ -1575,27 +1725,15 @@ def validate_source(
                 "--no-build",
             ],
         ]
-    elif language == "typescript":
+    elif language in {"typescript", "react"}:
         (output / "source_harness.ts").write_text(
             _typescript_harness(function, cases, module_path=f"./{source_name}.js"),
             encoding="utf-8",
         )
-        (output / "tsconfig.json").write_text(
-            json.dumps(
-                {
-                    "compilerOptions": {
-                        "target": "ES2022",
-                        "module": "NodeNext",
-                        "moduleResolution": "NodeNext",
-                        "strict": True,
-                        "outDir": "dist",
-                    },
-                    "include": ["*.ts"],
-                },
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
+        _write_typescript_validation_project(
+            output,
+            include=["*.ts", "*.tsx"] if language == "react" else ["*.ts"],
+            react=language == "react",
         )
         assert toolchain.auxiliary is not None
         commands = [
@@ -1740,9 +1878,45 @@ def validate_source(
             [toolchain.executable, "-Werror", "-d", "classes", source.name, "source_harness.kt"],
             [toolchain.auxiliary, "-classpath", "classes", entry_point],
         ]
+    elif language == "flutter":
+        if toolchain.auxiliary is None:
+            raise RouteError("EXACT_TOOLCHAIN_FLUTTER_DART_REQUIRED")
+        (output / "source_harness.dart").write_text(
+            _dart_harness(function, cases, copied_source.read_text(encoding="utf-8")),
+            encoding="utf-8",
+        )
+        commands = [
+            [
+                toolchain.auxiliary,
+                "analyze",
+                "--fatal-infos",
+                "--fatal-warnings",
+                source.name,
+                "source_harness.dart",
+            ],
+            [
+                toolchain.auxiliary,
+                "compile",
+                "kernel",
+                "source_harness.dart",
+                "-o",
+                "source_harness.dill",
+            ],
+            [toolchain.auxiliary, "source_harness.dill"],
+        ]
     else:
         raise RouteError(f"SOURCE_RUNTIME_UNSUPPORTED:{language}")
     logs: list[dict[str, Any]] = []
+    react_runtime_receipt: dict[str, Any] | None = None
+    if language == "react":
+        react_runtime_receipt = verify_react_runtime_import(toolchain)
+        logs.append(
+            {
+                "command": react_runtime_receipt["command"],
+                "stdout": react_runtime_receipt["stdout"],
+                "stderr": react_runtime_receipt["stderr"],
+            }
+        )
     runtime_stdout = ""
     executable_dirs = _toolchain_executable_dirs(toolchain)
     for index, command in enumerate(commands):
@@ -1785,6 +1959,8 @@ def validate_source(
     if javascript_descriptor_report is not None:
         report["javascript_esm_descriptor"] = javascript_descriptor_report
         report["javascript_esm_descriptor_observation"] = javascript_descriptor_observation
+    if react_runtime_receipt is not None:
+        report["react_runtime_receipt"] = react_runtime_receipt
     return report
 
 
@@ -1936,31 +2112,57 @@ def validate(
             [toolchain.executable, "-Werror", "-d", "classes", emitted.relative_path, "route_harness.kt"],
             [toolchain.auxiliary, "-classpath", "classes", _KOTLIN_HARNESS_JVM_NAME],
         ]
-    else:
-        (output / "route_harness.ts").write_text(_typescript_harness(function, cases), encoding="utf-8")
-        (output / "tsconfig.json").write_text(
-            json.dumps(
-                {
-                    "compilerOptions": {
-                        "target": "ES2022",
-                        "module": "NodeNext",
-                        "moduleResolution": "NodeNext",
-                        "strict": True,
-                        "outDir": "dist",
-                    },
-                    "include": ["*.ts"],
-                },
-                indent=2,
-            )
-            + "\n",
+    elif language == "flutter":
+        if toolchain.auxiliary is None:
+            raise RouteError("EXACT_TOOLCHAIN_FLUTTER_DART_REQUIRED")
+        (output / "route_harness.dart").write_text(
+            _dart_harness(function, cases, emitted.content),
             encoding="utf-8",
+        )
+        commands = [
+            [
+                toolchain.auxiliary,
+                "analyze",
+                "--fatal-infos",
+                "--fatal-warnings",
+                emitted.relative_path,
+                "route_harness.dart",
+            ],
+            [
+                toolchain.auxiliary,
+                "compile",
+                "kernel",
+                "route_harness.dart",
+                "-o",
+                "route_harness.dill",
+            ],
+            [toolchain.auxiliary, "route_harness.dill"],
+        ]
+    elif language in {"typescript", "react"}:
+        (output / "route_harness.ts").write_text(_typescript_harness(function, cases), encoding="utf-8")
+        _write_typescript_validation_project(
+            output,
+            include=["*.ts", "*.tsx"] if language == "react" else ["*.ts"],
+            react=language == "react",
         )
         assert toolchain.auxiliary is not None
         commands = [
             [toolchain.auxiliary, "-p", "tsconfig.json"],
             [toolchain.executable, "dist/route_harness.js"],
         ]
+    else:
+        raise RouteError(f"TARGET_RUNTIME_UNSUPPORTED:{language}")
     logs = []
+    react_runtime_receipt: dict[str, Any] | None = None
+    if language == "react":
+        react_runtime_receipt = verify_react_runtime_import(toolchain)
+        logs.append(
+            {
+                "command": react_runtime_receipt["command"],
+                "stdout": react_runtime_receipt["stdout"],
+                "stderr": react_runtime_receipt["stderr"],
+            }
+        )
     runtime_stdout = ""
     executable_dirs = _toolchain_executable_dirs(toolchain)
     for index, command in enumerate(commands):
@@ -1969,7 +2171,7 @@ def validate(
         if index == len(commands) - 1:
             runtime_stdout = completed.stdout
     observations = _observations(runtime_stdout, function, len(cases))
-    return {
+    report = {
         "status": "PASSED",
         "language": language,
         "toolchain": _toolchain_evidence(toolchain),
@@ -1977,6 +2179,9 @@ def validate(
         "case_count": len(cases),
         "observations": observations,
     }
+    if react_runtime_receipt is not None:
+        report["react_runtime_receipt"] = react_runtime_receipt
+    return report
 
 
 def safe_output(path: Path) -> Path:

@@ -24,12 +24,15 @@ export const translationLanguages: TranslationLanguage[] = [
   { id: "swift", label: "Swift", compiler: "Swift 6.3.3", runtime: "arm64-apple-macosx26.0", enginePath: "engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift" },
   { id: "python", label: "Python", compiler: "CPython AST 3.12.12", runtime: "CPython 3.12.12", enginePath: "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py" },
   { id: "typescript", label: "TypeScript", compiler: "TypeScript 5.9.2 Compiler API", runtime: "Node.js 26.0.0", enginePath: "engines/frontend-client-engine/src/polyglot.ts" },
-  { id: "javascript", label: "JavaScript (Node.js)", compiler: "ES2022 ESM / exact JSDoc contract", runtime: "Node.js 26.0.0", enginePath: "engines/polyglot-route-engine/native/javascript/analyzer.mjs" },
+  { id: "php", label: "PHP", compiler: "ext/tokenizer Zend token stream", runtime: "PHP 8.5.9 (NTS)", enginePath: "engines/polyglot-route-engine/native/php/analyzer.php" },
+  { id: "kotlin", label: "Kotlin", compiler: "Kotlin 2.2.20 compiler PSI", runtime: "JDK 21.0.11", enginePath: "engines/polyglot-route-engine/native/kotlin/analyzer.kt" },
+  { id: "react", label: "React / TSX", compiler: "TypeScript 5.9.2 Compiler API", runtime: "React 19.2.7 / Node.js 26.0.0", enginePath: "engines/polyglot-route-engine/native/react/analyzer.mjs" },
+  { id: "flutter", label: "Flutter / Dart", compiler: "Dart analyzer 10.1.0", runtime: "Flutter 3.44.1 / Dart 3.12.1", enginePath: "engines/polyglot-route-engine/native/dart/analyzer.dart" },
 ];
 
 /**
  * Offline/editorial fallback only. The live console exposure list is read from
- * routes/inventory.json; these ten IDs mirror the checked-in complete matrix.
+ * routes/inventory.json; these thirteen IDs mirror the checked-in active matrix.
  * Every fallback route remains NOT_RUN and cannot authorize execution.
  */
 export const fallbackConsoleLanguageIds = new Set<TranslationLanguageId>([
@@ -42,7 +45,10 @@ export const fallbackConsoleLanguageIds = new Set<TranslationLanguageId>([
   "cpp",
   "objc",
   "swift",
-  "javascript",
+  "php",
+  "kotlin",
+  "react",
+  "flutter",
 ]);
 
 export const consoleTranslationLanguages = translationLanguages.filter((language) =>
@@ -76,7 +82,10 @@ const sourceHazards: Record<TranslationLanguageId, string[]> = {
   swift: ["值/引用语义、可选值与协议派发", "actor、async 与 Sendable", "模块 ABI、桥接与 Apple 平台约束"],
   python: ["动态属性、MRO 与 duck typing", "truthiness、任意精度整数与生成器", "装饰器、元类、运行时导入与原生扩展"],
   typescript: ["结构类型、联合/交叉类型", "undefined/null 与 number 精度", "Promise 事件循环、原型与运行时类型守卫"],
-  javascript: ["JSDoc 契约缺失、冲突或运行时类型漂移", "undefined/null、number 精度与隐式强制转换", "Promise 事件循环、原型、模块副作用与 Node API"],
+  php: ["弱类型强制转换、数组键与 null 语义", "整数宽度、浮点与异常/错误边界", "动态 include、全局状态、扩展与 I/O"],
+  kotlin: ["nullable、平台类型与整数宽度", "协程、异常、扩展函数与重载解析", "反射、框架、JVM 互操作与副作用"],
+  react: ["JSX、组件生命周期、Hooks 与 effects", "props/state 闭包、事件与异步渲染", "当前仅支持显式类型的纯 TSX 函数"],
+  flutter: ["Widget 树、BuildContext 与生命周期", "async、平台通道、插件与设备 API", "当前仅支持显式类型的纯 Dart 函数"],
 };
 
 const targetHazards: Record<TranslationLanguageId, string[]> = {
@@ -89,7 +98,10 @@ const targetHazards: Record<TranslationLanguageId, string[]> = {
   swift: ["目标必须显式表达 Optional、溢出、值语义与错误", "actor、协议对象、桥接、框架与 I/O 不属于当前纯函数 profile"],
   python: ["目标类型证据与运行时约束必须分开", "动态对象、装饰器、导入副作用不属于当前纯函数 profile"],
   typescript: ["目标必须区分 null、undefined 与缺失属性", "Promise、原型、I/O 与框架不属于当前纯函数 profile"],
-  javascript: ["目标必须保留精确 JSDoc 类型、safe-integer 守卫与严格相等", "CommonJS、Promise、原型、I/O、包生命周期与框架不属于当前纯函数 profile"],
+  php: ["目标必须保留 strict_types、整数边界与显式空值语义", "动态 include、扩展、框架、会话与 I/O 不属于当前纯函数 profile"],
+  kotlin: ["目标必须保留 Long/Double/Boolean/String 的显式域", "协程、异常、对象图、框架与 I/O 不属于当前纯函数 profile"],
+  react: ["目标仅接收显式类型的纯函数，不把 JSX 当普通表达式降级", "组件、Hooks、effects、DOM 与渲染语义保持不支持"],
+  flutter: ["目标仅接收显式类型的纯 Dart 函数，不伪造 Widget 等价", "Widget、插件、平台通道、设备与渲染语义保持不支持"],
 };
 
 export function translationHazards(

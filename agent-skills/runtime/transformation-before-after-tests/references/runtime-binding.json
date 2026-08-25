@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "transformation-before-after-tests",
+  "source_contract_sha256": "sha256:06ec572a7f0f468a644000b619d143e9dfcdc822878b1a13180ba6f8e2b97585",
+  "source_id": "FOUNDATION-04-transformation-before-after-tests",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

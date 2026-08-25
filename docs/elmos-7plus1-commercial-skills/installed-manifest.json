@@ -1,4 +1,5 @@
 {
+  "active_archive_executables": [],
   "active_archive_instruction_filenames": [],
   "archive_content_executed": false,
   "canonical_source_file_count": 252,
@@ -6,722 +7,944 @@
   "canonical_source_path_mapping": [
     {
       "logical_path": "00-elmos-software-factory-master/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:476fc04c2dbc40ac68d237e1abb54ec455f93a6a4d437a9f0bc8859fb9bde58b"
+      "sha256": "sha256:476fc04c2dbc40ac68d237e1abb54ec455f93a6a4d437a9f0bc8859fb9bde58b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/architecture-invariant-linter/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/architecture-invariant-linter/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:924fc30f798847796064b3c4c821ca6b4deb274b66fad630df209a311e99b4b4"
+      "sha256": "sha256:924fc30f798847796064b3c4c821ca6b4deb274b66fad630df209a311e99b4b4",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/commercial-control-plane/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/commercial-control-plane/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:56c6137bf10adeee8fa76368fd64a5f39db8ff3902f645e77851c6fd0c7732ba"
+      "sha256": "sha256:56c6137bf10adeee8fa76368fd64a5f39db8ff3902f645e77851c6fd0c7732ba",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/documentation-gardener/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/documentation-gardener/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:ab5b04329cb805e0b3e3cec485c5a4420ea73c2a5af2a526ba27e78684c7d8f5"
+      "sha256": "sha256:ab5b04329cb805e0b3e3cec485c5a4420ea73c2a5af2a526ba27e78684c7d8f5",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/package-dependency-governor/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/package-dependency-governor/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:fc8f7ddbc6ce525ebe2319a6ffbb83e9cd11d2bd10bbf0291cf65c80d61a12df"
+      "sha256": "sha256:fc8f7ddbc6ce525ebe2319a6ffbb83e9cd11d2bd10bbf0291cf65c80d61a12df",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/release-certification/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/release-certification/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:1195562d88fddbdca83539f318922fef637aa6bdb7609fe9caca187e56ed1f79"
+      "sha256": "sha256:1195562d88fddbdca83539f318922fef637aa6bdb7609fe9caca187e56ed1f79",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/repository-system-of-record/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/repository-system-of-record/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:c09c0ed287861cd5efd684a2d3090b3980aae4f451485a68ab607bb0e598bb18"
+      "sha256": "sha256:c09c0ed287861cd5efd684a2d3090b3980aae4f451485a68ab607bb0e598bb18",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/upstream-change-monitor/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/upstream-change-monitor/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:dd657a5b690890d2e86bf0a968dc2050c126c58460000d31f103216ce385d38b"
+      "sha256": "sha256:dd657a5b690890d2e86bf0a968dc2050c126c58460000d31f103216ce385d38b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "00-elmos-software-factory-master/skills/workflow-contract-compiler/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "00-elmos-software-factory-master/skills/workflow-contract-compiler/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:ac5502ba636550e5a5d100b7066cc52ee0b72f53b270977d9c6bf56d74d313a8"
+      "sha256": "sha256:ac5502ba636550e5a5d100b7066cc52ee0b72f53b270977d9c6bf56d74d313a8",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:6d970bb318f9cbe2c672b1aff243633e317060db92d2818c0a85290e3b14c41b"
+      "sha256": "sha256:6d970bb318f9cbe2c672b1aff243633e317060db92d2818c0a85290e3b14c41b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/approval-gate/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/approval-gate/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:263653658d8c9fde8d48204006cc3e67c98c6d0e7fae150f570c092a86954d96"
+      "sha256": "sha256:263653658d8c9fde8d48204006cc3e67c98c6d0e7fae150f570c092a86954d96",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/async-task-runtime/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/async-task-runtime/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:7c19228ed91dc27f8aef5c860926e9e0c091f79b7187920f33a33bb1c27544df"
+      "sha256": "sha256:7c19228ed91dc27f8aef5c860926e9e0c091f79b7187920f33a33bb1c27544df",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/compaction-and-resume/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/compaction-and-resume/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:c2c143073a958ed21d667c54baae49e1c17373a6af8ee787061be43a33896fd6"
+      "sha256": "sha256:c2c143073a958ed21d667c54baae49e1c17373a6af8ee787061be43a33896fd6",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/context-epoch-manager/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/context-epoch-manager/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f15541e1c37ba1954bcad2056e544ca64f27f79b01e0d1a9de9e7e692fb2fce1"
+      "sha256": "sha256:f15541e1c37ba1954bcad2056e544ca64f27f79b01e0d1a9de9e7e692fb2fce1",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/continuable-subagent-manager/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/continuable-subagent-manager/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:0588bbb61ed2e4c8c8451b6ab9647ed248852ccc1d1ab16484e948b99bdcb173"
+      "sha256": "sha256:0588bbb61ed2e4c8c8451b6ab9647ed248852ccc1d1ab16484e948b99bdcb173",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/event-sourced-session-runtime/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/event-sourced-session-runtime/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:1a48bd868e94b00d8bc647526ec5ae840b6989b3e85749e95cef2faf4efeb023"
+      "sha256": "sha256:1a48bd868e94b00d8bc647526ec5ae840b6989b3e85749e95cef2faf4efeb023",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/harness-adapter-sdk/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/harness-adapter-sdk/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:2301b55d02591e418463dd9e1ace66a75e04e44b01be54c86f88a45da82580fe"
+      "sha256": "sha256:2301b55d02591e418463dd9e1ace66a75e04e44b01be54c86f88a45da82580fe",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/headless-runtime-api/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/headless-runtime-api/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:2d235ea3af283603d4b6ad4ff350b56e4f49ec0a67eaff6ffafd82832206f296"
+      "sha256": "sha256:2d235ea3af283603d4b6ad4ff350b56e4f49ec0a67eaff6ffafd82832206f296",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/lsp-capability-seam/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/lsp-capability-seam/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:e8368461f72e74ef7d5d3129c7a4094de7942385b6c7ae204e55e129330f2392"
+      "sha256": "sha256:e8368461f72e74ef7d5d3129c7a4094de7942385b6c7ae204e55e129330f2392",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/permission-policy-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/permission-policy-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f47b4d3c456eb717a74a2965d50978bfe84a526837c3504a5b29bd53c802acbb"
+      "sha256": "sha256:f47b4d3c456eb717a74a2965d50978bfe84a526837c3504a5b29bd53c802acbb",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/readiness-dry-run/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/readiness-dry-run/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:34a5ccad430a1a91a2dbec77db71f229a6dc199b6947eb993f7e06fb8eddbbeb"
+      "sha256": "sha256:34a5ccad430a1a91a2dbec77db71f229a6dc199b6947eb993f7e06fb8eddbbeb",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/sandbox-runtime/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/sandbox-runtime/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:b14e893026d31674356053b7b5e53f0d9b00f2c986d7cf469c793444f10c9347"
+      "sha256": "sha256:b14e893026d31674356053b7b5e53f0d9b00f2c986d7cf469c793444f10c9347",
+      "source_mode": "0644"
     },
     {
       "logical_path": "01-elmos-harness-runtime-platform/skills/tool-runtime/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "01-elmos-harness-runtime-platform/skills/tool-runtime/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:d49780f9ba2139308ae85bd5983b7a06d30ee146dcec2cc8ff70b802b845b852"
+      "sha256": "sha256:d49780f9ba2139308ae85bd5983b7a06d30ee146dcec2cc8ff70b802b845b852",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:4c34ab4f4517dc7a240007e6f660968625e6257b10a3c8830079f46bf5bd81f9"
+      "sha256": "sha256:4c34ab4f4517dc7a240007e6f660968625e6257b10a3c8830079f46bf5bd81f9",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/ast-symbol-indexer/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/ast-symbol-indexer/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:abfb386871e967f63a646c6d57399a70fa2afc338a717d9aff21b781c9717b4f"
+      "sha256": "sha256:abfb386871e967f63a646c6d57399a70fa2afc338a717d9aff21b781c9717b4f",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/capability-discovery-ledger/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/capability-discovery-ledger/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:525fb2a44bdeab006a09462b1b7aed0e80df83a779fe74f45e8866efd3c9ccfc"
+      "sha256": "sha256:525fb2a44bdeab006a09462b1b7aed0e80df83a779fe74f45e8866efd3c9ccfc",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/incremental-analysis-cache/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/incremental-analysis-cache/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:fa1f51608661a1b22ff78addb9ef3c507f2f52676a1ad335177a69bf3f947868"
+      "sha256": "sha256:fa1f51608661a1b22ff78addb9ef3c507f2f52676a1ad335177a69bf3f947868",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/language-framework-detector/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/language-framework-detector/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:15e4bf1ecf7f248364e72b9bb059c8b8d300c9a0b154bea1be1cff56aad8b15c"
+      "sha256": "sha256:15e4bf1ecf7f248364e72b9bb059c8b8d300c9a0b154bea1be1cff56aad8b15c",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/lsp-semantic-navigator/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/lsp-semantic-navigator/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:135687f2c3418a0c2ff0e18d25beefde8d516f88816042250ac6faabf1fd757b"
+      "sha256": "sha256:135687f2c3418a0c2ff0e18d25beefde8d516f88816042250ac6faabf1fd757b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/platform-graph-builder/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/platform-graph-builder/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:4938e77d3e58b954ec9053b81c68ee86f13d35b48586c047e0dd2d4904597c54"
+      "sha256": "sha256:4938e77d3e58b954ec9053b81c68ee86f13d35b48586c047e0dd2d4904597c54",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/program-graph-builder/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/program-graph-builder/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:279e36362674318ee93db8b0e18fcc8eb25a76da137ebe5323d32cc2c0d6e534"
+      "sha256": "sha256:279e36362674318ee93db8b0e18fcc8eb25a76da137ebe5323d32cc2c0d6e534",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/provenance-confidence-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/provenance-confidence-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:e7d0a45c36739ea8970cbfe5cd047178ea6ab2c3a105e224171d03b954e617ba"
+      "sha256": "sha256:e7d0a45c36739ea8970cbfe5cd047178ea6ab2c3a105e224171d03b954e617ba",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/repository-inventory-scanner/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/repository-inventory-scanner/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:dabb9ddc882de66307d4a71c27146f5674e2b305c4d9ee5487e0048edfab7113"
+      "sha256": "sha256:dabb9ddc882de66307d4a71c27146f5674e2b305c4d9ee5487e0048edfab7113",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/repository-query-service/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/repository-query-service/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:c4fc4bb2d7122ca88635df4d386a1bf1ba762975f7b280752ecdcc0394cbfac4"
+      "sha256": "sha256:c4fc4bb2d7122ca88635df4d386a1bf1ba762975f7b280752ecdcc0394cbfac4",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/runtime-trace-ingestor/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/runtime-trace-ingestor/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:36a67a3970907c543d72ccf22b6a29eaca3bfa0ffe7d4393aa3ac1d1f4a16731"
+      "sha256": "sha256:36a67a3970907c543d72ccf22b6a29eaca3bfa0ffe7d4393aa3ac1d1f4a16731",
+      "source_mode": "0644"
     },
     {
       "logical_path": "02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:2097a140635cc0b6e05108b72c89695d918c9063ed352882e7eca765a644bfa3"
+      "sha256": "sha256:2097a140635cc0b6e05108b72c89695d918c9063ed352882e7eca765a644bfa3",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:e92588936329d029231d30801b89f9797a8c44d34f91355aa84b96929043cfbc"
+      "sha256": "sha256:e92588936329d029231d30801b89f9797a8c44d34f91355aa84b96929043cfbc",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/architecture-synthesizer/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/architecture-synthesizer/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:3a65973ae9cf36e06970ad5e2520a444b41ca5ef2e56f6c89cad5f87622c92fa"
+      "sha256": "sha256:3a65973ae9cf36e06970ad5e2520a444b41ca5ef2e56f6c89cad5f87622c92fa",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/data-integration-transformer/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/data-integration-transformer/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:46514ae2961f37c780a4c109333b1b3fa6cc45996ac4b016e6e1cf2747cf16ec"
+      "sha256": "sha256:46514ae2961f37c780a4c109333b1b3fa6cc45996ac4b016e6e1cf2747cf16ec",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/framework-platform-adapter/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/framework-platform-adapter/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:976f934f7e3ba314c75b2172216521911587ed8c0ae4dcbf795121e237ff5578"
+      "sha256": "sha256:976f934f7e3ba314c75b2172216521911587ed8c0ae4dcbf795121e237ff5578",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/frontend-miniapp-transformer/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/frontend-miniapp-transformer/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:2416c91b0ecc47a831d446ff09759145f64fea7500754bb2f73e2f6b3e28ee5f"
+      "sha256": "sha256:2416c91b0ecc47a831d446ff09759145f64fea7500754bb2f73e2f6b3e28ee5f",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/implementation-dag-planner/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/implementation-dag-planner/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:36b49f5b6f63eec816879e58a0de5d2ad5b5fbb6f6c1c9136d95150ea47bffdb"
+      "sha256": "sha256:36b49f5b6f63eec816879e58a0de5d2ad5b5fbb6f6c1c9136d95150ea47bffdb",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/infrastructure-operations-generator/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/infrastructure-operations-generator/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:9e580b7d685636741a941f6370c254c76d7424d40496449598a0f92885ec3477"
+      "sha256": "sha256:9e580b7d685636741a941f6370c254c76d7424d40496449598a0f92885ec3477",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/migration-controller/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/migration-controller/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:0cafb53827062b961162fb0df9cc2cec79418bbb7b97e70a40aff9d0cfcfa9a3"
+      "sha256": "sha256:0cafb53827062b961162fb0df9cc2cec79418bbb7b97e70a40aff9d0cfcfa9a3",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/multi-language-emitter/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/multi-language-emitter/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:2099eaf4c4bff972236b4edbda0efb000dc75804dfa9fdc52e427277e33b58fc"
+      "sha256": "sha256:2099eaf4c4bff972236b4edbda0efb000dc75804dfa9fdc52e427277e33b58fc",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/mutation-exception-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/mutation-exception-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:812c8611f870e19f7ed7d2a05a4cebb20799b4570f4563ef044c4ebd418a2a4e"
+      "sha256": "sha256:812c8611f870e19f7ed7d2a05a4cebb20799b4570f4563ef044c4ebd418a2a4e",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/project-archetype-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/project-archetype-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:322fb55928d43d38f23ce22209a91982cc6fe879fab5fbe9ccd52dad3598b4d3"
+      "sha256": "sha256:322fb55928d43d38f23ce22209a91982cc6fe879fab5fbe9ccd52dad3598b4d3",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/requirement-expander/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/requirement-expander/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:967f34e6a6d1958cf6ac4fc50666dc949f461704d631541b304dbfd4050f4261"
+      "sha256": "sha256:967f34e6a6d1958cf6ac4fc50666dc949f461704d631541b304dbfd4050f4261",
+      "source_mode": "0644"
     },
     {
       "logical_path": "03-elmos-project-generation-transformation-engine/skills/transformation-rule-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "03-elmos-project-generation-transformation-engine/skills/transformation-rule-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:619446c1c71e249d3a58dff0fd6c2883ab86f6a7a01b934cd1f45d8ea57bf26e"
+      "sha256": "sha256:619446c1c71e249d3a58dff0fd6c2883ab86f6a7a01b934cd1f45d8ea57bf26e",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:5919add7f0a0fc213e00b6b25ebdf4eb9f55a0829aed3b8c21e158b01b0ab50f"
+      "sha256": "sha256:5919add7f0a0fc213e00b6b25ebdf4eb9f55a0829aed3b8c21e158b01b0ab50f",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/admission-concurrency-controller/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/admission-concurrency-controller/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:8e241f7417018207353ad5ed4e1d5f8af928ca3d13e2c27e391353536294a633"
+      "sha256": "sha256:8e241f7417018207353ad5ed4e1d5f8af928ca3d13e2c27e391353536294a633",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/continuable-collaboration-manager/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/continuable-collaboration-manager/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:93aed0bcbc2b2f4240c013a758560ef3dee0c31a1d0b6c4e7a9e6d9de385a9a0"
+      "sha256": "sha256:93aed0bcbc2b2f4240c013a758560ef3dee0c31a1d0b6c4e7a9e6d9de385a9a0",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/human-review-handoff/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/human-review-handoff/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:78c490c127e0bf81e3fece9c0c598bfe027695e21beb4abfe67b0ea596667b54"
+      "sha256": "sha256:78c490c127e0bf81e3fece9c0c598bfe027695e21beb4abfe67b0ea596667b54",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/proof-of-work-assembler/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/proof-of-work-assembler/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:02a3dc00f7df6ba9f8c7c5e9043d98907a232c85aa5b3ef385674894c2927ae0"
+      "sha256": "sha256:02a3dc00f7df6ba9f8c7c5e9043d98907a232c85aa5b3ef385674894c2927ae0",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/reconciliation-scheduler/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/reconciliation-scheduler/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:efd624a0334c7540c05d305b81c9cb696b8ed887bc8c10ea04ba0703003ae1ea"
+      "sha256": "sha256:efd624a0334c7540c05d305b81c9cb696b8ed887bc8c10ea04ba0703003ae1ea",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/retry-stall-doomloop-controller/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/retry-stall-doomloop-controller/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:378830fc61370355ce028841172c9bddc404d1b708fccb409fbf16526d435c0f"
+      "sha256": "sha256:378830fc61370355ce028841172c9bddc404d1b708fccb409fbf16526d435c0f",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/review-feedback-coordinator/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/review-feedback-coordinator/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:a371aa9bf8488b70b67443a3e0724edaee36466a43c473cca897780f47e2af00"
+      "sha256": "sha256:a371aa9bf8488b70b67443a3e0724edaee36466a43c473cca897780f47e2af00",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/specialized-agent-registry/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/specialized-agent-registry/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:386ba7853576e2ad8b438fc51e7219e56f2be1344b65a93c73beccaae8c020e1"
+      "sha256": "sha256:386ba7853576e2ad8b438fc51e7219e56f2be1344b65a93c73beccaae8c020e1",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/task-dag-orchestrator/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/task-dag-orchestrator/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:b0f133c48bbc55002fee4c65b1be1f0879ab74fa43bb51ac119a839fd1814ccf"
+      "sha256": "sha256:b0f133c48bbc55002fee4c65b1be1f0879ab74fa43bb51ac119a839fd1814ccf",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/workflow-tracker-adapter/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/workflow-tracker-adapter/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:356767f39a2c29d117073cf285c1ed15a03ca337179ba603c43b8ffc9b29593a"
+      "sha256": "sha256:356767f39a2c29d117073cf285c1ed15a03ca337179ba603c43b8ffc9b29593a",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/workpad-progress-journal/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/workpad-progress-journal/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:aae54d49ae5b35174f91ac312fb6118d6e26cd294d09a57a8ebf08a77cb15b27"
+      "sha256": "sha256:aae54d49ae5b35174f91ac312fb6118d6e26cd294d09a57a8ebf08a77cb15b27",
+      "source_mode": "0644"
     },
     {
       "logical_path": "04-elmos-agent-orchestration-software-factory/skills/workspace-worktree-manager/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "04-elmos-agent-orchestration-software-factory/skills/workspace-worktree-manager/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f950f5d51bfd8ffa015bba90b5b0fb11bc857b3d641e0117686e28b71da30bfa"
+      "sha256": "sha256:f950f5d51bfd8ffa015bba90b5b0fb11bc857b3d641e0117686e28b71da30bfa",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:5df868498879e5f24d12d63347046b0bb8d3f9379ccbd614cf4bc91f896c752e"
+      "sha256": "sha256:5df868498879e5f24d12d63347046b0bb8d3f9379ccbd614cf4bc91f896c752e",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/capability-coverage-ledger/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/capability-coverage-ledger/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:65b39d93b7c290c6621b5840aed82af5ff24f193769da9c8d5bfb8b0ef40822c"
+      "sha256": "sha256:65b39d93b7c290c6621b5840aed82af5ff24f193769da9c8d5bfb8b0ef40822c",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/compiler-static-pipeline/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/compiler-static-pipeline/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:9c21ad8633acd806935f8e6fba800f373279a5258df925419f6cc2121b767ca7"
+      "sha256": "sha256:9c21ad8633acd806935f8e6fba800f373279a5258df925419f6cc2121b767ca7",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/contract-integration-pipeline/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/contract-integration-pipeline/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:ed1ad0983b445a0bda647867ca16d0e88f2e69f5d097a534cbd77d7413325e80"
+      "sha256": "sha256:ed1ad0983b445a0bda647867ca16d0e88f2e69f5d097a534cbd77d7413325e80",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/diagnosis-repair-loop/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/diagnosis-repair-loop/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f58cb8b497a3a0aa2fecf3e70f3034a36df1143d316ac5adecd4fcdd91189a68"
+      "sha256": "sha256:f58cb8b497a3a0aa2fecf3e70f3034a36df1143d316ac5adecd4fcdd91189a68",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/differential-runtime/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/differential-runtime/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:230df790cd920c1e1c733ed2593d922b3849a4308ed95e988b47091a3ee394a7"
+      "sha256": "sha256:230df790cd920c1e1c733ed2593d922b3849a4308ed95e988b47091a3ee394a7",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/evidence-certification-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/evidence-certification-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f9ebde0a617457b613621cc440ea7517c2691caaae62cd7aba9f779806db2f1c"
+      "sha256": "sha256:f9ebde0a617457b613621cc440ea7517c2691caaae62cd7aba9f779806db2f1c",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/generative-testing/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/generative-testing/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:4176eb88c1f7ac4d4328c882841cbec583c60aa045ae85a4b0ea81fb8ca58685"
+      "sha256": "sha256:4176eb88c1f7ac4d4328c882841cbec583c60aa045ae85a4b0ea81fb8ca58685",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/mechanical-completion-gate/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/mechanical-completion-gate/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:640c84fdb75ddb84cd68cb2b8a87491acbc235b71d8099b929f8ca2439973f3e"
+      "sha256": "sha256:640c84fdb75ddb84cd68cb2b8a87491acbc235b71d8099b929f8ca2439973f3e",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/nonfunctional-verifier/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/nonfunctional-verifier/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:196f60d385d49f86d978054b2b3ce1548f4fdaa41d244fe547b6e0859d54cb2d"
+      "sha256": "sha256:196f60d385d49f86d978054b2b3ce1548f4fdaa41d244fe547b6e0859d54cb2d",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/requirement-coverage-ledger/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/requirement-coverage-ledger/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:a1149ec74e7c814e246d565f9dd5da6cd68a37cc16b184bf6b893f55b55c29f0"
+      "sha256": "sha256:a1149ec74e7c814e246d565f9dd5da6cd68a37cc16b184bf6b893f55b55c29f0",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/ui-multimodal-verifier/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/ui-multimodal-verifier/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:dad2760eb7269a10778e2dc962442133df16ceb3da44b25303879c18f069678b"
+      "sha256": "sha256:dad2760eb7269a10778e2dc962442133df16ceb3da44b25303879c18f069678b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "05-elmos-conversion-reliability-verification-harness/skills/verification-planner/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "05-elmos-conversion-reliability-verification-harness/skills/verification-planner/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:df79d52c279101d8510b3209699f10b0ee5b58fe4afb10fe4fabb2a28ccc40f7"
+      "sha256": "sha256:df79d52c279101d8510b3209699f10b0ee5b58fe4afb10fe4fabb2a28ccc40f7",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:b5f5662955a094f94cd122d0eb4522d01bd7c06319f359107248d640ccdefcd8"
+      "sha256": "sha256:b5f5662955a094f94cd122d0eb4522d01bd7c06319f359107248d640ccdefcd8",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/benchmark-availability-gate/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/benchmark-availability-gate/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:964ef2e76ccf0d6a47e375ebf8e824ced79f655c11c854293a004316bf7ea451"
+      "sha256": "sha256:964ef2e76ccf0d6a47e375ebf8e824ced79f655c11c854293a004316bf7ea451",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/cost-token-eta-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/cost-token-eta-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:9ab61d2bdc537b5153b0a8eb61ab93ac2e7b7984148ceb024ce8e2a936183ad1"
+      "sha256": "sha256:9ab61d2bdc537b5153b0a8eb61ab93ac2e7b7984148ceb024ce8e2a936183ad1",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/fallback-circuitbreaker-hedging/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/fallback-circuitbreaker-hedging/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:48fea31c462bd50ddcf3e27fdf4c136afe7ed3f3d48996f79a7e3726de5920dd"
+      "sha256": "sha256:48fea31c462bd50ddcf3e27fdf4c136afe7ed3f3d48996f79a7e3726de5920dd",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/historical-taskfit-scorer/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/historical-taskfit-scorer/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:e36b4eec27464696153920ebc022c3eed6f3f622d8838e7336b2da61028a4809"
+      "sha256": "sha256:e36b4eec27464696153920ebc022c3eed6f3f622d8838e7336b2da61028a4809",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/long-context-completeness-auditor/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/long-context-completeness-auditor/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:654a2e8a3b43615f6724fd3b2564952dbe4edea4b7adb26bee2eef676515755b"
+      "sha256": "sha256:654a2e8a3b43615f6724fd3b2564952dbe4edea4b7adb26bee2eef676515755b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/model-provider-catalog/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/model-provider-catalog/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:776ef40be5e4b94bc9d8d5e401c2426a38c07e4e09e8de7309a59e2db87e1789"
+      "sha256": "sha256:776ef40be5e4b94bc9d8d5e401c2426a38c07e4e09e8de7309a59e2db87e1789",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/multi-objective-router/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/multi-objective-router/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:be2ce6c405143e418624bdea1f67e76fc54500d862313fa3ee35ff21624e55dc"
+      "sha256": "sha256:be2ce6c405143e418624bdea1f67e76fc54500d862313fa3ee35ff21624e55dc",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/multimodal-route/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/multimodal-route/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:10549090792ad77fae107c9edf7d65db61ca85ead5c6b67a73cb129369ed8294"
+      "sha256": "sha256:10549090792ad77fae107c9edf7d65db61ca85ead5c6b67a73cb129369ed8294",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/privacy-data-policy-broker/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/privacy-data-policy-broker/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:97b8ef8ea8deaec8c13b7d9aad686e73f6788369cbdebfa478b16ebac02506e5"
+      "sha256": "sha256:97b8ef8ea8deaec8c13b7d9aad686e73f6788369cbdebfa478b16ebac02506e5",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/route-constraint-engine/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/route-constraint-engine/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:a366397dd11bba53bef514f4875c25c8d87b4ce47b27b797d6063da61fc791cd"
+      "sha256": "sha256:a366397dd11bba53bef514f4875c25c8d87b4ce47b27b797d6063da61fc791cd",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/route-observability/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/route-observability/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:de651e64c189466433cc3eac89025bdd738ce934c1152f3c5cd270edb04ca690"
+      "sha256": "sha256:de651e64c189466433cc3eac89025bdd738ce934c1152f3c5cd270edb04ca690",
+      "source_mode": "0644"
     },
     {
       "logical_path": "06-elmos-intelligent-model-router/skills/task-classifier/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "06-elmos-intelligent-model-router/skills/task-classifier/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:fee222ffbf22fd3cc97de248dac6af36023b7294c9109cb6115f476a72e36d6a"
+      "sha256": "sha256:fee222ffbf22fd3cc97de248dac6af36023b7294c9109cb6115f476a72e36d6a",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:553d5f9d22d7b0e07f552465a96b25f644f498dd11018148a9103289d74d7ff6"
+      "sha256": "sha256:553d5f9d22d7b0e07f552465a96b25f644f498dd11018148a9103289d74d7ff6",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/active-learning-queue/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/active-learning-queue/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:e20e93351266f59d72181b85f38f17cf88c3f85492d9f414e67c0033f9040312"
+      "sha256": "sha256:e20e93351266f59d72181b85f38f17cf88c3f85492d9f414e67c0033f9040312",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/benchmark-corpus/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/benchmark-corpus/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:2209221486dcd9a870db3a7e0162d4014d941fbd7313b0fb630b3591fec8a10b"
+      "sha256": "sha256:2209221486dcd9a870db3a7e0162d4014d941fbd7313b0fb630b3591fec8a10b",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/drift-regression-detector/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/drift-regression-detector/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:117c3f28a8d2a830f16a9ba02240c791ae3bbb022ebef4c1a5b7299c4543c982"
+      "sha256": "sha256:117c3f28a8d2a830f16a9ba02240c791ae3bbb022ebef4c1a5b7299c4543c982",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/evidence-corpus/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/evidence-corpus/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:ac5d5db526d00a5446a469fe8edef76c041a1adc2b1407d585b84fbb73800aea"
+      "sha256": "sha256:ac5d5db526d00a5446a469fe8edef76c041a1adc2b1407d585b84fbb73800aea",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/failure-repair-corpus/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/failure-repair-corpus/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:1d793ee3c521b2e56cc4473d93d6f38dc012104736090006d4a08b55b2669fa1"
+      "sha256": "sha256:1d793ee3c521b2e56cc4473d93d6f38dc012104736090006d4a08b55b2669fa1",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/knowledge-quality-auditor/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/knowledge-quality-auditor/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f3440b5dad4f11fd83e0e7d6a96ce16c60ad2caf129e7d5620d4c27fa8bff0fb"
+      "sha256": "sha256:f3440b5dad4f11fd83e0e7d6a96ce16c60ad2caf129e7d5620d4c27fa8bff0fb",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/project-archetype-knowledge-base/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/project-archetype-knowledge-base/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:d2e1f3a2700aa494ff46cbe07b2b0ef9c5d9264fef1221b0a43a5a9a889c829e"
+      "sha256": "sha256:d2e1f3a2700aa494ff46cbe07b2b0ef9c5d9264fef1221b0a43a5a9a889c829e",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/repair-retrieval-ranker/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/repair-retrieval-ranker/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:203b2f01074fd261b740f5591b5c55e56a2897665f6e8005e7b401196d91c093"
+      "sha256": "sha256:203b2f01074fd261b740f5591b5c55e56a2897665f6e8005e7b401196d91c093",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/rule-promotion-governance/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/rule-promotion-governance/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:bfed8e2cbe2617d8fd2beebe6a8b152054166687480b2a8d5223fb6f4c5199df"
+      "sha256": "sha256:bfed8e2cbe2617d8fd2beebe6a8b152054166687480b2a8d5223fb6f4c5199df",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/specialized-model-training/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/specialized-model-training/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:1369cddbc61c9d9920466bb016359fba0464e1fdab74908b6fac817973e96e9c"
+      "sha256": "sha256:1369cddbc61c9d9920466bb016359fba0464e1fdab74908b6fac817973e96e9c",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/tenant-ip-isolation/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/tenant-ip-isolation/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:80e2e504d70b08e69ba689b1a625233b5d664e6f0a55057bd4596a49ef02316f"
+      "sha256": "sha256:80e2e504d70b08e69ba689b1a625233b5d664e6f0a55057bd4596a49ef02316f",
+      "source_mode": "0644"
     },
     {
       "logical_path": "07-elmos-transformation-learning-evolution/skills/transformation-knowledge-base/SKILL.md",
+      "materialized_mode": "0644",
       "materialized_path": "07-elmos-transformation-learning-evolution/skills/transformation-knowledge-base/SKILL.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:007cc7777a00a4038269947b5d1f425f4acce10ba1e81e41912e44c90323f407"
+      "sha256": "sha256:007cc7777a00a4038269947b5d1f425f4acce10ba1e81e41912e44c90323f407",
+      "source_mode": "0644"
     },
     {
       "logical_path": "AGENTS.md",
+      "materialized_mode": "0644",
       "materialized_path": "_neutralized-instruction-data/AGENTS.md.source-data",
       "mode": "0644",
       "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
-      "sha256": "sha256:f468b7e5cb73a379c5cf2251416b8e0ba0ead6bde5ca5d238b3fcaf830d2ff64"
+      "sha256": "sha256:f468b7e5cb73a379c5cf2251416b8e0ba0ead6bde5ca5d238b3fcaf830d2ff64",
+      "source_mode": "0644"
+    },
+    {
+      "logical_path": "scripts/score_readiness.py",
+      "materialized_mode": "0644",
+      "materialized_path": "_neutralized-executable-data/scripts/score_readiness.py.source-data",
+      "mode": "0644",
+      "reason": "ARCHIVE_EXECUTABLE_NEUTRALIZED",
+      "sha256": "sha256:a17057412f9b574b5e1445cb6191ed4a4b0a8e1f09bcf59fb12cbbabb53c3dc7",
+      "source_mode": "0755"
+    },
+    {
+      "logical_path": "scripts/validate_packages.py",
+      "materialized_mode": "0644",
+      "materialized_path": "_neutralized-executable-data/scripts/validate_packages.py.source-data",
+      "mode": "0644",
+      "reason": "ARCHIVE_EXECUTABLE_NEUTRALIZED",
+      "sha256": "sha256:834aae29a1ba1ffc48d9ecf621b9e72e7a0e96e9cf74e255abf30f077921ad90",
+      "source_mode": "0755"
     }
   ],
-  "canonical_source_tree_sha256": "sha256:734973c5f0605f666b5d26e74042fa64445852fa7bfd8e494b37031e536bb186",
+  "canonical_source_tree_sha256": "sha256:e007cc070c6cd0c1e8776cff1b8294a9aef3a88d8141aaf3721108920159d52b",
   "certification_status": "NOT_CERTIFIED",
-  "compiled_manifest_sha256": "sha256:452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc",
+  "compiled_manifest_sha256": "sha256:898640a2b615e8736d966aabc297471a1531644fe24f49938a75900eeef2c6ca",
   "dual_root_byte_identical": true,
   "external_evidence_status": "NOT_RUN",
   "immutable_source": true,
@@ -766,7 +989,7 @@
     }
   ],
   "installed_skill_count_per_root": 102,
-  "installed_tree_sha256_per_root": "sha256:84b78f7ba011d03b7e20193e48a912611f99fdec81e992fb276da959d12ed280",
+  "installed_tree_sha256_per_root": "sha256:a37bda5ae53765292979fa51d93ec2df3d3e3bf399d42c470c2f2f3b5294ce74",
   "logical_source_tree_sha256": "sha256:522add74d84d60fb6770550aa2c6a997ebc224a1a510acd11ccd9b82f00d12cf",
   "namespace": "elmos-7plus1-commercial-v1",
   "package": {
@@ -780,18 +1003,34 @@
   },
   "runtime_binding": {
     "artifact_digests": {
-      "engines/software-factory-engine/src/elmos_software_factory/__init__.py": "sha256:6e4c59e0b24d76dbc548602e3dc04d67e058d854b1a479e3245ab78396f9f049",
+      "engines/software-factory-engine/schemas/archive-contract-inspection.schema.json": "sha256:b2db410a95d11a1498f1bf96a1d069f69088d54bc6afc7c7c18a7d4f154a4d15",
+      "engines/software-factory-engine/schemas/dependency-receipt.schema.json": "sha256:698e1eb09bbce33ad4ba4834e1a0bcd1f5365ba2e2126998405bf065472c1ce8",
+      "engines/software-factory-engine/schemas/evidence-campaign-receipt.schema.json": "sha256:a0937e1426ad9c052d09624c8ef2a3b8e8e881aa1e33392ee48abf9a719f0474",
+      "engines/software-factory-engine/schemas/evidence-campaign.schema.json": "sha256:0cab5a6d8df4026c1bba2e39627b06c7bedc8ac6538f35011ebbfb3259341097",
+      "engines/software-factory-engine/schemas/evidence-intake-decision.schema.json": "sha256:d71991842d519b8cfb8bb38e6ccb791512e807190c60c013b6155f7f84e9dc33",
+      "engines/software-factory-engine/schemas/evidence-intake-policy.schema.json": "sha256:3f3df6820f2109eed2881aff7030526da8c597956a10a474ad967b11ce8b94da",
+      "engines/software-factory-engine/schemas/external-evidence-receipt.schema.json": "sha256:cee5abc26cca7c459ddf342d073770d999f1298c81680827e11209e7a5820e75",
+      "engines/software-factory-engine/schemas/external-observation.schema.json": "sha256:7b09d1ec898555899af8b952b6e2a41a67154965b52daa1a47a2e7b06e286308",
+      "engines/software-factory-engine/schemas/external-preflight.schema.json": "sha256:b728ab998bba7e49cbe1f4740054d804f3d0cc302038ca10daadb8122584112e",
+      "engines/software-factory-engine/schemas/request.schema.json": "sha256:d8d09088f7aecba96518886920d5c5e8c3c3bf80d04969f1a1361f9b00d7ba18",
+      "engines/software-factory-engine/schemas/result.schema.json": "sha256:197c2dc389bb4f062bcd1e7f60b5dc4ef8bef545ac7eeef11035741fb5e503d2",
+      "engines/software-factory-engine/src/elmos_software_factory/__init__.py": "sha256:48b6cda097810fdf9edd41105d6fa23edfc204e7b67586b8a42996c0e5ac3764",
       "engines/software-factory-engine/src/elmos_software_factory/__main__.py": "sha256:0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3",
-      "engines/software-factory-engine/src/elmos_software_factory/canonical.py": "sha256:3ffdb587fc9e8e978279d0a92f746f55114690eb281e6c0e5dd8bc13ba9e7c6a",
+      "engines/software-factory-engine/src/elmos_software_factory/archive_contracts.py": "sha256:82a60326635b1f138818e3e552cb0b0a836f4920b71bc4c9fbbaf361fdcbcd77",
+      "engines/software-factory-engine/src/elmos_software_factory/artifact_binding.py": "sha256:47a53bcadf9ed26b8a9339628a16a936e18c372122bb0350daea4d39565026c1",
+      "engines/software-factory-engine/src/elmos_software_factory/campaigns.py": "sha256:06ed285e23b348b4141e52f1e173a56e4616e0cdb7babfaa1cd6d2fe04abbadd",
+      "engines/software-factory-engine/src/elmos_software_factory/canonical.py": "sha256:0a2f4b661e6bb755a7169defc40141ace8782ced5e781d9ba5bdc8ca219dce0f",
       "engines/software-factory-engine/src/elmos_software_factory/capabilities.py": "sha256:eb0cc604672c823d4137eb21a8722c4d4a72046e53eb75cb8b83b2ef92b85ede",
       "engines/software-factory-engine/src/elmos_software_factory/capability_registry.json": "sha256:a374f9b6d89b9e8c999f54b876f10b202576213a974190457cc8aaf1ad037ac7",
-      "engines/software-factory-engine/src/elmos_software_factory/cli.py": "sha256:e6b202e9ba2202f293d700ee82394d54c1ea178e19f0bd486c8bb1101c363d9d",
-      "engines/software-factory-engine/src/elmos_software_factory/handlers.py": "sha256:edb7cdc23599bb5a1439004db51f3ae8d9627aaaaa98377b3d044d0e4f5683ef",
+      "engines/software-factory-engine/src/elmos_software_factory/cli.py": "sha256:164321ac6e32138f52dbf47fa64e080403fe61c346de3866fd5d10ee4d5f94ed",
+      "engines/software-factory-engine/src/elmos_software_factory/evidence_intake.py": "sha256:9ef75e912ae88716d9c396d81d825c96c17bc7316dd26fd5555d3ff6d3e5652c",
+      "engines/software-factory-engine/src/elmos_software_factory/evidence_models.py": "sha256:51338eb7f5dee0c609c28ba102f9f02f949fb372e77bd5085dab5c356678013d",
+      "engines/software-factory-engine/src/elmos_software_factory/handlers.py": "sha256:04976c4cd4b9de56fd3497460af14f03b929d3d4c646b4450f8e461fa8ac2cb7",
       "engines/software-factory-engine/src/elmos_software_factory/models.py": "sha256:ebb2aa5daf9fa684179e65b51a838dfab72d766e85c30513496fce3a364b6921",
       "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f",
       "engines/software-factory-engine/src/elmos_software_factory/public_methods.py": "sha256:ea116dc02c646642986b0a725cd17bc4bddee7526e07c14f3e5597ea7ea2e67c",
-      "engines/software-factory-engine/src/elmos_software_factory/registry.py": "sha256:e7d4be4354f20b91fbf1146dd9c21d51ed8fc869fe1f69e583cbb28ac27839de",
-      "engines/software-factory-engine/src/elmos_software_factory/runtime.py": "sha256:fb6f6bc0f7b1d4aa80c4c887242c3cd520c936197799c4448911cf1f0feb069a",
+      "engines/software-factory-engine/src/elmos_software_factory/registry.py": "sha256:86fabd99064e042f7851ba8894fa4942072f7c2f852fd192b54efd0a1fba0614",
+      "engines/software-factory-engine/src/elmos_software_factory/runtime.py": "sha256:96bf85574f8d69a91879fca93922297ec55297ee00b96dbeca5a428360aaf710",
       "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
     },
     "bound_skill_count": 102,
@@ -805,7 +1044,7 @@
       "path": "engines/software-factory-engine/src/elmos_software_factory/public_method_registry.json",
       "sha256": "sha256:0171c8c6d4c5ee8b4cb1850ebd916ba485eead5f1984dd718386607be4fe029f"
     },
-    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
     "skill_registry": {
       "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
       "sha256": "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
@@ -830,7 +1069,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "LOCAL_IMPLEMENTED_BOUNDED",
       "installed_name": "elmos-7plus1-commercial-software-factory",
-      "installed_tree_sha256": "sha256:c38fb500fb299142e06c3e7c6527cc98440f0bf6e41cf8f3070343edc08dce08",
+      "installed_tree_sha256": "sha256:133388843779d36aa29196ed29ba4aa9dd4b220f78135c5e0fd0d54ba3bc762a",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "repository-owned-root-orchestrator",
       "name": "elmos-7plus1-commercial-software-factory",
@@ -852,7 +1091,7 @@
         "required_inputs": [
           "target_skill_or_public_method"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-7plus1-commercial-software-factory",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -883,7 +1122,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-software-factory-master",
-      "installed_tree_sha256": "sha256:b159d994871b91013cdb806c3ff946780adf482908a31900d3d075e5c29b3453",
+      "installed_tree_sha256": "sha256:ba2efec6eaff66fbd2c8671bba01935ed7723e436310377ea5beb67ce00ed1d1",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-software-factory-master",
@@ -905,7 +1144,7 @@
         "required_inputs": [
           "nodes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-software-factory-master",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -931,7 +1170,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-repository-system-of-record",
-      "installed_tree_sha256": "sha256:07b265b4135159d1a5d5da912a44a9977ab0d3bb1f8431de5d68cb8779d2e7e5",
+      "installed_tree_sha256": "sha256:98503c34013aadf851032be27e595db2bd611c76dbf7abe43c42d6edc411c7c8",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-repository-system-of-record",
@@ -953,7 +1192,7 @@
         "required_inputs": [
           "package_id"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-repository-system-of-record",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -981,7 +1220,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-workflow-contract-compiler",
-      "installed_tree_sha256": "sha256:96fb9d4d067a52c6806d689f2a95a12750f1bb3903d7bbbcdf960157473d607c",
+      "installed_tree_sha256": "sha256:9e4fd2325f9ea75f31171f4d89ff5b04d71cb211a9dbb1af908236b065af5ea9",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-workflow-contract-compiler",
@@ -1003,7 +1242,7 @@
         "required_inputs": [
           "nodes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-workflow-contract-compiler",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1031,7 +1270,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-package-dependency-governor",
-      "installed_tree_sha256": "sha256:cfd0f5b19a81cf0f27e7c2a047126321b698e0a2838f0536f9aa6d7e3f539205",
+      "installed_tree_sha256": "sha256:c61582e4e415c45f14407756ca4ca16fca65a84d13468d95b3fc11b715db69e3",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-package-dependency-governor",
@@ -1053,7 +1292,7 @@
         "required_inputs": [
           "package_id"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-package-dependency-governor",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1081,7 +1320,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-architecture-invariant-linter",
-      "installed_tree_sha256": "sha256:a93cdbdf5820cbca973630989498b52e078ed540a266bdef774db8dd7ce14a25",
+      "installed_tree_sha256": "sha256:f848edcf76694c3e996bf4e95907888f37a785b2b08ca76014b47dde8ced5ead",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-architecture-invariant-linter",
@@ -1104,7 +1343,7 @@
           "nodes",
           "invariants"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-architecture-invariant-linter",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1132,7 +1371,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-commercial-control-plane",
-      "installed_tree_sha256": "sha256:66cd74c5b198a71ab9a1d46223f1c04fd6316bc46f0ad23a6d6a9b08749afae5",
+      "installed_tree_sha256": "sha256:d80049406c4c10ab9e98a25298a7d99aa6259b24fd6186a32aefde4f3e6b79b2",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-commercial-control-plane",
@@ -1155,7 +1394,7 @@
           "job",
           "budget_micros"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-commercial-control-plane",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1183,7 +1422,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-7plus1-release-certification",
-      "installed_tree_sha256": "sha256:a6252bb774f80caf597dacd92584442f48e2524e6c4f981f7aaf021481cc471a",
+      "installed_tree_sha256": "sha256:d34c2ed49e90cedcf4ef27c07f6598af810aa0a76e27c36f8d4962fe0e83465a",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-7plus1-release-certification",
@@ -1205,7 +1444,7 @@
         "required_inputs": [
           "evidence_bundle"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-release-certification",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1233,7 +1472,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-documentation-gardener",
-      "installed_tree_sha256": "sha256:e165798f1652aa9a65ff3d267351a0a9c5150d584aa4a739260375b795308dd7",
+      "installed_tree_sha256": "sha256:c030f7ceb3656ab9989efa95e4a6709081b0759df3966bdd3a026665c0a3a82c",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-documentation-gardener",
@@ -1255,7 +1494,7 @@
         "required_inputs": [
           "config_revision"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-documentation-gardener",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1283,7 +1522,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-upstream-change-monitor",
-      "installed_tree_sha256": "sha256:7a6f251caff9fa436d4ab2fc3aa12ac2ac445078dcaf013465b945461fe32525",
+      "installed_tree_sha256": "sha256:5d7705097dbcea5b7e8fb69166ff58737ec01b223f0dba6f4c71220f2c297b9d",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-upstream-change-monitor",
@@ -1305,7 +1544,7 @@
         "required_inputs": [
           "upstream_ref"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-upstream-change-monitor",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1333,7 +1572,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-harness-runtime-platform",
-      "installed_tree_sha256": "sha256:10b5295575d39921c3cfebc05ac386bcb0bce979e2ce2b5db4940169292b8aef",
+      "installed_tree_sha256": "sha256:694e7d95a4f8510a1e95b3ba1335ba92d52ed6d3b4ae5f8e1634d3fa74fd77d1",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-harness-runtime-platform",
@@ -1355,7 +1594,7 @@
         "required_inputs": [
           "execution_contract"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-harness-runtime-platform",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1383,7 +1622,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-harness-adapter-sdk",
-      "installed_tree_sha256": "sha256:ec66bb625f91726cc7facd46cec82eb0bb5188674cf971139ed58881d4ddf16e",
+      "installed_tree_sha256": "sha256:3c4554164f2f3db42259c1062bf6e1140033e8fdd0fa813c2d5a3240a9696782",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-harness-adapter-sdk",
@@ -1405,7 +1644,7 @@
         "required_inputs": [
           "requested_permissions"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-harness-adapter-sdk",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1433,7 +1672,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-event-sourced-session-runtime",
-      "installed_tree_sha256": "sha256:11c31ffd8825a0ef8320cbd88599fa1f973ddc6fc84292b87e8e40e6860794d6",
+      "installed_tree_sha256": "sha256:aeeee3778159c7c631160401ad5961bf1527dbf19adb1a361ab4bae2cfe7fe71",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-event-sourced-session-runtime",
@@ -1455,7 +1694,7 @@
         "required_inputs": [
           "event"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-event-sourced-session-runtime",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1483,7 +1722,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-context-epoch-manager",
-      "installed_tree_sha256": "sha256:00ca2e01ef5b3f5ff9897c87edba99e98942d913a4cdaf4553ec160834b9b1c5",
+      "installed_tree_sha256": "sha256:1e4a7152a4e0887cef5fa76e9ac4421034218e0a24525dd58fa7e4bad3c7a4e4",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-context-epoch-manager",
@@ -1505,7 +1744,7 @@
         "required_inputs": [
           "session_id"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-context-epoch-manager",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1533,7 +1772,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-tool-runtime",
-      "installed_tree_sha256": "sha256:633408a34c6e49e03247ea98534a04c902456fa84b64ebd1fe520f9d71f1982c",
+      "installed_tree_sha256": "sha256:208900a6e9f8dba589f6e084baa5a03d05e1af97c0c47e86eb2875c915e435c2",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-tool-runtime",
@@ -1555,7 +1794,7 @@
         "required_inputs": [
           "tool_call"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-tool-runtime",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1583,7 +1822,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-async-task-runtime",
-      "installed_tree_sha256": "sha256:622d3716a2195d60e0db4efedf75f516c5a28f88305b92d9291fbc8ebb240da4",
+      "installed_tree_sha256": "sha256:eaca2bb45c07578c563a1e17994e4e54fd154ea91f7310b3e7f03681438bee7b",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-async-task-runtime",
@@ -1606,7 +1845,7 @@
           "task_id",
           "output"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-async-task-runtime",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1634,7 +1873,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-continuable-subagent-manager",
-      "installed_tree_sha256": "sha256:400a84152a77444bd7ce3ac2973bd2f1c5cb46a6bf2407d7fc056d63bf34d174",
+      "installed_tree_sha256": "sha256:ad20bff273e3259e16ea8117b22dc92532ad79a1eddb4873cc1eb2f0a601cc5b",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-continuable-subagent-manager",
@@ -1657,7 +1896,7 @@
           "prompt",
           "limits"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-continuable-subagent-manager",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1685,7 +1924,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-permission-policy-engine",
-      "installed_tree_sha256": "sha256:a472094df1afd08e016112cd6cf8b78b6c71533625e7aa4c61821ce2d9cf170d",
+      "installed_tree_sha256": "sha256:fa2ede09eaf62604e1f488817b880d52c8dce1f83587e9c849638cb21f43c1fc",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-permission-policy-engine",
@@ -1707,7 +1946,7 @@
         "required_inputs": [
           "requested_permissions"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-permission-policy-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1735,7 +1974,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-approval-gate",
-      "installed_tree_sha256": "sha256:e33811ef8afa90ddaa4793003ff5c92fd581a96dc07e5f06036983a3ad6780c1",
+      "installed_tree_sha256": "sha256:8cbebd39803b7660e15a50221cc47dd7c9c87606b25d87a35f8e717247a6c78e",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-approval-gate",
@@ -1757,7 +1996,7 @@
         "required_inputs": [
           "requested_permissions"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-approval-gate",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1785,7 +2024,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-sandbox-runtime",
-      "installed_tree_sha256": "sha256:e64007d71327abaf8f680894bbd8845544e93023d7ce5c76f08a65deff15381f",
+      "installed_tree_sha256": "sha256:96a1c82f251b435e73050ec18e7a6ae4b05793f59019180ed64aeba6dea9a030",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-sandbox-runtime",
@@ -1808,7 +2047,7 @@
           "argv",
           "sandbox_mode"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-sandbox-runtime",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1836,7 +2075,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-lsp-capability-seam",
-      "installed_tree_sha256": "sha256:f80ce0ec1f68c035401a21ff4ce787e3a2d9527269bac633a009e9344cdb890f",
+      "installed_tree_sha256": "sha256:dbdb2068f28e36e1d2e17df7d0d52ab4962c54b555638a5014fc98100bd0bb8f",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-lsp-capability-seam",
@@ -1858,7 +2097,7 @@
         "required_inputs": [
           "lsp_request"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-lsp-capability-seam",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1886,7 +2125,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-compaction-and-resume",
-      "installed_tree_sha256": "sha256:7571a60dabb6267dd498e405e42830ab3152de95290247c0e0c7f80e4c88a568",
+      "installed_tree_sha256": "sha256:c6272388260a9bd629285be9c5c0ed380f3fb825c6d54781f0e549eb8570e35c",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-compaction-and-resume",
@@ -1908,7 +2147,7 @@
         "required_inputs": [
           "session_id"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-compaction-and-resume",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1936,7 +2175,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-headless-runtime-api",
-      "installed_tree_sha256": "sha256:758b64236f942f585993c87ebf08488eca5653238da7972311c4a71d7b4ef31b",
+      "installed_tree_sha256": "sha256:b922ebca2b2e2937b590a9476a8dcf81162725376f731a10a29da883f4f8d12a",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-headless-runtime-api",
@@ -1958,7 +2197,7 @@
         "required_inputs": [
           "api_request"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-headless-runtime-api",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -1986,7 +2225,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-readiness-dry-run",
-      "installed_tree_sha256": "sha256:188d9ae09cc209d8b30f826ba44817164a99bf2546e423addae978910ac76b7f",
+      "installed_tree_sha256": "sha256:13d9872e59e4298fb8978bb627a595376e6000bf7efad8c87ae05291c0a9a16b",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-readiness-dry-run",
@@ -2009,7 +2248,7 @@
           "requested_permissions",
           "sandbox_mode"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-readiness-dry-run",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2038,7 +2277,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-repository-intelligence-semantic-ir",
-      "installed_tree_sha256": "sha256:c9ae516b81998a36717b1ea006d605275e6b3f6724c9e56fa744d6f5229a6301",
+      "installed_tree_sha256": "sha256:9153e3e281d56a84aac60d37492baf9303df7331aeb6e3f5e414be52cc29c94c",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-repository-intelligence-semantic-ir",
@@ -2060,7 +2299,7 @@
         "required_inputs": [
           "repository_snapshot"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-repository-intelligence-semantic-ir",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2089,7 +2328,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-repository-inventory-scanner",
-      "installed_tree_sha256": "sha256:78e1dab87d946a53c928a3e1d12733830cbeae3358eea65b604473c10ebf2a05",
+      "installed_tree_sha256": "sha256:24745da5908037a269b4dbca319b04dc0634358b5e3596629f98ad955890a915",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-repository-inventory-scanner",
@@ -2111,7 +2350,7 @@
         "required_inputs": [
           "repository_snapshot"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-repository-inventory-scanner",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2139,7 +2378,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-language-framework-detector",
-      "installed_tree_sha256": "sha256:786fd5fa01f559cbc91f47c558d7daec3806026c191cd5e7c4f406bf6393e065",
+      "installed_tree_sha256": "sha256:e17cd68fb4268b6b542252f1d0e0684d82a4d1e4e4777b43c4916abe2a1212e2",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-language-framework-detector",
@@ -2161,7 +2400,7 @@
         "required_inputs": [
           "inventory"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-language-framework-detector",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2189,7 +2428,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-ast-symbol-indexer",
-      "installed_tree_sha256": "sha256:4d65cc7e7973ce5a4dc4aa7ea27bfde0e8b7aec52cd76cc4155c79ff4d85d4c4",
+      "installed_tree_sha256": "sha256:34ad704d8091738efb188e03d2d89c13b7753d84eaec77d28d6f2cfb58aa9d61",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-ast-symbol-indexer",
@@ -2211,7 +2450,7 @@
         "required_inputs": [
           "inventory"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-ast-symbol-indexer",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2239,7 +2478,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-lsp-semantic-navigator",
-      "installed_tree_sha256": "sha256:c37fbfa935ef3e6a4adb73e14e63a8added7a4eea52cbe964e6a38e7aa623cfc",
+      "installed_tree_sha256": "sha256:1abff58fe5b9e0a4569c8505adb8be8710e4b76ac9f050d9cdca553a779e2153",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-lsp-semantic-navigator",
@@ -2261,7 +2500,7 @@
         "required_inputs": [
           "lsp_request"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-lsp-semantic-navigator",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2289,7 +2528,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-program-graph-builder",
-      "installed_tree_sha256": "sha256:21e7528057703177e8fd9c260903324cbbe0d0943a0e374f88b36d071e0be053",
+      "installed_tree_sha256": "sha256:35bdf41c6d1386b5fb911d074461324d735cab6429d39e9e97b505dab7f5b1f4",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-program-graph-builder",
@@ -2312,7 +2551,7 @@
           "inventory",
           "edges"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-program-graph-builder",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2340,7 +2579,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-platform-graph-builder",
-      "installed_tree_sha256": "sha256:b57421d09d14bee35c8c6d4ac00a9504a1d18b672030b072e194a128734f31a4",
+      "installed_tree_sha256": "sha256:b94188aed1309179774f0f90ab48f7c237f0c9a5a5681113770e90ede49c2d2b",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-platform-graph-builder",
@@ -2363,7 +2602,7 @@
           "inventory",
           "edges"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-platform-graph-builder",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2391,7 +2630,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-runtime-trace-ingestor",
-      "installed_tree_sha256": "sha256:6feae02e470afe5f4839a712ee32a2c99ee328b7df4b53b03bb51a20279aae16",
+      "installed_tree_sha256": "sha256:d2b59d847772015c4ba76a0702441364b4f899842db16775c696c1444fda8877",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-runtime-trace-ingestor",
@@ -2413,7 +2652,7 @@
         "required_inputs": [
           "trace_ref"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-runtime-trace-ingestor",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2441,7 +2680,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-semantic-ir-builder",
-      "installed_tree_sha256": "sha256:a8703cd0d1fa8b55572a60fd816046cad1219894e954f714f7e9d025280ffd1a",
+      "installed_tree_sha256": "sha256:04617128b1e798a67fae586052a080963f1bbc70a810543af0234c8ee341dd4f",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-semantic-ir-builder",
@@ -2463,7 +2702,7 @@
         "required_inputs": [
           "inventory"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-semantic-ir-builder",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2491,7 +2730,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-capability-discovery-ledger",
-      "installed_tree_sha256": "sha256:25fb499148872c64e75e9a71385b3ea347c8b117f2a7fe94ce2365c93db337fd",
+      "installed_tree_sha256": "sha256:7f6972e77288dfa18f8625bbf6ce3b0492cf6e3f0eab7ab32f363e241c057a1e",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-capability-discovery-ledger",
@@ -2514,7 +2753,7 @@
           "capabilities",
           "unknowns"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-capability-discovery-ledger",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2542,7 +2781,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-7plus1-incremental-analysis-cache",
-      "installed_tree_sha256": "sha256:1919b90cf6a426736a52e1b218cfe32cadfd24d9ff7444cd7c7b3b9713263be5",
+      "installed_tree_sha256": "sha256:b2e16c3dcdc581217328795199f79e26af02024c47afb8966809fc2210ce9e82",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-7plus1-incremental-analysis-cache",
@@ -2564,7 +2803,7 @@
         "required_inputs": [
           "inventory"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-incremental-analysis-cache",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2592,7 +2831,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-provenance-confidence-engine",
-      "installed_tree_sha256": "sha256:2c580aa7935e17bfde5751899dca365aaa59a2b9659059bd52dcb0655f6ab46b",
+      "installed_tree_sha256": "sha256:faa90ac3979c4ed6703d7125f6b4a04ec8470fbd73ea4935308b062d6e7d23ba",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-provenance-confidence-engine",
@@ -2614,7 +2853,7 @@
         "required_inputs": [
           "inventory"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-provenance-confidence-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2642,7 +2881,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-repository-query-service",
-      "installed_tree_sha256": "sha256:90f8c067da4cb6a17d9536245f53de88b4e24dc6cccb1d867b3452d9aae40945",
+      "installed_tree_sha256": "sha256:b4e761d93aa4932a89c23544550fa57b29289afb5b71528c40f54074c7c6397f",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-repository-query-service",
@@ -2665,7 +2904,7 @@
           "inventory",
           "query"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-repository-query-service",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2696,7 +2935,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-project-generation-transformation-engine",
-      "installed_tree_sha256": "sha256:87fe2b10e9bbddccb15c2cc63c8cc333d31d631b12c63b9104bdebc1658300b3",
+      "installed_tree_sha256": "sha256:3add689099031fca121b9a85860ceda1ae6aa5cb58988d14a89f1db8a5e2c054",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-project-generation-transformation-engine",
@@ -2718,7 +2957,7 @@
         "required_inputs": [
           "requirements"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-project-generation-transformation-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2749,7 +2988,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-requirement-expander",
-      "installed_tree_sha256": "sha256:2f32beef8da6f7c53c1008909078d9930e116523200a38ab49a99fc9cbfc7dfc",
+      "installed_tree_sha256": "sha256:886764a54737d16db715a4be7a5f1cef9830d38bb1241dc7b44548b0fd924ba9",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-requirement-expander",
@@ -2771,7 +3010,7 @@
         "required_inputs": [
           "requirements"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-requirement-expander",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2799,7 +3038,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-project-archetype-engine",
-      "installed_tree_sha256": "sha256:d9d2615b7238607bae307c53f1397a17b83de71497759a11f978810028228dda",
+      "installed_tree_sha256": "sha256:7f566fd5abf7645222f0ebf711ea54ed68e3fb6f318fb1a444e0e4114e64ea5b",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-project-archetype-engine",
@@ -2822,7 +3061,7 @@
           "requirements",
           "target_profile"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-project-archetype-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2850,7 +3089,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-architecture-synthesizer",
-      "installed_tree_sha256": "sha256:515c9a47c0966847b3ac6c43630c00428fdb477e25120c000d912aa9944b8598",
+      "installed_tree_sha256": "sha256:f0782a07a2c76374e84a968c03547ab65800823e1a38b0a815f09e881eaef296",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-architecture-synthesizer",
@@ -2873,7 +3112,7 @@
           "requirements",
           "target_profile"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-architecture-synthesizer",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2901,7 +3140,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-implementation-dag-planner",
-      "installed_tree_sha256": "sha256:bdc579ff2793f10cc308253d83fb60743d3ceeb9ec71c9d16f248813d7c4405c",
+      "installed_tree_sha256": "sha256:874d26733cb51246f5850ed8f8942ab6ae274abaed93198da27d19e8cd972e02",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-implementation-dag-planner",
@@ -2923,7 +3162,7 @@
         "required_inputs": [
           "requirements"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-implementation-dag-planner",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -2951,7 +3190,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-transformation-rule-engine",
-      "installed_tree_sha256": "sha256:a7850fcb08c5ed8bcfd351b23bf60d3f4021102d4baecb8be55c7f017888d72a",
+      "installed_tree_sha256": "sha256:34c713e722f71d87de06387c69ccdd3d4d27a5d8b7491dd1a88e792ecda6cf36",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-transformation-rule-engine",
@@ -2974,7 +3213,7 @@
           "requirements",
           "rules"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-transformation-rule-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3002,7 +3241,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-mutation-exception-engine",
-      "installed_tree_sha256": "sha256:4080c1ed0d787a60c8948a6fa85204ef7fb468ae5047230e933e8db3a78548a3",
+      "installed_tree_sha256": "sha256:dc502507311a33b9c4f0d6c99310599c06549e03c574b4fb1dd25272d8098878",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-mutation-exception-engine",
@@ -3024,7 +3263,7 @@
         "required_inputs": [
           "requirements"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-mutation-exception-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3052,7 +3291,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-multi-language-emitter",
-      "installed_tree_sha256": "sha256:c3c2a82b94a693b43cb0c8d06402ced28de2bbe84ef8f767bc5c87e66110f94f",
+      "installed_tree_sha256": "sha256:7adc196056e43ba5985080365721fb38e12d78a4c75b76b254058ad2d3c3d866",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-multi-language-emitter",
@@ -3074,7 +3313,7 @@
         "required_inputs": [
           "target_ir"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-multi-language-emitter",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3102,7 +3341,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-framework-platform-adapter",
-      "installed_tree_sha256": "sha256:52aaa433ea7e0d00e030ca02601fce48726baaa13ddc75948bdeecf1aa2aeb14",
+      "installed_tree_sha256": "sha256:2c804b9cbd4c5bf9b2b05efec156ff161ff92660229bbeb96fbd4a1e93d20f84",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-framework-platform-adapter",
@@ -3125,7 +3364,7 @@
           "requirements",
           "target_profile"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-framework-platform-adapter",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3153,7 +3392,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-data-integration-transformer",
-      "installed_tree_sha256": "sha256:7f8e446b83d55f886a24b0ee99e84de561738baffd0546c1bd7f47acb51954bd",
+      "installed_tree_sha256": "sha256:3f85b5757a5cb17e59ed95ec3c903c06d1e9b246ff990c55968ed7a24855c523",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-data-integration-transformer",
@@ -3176,7 +3415,7 @@
           "requirements",
           "target_profile"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-data-integration-transformer",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3204,7 +3443,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-frontend-miniapp-transformer",
-      "installed_tree_sha256": "sha256:9319d3303a6a9e30a38acc4d43d17a3344d6564755700764569abd0658c6707a",
+      "installed_tree_sha256": "sha256:b9850b687cd14502003e14296a48567bc2232295c5262db2e1a4f65a85a785c0",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-frontend-miniapp-transformer",
@@ -3227,7 +3466,7 @@
           "requirements",
           "target_profile"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-frontend-miniapp-transformer",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3255,7 +3494,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-infrastructure-operations-generator",
-      "installed_tree_sha256": "sha256:59528c1517debe2d85c3499ea8de2db8aa04524ce887aafac7ebb81ad196f757",
+      "installed_tree_sha256": "sha256:ce1c3f59843b4b88630694105ae74b230018cd86f8b25cf2e46315a10cd1c4c3",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-infrastructure-operations-generator",
@@ -3277,7 +3516,7 @@
         "required_inputs": [
           "target_ir"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-infrastructure-operations-generator",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3305,7 +3544,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-migration-controller",
-      "installed_tree_sha256": "sha256:00f689f0a9a6f0146a12381117531cd0bb4ca56b5bc3f55ab831f6e604978287",
+      "installed_tree_sha256": "sha256:dc0ae39d70191ae946b319c71a423e994b2aa338e62e24f6a60930e11c316087",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-migration-controller",
@@ -3328,7 +3567,7 @@
           "requirements",
           "rollback"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-migration-controller",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3361,7 +3600,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-agent-orchestration-software-factory",
-      "installed_tree_sha256": "sha256:83d7acd756bc1e95458d6740e1d3a13c64256b85aa823fdfb5a2daa7b9bd747c",
+      "installed_tree_sha256": "sha256:fc4f3265d68734d683e461d240f38063c238a7ff91bbba086d2410715b31fe21",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-agent-orchestration-software-factory",
@@ -3383,7 +3622,7 @@
         "required_inputs": [
           "nodes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-agent-orchestration-software-factory",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3416,7 +3655,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-workflow-tracker-adapter",
-      "installed_tree_sha256": "sha256:a2d36b0642cd5294e3238a20265e2de0e78a3cdb890e871dc8cf465106444428",
+      "installed_tree_sha256": "sha256:4938d342e1bdb40ee99b04747fdf196582e14c1ea17b100015b6253cfefd3144",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-workflow-tracker-adapter",
@@ -3438,7 +3677,7 @@
         "required_inputs": [
           "tracker_cursor"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-workflow-tracker-adapter",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3466,7 +3705,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-reconciliation-scheduler",
-      "installed_tree_sha256": "sha256:80b7f6be52ec73ca9ce2c7173855975d69298ae2276e5f5ffceb13296c4bb593",
+      "installed_tree_sha256": "sha256:6c87fa82d007c440cf2f1eff89ae7cda162d283d66ad62f76fdd9d3ffcebe920",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-reconciliation-scheduler",
@@ -3488,7 +3727,7 @@
         "required_inputs": [
           "nodes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-reconciliation-scheduler",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3516,7 +3755,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-task-dag-orchestrator",
-      "installed_tree_sha256": "sha256:6a976cab242315d5632f1ddbef645b4c949b697e22ebd6bddfb423fe320eaf67",
+      "installed_tree_sha256": "sha256:d082b6b440edbe68632ce38ba0b249cbbc64faf4933f17f2cda9ee2fbb4795ae",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-task-dag-orchestrator",
@@ -3539,7 +3778,7 @@
           "nodes",
           "capacity"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-task-dag-orchestrator",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3567,7 +3806,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-workspace-worktree-manager",
-      "installed_tree_sha256": "sha256:c0078eab08d42175f478920e8fc352ed99c8c161b96f3ee98656f420940663c2",
+      "installed_tree_sha256": "sha256:9928082b92a43626bd1b9873784ba2dca9c43da5b1f2be75c440f3115f1d1320",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-workspace-worktree-manager",
@@ -3589,7 +3828,7 @@
         "required_inputs": [
           "source_revision"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-workspace-worktree-manager",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3617,7 +3856,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-specialized-agent-registry",
-      "installed_tree_sha256": "sha256:cf880e1ce87da386fb2309ed8d09eddc441f06e5ffd16dbc3f04a759af0dc062",
+      "installed_tree_sha256": "sha256:8137440dc8ff964aebf903f99e78349c1ca1d183e6f3f1c7c24f30e9dd495587",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-specialized-agent-registry",
@@ -3639,7 +3878,7 @@
         "required_inputs": [
           "roles"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-specialized-agent-registry",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3667,7 +3906,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-continuable-collaboration-manager",
-      "installed_tree_sha256": "sha256:f5820e21e20aad7ec20367bd9fdacfbe22fcf7da44b15106b68354ea1d94643b",
+      "installed_tree_sha256": "sha256:72035e4934bc0a83e798e5c36f58c4346649eddc031423c0d7ebb2db86f6251d",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-continuable-collaboration-manager",
@@ -3689,7 +3928,7 @@
         "required_inputs": [
           "task"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-continuable-collaboration-manager",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3717,7 +3956,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-admission-concurrency-controller",
-      "installed_tree_sha256": "sha256:43e87683f5aa7553842ded37c52a1126e655714975e0a339aa0fba684ac55497",
+      "installed_tree_sha256": "sha256:ffb7044f992ca8875e6e04eb3772d07ca92475dec88a9466d2cb3dd245feadc9",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-admission-concurrency-controller",
@@ -3740,7 +3979,7 @@
           "nodes",
           "capacity"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-admission-concurrency-controller",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3768,7 +4007,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-retry-stall-doomloop-controller",
-      "installed_tree_sha256": "sha256:075aa4a36f704d291285ee72b92564a621b0c23f7d82ef5031458926032c2ece",
+      "installed_tree_sha256": "sha256:803e78de31f6a3be0eab70fc03a25fb6ec8070a40d2593218616a35034287c69",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-retry-stall-doomloop-controller",
@@ -3790,7 +4029,7 @@
         "required_inputs": [
           "nodes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-retry-stall-doomloop-controller",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3818,7 +4057,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-workpad-progress-journal",
-      "installed_tree_sha256": "sha256:9a1d4ffbdf161dff537ee22b8e070aca69aaad84ed2682764d142757f474debf",
+      "installed_tree_sha256": "sha256:53ff4475691a05dac31f482f97a94e0243257dfe7e4da7a382691aa49cbf0a4f",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-workpad-progress-journal",
@@ -3840,7 +4079,7 @@
         "required_inputs": [
           "journal_event"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-workpad-progress-journal",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3868,7 +4107,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-review-feedback-coordinator",
-      "installed_tree_sha256": "sha256:6a9bb227e5963213340b1d281ca8d0a3df1ee82227eb32855806fe7e47f2b4e6",
+      "installed_tree_sha256": "sha256:e1cadf58148850c46269febbba42472ab624f26e7e4ff18075b491d952d4fa03",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-review-feedback-coordinator",
@@ -3890,7 +4129,7 @@
         "required_inputs": [
           "review_ref"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-review-feedback-coordinator",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3918,7 +4157,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-proof-of-work-assembler",
-      "installed_tree_sha256": "sha256:0eb83eb67692fa796b8caff98ce156da70a2f03f8bfa130f1f02717dc7545fe3",
+      "installed_tree_sha256": "sha256:2bbf916c72b41b263af75816b035d2291ac2145f6595447315bf1f995b42b412",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-proof-of-work-assembler",
@@ -3940,7 +4179,7 @@
         "required_inputs": [
           "evidence_refs"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-proof-of-work-assembler",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -3968,7 +4207,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-human-review-handoff",
-      "installed_tree_sha256": "sha256:50bb49ad51f566027aee7a2b0042f17dd581ea129ca4f2366df7a015a6065fee",
+      "installed_tree_sha256": "sha256:281ade77e9dd426cd221121326ca3cce9de9c444005f609aae3381e8e221105d",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-human-review-handoff",
@@ -3990,7 +4229,7 @@
         "required_inputs": [
           "handoff"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-human-review-handoff",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4020,7 +4259,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-conversion-reliability-verification-harness",
-      "installed_tree_sha256": "sha256:9842ad38a67739eac1562b3314a6464fb19726c0be7ee8a783ce200ce5b4a43a",
+      "installed_tree_sha256": "sha256:25ff75ca3b89f4a2689f83f39d315785e4377fafd05a9ff78e8ceddb2fe331ac",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-conversion-reliability-verification-harness",
@@ -4042,7 +4281,7 @@
         "required_inputs": [
           "claims"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-conversion-reliability-verification-harness",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4072,7 +4311,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-requirement-coverage-ledger",
-      "installed_tree_sha256": "sha256:a2205b8dfbf641274fc9f02d165d39b910c5dffe22afe949696fa2e3556fda71",
+      "installed_tree_sha256": "sha256:2b952d936a519fcfad36deb5b99580f4c48843ba100b876483ceb51001cbae3e",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-requirement-coverage-ledger",
@@ -4094,7 +4333,7 @@
         "required_inputs": [
           "claims"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-requirement-coverage-ledger",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4122,7 +4361,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-capability-coverage-ledger",
-      "installed_tree_sha256": "sha256:fc0ae731f7cdbcb44bb75779ab1eba7c15a81633bc15b5ccf1cbeeba54366d37",
+      "installed_tree_sha256": "sha256:58dfac2eef6b100a47961e623397b7ef1211aa4cc620908bf7d1351659ca9ebb",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-capability-coverage-ledger",
@@ -4144,7 +4383,7 @@
         "required_inputs": [
           "claims"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-capability-coverage-ledger",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4172,7 +4411,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-mechanical-completion-gate",
-      "installed_tree_sha256": "sha256:30b5d911e3f206e50e172b497c257415e981c0c9481c59f51a9d57e7e6170581",
+      "installed_tree_sha256": "sha256:3a84df4d374334a9cb746e82380a2a851ec66ef59d5c7a53ff34682a6a8c5526",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-mechanical-completion-gate",
@@ -4194,7 +4433,7 @@
         "required_inputs": [
           "claims"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-mechanical-completion-gate",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4222,7 +4461,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-verification-planner",
-      "installed_tree_sha256": "sha256:848093c07815967cbd68e40c6ae0b361903bbd1699a324f783df86b1b072b606",
+      "installed_tree_sha256": "sha256:0da6b446eb2ebf17870018a3b6a908f16f695dcb9005f796981e6c9df34801a3",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-verification-planner",
@@ -4245,7 +4484,7 @@
           "claims",
           "changes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-verification-planner",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4273,7 +4512,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-compiler-static-pipeline",
-      "installed_tree_sha256": "sha256:16d7cde8b1d574d14e4275304cd062bd11c11f0b373e2016100e0eb6a5395910",
+      "installed_tree_sha256": "sha256:228bd1a0e4ae11f14c4f4015799d24c1e6671909b72e9bde356a22db9f50f835",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-compiler-static-pipeline",
@@ -4295,7 +4534,7 @@
         "required_inputs": [
           "build_request"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-compiler-static-pipeline",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4323,7 +4562,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-contract-integration-pipeline",
-      "installed_tree_sha256": "sha256:e789aa5dd6129b87abecf4e577a8cdc1519229707e93c1ed041b61d0adae46d0",
+      "installed_tree_sha256": "sha256:37eb6e141d0bb8a949bc809c62f2dbf85ccf0240051b952bdcb7464d0ee5afa4",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-contract-integration-pipeline",
@@ -4345,7 +4584,7 @@
         "required_inputs": [
           "test_request"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-contract-integration-pipeline",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4373,7 +4612,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-differential-runtime",
-      "installed_tree_sha256": "sha256:9e0ed0844e0166803dad22d84451a7deeba041851a43104e33ea5c1200b390fa",
+      "installed_tree_sha256": "sha256:cde4277dafa705a08097f54821bddde3d0b3653e4d505df87cf7e5b4f525d812",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-differential-runtime",
@@ -4395,7 +4634,7 @@
         "required_inputs": [
           "scenario_set"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-differential-runtime",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4423,7 +4662,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-generative-testing",
-      "installed_tree_sha256": "sha256:3ff67e7ff6ebca92b82a1121f6edb8dbf57403f92e32d49486f0a97fe42d98ed",
+      "installed_tree_sha256": "sha256:30850f7f8c78ccab98a21a46793a0d4d977eaf7f636e2a6dd5a5b5b58d0ca188",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-generative-testing",
@@ -4445,7 +4684,7 @@
         "required_inputs": [
           "generator_profile"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-generative-testing",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4473,7 +4712,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-ui-multimodal-verifier",
-      "installed_tree_sha256": "sha256:c0a66976b02f473b3a1ed7d5ad9fabbe1467070a1d241991dff87db23f9801e8",
+      "installed_tree_sha256": "sha256:06c43031d186944337239b3a70f65ecabcbbbb9a0801aa2d2e6c0a2410db5bdb",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-ui-multimodal-verifier",
@@ -4495,7 +4734,7 @@
         "required_inputs": [
           "journey"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-ui-multimodal-verifier",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4523,7 +4762,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-nonfunctional-verifier",
-      "installed_tree_sha256": "sha256:e219d6b6abc53990e081771ad91f4312624d81b72382f41caae7d07f18bb9baf",
+      "installed_tree_sha256": "sha256:373dd13efbbd4b433444d177a577f833c5e06edab4ed723641d15fe2cd789618",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-nonfunctional-verifier",
@@ -4545,7 +4784,7 @@
         "required_inputs": [
           "workload"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-nonfunctional-verifier",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4573,7 +4812,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-diagnosis-repair-loop",
-      "installed_tree_sha256": "sha256:b1f91ee8e413bdd750ab0a58e5f8a8052f15a2b120167eb33fc2956af662cdde",
+      "installed_tree_sha256": "sha256:271e01885fd27a012af6829e34aeef2d833fbd4a8b586fb94837f03faaab07b9",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-diagnosis-repair-loop",
@@ -4596,7 +4835,7 @@
           "failures",
           "budget_micros"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-diagnosis-repair-loop",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4624,7 +4863,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-evidence-certification-engine",
-      "installed_tree_sha256": "sha256:cd0e525fa975abfaebb709d2cc6bf3257c0017cd3483f6a66e75daeb5a5aec4e",
+      "installed_tree_sha256": "sha256:bcca2636e1af0c2f4c41dab92946c1bf7421fcb91c58e79467f5ae3e2a4961b9",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-evidence-certification-engine",
@@ -4646,7 +4885,7 @@
         "required_inputs": [
           "evidence_bundle"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-evidence-certification-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4676,7 +4915,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-intelligent-model-router",
-      "installed_tree_sha256": "sha256:867b7783be98638f631c9f8eff239c708f6e1637bec7c86a80837f67527bd428",
+      "installed_tree_sha256": "sha256:19ed5dc4ed66214d4600f3b1e792f07d4bdd2f0dcd2b64e5ca078b5e4d0c06bb",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-intelligent-model-router",
@@ -4699,7 +4938,7 @@
           "candidates",
           "data_classes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-intelligent-model-router",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4729,7 +4968,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-model-provider-catalog",
-      "installed_tree_sha256": "sha256:a2b1c0e490c3f154e43d7066d58938d384271d1b47188fbd7a55878d0c88fdbd",
+      "installed_tree_sha256": "sha256:0fcc00ea637a4473e66b100ca948f4ca9efe7aebc7817bfe6bb88c27adbddb94",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-model-provider-catalog",
@@ -4751,7 +4990,7 @@
         "required_inputs": [
           "provider"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-model-provider-catalog",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4779,7 +5018,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-task-classifier",
-      "installed_tree_sha256": "sha256:5d075646bd7472a7deac06623bf718cb01b81a36d1b680608747e3413301dd8a",
+      "installed_tree_sha256": "sha256:6e07252d73397bfe4cfb191d2148e961160d568d19de979fee8e8ba1074d99b1",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-task-classifier",
@@ -4801,7 +5040,7 @@
         "required_inputs": [
           "task"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-task-classifier",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4829,7 +5068,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-route-constraint-engine",
-      "installed_tree_sha256": "sha256:48768e9341d3722ded4c431bc52743d9e8bd5d59da7f61e7f54085f67ae25e10",
+      "installed_tree_sha256": "sha256:1d059e7e7af96966313d3f60aadf39f50850d2b3c7fe006ea04128d1967aec89",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-route-constraint-engine",
@@ -4852,7 +5091,7 @@
           "candidates",
           "data_classes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-route-constraint-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4880,7 +5119,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-benchmark-availability-gate",
-      "installed_tree_sha256": "sha256:e1bbc87c94fff45399ab2d61eedb0fe5c9280b5cf7a1ae07409d191267390049",
+      "installed_tree_sha256": "sha256:add088bf2ae52fcd0eca65a415b62697698801f0ca92d832dd63e174256f28ed",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-benchmark-availability-gate",
@@ -4902,7 +5141,7 @@
         "required_inputs": [
           "provider"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-benchmark-availability-gate",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4930,7 +5169,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-historical-taskfit-scorer",
-      "installed_tree_sha256": "sha256:7d8ab0a12e78ca8c3ac4da10e301f548584a180d7a8b37daa3eb5b2cf175722e",
+      "installed_tree_sha256": "sha256:67b5bee3c9d832326273eadeb22a8cd0e9599e1b7bd1f60b5d4b5a42d38cb5e8",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-historical-taskfit-scorer",
@@ -4952,7 +5191,7 @@
         "required_inputs": [
           "candidates"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-historical-taskfit-scorer",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -4980,7 +5219,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-multi-objective-router",
-      "installed_tree_sha256": "sha256:880f76491162c7abf3ccd7f0d4ae97b897942f42384c2e6f96bef0a03f916e22",
+      "installed_tree_sha256": "sha256:ed216721bf3e61c3ee14e4558c57ee310fe5d551ded862f40f4f4f2f2b2fd328",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-multi-objective-router",
@@ -5003,7 +5242,7 @@
           "candidates",
           "data_classes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-multi-objective-router",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5031,7 +5270,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-fallback-circuitbreaker-hedging",
-      "installed_tree_sha256": "sha256:5a863d8cd7dead5197ff12f0579d767ce1d6c027970c34c2ba9419a00afeb32a",
+      "installed_tree_sha256": "sha256:28704788ffcfcb8afe774fc1c8d230ae028ed01b6cb3b005eaaa0112cb566023",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-fallback-circuitbreaker-hedging",
@@ -5053,7 +5292,7 @@
         "required_inputs": [
           "candidates"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-fallback-circuitbreaker-hedging",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5081,7 +5320,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-long-context-completeness-auditor",
-      "installed_tree_sha256": "sha256:3abaf00e9643dd6c6f5f79c203c3fbd0d3f3c4f4bbfc6c16673bb67b40cd4d0f",
+      "installed_tree_sha256": "sha256:74e9d36225cdf06cec251bd86af9f8499330dd6c4e9776c9c69f6c067dd28d0f",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-long-context-completeness-auditor",
@@ -5103,7 +5342,7 @@
         "required_inputs": [
           "task"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-long-context-completeness-auditor",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5131,7 +5370,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-multimodal-route",
-      "installed_tree_sha256": "sha256:34d4f8973dafa7968d279d3cdcea6f9cdee7fbd6684d7c40fc093554c89416f4",
+      "installed_tree_sha256": "sha256:648047b02483cb0e9394975a00cd90bacecac95be7418a7a0e4cbb1d843d7c6c",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-multimodal-route",
@@ -5154,7 +5393,7 @@
           "candidates",
           "data_classes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-multimodal-route",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5182,7 +5421,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-cost-token-eta-engine",
-      "installed_tree_sha256": "sha256:de676fd72e683b0ba0434ec425039709208e2acb90826d8280491765a8577405",
+      "installed_tree_sha256": "sha256:6b9ab623071f8780581723ec7c0b62d7d7c71542479ca776e6f43c336f3c036a",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-cost-token-eta-engine",
@@ -5205,7 +5444,7 @@
           "candidates",
           "usage"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-cost-token-eta-engine",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5233,7 +5472,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-privacy-data-policy-broker",
-      "installed_tree_sha256": "sha256:b73439751addaa9da7ca200c2dbd6880abc9a5aa0742da78566ad2499035859c",
+      "installed_tree_sha256": "sha256:f0b55bbec2a4eb17e550ba61575a273abcf8012f4cb5ec858397f684ba028807",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-privacy-data-policy-broker",
@@ -5256,7 +5495,7 @@
           "candidates",
           "data_classes"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-privacy-data-policy-broker",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5284,7 +5523,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-route-observability",
-      "installed_tree_sha256": "sha256:cf9f4469251681a23f06df6595fc991e31d8f9afddaee81c2e786980ac462faa",
+      "installed_tree_sha256": "sha256:53f1a42ccf33c116d54cabc73e83d66125714d03933a069d4cbd9496f1d93f25",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-route-observability",
@@ -5306,7 +5545,7 @@
         "required_inputs": [
           "outcome"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-route-observability",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5338,7 +5577,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-transformation-learning-evolution",
-      "installed_tree_sha256": "sha256:e5eec7c2d1ae392d920035420f19baa58532da6dd714968bd12517ecac25d6cb",
+      "installed_tree_sha256": "sha256:f27210bc93bf3e15e6950739bbbc58283ac5bf6e5a7120c2f22980ae4698a3ff",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-transformation-learning-evolution",
@@ -5360,7 +5599,7 @@
         "required_inputs": [
           "entries"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-transformation-learning-evolution",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5392,7 +5631,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-transformation-knowledge-base",
-      "installed_tree_sha256": "sha256:412da57b3daadfce90a99f2955515c4f70e0d227baf3bed0641f67fdd509b5b1",
+      "installed_tree_sha256": "sha256:f2449dd4694735cf482b7318624d00b0d8e3c7b91769d9445b1e38a1fb50f451",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-transformation-knowledge-base",
@@ -5414,7 +5653,7 @@
         "required_inputs": [
           "entries"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-transformation-knowledge-base",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5442,7 +5681,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-project-archetype-knowledge-base",
-      "installed_tree_sha256": "sha256:82873a28d56015f82bedb63f7bc1d8f7c6013d065a9285639a4be679d3cfb97c",
+      "installed_tree_sha256": "sha256:2bccb2aee7719ab9b37fedb10c297ee479c9d93078d9fd7b31105a9bc5232caa",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-project-archetype-knowledge-base",
@@ -5464,7 +5703,7 @@
         "required_inputs": [
           "entries"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-project-archetype-knowledge-base",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5492,7 +5731,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-failure-repair-corpus",
-      "installed_tree_sha256": "sha256:60c5c69136a5cd3ffe6229333bd5c33eee57967204a1299b5825c25268f06ef0",
+      "installed_tree_sha256": "sha256:ff71cc3ae5c0d96288061606711e1752351fefe8e0c275c42db9fc89cdf26aca",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-failure-repair-corpus",
@@ -5515,7 +5754,7 @@
           "entries",
           "failure_signature"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-failure-repair-corpus",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5543,7 +5782,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-rule-promotion-governance",
-      "installed_tree_sha256": "sha256:7b78a4a39c6f46bd7e3d7abe036a79828cda11fb43fc389394113f18bf910a85",
+      "installed_tree_sha256": "sha256:3ca5e9d3cca1c5ee08c92041d03e6eedf3fa82e21efb2904cebeebdb844951dc",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-rule-promotion-governance",
@@ -5566,7 +5805,7 @@
           "entries",
           "candidate"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-rule-promotion-governance",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5594,7 +5833,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-benchmark-corpus",
-      "installed_tree_sha256": "sha256:c1b32f1e460c7a617713ac535960061612a7437f7751da0c5aef17a159e6aed3",
+      "installed_tree_sha256": "sha256:857a5a2f9720da2ca6ce70b8b43054fd7c92d9055e3ad21e9204fc811904109e",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-benchmark-corpus",
@@ -5616,7 +5855,7 @@
         "required_inputs": [
           "corpus_version"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-benchmark-corpus",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5644,7 +5883,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-evidence-corpus",
-      "installed_tree_sha256": "sha256:562dbcc6c80aa557a6ee641a60b4e503d3528f6e6cd3b86b107c2aa41b311db6",
+      "installed_tree_sha256": "sha256:fedb16fb302ba4b58e9993a1629f58dcafdd63ae5d9df6f2a224118c17e477a0",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-evidence-corpus",
@@ -5666,7 +5905,7 @@
         "required_inputs": [
           "entries"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-evidence-corpus",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5694,7 +5933,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-repair-retrieval-ranker",
-      "installed_tree_sha256": "sha256:811c05bcdeb8998d99b8187927daad7f8c4726c314257f92e680c39d0a56a490",
+      "installed_tree_sha256": "sha256:316380d1d4a0a2a5dc80657585b0ed7bccd51cd81f85d3578fa55789fa73e52e",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-repair-retrieval-ranker",
@@ -5717,7 +5956,7 @@
           "entries",
           "failure_signature"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-repair-retrieval-ranker",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5745,7 +5984,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-drift-regression-detector",
-      "installed_tree_sha256": "sha256:3e789e63b0d3d59a55c18e7818465a7256ce4fe6e2d029ca5d573e697eaf269c",
+      "installed_tree_sha256": "sha256:c899797227a45a7074221c5265d1d730183a61759e7ae9d210a1d366dc565e28",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-drift-regression-detector",
@@ -5767,7 +6006,7 @@
         "required_inputs": [
           "corpus_version"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-drift-regression-detector",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5795,7 +6034,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-active-learning-queue",
-      "installed_tree_sha256": "sha256:640a66e4357e4a9f0e5b3f3237b6547e3fc151c9633a662054dcf4f1134ec063",
+      "installed_tree_sha256": "sha256:892c326f91b345edc66072454896c82ca2e040b0f8bf398e1bd9a3d8c7a78614",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-active-learning-queue",
@@ -5818,7 +6057,7 @@
           "entries",
           "value_score"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-active-learning-queue",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5846,7 +6085,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-specialized-model-training",
-      "installed_tree_sha256": "sha256:4e823ca11e58f74f04445b110273aaa1da5d9e5833cc4be4c4ef77e0e250265f",
+      "installed_tree_sha256": "sha256:a6ec18661cb4948cf4003dd1cf21a720c30a5a89bb05f06a00d3b8ce97dcf6bc",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-specialized-model-training",
@@ -5868,7 +6107,7 @@
         "required_inputs": [
           "training_request"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-specialized-model-training",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5896,7 +6135,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-tenant-ip-isolation",
-      "installed_tree_sha256": "sha256:bf89fc19fc8be41a5580fa7f6b13b28c3132fa502ea8edcf4e04ad4edead03f9",
+      "installed_tree_sha256": "sha256:c8049a2b5fa4b645d756629e585f3f24c57bebf30c0786b5205e2c36ab668abc",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-tenant-ip-isolation",
@@ -5918,7 +6157,7 @@
         "required_inputs": [
           "entries"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-tenant-ip-isolation",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -5946,7 +6185,7 @@
       "external_evidence_status": "NOT_RUN",
       "implementation_state": "BLUEPRINT_IMPORTED",
       "installed_name": "elmos-knowledge-quality-auditor",
-      "installed_tree_sha256": "sha256:6f91277d201059534a5e5f6b6d796dd799666753046b87904d2ff751dc1157d6",
+      "installed_tree_sha256": "sha256:328f8b6bcf4be5db4b7a596cca0ce5f26af2e1f8de217c1db7d7a9b4e64a1ad1",
       "integration_state": "LOCAL_CONTRACT_IMPLEMENTED",
       "kind": "archive-source-skill-wrapper",
       "name": "elmos-knowledge-quality-auditor",
@@ -5968,7 +6207,7 @@
         "required_inputs": [
           "entries"
         ],
-        "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+        "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
         "skill_name": "elmos-knowledge-quality-auditor",
         "skill_registry": {
           "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",

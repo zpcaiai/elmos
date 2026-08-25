@@ -1,0 +1,174 @@
+{
+  "acceptance": [
+    {
+      "criterion": "`../`、绝对路径、盘符、UNC、编码变体和链接链均不能逃逸",
+      "evidence": [],
+      "id": "S45-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "压缩炸弹在超过策略前终止，不导致节点磁盘或内存耗尽",
+      "evidence": [],
+      "id": "S45-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "限额按租户/套餐可配置并带安全上下界和版本",
+      "evidence": [],
+      "id": "S45-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "嵌套归档共享累计预算",
+      "evidence": [],
+      "id": "S45-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "特殊文件和链接默认不被创建或跟随",
+      "evidence": [],
+      "id": "S45-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "攻击回归集和 fuzz 测试无路径逃逸、宿主写入或资源失控",
+      "evidence": [],
+      "id": "S45-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "`../`、绝对路径、盘符、UNC、编码变体和链接链均不能逃逸",
+      "压缩炸弹在超过策略前终止，不导致节点磁盘或内存耗尽",
+      "限额按租户/套餐可配置并带安全上下界和版本",
+      "嵌套归档共享累计预算",
+      "特殊文件和链接默认不被创建或跟随",
+      "攻击回归集和 fuzz 测试无路径逃逸、宿主写入或资源失控"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "archive_safety_checks",
+      "archive_resource_counters",
+      "archive_security_findings"
+    ],
+    "deliverables": [
+      "ArchiveSafetyDecision 与限额策略",
+      "安全路径解析、累计资源计数和终止机制",
+      "攻击语料、fuzz/property 测试与沙箱逃逸测试",
+      "安全告警、隔离和审计输出"
+    ],
+    "dependencies": [
+      "elmos-file-type-detection-and-validation",
+      "elmos-malware-quarantine-and-sandbox"
+    ],
+    "events": [
+      "archive.path_traversal.blocked",
+      "archive.bomb.suspected",
+      "archive.limit.exceeded",
+      "archive.special_entry.blocked"
+    ],
+    "failure_modes": [
+      "unicode traversal bypass",
+      "symlink race",
+      "declared size lies",
+      "nested budget reset",
+      "sparse file expansion"
+    ],
+    "inputs": [
+      "归档条目流",
+      "沙箱根句柄",
+      "版本化 ArchivePolicy",
+      "实时资源计数"
+    ],
+    "metrics": [
+      "archive_escape_attempt_count",
+      "zip_bomb_early_stop_rate",
+      "resource_limit_overshoot_bytes",
+      "security_false_negative_count"
+    ],
+    "name": "elmos-archive-bomb-and-path-traversal-defense",
+    "objective": "在内容落盘前以流式、累计和每层限额阻断路径逃逸、超高膨胀、无限嵌套及链接绕过。",
+    "ordinal": 45,
+    "outputs": [
+      "ALLOW/REJECT/QUARANTINE 决策",
+      "资源使用快照",
+      "安全发现",
+      "稳定错误码"
+    ],
+    "responsibilities": [
+      "对每个条目解码、规范化并解析目标路径，拒绝绝对路径、盘符、UNC、NUL、父级逃逸和编码混淆。",
+      "在真实父目录/链接语义下验证最终目标仍位于沙箱根，而非仅做字符串前缀比较。",
+      "跟踪归档大小、声明/实际展开大小、单文件大小、条目数、目录深度、压缩比、嵌套深度、CPU和时间。",
+      "采用逐条和累计双重限额；声明元数据不可信，实际写入时持续计数并可立即终止。",
+      "拒绝或仅记录符号链接、硬链接、设备、FIFO、socket、稀疏文件滥用和覆盖碰撞。",
+      "对嵌套归档使用全局预算，防止每层单独合规但累计爆炸。",
+      "提供稳定安全错误码、隔离报告和人工审查入口，不在错误信息泄露主机路径。",
+      "维护攻击语料库，覆盖 ZIP/TAR/GZIP 的已知绕过模式和属性测试。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "归档炸弹与路径穿越防御"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-archive-bomb-and-path-traversal-defense/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-archive-bomb-and-path-traversal-defense/SKILL.md": {
+        "bytes": 3766,
+        "mode": "0644",
+        "sha256": "106b43fcb49faef97d3babdc3cd5b82c9dfbf009ed6233278df8b05f3b317e62"
+      },
+      "skills/elmos-archive-bomb-and-path-traversal-defense/references/contract.yaml": {
+        "bytes": 2793,
+        "mode": "0644",
+        "sha256": "b8502509eff7f4b3c9bf0caa8561003a290d8cd856d8811b4aee2c51a84c2205"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-archive-bomb-and-path-traversal-defense/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_archive_bomb_and_path_traversal_defense",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "secure-intake",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当系统检查或展开任何归档、嵌套压缩包、链接或特殊条目，需要防止 Zip Slip、压缩炸弹和资源耗尽时使用。",
+    "name": "elmos-archive-bomb-and-path-traversal-defense",
+    "ordinal": 45,
+    "title": "归档炸弹与路径穿越防御"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "b8502509eff7f4b3c9bf0caa8561003a290d8cd856d8811b4aee2c51a84c2205",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "106b43fcb49faef97d3babdc3cd5b82c9dfbf009ed6233278df8b05f3b317e62"
+  }
+}

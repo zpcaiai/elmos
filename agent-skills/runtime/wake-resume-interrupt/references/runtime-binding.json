@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "wake-resume-interrupt",
+  "source_contract_sha256": "sha256:64249c28708afcc8bac0dbab99e1e5a6404af0b2a165b753f8ba6a1be25da39e",
+  "source_id": "FOUNDATION-07-wake-resume-interrupt",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

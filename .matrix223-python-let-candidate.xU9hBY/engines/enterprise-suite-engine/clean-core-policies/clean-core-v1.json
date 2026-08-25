@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1.0",
+  "supportedBoundaries": ["PUBLIC_API", "RELEASED_EXTENSION_POINT", "SUPPORTED_METADATA"],
+  "riskBoundaries": ["INTERNAL_API", "DIRECT_DATABASE", "SCREEN_AUTOMATION", "UNKNOWN"],
+  "necessaryExtensionAllowed": true,
+  "ownerTestExitPlanRequired": true
+}

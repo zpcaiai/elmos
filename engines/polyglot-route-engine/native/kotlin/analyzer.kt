@@ -7,13 +7,16 @@
 // with the real compiler is a silent wrong answer rather than a rejection.
 // `kotlin-compiler.jar` ships the production parser; this file only walks it.
 //
-// WHY THE OPT-INS BELOW.  `KotlinCoreEnvironment` is K1 API and the compiler
+// WHY THE OPT-IN BELOW.  `KotlinCoreEnvironment` is K1 API and the compiler
 // marks it deprecated-in-waiting.  Parsing is the one part of K1 that is not
 // being reworked -- PSI is shared with the IDE -- so the opt-in is recorded
-// here explicitly rather than silenced globally with a compiler flag.  If a
-// future Kotlin removes it, this file must fail to compile: that is the point.
+// here explicitly rather than silenced globally with a compiler flag.  Kotlin
+// 2.2.20 has `K1Deprecation` but not the later
+// `CompilerConfiguration.Internals` marker; naming that newer marker made the
+// analyzer itself uncompilable under the exact 2.2.20 route toolchain.  If a
+// future Kotlin removes this API, this file must fail to compile: that is the
+// point.
 @file:OptIn(
-    org.jetbrains.kotlin.config.CompilerConfiguration.Internals::class,
     org.jetbrains.kotlin.K1Deprecation::class,
 )
 @file:Suppress("DEPRECATION", "K1_DEPRECATION")
@@ -35,6 +38,7 @@ import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtConstantExpression
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtIfExpression
@@ -168,7 +172,13 @@ private val EMITTED_BINARY_HELPERS = mapOf(
     "elmosCheckedDiv" to "/",
     "elmosCheckedMod" to "%",
 )
-private const val EMITTED_NON_ZERO_HELPER = "elmosNonZeroDouble"
+private const val EMITTED_NON_ZERO_HELPER = "elmosNonZero"
+
+private val EMITTED_MATH_HELPERS = mapOf(
+    "addExact" to "+",
+    "subtractExact" to "-",
+    "multiplyExact" to "*",
+)
 
 private val SUPPORTED_OPERATORS =
     setOf("+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||")
@@ -184,6 +194,7 @@ private fun expression(node: KtExpression?, emittedTarget: Boolean): Map<String,
         is KtStringTemplateExpression -> stringLiteral(node)
         is KtBinaryExpression -> binary(node, emittedTarget)
         is KtCallExpression -> emittedHelper(node, emittedTarget)
+        is KtDotQualifiedExpression -> emittedDotQualified(node, emittedTarget)
         else -> fail("KOTLIN_UNSUPPORTED_EXPRESSION:${node::class.java.simpleName}")
     }
 }
@@ -279,6 +290,62 @@ private fun emittedHelper(node: KtCallExpression, emittedTarget: Boolean): Map<S
     fail("KOTLIN_EMITTED_HELPER_UNRECOGNIZED:$name")
 }
 
+private fun emittedDotQualified(
+    node: KtDotQualifiedExpression,
+    emittedTarget: Boolean,
+): Map<String, Any?> {
+    if (!emittedTarget) fail("KOTLIN_UNSUPPORTED_EXPRESSION:KtDotQualifiedExpression")
+    val receiver = node.receiverExpression
+    val selector = node.selectorExpression
+
+    // Kotlin/JVM's checked Long operations are emitted through java.lang.Math.
+    // Re-lifting the call to the canonical binary node records the operation,
+    // while the emitted helper-source verifier separately proves that the
+    // compensation was not removed.
+    if (receiver.text == "Math" && selector is KtCallExpression) {
+        val callee = selector.calleeExpression as? KtNameReferenceExpression
+            ?: fail("KOTLIN_EMITTED_MATH_CALLEE_INVALID")
+        val name = callee.getReferencedName()
+        val operator = EMITTED_MATH_HELPERS[name]
+            ?: fail("KOTLIN_EMITTED_MATH_HELPER_UNRECOGNIZED:$name")
+        if (selector.lambdaArguments.isNotEmpty() || selector.valueArguments.size != 2) {
+            fail("KOTLIN_EMITTED_HELPER_ARITY:Math.$name")
+        }
+        return mapOf(
+            "kind" to "binary",
+            "operator" to operator,
+            "left" to expression(selector.valueArguments[0].getArgumentExpression(), true),
+            "right" to expression(selector.valueArguments[1].getArgumentExpression(), true),
+        )
+    }
+
+    // The emitter spells the one permitted numeric widening explicitly.
+    // Canonical IR records the original integer expression under a `number`
+    // return or binding; the target syntax's `.toDouble()` is compensation,
+    // not an extra semantic node.
+    if (selector is KtCallExpression) {
+        val callee = selector.calleeExpression as? KtNameReferenceExpression
+        if (
+            callee?.getReferencedName() == "toDouble" &&
+            selector.valueArguments.isEmpty() &&
+            selector.lambdaArguments.isEmpty()
+        ) {
+            return expression(receiver, true)
+        }
+    }
+
+    // Kotlin cannot spell -2^63 as a signed literal; the emitter uses the
+    // standard constant because `-9223372036854775808L` does not compile.
+    if (
+        receiver.text == "Long" &&
+        selector is KtNameReferenceExpression &&
+        selector.getReferencedName() == "MIN_VALUE"
+    ) {
+        return mapOf("kind" to "literal", "value" to Long.MIN_VALUE)
+    }
+    fail("KOTLIN_EMITTED_DOT_QUALIFIED_UNRECOGNIZED:${node.text}")
+}
+
 private fun ifStatement(node: KtIfExpression, emittedTarget: Boolean): Map<String, Any?> {
     val condition = node.condition ?: fail("KOTLIN_IF_CONDITION_REQUIRED")
     val thenBranch = node.then ?: fail("KOTLIN_IF_THEN_REQUIRED")
@@ -316,6 +383,22 @@ private fun statements(block: KtBlockExpression, emittedTarget: Boolean): List<M
                 result.add(mapOf("kind" to "return", "expression" to expression(value, emittedTarget)))
             }
             is KtIfExpression -> result.add(ifStatement(statement, emittedTarget))
+            is KtProperty -> {
+                if (statement.isVar) fail("KOTLIN_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET")
+                if (statement.delegateExpression != null) {
+                    fail("KOTLIN_DELEGATED_LOCAL_OUTSIDE_CERTIFIED_SUBSET")
+                }
+                val name = statement.name ?: fail("KOTLIN_LOCAL_NAME_REQUIRED")
+                val initializer = statement.initializer ?: fail("KOTLIN_LOCAL_INITIALIZER_REQUIRED")
+                result.add(
+                    mapOf(
+                        "kind" to "let",
+                        "name" to name,
+                        "type" to canonicalType(statement.typeReference),
+                        "expression" to expression(initializer, emittedTarget),
+                    )
+                )
+            }
             else -> fail("KOTLIN_UNSUPPORTED_STATEMENT:${statement::class.java.simpleName}")
         }
     }
@@ -376,7 +459,7 @@ private fun functionSubject(
 ): Map<String, Any?> {
     val parameters = declaration.valueParameters.map {
         mapOf(
-            "names" to listOf(it.name ?: ""),
+            "name" to (it.name ?: ""),
             "source_type" to (it.typeReference?.text ?: ""),
         )
     }
@@ -397,6 +480,9 @@ private fun functionSubject(
             "parameters" to parameters,
             "source_return_type" to (declaration.typeReference?.text ?: ""),
             "receiver" to receiver,
+            "visibility" to
+                if (declaration.hasModifier(KtTokens.PRIVATE_KEYWORD)) "private" else "external",
+            "storage" to "file-scope",
         ),
     )
 }
@@ -505,14 +591,16 @@ private fun analyzeFunction(
     functionName: String,
     emittedTarget: Boolean,
 ): Map<String, Any?> {
-    val candidate = file.declarations
+    val matches = file.declarations
         .filterIsInstance<KtNamedFunction>()
-        .firstOrNull { it.name == functionName }
-        ?: fail("FUNCTION_NOT_FOUND:$functionName")
-    // An extension function is a different callable with the same name; it is
-    // "not found" rather than "unsupported" so a caller cannot mistake it for
-    // the top-level function it was asking about.
-    if (candidate.receiverTypeReference != null) fail("FUNCTION_NOT_FOUND:$functionName")
+        .filter { it.name == functionName && it.receiverTypeReference == null }
+    // Selection is by exact top-level function name.  Kotlin permits overloads,
+    // but this bounded analyzer has no signature selector, so choosing the first
+    // declaration would make source order decide semantics.  Zero and multiple
+    // matches are separate explicit failures; exactly one is the only safe case.
+    if (matches.isEmpty()) fail("FUNCTION_NOT_FOUND:$functionName")
+    if (matches.size != 1) fail("KOTLIN_FUNCTION_NAME_AMBIGUOUS")
+    val candidate = matches.single()
     if (candidate.typeParameters.isNotEmpty()) fail("KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET")
     if (candidate.hasModifier(KtTokens.SUSPEND_KEYWORD)) fail("KOTLIN_SUSPEND_FUNCTION_UNSUPPORTED")
     // An expression body (`fun f() = expr`) can omit the return type and lean

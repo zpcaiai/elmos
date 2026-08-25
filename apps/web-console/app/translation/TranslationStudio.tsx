@@ -651,7 +651,7 @@ export function TranslationStudio() {
         <div>
           <span className="overline">DIRECTED LANGUAGE ROUTES · BATCH 29</span>
           <h1>全库跨语言转换</h1>
-          <p>Java、C#、Python 与 TypeScript 形成 12 条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。</p>
+          <p>{languages.length} 种活动语言形成 {capability?.routePackageCount ?? routeCounts.total} 条方向独立的转换路线；每条路线分别绑定语义风险、精确工具链、语料和认证证据。</p>
         </div>
         <div className="header-actions">
           <StatusChip

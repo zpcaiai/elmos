@@ -1,0 +1,56 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "all required local gates have explicit pass/fail/skip reason"
+    ],
+    "guardrails": [
+      "Never treat model self-review as substitute for executable validation."
+    ],
+    "inputs": [
+      "task",
+      "worktree",
+      "gate config"
+    ],
+    "outputs": [
+      "validation evidence",
+      "failure signals"
+    ],
+    "triggers": [
+      "worker patch produced"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-risk-classifier",
+      "elmos-worker-executor"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "runner",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.runner",
+    "handler": "deterministic_validator",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-deterministic-validator",
+    "ordinal": 21,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/21-deterministic-validator/SKILL.md",
+    "sha256": "sha256:b0e3b1285296188bcf1c0b139a99c22ea890b09e5b352428dfb4d512cba68eae",
+    "version": "1.0.0"
+  }
+}

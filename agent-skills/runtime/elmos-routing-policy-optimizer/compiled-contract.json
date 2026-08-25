@@ -1,0 +1,59 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "candidate shows measurable expected-cost improvement without quality regression"
+    ],
+    "guardrails": [
+      "Cannot add an 11th model.",
+      "Cannot lower mandatory high-risk tier without explicit policy change."
+    ],
+    "inputs": [
+      "historical telemetry",
+      "current policy",
+      "budget goals"
+    ],
+    "outputs": [
+      "candidate policy",
+      "offline evaluation",
+      "approved policy"
+    ],
+    "triggers": [
+      "sufficient telemetry or scheduled tuning"
+    ]
+  },
+  "dag": {
+    "activation": "offline",
+    "dependencies": [
+      "elmos-model-registry-guard",
+      "elmos-cost-performance-router",
+      "elmos-telemetry-learner"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.model-gateway",
+    "handler": "routing_policy_optimizer",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-routing-policy-optimizer",
+    "ordinal": 35,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/35-routing-policy-optimizer/SKILL.md",
+    "sha256": "sha256:53a7b046290b409998b90fd181ffd0dadfe0809cd6569a4b22342a4bc0e1023c",
+    "version": "1.0.0"
+  }
+}

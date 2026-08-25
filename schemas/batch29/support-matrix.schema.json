@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Batch29SupportMatrix",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "schema_version",
     "route_key",
@@ -9,25 +10,30 @@
   ],
   "properties": {
     "schema_version": {
-      "type": "integer",
-      "minimum": 1
+      "const": 1
     },
     "route_key": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9]*-to-[a-z][a-z0-9]*$"
     },
     "capabilities": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "id",
           "status",
           "strategy",
+          "reason",
           "evidence_refs"
         ],
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "status": {
             "enum": [
@@ -40,15 +46,18 @@
             ]
           },
           "strategy": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "reason": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "evidence_refs": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           }
         }

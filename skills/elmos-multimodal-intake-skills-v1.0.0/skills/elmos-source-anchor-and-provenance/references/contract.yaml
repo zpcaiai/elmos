@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+ordinal: 13
+name: elmos-source-anchor-and-provenance
+title: 来源锚点与证据链
+objective: 保证 Elmos 的关键结论可以回到原始文件、具体位置和处理版本，并可验证未被篡改。
+dependencies:
+- elmos-unified-multimodal-content-ir
+inputs:
+- 内容块、原始资产、处理元数据
+outputs:
+- SourceAnchor、ProvenanceGraph
+responsibilities:
+- 统一 PDF page/bbox、图片 bbox、音频时间段、文本行号和代码符号锚点
+- 记录解析器版本、模型、配置、哈希和派生链
+- 支持一条结论关联多个证据以及证据被版本替换
+- 提供来源预览、跳转和完整性校验 API
+deliverables:
+- SourceAnchor、ProvenanceEdge schema
+- 来源解析与预览 API
+- 锚点迁移和内容哈希完整性测试
+acceptance:
+- 关键需求与决策来源锚点覆盖率 100%
+- 锚点能解析到不可变原始资产或明确失效状态
+- 派生链包含处理版本与哈希
+- 任何压缩或融合不会删除证据引用
+data_entities:
+- source_anchors
+- provenance_edges
+- asset_versions
+events:
+- provenance.anchor.created
+- provenance.integrity_failed
+metrics:
+- anchor_coverage
+- anchor_resolution_success_rate
+failure_modes:
+- 原始资产删除
+- 文档新版本导致偏移
+- 哈希不一致
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

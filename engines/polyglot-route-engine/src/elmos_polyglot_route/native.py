@@ -45,9 +45,8 @@ from .toolchains import (
 ENGINE_ROOT = Path(__file__).resolve().parents[2]
 REPOSITORY_ROOT = ENGINE_ROOT.parents[1]
 
-# These native frontends can re-lift emitted target source even though they
-# are not part of the older ROUTED_LANGUAGES evidence inventory.  Relift
-# capability is deliberately named separately from route certification.
+# These native frontends keep an explicit relift surface separate from route
+# certification. JavaScript remains available only for archived evidence.
 NATIVE_RELIFTABLE_LANGUAGES = frozenset({"cpp", "objc", "swift", "php"})
 MODULE_INVENTORY_KIND = "elmos.typed-pure-module-inventory"
 MODULE_INVENTORY_PROFILE = "typed-pure-module-v1"
@@ -7563,6 +7562,7 @@ _KOTLIN_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "KOTLIN_UNSUPPORTED_TYPE:Int",
         "KOTLIN_GENERIC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET",
+        "KOTLIN_FUNCTION_NAME_AMBIGUOUS",
     }
 )
 
@@ -7679,10 +7679,10 @@ def _kotlin_analyzer_arguments(arguments: list[str]) -> None:
 def _verify_trusted_kotlin_toolchain(expected: ExactToolchain) -> None:
     """Re-assert the pin around every analyzer run, as the Java path does.
 
-    The probe already ran once; this is the cheap re-check that the *identity*
-    the caller is holding is still the Kotlin identity, so a swapped
-    ``ExactToolchain`` cannot smuggle a different compiler into a run that has
-    already passed its source checks.
+    Re-selecting is intentional: the selector re-hashes the compiler, JARs,
+    JVM release and full Kotlin tree. A dataclass shape check would let bytes
+    drift after the first selection while the analyzer kept executing paths
+    recorded in a stale object.
     """
     digest = re.compile(r"[0-9a-f]{64}").fullmatch
     if (
@@ -7690,10 +7690,17 @@ def _verify_trusted_kotlin_toolchain(expected: ExactToolchain) -> None:
         or not Path(expected.executable).is_absolute()
         or expected.auxiliary is None
         or not Path(expected.auxiliary).is_absolute()
+        or not expected.profile
         or expected.executable_sha256 is None
         or digest(expected.executable_sha256) is None
     ):
         raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_UNTRUSTED")
+    try:
+        current = exact_toolchain("kotlin")
+    except RouteError as error:
+        raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("KOTLIN_ANALYZER_TOOLCHAIN_CHANGED")
 
 
 def _kotlin_runtime_paths(toolchain: ExactToolchain) -> tuple[Path, Path, Path]:
@@ -7742,81 +7749,17 @@ def _kotlin_analyzer_classes(
     compiler_jar: Path,
     staging_root: Path,
 ) -> tuple[Path, dict[str, Any]] | None:
-    """Compile the Kotlin analyzer and bind the bytecode to its source.
+    """Disable persistent analyzer bytecode until provenance is non-forgeable.
 
-    Unlike Java there is no source-launcher to fall back to: Kotlin has no
-    equivalent of JEP 330, so *something* always has to compile this file before
-    it can run.  That makes the cache load-bearing rather than an optimisation
-    -- a cold `kotlinc` is a JVM start plus a ~60MB compiler jar, measured in
-    seconds, and the analyzer runs once per candidate function.  When the cache
-    is unavailable the caller compiles into the private snapshot directory
-    instead, which is slower but produces the same binding.
-
-    The cache key covers the compiler binary, the analyzer source and the
-    compiler jar, because all three decide what bytecode comes out; a receipt
-    records the digest of every class file, re-checked before every run, so
-    "what executed" stays provably derived from "what we hashed".
+    A content-addressed key plus a self-authored class digest does not prove
+    that pre-existing class bytes were produced by the pinned compiler. The
+    callers therefore always take the private-directory compile path. Keeping
+    this small compatibility hook avoids duplicating that fallback between
+    named-function and repository inventory execution.
     """
-    compiler = Path(toolchain.executable)
-    if not compiler.is_file():
-        return None
-    try:
-        key = _toolchain_build_cache_key(
-            "kotlin",
-            compiler,
-            files=(helper, compiler_jar),
-            salt=(f"kotlin-build={_toolchain_profile_value(toolchain.profile, 'kotlin-build-number')}",),
-        )
-    except (OSError, RouteError):
-        return None
-    directories = _toolchain_build_cache("kotlin", key, ("classes",))
-    if directories is None:
-        return None
-    (classes,) = directories
-    receipt_path = classes.parent / _KOTLIN_ANALYZER_CLASS_RECEIPT
 
-    if receipt_path.is_file():
-        try:
-            receipt = json.loads(receipt_path.read_text())
-            _verify_kotlin_analyzer_classes(classes, receipt)
-            return classes, receipt
-        except (OSError, ValueError, RouteError):
-            # A damaged or tampered cache entry is rebuilt, never trusted.
-            shutil.rmtree(classes, ignore_errors=True)
-            classes.mkdir(mode=0o700, parents=True, exist_ok=True)
-
-    staging = classes.parent / f".staging-{os.getpid()}"
-    shutil.rmtree(staging, ignore_errors=True)
-    try:
-        staging.mkdir(mode=0o700, parents=True)
-        if not _compile_kotlin_analyzer(
-            toolchain, compiler_jar, staging_root / helper.name, staging, staging.parent
-        ):
-            shutil.rmtree(staging, ignore_errors=True)
-            return None
-        produced = sorted(path for path in staging.rglob("*.class") if path.is_file())
-        if not produced:
-            shutil.rmtree(staging, ignore_errors=True)
-            return None
-        receipt = {
-            "cache_schema": _TOOLCHAIN_BUILD_CACHE_SCHEMA,
-            "cache_key": key,
-            "cache_scope": "content-addressed-persistent",
-            "analyzer_source_sha256": _sha256_file(helper),
-            "compiler_sha256": _sha256_file(compiler),
-            "compiler_jar_sha256": _sha256_file(compiler_jar),
-            "classes": {path.relative_to(staging).as_posix(): _sha256_file(path) for path in produced},
-        }
-        # Publish atomically, so a concurrent reader never observes a partial
-        # class set.  Two writers derived the same key from the same inputs, so
-        # whichever lands is equivalent by construction.
-        shutil.rmtree(classes, ignore_errors=True)
-        staging.rename(classes)
-        receipt_path.write_text(json.dumps(receipt, sort_keys=True))
-    except (OSError, subprocess.SubprocessError):
-        shutil.rmtree(staging, ignore_errors=True)
-        return None
-    return classes, receipt
+    del helper, toolchain, compiler_jar, staging_root
+    return None
 
 
 def _compile_kotlin_analyzer(
@@ -7967,17 +7910,9 @@ def analyze(
     if not source.is_file() or source.stat().st_size > 2_000_000:
         raise RouteError("SOURCE_FILE_UNSAFE_OR_TOO_LARGE")
     if language in PENDING_ANALYZER_LANGUAGES:
-        # A matrix member declared ahead of its analyzer cannot be lifted, in
-        # either direction and whether or not the file is emitted output.
-        # Without this line the first thing to fail was `exact_toolchain`, and
-        # for kotlin it failed with EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED -- an
-        # error that names a fix ("run tools/pin_kotlin_toolchain.py") which
-        # would not have helped, because the missing piece is the analyzer, not
-        # the pin.  `SemanticIR.from_mapping` already refuses these languages
-        # under this exact name; saying it here just moves the refusal to the
-        # boundary the caller actually crossed.  The kotlin toolchain stays
-        # reachable through the *target* path, where pinning is the real
-        # prerequisite.
+        # A future matrix member declared ahead of its analyzer cannot be
+        # lifted in either direction. The current active13 set is required to
+        # keep this tuple empty; this branch is the fail-closed future guard.
         raise RouteError(f"SOURCE_ANALYZER_NOT_IMPLEMENTED:{language}")
     # A backstop, and deliberately unreachable today: `ROUTED_LANGUAGES` and
     # `DEPRECATED_LANGUAGES` together cover every member of `Language`, and the

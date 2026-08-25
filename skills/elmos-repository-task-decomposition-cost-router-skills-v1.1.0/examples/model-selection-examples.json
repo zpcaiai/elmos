@@ -1,0 +1,29 @@
+{
+  "smart": {
+    "mode": "smart",
+    "selected_model": null,
+    "optimization_profile": "cost_performance",
+    "fallback_policy": "strict",
+    "verification_policy": "system_required_verifiers",
+    "selection_source": "ui",
+    "locked_by_user": false
+  },
+  "manual_strict": {
+    "mode": "manual",
+    "selected_model": "kimi-k3-max",
+    "optimization_profile": "cost_performance",
+    "fallback_policy": "strict",
+    "verification_policy": "system_required_verifiers",
+    "selection_source": "ui",
+    "locked_by_user": true
+  },
+  "manual_with_fallback": {
+    "mode": "manual",
+    "selected_model": "kimi-k3-max",
+    "optimization_profile": "cost_performance",
+    "fallback_policy": "smart_within_allowlist",
+    "verification_policy": "system_required_verifiers",
+    "selection_source": "ui",
+    "locked_by_user": true
+  }
+}

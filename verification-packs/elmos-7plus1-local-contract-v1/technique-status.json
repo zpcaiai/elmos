@@ -28,6 +28,46 @@
       "evidence_ref": "certification/local-installation-validation.json"
     },
     {
+      "technique": "archive-script-safe-reimplementation",
+      "status": "LOCAL_REIMPLEMENTED_AND_EXECUTED_SELF_ATTESTED",
+      "evidence_ref": "certification/local-evidence/archive-contract-inspection.json"
+    },
+    {
+      "technique": "local-holdout",
+      "status": "LOCAL_HOLDOUT_EXECUTED_SELF_ATTESTED",
+      "evidence_ref": "certification/local-evidence/local-holdout-receipt.json"
+    },
+    {
+      "technique": "provider-contract-simulation",
+      "status": "LOCAL_PROVIDER_CONTRACT_SIMULATED_SELF_ATTESTED",
+      "evidence_ref": "certification/local-evidence/provider-contract-simulation-receipt.json"
+    },
+    {
+      "technique": "production-like-canary-rehearsal",
+      "status": "LOCAL_PRODUCTION_LIKE_REHEARSAL_SELF_ATTESTED",
+      "evidence_ref": "certification/local-evidence/production-like-rehearsal-receipt.json"
+    },
+    {
+      "technique": "deterministic-local-holdout-replay",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED_MATCHED",
+      "evidence_ref": "certification/local-evidence/local-holdout-replay.json"
+    },
+    {
+      "technique": "deterministic-provider-contract-replay",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED_MATCHED",
+      "evidence_ref": "certification/local-evidence/provider-contract-simulation-replay.json"
+    },
+    {
+      "technique": "deterministic-production-like-replay",
+      "status": "LOCAL_EXECUTED_SELF_ATTESTED_MATCHED",
+      "evidence_ref": "certification/local-evidence/production-like-rehearsal-replay.json"
+    },
+    {
+      "technique": "external-receipt-quarantine-and-preflight",
+      "status": "LOCAL_CONTRACT_TESTED_EXTERNAL_TRUST_NOT_CONFIGURED",
+      "evidence_ref": "certification/local-runtime-test-result.json"
+    },
+    {
       "technique": "skill-creator-structural-validation",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED_204_OF_204",
       "evidence_ref": "certification/raw/skill-creator-validation.txt"

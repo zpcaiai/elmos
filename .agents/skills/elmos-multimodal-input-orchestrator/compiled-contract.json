@@ -1,0 +1,145 @@
+{
+  "acceptance": [
+    {
+      "criterion": "同一幂等键不会创建重复任务或副作用",
+      "evidence": [],
+      "id": "S01-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "单资产失败不阻塞同包其他资产，包状态准确反映部分就绪",
+      "evidence": [],
+      "id": "S01-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "所有 READY 内容具备来源锚点和处理报告",
+      "evidence": [],
+      "id": "S01-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "下游无需感知 PDF、Word、音频等原始格式",
+      "evidence": [],
+      "id": "S01-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "同一幂等键不会创建重复任务或副作用",
+      "单资产失败不阻塞同包其他资产，包状态准确反映部分就绪",
+      "所有 READY 内容具备来源锚点和处理报告",
+      "下游无需感知 PDF、Word、音频等原始格式"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "input_sessions",
+      "input_assets",
+      "processing_jobs"
+    ],
+    "deliverables": [
+      "编排服务与端口适配器",
+      "状态机、事件和数据库迁移",
+      "跨模态端到端测试与运行手册"
+    ],
+    "dependencies": [
+      "elmos-unified-multimodal-content-ir",
+      "elmos-source-anchor-and-provenance",
+      "elmos-durable-processing-and-recovery"
+    ],
+    "events": [
+      "input.session.created",
+      "input.package.ready",
+      "input.package.partially_ready"
+    ],
+    "failure_modes": [
+      "重复提交",
+      "解析器不可用",
+      "部分资产永久失败"
+    ],
+    "inputs": [
+      "用户提交、上传清单、租户策略、模型能力"
+    ],
+    "metrics": [
+      "package_ready_latency_p95",
+      "asset_success_rate"
+    ],
+    "name": "elmos-multimodal-input-orchestrator",
+    "objective": "建立所有输入类型共享的会话、状态机、路由、错误隔离和下游交付边界，使下游 Agent 只消费统一内容模型。",
+    "ordinal": 1,
+    "outputs": [
+      "InputPackage、处理事件、下游任务句柄"
+    ],
+    "responsibilities": [
+      "创建 InputSession/InputAsset/InputPackage 聚合根与持久状态机",
+      "按文件类型、风险、租户策略和资源需求选择解析流水线",
+      "支持部分成功、重试、取消、恢复、幂等和进度事件",
+      "将原始资产、解析结果、来源锚点和质量报告原子化提交给下游"
+    ],
+    "schema_version": "1.0.0",
+    "title": "统一多模态输入总控"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-multimodal-input-orchestrator/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-multimodal-input-orchestrator/SKILL.md": {
+        "bytes": 3017,
+        "mode": "0644",
+        "sha256": "f50c3a346442b19f7f119a4cb856f8ff58c7841032d5e722e037abdd934e257c"
+      },
+      "skills/elmos-multimodal-input-orchestrator/references/contract.yaml": {
+        "bytes": 1800,
+        "mode": "0644",
+        "sha256": "7bee0bc845ceb53e05ff5a709d05b746f659567a3940c1569495ac337fd1d67d"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-multimodal-input-orchestrator/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_multimodal_input_orchestrator",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "secure-intake",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "为 Elmos 实现统一多模态输入总控；当任务涉及音频、图片、PDF、Word、Markdown、TXT、文件夹或压缩包接入、解析编排与下游交接时使用。",
+    "name": "elmos-multimodal-input-orchestrator",
+    "ordinal": 1,
+    "title": "统一多模态输入总控"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "7bee0bc845ceb53e05ff5a709d05b746f659567a3940c1569495ac337fd1d67d",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "f50c3a346442b19f7f119a4cb856f8ff58c7841032d5e722e037abdd934e257c"
+  }
+}

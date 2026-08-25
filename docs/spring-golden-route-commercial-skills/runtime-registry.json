@@ -1,0 +1,3939 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "bindings": [
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "lossless-semantic-ir",
+      "source_contract_sha256": "sha256:a597c0b2fca55b101c43bb93a8c76370f7d5635db166b28a0b6d7f8ff894064f",
+      "source_id": "FOUNDATION-01-lossless-semantic-ir",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "rich-type-attribution",
+      "source_contract_sha256": "sha256:c6b22112af6cc33183df5c3df2bb3141f14d22b8b0a6206315efadefd72d89ac",
+      "source_id": "FOUNDATION-01-rich-type-attribution",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "semantic-marker-metadata",
+      "source_contract_sha256": "sha256:da5c26bdcbeef17f1c648accbad511314f63295f5cdec590d725fc1c3ff3ba10",
+      "source_id": "FOUNDATION-01-semantic-marker-metadata",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "cursor-execution-context",
+      "source_contract_sha256": "sha256:8921f093cfee57138733df422efd5e0e579dcd69f267ad84d2b90d32ccd6bbb8",
+      "source_id": "FOUNDATION-01-cursor-execution-context",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "immutable-tree-transform",
+      "source_contract_sha256": "sha256:557baa6aed068255030c16036bbc9c0592e8bae96565bd45584e304b18514ac1",
+      "source_id": "FOUNDATION-01-immutable-tree-transform",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "parser-roundtrip-fidelity",
+      "source_contract_sha256": "sha256:b2cc0b585729547db4a8bab3b1542e5c59840d6fa0dc4f31119769688862ad3a",
+      "source_id": "FOUNDATION-01-parser-roundtrip-fidelity",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "parser-capability-contract",
+      "source_contract_sha256": "sha256:97fc61a1b3607090f5a1c0ee2ff261a5052e2c0f440fcfecddef33bdf13802ec",
+      "source_id": "FOUNDATION-01-parser-capability-contract",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "native-parser-adapter",
+      "source_contract_sha256": "sha256:2dafd212528d61061380d51216a43c7c15f48fcf7fddf35da31ca814a09a4d4c",
+      "source_id": "FOUNDATION-01-native-parser-adapter",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "version-aware-parser",
+      "source_contract_sha256": "sha256:01839811d710e9410ee76a183d3a0269d0d45a10ca910d121a060bbbe1bf186a",
+      "source_id": "FOUNDATION-01-version-aware-parser",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "multi-format-source-model",
+      "source_contract_sha256": "sha256:86e6f464d18670b43cd2abc88bf56d6e322c21d1d68e8b0417c0fbbc67e72fca",
+      "source_id": "FOUNDATION-01-multi-format-source-model",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "deterministic-recipe-engine",
+      "source_contract_sha256": "sha256:a9f7a9663ab22bb1948cb5f1733e9a53c54c66632d18d83419ceef727de3e0ff",
+      "source_id": "FOUNDATION-02-deterministic-recipe-engine",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-composition-graph",
+      "source_contract_sha256": "sha256:3271cbbc9d456057384ecc9565deb936c8c75116b243c9f9324fc853a03ac02a",
+      "source_id": "FOUNDATION-02-recipe-composition-graph",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-preconditions",
+      "source_contract_sha256": "sha256:4cf7867978f073133724027ab42d636bac90010c687a5dfd2eba186fdecf41fa",
+      "source_id": "FOUNDATION-02-recipe-preconditions",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "scanning-recipe-accumulator",
+      "source_contract_sha256": "sha256:e1c8fb143f37f1a8b35cf34aa09994b2d8b7409bed757212c5807071d5c48358",
+      "source_id": "FOUNDATION-02-scanning-recipe-accumulator",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "scan-generate-edit-lifecycle",
+      "source_contract_sha256": "sha256:f85cdb17e2d8a99952d610b63ddce31525acb2eb4c1e1ed40be09c2c0e291a42",
+      "source_id": "FOUNDATION-02-scan-generate-edit-lifecycle",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "multi-cycle-fixpoint",
+      "source_contract_sha256": "sha256:ad8bffa2a8b8806f848d6ed5546544822578d3b5bb0895c04d47dc46fe2ba8ec",
+      "source_id": "FOUNDATION-02-multi-cycle-fixpoint",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-option-schema",
+      "source_contract_sha256": "sha256:ebd431be4132fb29a10ab4b4f667a2da0db5c3480f6018cf67a5e32cb481a390",
+      "source_id": "FOUNDATION-02-recipe-option-schema",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-descriptor-introspection",
+      "source_contract_sha256": "sha256:6cfb87625fee402c2d0d39ac7e9f73cb8c084dcf841a9bfb13c17862347061ff",
+      "source_id": "FOUNDATION-02-recipe-descriptor-introspection",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-change-attribution",
+      "source_contract_sha256": "sha256:da6b5b160d6f94610fc8cdcfb127982559e7fb4d95f70f0dd55569fc99e03574",
+      "source_id": "FOUNDATION-02-recipe-change-attribution",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-effort-estimation",
+      "source_contract_sha256": "sha256:1e6c8578aad226b270e53a2debea14035fb6ca9e463e28d849576c155249be02",
+      "source_id": "FOUNDATION-02-recipe-effort-estimation",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-data-table",
+      "source_contract_sha256": "sha256:066e392eb1f4e6059733a13530bf3ab0cc5c8619cbfd3131ed39339694cbefc9",
+      "source_id": "FOUNDATION-03-recipe-data-table",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-marketplace",
+      "source_contract_sha256": "sha256:bd245ed7d128c8dd8df6e9d86835b344f9251c67d8eb085266173a69fe38fa0b",
+      "source_id": "FOUNDATION-03-recipe-marketplace",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-bundle-resolver",
+      "source_contract_sha256": "sha256:cd678a2da9e21ab646dca0b86f90b2a3c14d27976f311e2ae65157b4a31f2cd8",
+      "source_id": "FOUNDATION-03-recipe-bundle-resolver",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-marketplace-validation",
+      "source_contract_sha256": "sha256:2ff4f2468ac97bf17ce0128fb045ae903c446c64bcbbc1e2e782ef611161e90b",
+      "source_id": "FOUNDATION-03-recipe-marketplace-validation",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "semantic-template-engine",
+      "source_contract_sha256": "sha256:7e654b115cbee10049f30414c6b41b9556986ba499ec6349d56983c0bb794800",
+      "source_id": "FOUNDATION-03-semantic-template-engine",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "constrained-capture-matching",
+      "source_contract_sha256": "sha256:3029e8845682d70690a586a80933eb840a2ec08ec17deac930c51fe5cd274904",
+      "source_id": "FOUNDATION-03-constrained-capture-matching",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "variadic-pattern-matching",
+      "source_contract_sha256": "sha256:b333d3b4b68de77460df0b1c820c46ec368070e03b4a5c0202339981b94923a2",
+      "source_id": "FOUNDATION-03-variadic-pattern-matching",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "dynamic-template-builder",
+      "source_contract_sha256": "sha256:8cdf284213103d8ae57c783afff47a3575792f4ec189703a96eb8da08b903bfb",
+      "source_id": "FOUNDATION-03-dynamic-template-builder",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "lenient-semantic-comparator",
+      "source_contract_sha256": "sha256:b377d81b74ec931bd0a72e032fe30592c3cc56ece178b0e621641e6072068447",
+      "source_id": "FOUNDATION-03-lenient-semantic-comparator",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "semantic-search-engine",
+      "source_contract_sha256": "sha256:5ebec0ed8ecf2de2a533a188f816bc6dcfa417a26ec2202e6d776366745eb29f",
+      "source_id": "FOUNDATION-03-semantic-search-engine",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "build-model-intelligence",
+      "source_contract_sha256": "sha256:fe6255502a6dc4f138b1defd81f9f1a9549f72500feff7abfa29c3dff902bd08",
+      "source_id": "FOUNDATION-04-build-model-intelligence",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "native-dependency-resolution",
+      "source_contract_sha256": "sha256:bee3c00b94c42d3f8a6a39e644080cf94f7b55746dd48ec255899a2efb82172d",
+      "source_id": "FOUNDATION-04-native-dependency-resolution",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "minimal-lockfile-delta",
+      "source_contract_sha256": "sha256:e17afae3abbbd2b3138ff3ed1f268b30d5d2ef6954534d8b44026b23faa20b7c",
+      "source_id": "FOUNDATION-04-minimal-lockfile-delta",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "package-metadata-ladder",
+      "source_contract_sha256": "sha256:36807bb3c8ccc7fcf1f52856d6ce7444c3157993e13b7b06ad7c14a6e917216b",
+      "source_id": "FOUNDATION-04-package-metadata-ladder",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "dependency-credential-propagation",
+      "source_contract_sha256": "sha256:d157000519b4d44a14a07a6ac3f6f588a7a7ede7643e3c82f961f95b93ede657",
+      "source_id": "FOUNDATION-04-dependency-credential-propagation",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "lockfile-accuracy-contract",
+      "source_contract_sha256": "sha256:6da715f0b7c90037f8ecab4183142393c496f05faebb9bcd5fa19f2b92095fe8",
+      "source_id": "FOUNDATION-04-lockfile-accuracy-contract",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "parser-tck",
+      "source_contract_sha256": "sha256:f230185110f97f161dc13f43baed04d8edcc289d5eeaae17e6933f18b7a897fd",
+      "source_id": "FOUNDATION-04-parser-tck",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "transformation-before-after-tests",
+      "source_contract_sha256": "sha256:06ec572a7f0f468a644000b619d143e9dfcdc822878b1a13180ba6f8e2b97585",
+      "source_id": "FOUNDATION-04-transformation-before-after-tests",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "transformation-benchmarks",
+      "source_contract_sha256": "sha256:bd758ddd216fa9f8fc7b4c1f81bb025420fa0217c3347fe6942ea89aca6bd1e5",
+      "source_id": "FOUNDATION-04-transformation-benchmarks",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "parse-failure-evidence",
+      "source_contract_sha256": "sha256:f55510d047fc7c0c898a1335dac055e0683265dca03ea3f1fa42ac67df6138e6",
+      "source_id": "FOUNDATION-04-parse-failure-evidence",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "rewrite-rpc-runtime",
+      "source_contract_sha256": "sha256:37876e2f8f0538905a54c528dc1687bf5603cfff13f4c2af406cf5dc01fabc19",
+      "source_id": "FOUNDATION-05-rewrite-rpc-runtime",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "mirrored-rpc-capabilities",
+      "source_contract_sha256": "sha256:7e2cc99e3c5e0addc7c0414969e9a3a625d3f948c454aec5b3ec978ccd6afddb",
+      "source_id": "FOUNDATION-05-mirrored-rpc-capabilities",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "cross-runtime-data-sink",
+      "source_contract_sha256": "sha256:a7820f4517d373adad6d9a254d9e43c6e793479fb1d365019846a9f2526b140e",
+      "source_id": "FOUNDATION-05-cross-runtime-data-sink",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "rpc-process-isolation",
+      "source_contract_sha256": "sha256:1741a47016594af380e5722defa8c0cfa5dd606a6f2d5e9f44c550e4e6e1b38d",
+      "source_id": "FOUNDATION-05-rpc-process-isolation",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repository-knowledge-precompute",
+      "source_contract_sha256": "sha256:edb7ca3e064111f1b26d8bab51d93dc4d0c843621a02e8ba95de9d45d5221b74",
+      "source_id": "FOUNDATION-05-repository-knowledge-precompute",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "architecture-context-extractor",
+      "source_contract_sha256": "sha256:fa2909b5bad0dacfe0b208e2c27f615057e23de6fd5af099eda58271881a001e",
+      "source_id": "FOUNDATION-05-architecture-context-extractor",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "dependency-and-library-usage-index",
+      "source_contract_sha256": "sha256:b116ebf520735d554bb64ed007be2549978230c86a4c03c6e8bfb5907aada70f",
+      "source_id": "FOUNDATION-05-dependency-and-library-usage-index",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "coding-and-error-pattern-miner",
+      "source_contract_sha256": "sha256:3ea648b5ce6332dfebf2661f41831e65cccfe54fda7bd87058b1e655a438375b",
+      "source_id": "FOUNDATION-05-coding-and-error-pattern-miner",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "method-and-test-quality-index",
+      "source_contract_sha256": "sha256:a6ebf16df2f9b3a9e7f46703d797e9833020d8605bf9c47149433c426325a65a",
+      "source_id": "FOUNDATION-05-method-and-test-quality-index",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "semantic-token-context-query",
+      "source_contract_sha256": "sha256:ccd13b59ea247ce1f603bea501f95fb6436c47b39118e73848ef5d6fec7c0500",
+      "source_id": "FOUNDATION-05-semantic-token-context-query",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "agent-registry",
+      "source_contract_sha256": "sha256:4070de48b8889ada3addc6fff08c9042fc00edbf3b3d2cafb4b6a12bba5a3341",
+      "source_id": "FOUNDATION-06-agent-registry",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "primary-subagent-hierarchy",
+      "source_contract_sha256": "sha256:36fea60ffa335bda196391ce5475b02f81a3583beb70b2147b6507929d5dfc26",
+      "source_id": "FOUNDATION-06-primary-subagent-hierarchy",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "plan-explore-scout-agents",
+      "source_contract_sha256": "sha256:9bf0b11e97c9329c4e6197f003c5303e466868f7ae10f0cd6c8cca1d88a9bf14",
+      "source_id": "FOUNDATION-06-plan-explore-scout-agents",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "hidden-system-agents",
+      "source_contract_sha256": "sha256:966eded3942f7d2e81ae03c39eb309c2551f24a1e9ad99da5da0601ee4e6c64d",
+      "source_id": "FOUNDATION-06-hidden-system-agents",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "per-agent-model-routing",
+      "source_contract_sha256": "sha256:44072229e0ebb323775cca923194754ff900b37fb3a17cdc6cd4a300cf17ab60",
+      "source_id": "FOUNDATION-06-per-agent-model-routing",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "agent-step-budget",
+      "source_contract_sha256": "sha256:e7c2f088cd0d1e916151d52e5360986fe60fb328cc72a8a05dfa494d3dca4bb5",
+      "source_id": "FOUNDATION-06-agent-step-budget",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "parallel-subagent-execution",
+      "source_contract_sha256": "sha256:1789a2bac805c037dcb11019ce50b1ab1b7023afef6f8eabf2aab9f0f9678218",
+      "source_id": "FOUNDATION-06-parallel-subagent-execution",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "parent-child-session-graph",
+      "source_contract_sha256": "sha256:ba915ee5147d9ba12a83966fb8f767256edb45f2c6cec721cb585faa531daf3b",
+      "source_id": "FOUNDATION-06-parent-child-session-graph",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "agent-command-playbooks",
+      "source_contract_sha256": "sha256:a1e56e39363ba2f62f3d66321e92b854c5e41b433553c4a8e59e0764a345a583",
+      "source_id": "FOUNDATION-06-agent-command-playbooks",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "safe-agent-role-switching",
+      "source_contract_sha256": "sha256:ad6c81e39043e3865083302b81d0bba5c130b6e9a625abf5a64371a05a892bd9",
+      "source_id": "FOUNDATION-06-safe-agent-role-switching",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "durable-session-inbox",
+      "source_contract_sha256": "sha256:8f8c7620a2b82a913dfc62b9c64afdc18cf75d20bd16f5631563b0fe251dd3e6",
+      "source_id": "FOUNDATION-07-durable-session-inbox",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "queue-steer-delivery",
+      "source_contract_sha256": "sha256:fdaad32eeee54d98613932bcdfd254b55ce833b05191f35437f7b7b2f6ca45a0",
+      "source_id": "FOUNDATION-07-queue-steer-delivery",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "session-event-sourcing",
+      "source_contract_sha256": "sha256:932f09b1129d7300337567080de581093b81159ecb51bb2ac040b22573d2b63a",
+      "source_id": "FOUNDATION-07-session-event-sourcing",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "session-run-coordinator",
+      "source_contract_sha256": "sha256:1252641c9d82329918d43c54a1df4773d5dc78c7af0a884f01f7eded5ae5c4f9",
+      "source_id": "FOUNDATION-07-session-run-coordinator",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "wake-resume-interrupt",
+      "source_contract_sha256": "sha256:64249c28708afcc8bac0dbab99e1e5a6404af0b2a165b753f8ba6a1be25da39e",
+      "source_id": "FOUNDATION-07-wake-resume-interrupt",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "provider-turn-persistence",
+      "source_contract_sha256": "sha256:b716b5f752d0c5a118d8565463223bb6f2f140c2b77a1a3f065450e2b185e9b8",
+      "source_id": "FOUNDATION-07-provider-turn-persistence",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "durable-tool-settlement",
+      "source_contract_sha256": "sha256:d921bec767471c9ad21727985df072dbdd0a1ffda570ca1757dbe3907b021c51",
+      "source_id": "FOUNDATION-07-durable-tool-settlement",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "context-epoch",
+      "source_contract_sha256": "sha256:760939004bb17f4f2e13634a3dcf7e449b8b0bbeae1905ac534108422e841d02",
+      "source_id": "FOUNDATION-07-context-epoch",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "context-compaction",
+      "source_contract_sha256": "sha256:34777edf823782f6de7e9aa61d3a2969000de192e90e4a5ce22f932b9a9ffaf8",
+      "source_id": "FOUNDATION-07-context-compaction",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "reconnect-safe-history",
+      "source_contract_sha256": "sha256:77c3b8412501edebe7c490b911006fc9814daac3c4a00e51536b11ef777fc06f",
+      "source_id": "FOUNDATION-07-reconnect-safe-history",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "git-snapshot-revert",
+      "source_contract_sha256": "sha256:d26255a328f0a104595a21dadf159913e99d728f4345458d638a23e9f1e03eb9",
+      "source_id": "FOUNDATION-08-git-snapshot-revert",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "session-retry-run-state",
+      "source_contract_sha256": "sha256:128f1874fd77d5f5d8dca330192d32247328f3c63bb3c9f82a0e924146e66a9d",
+      "source_id": "FOUNDATION-08-session-retry-run-state",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "side-effect-interruption-fencing",
+      "source_contract_sha256": "sha256:6fe483c9656b9fb649929545ca2ca4bc30896cc8e7b3cce162331fa4a3948221",
+      "source_id": "FOUNDATION-08-side-effect-interruption-fencing",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "post-crash-continuation-recovery",
+      "source_contract_sha256": "sha256:3b94b8e3baef268f741401fc9439aad15259aac6cc74dd87be9ca12d96b836b5",
+      "source_id": "FOUNDATION-08-post-crash-continuation-recovery",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "typed-tool-registry",
+      "source_contract_sha256": "sha256:5b0104f9bd21718deb4920b970ee92df719b8e3406e2da22a7a2cadaa3b45edf",
+      "source_id": "FOUNDATION-08-typed-tool-registry",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "schema-validated-tool-io",
+      "source_contract_sha256": "sha256:cf5d2d6b633619dd7864d3c5a8ac4c1d4c65a58066a5dab4328e9fbce6a59a55",
+      "source_id": "FOUNDATION-08-schema-validated-tool-io",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "wildcard-permission-engine",
+      "source_contract_sha256": "sha256:c090bd759a2b5ebec2337d42989d00e6ef6deae7955046643ca9c94995caf2c6",
+      "source_id": "FOUNDATION-08-wildcard-permission-engine",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "command-resource-policy",
+      "source_contract_sha256": "sha256:3c566410065d9e10c9082fb7eac15eb0bb48a0fa091d195620a8548391c8ba2c",
+      "source_id": "FOUNDATION-08-command-resource-policy",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "doom-loop-human-intervention",
+      "source_contract_sha256": "sha256:c823abb69d471d49bab995c94330457f8d509c7458b61d3f4ed3ff327afa00ec",
+      "source_id": "FOUNDATION-08-doom-loop-human-intervention",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "structured-task-and-question-tools",
+      "source_contract_sha256": "sha256:e78115ef1d0823959c9a47af3d85a465846ed7d62e838c57b5b34d27a885f08f",
+      "source_id": "FOUNDATION-08-structured-task-and-question-tools",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "lazy-skill-discovery",
+      "source_contract_sha256": "sha256:21fa77d1ef5d4d860e4a9c75508bf6dd75b348ecf0184154d4343842d5953c02",
+      "source_id": "FOUNDATION-09-lazy-skill-discovery",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "mcp-gateway-oauth-context-budget",
+      "source_contract_sha256": "sha256:998f3c632d86425a83bfcabfcaccf22bfbd9752e08be4dd59404dd7dce07e25e",
+      "source_id": "FOUNDATION-09-mcp-gateway-oauth-context-budget",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "lsp-diagnostics-and-navigation",
+      "source_contract_sha256": "sha256:4285e7046fb69fa4014047b6b1b2d1fb52a32b7f225668f51de178d696ddbc01",
+      "source_id": "FOUNDATION-09-lsp-diagnostics-and-navigation",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "post-edit-format-and-patch",
+      "source_contract_sha256": "sha256:416044f74f7f2c5c6f261eb6b2f6c8d3369e55a6d87acb7eac236713a8621a6c",
+      "source_id": "FOUNDATION-09-post-edit-format-and-patch",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "provider-model-abstraction",
+      "source_contract_sha256": "sha256:17799450dce3f31254e802254b9c344f46c3aa5a4ad88c7990c3d2d6f875c8de",
+      "source_id": "FOUNDATION-09-provider-model-abstraction",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "portable-request-vs-local-behavior",
+      "source_contract_sha256": "sha256:f3ae6523cc0c2ee2002662f988e1aae8e33e8c9b34f3bdfdae31389255fd2533",
+      "source_id": "FOUNDATION-09-portable-request-vs-local-behavior",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "model-run-vs-provider-turn",
+      "source_contract_sha256": "sha256:2050402b7968008fde76fe2ce17c2f8c1da2fac2734903d4deeae43169ea680c",
+      "source_id": "FOUNDATION-09-model-run-vs-provider-turn",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "stream-usage-cost-cache-runtime",
+      "source_contract_sha256": "sha256:9a5e4fc42a2b64f82c37b84c0633a5b433170160c871f48104192f9788628643",
+      "source_id": "FOUNDATION-09-stream-usage-cost-cache-runtime",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "hierarchical-enterprise-config",
+      "source_contract_sha256": "sha256:64b44beea52f77b6d126618bebb34e939f7935c5efd50e7915daea3c2f4bd7c5",
+      "source_id": "FOUNDATION-09-hierarchical-enterprise-config",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "workspace-control-plane-and-multi-client",
+      "source_contract_sha256": "sha256:5279c9a21886800a2be12615b73315ebbea7399a567540dc7c058c3f8db354e4",
+      "source_id": "FOUNDATION-09-workspace-control-plane-and-multi-client",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "deterministic-first-router",
+      "source_contract_sha256": "sha256:a56ca908d5ce8dc3445f5262c106b0167ef3a4870eacadfa43cdd06df1f7299b",
+      "source_id": "FOUNDATION-10-deterministic-first-router",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "recipe-agent-hybrid-planner",
+      "source_contract_sha256": "sha256:e3c4afba847cd6f0677f7387b1b02c270ea9f4dac1657a3abe13736db9eb96de",
+      "source_id": "FOUNDATION-10-recipe-agent-hybrid-planner",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "semantic-context-provider",
+      "source_contract_sha256": "sha256:b2fb809ad4450aab6d2fc997e6f565a2eba333f5384bab4cc6811f2d3d439da1",
+      "source_id": "FOUNDATION-10-semantic-context-provider",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "semantic-patch-and-evidence-ledger",
+      "source_contract_sha256": "sha256:59c480f719b46ea6f089583cff793d6bf9bade96c96fd11143190a28d8ce1fda",
+      "source_id": "FOUNDATION-10-semantic-patch-and-evidence-ledger",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "verification-fixpoint-completion-proof",
+      "source_contract_sha256": "sha256:44e7802d092f1567cd88d5a630bd2c6673ba1c937e5b7490882ece4c6fcebc60",
+      "source_id": "FOUNDATION-10-verification-fixpoint-completion-proof",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "migration-knowledge-graph",
+      "source_contract_sha256": "sha256:b4b469e707d9cfbd30af165e123f8c15f7673bcb66e71a11f2f11445f56df89f",
+      "source_id": "FOUNDATION-10-migration-knowledge-graph",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "successful-patch-to-recipe-learning",
+      "source_contract_sha256": "sha256:b11eb88d4b518d325cb5a199bd7988ee881583bd933d353adf12531b359b40a3",
+      "source_id": "FOUNDATION-10-successful-patch-to-recipe-learning",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "hierarchical-context-and-repo-cache",
+      "source_contract_sha256": "sha256:4b9abf36d6664e3ccc8ec4b079eeb84bb8928561458b831f3e43a7d06735a944",
+      "source_id": "FOUNDATION-10-hierarchical-context-and-repo-cache",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "side-effect-ledger-and-recovery-fencing",
+      "source_contract_sha256": "sha256:cccd768763ee37f028dbcc8add5e8b36593787f709a4bfd432a85de4ea22628c",
+      "source_id": "FOUNDATION-10-side-effect-ledger-and-recovery-fencing",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "skill-marketplace-certification",
+      "source_contract_sha256": "sha256:23d758a4f4396b277553b42e02d078fc2cfd92aadec2bb73752c3dde8c1a3103",
+      "source_id": "FOUNDATION-10-skill-marketplace-certification",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-product-category",
+      "source_contract_sha256": "sha256:6c8d5c8b095adbe84c2d687a3f0cc4ed19e03d6bc6096f7deee2b919299082bf",
+      "source_id": "ELMOS-GR-001",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-competitive-positioning",
+      "source_contract_sha256": "sha256:af4bd99243eff1edd85cdac1c7ef64c4be89c0d1a2fd7fe16991e47de13e77ea",
+      "source_id": "ELMOS-GR-002",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-build-buy-partner",
+      "source_contract_sha256": "sha256:26128215d5a020dc1b10a3f948ef0f35418d3a9d2642378607a7fc777ec81f15",
+      "source_id": "ELMOS-GR-003",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-maturity-l1-l5",
+      "source_contract_sha256": "sha256:8a99f835163759c3c4be8f22468ba350e4288cfbd8696c3caf1759408f4a2298",
+      "source_id": "ELMOS-GR-004",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-golden-route-priority",
+      "source_contract_sha256": "sha256:d6a8b062e60262dafea7eab34376aec4539fadbfc265b124a21d3176af1038a2",
+      "source_id": "ELMOS-GR-005",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-spring-route-boundary",
+      "source_contract_sha256": "sha256:f69cf7f423e363043ae7dabb7992fceee7100941027c65bd01e76711b080cc28",
+      "source_id": "ELMOS-GR-006",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-recipe-license-gate",
+      "source_contract_sha256": "sha256:ff404265723f3488b148a9499ba42ca9ec631679e8da6acea90ee3a2687f0127",
+      "source_id": "ELMOS-GR-007",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "elmos-scope-control",
+      "source_contract_sha256": "sha256:5386e69f11317d0977603534544dc857123aa47b287abaded92d71928a9babeb",
+      "source_id": "ELMOS-GR-008",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-route-orchestrator",
+      "source_contract_sha256": "sha256:d092c4247bc985246a69d44350786137b8f8b8225e5166bb43d3d64f83837bf0",
+      "source_id": "ELMOS-GR-009",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-source-profile",
+      "source_contract_sha256": "sha256:5ac768f40713ec85452b6508249bb355dcb6cbabd395c7e6fec3d17a70bc88e3",
+      "source_id": "ELMOS-GR-010",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-target-profile",
+      "source_contract_sha256": "sha256:befe92b6ebce98633c7cf054a7b222c843290b369f8e0b6167cff6dd1f77dc99",
+      "source_id": "ELMOS-GR-011",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-maven-multimodule",
+      "source_contract_sha256": "sha256:13c6f2c8cf44d6115a63e7836c8bf2b728abe4d6f6ac61eb2b9d43a3e10ad39f",
+      "source_id": "ELMOS-GR-012",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-capability-matrix",
+      "source_contract_sha256": "sha256:3a96d575763c65485236609bd32a6ebb1c3019cb0a8fc8580714075e6a5d7991",
+      "source_id": "ELMOS-GR-013",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-critical-subroutes",
+      "source_contract_sha256": "sha256:158f50dd46261c9f22b9339e02955ef2ecd564463399940d303280fd559824e4",
+      "source_id": "ELMOS-GR-014",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-unsupported-manager",
+      "source_contract_sha256": "sha256:327e6c2a45db6e9d12d757b530c010a55bd842fd6edf54c97c42449e2d559d46",
+      "source_id": "ELMOS-GR-015",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-delivery-rollback",
+      "source_contract_sha256": "sha256:f380086a675fb839b6f7a84d609ca81f660bb5ac2e850a74143de6ff54cae714",
+      "source_id": "ELMOS-GR-016",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-mrloc",
+      "source_contract_sha256": "sha256:2644d98765d925bca4a759bedce2cae752ab266ca6abfa2120ee5b9f19a2ba97",
+      "source_id": "ELMOS-GR-017",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-origin-classifier",
+      "source_contract_sha256": "sha256:b5a5479130960b839ab853450929fd77f5ff13325094662d509cc0c272bced2b",
+      "source_id": "ELMOS-GR-018",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-erss",
+      "source_contract_sha256": "sha256:a2b016732b19de6cae5ba6d651e10717a1952e2652a21df9203c490926d5b1a6",
+      "source_id": "ELMOS-GR-019",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-rcs",
+      "source_contract_sha256": "sha256:acec850a45a1f6d91299d41370cf85211a584a2950b6f95b3872cb9714210614",
+      "source_id": "ELMOS-GR-020",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-transform-surface",
+      "source_contract_sha256": "sha256:06f8bca4a680b29c857e60afe915da955acd7bc239eb05b730214b41b2093468",
+      "source_id": "ELMOS-GR-021",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-semantic-accounting",
+      "source_contract_sha256": "sha256:0735f2e7ff4f5ad66a5d9e7e132af5d9a4ae86b1e7dddbeb9ba07fed922166aa",
+      "source_id": "ELMOS-GR-022",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-benchmark-profile",
+      "source_contract_sha256": "sha256:12793d2464ee19a806e6ddfa9b61f01385c68a9f2cabf56ad771664b8e4d1721",
+      "source_id": "ELMOS-GR-023",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "repo-scale-report",
+      "source_contract_sha256": "sha256:99f6346d7c65babae738e2c6b585a0d7be4a76a717449a64d0a48b8a9d233113",
+      "source_id": "ELMOS-GR-024",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-secure-intake",
+      "source_contract_sha256": "sha256:acc8bc7ec37e87a41d8d7eb5282a8053e483f2fc7d54a80fd6204aa3a55e4b89",
+      "source_id": "ELMOS-GR-025",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-eligibility",
+      "source_contract_sha256": "sha256:ede971c28212aac6cb759d7bfa1f9828254974c625e5236a254952d28027b74c",
+      "source_id": "ELMOS-GR-026",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-baseline-preflight",
+      "source_contract_sha256": "sha256:48c3ef86f73a87949bb3d8e9167f23ebb2bfb15d34bf62a114d2e4e82829ee16",
+      "source_id": "ELMOS-GR-027",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-legacy-risk",
+      "source_contract_sha256": "sha256:848fb14b18624c7dad88eee36e5ee57fa4d1ad9bf17393bb97dc5ff758f057f3",
+      "source_id": "ELMOS-GR-028",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-private-deps",
+      "source_contract_sha256": "sha256:1045812e3f2aa997a4a9987116844b344201cbd71052654dc1a57e0d5d6e772c",
+      "source_id": "ELMOS-GR-029",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-effort-estimate",
+      "source_contract_sha256": "sha256:035d0f14956ee4635e1f06e29ef194a2cd86fec891d893dfc14b15aa70a24ae7",
+      "source_id": "ELMOS-GR-030",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-runtime-eta",
+      "source_contract_sha256": "sha256:777db17d1b3bfb9f870e47dd5cfd6976155b15380a09cca200b98c78613cb0c5",
+      "source_id": "ELMOS-GR-031",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-assessment-report",
+      "source_contract_sha256": "sha256:4cc77e055e7a237f22ff71b9ab1d3fc9bbc3c11a307a7026c5d542e6920d7b71",
+      "source_id": "ELMOS-GR-032",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-env-snapshot",
+      "source_contract_sha256": "sha256:5cd06ee4e4a2cbecc309536773375777eba50f120fac0afdbfeb40ea43cd3e60",
+      "source_id": "ELMOS-GR-033",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-characterization",
+      "source_contract_sha256": "sha256:71f7401b3572afce4ea1ddf4e52448776f355f2ea73daa44f535f459c857a117",
+      "source_id": "ELMOS-GR-034",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-repo-graph",
+      "source_contract_sha256": "sha256:3e242ada2e702bd6550eac4838b951aad6f7b6f63b6a01903e55b56c9be637a4",
+      "source_id": "ELMOS-GR-035",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-bean-flow",
+      "source_contract_sha256": "sha256:433c22f17c267d3be5bf208e6f9832b76a57bbae4b929d35d1ef302b3f09c9fd",
+      "source_id": "ELMOS-GR-036",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-data-graph",
+      "source_contract_sha256": "sha256:05c35e809e6eb77e7538b3845ba7cdf2a5624f413b2b12bdd48be6f1b39180f1",
+      "source_id": "ELMOS-GR-037",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-security-graph",
+      "source_contract_sha256": "sha256:9e8bdd4a0f4cf2dab336d3d5b936d184b11f51dc5f2bebb0fa972e0304d5bd12",
+      "source_id": "ELMOS-GR-038",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-async-graph",
+      "source_contract_sha256": "sha256:8e8ef565ffbeb4b51f70a99ef5314126a2660447a409eeff33feafa143371030",
+      "source_id": "ELMOS-GR-039",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-test-corpus",
+      "source_contract_sha256": "sha256:ed90c021a74dd9a60dc951d0f6292b50d2fb3f94e849e1215d3316cc5d112757",
+      "source_id": "ELMOS-GR-040",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-migration-dag",
+      "source_contract_sha256": "sha256:1c7d4e257850268739830cc03b66d6f43cbdbe8dc13e7b3caa9268883c7ca316",
+      "source_id": "ELMOS-GR-041",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-openrewrite-adapter",
+      "source_contract_sha256": "sha256:2a160214e7610ebadcefbc8a7a7dcb4901e6c85150831857ea14d51ce8d95dda",
+      "source_id": "ELMOS-GR-042",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-native-recipes",
+      "source_contract_sha256": "sha256:3c47906167ace2535cdbc9736fa8cc23ae085de068ceec309bf7ecdfbc546e88",
+      "source_id": "ELMOS-GR-043",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-license-router",
+      "source_contract_sha256": "sha256:18d4ed5fbf97b7bd4f1f8596d76c3397bda91a3c0ffe22e43aad7a7920b0ac86",
+      "source_id": "ELMOS-GR-044",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-build-migrator",
+      "source_contract_sha256": "sha256:01faa279741b8f24538e8b39f430c60935966ec054cf3fd994bdc1774b325f4c",
+      "source_id": "ELMOS-GR-045",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-api-config-migrator",
+      "source_contract_sha256": "sha256:dbdc580fe784042221ae70fbf1085105ba29288396db91632a39d1dbea6814e9",
+      "source_id": "ELMOS-GR-046",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-recipe-fixpoint",
+      "source_contract_sha256": "sha256:3e85128fd965e3b86152f77b8b367676bf412694f91dd89f88a8c2b56acc281f",
+      "source_id": "ELMOS-GR-047",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-deterministic-share",
+      "source_contract_sha256": "sha256:fd19364dcd0623f9c09374f2e3d46dbb877b18cda52afd111fb846591df6ae1b",
+      "source_id": "ELMOS-GR-048",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-diagnostic-classifier",
+      "source_contract_sha256": "sha256:b0d7c1a46c48f2a8ffa8bc38ef00b77ec6939f30fa3f8943b6eaebd97152a962",
+      "source_id": "ELMOS-GR-049",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-repair-agent",
+      "source_contract_sha256": "sha256:621fb56e543420b48e1c6fa3518cf7f6e20848781c0fcea9d22296aa6bef044e",
+      "source_id": "ELMOS-GR-050",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-context-slicer",
+      "source_contract_sha256": "sha256:3eecb01d69cc866ad51690fc86f7431245dbb8b66fc62ae91d61113c52676068",
+      "source_id": "ELMOS-GR-051",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-durable-session",
+      "source_contract_sha256": "sha256:5c5dbeebbc0465068a132e821219c07d0fa3fa30e28059f4eb03d165f2b9dba3",
+      "source_id": "ELMOS-GR-052",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-side-effect-ledger",
+      "source_contract_sha256": "sha256:7c3acffca4be4982bbb160b54fd2ab1c9192e9d04047e63199785bc76142e6d7",
+      "source_id": "ELMOS-GR-053",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-crash-recovery",
+      "source_contract_sha256": "sha256:96ac5f85ace627908e4b385ba421f18ef815526ed240f30597c5e715ba589c6d",
+      "source_id": "ELMOS-GR-054",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-human-approval",
+      "source_contract_sha256": "sha256:a097c2682e7b4f41615f1a5015515bb09b51ce81f3483ff635edf9be42b86f66",
+      "source_id": "ELMOS-GR-055",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-sandbox",
+      "source_contract_sha256": "sha256:83933d28f3938dd0c56776b24cb00adeb7c94f0c0188ac4b91bfbb3bf53305f1",
+      "source_id": "ELMOS-GR-056",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-dual-runtime",
+      "source_contract_sha256": "sha256:26cdd2ba26fbeb7ba67a7239bafd74db934ee8bcbb3e0c5354f02684ba19b8af",
+      "source_id": "ELMOS-GR-057",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-api-diff",
+      "source_contract_sha256": "sha256:71b2d191068d22a0f1b9dce04e468f2419f7fa59d2692893608ce907f76aa807",
+      "source_id": "ELMOS-GR-058",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-db-diff",
+      "source_contract_sha256": "sha256:71b7e825e9ac3df526623bc6995bd158467e8597e4c728289642875d0813dd3e",
+      "source_id": "ELMOS-GR-059",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-security-diff",
+      "source_contract_sha256": "sha256:8fbceb46a1522b409eaa3ba78f5d722ce2f08709f675c8a50f34228d4058ed5f",
+      "source_id": "ELMOS-GR-060",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-sideeffect-diff",
+      "source_contract_sha256": "sha256:bdefc72092f7485bdc9add49c4b45b6c3287f6342bcb97c99bd0bde99a368ea7",
+      "source_id": "ELMOS-GR-061",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-quality-gates",
+      "source_contract_sha256": "sha256:1423c517a3a59765058cf39967e79a7c70bf2ce06f95424b23598b9f2158a96a",
+      "source_id": "ELMOS-GR-062",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-verification-fixpoint",
+      "source_contract_sha256": "sha256:175476176eec0d86fe86c271f48ab565c4413ae1fe353af2561e17bfc8fad4f7",
+      "source_id": "ELMOS-GR-063",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-completion-proof",
+      "source_contract_sha256": "sha256:93f83797e0b2ee566f0d4d0f6b1391e0a90a5d62d30044723e59b51d88999555",
+      "source_id": "ELMOS-GR-064",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-data-model",
+      "source_contract_sha256": "sha256:0e918c4ae90a82e609aefcc84c49817d657bf2a6edbda455ee811fe78dbefd6d",
+      "source_id": "ELMOS-GR-065",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-event-catalog",
+      "source_contract_sha256": "sha256:501a6d147f0428b7c057baf70af19aa792906cc819edeabe7cc229459ad934f7",
+      "source_id": "ELMOS-GR-066",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-evidence-store",
+      "source_contract_sha256": "sha256:906838ef6a55c76023800565b24a22ed74dda48e68ff05e1771cae11be3ec407",
+      "source_id": "ELMOS-GR-067",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-claim-ledger",
+      "source_contract_sha256": "sha256:45b8d97ffaa913e01a9453dc04e2b92aa091151e28713ced2f117fdc068fca86",
+      "source_id": "ELMOS-GR-068",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-observability",
+      "source_contract_sha256": "sha256:ccc74053909ba44cf0cf02918a9664ed44f1aff9c5b2eab1e6605c965904717c",
+      "source_id": "ELMOS-GR-069",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-cost-accounting",
+      "source_contract_sha256": "sha256:5fde6aa161108bbdbb10e777e038663a6a1a30a2f4ed3dd5ecaba5bdf24e5d41",
+      "source_id": "ELMOS-GR-070",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-progress-eta",
+      "source_contract_sha256": "sha256:0fdff53aec48d111ee5d48f54917e7bcc57fc2294741b55dd8b6ebc7037ff63a",
+      "source_id": "ELMOS-GR-071",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-audit-retention",
+      "source_contract_sha256": "sha256:c334428c7f39622e450ddef756f6e2b7558deb8e7b90158298453d125c362494",
+      "source_id": "ELMOS-GR-072",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-benchmark-corpus",
+      "source_contract_sha256": "sha256:e86cb0101f0a5d3dd06a7aebfde0405c902c7e1cd118a57d2dbc245b66c9bfb4",
+      "source_id": "ELMOS-GR-073",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-unseen-policy",
+      "source_contract_sha256": "sha256:5b75584e9f511495ca92017e759a911cd9f92561ac68caffe31ca07152c8b987",
+      "source_id": "ELMOS-GR-074",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-no-cheating",
+      "source_contract_sha256": "sha256:3ee4d81cbe1fc1b60859e9aac69a614a79e593eada8e9693ecab1b0694895515",
+      "source_id": "ELMOS-GR-075",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-size-gate",
+      "source_contract_sha256": "sha256:15e8b42050f96720d43a65b19b2f168977c52cb80094f1455ca6816acfb81c98",
+      "source_id": "ELMOS-GR-076",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-clean-room",
+      "source_contract_sha256": "sha256:ee03a5926899d0628024e71e355d131875682bb8083f6b1820e55b431b1791fe",
+      "source_id": "ELMOS-GR-077",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-failure-denominator",
+      "source_contract_sha256": "sha256:236cac7cbd7db8348f43ea09100bd56e58ec126b9165b27136082fadb54e6005",
+      "source_id": "ELMOS-GR-078",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-l3-gate",
+      "source_contract_sha256": "sha256:4f4211ec6957da11c53d42b7090533fd0c4ec09190f3da0a195108327a011640",
+      "source_id": "ELMOS-GR-079",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-public-claims",
+      "source_contract_sha256": "sha256:e95eeb2eb295e515f774bcd4ba0121c77461f8d4c2905c2d36f17eed16a55125",
+      "source_id": "ELMOS-GR-080",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-assessment-sku",
+      "source_contract_sha256": "sha256:48ba455082f407fd5e88f977d4fafae029d472507fb2605e68eda4ab28638153",
+      "source_id": "ELMOS-GR-081",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-pilot-sku",
+      "source_contract_sha256": "sha256:b2b65e26cd570988418a08683a908b3d6d4e0024b863078d8784edbaf4e67f84",
+      "source_id": "ELMOS-GR-082",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "spring-factory-sku",
+      "source_contract_sha256": "sha256:962bd909c8614b2838778302043ffcd831bc67508dc3a5e926052a8cebd37cf2",
+      "source_id": "ELMOS-GR-083",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-pricing",
+      "source_contract_sha256": "sha256:7ecc07d71afab86a4f69e141503db628957809dec09d620738b26f8163a6235a",
+      "source_id": "ELMOS-GR-084",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-sow",
+      "source_contract_sha256": "sha256:3973a3b186ad524fdc732724b0e27d41c599db3e2b231d4351dd457d6d9dea07",
+      "source_id": "ELMOS-GR-085",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-customer-data-ip",
+      "source_contract_sha256": "sha256:e59d2e766f79103b23ecb64bee92d962196cac3fd828313e153d58d59026b5be",
+      "source_id": "ELMOS-GR-086",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-pilot-selection",
+      "source_contract_sha256": "sha256:8dc71a5c674a076d9ddee50cde122e5e4633ebebdd5c4ad3750fa169b15da3c1",
+      "source_id": "ELMOS-GR-087",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-pilot-success",
+      "source_contract_sha256": "sha256:3a44407dd11f3e10efffd3ccceb2b61cf539dc8d4802de19c0abefea856e9a16",
+      "source_id": "ELMOS-GR-088",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-large-repo",
+      "source_contract_sha256": "sha256:b47ee8b6211cd073d079ce8a9c1064210bffbcffad85cf8ad51239f22fc20c85",
+      "source_id": "ELMOS-GR-089",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-multirepo",
+      "source_contract_sha256": "sha256:34bc84455fa244cd7baf5f67fffabad41a66a4c9e13c2cbf77406bc2dcc7cea2",
+      "source_id": "ELMOS-GR-090",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-capacity",
+      "source_contract_sha256": "sha256:f83e9b8e175e8137009b8c14a11410cf0c3d3e831d5c6b888b9edffbc34826ff",
+      "source_id": "ELMOS-GR-091",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-cache",
+      "source_contract_sha256": "sha256:75e41ef53604a1e7591956cbf0fe062a92005e1adf7998ca516cc1beac53415a",
+      "source_id": "ELMOS-GR-092",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-patch-mining",
+      "source_contract_sha256": "sha256:6cb989c4d9b12bd0a0de8045c6e6a4b5daf01af1659c942c94abbeaafb01a64d",
+      "source_id": "ELMOS-GR-093",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-recipe-certification",
+      "source_contract_sha256": "sha256:ba6d2b99e3ae31cddf7970e5489860334a018d9fb3918783bbfc9e1de3b9b3e8",
+      "source_id": "ELMOS-GR-094",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-migration-kg",
+      "source_contract_sha256": "sha256:43e581551f22a7642a0081924af1aa005e4c21291f257d33f1fc4ca4af384b77",
+      "source_id": "ELMOS-GR-095",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    },
+    {
+      "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+      "certification": "NOT_CERTIFIED",
+      "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "customer_evidence_status": "NOT_RUN",
+      "dispatcher": "dispatch_skill",
+      "domain_runtime_evidence_status": "NOT_RUN",
+      "engine_path": "engines/spring-golden-route-engine",
+      "external_evidence_status": "NOT_RUN",
+      "module_path": "elmos_spring_golden_route.runtime",
+      "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+      "side_effects_authorized": false,
+      "skill_name": "gr-route-expansion",
+      "source_contract_sha256": "sha256:003c978ca4ebff88cdcfcefdf05eff749a36912a450f35aa31b4fbddc301e662",
+      "source_id": "ELMOS-GR-096",
+      "supported_operations": [
+        "describe",
+        "plan"
+      ]
+    }
+  ],
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "package": "elmos-spring-golden-route-commercial-skills",
+  "package_version": "2.0.0",
+  "schema_version": "elmos.spring-golden-route.runtime-registry.v1",
+  "side_effects_authorized": false,
+  "skill_count": 196,
+  "source_archive_sha256": "sha256:952dce43681a56dbd3323ef03b334b08d5be980000e9c7ee3f0ac3e3bcd42c4e"
+}

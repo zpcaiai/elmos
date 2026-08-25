@@ -1,0 +1,29 @@
+schema_version: '1.0'
+classes:
+  task-metadata:
+    hot_days: 365
+    archive_days: 2555
+    delete_after_days: 2555
+  task-events:
+    hot_days: 90
+    archive_days: 730
+    delete_after_days: 2555
+  verbose-logs:
+    hot_days: 14
+    archive_days: 90
+    delete_after_days: 365
+  input-output-artifacts:
+    hot_days: 30
+    archive_days: 365
+    delete_after_days: 1095
+  financial-ledgers:
+    hot_days: 730
+    archive_days: 2555
+    delete_after_days: null
+legal_hold:
+  supported: true
+  overrides_deletion: true
+privacy:
+  redact_secrets_before_persistence: true
+  encrypt_object_payloads: true
+  tenant_export_and_delete_workflow: required

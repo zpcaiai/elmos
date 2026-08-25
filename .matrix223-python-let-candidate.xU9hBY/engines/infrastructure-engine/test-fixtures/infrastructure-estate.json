@@ -1,0 +1,24 @@
+{
+  "estateId": "estate-1",
+  "organizationId": "org-1",
+  "observationWindow": {
+    "start": "2026-07-01T00:00:00Z",
+    "end": "2026-07-08T00:00:00Z"
+  },
+  "coverage": 0.91,
+  "hosts": [
+    "host-1"
+  ],
+  "virtualMachines": [
+    "vm-1"
+  ],
+  "workloads": [
+    "orders"
+  ],
+  "secretValuesCaptured": false,
+  "privateKeysCaptured": false,
+  "evidenceRefs": [
+    "artifact://estate/sha256-a"
+  ]
+}
+

@@ -1,0 +1,71 @@
+schema_version: 1.0.0
+policy_id: elmos-archive-default
+version: 1.0.0
+supported_formats:
+- ZIP
+- TAR
+- TAR_GZ
+- TGZ
+- GZIP
+inspect_before_extract: true
+extract_in_sandbox: true
+execute_entries: false
+limits:
+  default:
+    max_archive_bytes: 5368709120
+    max_uncompressed_bytes: 21474836480
+    max_entries: 200000
+    max_single_entry_bytes: 5368709120
+    max_directory_depth: 64
+    max_nested_archive_depth: 3
+    max_expansion_ratio: 200
+    max_cpu_seconds: 1200
+    max_wall_clock_seconds: 1800
+    max_scratch_bytes: 23622320128
+  hard_ceiling:
+    max_archive_bytes: 53687091200
+    max_uncompressed_bytes: 214748364800
+    max_entries: 2000000
+    max_nested_archive_depth: 8
+    max_expansion_ratio: 1000
+  tenant_configurable: true
+  never_allow_unbounded: true
+paths:
+  reject_parent_escape: true
+  reject_absolute_posix: true
+  reject_windows_drive: true
+  reject_unc: true
+  reject_nul: true
+  normalize_unicode: true
+  resolve_relative_to_open_sandbox_handle: true
+  allow_overwrite: false
+links:
+  create_symlink: false
+  follow_symlink: false
+  create_hardlink: false
+  follow_hardlink: false
+  store_metadata_only: true
+special_entries:
+  device: REJECT
+  fifo: REJECT
+  socket: REJECT
+  setuid: REJECT
+  sparse_file: LIMITED_OR_REVIEW
+nested_archives:
+  enabled: true
+  auto_extract_depth: 1
+  rescan_every_layer: true
+  share_global_budget: true
+  require_user_or_policy_approval_beyond_auto_depth: true
+encrypted:
+  supported_when_user_provides_password: true
+  attempt_password_cracking: false
+  secret_storage: EPHEMERAL_SECRET_HANDLE
+  persist_plaintext: false
+  include_in_logs: false
+  include_in_traces: false
+  include_in_model_context: false
+  destroy_after_use: true
+on_limit_exceeded: QUARANTINE
+on_unsafe_entry: REJECT_ENTRY_AND_QUARANTINE_PACKAGE
+on_unknown_format: QUARANTINE

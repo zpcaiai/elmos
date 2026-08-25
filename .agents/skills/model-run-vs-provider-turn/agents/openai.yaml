@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Run Vs Provider Turn"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $model-run-vs-provider-turn for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

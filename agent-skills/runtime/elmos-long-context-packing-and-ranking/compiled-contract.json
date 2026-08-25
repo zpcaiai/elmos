@@ -1,0 +1,175 @@
+{
+  "acceptance": [
+    {
+      "criterion": "P0/P1 内容在任何正常压缩或驱逐路径中都不被移除",
+      "evidence": [],
+      "id": "S32-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "装载总量不超过有效输入预算且保留输出与安全余量",
+      "evidence": [],
+      "id": "S32-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "关键需求、直接依赖、测试失败和安全发现召回率达到验收门槛",
+      "evidence": [],
+      "id": "S32-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "每个纳入或排除决定都有机器可读理由",
+      "evidence": [],
+      "id": "S32-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "相同快照与配置产生确定性计划",
+      "evidence": [],
+      "id": "S32-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "超大候选集处理不会退化为随机截断或按上传顺序截断",
+      "evidence": [],
+      "id": "S32-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "P0/P1 内容在任何正常压缩或驱逐路径中都不被移除",
+      "装载总量不超过有效输入预算且保留输出与安全余量",
+      "关键需求、直接依赖、测试失败和安全发现召回率达到验收门槛",
+      "每个纳入或排除决定都有机器可读理由",
+      "相同快照与配置产生确定性计划",
+      "超大候选集处理不会退化为随机截断或按上传顺序截断"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "context_candidates",
+      "context_load_plans",
+      "context_load_plan_items"
+    ],
+    "deliverables": [
+      "ContextCandidate/ContextLoadPlan schema",
+      "混合排序、去重、多样性和预算装箱实现",
+      "可解释装载清单与调试界面",
+      "长仓库与多文档检索评测集"
+    ],
+    "dependencies": [
+      "elmos-context-budget-manager",
+      "elmos-multimodal-token-accounting",
+      "elmos-source-anchor-and-provenance",
+      "elmos-repository-context-map"
+    ],
+    "events": [
+      "context.plan.created",
+      "context.plan.updated",
+      "context.source.selected",
+      "context.source.deferred"
+    ],
+    "failure_modes": [
+      "critical constraint evicted",
+      "single source dominance",
+      "stale version selected",
+      "budget overflow"
+    ],
+    "inputs": [
+      "任务目标与阶段",
+      "候选内容块",
+      "上下文预算",
+      "来源/版本/依赖元数据"
+    ],
+    "metrics": [
+      "critical_fact_recall",
+      "context_precision",
+      "duplicate_token_ratio",
+      "source_coverage_ratio"
+    ],
+    "name": "elmos-long-context-packing-and-ranking",
+    "objective": "把有限活动窗口分配给最高价值、最新、可信且覆盖完整的证据，并提供可解释、确定、可回滚的装箱计划。",
+    "ordinal": 32,
+    "outputs": [
+      "ContextLoadPlan",
+      "上下文装载顺序",
+      "排除与压缩理由",
+      "覆盖报告"
+    ],
+    "responsibilities": [
+      "建立候选内容池，保留 source anchor、版本、可信度、任务相关性、依赖距离、时效性和 token 成本。",
+      "将系统/安全策略、当前用户指令、不可违反约束、验收标准定义为 P0/P1 固定项。",
+      "结合关键词、向量、符号图、调用图、知识图谱、版本关系和历史决策进行混合排序。",
+      "执行语义去重、近重复合并、多样性约束和来源覆盖约束，防止单一文档挤占窗口。",
+      "采用预算感知装箱，为输出、工具调用、推理余量和安全 headroom 预留容量。",
+      "生成 ContextLoadPlan，列出纳入、排除、压缩和延迟加载项及理由。",
+      "在任务阶段、依赖图或失败证据变化时增量重排，而非盲目重建全部上下文。",
+      "用消融评测验证排序质量与关键事实召回率。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "长上下文装箱与排序"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-long-context-packing-and-ranking/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-long-context-packing-and-ranking/SKILL.md": {
+        "bytes": 3779,
+        "mode": "0644",
+        "sha256": "880833e3f0ac2439037fe4c385dc92b7f4eaf0943673b5f2b9df22bd3b8711d4"
+      },
+      "skills/elmos-long-context-packing-and-ranking/references/contract.yaml": {
+        "bytes": 2741,
+        "mode": "0644",
+        "sha256": "0803136c67aab71cf6f9430dd684b6a4cab4056d63812e872d0e34b535c19a23"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-long-context-packing-and-ranking/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_long_context_packing_and_ranking",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当任务候选证据超过活动上下文，必须在不丢失关键约束的前提下选择、排序、去重和装载内容时使用。",
+    "name": "elmos-long-context-packing-and-ranking",
+    "ordinal": 32,
+    "title": "长上下文装箱与排序"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "0803136c67aab71cf6f9430dd684b6a4cab4056d63812e872d0e34b535c19a23",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "880833e3f0ac2439037fe4c385dc92b7f4eaf0943673b5f2b9df22bd3b8711d4"
+  }
+}

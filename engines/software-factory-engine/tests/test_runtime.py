@@ -30,7 +30,6 @@ from elmos_software_factory.public_methods import (
     PublicMethodRegistryError,
     load_public_method_registry,
 )
-from elmos_software_factory.registry import load_registry
 from elmos_software_factory.runtime import SoftwareFactoryEngine, dispatch_skill
 
 

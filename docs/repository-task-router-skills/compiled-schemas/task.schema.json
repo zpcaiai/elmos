@@ -1,0 +1,127 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/task.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "anyOf": [
+        {
+          "properties": {
+            "owned_paths": {
+              "minItems": 1
+            }
+          },
+          "required": [
+            "owned_paths"
+          ]
+        },
+        {
+          "properties": {
+            "read_only": {
+              "const": true
+            }
+          },
+          "required": [
+            "read_only"
+          ]
+        }
+      ]
+    }
+  ],
+  "description": "Atomic planning input. Complexity and status are optional stage-owned annotations added by the estimator and journal after decomposition.",
+  "properties": {
+    "acceptance": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "complexity": {
+      "type": "object"
+    },
+    "context_pack": {
+      "type": "object"
+    },
+    "dependencies": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "forbidden_paths": {
+      "items": {
+        "minLength": 1,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "type": "string"
+    },
+    "objective": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "owned_paths": {
+      "items": {
+        "minLength": 1,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "read_only": {
+      "type": "boolean"
+    },
+    "read_paths": {
+      "items": {
+        "minLength": 1,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "risk": {
+      "type": "object"
+    },
+    "routing": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "ready",
+        "running",
+        "blocked",
+        "failed",
+        "passed",
+        "waived"
+      ]
+    },
+    "task_class": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "objective",
+    "acceptance"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,24 @@
+{
+  "workloadId": "vendor-suite",
+  "recommendedTarget": "MODERNIZE_VM",
+  "alternatives": [
+    "KEEP_BARE_METAL"
+  ],
+  "status": "RECOMMENDED",
+  "reasonCodes": [
+    "FIXED_HOST_ID",
+    "PHYSICAL_CPU_LICENSE"
+  ],
+  "hardConstraints": [
+    "LICENSE_BINDING"
+  ],
+  "requiredGates": [
+    "LICENSE_VALIDATION",
+    "IMAGE_HARDENING"
+  ],
+  "confidence": 0.94,
+  "evidenceRefs": [
+    "artifact://placement/sha256-b"
+  ]
+}
+

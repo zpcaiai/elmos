@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "pack_key": "build-cache-tenant-isolation-v1-2",
+  "gate": "batch35-conservative-verification-gate",
+  "gate_execution_status": "NOT_RUN",
+  "decision": "NOT_CERTIFIED",
+  "eligible": false,
+  "reasons": [
+    "RUNTIME_LOCAL_TESTS_NOT_RUN",
+    "NEGATIVE_CORPUS_NOT_RUN",
+    "HOLDOUT_NOT_RUN",
+    "REPRESENTATIVE_WORKLOAD_NOT_RUN",
+    "MUTATION_NOT_RUN",
+    "INDEPENDENT_P0_REVIEW_NOT_RUN",
+    "PRODUCTION_CALL_CHAINS_INCOMPLETE",
+    "EXTERNAL_EVIDENCE_NOT_RUN"
+  ],
+  "gate_command_executed": false,
+  "certified": false
+}

@@ -1,0 +1,96 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/model-selection-request.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "selected_model": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "manual"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "selected_model": {
+            "enum": [
+              "gpt-5.6-sol-max",
+              "claude-opus-5-max",
+              "claude-fable-5",
+              "grok-4.6",
+              "kimi-k3-max",
+              "glm-5.3-max",
+              "qwen3.8-max",
+              "deepseek-v4-pro-0813",
+              "gemini-3.7-flash-high",
+              "claude-sonnet-5"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "selected_model"
+        ]
+      }
+    }
+  ],
+  "description": "Caller-controlled model-selection request. Server-derived lock, source, resolution time, and registry provenance fields are forbidden.",
+  "properties": {
+    "fallback_policy": {
+      "enum": [
+        "strict",
+        "smart_within_allowlist"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "smart",
+        "manual"
+      ]
+    },
+    "optimization_profile": {
+      "enum": [
+        "cost_performance",
+        "lowest_cost",
+        "max_quality",
+        "fastest"
+      ]
+    },
+    "selected_model": {
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    },
+    "verification_policy": {
+      "enum": [
+        "system_required_verifiers",
+        "selected_model_only"
+      ]
+    }
+  },
+  "required": [
+    "mode"
+  ],
+  "type": "object"
+}

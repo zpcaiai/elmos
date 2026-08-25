@@ -51,10 +51,10 @@
       "sha256": "sha256:10807430511facc0f17ea4b32be89857bb08aa04b199e0b747a7ead5c5024986"
     },
     {
-      "bytes": 53469,
+      "bytes": 54542,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/domain.py",
-      "sha256": "sha256:9cd864ce26665158750eded8c8925b8d4347420dcb1b4af87dac6174d4a747e4"
+      "sha256": "sha256:7653439d65e5f8034ba64dc668daeabf6921ea6bb6f9450d8a54de9ef3c164f1"
     },
     {
       "bytes": 18277,
@@ -105,10 +105,10 @@
       "sha256": "sha256:54e9ad2b260e39f02b4bcf4e734ef744b002b2d5af1161af398b51dfd6246fc4"
     },
     {
-      "bytes": 11034,
+      "bytes": 12168,
       "mode": "0644",
       "path": "tests/test_runtime.py",
-      "sha256": "sha256:fce709e2aefc4f82ae95c5ec6bc49c39c39d60f8de0f313b74802ea790132ea1"
+      "sha256": "sha256:2201e0e01a687c9a289b86657d453055fd9ea1a2b68704b85ac83ce209b6270c"
     },
     {
       "bytes": 4297,
@@ -117,18 +117,18 @@
       "sha256": "sha256:7805b1b1dac9c960114d2275b4c2ffc83c8d9d2500141786150229a7d15fd18b"
     }
   ],
-  "engine_tree_sha256": "sha256:44628cf03300c1ae2e831c237f5e14fe5daa2e38e1e57a058b6d1c9fda3abaee",
+  "engine_tree_sha256": "sha256:ef62f19e8708a3935243a22b2ebdfc20cd97c6ac046f2ccd8dcd90cfd8b13811",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
-  "fixture_sha256": "sha256:fce709e2aefc4f82ae95c5ec6bc49c39c39d60f8de0f313b74802ea790132ea1",
+  "fixture_sha256": "sha256:2201e0e01a687c9a289b86657d453055fd9ea1a2b68704b85ac83ce209b6270c",
   "independent_verifier": null,
   "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
   "qualification_scope": "bounded-local-fixture-handlers",
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:ad9691c34d77d4c065105b82396f06fb933097e5766788e0a7a0837e0ac09b61",
-  "receipt_digest": "sha256:8896378afd7f04895d6525a58b2349dbf2341bccf56d88beadffaebb19427991",
+  "receipt_digest": "sha256:45f61d8643717452553b8fe250e4c210543d6999bec81ac6573260bd20d9e2a6",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {

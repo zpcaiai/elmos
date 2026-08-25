@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lossless Semantic Ir"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $lossless-semantic-ir for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

@@ -1,0 +1,32 @@
+server:
+  port: ${ELMOS_DATABASE_DATA_PORT:8089}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+spring:
+  application:
+    name: elmos-database-data-engine
+  lifecycle:
+    timeout-per-shutdown-phase: ${ELMOS_SHUTDOWN_TIMEOUT:30s}
+  mvc:
+    problemdetails:
+      enabled: true
+elmos:
+  chinadb-sql-preflight:
+    enabled: ${ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED:false}
+    base-url: ${ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL:http://chinadb-sql-preflight:8101}
+    connect-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_CONNECT_TIMEOUT:2s}
+    request-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_REQUEST_TIMEOUT:15s}
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+        add-additional-paths: true
+      show-details: never
+  endpoints:
+    web:
+      exposure:
+        include: health,info

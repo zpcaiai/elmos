@@ -2073,6 +2073,7 @@
           "command": [
             "python3",
             "scripts/batch29/configure_research_routes.py",
+            "--verify-legacy-12",
             "--routes-root",
             "routes"
           ],

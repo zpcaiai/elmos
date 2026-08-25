@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "selectionPolicy": "DENY_UNLESS_CAPABILITY_DIGEST_AND_EVIDENCE_APPROVED",
+  "profiles": [
+    {"profile": "WEB_LEGACY", "platform": "linux-amd64", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null},
+    {"profile": "MODERN_WEB", "platform": "linux-amd64", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null},
+    {"profile": "BROWSER_MATRIX", "platform": "linux-amd64", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null},
+    {"profile": "DESKTOP_WINDOWS", "platform": "windows-amd64", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null},
+    {"profile": "DESKTOP_MACOS", "platform": "macos-arm64", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null},
+    {"profile": "ANDROID", "platform": "linux-amd64-kvm-or-device", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null},
+    {"profile": "IOS", "platform": "macos-arm64-simulator-or-device", "buildStatus": "NOT_BUILT", "approvalStatus": "UNAPPROVED", "imageDigest": null}
+  ],
+  "requiredEvidence": ["TOOLCHAIN_MANIFEST", "BROWSER_OR_DEVICE_VERSION", "FONT_HASH", "SBOM", "SIGNATURE", "PROVENANCE", "VULNERABILITY_SCAN", "SECRET_SCAN", "NETWORK_POLICY", "ISOLATION_TEST", "CLEANUP_TEST", "REPRODUCIBILITY_TEST"],
+  "note": "No profile is selectable until an immutable image or host capability and its evidence are approved. Store credentials and production signing keys are excluded."
+}

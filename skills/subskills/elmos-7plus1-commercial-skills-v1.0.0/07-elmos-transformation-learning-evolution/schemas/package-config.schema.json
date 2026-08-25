@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/package/P07/config/1.0",
+  "title": "P07 package configuration",
+  "type": "object",
+  "required": [
+    "package_id",
+    "version",
+    "enabled",
+    "components",
+    "policy"
+  ],
+  "properties": {
+    "package_id": {
+      "const": "P07"
+    },
+    "version": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "P07-C01",
+          "P07-C02",
+          "P07-C03",
+          "P07-C04",
+          "P07-C05",
+          "P07-C06",
+          "P07-C07",
+          "P07-C08",
+          "P07-C09",
+          "P07-C10",
+          "P07-C11",
+          "P07-C12"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "policy": {
+      "type": "object"
+    },
+    "limits": {
+      "type": "object"
+    },
+    "feature_flags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    }
+  },
+  "additionalProperties": false
+}

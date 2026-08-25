@@ -40,9 +40,9 @@
       "version": "10.0.301"
     },
     "flutter": {
-      "analyzer_status": "PENDING_ANALYZER",
+      "analyzer_status": "LOCAL_SINGLE_UNIT_READY",
       "engine_path": null,
-      "version": "PENDING_ANALYZER"
+      "version": "LOCAL_SINGLE_UNIT_READY"
     },
     "go": {
       "engine_path": "engines/polyglot-route-engine/native/go/analyzer.go",
@@ -53,9 +53,9 @@
       "version": "21.0.11"
     },
     "kotlin": {
-      "analyzer_status": "PENDING_ANALYZER",
+      "analyzer_status": "LOCAL_SINGLE_UNIT_READY",
       "engine_path": null,
-      "version": "PENDING_ANALYZER"
+      "version": "LOCAL_SINGLE_UNIT_READY"
     },
     "objc": {
       "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
@@ -70,9 +70,9 @@
       "version": "3.12.12"
     },
     "react": {
-      "analyzer_status": "PENDING_ANALYZER",
+      "analyzer_status": "LOCAL_SINGLE_UNIT_READY",
       "engine_path": null,
-      "version": "PENDING_ANALYZER"
+      "version": "LOCAL_SINGLE_UNIT_READY"
     },
     "rust": {
       "engine_path": "engines/polyglot-route-engine/native/rust/src/main.rs",
@@ -90,11 +90,7 @@
   "limited_route_count": 90,
   "local_execution_evidence": "NOT_RUN",
   "module_profile": "typed-pure-module-v1",
-  "pending_analyzer_languages": [
-    "kotlin",
-    "react",
-    "flutter"
-  ],
+  "pending_analyzer_languages": [],
   "research_route_count": 66,
   "route_count": 156,
   "route_execution_authorities": {
@@ -574,7 +570,7 @@
       "runtime_profile": "Node.js 26.0.0 / ES2022 / ESM"
     },
     "kotlin-react-flutter-completion-66": {
-      "analyzer_status": "PENDING_ANALYZER",
+      "analyzer_status": "LOCAL_SINGLE_UNIT_READY",
       "languages": [
         "java",
         "csharp",
@@ -590,11 +586,7 @@
         "react",
         "flutter"
       ],
-      "pending_analyzer_languages": [
-        "kotlin",
-        "react",
-        "flutter"
-      ],
+      "pending_analyzer_languages": [],
       "policy": "exact-matrix-completion-set",
       "route_count": 66,
       "route_keys": [
@@ -664,7 +656,8 @@
         "flutter-to-php",
         "flutter-to-kotlin",
         "flutter-to-react"
-      ]
+      ],
+      "repository_status": "PENDING_REPOSITORY_SURFACE"
     },
     "legacy-complete-30": {
       "execution_authority_sha256": "sha256:2dae6e0efc55a4c5056a8f8508176981a30341a15301756f854393e7def6b13e",
@@ -4144,5 +4137,6 @@
     }
   ],
   "schema_version": "1.4.0",
-  "semantic_profile": "typed-pure-function-v1"
+  "semantic_profile": "typed-pure-function-v1",
+  "pending_repository_languages": []
 }

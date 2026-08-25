@@ -1,0 +1,785 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "completeness_status": "INCOMPLETE",
+  "diagnostic_obligations": [
+    {
+      "blocks_repository_complete": true,
+      "code": "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED",
+      "id": "elmos:diagnostic-obligation:sha256:118b5e15761d5bd7ce284a8a6576d7e1c6999360e4bf731228045912b706d398",
+      "kind": "diagnostic-obligation",
+      "message": "add.php:<declare> is not fully covered: NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED.",
+      "node_id": "elmos:effect:sha256:3341de42ee2dc79e5a755daf5f42848fe5171c336385532b4f82d6c63c31c85d",
+      "required_evidence": "Provide one exact compiler-indexed READY conversion unit that PASSED, or retain this subject as an explicit repository blocker.",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 3
+      },
+      "verification_status": "UNKNOWN"
+    },
+    {
+      "blocks_repository_complete": true,
+      "code": "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED",
+      "id": "elmos:diagnostic-obligation:sha256:1c2b0c3954d6267cf946114663416ef75138073ed23430c362e325313fc02153",
+      "kind": "diagnostic-obligation",
+      "message": "subtract.php:<declare> is not fully covered: NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED.",
+      "node_id": "elmos:effect:sha256:d90159d89e46cb4f73c832bdd4bee2e10aa1c75d6afe0920202727084678aae3",
+      "required_evidence": "Provide one exact compiler-indexed READY conversion unit that PASSED, or retain this subject as an explicit repository blocker.",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 3
+      },
+      "verification_status": "UNKNOWN"
+    },
+    {
+      "blocks_repository_complete": true,
+      "code": "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED",
+      "id": "elmos:diagnostic-obligation:sha256:e4b51427ed74ca8770c51068281156f22f9edcd7dd657d8d8acedb36b6811034",
+      "kind": "diagnostic-obligation",
+      "message": "multiply.php:<declare> is not fully covered: NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED.",
+      "node_id": "elmos:effect:sha256:b94e3b4d305aa242825523eb407a064046e479b2d2ac7b023870c2d320c493e7",
+      "required_evidence": "Provide one exact compiler-indexed READY conversion unit that PASSED, or retain this subject as an explicit repository blocker.",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 3
+      },
+      "verification_status": "UNKNOWN"
+    }
+  ],
+  "discovery_profile": "static-project-graph-v1",
+  "edges": [
+    {
+      "attributes": {
+        "indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:099130f3ac4c4cd96d6a40dd0bc897bf6e7db3f71bf9713b9138c46908392d3b",
+      "kind": "contains",
+      "source": "elmos:module:sha256:a8e5fa4408c75733635a01935c02c53c08acbcee69668eb4cf37d185677c9021",
+      "source_location": {
+        "end_column": 72,
+        "end_line": 5,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 5
+      },
+      "target": "elmos:symbol:sha256:aa596fdb8dc52748e4bd28f4b2130172e03e98546b95f741db1e3340cb58e871"
+    },
+    {
+      "attributes": {},
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:42f693bb471afedb4a55d205f3d26252aac9ce2c9ce9fa3fb736789527db441b",
+      "kind": "contains",
+      "source": "elmos:repository:sha256:ff04ffbb8f88392b2a6ef4992c832660aaef3d0175777425a703985eb88f33c5",
+      "source_location": {
+        "end_column": null,
+        "end_line": null,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 1
+      },
+      "target": "elmos:file:sha256:b70aa83621ec476465506ac218238a13419044d19f07b7e03ebe5d1abf795b5d"
+    },
+    {
+      "attributes": {
+        "indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:4a73ea9470ea3f180c7e9cc0d002d422fad36c3c1449b95be2ad05d05c7f8a4b",
+      "kind": "contains",
+      "source": "elmos:module:sha256:16849bf358c4c8853465fe1f65f2c98c0f9008f28fec0aa94bda238aa63bf270",
+      "source_location": {
+        "end_column": 67,
+        "end_line": 5,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 5
+      },
+      "target": "elmos:symbol:sha256:237490b9e00288ab29837b3f983972ece33936a18f3917ebeb5949bb525c0885"
+    },
+    {
+      "attributes": {},
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:4cf9a37bc7e472d19e9583c6f7dc748f1cc5e2916c70419810dca1d8390dac13",
+      "kind": "contains",
+      "source": "elmos:repository:sha256:ff04ffbb8f88392b2a6ef4992c832660aaef3d0175777425a703985eb88f33c5",
+      "source_location": {
+        "end_column": null,
+        "end_line": null,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 1
+      },
+      "target": "elmos:file:sha256:b2b04afce996bd487874fdff5c4b5cea022ea6cb4a68766e8af4d3a96dcbd99c"
+    },
+    {
+      "attributes": {
+        "indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:6fc47ee7b8d773621e97526066470390fe6e8ec515f745c0fcb7e2691b483149",
+      "kind": "contains",
+      "source": "elmos:module:sha256:16849bf358c4c8853465fe1f65f2c98c0f9008f28fec0aa94bda238aa63bf270",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 3
+      },
+      "target": "elmos:effect:sha256:3341de42ee2dc79e5a755daf5f42848fe5171c336385532b4f82d6c63c31c85d"
+    },
+    {
+      "attributes": {
+        "indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:77a21d84e96741ef9524d7ef5685b8add206a1145f4543823268001aaa13e8c6",
+      "kind": "contains",
+      "source": "elmos:module:sha256:a8e5fa4408c75733635a01935c02c53c08acbcee69668eb4cf37d185677c9021",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 3
+      },
+      "target": "elmos:effect:sha256:d90159d89e46cb4f73c832bdd4bee2e10aa1c75d6afe0920202727084678aae3"
+    },
+    {
+      "attributes": {
+        "indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:935a4eba24472efd76aae52de2961b284e5eea5cfe9933bb631dad181b9f9741",
+      "kind": "contains",
+      "source": "elmos:module:sha256:09ba709bfef30e1e50590ffc9ac9e235ab642ea807e061a10eaa607f8b5e176d",
+      "source_location": {
+        "end_column": 72,
+        "end_line": 5,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 5
+      },
+      "target": "elmos:symbol:sha256:224b3cc9c49982d06f4ee173b5587a8330e8fc87fff0e28e60036765a77ff0e0"
+    },
+    {
+      "attributes": {},
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:a7bb5e06b855bfec96e79dfedd7f5901df309eb08aaf5109595fea1aa2d1a77e",
+      "kind": "contains",
+      "source": "elmos:file:sha256:b70aa83621ec476465506ac218238a13419044d19f07b7e03ebe5d1abf795b5d",
+      "source_location": {
+        "end_column": null,
+        "end_line": null,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 1
+      },
+      "target": "elmos:module:sha256:a8e5fa4408c75733635a01935c02c53c08acbcee69668eb4cf37d185677c9021"
+    },
+    {
+      "attributes": {},
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:d421db26eaf2eb96f297419c2058f15a1d039c70398e363d28ff6c5b6ac2297c",
+      "kind": "contains",
+      "source": "elmos:file:sha256:b2b04afce996bd487874fdff5c4b5cea022ea6cb4a68766e8af4d3a96dcbd99c",
+      "source_location": {
+        "end_column": null,
+        "end_line": null,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 1
+      },
+      "target": "elmos:module:sha256:09ba709bfef30e1e50590ffc9ac9e235ab642ea807e061a10eaa607f8b5e176d"
+    },
+    {
+      "attributes": {
+        "indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:d4deffc572d5f87825959962f3c5680496d7dc79534298f29599a95756673a6c",
+      "kind": "contains",
+      "source": "elmos:module:sha256:09ba709bfef30e1e50590ffc9ac9e235ab642ea807e061a10eaa607f8b5e176d",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 3
+      },
+      "target": "elmos:effect:sha256:b94e3b4d305aa242825523eb407a064046e479b2d2ac7b023870c2d320c493e7"
+    },
+    {
+      "attributes": {},
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:f38ce83718a6ade46ec8470e919206268fbda35158550308f00a7c3d4e34d450",
+      "kind": "contains",
+      "source": "elmos:file:sha256:ad211b75c2f416bbd62304e1fb659f73384b2c642e1f668e3dacd0b7fc060688",
+      "source_location": {
+        "end_column": null,
+        "end_line": null,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 1
+      },
+      "target": "elmos:module:sha256:16849bf358c4c8853465fe1f65f2c98c0f9008f28fec0aa94bda238aa63bf270"
+    },
+    {
+      "attributes": {},
+      "evidence_status": "PASSED",
+      "id": "elmos:edge:sha256:fda577c00eb822b1ec256d6816f9750674e59d9ddf279a58d4752e7424fcdbc5",
+      "kind": "contains",
+      "source": "elmos:repository:sha256:ff04ffbb8f88392b2a6ef4992c832660aaef3d0175777425a703985eb88f33c5",
+      "source_location": {
+        "end_column": null,
+        "end_line": null,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 1
+      },
+      "target": "elmos:file:sha256:ad211b75c2f416bbd62304e1fb659f73384b2c642e1f668e3dacd0b7fc060688"
+    }
+  ],
+  "execution_status": "NOT_RUN",
+  "external_verification_status": "NOT_RUN",
+  "graph_id": "elmos:project-graph:sha256:0461964d8641e159a16a5400aa7c8f9bb50e39aeb1651ad6be025675efe31640",
+  "graph_sha256": "0461964d8641e159a16a5400aa7c8f9bb50e39aeb1651ad6be025675efe31640",
+  "indexers": {
+    "other_languages": {
+      "languages": [
+        "cpp",
+        "csharp",
+        "go",
+        "java",
+        "javascript",
+        "objc",
+        "php",
+        "rust",
+        "swift",
+        "typescript"
+      ],
+      "module_inventory_count": 3,
+      "status": "PASSED"
+    },
+    "python": {
+      "name": "cpython-ast",
+      "runtime_version": "3.12.12",
+      "status": "PASSED"
+    }
+  },
+  "inventory": {
+    "classified_file_count": 3,
+    "excluded_count": 0,
+    "excluded_entries": [],
+    "file_count": 3,
+    "ignored_directory_policy": [
+      ".git",
+      ".hg",
+      ".mypy_cache",
+      ".pytest_cache",
+      ".ruff_cache",
+      ".svn",
+      ".venv",
+      "__pycache__",
+      "bin",
+      "build",
+      "dist",
+      "node_modules",
+      "obj",
+      "target",
+      "vendor"
+    ],
+    "language_counts": {
+      "cpp": 0,
+      "csharp": 0,
+      "go": 0,
+      "java": 0,
+      "javascript": 0,
+      "objc": 0,
+      "php": 3,
+      "python": 0,
+      "rust": 0,
+      "swift": 0,
+      "typescript": 0
+    },
+    "limits": {
+      "maximum_file_bytes": 2097152,
+      "maximum_files": 10000,
+      "maximum_repository_bytes": 134217728
+    },
+    "role_counts": {
+      "build-descriptor": 0,
+      "resource": 0,
+      "source": 3,
+      "test": 0,
+      "unknown": 0
+    }
+  },
+  "javascript_esm_descriptors": [],
+  "kind": "elmos.content-addressed-project-graph",
+  "limitations": [
+    "Repository completeness is scoped to static-project-graph-v1, not behavioral equivalence.",
+    "Non-Python semantic closure is accepted only from a matching pinned compiler module inventory.",
+    "Runtime calls, reflection, generated code, and deployment consumers require separate evidence sources."
+  ],
+  "nodes": [
+    {
+      "attributes": {
+        "blocking_reasons": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "candidate": false,
+        "conversion_coverage_requirement": "REQUIRED",
+        "coverage_key": "php:sha256:1af45afed7053bcd63df1793bb607aa20b1a685dd4fd25508135fe82f0068466",
+        "declaration_kind": "declare-directive",
+        "diagnostics": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "language": "php",
+        "name": "<declare>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "add.php",
+        "qualified_name": "<declare>",
+        "scope_depth": 0,
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream",
+        "semantic_status": "BLOCKED",
+        "source_location": {
+          "end_column": 24,
+          "end_line": 3,
+          "path": "add.php",
+          "start_column": 0,
+          "start_line": 3
+        },
+        "source_signature": {},
+        "source_span": {
+          "end_byte": 31,
+          "file": "add.php",
+          "start_byte": 7
+        },
+        "subject_kind": "module-obligation"
+      },
+      "id": "elmos:effect:sha256:3341de42ee2dc79e5a755daf5f42848fe5171c336385532b4f82d6c63c31c85d",
+      "kind": "effect",
+      "language": "php",
+      "name": "<declare>",
+      "path": "add.php",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 3
+      }
+    },
+    {
+      "attributes": {
+        "blocking_reasons": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "candidate": false,
+        "conversion_coverage_requirement": "REQUIRED",
+        "coverage_key": "php:sha256:8e21a04b9234bb2af9b3b23065a5f10de12f5a529ca5ce4f3f2b81e5064dd511",
+        "declaration_kind": "declare-directive",
+        "diagnostics": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "language": "php",
+        "name": "<declare>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "multiply.php",
+        "qualified_name": "<declare>",
+        "scope_depth": 0,
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream",
+        "semantic_status": "BLOCKED",
+        "source_location": {
+          "end_column": 24,
+          "end_line": 3,
+          "path": "multiply.php",
+          "start_column": 0,
+          "start_line": 3
+        },
+        "source_signature": {},
+        "source_span": {
+          "end_byte": 31,
+          "file": "multiply.php",
+          "start_byte": 7
+        },
+        "subject_kind": "module-obligation"
+      },
+      "id": "elmos:effect:sha256:b94e3b4d305aa242825523eb407a064046e479b2d2ac7b023870c2d320c493e7",
+      "kind": "effect",
+      "language": "php",
+      "name": "<declare>",
+      "path": "multiply.php",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 3
+      }
+    },
+    {
+      "attributes": {
+        "blocking_reasons": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "candidate": false,
+        "conversion_coverage_requirement": "REQUIRED",
+        "coverage_key": "php:sha256:da7097f0abe1ff866541e2dc60abd9e6ad0b7c0560515baa3dc8d15384b3cb18",
+        "declaration_kind": "declare-directive",
+        "diagnostics": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "language": "php",
+        "name": "<declare>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "subtract.php",
+        "qualified_name": "<declare>",
+        "scope_depth": 0,
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream",
+        "semantic_status": "BLOCKED",
+        "source_location": {
+          "end_column": 24,
+          "end_line": 3,
+          "path": "subtract.php",
+          "start_column": 0,
+          "start_line": 3
+        },
+        "source_signature": {},
+        "source_span": {
+          "end_byte": 31,
+          "file": "subtract.php",
+          "start_byte": 7
+        },
+        "subject_kind": "module-obligation"
+      },
+      "id": "elmos:effect:sha256:d90159d89e46cb4f73c832bdd4bee2e10aa1c75d6afe0920202727084678aae3",
+      "kind": "effect",
+      "language": "php",
+      "name": "<declare>",
+      "path": "subtract.php",
+      "source_location": {
+        "end_column": 24,
+        "end_line": 3,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 3
+      }
+    },
+    {
+      "attributes": {
+        "byte_count": 101,
+        "read_status": "PASSED",
+        "role": "source",
+        "sha256": "675c8621211cd2ece02c9181005ce2bdb7cd1e2a46ffffda8c2f20d6f4e046fd"
+      },
+      "id": "elmos:file:sha256:ad211b75c2f416bbd62304e1fb659f73384b2c642e1f668e3dacd0b7fc060688",
+      "kind": "file",
+      "language": "php",
+      "name": "add.php",
+      "path": "add.php"
+    },
+    {
+      "attributes": {
+        "byte_count": 106,
+        "read_status": "PASSED",
+        "role": "source",
+        "sha256": "72266498627f8e34eaa3343e7d24b891ce152dea93d7232cd6e6022144c45ef6"
+      },
+      "id": "elmos:file:sha256:b2b04afce996bd487874fdff5c4b5cea022ea6cb4a68766e8af4d3a96dcbd99c",
+      "kind": "file",
+      "language": "php",
+      "name": "multiply.php",
+      "path": "multiply.php"
+    },
+    {
+      "attributes": {
+        "byte_count": 106,
+        "read_status": "PASSED",
+        "role": "source",
+        "sha256": "10b30a50411f5ef465c4e015f12f1af68d28500e608abb9bb797b51dfbbb4fff"
+      },
+      "id": "elmos:file:sha256:b70aa83621ec476465506ac218238a13419044d19f07b7e03ebe5d1abf795b5d",
+      "kind": "file",
+      "language": "php",
+      "name": "subtract.php",
+      "path": "subtract.php"
+    },
+    {
+      "attributes": {
+        "file_id": "elmos:file:sha256:b2b04afce996bd487874fdff5c4b5cea022ea6cb4a68766e8af4d3a96dcbd99c",
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "id": "elmos:module:sha256:09ba709bfef30e1e50590ffc9ac9e235ab642ea807e061a10eaa607f8b5e176d",
+      "kind": "module",
+      "language": "php",
+      "name": "multiply",
+      "path": "multiply.php"
+    },
+    {
+      "attributes": {
+        "file_id": "elmos:file:sha256:ad211b75c2f416bbd62304e1fb659f73384b2c642e1f668e3dacd0b7fc060688",
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "id": "elmos:module:sha256:16849bf358c4c8853465fe1f65f2c98c0f9008f28fec0aa94bda238aa63bf270",
+      "kind": "module",
+      "language": "php",
+      "name": "add",
+      "path": "add.php"
+    },
+    {
+      "attributes": {
+        "file_id": "elmos:file:sha256:b70aa83621ec476465506ac218238a13419044d19f07b7e03ebe5d1abf795b5d",
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream"
+      },
+      "id": "elmos:module:sha256:a8e5fa4408c75733635a01935c02c53c08acbcee69668eb4cf37d185677c9021",
+      "kind": "module",
+      "language": "php",
+      "name": "subtract",
+      "path": "subtract.php"
+    },
+    {
+      "attributes": {
+        "discovery_profile": "static-project-graph-v1"
+      },
+      "id": "elmos:repository:sha256:ff04ffbb8f88392b2a6ef4992c832660aaef3d0175777425a703985eb88f33c5",
+      "kind": "repository",
+      "language": null,
+      "name": "local:functional-matrix/php-to-java",
+      "path": null
+    },
+    {
+      "attributes": {
+        "analyzer": "php/ext-tokenizer Zend token stream",
+        "analyzer_version": "php-8.5.9;tokenizer=8.5.9;zend-ast=ABSENT;analyzer-sha256=eb32e4983dce7f992a059d1de71de8ad304fd8308d283508fdf05fe0950b8cdf;interpreter-sha256=6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218;interpreter-version=PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+        "blocking_reasons": [],
+        "candidate": true,
+        "conversion_coverage_requirement": "REQUIRED",
+        "coverage_key": "php:sha256:2978c82868c7fe2b7957a46939fc4bcd82f7b548f5b61c3966ac1aa4f6f83a44",
+        "declaration_kind": "function",
+        "diagnostics": [],
+        "language": "php",
+        "name": "multiply",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "multiply.php",
+        "qualified_name": "multiply",
+        "scope_depth": 0,
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream",
+        "semantic_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "semantic_status": "PASSED",
+        "source_location": {
+          "end_column": 72,
+          "end_line": 5,
+          "path": "multiply.php",
+          "start_column": 0,
+          "start_line": 5
+        },
+        "source_signature": {
+          "by_reference": false,
+          "source_parameters": "(int $left, int $right)",
+          "source_return_type": "int"
+        },
+        "source_span": {
+          "end_byte": 105,
+          "file": "multiply.php",
+          "start_byte": 33
+        },
+        "subject_kind": "function"
+      },
+      "id": "elmos:symbol:sha256:224b3cc9c49982d06f4ee173b5587a8330e8fc87fff0e28e60036765a77ff0e0",
+      "kind": "symbol",
+      "language": "php",
+      "name": "multiply",
+      "path": "multiply.php",
+      "source_location": {
+        "end_column": 72,
+        "end_line": 5,
+        "path": "multiply.php",
+        "start_column": 0,
+        "start_line": 5
+      }
+    },
+    {
+      "attributes": {
+        "analyzer": "php/ext-tokenizer Zend token stream",
+        "analyzer_version": "php-8.5.9;tokenizer=8.5.9;zend-ast=ABSENT;analyzer-sha256=eb32e4983dce7f992a059d1de71de8ad304fd8308d283508fdf05fe0950b8cdf;interpreter-sha256=6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218;interpreter-version=PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+        "blocking_reasons": [],
+        "candidate": true,
+        "conversion_coverage_requirement": "REQUIRED",
+        "coverage_key": "php:sha256:0f80020c6ed86319dea54e03f4660f042fd8872c3c22f99521f92ed3db849f68",
+        "declaration_kind": "function",
+        "diagnostics": [],
+        "language": "php",
+        "name": "add",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "add.php",
+        "qualified_name": "add",
+        "scope_depth": 0,
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream",
+        "semantic_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "semantic_status": "PASSED",
+        "source_location": {
+          "end_column": 67,
+          "end_line": 5,
+          "path": "add.php",
+          "start_column": 0,
+          "start_line": 5
+        },
+        "source_signature": {
+          "by_reference": false,
+          "source_parameters": "(int $left, int $right)",
+          "source_return_type": "int"
+        },
+        "source_span": {
+          "end_byte": 100,
+          "file": "add.php",
+          "start_byte": 33
+        },
+        "subject_kind": "function"
+      },
+      "id": "elmos:symbol:sha256:237490b9e00288ab29837b3f983972ece33936a18f3917ebeb5949bb525c0885",
+      "kind": "symbol",
+      "language": "php",
+      "name": "add",
+      "path": "add.php",
+      "source_location": {
+        "end_column": 67,
+        "end_line": 5,
+        "path": "add.php",
+        "start_column": 0,
+        "start_line": 5
+      }
+    },
+    {
+      "attributes": {
+        "analyzer": "php/ext-tokenizer Zend token stream",
+        "analyzer_version": "php-8.5.9;tokenizer=8.5.9;zend-ast=ABSENT;analyzer-sha256=eb32e4983dce7f992a059d1de71de8ad304fd8308d283508fdf05fe0950b8cdf;interpreter-sha256=6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218;interpreter-version=PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+        "blocking_reasons": [],
+        "candidate": true,
+        "conversion_coverage_requirement": "REQUIRED",
+        "coverage_key": "php:sha256:0232157c6dab48f84d630a3db2d6b7840fd33ac0c1ea5ddc0623b6c14250f8a4",
+        "declaration_kind": "function",
+        "diagnostics": [],
+        "language": "php",
+        "name": "subtract",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "subtract.php",
+        "qualified_name": "subtract",
+        "scope_depth": 0,
+        "semantic_index_status": "PASSED",
+        "semantic_indexer": "php/ext-tokenizer Zend token stream",
+        "semantic_signature": {
+          "parameters": [
+            {
+              "name": "left",
+              "type": "integer"
+            },
+            {
+              "name": "right",
+              "type": "integer"
+            }
+          ],
+          "return_type": "integer"
+        },
+        "semantic_status": "PASSED",
+        "source_location": {
+          "end_column": 72,
+          "end_line": 5,
+          "path": "subtract.php",
+          "start_column": 0,
+          "start_line": 5
+        },
+        "source_signature": {
+          "by_reference": false,
+          "source_parameters": "(int $left, int $right)",
+          "source_return_type": "int"
+        },
+        "source_span": {
+          "end_byte": 105,
+          "file": "subtract.php",
+          "start_byte": 33
+        },
+        "subject_kind": "function"
+      },
+      "id": "elmos:symbol:sha256:aa596fdb8dc52748e4bd28f4b2130172e03e98546b95f741db1e3340cb58e871",
+      "kind": "symbol",
+      "language": "php",
+      "name": "subtract",
+      "path": "subtract.php",
+      "source_location": {
+        "end_column": 72,
+        "end_line": 5,
+        "path": "subtract.php",
+        "start_column": 0,
+        "start_line": 5
+      }
+    }
+  ],
+  "repository_complete": false,
+  "repository_id": "elmos:repository:sha256:ff04ffbb8f88392b2a6ef4992c832660aaef3d0175777425a703985eb88f33c5",
+  "repository_ref": "local:functional-matrix/php-to-java",
+  "schema_version": "1.0.0",
+  "snapshot_consistency": "PER_FILE_STABLE_READ_NON_ATOMIC",
+  "snapshot_sha256": "bcacdacf5e252b34b3759c2c2834c8a877947009a9cca0e92def00310a935b56",
+  "supported_languages": [
+    "cpp",
+    "csharp",
+    "go",
+    "java",
+    "javascript",
+    "objc",
+    "php",
+    "python",
+    "rust",
+    "swift",
+    "typescript"
+  ]
+}

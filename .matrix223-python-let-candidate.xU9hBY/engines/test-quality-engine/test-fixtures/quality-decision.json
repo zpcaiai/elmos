@@ -1,0 +1,1 @@
+{"scopeId":"release-1","sourceCommit":"abc123","decision":"FAIL","confidence":"INSUFFICIENT","evidenceManifestHash":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","conditions":[],"blockers":["QUALITY_RISK_UNCOVERED"],"unknowns":[],"evidenceRefs":["evidence://manifest"],"workerModifiedGate":false}

@@ -1,0 +1,34 @@
+version: 1
+mandatory_before_merge:
+- build
+- lint_or_static_analysis
+- typecheck_if_applicable
+- unit_tests_changed_scope
+conditional:
+  public_api:
+  - contract_tests
+  - backward_compatibility_check
+  database:
+  - migration_forward
+  - migration_rollback
+  - data_integrity_check
+  security:
+  - threat_check
+  - secret_scan
+  - authorization_negative_tests
+  concurrency:
+  - race_or_stress_tests
+  - idempotency_check
+  frontend:
+  - build
+  - component_or_e2e_smoke
+  infra:
+  - config_validation
+  - dry_run_or_plan
+repository_final:
+- clean_build
+- full_regression
+- acceptance_scenarios
+- requirement_traceability
+- no_unowned_diff
+- dependency_graph_complete

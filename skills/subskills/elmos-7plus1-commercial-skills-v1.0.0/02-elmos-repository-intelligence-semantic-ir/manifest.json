@@ -1,0 +1,91 @@
+{
+  "package_id": "P02",
+  "name": "elmos-repository-intelligence-semantic-ir",
+  "version": "1.0.0",
+  "phase": "Phase 1（P0 核心护城河）",
+  "dependencies": [
+    "P00",
+    "P01"
+  ],
+  "capabilities": [
+    {
+      "id": "P02-C01",
+      "name": "Repository Inventory Scanner",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C02",
+      "name": "Language & Framework Detectors",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C03",
+      "name": "AST & Symbol Index",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C04",
+      "name": "LSP Semantic Navigation",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C05",
+      "name": "Program Graph Builder",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C06",
+      "name": "Platform Graph Builder",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C07",
+      "name": "Runtime Trace Ingestor",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C08",
+      "name": "Canonical Semantic IR",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C09",
+      "name": "Capability Discovery Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C10",
+      "name": "Provenance & Confidence Engine",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C11",
+      "name": "Incremental Analysis Cache",
+      "maturity": "design"
+    },
+    {
+      "id": "P02-C12",
+      "name": "Repository Query Service",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "OpenAI Harness Engineering",
+    "DeepSeek Harness",
+    "OpenCode"
+  ],
+  "subskills": [
+    "repository-inventory-scanner",
+    "language-framework-detector",
+    "ast-symbol-indexer",
+    "lsp-semantic-navigator",
+    "program-graph-builder",
+    "platform-graph-builder",
+    "runtime-trace-ingestor",
+    "semantic-ir-builder",
+    "capability-discovery-ledger",
+    "incremental-analysis-cache",
+    "provenance-confidence-engine",
+    "repository-query-service"
+  ]
+}

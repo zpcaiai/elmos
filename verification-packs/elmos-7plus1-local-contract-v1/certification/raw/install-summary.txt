@@ -2,12 +2,14 @@ Evidence classification: LOCAL_INSTALLED_SELF_ATTESTED
 Date: 2026-08-24
 Observation source: docs/elmos-7plus1-commercial-skills/installed-manifest.json
 
-compiled_manifest_sha256=sha256:452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc
-installed_manifest_sha256=sha256:13727100a92ba3b639ff5c9ee333f93bac8be6378d63677d32fb9fe1ac171138
+compiled_manifest_sha256=sha256:898640a2b615e8736d966aabc297471a1531644fe24f49938a75900eeef2c6ca
+installed_manifest_sha256=sha256:a36cb7c849db5181a9ba221caaa0907d2b824849e50792a548b915b7b94c5ff1
 source_archive_count=8
 source_archive_entry_count=469
 canonical_source_file_count=252
-neutralized_instruction_path_count=102
+neutralized_path_mapping_count=104
+neutralized_archive_executable_count=2
+active_archive_executable_count=0
 source_skill_count=101
 installed_skill_count_per_root=102
 runtime_bound_skill_count=102
@@ -21,6 +23,9 @@ runtime_evidence_status=NOT_RUN
 external_evidence_status=NOT_RUN
 certification_status=NOT_CERTIFIED
 
-This is a digest-bound local observation of installed repository state. It is
-not an independent install attestation, provider/runtime execution, or
-certification result.
+This is a digest-bound local observation of installed repository state. The two
+archive scripts are materialized as mode 0644 source data under a neutralized
+path and were not imported, compiled, or executed by the repository importer or
+this recorded qualification run. No claim is made about actions outside those
+paths. This is not an independent install attestation, provider/runtime
+execution, or certification result.

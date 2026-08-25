@@ -1,0 +1,445 @@
+{
+  "total": 73,
+  "killed": 73,
+  "survivors": [],
+  "results": [
+    {
+      "id": "M01",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "int arithmetic wraps at 32 bits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M02",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "long arithmetic wraps at 64 bits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M03",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "char is unsigned 16-bit",
+      "status": "KILLED"
+    },
+    {
+      "id": "M04",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "byte narrows to 8 bits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M05",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "integer division truncates toward zero",
+      "status": "KILLED"
+    },
+    {
+      "id": "M06",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "remainder takes the sign of the dividend",
+      "status": "KILLED"
+    },
+    {
+      "id": "M07",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "integer division by zero raises ArithmeticException",
+      "status": "KILLED"
+    },
+    {
+      "id": "M08",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "floating division by zero yields infinity instead of raising",
+      "status": "KILLED"
+    },
+    {
+      "id": "M09",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "shift distance is masked",
+      "status": "KILLED"
+    },
+    {
+      "id": "M10",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "unsigned right shift fills with zeros",
+      "status": "KILLED"
+    },
+    {
+      "id": "M11",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "double-to-int cast maps NaN to zero",
+      "status": "KILLED"
+    },
+    {
+      "id": "M12",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "double-to-int cast saturates instead of overflowing",
+      "status": "KILLED"
+    },
+    {
+      "id": "M13",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Math.abs of MIN_VALUE wraps rather than widening",
+      "status": "KILLED"
+    },
+    {
+      "id": "M14",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Double.toString uses Java's notation thresholds",
+      "status": "KILLED"
+    },
+    {
+      "id": "M15",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "null converts to the string \"null\"",
+      "status": "KILLED"
+    },
+    {
+      "id": "M16",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "booleans convert to lowercase true/false",
+      "status": "KILLED"
+    },
+    {
+      "id": "M17",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "array index bounds are checked on both sides",
+      "status": "KILLED"
+    },
+    {
+      "id": "M18",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Integer.parseInt rejects values outside int range",
+      "status": "KILLED"
+    },
+    {
+      "id": "M19",
+      "file": "j2p/emit/python.py",
+      "rule": "integer division is emitted through the truncating helper",
+      "status": "KILLED"
+    },
+    {
+      "id": "M20",
+      "file": "j2p/emit/python.py",
+      "rule": "integral arithmetic is emitted through the wrapping helper",
+      "status": "KILLED"
+    },
+    {
+      "id": "M21",
+      "file": "j2p/emit/python.py",
+      "rule": "compound assignment casts back to the target type",
+      "status": "KILLED"
+    },
+    {
+      "id": "M22",
+      "file": "j2p/emit/python.py",
+      "rule": "switch fall-through is refused rather than mistranslated",
+      "status": "KILLED"
+    },
+    {
+      "id": "M23",
+      "file": "j2p/emit/python.py",
+      "rule": "string concatenation uses Java's conversion rules",
+      "status": "KILLED"
+    },
+    {
+      "id": "M24",
+      "file": "j2p/emit/python.py",
+      "rule": "the for-loop update runs even when the body continues",
+      "status": "KILLED"
+    },
+    {
+      "id": "M25",
+      "file": "j2p/emit/python.py",
+      "rule": "a record component and its accessor are kept distinct",
+      "status": "KILLED"
+    },
+    {
+      "id": "M26",
+      "file": "j2p/emit/python.py",
+      "rule": "++ in expression position is refused",
+      "status": "KILLED"
+    },
+    {
+      "id": "M27",
+      "file": "j2p/frontend/java.py",
+      "rule": "assignment inserts Java's implicit widening conversion",
+      "status": "KILLED"
+    },
+    {
+      "id": "M28",
+      "file": "j2p/frontend/java.py",
+      "rule": "shift result type comes from the left operand alone",
+      "status": "KILLED"
+    },
+    {
+      "id": "M29",
+      "file": "j2p/frontend/java.py",
+      "rule": "String + x is concatenation, not addition",
+      "status": "KILLED"
+    },
+    {
+      "id": "M30",
+      "file": "j2p/frontend/java.py",
+      "rule": "a parameter shadows a field of the same name",
+      "status": "KILLED"
+    },
+    {
+      "id": "M40",
+      "file": "j2p/emit/python.py",
+      "rule": "a compact constructor body runs before the fields are stored",
+      "status": "KILLED"
+    },
+    {
+      "id": "M41",
+      "file": "j2p/frontend/java.py",
+      "rule": "compact constructor parameters shadow the record's components",
+      "status": "KILLED"
+    },
+    {
+      "id": "M42",
+      "file": "j2p/emit/python.py",
+      "rule": "a switch expression evaluates its subject exactly once",
+      "status": "KILLED"
+    },
+    {
+      "id": "M43",
+      "file": "j2p/emit/python.py",
+      "rule": "a hoisted statement is refused where it would be evaluated once instead of many times",
+      "status": "KILLED"
+    },
+    {
+      "id": "M44",
+      "file": "j2p/frontend/java.py",
+      "rule": "an arrow switch case is terminated so it cannot read as fall-through",
+      "status": "KILLED"
+    },
+    {
+      "id": "M45",
+      "file": "j2p/frontend/java.py",
+      "rule": "a switch expression without a default is refused",
+      "status": "KILLED"
+    },
+    {
+      "id": "M46",
+      "file": "j2p/emit/python.py",
+      "rule": "a class literal is refused rather than invented",
+      "status": "KILLED"
+    },
+    {
+      "id": "M47",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Math.round is floor(x+0.5), not Python's banker's rounding",
+      "status": "KILLED"
+    },
+    {
+      "id": "M48",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Math.*Exact raises on overflow instead of wrapping",
+      "status": "KILLED"
+    },
+    {
+      "id": "M49",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "String.hashCode wraps at every step of the 31-based algorithm",
+      "status": "KILLED"
+    },
+    {
+      "id": "M50",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "String.compareTo returns the character difference, not its sign",
+      "status": "KILLED"
+    },
+    {
+      "id": "M51",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "String.split drops trailing empty strings",
+      "status": "KILLED"
+    },
+    {
+      "id": "M52",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "isBlank uses Java's whitespace set, not Python's",
+      "status": "KILLED"
+    },
+    {
+      "id": "M53",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Integer.toHexString formats the unsigned 32-bit pattern",
+      "status": "KILLED"
+    },
+    {
+      "id": "M54",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "List.of is immutable",
+      "status": "KILLED"
+    },
+    {
+      "id": "M55",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "List.of rejects null elements",
+      "status": "KILLED"
+    },
+    {
+      "id": "M56",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "list indices are bounds-checked on both sides",
+      "status": "KILLED"
+    },
+    {
+      "id": "M57",
+      "file": "runtime/j2p_runtime.py",
+      "rule": "Objects.requireNonNull raises rather than returning null",
+      "status": "KILLED"
+    },
+    {
+      "id": "M58",
+      "file": "j2p/emit/python.py",
+      "rule": "a close() failure during an in-flight exception is suppressed",
+      "status": "KILLED"
+    },
+    {
+      "id": "M59",
+      "file": "j2p/emit/python.py",
+      "rule": "resources are closed in reverse declaration order",
+      "status": "KILLED"
+    },
+    {
+      "id": "M60",
+      "file": "j2p/emit/python.py",
+      "rule": "varargs arguments are packed into an array at the call site",
+      "status": "KILLED"
+    },
+    {
+      "id": "M61",
+      "file": "j2p/emit/python.py",
+      "rule": "String.split refuses a regex separator",
+      "status": "KILLED"
+    },
+    {
+      "id": "M62",
+      "file": "runtime/j2p_time.py",
+      "rule": "month arithmetic clamps the day to the target month's length",
+      "status": "KILLED"
+    },
+    {
+      "id": "M63",
+      "file": "runtime/j2p_time.py",
+      "rule": "Instant prints its fraction in groups of three digits",
+      "status": "KILLED"
+    },
+    {
+      "id": "M64",
+      "file": "runtime/j2p_time.py",
+      "rule": "Duration.toString drops trailing zeros from the fraction",
+      "status": "KILLED"
+    },
+    {
+      "id": "M65",
+      "file": "runtime/j2p_time.py",
+      "rule": "LocalTime omits seconds when they are zero, unlike Instant",
+      "status": "KILLED"
+    },
+    {
+      "id": "M66",
+      "file": "runtime/j2p_time.py",
+      "rule": "ChronoUnit truncates toward zero rather than flooring",
+      "status": "KILLED"
+    },
+    {
+      "id": "M67",
+      "file": "runtime/j2p_time.py",
+      "rule": "an impossible date raises rather than being silently accepted",
+      "status": "KILLED"
+    },
+    {
+      "id": "M68",
+      "file": "runtime/j2p_time.py",
+      "rule": "years beyond four digits are printed with Java's + prefix",
+      "status": "KILLED"
+    },
+    {
+      "id": "M69",
+      "file": "j2p/emit/python.py",
+      "rule": "named time zones are refused because the tz database is not pinned",
+      "status": "KILLED"
+    },
+    {
+      "id": "M70",
+      "file": "j2p/emit/python.py",
+      "rule": "survey-mode output is refused as a translation",
+      "status": "KILLED"
+    },
+    {
+      "id": "M71",
+      "file": "j2p/emit/python.py",
+      "rule": "an untranslatable expression does not hide the rest of the statement",
+      "status": "KILLED"
+    },
+    {
+      "id": "M72",
+      "file": "j2p/emit/python.py",
+      "rule": "an untranslatable statement does not hide the rest of the file",
+      "status": "KILLED"
+    },
+    {
+      "id": "M73",
+      "file": "j2p/emit/python.py",
+      "rule": "blocker categories group by capability, not by occurrence",
+      "status": "KILLED"
+    },
+    {
+      "id": "M33",
+      "file": "j2p/emit/python.py",
+      "rule": "captured locals are bound by value, not by closure reference",
+      "status": "KILLED"
+    },
+    {
+      "id": "M34",
+      "file": "j2p/emit/python.py",
+      "rule": "a lambda parameter is not treated as a capture",
+      "status": "KILLED"
+    },
+    {
+      "id": "M35",
+      "file": "j2p/emit/python.py",
+      "rule": "locals declared inside a lambda body are not captured",
+      "status": "KILLED"
+    },
+    {
+      "id": "M36",
+      "file": "j2p/emit/python.py",
+      "rule": "== between two reference types is refused",
+      "status": "KILLED"
+    },
+    {
+      "id": "M37",
+      "file": "j2p/emit/python.py",
+      "rule": "only the single abstract method may be called on a lambda value",
+      "status": "KILLED"
+    },
+    {
+      "id": "M38",
+      "file": "j2p/frontend/java.py",
+      "rule": "a lambda's result takes the conversion its interface declares",
+      "status": "KILLED"
+    },
+    {
+      "id": "M39",
+      "file": "j2p/frontend/java.py",
+      "rule": "lambda parameter types come from the target functional interface",
+      "status": "KILLED"
+    },
+    {
+      "id": "M31",
+      "file": "j2p/uir.py",
+      "rule": "dict keys are ordered before serialization",
+      "status": "KILLED"
+    },
+    {
+      "id": "M32",
+      "file": "j2p/uir.py",
+      "rule": "floats are refused in the canonical form",
+      "status": "KILLED"
+    }
+  ]
+}

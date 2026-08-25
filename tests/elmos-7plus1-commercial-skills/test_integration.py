@@ -13,6 +13,7 @@ import unicodedata
 import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -20,7 +21,7 @@ TOOLING_ROOT = REPOSITORY_ROOT / "tooling"
 if str(TOOLING_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLING_ROOT))
 
-import integrate_elmos_7plus1_skills as integration
+import integrate_elmos_7plus1_skills as integration  # noqa: E402
 
 
 class ElmosSevenPlusOneIntegrationTest(unittest.TestCase):
@@ -181,6 +182,37 @@ class ElmosSevenPlusOneIntegrationTest(unittest.TestCase):
         bomb.compress_size = 1
         with self.assertRaisesRegex(integration.IntegrationError, "size is unsafe"):
             integration._validate_member_metadata(bomb)
+
+    def test_archive_file_read_is_bounded_pinned_and_nofollow(self) -> None:
+        temporary = tempfile.TemporaryDirectory(prefix="elmos-7plus1-archive-read-")
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+
+        oversized = root / "oversized.zip"
+        with oversized.open("wb") as handle:
+            handle.truncate(integration.MAX_ARCHIVE_BYTES + 1)
+        with (
+            patch.object(integration.os, "read", side_effect=AssertionError("must not read")),
+            self.assertRaisesRegex(integration.IntegrationError, "compressed-byte budget"),
+        ):
+            integration.inspect_archive(oversized)
+
+        archive = root / "valid.zip"
+        with zipfile.ZipFile(archive, "w") as handle:
+            info = zipfile.ZipInfo("package/file.txt")
+            info.create_system = 3
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = (stat.S_IFREG | 0o644) << 16
+            handle.writestr(info, b"bounded\n")
+        with patch.object(Path, "read_bytes", side_effect=AssertionError("unbounded read")):
+            raw, records = integration.inspect_archive(archive)
+        self.assertEqual(archive.stat().st_size, len(raw))
+        self.assertEqual(b"bounded\n", records["package/file.txt"].content)
+
+        symlink = root / "archive-link.zip"
+        symlink.symlink_to(archive)
+        with self.assertRaisesRegex(integration.IntegrationError, "cannot safely read archive"):
+            integration.inspect_archive(symlink)
 
     def test_archive_casefold_duplicate_is_rejected(self) -> None:
         temporary = tempfile.TemporaryDirectory(prefix="elmos-7plus1-casefold-")
@@ -549,7 +581,7 @@ class ElmosSevenPlusOneIntegrationTest(unittest.TestCase):
             set(runtime_binding["artifact_digests"]), set(integration.RUNTIME_ARTIFACTS)
         )
         source_mapping = manifest["canonical_source_path_mapping"]
-        self.assertEqual(len(source_mapping), 102)
+        self.assertEqual(len(source_mapping), 104)
         mapping_by_logical = {item["logical_path"]: item for item in source_mapping}
         self.assertEqual(
             mapping_by_logical["AGENTS.md"],
@@ -557,6 +589,8 @@ class ElmosSevenPlusOneIntegrationTest(unittest.TestCase):
                 "logical_path": "AGENTS.md",
                 "materialized_path": integration.NEUTRALIZED_SOURCE_PATHS["AGENTS.md"],
                 "mode": "0644",
+                "source_mode": "0644",
+                "materialized_mode": "0644",
                 "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
                 "sha256": "sha256:" + snapshot.canonical_files["AGENTS.md"].sha256,
             },
@@ -566,6 +600,23 @@ class ElmosSevenPlusOneIntegrationTest(unittest.TestCase):
             101,
         )
         self.assertEqual(manifest["active_archive_instruction_filenames"], [])
+        self.assertEqual(manifest["active_archive_executables"], [])
+        for logical_path in sorted(integration.NEUTRALIZED_EXECUTABLE_SOURCE_PATHS):
+            with self.subTest(neutralized_executable=logical_path):
+                record = mapping_by_logical[logical_path]
+                self.assertEqual("0755", record["source_mode"])
+                self.assertEqual("0644", record["materialized_mode"])
+                self.assertEqual("ARCHIVE_EXECUTABLE_NEUTRALIZED", record["reason"])
+                self.assertEqual(
+                    "sha256:" + snapshot.canonical_files[logical_path].sha256,
+                    record["sha256"],
+                )
+                materialized = (
+                    root / integration.SOURCE_RELATIVE / record["materialized_path"]
+                )
+                self.assertTrue(materialized.is_file())
+                self.assertEqual(0o644, stat.S_IMODE(materialized.stat().st_mode))
+                self.assertFalse((root / integration.SOURCE_RELATIVE / logical_path).exists())
 
         for record in manifest["skills"]:
             name = record["name"]

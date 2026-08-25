@@ -1,0 +1,1 @@
+{"provenanceId":"provenance-1","subjectDigest":"sha256:artifact","builderIdentity":"builder://ci/1","buildType":"maven","sourceCommit":"abc123","trustedBuilder":false,"evidenceRefs":["evidence://provenance/1"]}

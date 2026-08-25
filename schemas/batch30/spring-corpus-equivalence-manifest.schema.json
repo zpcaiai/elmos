@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/spring-corpus-equivalence-manifest.schema.json",
+  "title": "Batch 30 Spring corpus equivalence manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "tuple",
+    "tuple_sha256",
+    "corpus_roots",
+    "external_intake",
+    "projects"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema_version": {"const": "elmos.spring-corpus-equivalence-manifest.v1"},
+    "evaluation_id": {"$ref": "#/$defs/identity"},
+    "tuple": {"$ref": "#/$defs/exactTuple"},
+    "tuple_sha256": {"$ref": "#/$defs/digest"},
+    "corpus_roots": {
+      "type": "object",
+      "required": ["development", "holdout", "representative", "customer"],
+      "properties": {
+        "development": {"$ref": "#/$defs/relativePath"},
+        "holdout": {"$ref": "#/$defs/relativePath"},
+        "representative": {"$ref": "#/$defs/relativePath"},
+        "customer": {"$ref": "#/$defs/relativePath"}
+      },
+      "additionalProperties": false
+    },
+    "external_intake": {"$ref": "#/$defs/externalIntake"},
+    "projects": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/project"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$",
+      "not": {
+        "enum": ["UNKNOWN", "NOT_RUN", "NOT_EVALUATED", "INCONCLUSIVE", "TBD", "TODO"]
+      }
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._@+\\-]*(/[A-Za-z0-9][A-Za-z0-9._@+\\-]*)*$"
+    },
+    "exactVersion": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s*<>=^~|,\\[\\](){}]+$",
+      "not": {
+        "pattern": "(^|[._+\\-])(latest|current|snapshot|nightly|main|master|x)([._+\\-]|$)"
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"$ref": "#/$defs/identity"},
+        "version": {"$ref": "#/$defs/exactVersion"}
+      },
+      "additionalProperties": false
+    },
+    "side": {
+      "type": "object",
+      "required": ["framework", "runtime", "build_tool", "providers"],
+      "properties": {
+        "framework": {"$ref": "#/$defs/component"},
+        "runtime": {"$ref": "#/$defs/component"},
+        "build_tool": {"$ref": "#/$defs/component"},
+        "providers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/component"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "versionedContent": {
+      "type": "object",
+      "required": ["id", "version", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identity"},
+        "version": {"$ref": "#/$defs/exactVersion"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      },
+      "additionalProperties": false
+    },
+    "exactTuple": {
+      "type": "object",
+      "required": ["route_id", "pack", "recipe", "source", "target"],
+      "properties": {
+        "route_id": {"$ref": "#/$defs/identity"},
+        "pack": {"$ref": "#/$defs/versionedContent"},
+        "recipe": {
+          "allOf": [{"$ref": "#/$defs/versionedContent"}],
+          "description": "Recipe identity inside recipes/manifest.json. version is the exact immutable pack-bundle version that owns the recipe manifest; the current manifest has no independent recipe-version field."
+        },
+        "source": {"$ref": "#/$defs/side"},
+        "target": {"$ref": "#/$defs/side"}
+      },
+      "additionalProperties": false
+    },
+    "contentReference": {
+      "type": "object",
+      "required": ["path", "sha256", "size_bytes", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relativePath"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "media_type": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "externalIntake": {
+      "type": "object",
+      "required": ["status", "content"],
+      "properties": {
+        "status": {"enum": ["SUBMITTED", "NOT_RUN"]},
+        "content": {
+          "oneOf": [
+            {
+              "allOf": [
+                {"$ref": "#/$defs/contentReference"},
+                {"properties": {"media_type": {"const": "application/json"}}}
+              ]
+            },
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "SUBMITTED"}}},
+          "then": {"properties": {"content": {"$ref": "#/$defs/contentReference"}}},
+          "else": {"properties": {"content": {"type": "null"}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "project_id",
+        "corpus_role",
+        "corpus_path",
+        "tuple_sha256",
+        "evaluation_scope",
+        "artifacts"
+      ],
+      "properties": {
+        "project_id": {"$ref": "#/$defs/identity"},
+        "corpus_role": {
+          "enum": ["development", "holdout", "representative", "customer"]
+        },
+        "corpus_path": {"$ref": "#/$defs/relativePath"},
+        "tuple_sha256": {"$ref": "#/$defs/digest"},
+        "evaluation_scope": {"enum": ["EXACT_FIXTURE", "WHOLE_REPOSITORY"]},
+        "artifacts": {
+          "type": "object",
+          "required": ["source_snapshot", "target_snapshot", "outcome_evidence"],
+          "properties": {
+            "source_snapshot": {"$ref": "#/$defs/contentReference"},
+            "target_snapshot": {"$ref": "#/$defs/contentReference"},
+            "outcome_evidence": {
+              "allOf": [
+                {"$ref": "#/$defs/contentReference"},
+                {"properties": {"media_type": {"const": "application/json"}}}
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

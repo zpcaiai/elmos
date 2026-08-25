@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Concurrency Recovery FinOps Certification"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-concurrency-recovery-finops-certification to execute its scoped workflow with fail-closed evidence."

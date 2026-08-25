@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "66666666-6666-4666-8666-666666666666",
+  "tenant_id": "11111111-1111-4111-8111-111111111111",
+  "task_id": "33333333-3333-4333-8333-333333333333",
+  "task_run_id": "44444444-4444-4444-8444-444444444444",
+  "node_key": "create-pull-request",
+  "attempt_no": 1,
+  "effect_type": "GITHUB_PULL_REQUEST_CREATE",
+  "target_ref": "github:example/repo#42",
+  "idempotency_key": "task-333-node-create-pr",
+  "status": "CONFIRMED",
+  "provider_receipt_id": "pr-42",
+  "effect_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "compensation_ref": null,
+  "occurred_at": "2026-08-19T10:20:00Z",
+  "confirmed_at": "2026-08-19T10:20:01Z",
+  "details": {
+    "url_redacted": true
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/input-package.schema.json",
+  "title": "Elmos InputPackage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "input_package_id",
+    "tenant_id",
+    "project_id",
+    "version",
+    "status",
+    "assets",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "input_package_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parent_version_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "CREATED",
+        "UPLOADING",
+        "UPLOADED",
+        "VALIDATING",
+        "SCANNING",
+        "PARSING",
+        "NORMALIZING",
+        "FUSING",
+        "INDEXING",
+        "READY",
+        "PARTIALLY_READY",
+        "NEEDS_REVIEW",
+        "QUARANTINED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "completeness": {
+      "type": "object",
+      "required": [
+        "expected_assets",
+        "ready_assets",
+        "failed_assets"
+      ],
+      "properties": {
+        "expected_assets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ready_assets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_assets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pending_assets": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assetRef"
+      }
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/packageRole"
+      }
+    },
+    "manifest_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(sha256:)?[0-9a-fA-F]{64}$"
+    },
+    "active_analysis_view_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "security_state": {
+      "enum": [
+        "UNKNOWN",
+        "SCANNING",
+        "APPROVED",
+        "NEEDS_REVIEW",
+        "QUARANTINED",
+        "REJECTED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "role",
+        "status"
+      ],
+      "properties": {
+        "asset_id": {
+          "type": "string"
+        },
+        "asset_version_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "enum": [
+            "PRIMARY_REQUIREMENT",
+            "SUPPLEMENT",
+            "UI_REFERENCE",
+            "ARCHITECTURE_REFERENCE",
+            "TEST_REPORT",
+            "ERROR_EVIDENCE",
+            "BUSINESS_RULE",
+            "CODE_REFERENCE",
+            "PROJECT_PACKAGE",
+            "HISTORICAL",
+            "OTHER"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PENDING",
+            "PROCESSING",
+            "READY",
+            "NEEDS_REVIEW",
+            "QUARANTINED",
+            "FAILED",
+            "DELETED"
+          ]
+        },
+        "relative_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "packageRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "target_id"
+      ],
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

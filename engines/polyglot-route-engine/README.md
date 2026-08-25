@@ -1,19 +1,20 @@
 # ELMOS Polyglot Route Engine
 
-This engine implements a compiler-backed, fail-closed vertical slice across Java,
-Python, C#, TypeScript, Go, Rust, C++, Objective-C, Swift and PHP. Every attempted
-direction is evaluated independently; no reverse or Cartesian route is inferred.
+This engine implements a compiler-backed, fail-closed vertical slice across 13
+active identities: Java, Python, C#, TypeScript, Go, Rust, C++, Objective-C,
+Swift, PHP, Kotlin, React and Flutter/Dart. Every attempted direction is
+evaluated independently; no reverse or Cartesian route is inferred. JavaScript
+is retained only as a deprecated historical identity and is not an active API,
+CLI, repository-batch or route-set execution choice.
 
-All eleven have source inventory, candidate discovery and target-project
-assembly plumbing. The repository capability inventory explicitly lists all 110
-ordered language pairs; it never infers an unlisted direction and a route record is not
-a certification claim. Evidence provenance remains split between the original
-six-language complete 30, the C++/Objective-C/Swift/Java specialised exact
-eight, and the remaining 34 local capability routes. Only the exact eight carry
-the additional module, concrete-span, behaviour and SMT obligations described
-below. Swift source analysis goes through a SwiftSyntax helper under
-`native/swift`, built on demand by `swift build -c release` the first time a
-Swift route runs -- the same on-demand build the TypeScript CLI already uses.
+All 13 active identities have source inventory, candidate discovery,
+target-project assembly, an exact local toolchain selector and executable
+static checks. The capability inventory explicitly lists the 156 active ordered
+pairs and preserves 20 archived JavaScript directions separately; a declared
+route is never an execution or certification claim. Kotlin, React and Flutter
+route packs remain `research / NOT_RUN / NOT_CERTIFIED` until direction-specific
+campaigns exist. Swift source analysis uses the pinned SwiftSyntax helper under
+`native/swift`, built in a private exact-toolchain closure.
 
 The helper is built against the `exact:` swift-syntax pin in
 `native/swift/Package.swift` (currently `600.0.1`). swift-syntax's major tracks
@@ -61,12 +62,12 @@ The IR has four canonical types. `integer` is a **64-bit signed integer** and
 `number` is **IEEE-754 binary64**; those two definitions are what every route
 is checked against.
 
-| Canonical | java | python | csharp | typescript | go | rust | cpp | objc | swift | php |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `integer` | `long` | `int` | `long` | guarded `number` | `int64` | `i64` | `std::int64_t` | `long long` | `Int64` | `int` |
-| `number` | `double` | `float` | `double` | `number` | `float64` | `f64` | `double` | `double` | `Double` | `float` |
-| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `bool` | `bool` | `BOOL` | `Bool` | `bool` |
-| `string` | `String` | `str` | `string` | `string` | `string` | `String` | `std::string` | `NSString *` | `String` | `string` |
+| Canonical | java | python | csharp | typescript | go | rust | cpp | objc | swift | php | kotlin | react | flutter |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `integer` | `long` | `int` | `long` | guarded `number` | `int64` | `i64` | `std::int64_t` | `long long` | `Int64` | `int` | `Long` | guarded `number` | `int` |
+| `number` | `double` | `float` | `double` | `number` | `float64` | `f64` | `double` | `double` | `Double` | `float` | `Double` | `number` | `double` |
+| `boolean` | `boolean` | `bool` | `bool` | `boolean` | `bool` | `bool` | `bool` | `BOOL` | `Bool` | `bool` | `Boolean` | `boolean` | `bool` |
+| `string` | `String` | `str` | `string` | `string` | `string` | `String` | `std::string` | `NSString *` | `String` | `string` | `String` | `string` | `String` |
 
 PHP's `int` is platform-width rather than fixed at 64 bits, so it is admitted
 only on a build whose `PHP_INT_SIZE` the toolchain probe has observed to be 8;
@@ -157,9 +158,11 @@ Fixed-width native targets hold the canonical range in their declared type,
 while emitted arithmetic helpers make overflow and invalid division explicit
 under the canonical IR contract.
 
-Execution is exact-toolchain bound: Java 21.0.11, Python 3.12.12, .NET SDK
-10.0.301 / Roslyn 5.6.0, and TypeScript 5.9.2 on Node 26.0.0. A missing or
-different source or target toolchain blocks the route instead of accepting
+Execution is exact-toolchain bound, including Java 21.0.11, Python 3.12.12,
+.NET SDK 10.0.301 / Roslyn 5.6.0, TypeScript 5.9.2 and React 19.2.7 on Node
+26.0.0, Go 1.25.0, Rust/Cargo 1.89.0, PHP 8.5.9, Kotlin/JVM 2.2.20 on the
+pinned JDK 21, and Flutter 3.44.1 with bundled Dart 3.12.1. A missing or
+different source or target toolchain blocks the operation instead of accepting
 language-level compatibility flags as equivalent evidence.
 
 The exact-eight native evidence is pinned to Xcode 26.6 build 17F113, macOS SDK

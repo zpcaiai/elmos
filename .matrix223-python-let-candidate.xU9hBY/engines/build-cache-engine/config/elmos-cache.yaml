@@ -1,0 +1,110 @@
+elmos:
+  cache:
+    enabled: true
+    mode: read-write  # bypass | read-only | write-only | read-write | refresh
+    package_version: 1.1.0
+
+    local:
+      root: .elmos/cache
+      metadata: .elmos/cache/index.sqlite
+      max_size_gb: 100
+      canonical_hash: sha256
+      fast_pre_hash: blake3
+      compression: zstd
+      materialize: reflink-hardlink-copy
+
+    remote:
+      enabled: false
+      backend: s3  # s3 | minio
+      bucket: elmos-cache
+      prefix: ${TENANT_ID}/${PROJECT_ID}/${TRUST_NAMESPACE}
+      upload_mode: write-behind
+      checksum: sha256
+      multipart_threshold_mb: 64
+      chunk_size_mb: 8
+      max_parallel_transfers: 8
+      offline_fallback: true
+
+    redis:
+      enabled: false
+      purposes: [leases, hot-index, coordination]
+      authoritative: false
+
+    fingerprint:
+      normalize_paths: true
+      normalize_line_endings: true
+      normalize_unicode: NFC
+      public_interface_hash: true
+      semantic_ir_hash: true
+      declared_environment:
+        - LANG
+        - TZ
+        - ELMOS_TARGET_PROFILE
+
+    workspace:
+      root: .elmos/workspaces
+      source_read_only: true
+      quota_gb_per_run: 30
+      max_files_per_run: 500000
+      max_single_file_mb: 2048
+      scratch_checkpointed: false
+      undeclared_output_policy: quarantine
+      publish_strategy: versioned-atomic-pointer
+      keep_previous_published_versions: 2
+
+    checkpoint:
+      stage_boundary: true
+      interval_seconds: 30
+      max_chain_length: 100
+      verify_all_digests_on_resume: true
+
+    validation:
+      default_minimum: TEST_VERIFIED
+      production_minimum: PRODUCTION_CERTIFIED
+      quarantine_on_nondeterminism: true
+      exact_cache_only_for_direct_reuse: true
+
+    security:
+      tenant_isolation: true
+      sign_provenance: true
+      scan_secrets_before_remote_upload: true
+      scan_secrets_before_publish: true
+      reject_symlink_escape: true
+      encrypt_sensitive_artifacts: true
+
+    retention:
+      successful_run_days: 90
+      failed_run_days: 14
+      quarantine_days: 30
+      gc_grace_hours: 24
+      protect_published: true
+      protect_checkpoints: true
+      protect_certificates: true
+
+    observability:
+      otel_enabled: true
+      metrics_enabled: true
+      log_source_content: false
+      retain_all_failure_traces: true
+
+    policy:
+      enabled: true
+      l0_policy: W_TINY_LFU
+      l1_policy: SIEVE
+      l2_policy: GDSF
+      fallback: SIEVE
+      objective_profile: BALANCED
+      adaptive_selection: false
+      learned_tuning: false
+      learned_shadow_only: true
+      learned_canary_fraction: 0.0
+      minimum_dwell_events: 5000
+      improvement_margin: 0.03
+      admission_enabled: false
+      trace_capture: false
+      trace_sample_rate: 0.05
+      trace_per_tenant_budget: 1000000
+      prefetch_enabled: false
+      prefetch_horizon: 4
+      prefetch_max_in_flight: 4
+      prefetch_max_bytes: 536870912

@@ -1,0 +1,173 @@
+{
+  "acceptance": [
+    {
+      "criterion": "相对路径和目录层次100%保留，同名不同路径文件不覆盖",
+      "evidence": [],
+      "id": "S41-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "请求、日志、数据库和模型上下文中不出现用户本地绝对路径",
+      "evidence": [],
+      "id": "S41-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "Unicode、大小写、点文件和空目录行为有明确且通过测试的规则",
+      "evidence": [],
+      "id": "S41-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "符号链接默认不跟随，目标仅作为安全元数据",
+      "evidence": [],
+      "id": "S41-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "客户端与服务端清单不一致时包不能被标为完整",
+      "evidence": [],
+      "id": "S41-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "多根目录可独立标记项目角色和根名称",
+      "evidence": [],
+      "id": "S41-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "相对路径和目录层次100%保留，同名不同路径文件不覆盖",
+      "请求、日志、数据库和模型上下文中不出现用户本地绝对路径",
+      "Unicode、大小写、点文件和空目录行为有明确且通过测试的规则",
+      "符号链接默认不跟随，目标仅作为安全元数据",
+      "客户端与服务端清单不一致时包不能被标为完整",
+      "多根目录可独立标记项目角色和根名称"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "folder_input_sessions",
+      "folder_entries",
+      "folder_manifest_versions"
+    ],
+    "deliverables": [
+      "FolderManifest/FolderEntry schema",
+      "浏览器、CLI 和 SDK 的文件夹扫描/提交实现",
+      "目录树校验、差异和绝对路径泄露防护",
+      "跨平台路径与大目录测试"
+    ],
+    "dependencies": [
+      "elmos-multimodal-input-orchestrator",
+      "elmos-secure-resumable-upload",
+      "elmos-project-package-manifest"
+    ],
+    "events": [
+      "folder.scan.started",
+      "folder.manifest.submitted",
+      "folder.tree.verified",
+      "folder.input.completed"
+    ],
+    "failure_modes": [
+      "absolute path captured",
+      "path collision",
+      "folder changed during upload",
+      "unsupported filesystem entry"
+    ],
+    "inputs": [
+      "本地目录树",
+      "用户选择的根目录名称",
+      "租户上传和忽略策略"
+    ],
+    "metrics": [
+      "folder_manifest_match_rate",
+      "absolute_path_leak_count",
+      "duplicate_path_collision_count",
+      "scan_files_per_second"
+    ],
+    "name": "elmos-folder-tree-input",
+    "objective": "将文件夹作为一等 InputPackage 接收，可靠保留目录、文件、空目录和项目边界，同时绝不采集客户端绝对路径。",
+    "ordinal": 41,
+    "outputs": [
+      "标准化 FolderManifest",
+      "目录/文件条目",
+      "上传协商结果",
+      "树一致性报告"
+    ],
+    "responsibilities": [
+      "实现目录选择、拖拽、多根目录和文件/文件夹混合输入的统一清单协议。",
+      "在客户端只生成相对于用户选择根目录的标准化路径，不上传 /Users、盘符或其他绝对路径。",
+      "保留同名文件的不同父目录、空目录、文件类型、大小、修改时间、哈希和可选权限元数据。",
+      "处理 Unicode 规范化、大小写敏感差异、超长路径、保留名、点文件和跨平台分隔符。",
+      "为目录、文件、符号链接和不支持条目建立显式 EntryType，不自动跟随链接。",
+      "先提交 manifest，再以文件哈希协商上传，支持去重与缺失文件校验。",
+      "在完成前验证服务端目录树与客户端清单一致，并生成差异。",
+      "将文件夹输入接入统一 InputSession、状态机、配额和审计。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "文件夹树输入"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-folder-tree-input/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-folder-tree-input/SKILL.md": {
+        "bytes": 3752,
+        "mode": "0644",
+        "sha256": "d9ec1e32abd3a58a572a5e3ca84c3c252fa34a033fae94a496ca8d448a2e7b50"
+      },
+      "skills/elmos-folder-tree-input/references/contract.yaml": {
+        "bytes": 2737,
+        "mode": "0644",
+        "sha256": "5a92fad1add7cbe07d8ae61ac6deb961eaf62ecc3dea458a967065042c7dfd6f"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-folder-tree-input/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_folder_tree_input",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "project-package",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当用户通过浏览器、桌面端、CLI 或 SDK 提交一个或多个本地文件夹，并要求保留完整相对目录结构时使用。",
+    "name": "elmos-folder-tree-input",
+    "ordinal": 41,
+    "title": "文件夹树输入"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "5a92fad1add7cbe07d8ae61ac6deb961eaf62ecc3dea458a967065042c7dfd6f",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "d9ec1e32abd3a58a572a5e3ca84c3c252fa34a033fae94a496ca8d448a2e7b50"
+  }
+}

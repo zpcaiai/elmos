@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "FOUNDATION-05-coding-and-error-pattern-miner",
+  "name": "coding-and-error-pattern-miner",
+  "title": "Coding & Error Pattern Miner",
+  "description": "从仓库提取真实命名、错误处理、日志和约定，供生成代码遵循。",
+  "batch": "F05",
+  "batch_slug": "repository-intelligence-cross-runtime",
+  "priority": "P0",
+  "risk": "high",
+  "path": "skills/coding-and-error-pattern-miner/SKILL.md",
+  "origin": "foundation",
+  "dependencies": [],
+  "outputs": [],
+  "sources": [
+    "openrewrite"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [],
+  "tests": [
+    "Execute target-repository tests before production claims."
+  ],
+  "evidence": [
+    "Target-repository executed Evidence required."
+  ],
+  "stop_conditions": [
+    "Stop when the Skill-specific acceptance contract cannot be proven."
+  ],
+  "definition_of_done": [
+    "Skill-specific acceptance criteria pass in the target repository."
+  ],
+  "production_claim_boundary": "Imported static Foundation Skill; not implementation evidence."
+}

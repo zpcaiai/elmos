@@ -1,0 +1,1289 @@
+{
+  "name": "elmos-7plus1-commercial-skills",
+  "version": "1.0.0",
+  "generated_at": "2026-08-21T08:00:00+08:00",
+  "package_count": 8,
+  "subskill_count": 93,
+  "files": [
+    {
+      "path": "00-elmos-software-factory-master/ACCEPTANCE-GATES.md",
+      "size": 1943,
+      "sha256": "1a1fba5688b32d026fd333e040e6237abf6b6d4b99bc0b8ffba53e2ca070bb37"
+    },
+    {
+      "path": "00-elmos-software-factory-master/ARCHITECTURE.md",
+      "size": 5868,
+      "sha256": "10c5fce16d5269fa18f95af60f3742ed662703107346b28f4316d38d37023ed3"
+    },
+    {
+      "path": "00-elmos-software-factory-master/BENCHMARKS-AND-EVALS.md",
+      "size": 2302,
+      "sha256": "74f6c0b7c8dfb44bdfbf32d5a55a13afbd9d0febccf36ab85a747c5cc588baff"
+    },
+    {
+      "path": "00-elmos-software-factory-master/DATA-AND-EVENT-MODEL.md",
+      "size": 3569,
+      "sha256": "071c69755315a81b1aa0afb08bad5e2123d8c486849e0c5aa42fd7371b0c6013"
+    },
+    {
+      "path": "00-elmos-software-factory-master/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2011,
+      "sha256": "bdc5c005b5cf754eb161a7471ac7760fff3ff41917676e3d2469924b088b4497"
+    },
+    {
+      "path": "00-elmos-software-factory-master/IMPLEMENTATION-BACKLOG.md",
+      "size": 5765,
+      "sha256": "e84f1625e59e1bc3afd494a2a378b16cfd1dea947e0e623ef1c31e8146bc52d5"
+    },
+    {
+      "path": "00-elmos-software-factory-master/INTERFACE-CONTRACTS.md",
+      "size": 2627,
+      "sha256": "edca3ec665282237e6862d8577585088f472206f421e5960a8aeb7e9d24ac729"
+    },
+    {
+      "path": "00-elmos-software-factory-master/OBSERVABILITY-AND-SLO.md",
+      "size": 2197,
+      "sha256": "6d8dd59701f69c103f50f2b52fcfc697cde586b14e00a4d0e62201f0f03915d0"
+    },
+    {
+      "path": "00-elmos-software-factory-master/PHASE-PLAN.md",
+      "size": 3256,
+      "sha256": "3d42843a80633b633511fe5efcfdb7a0bf1f39fd350d9197ff4e893fc058c241"
+    },
+    {
+      "path": "00-elmos-software-factory-master/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 5829,
+      "sha256": "c007e7574fd811e851c0f173680f16dc0610ad6adb33905609679e6ccc17d9cb"
+    },
+    {
+      "path": "00-elmos-software-factory-master/README.md",
+      "size": 1778,
+      "sha256": "b17160fbe0c17dc075131ba2a466449fc19bd69fde0bb83a5e9d4db63b7af794"
+    },
+    {
+      "path": "00-elmos-software-factory-master/SECURITY-AND-GOVERNANCE.md",
+      "size": 2355,
+      "sha256": "202d2811466f7f60b78dd2825f13fd17eee19f34b630cf6f80dbc634fc3cab95"
+    },
+    {
+      "path": "00-elmos-software-factory-master/SKILL.md",
+      "size": 6407,
+      "sha256": "476fc04c2dbc40ac68d237e1abb54ec455f93a6a4d437a9f0bc8859fb9bde58b"
+    },
+    {
+      "path": "00-elmos-software-factory-master/examples/package-config.yaml",
+      "size": 464,
+      "sha256": "376c876d1a0dad9a5ff40b216213745f43e4ecfe00ce0ce8b8538fb0111da526"
+    },
+    {
+      "path": "00-elmos-software-factory-master/manifest.json",
+      "size": 1400,
+      "sha256": "22941c0d352f44b26e7fb551c23d244443bb5833bf942f75bdd18e10c65be6d1"
+    },
+    {
+      "path": "00-elmos-software-factory-master/schemas/package-config.schema.json",
+      "size": 992,
+      "sha256": "8f620c27968003b645083e64c3ea66058c19ef4f44174d9b5fe7308ed3487a7b"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/architecture-invariant-linter/SKILL.md",
+      "size": 1990,
+      "sha256": "924fc30f798847796064b3c4c821ca6b4deb274b66fad630df209a311e99b4b4"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/commercial-control-plane/SKILL.md",
+      "size": 2023,
+      "sha256": "56c6137bf10adeee8fa76368fd64a5f39db8ff3902f645e77851c6fd0c7732ba"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/documentation-gardener/SKILL.md",
+      "size": 1983,
+      "sha256": "ab5b04329cb805e0b3e3cec485c5a4420ea73c2a5af2a526ba27e78684c7d8f5"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/package-dependency-governor/SKILL.md",
+      "size": 1941,
+      "sha256": "fc8f7ddbc6ce525ebe2319a6ffbb83e9cd11d2bd10bbf0291cf65c80d61a12df"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/release-certification/SKILL.md",
+      "size": 1959,
+      "sha256": "1195562d88fddbdca83539f318922fef637aa6bdb7609fe9caca187e56ed1f79"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/repository-system-of-record/SKILL.md",
+      "size": 2167,
+      "sha256": "c09c0ed287861cd5efd684a2d3090b3980aae4f451485a68ab607bb0e598bb18"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/upstream-change-monitor/SKILL.md",
+      "size": 2060,
+      "sha256": "dd657a5b690890d2e86bf0a968dc2050c126c58460000d31f103216ce385d38b"
+    },
+    {
+      "path": "00-elmos-software-factory-master/skills/workflow-contract-compiler/SKILL.md",
+      "size": 2110,
+      "sha256": "ac5502ba636550e5a5d100b7066cc52ee0b72f53b270977d9c6bf56d74d313a8"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/ACCEPTANCE-GATES.md",
+      "size": 2059,
+      "sha256": "a2fed03abd182d5f199f4f926f1797be1381cfec4c2e115369be75bc8b2d26e5"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/ARCHITECTURE.md",
+      "size": 6482,
+      "sha256": "0b586ab81d417cc1ca70b8160719d1478348fbbda8f6d9026c497308e1c3a9fa"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/BENCHMARKS-AND-EVALS.md",
+      "size": 2475,
+      "sha256": "f184c5b2a33f045158d574683668bf826c7f864c9a44a7f63de84e859f396c8b"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/DATA-AND-EVENT-MODEL.md",
+      "size": 3947,
+      "sha256": "ec98997fc055cf9a6cbc3712528a26b988b07ea95b2586c9c5ee833b2829bc5c"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2175,
+      "sha256": "481af9b44df5445c163c975b62fb0b012d30a0a033cde6d03843051c94173a4b"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/IMPLEMENTATION-BACKLOG.md",
+      "size": 8261,
+      "sha256": "2460475789b78b4e7d025dd2ac32bb70046931b2f5373aa4f19c18ade6eae0b3"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/INTERFACE-CONTRACTS.md",
+      "size": 2874,
+      "sha256": "ee94be0485916fde1cd31d8ba5a674a9c9f4bfbf8ac0f0f8ac14ef6321b33cfe"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/OBSERVABILITY-AND-SLO.md",
+      "size": 2225,
+      "sha256": "5a3e0abdbe12a65971a2b70f6271763368bcb2caa099449600a0aa11ca3b985c"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/PHASE-PLAN.md",
+      "size": 3267,
+      "sha256": "ad48ed290387e0791dcc3a581568c4979dc6e0ab91277d9a99894e5f617a1d80"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6289,
+      "sha256": "7dbdaa1b7d974d0e1d4991854e8779fd97fa399ada64bbe247b44fed8466f110"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/README.md",
+      "size": 1750,
+      "sha256": "e93327a7b06a6a636cd5455cfec739bacc3a438ab423c335310e5eb58075827e"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/SECURITY-AND-GOVERNANCE.md",
+      "size": 2424,
+      "sha256": "9aecf74ba798232de17f0a5420770cde9abb339ac9351e4b1af411f6f991a212"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/SKILL.md",
+      "size": 7167,
+      "sha256": "6d970bb318f9cbe2c672b1aff243633e317060db92d2818c0a85290e3b14c41b"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "5b9beffa775dda3b4636373e3b587e47d5a158bf453ba3825938a232b15f66ae"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/manifest.json",
+      "size": 1942,
+      "sha256": "8c6e42d6d70062a5593d5a79b369177c6ce3faf0b4c55b3a67b21c91f5630e89"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "fca6ecf92ff44bcbae89759f54309a45b0aaa1f4fdd38de63d0ee84912da8493"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/approval-gate/SKILL.md",
+      "size": 1922,
+      "sha256": "263653658d8c9fde8d48204006cc3e67c98c6d0e7fae150f570c092a86954d96"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/async-task-runtime/SKILL.md",
+      "size": 2042,
+      "sha256": "7c19228ed91dc27f8aef5c860926e9e0c091f79b7187920f33a33bb1c27544df"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/compaction-and-resume/SKILL.md",
+      "size": 1986,
+      "sha256": "c2c143073a958ed21d667c54baae49e1c17373a6af8ee787061be43a33896fd6"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/context-epoch-manager/SKILL.md",
+      "size": 2109,
+      "sha256": "f15541e1c37ba1954bcad2056e544ca64f27f79b01e0d1a9de9e7e692fb2fce1"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/continuable-subagent-manager/SKILL.md",
+      "size": 2025,
+      "sha256": "0588bbb61ed2e4c8c8451b6ab9647ed248852ccc1d1ab16484e948b99bdcb173"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/event-sourced-session-runtime/SKILL.md",
+      "size": 1997,
+      "sha256": "1a48bd868e94b00d8bc647526ec5ae840b6989b3e85749e95cef2faf4efeb023"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/harness-adapter-sdk/SKILL.md",
+      "size": 2098,
+      "sha256": "2301b55d02591e418463dd9e1ace66a75e04e44b01be54c86f88a45da82580fe"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/headless-runtime-api/SKILL.md",
+      "size": 1981,
+      "sha256": "2d235ea3af283603d4b6ad4ff350b56e4f49ec0a67eaff6ffafd82832206f296"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/lsp-capability-seam/SKILL.md",
+      "size": 1965,
+      "sha256": "e8368461f72e74ef7d5d3129c7a4094de7942385b6c7ae204e55e129330f2392"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/permission-policy-engine/SKILL.md",
+      "size": 1967,
+      "sha256": "f47b4d3c456eb717a74a2965d50978bfe84a526837c3504a5b29bd53c802acbb"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/readiness-dry-run/SKILL.md",
+      "size": 2068,
+      "sha256": "34a5ccad430a1a91a2dbec77db71f229a6dc199b6947eb993f7e06fb8eddbbeb"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/sandbox-runtime/SKILL.md",
+      "size": 1956,
+      "sha256": "b14e893026d31674356053b7b5e53f0d9b00f2c986d7cf469c793444f10c9347"
+    },
+    {
+      "path": "01-elmos-harness-runtime-platform/skills/tool-runtime/SKILL.md",
+      "size": 2000,
+      "sha256": "d49780f9ba2139308ae85bd5983b7a06d30ee146dcec2cc8ff70b802b845b852"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/ACCEPTANCE-GATES.md",
+      "size": 1985,
+      "sha256": "3759e71628c54acdf6305226035404268853db079bd53386e654f9b2486fc4a4"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/ARCHITECTURE.md",
+      "size": 6396,
+      "sha256": "ddd63b22257578c08b1e090fd04c82432a6078c283243ac476bca66a9b926b98"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/BENCHMARKS-AND-EVALS.md",
+      "size": 2418,
+      "sha256": "1c4ad22234f3ad1c76d662be491fcc091978ca30f9fdce57ee1517d4e94c2414"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/DATA-AND-EVENT-MODEL.md",
+      "size": 4219,
+      "sha256": "2e06a0d31dffee5c7d587deb900a6b1e7564f8c517022d7e6bcd1e0f92caec83"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2045,
+      "sha256": "872226e0343853c31007e2a969428d4435e6c589de982b544729bd730340da30"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/IMPLEMENTATION-BACKLOG.md",
+      "size": 8353,
+      "sha256": "9ab3116d3fd5bd2e00ce8b7c18d74e3f80da9b625e8f6d6a04abdf5c4ca4940f"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/INTERFACE-CONTRACTS.md",
+      "size": 2592,
+      "sha256": "d499375abc224e6f5c878383f397889b65078bb0f6de81505a7dfcb8c9ab0374"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/OBSERVABILITY-AND-SLO.md",
+      "size": 2165,
+      "sha256": "66ffe354aa063030f380aa0165ed581a83cb5ddd40c1ea39dbf50e572d3dd01e"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/PHASE-PLAN.md",
+      "size": 3267,
+      "sha256": "ae64e23af6d8970ee67cdddaa85d2a220b635f3a9adf1af57c8e16f36e82b697"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6160,
+      "sha256": "678f8e2694b30041ae9988c7cac8f272cf803dc05371de0f348917cb478b509d"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/README.md",
+      "size": 1784,
+      "sha256": "a2d28615e9b2214dba9517946b18fc1bb09a4942978fa8508f940319de4182c4"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/SECURITY-AND-GOVERNANCE.md",
+      "size": 2305,
+      "sha256": "f39976ef46cfa6d51cb8f31804da383f581867dab2accf7ec1264706369d6927"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/SKILL.md",
+      "size": 6940,
+      "sha256": "4c34ab4f4517dc7a240007e6f660968625e6257b10a3c8830079f46bf5bd81f9"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "292eea9fd2732fc9023b7ee491d3bf6dfd1b75eba5f0d32e739cb6dd8c1f782a"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/manifest.json",
+      "size": 1981,
+      "sha256": "eaaa1a349d59ca125aeccb2a76a4f0bc4f92e9afda1756f97e13f88cf46ba2ef"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "10de7077a9592490cf000f65d328389be7e1b486b53a8a8d2afd837480e5d662"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/ast-symbol-indexer/SKILL.md",
+      "size": 1914,
+      "sha256": "abfb386871e967f63a646c6d57399a70fa2afc338a717d9aff21b781c9717b4f"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/capability-discovery-ledger/SKILL.md",
+      "size": 1992,
+      "sha256": "525fb2a44bdeab006a09462b1b7aed0e80df83a779fe74f45e8866efd3c9ccfc"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/incremental-analysis-cache/SKILL.md",
+      "size": 1950,
+      "sha256": "fa1f51608661a1b22ff78addb9ef3c507f2f52676a1ad335177a69bf3f947868"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/language-framework-detector/SKILL.md",
+      "size": 1961,
+      "sha256": "15e4bf1ecf7f248364e72b9bb059c8b8d300c9a0b154bea1be1cff56aad8b15c"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/lsp-semantic-navigator/SKILL.md",
+      "size": 1988,
+      "sha256": "135687f2c3418a0c2ff0e18d25beefde8d516f88816042250ac6faabf1fd757b"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/platform-graph-builder/SKILL.md",
+      "size": 2049,
+      "sha256": "4938e77d3e58b954ec9053b81c68ee86f13d35b48586c047e0dd2d4904597c54"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/program-graph-builder/SKILL.md",
+      "size": 1970,
+      "sha256": "279e36362674318ee93db8b0e18fcc8eb25a76da137ebe5323d32cc2c0d6e534"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/provenance-confidence-engine/SKILL.md",
+      "size": 1955,
+      "sha256": "e7d0a45c36739ea8970cbfe5cd047178ea6ab2c3a105e224171d03b954e617ba"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/repository-inventory-scanner/SKILL.md",
+      "size": 1992,
+      "sha256": "dabb9ddc882de66307d4a71c27146f5674e2b305c4d9ee5487e0048edfab7113"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/repository-query-service/SKILL.md",
+      "size": 1961,
+      "sha256": "c4fc4bb2d7122ca88635df4d386a1bf1ba762975f7b280752ecdcc0394cbfac4"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/runtime-trace-ingestor/SKILL.md",
+      "size": 1933,
+      "sha256": "36a67a3970907c543d72ccf22b6a29eaca3bfa0ffe7d4393aa3ac1d1f4a16731"
+    },
+    {
+      "path": "02-elmos-repository-intelligence-semantic-ir/skills/semantic-ir-builder/SKILL.md",
+      "size": 2033,
+      "sha256": "2097a140635cc0b6e05108b72c89695d918c9063ed352882e7eca765a644bfa3"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/ACCEPTANCE-GATES.md",
+      "size": 2023,
+      "sha256": "ff0256befda1a0795195ffda1a35d852bd13ec883673038045d680e0cd43d207"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/ARCHITECTURE.md",
+      "size": 6452,
+      "sha256": "08ef530a22b3487c6d6d5a33491fddbdb79a483dd9adfacd6eb45e61363aa97f"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/BENCHMARKS-AND-EVALS.md",
+      "size": 2449,
+      "sha256": "3d134ba4b1d3e3c4c9f373c8dead4e9430aecd14cda5d9a95ff307dfa68566f7"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/DATA-AND-EVENT-MODEL.md",
+      "size": 3935,
+      "sha256": "58c96be59bc87b7631f07d67e5728984e9071ec843b37b2579ae14b70b7cc5d6"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2062,
+      "sha256": "dabdaf70f9191d87a50122cfdc3c95ca7a1438a5c311fd61264d10071e25e661"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/IMPLEMENTATION-BACKLOG.md",
+      "size": 8469,
+      "sha256": "004c079b7869a2b3965828a3b4574f3c5d1323e349905d103ebb37135ec031c7"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/INTERFACE-CONTRACTS.md",
+      "size": 2654,
+      "sha256": "02c5d9e3f1dfc1c65ce698afbe16b47487b8039f68b33ae432050488b2836ca1"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/OBSERVABILITY-AND-SLO.md",
+      "size": 2211,
+      "sha256": "77544a2a80d54349d0ba0e95f3b32e78de97bdc400607e6434c41cc96821a57c"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/PHASE-PLAN.md",
+      "size": 3267,
+      "sha256": "feb54b08a6645e59f1219dd0a579e681d3c2f9a448bece1e65539b92e9256b4c"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6352,
+      "sha256": "be344bde4e2a51ae995e6acf4d0eb51aa3c958b714fe98efee7c7639fa170c9e"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/README.md",
+      "size": 1784,
+      "sha256": "8d166a20c72ca57d2ff5000e8113227321374db18d195038deea9fe05e783bf7"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/SECURITY-AND-GOVERNANCE.md",
+      "size": 2329,
+      "sha256": "074d2b6cd8a95b5050d96279c3a20c476c10a82177b69ef28a4b1f4ea2641cdb"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/SKILL.md",
+      "size": 7006,
+      "sha256": "e92588936329d029231d30801b89f9797a8c44d34f91355aa84b96929043cfbc"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "0da7ee1bfe9549bf423626662b5e42371966ae652e1d39318b772147f8e537f7"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/manifest.json",
+      "size": 2070,
+      "sha256": "e757b19cf33017be246ead94f640e07ad92c2a1d127f121fe82754b7f48fd13f"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "ce375ca2704adb55cfb978d158f5431f2cbab411211f487d230772267190878d"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/architecture-synthesizer/SKILL.md",
+      "size": 1951,
+      "sha256": "3a65973ae9cf36e06970ad5e2520a444b41ca5ef2e56f6c89cad5f87622c92fa"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/data-integration-transformer/SKILL.md",
+      "size": 2027,
+      "sha256": "46514ae2961f37c780a4c109333b1b3fa6cc45996ac4b016e6e1cf2747cf16ec"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/framework-platform-adapter/SKILL.md",
+      "size": 2008,
+      "sha256": "976f934f7e3ba314c75b2172216521911587ed8c0ae4dcbf795121e237ff5578"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/frontend-miniapp-transformer/SKILL.md",
+      "size": 2013,
+      "sha256": "2416c91b0ecc47a831d446ff09759145f64fea7500754bb2f73e2f6b3e28ee5f"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/implementation-dag-planner/SKILL.md",
+      "size": 1927,
+      "sha256": "36b49f5b6f63eec816879e58a0de5d2ad5b5fbb6f6c1c9136d95150ea47bffdb"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/infrastructure-operations-generator/SKILL.md",
+      "size": 1977,
+      "sha256": "9e580b7d685636741a941f6370c254c76d7424d40496449598a0f92885ec3477"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/migration-controller/SKILL.md",
+      "size": 1979,
+      "sha256": "0cafb53827062b961162fb0df9cc2cec79418bbb7b97e70a40aff9d0cfcfa9a3"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/multi-language-emitter/SKILL.md",
+      "size": 1943,
+      "sha256": "2099eaf4c4bff972236b4edbda0efb000dc75804dfa9fdc52e427277e33b58fc"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/mutation-exception-engine/SKILL.md",
+      "size": 1962,
+      "sha256": "812c8611f870e19f7ed7d2a05a4cebb20799b4570f4563ef044c4ebd418a2a4e"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/project-archetype-engine/SKILL.md",
+      "size": 1996,
+      "sha256": "322fb55928d43d38f23ce22209a91982cc6fe879fab5fbe9ccd52dad3598b4d3"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/requirement-expander/SKILL.md",
+      "size": 2048,
+      "sha256": "967f34e6a6d1958cf6ac4fc50666dc949f461704d631541b304dbfd4050f4261"
+    },
+    {
+      "path": "03-elmos-project-generation-transformation-engine/skills/transformation-rule-engine/SKILL.md",
+      "size": 1920,
+      "sha256": "619446c1c71e249d3a58dff0fd6c2883ab86f6a7a01b934cd1f45d8ea57bf26e"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/ACCEPTANCE-GATES.md",
+      "size": 2050,
+      "sha256": "9ca716336f5044ad66ab9b2db8e26f831cc503f5372808b5ab5b195a591aa455"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/ARCHITECTURE.md",
+      "size": 6482,
+      "sha256": "eb3d4eba1375d604634e305f232cf23c9a34154f83a16d1ea4e2bfb132fe018a"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/BENCHMARKS-AND-EVALS.md",
+      "size": 2409,
+      "sha256": "6196b2535fed2d160333ea28ab797125058cb1dbefc5b4abf4076c7f31afe7ea"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/DATA-AND-EVENT-MODEL.md",
+      "size": 3757,
+      "sha256": "df8ff17c8d30c29d0f64bd5e88951971fda74b1a8de4f59c3607a76f82343694"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2083,
+      "sha256": "9e03f74fcce3863129bcf71dc78ae83ebe74d6741f2487e6a722953bd88a6ef0"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/IMPLEMENTATION-BACKLOG.md",
+      "size": 8465,
+      "sha256": "f974fa046d42a9f932c832a9cdff18345a80305181e3305755315d61a5ea22d2"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/INTERFACE-CONTRACTS.md",
+      "size": 2679,
+      "sha256": "a37d3aac09d35b0262ce6fb2cea461b0eda6ee036a67ec54c3ed80ea25c5b5b5"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/OBSERVABILITY-AND-SLO.md",
+      "size": 2222,
+      "sha256": "6bf5a3f380941dadbe595a5ab34a7598dcdad56105d47a83b4245fadcf8fb23a"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/PHASE-PLAN.md",
+      "size": 3267,
+      "sha256": "e0ca3acdc5e4f92497cd9d54c9125795258b41991e08dce1e7bb65b59c9a2e0e"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6420,
+      "sha256": "cd6fb353fb2d4bc9f1f17085a79bc69560e4fe8b3df13fdf901e08ea9fbe3c9a"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/README.md",
+      "size": 1874,
+      "sha256": "e928e9b3d83913b1266afeabf7737c7484ea390d3d667d0f1d94e9c72561ed53"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/SECURITY-AND-GOVERNANCE.md",
+      "size": 2451,
+      "sha256": "70a24c51c583cd4bdb9cb1c46cdab87f40d961d1ce74d44caac8138859d3c930"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/SKILL.md",
+      "size": 7101,
+      "sha256": "5919add7f0a0fc213e00b6b25ebdf4eb9f55a0829aed3b8c21e158b01b0ab50f"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "6c05809075918ea9b22d4963cd085f746459fdd7b7c1261b5a99d074880b079d"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/manifest.json",
+      "size": 2130,
+      "sha256": "cb6f9eba42239992983b09c124e12c7ef40d7011278f309ba427600f3101addb"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "442d2ffbd53be8d26d7612684d5fb2c4aa6f86e1ed53f9adf6d245727adc8bbe"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/admission-concurrency-controller/SKILL.md",
+      "size": 1943,
+      "sha256": "8e241f7417018207353ad5ed4e1d5f8af928ca3d13e2c27e391353536294a633"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/continuable-collaboration-manager/SKILL.md",
+      "size": 1937,
+      "sha256": "93aed0bcbc2b2f4240c013a758560ef3dee0c31a1d0b6c4e7a9e6d9de385a9a0"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/human-review-handoff/SKILL.md",
+      "size": 2002,
+      "sha256": "78c490c127e0bf81e3fece9c0c598bfe027695e21beb4abfe67b0ea596667b54"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/proof-of-work-assembler/SKILL.md",
+      "size": 1984,
+      "sha256": "02a3dc00f7df6ba9f8c7c5e9043d98907a232c85aa5b3ef385674894c2927ae0"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/reconciliation-scheduler/SKILL.md",
+      "size": 1967,
+      "sha256": "efd624a0334c7540c05d305b81c9cb696b8ed887bc8c10ea04ba0703003ae1ea"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/retry-stall-doomloop-controller/SKILL.md",
+      "size": 1993,
+      "sha256": "378830fc61370355ce028841172c9bddc404d1b708fccb409fbf16526d435c0f"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/review-feedback-coordinator/SKILL.md",
+      "size": 1962,
+      "sha256": "a371aa9bf8488b70b67443a3e0724edaee36466a43c473cca897780f47e2af00"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/specialized-agent-registry/SKILL.md",
+      "size": 1992,
+      "sha256": "386ba7853576e2ad8b438fc51e7219e56f2be1344b65a93c73beccaae8c020e1"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/task-dag-orchestrator/SKILL.md",
+      "size": 1928,
+      "sha256": "b0f133c48bbc55002fee4c65b1be1f0879ab74fa43bb51ac119a839fd1814ccf"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/workflow-tracker-adapter/SKILL.md",
+      "size": 2015,
+      "sha256": "356767f39a2c29d117073cf285c1ed15a03ca337179ba603c43b8ffc9b29593a"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/workpad-progress-journal/SKILL.md",
+      "size": 1981,
+      "sha256": "aae54d49ae5b35174f91ac312fb6118d6e26cd294d09a57a8ebf08a77cb15b27"
+    },
+    {
+      "path": "04-elmos-agent-orchestration-software-factory/skills/workspace-worktree-manager/SKILL.md",
+      "size": 1959,
+      "sha256": "f950f5d51bfd8ffa015bba90b5b0fb11bc857b3d641e0117686e28b71da30bfa"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/ACCEPTANCE-GATES.md",
+      "size": 2108,
+      "sha256": "8f00f49e506379e7fb045cb063888d84cc4fbc54c4956fd0a1a531fc312beb08"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/ARCHITECTURE.md",
+      "size": 6295,
+      "sha256": "0497757bb2be4118674af3599ccfbd844aa69f837fe77bc6de3a744468a6a1d8"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/BENCHMARKS-AND-EVALS.md",
+      "size": 2404,
+      "sha256": "6e7b031326d4302c3343de3cf61c181f81458ed2e9f43e600c1599f948e86e7a"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/DATA-AND-EVENT-MODEL.md",
+      "size": 3893,
+      "sha256": "d53514489e83c59874b5cc547d4973e2d0727b6031b4e24b75ba298e30a58e8c"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2067,
+      "sha256": "bbb3803cfa6bb19806e4707d8eab3bc52ba64dd46d2d9d9cbbcd409a7003d8dc"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/IMPLEMENTATION-BACKLOG.md",
+      "size": 8377,
+      "sha256": "0a73cf6f42c023ce84743f4168f95aaaa1674d983f797fc9ab5de62389f2a956"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/INTERFACE-CONTRACTS.md",
+      "size": 2600,
+      "sha256": "d89ecf152320df9b2b40598756b80bccc8cd528e94ddc92a02a0df1eb15335e3"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/OBSERVABILITY-AND-SLO.md",
+      "size": 2229,
+      "sha256": "01f14bf210194814e87db177f7c3c77c2d2c1e88ecbf035ec1208ccfa222d242"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/PHASE-PLAN.md",
+      "size": 3267,
+      "sha256": "7402f3b056f63bd508625f2fd1397b036db4b3f4c49cd10c0a601649da65aad0"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6159,
+      "sha256": "6dcce529e91143b93adabfa4d22ab63b7d63f9c90644684ca18c9834b3758303"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/README.md",
+      "size": 1871,
+      "sha256": "0afc558c5dae44b57c822751655dc1b7efbbd33b545eaed0d73cae227ed5675a"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/SECURITY-AND-GOVERNANCE.md",
+      "size": 2376,
+      "sha256": "609acd488c44496d10752f0769f0f321039d9d7ee59dbe5cf1008d5f03208838"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/SKILL.md",
+      "size": 6934,
+      "sha256": "5df868498879e5f24d12d63347046b0bb8d3f9379ccbd614cf4bc91f896c752e"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "56e4617e06232df2dcd15c682ae3690dcd35af960ef2207d9efd705bf75ad83a"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/manifest.json",
+      "size": 2074,
+      "sha256": "9203ed7b63f9c9e92097a9f130347e3222c6aed56d2954ad599bd38535b49cf3"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "498e34855c968c9e8cd46c2c176c6c9ec01acfb9b7f129f4ea1d44bd01007016"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/capability-coverage-ledger/SKILL.md",
+      "size": 1950,
+      "sha256": "65b39d93b7c290c6621b5840aed82af5ff24f193769da9c8d5bfb8b0ef40822c"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/compiler-static-pipeline/SKILL.md",
+      "size": 1937,
+      "sha256": "9c21ad8633acd806935f8e6fba800f373279a5258df925419f6cc2121b767ca7"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/contract-integration-pipeline/SKILL.md",
+      "size": 1937,
+      "sha256": "ed1ad0983b445a0bda647867ca16d0e88f2e69f5d097a534cbd77d7413325e80"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/diagnosis-repair-loop/SKILL.md",
+      "size": 1981,
+      "sha256": "f58cb8b497a3a0aa2fecf3e70f3034a36df1143d316ac5adecd4fcdd91189a68"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/differential-runtime/SKILL.md",
+      "size": 1947,
+      "sha256": "230df790cd920c1e1c733ed2593d922b3849a4308ed95e988b47091a3ee394a7"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/evidence-certification-engine/SKILL.md",
+      "size": 1977,
+      "sha256": "f9ebde0a617457b613621cc440ea7517c2691caaae62cd7aba9f779806db2f1c"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/generative-testing/SKILL.md",
+      "size": 1926,
+      "sha256": "4176eb88c1f7ac4d4328c882841cbec583c60aa045ae85a4b0ea81fb8ca58685"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/mechanical-completion-gate/SKILL.md",
+      "size": 1966,
+      "sha256": "640c84fdb75ddb84cd68cb2b8a87491acbc235b71d8099b929f8ca2439973f3e"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/nonfunctional-verifier/SKILL.md",
+      "size": 1980,
+      "sha256": "196f60d385d49f86d978054b2b3ce1548f4fdaa41d244fe547b6e0859d54cb2d"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/requirement-coverage-ledger/SKILL.md",
+      "size": 1935,
+      "sha256": "a1149ec74e7c814e246d565f9dd5da6cd68a37cc16b184bf6b893f55b55c29f0"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/ui-multimodal-verifier/SKILL.md",
+      "size": 1980,
+      "sha256": "dad2760eb7269a10778e2dc962442133df16ceb3da44b25303879c18f069678b"
+    },
+    {
+      "path": "05-elmos-conversion-reliability-verification-harness/skills/verification-planner/SKILL.md",
+      "size": 1907,
+      "sha256": "df79d52c279101d8510b3209699f10b0ee5b58fe4afb10fe4fabb2a28ccc40f7"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/ACCEPTANCE-GATES.md",
+      "size": 2005,
+      "sha256": "b799f7e020cf61183d3366caa8ef6f809a84843b2e60f3a29d1c83d4965da436"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/ARCHITECTURE.md",
+      "size": 6365,
+      "sha256": "e65a9fc786ebb26b4ed172e1527984704d3163cd0c6dfa599fe149b4cf56f506"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/BENCHMARKS-AND-EVALS.md",
+      "size": 2368,
+      "sha256": "30ac295a18b0d07e9b475d8fd032a71983d9311f14680e53c9123304fa7676d0"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/DATA-AND-EVENT-MODEL.md",
+      "size": 3908,
+      "sha256": "ed1af614ec2598156591e499da0925257f23426d48e477550eb960b12396f310"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2041,
+      "sha256": "20714f033a05b7a5030b25a212df11b3f7c5e5b41153858844990ba535c549ba"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/IMPLEMENTATION-BACKLOG.md",
+      "size": 8257,
+      "sha256": "30d52893b97eb1e767ab7722a2246d36e4ce395c8e9303b0819f93ca939af26a"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/INTERFACE-CONTRACTS.md",
+      "size": 2562,
+      "sha256": "3f4f361a2e43f53e5bf64e2f152fb22a228b0f838d06e4ddb2535fe647ffb733"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/OBSERVABILITY-AND-SLO.md",
+      "size": 2277,
+      "sha256": "301150b7208326416138d1ab8285378e6f97c36b2297b9bd105219d7cb097278"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/PHASE-PLAN.md",
+      "size": 3275,
+      "sha256": "e7cedfd870ab08a2de83d2777e5ec230c339b3aa482b12fed91930a06ec6e4e1"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6436,
+      "sha256": "154e6dfb0c968f278e3bc1dbf49e6f98a4ec444d4e653acd3f70c4c1571fe608"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/README.md",
+      "size": 1893,
+      "sha256": "39088f0c85312ad896fdf6373eb981cecc3372124041e57155c7230f225d7fd3"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/SECURITY-AND-GOVERNANCE.md",
+      "size": 2391,
+      "sha256": "51ae421b005d0ca37c11a9d3e8fa6b527411542f186a70f18268245dfb58740e"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/SKILL.md",
+      "size": 7096,
+      "sha256": "b5f5662955a094f94cd122d0eb4522d01bd7c06319f359107248d640ccdefcd8"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "be97af9974b73ff134df83d232a74bdbf9be7fe5f704fa146af518ab9b9bf2b8"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/manifest.json",
+      "size": 2034,
+      "sha256": "5eb8eda701ddecc82b0f4c2127305900945cf790f21dfe76174162f97865aa78"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "4dfa7be544f92f4666e1bdba62d6dba0088445762cb5e1e012fc685f9a73df1c"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/benchmark-availability-gate/SKILL.md",
+      "size": 2003,
+      "sha256": "964ef2e76ccf0d6a47e375ebf8e824ced79f655c11c854293a004316bf7ea451"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/cost-token-eta-engine/SKILL.md",
+      "size": 2050,
+      "sha256": "9ab61d2bdc537b5153b0a8eb61ab93ac2e7b7984148ceb024ce8e2a936183ad1"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/fallback-circuitbreaker-hedging/SKILL.md",
+      "size": 2008,
+      "sha256": "48fea31c462bd50ddcf3e27fdf4c136afe7ed3f3d48996f79a7e3726de5920dd"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/historical-taskfit-scorer/SKILL.md",
+      "size": 1958,
+      "sha256": "e36b4eec27464696153920ebc022c3eed6f3f622d8838e7336b2da61028a4809"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/long-context-completeness-auditor/SKILL.md",
+      "size": 2087,
+      "sha256": "654a2e8a3b43615f6724fd3b2564952dbe4edea4b7adb26bee2eef676515755b"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/model-provider-catalog/SKILL.md",
+      "size": 2044,
+      "sha256": "776ef40be5e4b94bc9d8d5e401c2426a38c07e4e09e8de7309a59e2db87e1789"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/multi-objective-router/SKILL.md",
+      "size": 1970,
+      "sha256": "be2ce6c405143e418624bdea1f67e76fc54500d862313fa3ee35ff21624e55dc"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/multimodal-route/SKILL.md",
+      "size": 1973,
+      "sha256": "10549090792ad77fae107c9edf7d65db61ca85ead5c6b67a73cb129369ed8294"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/privacy-data-policy-broker/SKILL.md",
+      "size": 1968,
+      "sha256": "97b8ef8ea8deaec8c13b7d9aad686e73f6788369cbdebfa478b16ebac02506e5"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/route-constraint-engine/SKILL.md",
+      "size": 1993,
+      "sha256": "a366397dd11bba53bef514f4875c25c8d87b4ce47b27b797d6063da61fc791cd"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/route-observability/SKILL.md",
+      "size": 1934,
+      "sha256": "de651e64c189466433cc3eac89025bdd738ce934c1152f3c5cd270edb04ca690"
+    },
+    {
+      "path": "06-elmos-intelligent-model-router/skills/task-classifier/SKILL.md",
+      "size": 1977,
+      "sha256": "fee222ffbf22fd3cc97de248dac6af36023b7294c9109cb6115f476a72e36d6a"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/ACCEPTANCE-GATES.md",
+      "size": 1987,
+      "sha256": "75f9232873072504a00b649513d62221bd2536d0a5c6252d338d0b707818118f"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/ARCHITECTURE.md",
+      "size": 6385,
+      "sha256": "0c5ff38a61fc869815f2c68e5762a19e8f9845e6a545796644f51a5078f19552"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/BENCHMARKS-AND-EVALS.md",
+      "size": 2401,
+      "sha256": "4a11ea025b0386f4126b45db7a5e73f6ff7164fa3838aced0f57a10696ce3190"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/DATA-AND-EVENT-MODEL.md",
+      "size": 3888,
+      "sha256": "e4f9f158d88baf24e2ae3013c1bb0efe1ba498b39d4a5642ffd9a1123162036b"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/FAILURE-MODES-AND-RECOVERY.md",
+      "size": 2027,
+      "sha256": "5878d72aa8342ff1a5d0e36281bd8b2181c2709766f4e4b5dabf9db264daf675"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/IMPLEMENTATION-BACKLOG.md",
+      "size": 8365,
+      "sha256": "e50c2b5b0a1f64eb04cd87ee66839aaab0ddd542eda007a953a2818945f3cc04"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/INTERFACE-CONTRACTS.md",
+      "size": 2586,
+      "sha256": "072d36c64c8c9ca15b1fcbc09935286638bb97666c17522a92cd9779f60b9a68"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/OBSERVABILITY-AND-SLO.md",
+      "size": 2245,
+      "sha256": "864091c824d1c1fddf9ab27f61ddc5ba7833d7168ad5b5721ac432d6ef8723ab"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/PHASE-PLAN.md",
+      "size": 3270,
+      "sha256": "06e48118028c420858be787372e8e71eea1f1c4d255d261774f0f22f758661fa"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/PRODUCT-CAPABILITY-SPEC.md",
+      "size": 6383,
+      "sha256": "8bebfc052d2a92964a6ad330d2c96b64f9d173e388d8bb487fe2218059d0873e"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/README.md",
+      "size": 1894,
+      "sha256": "c61f693ffe2b2690ec136a89fa52379872f1b71d3d89e663500a27bbe7568cc1"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/SECURITY-AND-GOVERNANCE.md",
+      "size": 2397,
+      "sha256": "b5235dc65c98c5540c99b97088418ba5e6db3068ea777e7a8247f738041ab87a"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/SKILL.md",
+      "size": 6979,
+      "sha256": "553d5f9d22d7b0e07f552465a96b25f644f498dd11018148a9103289d74d7ff6"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/examples/package-config.yaml",
+      "size": 512,
+      "sha256": "79a099d6b49702d8472f7774d51ad9c500f763ab70469d8ee0e37ca5b2effbea"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/manifest.json",
+      "size": 2049,
+      "sha256": "39ae82c9c70bf13e50b7d8a9c74f05cbed1b97bbcdcf664bdbd8a3eec27f5375"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/schemas/package-config.schema.json",
+      "size": 1076,
+      "sha256": "8032a6cc80069998bb7c53b8ab43018f6e5a3d25f6d8e42c8aae69b619fc9094"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/active-learning-queue/SKILL.md",
+      "size": 1919,
+      "sha256": "e20e93351266f59d72181b85f38f17cf88c3f85492d9f414e67c0033f9040312"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/benchmark-corpus/SKILL.md",
+      "size": 1965,
+      "sha256": "2209221486dcd9a870db3a7e0162d4014d941fbd7313b0fb630b3591fec8a10b"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/drift-regression-detector/SKILL.md",
+      "size": 1971,
+      "sha256": "117c3f28a8d2a830f16a9ba02240c791ae3bbb022ebef4c1a5b7299c4543c982"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/evidence-corpus/SKILL.md",
+      "size": 1953,
+      "sha256": "ac5d5db526d00a5446a469fe8edef76c041a1adc2b1407d585b84fbb73800aea"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/failure-repair-corpus/SKILL.md",
+      "size": 1919,
+      "sha256": "1d793ee3c521b2e56cc4473d93d6f38dc012104736090006d4a08b55b2669fa1"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/knowledge-quality-auditor/SKILL.md",
+      "size": 1978,
+      "sha256": "f3440b5dad4f11fd83e0e7d6a96ce16c60ad2caf129e7d5620d4c27fa8bff0fb"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/project-archetype-knowledge-base/SKILL.md",
+      "size": 1982,
+      "sha256": "d2e1f3a2700aa494ff46cbe07b2b0ef9c5d9264fef1221b0a43a5a9a889c829e"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/repair-retrieval-ranker/SKILL.md",
+      "size": 1948,
+      "sha256": "203b2f01074fd261b740f5591b5c55e56a2897665f6e8005e7b401196d91c093"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/rule-promotion-governance/SKILL.md",
+      "size": 1959,
+      "sha256": "bfed8e2cbe2617d8fd2beebe6a8b152054166687480b2a8d5223fb6f4c5199df"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/specialized-model-training/SKILL.md",
+      "size": 2020,
+      "sha256": "1369cddbc61c9d9920466bb016359fba0464e1fdab74908b6fac817973e96e9c"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/tenant-ip-isolation/SKILL.md",
+      "size": 1957,
+      "sha256": "80e2e504d70b08e69ba689b1a625233b5d664e6f0a55057bd4596a49ef02316f"
+    },
+    {
+      "path": "07-elmos-transformation-learning-evolution/skills/transformation-knowledge-base/SKILL.md",
+      "size": 2050,
+      "sha256": "007cc7777a00a4038269947b5d1f425f4acce10ba1e81e41912e44c90323f407"
+    },
+    {
+      "path": "AGENTS.md",
+      "size": 3434,
+      "sha256": "f468b7e5cb73a379c5cf2251416b8e0ba0ead6bde5ca5d238b3fcaf830d2ff64"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 297,
+      "sha256": "812490a4cf6dfbc59b59c2826d10563cb77c620bf40899244b6f39d4d155f120"
+    },
+    {
+      "path": "COMMERCIAL-GA-CHECKLIST.md",
+      "size": 1579,
+      "sha256": "7e94f5d3f766b863aa1ae609aea47cbf25e3a8221f896eb9c9c0a3812db4ac2a"
+    },
+    {
+      "path": "DETAILED-PHASE-DELIVERY-PLAN.md",
+      "size": 8550,
+      "sha256": "fea017a40407118aecc331f4340d5130a18042e25a9b013a74bd21f48cf4774b"
+    },
+    {
+      "path": "ELMOS-REFERENCE-ARCHITECTURE.md",
+      "size": 5518,
+      "sha256": "dd19a05f7fa82e142ba874f7e5e04f820164b723b71613ac2d49b73bd3f8e92f"
+    },
+    {
+      "path": "ELMOS_WORKFLOW.md",
+      "size": 2157,
+      "sha256": "4b77e540961f0536a3b0923eebc2520c98c57242aade721afac202609e923364"
+    },
+    {
+      "path": "KPI-AND-BENCHMARK-FRAMEWORK.md",
+      "size": 2571,
+      "sha256": "5d8a7949428787310663326dff2e14ebddabced0537074a59a93b741cca95efb"
+    },
+    {
+      "path": "LICENSE-AND-ATTRIBUTION.md",
+      "size": 845,
+      "sha256": "6ca7abd53fd74e34c6639c16b28976e5bf2edf8627fd5cead568d6d79c539ee5"
+    },
+    {
+      "path": "PHASE-MAP.md",
+      "size": 4929,
+      "sha256": "78d663bb1b2eef77bc882597a26e070affda801637e06e8d730df0f11859153f"
+    },
+    {
+      "path": "README.md",
+      "size": 6053,
+      "sha256": "38361256ef16c99035488ed928123244c82f9b27373492c03a63d9db935b0699"
+    },
+    {
+      "path": "SKILL.md",
+      "size": 1850,
+      "sha256": "15d369d40889deed1e1fa261467274f27fb0b67d7aa5cdad303795210c689494"
+    },
+    {
+      "path": "SOURCE-MANIFEST.md",
+      "size": 4816,
+      "sha256": "9ad8a0c297246e52d1ab94ddd968e3fe1789d1a1c4c516dbe67eef80a5620437"
+    },
+    {
+      "path": "SOURCE-TO-CAPABILITY-MATRIX.md",
+      "size": 2239,
+      "sha256": "f24a30c163520c205e6e08127ed127445df8fe77a17da3049d79329795d903bb"
+    },
+    {
+      "path": "UPSTREAM-CAPABILITY-EXTRACTION.md",
+      "size": 11493,
+      "sha256": "4530f013889321060dfd11e0181f4d404434535bab546fa8e9c520329c7c4f64"
+    },
+    {
+      "path": "VERSION",
+      "size": 6,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "path": "examples/completion-gate.example.yaml",
+      "size": 518,
+      "sha256": "2c0bb23f9e7052affe690e93f453fb039973d1280d0e170c78e0340df6dd21e2"
+    },
+    {
+      "path": "examples/java-spring-to-rust.example.yaml",
+      "size": 716,
+      "sha256": "603afd8184fcd94ca1999a544a439d53527c7212d71cb4b45d4705ee5d937646"
+    },
+    {
+      "path": "examples/model-routing-policy.example.yaml",
+      "size": 783,
+      "sha256": "1ce75e0731e287ededfcb3544aa83b30a6d111ea91191a0aec5809ea2d705e04"
+    },
+    {
+      "path": "examples/package-registry.example.yaml",
+      "size": 594,
+      "sha256": "040b56f63399ba028dc6819ff697911401f01de4131c4a92215c11a753924a62"
+    },
+    {
+      "path": "examples/requirement-ledger.example.json",
+      "size": 547,
+      "sha256": "64b2be17b5543da77c0c2f705fb898ca2bc45606333d6f00dd3e875fa02c7cd4"
+    },
+    {
+      "path": "examples/saas-project-generation.example.yaml",
+      "size": 700,
+      "sha256": "0ba45588531506ca5074ec7e650bef5beede44a862de27980d7482542ea2e93e"
+    },
+    {
+      "path": "examples/source-capability-ledger.example.json",
+      "size": 1204,
+      "sha256": "e2ab748984b6411da1df0b1320fef84379d08fbbfa6c6744cbfb0fbf62afb619"
+    },
+    {
+      "path": "schemas/benchmark-case.schema.json",
+      "size": 1153,
+      "sha256": "97080c4f0164d3d068d84ef7ca99b44bb99e68df1c2dacd070e5fd0075cb374e"
+    },
+    {
+      "path": "schemas/capability-ledger.schema.json",
+      "size": 2808,
+      "sha256": "27c705a2b2aa51f9df2a75f1ead54e0e8891db6b8448c09f18c0aee89b141aef"
+    },
+    {
+      "path": "schemas/event-envelope.schema.json",
+      "size": 2039,
+      "sha256": "df8a83712aae1b86290bd58caaf881d6d52f3a58c06dc067d1d7836a79d83da6"
+    },
+    {
+      "path": "schemas/evidence-bundle.schema.json",
+      "size": 1772,
+      "sha256": "8520cfa7cd7d2e4d0af67b225ff46e079f04482980ee34437e86a279d8cb03dd"
+    },
+    {
+      "path": "schemas/model-route-decision.schema.json",
+      "size": 1626,
+      "sha256": "c4a31c2c78b552f18c735acd9231350d47b55488908d38e986f4bd3d3324193b"
+    },
+    {
+      "path": "schemas/package-manifest.schema.json",
+      "size": 1561,
+      "sha256": "51c3c3a505b66bf1f8d18884c035047365d251b6bf186ef4d18045dc4c34c172"
+    },
+    {
+      "path": "schemas/policy-decision.schema.json",
+      "size": 1033,
+      "sha256": "18a60b17666a2fa16d471f11dc3b5f169fe7ddc17aa69006440aa81a2084969f"
+    },
+    {
+      "path": "schemas/repair-trace.schema.json",
+      "size": 1051,
+      "sha256": "d193684898f57bfd677e3521ed46d86b4f3d9a36fe2dc4d7be99eff89dad7a2b"
+    },
+    {
+      "path": "schemas/requirement-ledger.schema.json",
+      "size": 1923,
+      "sha256": "7a75c6092835b2491ac272a5d31ec5c71c4e85eff5037eca991c0a110f333e9f"
+    },
+    {
+      "path": "schemas/transformation-rule.schema.json",
+      "size": 1451,
+      "sha256": "0651b7a5625f56a0c4fd8234b1137291a7fa6da2aac0e56560b879ddb5250959"
+    },
+    {
+      "path": "schemas/workflow-contract.schema.json",
+      "size": 2407,
+      "sha256": "99570c380c814bb0d289ed00987ca981a9128592889589af3c81dad3e1b9e3cd"
+    },
+    {
+      "path": "scripts/score_readiness.py",
+      "size": 1507,
+      "sha256": "a17057412f9b574b5e1445cb6191ed4a4b0a8e1f09bcf59fb12cbbabb53c3dc7"
+    },
+    {
+      "path": "scripts/validate_packages.py",
+      "size": 4743,
+      "sha256": "834aae29a1ba1ffc48d9ecf621b9e72e7a0e96e9cf74e255abf30f077921ad90"
+    }
+  ]
+}

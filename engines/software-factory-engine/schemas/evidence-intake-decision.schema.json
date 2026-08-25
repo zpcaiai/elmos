@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/software-factory/evidence-intake-decision/1.0",
+  "title": "Local external-evidence quarantine decision",
+  "type": "object",
+  "required": [
+    "schema_version", "status", "policy_id", "policy_digest", "receipt_id",
+    "receipt_digest", "raw_evidence_digest", "raw_evidence_bytes", "local_admission_state",
+    "failures", "external_states", "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "status": {"enum": ["EXTERNAL_RECEIPT_POLICY_ADMITTED", "EXTERNAL_RECEIPT_QUARANTINED"]},
+    "policy_id": {"$ref": "#/$defs/token"},
+    "policy_digest": {"$ref": "#/$defs/digest"},
+    "receipt_id": {"$ref": "#/$defs/token"},
+    "receipt_digest": {"$ref": "#/$defs/digest"},
+    "raw_evidence_digest": {"$ref": "#/$defs/digest"},
+    "raw_evidence_bytes": {"type": "integer", "minimum": 0, "maximum": 8388608},
+    "local_admission_state": {"enum": ["ADMITTED_UNVERIFIED", "QUARANTINED"]},
+    "failures": {
+      "type": "array", "maxItems": 10, "uniqueItems": true,
+      "items": {
+        "enum": [
+          "SCOPE_MISMATCH", "ROLE_PRINCIPALS_NOT_DISTINCT",
+          "ROLE_ORGANIZATIONS_NOT_DISTINCT", "AUTHOR_REVOKED", "EXECUTOR_REVOKED",
+          "VERIFIER_REVOKED", "ORGANIZATION_NOT_ALLOWED", "EVIDENCE_KIND_NOT_ALLOWED",
+          "RECEIPT_NOT_ALLOWLISTED", "EXECUTION_STATE_NOT_PASSED"
+        ]
+      }
+    },
+    "external_states": {"$ref": "#/$defs/externalStates"},
+    "limitations": {
+      "type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true,
+      "items": {
+        "enum": [
+          "LOCAL_POLICY_ADMISSION_IS_NOT_SIGNATURE_VERIFICATION",
+          "LOCAL_ROLE_LABELS_DO_NOT_PROVE_ORGANIZATIONAL_INDEPENDENCE",
+          "EXTERNAL_EXECUTION_AND_CERTIFICATION_REMAIN_NOT_RUN"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "externalStates": {
+      "type": "object",
+      "required": [
+        "external_receipt_trust", "independent_holdout", "real_provider_execution",
+        "representative_customer_workload", "production_canary", "production_rollback",
+        "production_writes", "external_certification"
+      ],
+      "properties": {
+        "external_receipt_trust": {"const": "NOT_RUN"},
+        "independent_holdout": {"const": "NOT_RUN"},
+        "real_provider_execution": {"const": "NOT_RUN"},
+        "representative_customer_workload": {"const": "NOT_RUN"},
+        "production_canary": {"const": "NOT_RUN"},
+        "production_rollback": {"const": "NOT_RUN"},
+        "production_writes": {"const": "NOT_RUN"},
+        "external_certification": {"const": "NOT_CERTIFIED"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

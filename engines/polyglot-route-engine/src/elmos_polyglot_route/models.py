@@ -55,16 +55,12 @@ SUPPORTED_LANGUAGES: tuple[Language, ...] = (
 #: producing an unbacked SemanticIR.  Moving a language out of this tuple is
 #: the single edit that turns its analyzer on, and it must not happen before a
 #: pinned toolchain and a real analyzer exist for it.
-PENDING_ANALYZER_LANGUAGES: tuple[Language, ...] = (
-    "kotlin",
-    "react",
-    "flutter",
-)
+PENDING_ANALYZER_LANGUAGES: tuple[Language, ...] = ()
 
 #: Languages this engine can lift *from*.  This was an alias for
 #: ``SUPPORTED_LANGUAGES`` while every supported language had an analyzer.  It
-#: is now an explicit tuple because the matrix declares three languages ahead
-#: of their analyzers; keeping the alias would have made
+#: remains an explicit tuple so future matrix declarations cannot silently
+#: claim analyzer support; aliasing it to ``SUPPORTED_LANGUAGES`` would make
 #: ``PENDING_ANALYZER_LANGUAGES`` decorative.  Swift is analyzed by the
 #: SwiftSyntax helper under `native/swift`, which `native.analyze` builds on
 #: demand the same way the TypeScript CLI is built.
@@ -72,19 +68,41 @@ ANALYZABLE_LANGUAGES: tuple[Language, ...] = tuple(
     language for language in SUPPORTED_LANGUAGES if language not in PENDING_ANALYZER_LANGUAGES
 )
 
+#: Languages whose exact single-unit source analyzer exists, but whose
+#: repository-wide inventory, discovery, placement, build, and relift surface
+#: is not complete.  This is intentionally independent of analyzer readiness:
+#: promoting a parser must not silently promote whole-repository support.
+PENDING_REPOSITORY_LANGUAGES: tuple[Language, ...] = ()
+
 #: Languages the repository orchestration surface actually handles end to end:
 #: source inventory extensions, discovery declaration patterns, target project
 #: placement and target build files.  This is deliberately NOT
-#: ``SUPPORTED_LANGUAGES``.  A pending-analyzer language is a declared matrix
-#: member with no repository surface yet, and a deprecated language keeps its
+#: ``SUPPORTED_LANGUAGES``. A repository-pending language is a declared matrix
+#: member with no complete repository surface yet, and a deprecated language keeps its
 #: repository surface so filed evidence stays reproducible.  Adding a stub
 #: extension or placer for a pending language just to make a set comparison
 #: pass would claim support that does not exist.
 REPOSITORY_SURFACE_LANGUAGES: tuple[Language, ...] = tuple(
     language
     for language in (*SUPPORTED_LANGUAGES, *DEPRECATED_LANGUAGES)
-    if language not in PENDING_ANALYZER_LANGUAGES
+    if language not in PENDING_REPOSITORY_LANGUAGES
 )
+
+REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE = "ACTIVE"
+REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY = "DEPRECATED_REPLAY"
+
+
+def repository_language_lifecycle(
+    source_language: object,
+    target_language: object,
+) -> str | None:
+    """Classify a repository pair without reviving a deprecated direction."""
+
+    if source_language in SUPPORTED_LANGUAGES and target_language in SUPPORTED_LANGUAGES:
+        return REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE
+    if (source_language, target_language) in DEPRECATED_DIRECTED_PAIRS:
+        return REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+    return None
 
 #: The explicit complete route matrix.  Route-pack presence does not imply a
 #: local pass, repository pass, independent verification, or certification;
@@ -558,17 +576,35 @@ class Function:
     return_type: str
     body: tuple[Statement, ...]
     source_span: SourceSpan | None = None
+    #: Source-language documentation attached to the declaration (a Python
+    #: docstring; the equivalent in other frontends can follow).
+    #:
+    #: This is PROVENANCE, not semantics, and the distinction is load-bearing:
+    #: it appears in `to_mapping` -- so nothing the source carried is silently
+    #: dropped and the artifact digest reflects it -- and NOT in
+    #: `semantic_mapping`, so source/target equivalence is never asked to
+    #: compare a Python `__doc__` against a Java method that has no such
+    #: concept. Functions without documentation serialize byte-identically to
+    #: before this field existed, so previously recorded IR digests still hold.
+    documentation: str | None = None
 
     @classmethod
     def from_mapping(cls, value: dict[str, Any], *, _path: str = "function") -> Function:
         _require_exact_keys(
             value,
             frozenset({"name", "parameters", "return_type", "body"}),
-            frozenset({"source_span"}),
+            frozenset({"source_span", "documentation"}),
             _path,
         )
         name = _require_string(value["name"], f"{_path}.name", nonempty=True)
         return_type = _require_string(value["return_type"], f"{_path}.return_type")
+        documentation = (
+            # An empty docstring is legal Python and stays distinguishable from
+            # "no docstring at all", so `nonempty` is deliberately not required.
+            _require_string(value["documentation"], f"{_path}.documentation")
+            if "documentation" in value
+            else None
+        )
         parameters = _require_mapping_list(value["parameters"], f"{_path}.parameters")
         body = _require_mapping_list(value["body"], f"{_path}.body", nonempty=True)
         if not name or return_type not in {"integer", "number", "boolean", "string"}:
@@ -582,6 +618,7 @@ class Function:
             return_type=return_type,
             body=tuple(Statement.from_mapping(item, _path=f"{_path}.body[{index}]") for index, item in enumerate(body)),
             source_span=_optional_source_span(value, _path),
+            documentation=documentation,
         )
 
     def signature_mapping(self) -> dict[str, Any]:
@@ -607,6 +644,8 @@ class Function:
         }
         if self.source_span is not None:
             result["source_span"] = self.source_span.to_mapping()
+        if self.documentation is not None:
+            result["documentation"] = self.documentation
         return result
 
 

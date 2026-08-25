@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Task Lifecycle Temporal"
+  short_description: "Run this ELMOS task and FinOps Skill"
+  default_prompt: "Use $elmos-task-lifecycle-temporal to execute its scoped workflow with fail-closed evidence."

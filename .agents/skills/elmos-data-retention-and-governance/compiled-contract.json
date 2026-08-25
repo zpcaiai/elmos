@@ -1,0 +1,143 @@
+{
+  "acceptance": [
+    {
+      "criterion": "用户删除请求能覆盖所有派生副本或明确受法律保留限制",
+      "evidence": [],
+      "id": "S27-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "未经许可的资产不发送第三方模型",
+      "evidence": [],
+      "id": "S27-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "租户可配置保留期限且新策略可追踪",
+      "evidence": [],
+      "id": "S27-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "审计日志防篡改并与业务内容隔离",
+      "evidence": [],
+      "id": "S27-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "用户删除请求能覆盖所有派生副本或明确受法律保留限制",
+      "未经许可的资产不发送第三方模型",
+      "租户可配置保留期限且新策略可追踪",
+      "审计日志防篡改并与业务内容隔离"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "retention_policies",
+      "deletion_jobs",
+      "data_access_audit"
+    ],
+    "deliverables": [
+      "GovernancePolicyEngine",
+      "retention、delete、export workflows",
+      "删除传播、法律保留和跨租户测试"
+    ],
+    "dependencies": [
+      "elmos-storage-index-and-retrieval"
+    ],
+    "events": [
+      "retention.expired",
+      "deletion.completed",
+      "governance.policy.denied"
+    ],
+    "failure_modes": [
+      "索引残留",
+      "备份删除延迟",
+      "法律保留冲突"
+    ],
+    "inputs": [
+      "数据分类、租户策略、资产和派生关系"
+    ],
+    "metrics": [
+      "deletion_sla",
+      "orphan_derivative_count"
+    ],
+    "name": "elmos-data-retention-and-governance",
+    "objective": "让数据用途、驻留、第三方模型发送、保留期限和删除传播可配置、可证明。",
+    "ordinal": 27,
+    "outputs": [
+      "PolicyDecision、DeletionProof、ExportPackage"
+    ],
+    "responsibilities": [
+      "定义数据分类、租户策略、合法用途和 provider 发送边界",
+      "实施对象存储、数据库、索引、缓存和备份的保留、删除传播",
+      "提供用户导出、项目归档、法律保留和删除证明",
+      "记录访问、共享、模型调用和管理员操作审计"
+    ],
+    "schema_version": "1.0.0",
+    "title": "数据保留与治理"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-data-retention-and-governance/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-data-retention-and-governance/SKILL.md": {
+        "bytes": 2843,
+        "mode": "0644",
+        "sha256": "124fe26b52d2b06c37e2e0dc49abff8f030d43bda8ed079181f3da0c7db7c765"
+      },
+      "skills/elmos-data-retention-and-governance/references/contract.yaml": {
+        "bytes": 1604,
+        "mode": "0644",
+        "sha256": "29875261be12c2253af438d7d105b306ddf93e47db6d95853aac16796c01cfd5"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-data-retention-and-governance/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_data_retention_and_governance",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "governance",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "实现多租户输入资产、派生内容、索引、修正和审计数据的分类、保留、导出与彻底删除；当任务涉及隐私、合规或生命周期管理时使用。",
+    "name": "elmos-data-retention-and-governance",
+    "ordinal": 27,
+    "title": "数据保留与治理"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "29875261be12c2253af438d7d105b306ddf93e47db6d95853aac16796c01cfd5",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "124fe26b52d2b06c37e2e0dc49abff8f030d43bda8ed079181f3da0c7db7c765"
+  }
+}

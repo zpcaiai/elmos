@@ -69,6 +69,29 @@ provider, production, independent-verifier or certification evidence.
 5. Keep BC-18 `NOT_RUN` and BC-19 `NOT_CERTIFIED` until exact external evidence
    exists.
 
+## Active claims (2026-08-25)
+
+> Claim protocol per `.ai/CODE_LEVEL_BACKLOG.md`: write the claim before touching code.
+
+- `BC-13` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
+- `BC-14` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
+- `BC-15` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
+- `BC-16` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
+
+Observed baseline before any change of this session (cloud container, CPython 3.11.15,
+aarch64-linux, editable install, `pytest tests/ -q`): **4 failures**, all in
+already-`COMPLETE_VERIFIED`-adjacent rows and all attributable to BC-13's untested
+migration additions:
+
+- `test_metadata_store_contract.py::test_project_scope_migrations_are_contiguous_and_packaged_byte_exactly`
+- `test_metadata_store_contract.py::test_sqlite_project_scope_upgrade_rejects_legacy_drift_without_ledger_entry`
+- `test_metadata_store_contract.py::test_postgres_project_scope_migration_has_exact_composite_fk_contract`
+- `test_sota_acceptance.py::test_sota_16_a_policy_cannot_make_an_invalid_entry_reusable`
+
+This baseline is cloud-container engineering evidence only. It is not Mac, provider,
+production, independent-verifier or certification evidence, and it does not change
+BC-18 (`NOT_RUN`) or BC-19 (`NOT_CERTIFIED`).
+
 ## Synchronization rule
 
 After any task changes state, update in the same atomic documentation write:

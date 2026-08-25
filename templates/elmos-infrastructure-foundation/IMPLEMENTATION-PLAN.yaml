@@ -1,0 +1,49 @@
+# Validate an equivalent JSON form with schemas/implementation-plan.schema.json.
+schema_version: "1.0"
+plan_id: plan-YYYYMMDD-short-name
+repository: organization/repository
+scope: Describe the smallest dependency-resolved vertical slice.
+status: DRAFT
+selected_skills:
+  - elmos-infrastructure-program-orchestrator
+tasks:
+  - id: ELMOS-ARCH-001
+    status: READY
+    description: Map actual repository modules and authority boundaries.
+    dependencies: []
+runtime_estimate:
+  estimate_id: estimate-YYYYMMDD-short-name
+  as_of: "2026-08-19T00:00:00Z"
+  system_runtime:
+    p50_seconds: 0
+    p80_seconds: 0
+    p95_seconds: 0
+    confidence: low
+    queue_seconds_p50: 0
+    execution_seconds_p50: 0
+    critical_path: []
+  human_equivalent:
+    engineering_hours_p50: 0
+    review_hours_p50: 0
+    notes: Comparison only; excluded from autonomous eLMOS runtime.
+  human_in_loop_delay:
+    excluded_from_system_runtime: true
+    risks: []
+  assumptions: {}
+  coverage:
+    historical_runs: 0
+    segment_match: 0
+    calibration_date: "2026-08-19"
+validation:
+  - command: ./verify.sh
+    expected: All applicable checks pass.
+production_claim: This plan is implementation intent, not production evidence.
+rollback:
+  boundary: Describe the last safe state.
+  procedure: Describe exact rollback or forward-fix.
+  point_of_no_return: None for this slice.
+evidence:
+  expected: []
+  produced: []
+residual_risks: []
+next_task: ""

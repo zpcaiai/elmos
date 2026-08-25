@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "corpus_key": "build-cache-tenant-isolation-development-v1",
+  "classification": "development",
+  "execution_status": "NOT_RUN",
+  "may_influence_implementation": true,
+  "test_refs": [
+    "engines/build-cache-engine/tests/test_api.py",
+    "engines/build-cache-engine/tests/test_affinity.py",
+    "engines/build-cache-engine/tests/test_parity_api.py",
+    "engines/build-cache-engine/tests/test_parity_store.py",
+    "engines/build-cache-engine/tests/test_environment_service.py",
+    "engines/build-cache-engine/tests/test_context_ledger.py",
+    "engines/build-cache-engine/tests/test_context_compaction.py",
+    "engines/build-cache-engine/tests/test_coordinator.py",
+    "engines/build-cache-engine/tests/test_metadata_store_contract.py"
+  ],
+  "prohibited_uses": [
+    "independent-verification",
+    "certification"
+  ]
+}

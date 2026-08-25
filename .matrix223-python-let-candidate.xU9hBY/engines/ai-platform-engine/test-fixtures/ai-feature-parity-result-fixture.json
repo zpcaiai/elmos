@@ -1,0 +1,7 @@
+{
+  "featureId": "featureId-fixture",
+  "offlineVersion": "offlineVersion-fixture",
+  "onlineVersion": "onlineVersion-fixture",
+  "status": "EXACT",
+  "evidenceRefs": []
+}

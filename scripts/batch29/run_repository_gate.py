@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Fail-closed Batch 29 gate for ten-language repository conversion evidence.
+"""Fail-closed Batch 29 gate for the active repository conversion matrix.
 
 This gate evaluates local engineering evidence only.  A complete result can
 prepare ``READY_FOR_EXTERNAL_GATE``; it can never certify a route, a language
 pair, or the platform.  Every ordered pair and both bounded repository classes
 must be present, and every referenced artifact is content verified below the
-selected evidence root.
+selected evidence root.  The current authority is the thirteen-language active
+matrix from :mod:`scripts.batch29.route_sets`; deprecated JavaScript campaigns
+remain historical evidence and cannot pass this gate.
 """
 
 from __future__ import annotations
@@ -21,27 +23,45 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.batch29.route_sets import (  # noqa: E402
+    COMPLETE_ROUTE_KEYS as AUTHORITATIVE_ACTIVE_ROUTE_KEYS,
+    DEPRECATED_ROUTE_LANGUAGES,
+    SUPPORTED_ROUTE_LANGUAGES,
+)
+
 CAMPAIGN_SCHEMA = (
     ROOT / "schemas" / "batch29" / "repository-capability-campaign.schema.json"
 )
 RESULT_SCHEMA = ROOT / "schemas" / "batch29" / "repository-gate-result.schema.json"
 GATE_IMPLEMENTATION = Path(__file__).resolve()
 
-LANGUAGES = (
-    "java",
-    "python",
-    "csharp",
-    "typescript",
-    "go",
-    "rust",
-    "cpp",
-    "objc",
-    "swift",
-    "javascript",
-)
+CURRENT_CAMPAIGN_SCHEMA_VERSION = "batch29.repository-capability-campaign.v2"
+CURRENT_RESULT_SCHEMA_VERSION = "batch29.repository-gate-result.v2"
+CURRENT_REPOSITORY_PROFILE = "repository-wide-v2"
+LEGACY_CAMPAIGN_SCHEMA_VERSION = "batch29.repository-capability-campaign.v1"
+
+LANGUAGES = tuple(SUPPORTED_ROUTE_LANGUAGES)
+EXPECTED_ROUTE_KEYS = tuple(AUTHORITATIVE_ACTIVE_ROUTE_KEYS)
 EXPECTED_PAIRS = tuple(
-    (source, target) for source in LANGUAGES for target in LANGUAGES if source != target
+    (route_key.split("-to-", 1)[0], route_key.split("-to-", 1)[1])
+    for route_key in EXPECTED_ROUTE_KEYS
 )
+DERIVED_ROUTE_KEYS = tuple(
+    f"{source}-to-{target}"
+    for source in LANGUAGES
+    for target in LANGUAGES
+    if source != target
+)
+if len(LANGUAGES) != 13 or len(set(LANGUAGES)) != 13:
+    raise RuntimeError("REPOSITORY_GATE_ACTIVE_LANGUAGE_SET_DRIFT")
+if "javascript" in LANGUAGES or set(LANGUAGES) & set(DEPRECATED_ROUTE_LANGUAGES):
+    raise RuntimeError("REPOSITORY_GATE_DEPRECATED_LANGUAGE_IS_ACTIVE")
+if EXPECTED_ROUTE_KEYS != DERIVED_ROUTE_KEYS or len(EXPECTED_ROUTE_KEYS) != 156:
+    raise RuntimeError("REPOSITORY_GATE_ACTIVE_ROUTE_SET_DRIFT")
+
 REPOSITORY_CLASSES = ("SMALL", "MEDIUM")
 ROUTE_STATES = ("PASSED", "FAILED", "SKIPPED", "UNSUPPORTED", "NOT_RUN")
 
@@ -1577,7 +1597,7 @@ def _build_result(
         sorted(context.evidence_records, key=lambda item: str(item["artifact_id"]))
     )
     result_without_digest = {
-        "schema_version": "batch29.repository-gate-result.v1",
+        "schema_version": CURRENT_RESULT_SCHEMA_VERSION,
         "kind": "elmos.batch29.repository-gate-result",
         "campaign_id": campaign_id,
         "campaign_digest": campaign_digest,
@@ -1640,7 +1660,13 @@ def evaluate_repository_gate(campaign: Any, evidence_root: Path) -> dict[str, An
         context,
     )
     if root is not None:
-        if root.get("schema_version") != "batch29.repository-capability-campaign.v1":
+        schema_version = root.get("schema_version")
+        if schema_version == LEGACY_CAMPAIGN_SCHEMA_VERSION:
+            context.fail(
+                "legacy ten-language/90-route repository evidence is historical-only "
+                "and cannot produce the current readiness decision"
+            )
+        elif schema_version != CURRENT_CAMPAIGN_SCHEMA_VERSION:
             context.fail("campaign.schema_version is invalid")
         if root.get("kind") != "elmos.batch29.repository-capability-campaign":
             context.fail("campaign.kind is invalid")
@@ -1652,9 +1678,22 @@ def evaluate_repository_gate(campaign: Any, evidence_root: Path) -> dict[str, An
             context.fail("campaign.campaign_id is invalid")
         else:
             campaign_id = raw_campaign_id
-        if root.get("languages") != list(LANGUAGES):
+        campaign_languages = root.get("languages")
+        if (
+            isinstance(campaign_languages, list)
+            and any(
+                isinstance(language, str)
+                and language in DEPRECATED_ROUTE_LANGUAGES
+                for language in campaign_languages
+            )
+        ):
             context.fail(
-                "campaign.languages must be the exact ordered ten-language set"
+                "campaign.languages contains deprecated JavaScript; its repository "
+                "evidence is historical-only"
+            )
+        if campaign_languages != list(LANGUAGES):
+            context.fail(
+                "campaign.languages must be the exact ordered thirteen-language active set"
             )
         scope = _exact_object(
             root.get("scope"),
@@ -1663,8 +1702,10 @@ def evaluate_repository_gate(campaign: Any, evidence_root: Path) -> dict[str, An
             context,
         )
         if scope is not None:
-            if scope.get("profile") != "repository-wide-v1":
-                context.fail("campaign.scope.profile must be repository-wide-v1")
+            if scope.get("profile") != CURRENT_REPOSITORY_PROFILE:
+                context.fail(
+                    f"campaign.scope.profile must be {CURRENT_REPOSITORY_PROFILE}"
+                )
             if scope.get("repository_classes") != list(REPOSITORY_CLASSES):
                 context.fail(
                     "campaign.scope.repository_classes must be exactly SMALL and MEDIUM"

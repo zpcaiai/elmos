@@ -31,22 +31,10 @@ import pytest
 from elmos_polyglot_route import types
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.identifier_hygiene import plan_identifiers
-from elmos_polyglot_route.models import Language, RouteError
+from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import SemanticIR
 
-_EMITTABLE: tuple[Language, ...] = (
-    "java",
-    "python",
-    "csharp",
-    "typescript",
-    "go",
-    "rust",
-    "cpp",
-    "objc",
-    "swift",
-    "php",
-    "kotlin",
-)
+_EMITTABLE: tuple[Language, ...] = ROUTED_LANGUAGES
 
 
 def _name(value: str) -> dict:

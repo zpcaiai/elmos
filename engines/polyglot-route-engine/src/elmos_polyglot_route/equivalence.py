@@ -961,7 +961,7 @@ class _Encoder:
         for parameter in function.parameters:
             variable = self._variable(f"{role}_{parameter.name}", parameter.type)
             self.environment[parameter.name] = variable
-            if runtime_language in {"typescript", "javascript"} and parameter.type == "integer":
+            if runtime_language in {"typescript", "react", "javascript"} and parameter.type == "integer":
                 self._safe_integer_assumption(variable, f"parameter:{parameter.name}")
 
     @staticmethod
@@ -1045,7 +1045,7 @@ class _Encoder:
                 if not isinstance(expression.value, float):
                     raise _UnsupportedFormal("FORMAL_NUMBER_LITERAL_INVALID")
                 if (
-                    self.runtime_language in {"typescript", "javascript"}
+                    self.runtime_language in {"typescript", "react", "javascript"}
                     and expression.value == 0.0
                     and math.copysign(1.0, expression.value) < 0
                 ):
@@ -1094,7 +1094,7 @@ class _Encoder:
                     value = left.value / right.value if operator == "/" else z3.SRem(left.value, right.value)
                 else:
                     raise _UnsupportedFormal(f"FORMAL_INTEGER_OPERATOR_UNSUPPORTED:{operator}")
-                if self.runtime_language in {"typescript", "javascript"}:
+                if self.runtime_language in {"typescript", "react", "javascript"}:
                     self._safe_integer_assumption(value, f"expression:{operator}:{len(self.assumptions)}")
                 error = z3.If(prior_error != 0, prior_error, operation_error)
                 return _ExpressionDenotation(value, "integer", error)
@@ -1115,7 +1115,7 @@ class _Encoder:
                     raise _UnsupportedFormal(f"FORMAL_FLOAT_OPERATOR_UNSUPPORTED:{operator}")
                 zero_error = z3.fpIsZero(right_value) if operator in {"/", "%"} else z3.BoolVal(False)
                 operation_error = z3.If(zero_error, z3.IntVal(2), z3.IntVal(0))
-                if self.runtime_language in {"typescript", "javascript"}:
+                if self.runtime_language in {"typescript", "react", "javascript"}:
                     self._finite_number_assumption(
                         value,
                         f"expression:{operator}:{len(self.assumptions)}",
@@ -1217,7 +1217,10 @@ class _Encoder:
 
     def encode(self) -> _FunctionDenotation:
         denotation = self.statements(self.function.body, "/body")
-        if self.runtime_language in {"typescript", "javascript"} and self.function.return_type == "number":
+        if (
+            self.runtime_language in {"typescript", "react", "javascript"}
+            and self.function.return_type == "number"
+        ):
             self._finite_number_assumption(denotation.value, "return")
         return denotation
 

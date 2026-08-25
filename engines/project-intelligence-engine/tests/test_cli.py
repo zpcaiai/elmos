@@ -138,8 +138,8 @@ class CliBoundaryTests(unittest.TestCase):
         self.assertEqual(completed.stdout, _canonical_line(result))
         self.assertEqual(result["state"], "BLOCKED")
         self.assertEqual(result["code"], "CLI_REQUEST_REJECTED")
-        self.assertEqual(result["error"]["type"], "SkillRuntimeError")
-        self.assertIn("unknown Project Intelligence Skill", result["error"]["message"])
+        self.assertEqual(result["error"]["type"], "REQUEST_REJECTED")
+        self.assertEqual(result["error"]["message"], "CLI request rejected")
         self.assertFalse(result["external_effects_performed"])
         self.assertEqual(result["external_evidence"], "NOT_RUN")
         self.assertEqual(result["certification"], "NOT_CERTIFIED")
@@ -162,7 +162,8 @@ class CliBoundaryTests(unittest.TestCase):
         result = json.loads(completed.stdout)
         self.assertEqual(result["state"], "BLOCKED")
         self.assertEqual(result["code"], "CLI_REQUEST_REJECTED")
-        self.assertIn("duplicate JSON key", result["error"]["message"])
+        self.assertEqual(result["error"]["type"], "REQUEST_REJECTED")
+        self.assertNotIn("request_id", json.dumps(result, sort_keys=True))
         self.assertFalse(result["external_effects_performed"])
 
 

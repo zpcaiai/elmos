@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","scenarioId":"order-to-cash-standardization","sourceResult":{"approvalLevels":3},"targetResult":{"approvalLevels":2},"status":"STANDARDIZED_APPROVED","financialStatus":"PASS","inventoryStatus":"PASS","securityStatus":"PASS","standardizationApprovalRef":"approval://business-owner/otc-v3","evidenceRefs":["evidence://process/otc","evidence://finance/otc"]}

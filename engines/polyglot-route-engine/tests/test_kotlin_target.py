@@ -29,9 +29,8 @@ from elmos_polyglot_route import identifier_hygiene as hygiene
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.identifier_hygiene import plan_identifiers
 from elmos_polyglot_route.models import (
+    ANALYZABLE_LANGUAGES,
     PENDING_ANALYZER_LANGUAGES,
-    REPOSITORY_SURFACE_LANGUAGES,
-    RouteError,
     SemanticIR,
     is_routed_pair,
 )
@@ -52,9 +51,8 @@ def _ir(
     return_type: str,
     body: list[dict[str, object]],
 ) -> SemanticIR:
-    # `python` rather than `kotlin` as the source language: kotlin is still a
-    # pending-analyzer language, so a kotlin-sourced SemanticIR is refused by
-    # construction.  The target side does not care where the IR came from.
+    # The target-side assertions deliberately use a synthetic Python origin so
+    # they remain independent from the real Kotlin analyzer integration tests.
     return SemanticIR.from_mapping(
         {
             "schema_version": "1.0.0",
@@ -91,17 +89,15 @@ def _emit(ir: SemanticIR) -> str:
 # --------------------------------------------------------------- emitted source
 
 
-def test_kotlin_is_declared_in_the_matrix_but_not_yet_liftable() -> None:
-    """The state this whole file is written against, asserted up front.
-
-    If kotlin ever leaves PENDING_ANALYZER_LANGUAGES, the `_ir` helper's comment
-    stops being true and this suite should be revisited rather than silently
-    testing something else.
-    """
-    assert "kotlin" in PENDING_ANALYZER_LANGUAGES
-    assert "kotlin" not in REPOSITORY_SURFACE_LANGUAGES
+def test_kotlin_is_declared_in_the_matrix_and_liftable() -> None:
+    assert "kotlin" not in PENDING_ANALYZER_LANGUAGES
+    assert "kotlin" in ANALYZABLE_LANGUAGES
     assert is_routed_pair("kotlin", "python")
     assert is_routed_pair("python", "kotlin")
+
+
+def test_kotlin_identifier_policy_pins_the_exact_compiler_dialect() -> None:
+    assert hygiene.policy_for_language("kotlin").dialect == "kotlin-2.2.20-jvm"
 
 
 def test_emitted_signature_and_types_are_the_sixty_four_bit_spellings() -> None:
@@ -380,25 +376,26 @@ def test_package_extraction(text: str, expected: str) -> None:
     assert _kotlin_package(text) == expected
 
 
-def test_a_kotlin_sourced_semantic_ir_is_still_refused() -> None:
-    with pytest.raises(RouteError, match=r"^SOURCE_ANALYZER_NOT_IMPLEMENTED:kotlin$"):
-        SemanticIR.from_mapping(
-            {
-                "schema_version": "1.0.0",
-                "source_language": "kotlin",
-                "source_file": "subject.kt",
-                "analyzer": "test",
-                "analyzer_version": "1",
-                "functions": [
-                    {
-                        "name": "identity",
-                        "parameters": [{"name": "value", "type": "integer"}],
-                        "return_type": "integer",
-                        "body": [
-                            {"kind": "return", "expression": {"kind": "name", "value": "value"}}
-                        ],
-                    }
-                ],
-                "diagnostics": [],
-            }
-        )
+def test_a_kotlin_sourced_semantic_ir_is_admitted() -> None:
+    semantic = SemanticIR.from_mapping(
+        {
+            "schema_version": "1.0.0",
+            "source_language": "kotlin",
+            "source_file": "subject.kt",
+            "analyzer": "kotlin-compiler PSI",
+            "analyzer_version": "2.2.20",
+            "functions": [
+                {
+                    "name": "identity",
+                    "parameters": [{"name": "value", "type": "integer"}],
+                    "return_type": "integer",
+                    "body": [
+                        {"kind": "return", "expression": {"kind": "name", "value": "value"}}
+                    ],
+                }
+            ],
+            "diagnostics": [],
+        }
+    )
+    assert semantic.source_language == "kotlin"
+    assert semantic.analyzer_version == "2.2.20"

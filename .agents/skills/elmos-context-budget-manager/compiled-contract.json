@@ -1,0 +1,144 @@
+{
+  "acceptance": [
+    {
+      "criterion": "总输入加预留输出加安全余量不超过模型窗口",
+      "evidence": [],
+      "id": "S30-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "P0、P1 内容不能被普通驱逐策略移除",
+      "evidence": [],
+      "id": "S30-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "预算包含工具 schema、工具结果和多模态等价 token",
+      "evidence": [],
+      "id": "S30-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "前端显示值与实际调用计量一致",
+      "evidence": [],
+      "id": "S30-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "总输入加预留输出加安全余量不超过模型窗口",
+      "P0、P1 内容不能被普通驱逐策略移除",
+      "预算包含工具 schema、工具结果和多模态等价 token",
+      "前端显示值与实际调用计量一致"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "task_context_budgets",
+      "context_usage_snapshots",
+      "context_source_items"
+    ],
+    "deliverables": [
+      "ContextBudgetManager 服务",
+      "预算策略、快照和审计模型",
+      "边界值、并发工具调用和模型切换测试"
+    ],
+    "dependencies": [
+      "elmos-model-capability-discovery",
+      "elmos-multimodal-token-accounting"
+    ],
+    "events": [
+      "context.source.loaded",
+      "context.source.evicted",
+      "context.budget.rejected"
+    ],
+    "failure_modes": [
+      "tokenizer 不匹配",
+      "并发增长",
+      "工具结果爆量"
+    ],
+    "inputs": [
+      "上下文候选、模型能力、预留策略"
+    ],
+    "metrics": [
+      "budget_estimation_error",
+      "over_limit_requests"
+    ],
+    "name": "elmos-context-budget-manager",
+    "objective": "计算真实可用输入容量，按优先级和不可驱逐规则装载内容，并为工具回合与输出保留安全空间。",
+    "ordinal": 30,
+    "outputs": [
+      "ContextPlan、UsageSnapshot、EvictionDecision"
+    ],
+    "responsibilities": [
+      "实现 ContextUsage 分类计量和实时 remaining、pressure",
+      "定义 P0-P5 优先级、pin、evict 和 reserve 规则",
+      "在每次调用前运行确定性 budget gate",
+      "记录装入、卸载、压缩和重新水化决策"
+    ],
+    "schema_version": "1.0.0",
+    "title": "上下文预算管理器"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-context-budget-manager/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-context-budget-manager/SKILL.md": {
+        "bytes": 2819,
+        "mode": "0644",
+        "sha256": "14428b8f21f200a579a19bcc62dddc313504bf714e68e5fe6c5cdeb3254a4790"
+      },
+      "skills/elmos-context-budget-manager/references/contract.yaml": {
+        "bytes": 1632,
+        "mode": "0644",
+        "sha256": "bfdbabf12c16716873207643a414293c577f8ee475ea3c44c3481fa43d9b1ab6"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-context-budget-manager/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_context_budget_manager",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "为每次模型调用分配系统、策略、技能、对话、文档、代码、工具结果和输出预算；当任务涉及长上下文装载和超限控制时使用。",
+    "name": "elmos-context-budget-manager",
+    "ordinal": 30,
+    "title": "上下文预算管理器"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "bfdbabf12c16716873207643a414293c577f8ee475ea3c44c3481fa43d9b1ab6",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "14428b8f21f200a579a19bcc62dddc313504bf714e68e5fe6c5cdeb3254a4790"
+  }
+}

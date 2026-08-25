@@ -1,0 +1,393 @@
+{
+  "acyclic": true,
+  "authority": "repository-compiled-contract",
+  "edge_count": 84,
+  "node_count": 37,
+  "nodes": [
+    {
+      "activation": "required",
+      "depends_on": [],
+      "name": "elmos-repository-orchestrator",
+      "source_ordinal": 0
+    },
+    {
+      "activation": "control",
+      "depends_on": [
+        "elmos-repository-orchestrator"
+      ],
+      "name": "elmos-run-state-journal",
+      "source_ordinal": 33
+    },
+    {
+      "activation": "control",
+      "depends_on": [
+        "elmos-repository-orchestrator",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-model-selection-controller",
+      "source_ordinal": 36
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-repository-orchestrator",
+        "elmos-run-state-journal",
+        "elmos-model-selection-controller"
+      ],
+      "name": "elmos-requirement-normalizer",
+      "source_ordinal": 1
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-requirement-normalizer"
+      ],
+      "name": "elmos-repo-intake",
+      "source_ordinal": 2
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-repo-intake"
+      ],
+      "name": "elmos-architecture-indexer",
+      "source_ordinal": 3
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-requirement-normalizer",
+        "elmos-architecture-indexer"
+      ],
+      "name": "elmos-change-impact-analyzer",
+      "source_ordinal": 4
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-change-impact-analyzer"
+      ],
+      "name": "elmos-task-decomposer",
+      "source_ordinal": 5
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-decomposer"
+      ],
+      "name": "elmos-atomicity-validator",
+      "source_ordinal": 6
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-atomicity-validator"
+      ],
+      "name": "elmos-task-dag-builder",
+      "source_ordinal": 7
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-task-dag-builder"
+      ],
+      "name": "elmos-contract-boundary-generator",
+      "source_ordinal": 8
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-contract-boundary-generator"
+      ],
+      "name": "elmos-complexity-estimator",
+      "source_ordinal": 9
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-contract-boundary-generator"
+      ],
+      "name": "elmos-risk-classifier",
+      "source_ordinal": 10
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-contract-boundary-generator"
+      ],
+      "name": "elmos-context-slicer",
+      "source_ordinal": 11
+    },
+    {
+      "activation": "control",
+      "depends_on": [
+        "elmos-run-state-journal",
+        "elmos-model-selection-controller"
+      ],
+      "name": "elmos-model-registry-guard",
+      "source_ordinal": 12
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-model-registry-guard"
+      ],
+      "name": "elmos-model-capability-profiler",
+      "source_ordinal": 13
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-complexity-estimator",
+        "elmos-risk-classifier",
+        "elmos-context-slicer",
+        "elmos-model-registry-guard",
+        "elmos-model-capability-profiler",
+        "elmos-model-selection-controller"
+      ],
+      "name": "elmos-cost-performance-router",
+      "source_ordinal": 14
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-cost-performance-router"
+      ],
+      "name": "elmos-budget-planner",
+      "source_ordinal": 15
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-budget-planner"
+      ],
+      "name": "elmos-eta-estimator",
+      "source_ordinal": 16
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-budget-planner",
+        "elmos-eta-estimator",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-wave-scheduler",
+      "source_ordinal": 17
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-wave-scheduler"
+      ],
+      "name": "elmos-worktree-manager",
+      "source_ordinal": 18
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-contract-boundary-generator",
+        "elmos-context-slicer",
+        "elmos-worktree-manager"
+      ],
+      "name": "elmos-worker-prompt-builder",
+      "source_ordinal": 19
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-cost-performance-router",
+        "elmos-worktree-manager",
+        "elmos-worker-prompt-builder",
+        "elmos-model-selection-controller"
+      ],
+      "name": "elmos-worker-executor",
+      "source_ordinal": 20
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-worker-executor"
+      ],
+      "name": "elmos-deterministic-validator",
+      "source_ordinal": 21
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-worker-executor",
+        "elmos-deterministic-validator"
+      ],
+      "name": "elmos-failure-classifier",
+      "source_ordinal": 22
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-cost-performance-router",
+        "elmos-failure-classifier",
+        "elmos-model-selection-controller"
+      ],
+      "name": "elmos-retry-escalation-controller",
+      "source_ordinal": 23
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-model-registry-guard",
+        "elmos-deterministic-validator"
+      ],
+      "name": "elmos-patch-reviewer",
+      "source_ordinal": 24
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-deterministic-validator"
+      ],
+      "name": "elmos-security-auth-gate",
+      "source_ordinal": 25
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-deterministic-validator"
+      ],
+      "name": "elmos-data-migration-gate",
+      "source_ordinal": 26
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-deterministic-validator"
+      ],
+      "name": "elmos-concurrency-idempotency-gate",
+      "source_ordinal": 27
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-deterministic-validator",
+        "elmos-patch-reviewer",
+        "elmos-security-auth-gate",
+        "elmos-data-migration-gate",
+        "elmos-concurrency-idempotency-gate",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-integration-manager",
+      "source_ordinal": 28
+    },
+    {
+      "activation": "conditional",
+      "depends_on": [
+        "elmos-integration-manager"
+      ],
+      "name": "elmos-conflict-resolver",
+      "source_ordinal": 29
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-integration-manager",
+        "elmos-conflict-resolver"
+      ],
+      "name": "elmos-incremental-regression-gate",
+      "source_ordinal": 30
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-security-auth-gate",
+        "elmos-data-migration-gate",
+        "elmos-concurrency-idempotency-gate",
+        "elmos-incremental-regression-gate"
+      ],
+      "name": "elmos-repository-certifier",
+      "source_ordinal": 31
+    },
+    {
+      "activation": "exception",
+      "depends_on": [
+        "elmos-repository-orchestrator",
+        "elmos-worktree-manager",
+        "elmos-worker-executor",
+        "elmos-integration-manager",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-rollback-recovery",
+      "source_ordinal": 32
+    },
+    {
+      "activation": "required",
+      "depends_on": [
+        "elmos-repository-certifier",
+        "elmos-run-state-journal"
+      ],
+      "name": "elmos-telemetry-learner",
+      "source_ordinal": 34
+    },
+    {
+      "activation": "offline",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-cost-performance-router",
+        "elmos-telemetry-learner"
+      ],
+      "name": "elmos-routing-policy-optimizer",
+      "source_ordinal": 35
+    }
+  ],
+  "package": "elmos-repository-task-decomposition-cost-router-skills",
+  "package_version": "1.1.0",
+  "schema_version": "elmos.repository-task-router.dependency-dag.v1",
+  "source_manifest_declared_dag": false,
+  "topological_order": [
+    "elmos-repository-orchestrator",
+    "elmos-run-state-journal",
+    "elmos-model-selection-controller",
+    "elmos-requirement-normalizer",
+    "elmos-repo-intake",
+    "elmos-architecture-indexer",
+    "elmos-change-impact-analyzer",
+    "elmos-task-decomposer",
+    "elmos-atomicity-validator",
+    "elmos-task-dag-builder",
+    "elmos-contract-boundary-generator",
+    "elmos-complexity-estimator",
+    "elmos-risk-classifier",
+    "elmos-context-slicer",
+    "elmos-model-registry-guard",
+    "elmos-model-capability-profiler",
+    "elmos-cost-performance-router",
+    "elmos-budget-planner",
+    "elmos-eta-estimator",
+    "elmos-wave-scheduler",
+    "elmos-worktree-manager",
+    "elmos-worker-prompt-builder",
+    "elmos-worker-executor",
+    "elmos-deterministic-validator",
+    "elmos-failure-classifier",
+    "elmos-retry-escalation-controller",
+    "elmos-patch-reviewer",
+    "elmos-security-auth-gate",
+    "elmos-data-migration-gate",
+    "elmos-concurrency-idempotency-gate",
+    "elmos-integration-manager",
+    "elmos-conflict-resolver",
+    "elmos-incremental-regression-gate",
+    "elmos-repository-certifier",
+    "elmos-rollback-recovery",
+    "elmos-telemetry-learner",
+    "elmos-routing-policy-optimizer"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Post Edit Format and Patch"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $post-edit-format-and-patch for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

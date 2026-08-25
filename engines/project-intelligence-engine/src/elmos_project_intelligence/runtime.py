@@ -59,7 +59,7 @@ from .domain import (
     score_risk_and_debt,
     validate_connector_contract,
     validate_conversion_mapping,
-    version_artifact,
+    validate_artifact_version_proposal,
 )
 
 
@@ -68,6 +68,200 @@ class SkillRuntimeError(ValueError):
 
 
 CapabilityOperation = Callable[[Mapping[str, Any]], CapabilityOutcome]
+
+_MAX_INPUT_DEPTH = 64
+_MAX_INPUT_NODES = 100_000
+_MAX_INPUT_UTF8_BYTES = 16 * 1024 * 1024
+
+
+def _validate_input_budget(value: Any) -> None:
+    stack: list[tuple[Any, int]] = [(value, 0)]
+    seen_containers: set[int] = set()
+    nodes = 0
+    utf8_bytes = 0
+    while stack:
+        item, depth = stack.pop()
+        if depth > _MAX_INPUT_DEPTH:
+            raise SkillRuntimeError("inputs exceed the maximum nesting depth")
+        nodes += 1
+        if nodes > _MAX_INPUT_NODES:
+            raise SkillRuntimeError("inputs exceed the maximum node count")
+        if isinstance(item, str):
+            utf8_bytes += len(item.encode("utf-8", errors="strict"))
+        elif isinstance(item, Mapping):
+            identity = id(item)
+            if identity in seen_containers:
+                raise SkillRuntimeError("inputs contain a repeated or cyclic mapping")
+            seen_containers.add(identity)
+            for key, child in item.items():
+                if not isinstance(key, str):
+                    raise SkillRuntimeError("input mapping keys must be strings")
+                utf8_bytes += len(key.encode("utf-8", errors="strict"))
+                stack.append((child, depth + 1))
+        elif isinstance(item, Sequence) and not isinstance(
+            item, (str, bytes, bytearray, memoryview)
+        ):
+            identity = id(item)
+            if identity in seen_containers:
+                raise SkillRuntimeError("inputs contain a repeated or cyclic sequence")
+            seen_containers.add(identity)
+            stack.extend((child, depth + 1) for child in item)
+        elif isinstance(item, (bytes, bytearray, memoryview)):
+            utf8_bytes += len(item)
+        if utf8_bytes > _MAX_INPUT_UTF8_BYTES:
+            raise SkillRuntimeError("inputs exceed the maximum UTF-8 byte budget")
+
+
+_INERT_OUTPUT_PATHS: Final[Mapping[str, Mapping[tuple[str, ...], Any]]] = (
+    MappingProxyType(
+        {
+            "elmos-insight-orchestrator": {("automatic_effects",): False},
+            "elmos-reference-architecture": {("deployment_verified",): False},
+            "elmos-repository-ingestion": {("code_executed",): False},
+            "elmos-code-explanation": {("narrative_model_used",): False},
+            "elmos-architecture-discovery": {("runtime_verified",): False},
+            "elmos-data-architecture-lineage": {
+                ("runtime_lineage_verified",): False
+            },
+            "elmos-api-event-topology": {("runtime_activity",): "NOT_RUN"},
+            "elmos-runtime-trace-fusion": {("collector_executed",): False},
+            "elmos-presentation-generation": {("pptx_generated",): False},
+            "elmos-security-threat-model": {("secrets_disclosed",): False},
+            "elmos-artifact-versioning-human-lock": {
+                ("authoritative_lock_verified",): False,
+                ("version_persisted",): False,
+            },
+            "elmos-git-pr-automation": {
+                ("git_mutated",): False,
+                ("push_performed",): False,
+            },
+            "elmos-collaboration-governance": {
+                ("enforcement_authorized",): False
+            },
+            "elmos-integrations-mcp": {
+                ("connector_called",): False,
+                ("enforcement_authorized",): False,
+            },
+            "elmos-large-repository-scaling": {
+                ("distributed_execution",): False
+            },
+            "elmos-observability-slo": {("production_slo_claimed",): False},
+            "elmos-testing-evaluation": {("external_evidence",): "NOT_RUN"},
+            "elmos-conversion-integration": {("conversion_executed",): False},
+            "elmos-deployment-private-cloud": {("deployment_performed",): False},
+            "elmos-release-certification": {
+                ("certified",): False,
+                ("release_authorized",): False,
+            },
+            "elmos-commercial-packaging": {
+                ("billing_performed",): False,
+                ("enforcement_authorized",): False,
+            },
+            "elmos-debug-adapter-gateway": {
+                ("adapter_started",): False,
+                ("enforcement_authorized",): False,
+            },
+            "elmos-debug-sandbox-orchestration": {("sandbox_started",): False},
+            "elmos-online-debug-workbench": {("ui_rendered",): False},
+            "elmos-debug-learning-copilot": {
+                ("model_used",): False,
+                ("side_effects",): False,
+            },
+            "elmos-debug-record-replay": {
+                ("bundle", "native_reverse_debug"): False
+            },
+            "elmos-distributed-debug-correlation": {
+                ("distributed_pause_performed",): False
+            },
+        }
+    )
+)
+_AUTHORITY_KEY_MARKERS = (
+    "authoriz",
+    "authoritative_lock",
+    "approv",
+    "certif",
+    "external_effect",
+    "external_evidence",
+    "side_effect",
+    "secret_disclos",
+    "secrets_disclos",
+    "deployment_verified",
+    "deployment_performed",
+    "runtime_verified",
+    "runtime_lineage_verified",
+    "runtime_activity",
+    "native_reverse_debug",
+    "git_mutated",
+    "push_performed",
+    "connector_called",
+    "distributed_execution",
+    "distributed_pause_performed",
+    "adapter_started",
+    "sandbox_started",
+    "ui_rendered",
+    "model_used",
+    "code_executed",
+    "collector_executed",
+    "billing_performed",
+    "conversion_executed",
+    "production_slo_claimed",
+    "pptx_generated",
+    "automatic_effects",
+    "version_persisted",
+)
+
+
+def _authority_output_paths(
+    value: Any, path: tuple[str, ...] = ()
+) -> set[tuple[str, ...]]:
+    found: set[tuple[str, ...]] = set()
+    if isinstance(value, Mapping):
+        for key, child in value.items():
+            if not isinstance(key, str):
+                raise SkillRuntimeError("handler output keys must be strings")
+            child_path = (*path, key)
+            lowered = key.lower()
+            if any(marker in lowered for marker in _AUTHORITY_KEY_MARKERS):
+                found.add(child_path)
+            found.update(_authority_output_paths(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            found.update(_authority_output_paths(child, (*path, f"[{index}]")))
+    return found
+
+
+def _output_path(value: Mapping[str, Any], path: tuple[str, ...]) -> Any:
+    current: Any = value
+    for component in path:
+        if not isinstance(current, Mapping) or component not in current:
+            raise SkillRuntimeError("handler omitted a required inert authority field")
+        current = current[component]
+    return current
+
+
+def _validate_output_authority(skill: str, outputs: Mapping[str, Any]) -> None:
+    expected = _INERT_OUTPUT_PATHS.get(skill, {})
+    if _authority_output_paths(outputs) != set(expected):
+        raise SkillRuntimeError("handler output contains an unexpected authority field")
+    for path, expected_value in expected.items():
+        observed = _output_path(outputs, path)
+        if type(observed) is not type(expected_value) or observed != expected_value:
+            raise SkillRuntimeError("handler output promoted an unavailable authority")
+    if skill == "elmos-evidence-provenance":
+        bindings = outputs.get("bindings")
+        if not isinstance(bindings, list) or any(
+            not isinstance(item, Mapping)
+            or item.get("verification_state") != "NOT_RUN"
+            or item.get("confidence") not in {"REFERENCED_UNVERIFIED", "UNKNOWN"}
+            for item in bindings
+        ):
+            raise SkillRuntimeError("handler output promoted unverified evidence")
+    if skill == "elmos-release-certification" and outputs.get("decision") not in {
+        "EXTERNAL_GATE_REQUIRED",
+        "BLOCKED",
+    }:
+        raise SkillRuntimeError("handler output bypassed the external release gate")
 
 
 @dataclass(frozen=True, slots=True)
@@ -115,13 +309,22 @@ class RuntimeRequest:
             raise SkillRuntimeError("inputs must be an object")
         actor = value.get("actor_id")
         purpose = value.get("purpose")
+        revision = cls._identifier(value.get("revision"), "revision")
+        _validate_input_budget(inputs)
+        canonical_inputs = canonical_value(dict(inputs))
+        if not isinstance(canonical_inputs, dict):
+            raise SkillRuntimeError("inputs must canonicalize to an object")
+        supplied_revision = canonical_inputs.get("revision")
+        if supplied_revision is not None and supplied_revision != revision:
+            raise SkillRuntimeError("inputs.revision must match the request revision")
+        canonical_inputs["revision"] = revision
         return cls(
             schema_version="1.0",
             request_id=cls._identifier(value.get("request_id"), "request_id"),
             tenant_id=cls._identifier(value.get("tenant_id"), "tenant_id"),
             project_id=cls._identifier(value.get("project_id"), "project_id"),
-            revision=cls._identifier(value.get("revision"), "revision"),
-            inputs=canonical_value(dict(inputs)),
+            revision=revision,
+            inputs=canonical_inputs,
             actor_id=None if actor is None else cls._identifier(actor, "actor_id"),
             purpose=None if purpose is None else cls._identifier(purpose, "purpose"),
         )
@@ -365,10 +568,10 @@ _SPECS: Final[tuple[tuple[str, str, str, str, CapabilityOperation], ...]] = (
     ),
     (
         "elmos-artifact-versioning-human-lock",
-        "LOCAL",
-        "ARTIFACT_VERSION_CREATED",
+        "PARTIAL",
+        "ARTIFACT_VERSION_PROPOSAL_VALIDATED",
         "platform",
-        version_artifact,
+        validate_artifact_version_proposal,
     ),
     (
         "elmos-git-pr-automation",
@@ -380,7 +583,7 @@ _SPECS: Final[tuple[tuple[str, str, str, str, CapabilityOperation], ...]] = (
     (
         "elmos-collaboration-governance",
         "PARTIAL",
-        "LOCAL_POLICY_ALLOWED",
+        "LOCAL_POLICY_SIMULATED",
         "enterprise",
         authorize_and_audit,
     ),
@@ -430,7 +633,7 @@ _SPECS: Final[tuple[tuple[str, str, str, str, CapabilityOperation], ...]] = (
     (
         "elmos-release-certification",
         "PLAN",
-        "RELEASE_READINESS_EVALUATED",
+        "RELEASE_READINESS_PLANNED",
         "quality",
         evaluate_release_readiness,
     ),
@@ -521,7 +724,7 @@ def validate_skill_registry(expected_names: Sequence[str] | None = None) -> None
         state: sum(binding.capability_state == state for binding in bindings)
         for state in ("LOCAL", "PARTIAL", "PLAN")
     }
-    if counts != {"LOCAL": 21, "PARTIAL": 24, "PLAN": 5}:
+    if counts != {"LOCAL": 20, "PARTIAL": 25, "PLAN": 5}:
         raise SkillRuntimeError(f"unexpected capability-state counts: {counts}")
     if expected_names is not None and list(SKILL_REGISTRY) != list(expected_names):
         raise SkillRuntimeError(
@@ -536,7 +739,8 @@ def dispatch_skill(skill: str, value: Mapping[str, Any]) -> dict[str, Any]:
     try:
         request = RuntimeRequest.parse(value)
         outcome = binding.operation(request.inputs)
-    except (TypeError, ValueError, KeyError) as exc:
+        _validate_output_authority(binding.skill, outcome.outputs)
+    except (TypeError, ValueError, KeyError, RecursionError):
         return {
             "schema_version": "elmos.project-intelligence.result.v1",
             "skill": skill,
@@ -544,7 +748,10 @@ def dispatch_skill(skill: str, value: Mapping[str, Any]) -> dict[str, Any]:
             "state": "BLOCKED",
             "code": "REQUEST_OR_CAPABILITY_CONTRACT_REJECTED",
             "outputs": {},
-            "error": {"type": type(exc).__name__, "message": str(exc)},
+            "error": {
+                "type": "CONTRACT_REJECTED",
+                "message": "request or capability contract rejected",
+            },
             "external_effects_performed": False,
             "external_evidence": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
@@ -570,7 +777,7 @@ def capability_manifest() -> dict[str, Any]:
         "schema_version": "elmos.project-intelligence.capabilities.v1",
         "source_package": "elmos-project-intelligence-skills",
         "source_version": "1.1.0",
-        "counts": {"skills": 50, "local": 21, "partial": 24, "plan": 5},
+        "counts": {"skills": 50, "local": 20, "partial": 25, "plan": 5},
         "external_evidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "capabilities": [

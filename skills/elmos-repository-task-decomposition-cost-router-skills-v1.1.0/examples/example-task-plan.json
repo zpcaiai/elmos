@@ -1,0 +1,113 @@
+{
+  "run_id": "example-auth-audit-001",
+  "requirement": "Add repository-wide audit events for privileged admin actions without breaking existing APIs.",
+  "tasks": [
+    {
+      "id": "T010",
+      "title": "Define audit event contract",
+      "task_class": "architecture_contracts",
+      "owned_paths": [
+        "packages/audit-contract/**"
+      ],
+      "dependencies": [],
+      "risk": {
+        "public_contract": "high"
+      },
+      "routing": {
+        "minimum_tier": "L3"
+      }
+    },
+    {
+      "id": "T020",
+      "title": "Add backend audit publisher",
+      "task_class": "backend_standard",
+      "owned_paths": [
+        "services/api/src/audit/**"
+      ],
+      "dependencies": [
+        "T010"
+      ],
+      "risk": {
+        "security": "medium"
+      },
+      "routing": {
+        "minimum_tier": "L1"
+      }
+    },
+    {
+      "id": "T030",
+      "title": "Instrument admin endpoints",
+      "task_class": "backend_standard",
+      "owned_paths": [
+        "services/api/src/admin/**"
+      ],
+      "dependencies": [
+        "T010",
+        "T020"
+      ],
+      "risk": {
+        "security": "high"
+      },
+      "routing": {
+        "minimum_tier": "L3"
+      }
+    },
+    {
+      "id": "T040",
+      "title": "Add audit integration tests",
+      "task_class": "docs_config_boilerplate",
+      "owned_paths": [
+        "services/api/tests/audit/**"
+      ],
+      "dependencies": [
+        "T020",
+        "T030"
+      ],
+      "risk": {},
+      "routing": {
+        "minimum_tier": "L0"
+      }
+    },
+    {
+      "id": "T050",
+      "title": "End-to-end repository certification",
+      "task_class": "final_repository_certification",
+      "owned_paths": [],
+      "dependencies": [
+        "T040"
+      ],
+      "risk": {
+        "blast_radius": "critical"
+      },
+      "routing": {
+        "minimum_tier": "L3"
+      }
+    }
+  ],
+  "waves": [
+    [
+      "T010"
+    ],
+    [
+      "T020"
+    ],
+    [
+      "T030"
+    ],
+    [
+      "T040"
+    ],
+    [
+      "T050"
+    ]
+  ],
+  "model_selection": {
+    "mode": "smart",
+    "selected_model": null,
+    "optimization_profile": "cost_performance",
+    "fallback_policy": "strict",
+    "verification_policy": "system_required_verifiers",
+    "selection_source": "ui",
+    "locked_by_user": false
+  }
+}

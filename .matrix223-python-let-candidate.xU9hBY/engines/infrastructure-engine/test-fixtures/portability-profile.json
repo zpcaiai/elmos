@@ -1,0 +1,16 @@
+{
+  "workloadId": "orders",
+  "level": "P2_ARTIFACT_PORTABLE",
+  "vendorBindings": [
+    "PROVIDER_MANAGED_WITH_EXIT"
+  ],
+  "dataGravity": {
+    "dataGb": 480,
+    "egressEstimateUsd": 42
+  },
+  "exitPlanRef": "artifact://exit/orders",
+  "lastRecoveryTest": null,
+  "status": "NOT_RUN",
+  "evidenceRefs": []
+}
+

@@ -4,38 +4,38 @@
   "executed_on": "2026-08-24",
   "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
   "source_artifact_digest": "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd",
-  "target_artifact_digest": "sha256:2d68e5ccd44465c0bee8307e042097c2b84d0e8201d7ee10ae6d2c44c296bc6c",
-  "target_manifest_digest": "sha256:dbe0c5c379ffa468b98b92a43c39fb08b914cd2e9e78ded0fe9533e864dde26b",
-  "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+  "target_artifact_digest": "sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4",
+  "target_manifest_digest": "sha256:108f38e6547603c68a7ea7a93b53ff8bf23009d4a7769bb7157dbb418e6dcb9e",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
   "commands": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src python3 -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src /opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 --python 3.12 python -m unittest discover -s engines/software-factory-engine/tests -p 'test_*.py' -v",
       "exit_code": 0,
-      "test_count": 25,
-      "passed": 25,
+      "test_count": 76,
+      "passed": 76,
       "failed": 0,
       "errors": 0,
       "skipped": 0,
-      "suite_duration_seconds": 2.218,
+      "suite_duration_seconds": 6.829,
       "raw_evidence_ref": "certification/raw/runtime-tests.txt",
-      "raw_evidence_digest": "sha256:ca5217118ffd43a0860f7813676888fc70116d6c986a2a5059476a3ca922a989"
+      "raw_evidence_digest": "sha256:7fc3db2be8cef42844542d87f657e9982544961f7628cd698ac1c6f18d968f06"
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v",
+      "command": "PYTHONDONTWRITEBYTECODE=1 /opt/homebrew/bin/python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v",
       "exit_code": 0,
-      "test_count": 15,
-      "passed": 15,
+      "test_count": 16,
+      "passed": 16,
       "failed": 0,
       "errors": 0,
       "skipped": 0,
-      "suite_duration_seconds": 59.279,
+      "suite_duration_seconds": 25.221,
       "raw_evidence_ref": "certification/raw/importer-integration-tests.txt",
-      "raw_evidence_digest": "sha256:7b5686df37f825e24e39eb6987fb62f802f6a93f85afc266fdfda7457c0a433a"
+      "raw_evidence_digest": "sha256:684bb019ee45d548d703a11d1b0301f0962c3cd98dee4a13a47addbcbd5df2a1"
     }
   ],
   "totals": {
-    "tests": 40,
-    "passed": 40,
+    "tests": 92,
+    "passed": 92,
     "failed": 0,
     "errors": 0,
     "skipped": 0,
@@ -46,11 +46,16 @@
     "covered": [
       "exact eight-archive identity and 252-member union",
       "101 source Skill inventory and 102 repository-owned wrapper contract",
-      "three runtime registries and four JSON schemas",
+      "three runtime registries and eleven runtime/evidence JSON schemas",
       "exact 50 public-method modes and required inputs",
       "meaningful bounded local handler outputs",
-      "temporary-root install/check, directory-mode, and conservative evidence-state behavior",
-      "collision-safe deterministic aliases preserve source identity without overwriting pre-existing owned names"
+      "repository-owned safe archive contract inspection without importing or executing archive scripts",
+      "deterministic local holdout, provider-contract simulation, production-like rollback rehearsal, and replay",
+      "external receipt quarantine and structural preflight without external trust promotion",
+      "current repository install/check, directory-mode, executable-neutralization, and conservative evidence-state behavior",
+      "collision-safe deterministic aliases preserve source identity without overwriting pre-existing owned names",
+      "content-bound development case manifest and digest-disjoint self-attested local holdout inputs",
+      "target-byte-bound loaded Python code-object and in-memory registry identity verification"
     ]
   },
   "negative_scope": {
@@ -58,17 +63,50 @@
     "covered": [
       "path traversal, absolute, backslash, reserved, casefold, symlink, special, encrypted, and archive-budget rejection",
       "unknown member, manifest, DAG, name, shared-byte, collision, stale-wrapper, and restrictive-umask controls",
-      "embedded archive scripts and Skill instructions remain non-executable untrusted data",
-      "unknown child/package actions and missing required inputs fail closed",
-      "caller availability and external observation cannot substitute for an adapter",
-      "scope/correlation mismatch, zero capacity, oversized input, and invalid JSON remain non-successful",
-      "external, provider, and evidence-gate states cannot be promoted to execution or certification"
+      "archive scripts are digest-checked mode-0644 data and were not imported, compiled, or executed by the repository importer or recorded qualification run",
+      "ambiguous JSON, active YAML features, remote schema references, and manifest path escape fail closed",
+      "holdout overlap, receipt drift, duplicate or reordered cases, unsafe canary controls, and incomplete rollback fail closed",
+      "unallowlisted, revoked, role-conflicted, symlinked, FIFO, or digest-drifted external evidence is rejected or quarantined",
+      "provider fixtures never remove the real runtime adapter requirement",
+      "unknown child/package actions, missing required inputs, and caller-asserted external observations remain non-successful",
+      "external, provider, independent, production, and certification states cannot be promoted by local code",
+      "oversized or symlinked ZIP inputs fail before unbounded allocation through pinned no-follow descriptor reads",
+      "loaded-code drift, registry-content drift, contradictory receipt status, duplicate receipt cases, and unbound development corpora fail closed"
     ]
   },
+  "local_campaign_receipts": [
+    {
+      "kind": "archive-contract-inspection",
+      "status": "LOCAL_REIMPLEMENTED_AND_EXECUTED_SELF_ATTESTED",
+      "ref": "certification/local-evidence/archive-contract-inspection.json",
+      "file_digest": "sha256:3444f549c6f7261ef1bd2a3b8d589f8651c1cdf3a2db4f70db4682c3c4cca3f6"
+    },
+    {
+      "kind": "local-holdout",
+      "status": "LOCAL_HOLDOUT_EXECUTED_SELF_ATTESTED",
+      "ref": "certification/local-evidence/local-holdout-receipt.json",
+      "file_digest": "sha256:0ded5f7ee9caff70658e59defaec66d51fe12a515d09460e6a48eaee40e5ebcc"
+    },
+    {
+      "kind": "provider-contract-simulation",
+      "status": "LOCAL_PROVIDER_CONTRACT_SIMULATED_SELF_ATTESTED",
+      "ref": "certification/local-evidence/provider-contract-simulation-receipt.json",
+      "file_digest": "sha256:6cdbdc24a6727fccb07a363735d545cd29fb9455140bb389409a2cbc44d6b0ae"
+    },
+    {
+      "kind": "production-like-rehearsal",
+      "status": "LOCAL_PRODUCTION_LIKE_REHEARSAL_SELF_ATTESTED",
+      "ref": "certification/local-evidence/production-like-rehearsal-receipt.json",
+      "file_digest": "sha256:975f46194e9ec8442e85c712b2ac2435bee262a20bcc2a75181624cad087c5b0"
+    }
+  ],
   "limitations": [
-    "Evidence is local and self-attested; executor and verifier are not independent.",
-    "The install/check test used disposable temporary roots and did not install repository outputs.",
-    "No mutation, fuzz, solver, symbolic, concurrency campaign, holdout, representative workload, provider, production, external review, or certification execution was performed.",
+    "All recorded executions are local and self-attested; executor and verifier are not independent.",
+    "The local holdout is repository-owned engineering data, not an untouched independently supplied holdout.",
+    "Provider execution is NOT_RUN; provider-contract evidence uses fixed offline fixtures and preserves REQUIRES_ADAPTER.",
+    "Production execution, data, deployment, writes, canary, and rollback are NOT_RUN; the rehearsal is synthetic with zero network, provider calls, production population, or writes.",
+    "External receipt intake and preflight are locally tested policy paths; no external trust root, verified signature, or independent attestation is configured.",
+    "Mutation, fuzz, solver, symbolic, concurrency, representative production-derived workload, external review, and external certification evidence remain NOT_RUN or unsupported; the decision remains NOT_CERTIFIED.",
     "Finite passing tests are not proof of universal correctness."
   ],
   "certification_decision": "NOT_CERTIFIED"

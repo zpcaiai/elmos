@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/action-result.schema.json",
+  "title": "ELMOS Action Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "action_id",
+    "attempt",
+    "lease_generation",
+    "receipt_id",
+    "status",
+    "started_at",
+    "finished_at",
+    "exit_code",
+    "output_manifest_digest",
+    "resource_usage",
+    "provenance_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "action_id": {
+      "type": "string"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lease_generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "status": {
+      "enum": [
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED",
+        "UNKNOWN_RESULT"
+      ]
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "exit_code": {
+      "type": "integer"
+    },
+    "output_manifest_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "stdout_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "stderr_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "resource_usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpu_seconds",
+        "max_memory_mb",
+        "read_bytes",
+        "written_bytes"
+      ],
+      "properties": {
+        "cpu_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_memory_mb": {
+          "type": "number",
+          "minimum": 0
+        },
+        "read_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "written_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gpu_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "wall_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "failure_class": {
+      "enum": [
+        "ENVIRONMENT",
+        "DEPENDENCY",
+        "CODE",
+        "POLICY",
+        "SECURITY",
+        "DATA",
+        "CAPACITY",
+        "PROVIDER",
+        "UNKNOWN"
+      ]
+    },
+    "failure_message": {
+      "type": "string"
+    },
+    "validation_status": {
+      "enum": [
+        "NOT_RUN",
+        "PASS",
+        "FAIL",
+        "PARTIAL"
+      ]
+    },
+    "provenance_digest": {
+      "$ref": "digest.schema.json"
+    }
+  }
+}

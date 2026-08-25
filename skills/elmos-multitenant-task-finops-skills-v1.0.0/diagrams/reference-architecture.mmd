@@ -1,0 +1,27 @@
+flowchart LR
+    U[Browser / CLI / API Client] -->|OIDC access token| G[API Gateway]
+    G --> C[Elmos Control API]
+    C --> I[Identity + Tenant Membership]
+    C --> A[Admission Service]
+    A -->|atomic claim 1..3| P[(PostgreSQL\nTask + Slots + Ledgers)]
+    C --> O[Transactional Outbox]
+    O --> B[Event Bus]
+    C --> T[Temporal Cluster]
+    T --> W1[CPU Worker Pool]
+    T --> W2[Model Worker Pool]
+    T --> W3[Private Runner / Sandbox]
+    W1 --> P
+    W2 --> M[Model Gateway]
+    W3 --> S[(S3 / MinIO\nInputs Outputs Logs Checkpoints)]
+    W1 --> S
+    W2 --> S
+    W1 --> O
+    W2 --> O
+    W3 --> O
+    B --> J[Progress Journal Projector]
+    B --> F[FinOps + Revenue Projector]
+    J --> P
+    F --> P
+    B --> R[SSE / WebSocket Gateway]
+    R --> U
+    P --> D[Operations + Financial Analytics]

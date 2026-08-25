@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
 import pytest
+from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "scripts" / "toolchains" / "runtime_environment.py"
@@ -47,10 +50,14 @@ ROUTE_LANGUAGE_RUNTIMES = {
     "cpp": "apple-clang-21",
     "objc": "objective-c-apple",
     "swift": "swift-6.3.3",
+    "php": "php-route-8.5.9",
+    "kotlin": "kotlin-route-2.2.20",
+    "react": "react-19.2.7",
+    "flutter": "flutter-3.44.1",
 }
 
 B66_80_BINDINGS = {
-    "66": {"node-26.0.0", "pnpm-10.12.4"},
+    "66": {"node-26.0.0", "pnpm-10.12.4", "typescript-5.9.2"},
     "67": {"go-1.25.0"},
     "68": {"java-21", "kotlin-2.2.20"},
     "69": {"php-8.4.12"},
@@ -113,6 +120,169 @@ def _doctor_runtime(result: dict, runtime_id: str) -> dict:
     return next(item for item in result["runtimes"] if item["id"] == runtime_id)
 
 
+def _route_receipt_bound(receipt: dict) -> dict:
+    return {
+        key: receipt[key]
+        for key in (
+            "toolchain_contract_sha256",
+            "active_languages",
+            "deprecated_languages",
+            "toolchains",
+            "react_runtime_receipt",
+            "flutter_build_toolchain_receipt",
+        )
+    }
+
+
+def _rebind_route_receipt(receipt: dict) -> None:
+    receipt["receipt_sha256"] = runtime_environment._route_receipt_digest(
+        _route_receipt_bound(receipt)
+    )
+
+
+def _valid_route_receipt(monkeypatch: pytest.MonkeyPatch) -> dict:
+    dependency_profile_sha256 = "1" * 64
+    probe_source = "probe"
+    runtime_payload = {
+        "schema_version": "1.0.0",
+        "kind": "elmos.react-runtime-import-receipt",
+        "status": "PASSED",
+        "toolchain_language": "react",
+        "toolchain_version": (
+            "React 19.2.7 / React DOM 19.2.7 / TypeScript 5.9.2 / Node 26.0.0"
+        ),
+        "dependency_profile_sha256": dependency_profile_sha256,
+        "probe_source_sha256": hashlib.sha256(probe_source.encode("utf-8")).hexdigest(),
+        "versions": {"react": "19.2.7", "react-dom": "19.2.7"},
+        "command": [
+            "/exact/react",
+            "--input-type=module",
+            "--eval",
+            probe_source,
+            "/exact/react/index.js",
+            "/exact/react-dom/index.js",
+        ],
+        "stdout": '{"react":"19.2.7","react-dom":"19.2.7"}\n',
+        "stderr": "",
+        "browser_execution_status": "NOT_RUN",
+        "independent_verification_status": "NOT_RUN",
+        "certification_status": "NOT_CERTIFIED",
+    }
+    runtime_receipt = {
+        **runtime_payload,
+        "receipt_sha256": runtime_environment._route_receipt_digest(runtime_payload),
+    }
+    toolchains = [
+        {
+            "language": language,
+            "version": runtime_environment.EXACT_TOOLCHAIN_VERSIONS[language],
+            "executable": f"/exact/{language}",
+            "auxiliary": None,
+            "profile": (
+                [f"react-dependency-profile-sha256={dependency_profile_sha256}"]
+                if language == "react"
+                else [f"fixture-profile={language}"]
+            ),
+            "executable_sha256": "3" * 64,
+            "auxiliary_sha256": None,
+        }
+        for language in runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES
+    ]
+    flutter_toolchain = next(
+        item for item in toolchains if item["language"] == "flutter"
+    )
+    dart_sdk = {
+        "root": "/exact/flutter-sdk",
+        "sha256": "4" * 64,
+        "record_count": 3,
+        "file_count": 2,
+        "directory_count": 1,
+        "bytes": 1234,
+    }
+    closure = {"schema": "v1", "trees": {"dart_sdk": dart_sdk}}
+    closure_sha256 = runtime_environment._route_receipt_digest(closure)
+    flutter_toolchain["auxiliary"] = "/exact/flutter-sdk/bin/dart"
+    flutter_toolchain["profile"] = [
+        "flutter-build-closure-schema=v1",
+        f"flutter-build-closure-sha256={closure_sha256}",
+        f"flutter-dart-sdk-tree-sha256={dart_sdk['sha256']}",
+        "repository-build=pure-dart-import-free",
+        "flutter-ui-semantics=UNSUPPORTED",
+    ]
+    flutter_receipt = {
+        "schema_version": 1,
+        "kind": "elmos.flutter-dart-build-toolchain-receipt",
+        "language": "flutter",
+        "version": flutter_toolchain["version"],
+        "closure_sha256": closure_sha256,
+        "profile_sha256": runtime_environment._route_receipt_digest(
+            flutter_toolchain["profile"]
+        ),
+        "trees": {"dart_sdk": dart_sdk},
+    }
+    record_sha256 = {
+        str(item["language"]): runtime_environment.exact_toolchain_record_sha256(
+            item
+        )
+        for item in toolchains
+    }
+    contract_document = {
+        "receipt_schema_version": (
+            runtime_environment.EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION
+        ),
+        "active_languages": list(
+            runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES
+        ),
+        "deprecated_languages": list(
+            runtime_environment.EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES
+        ),
+        "versions": {
+            language: runtime_environment.EXACT_TOOLCHAIN_VERSIONS[language]
+            for language in runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES
+        },
+        "record_sha256": record_sha256,
+    }
+    contract_sha256 = runtime_environment._route_receipt_digest(
+        contract_document
+    )
+    monkeypatch.setattr(
+        runtime_environment,
+        "EXACT_TOOLCHAIN_RECORD_SHA256",
+        record_sha256,
+    )
+    monkeypatch.setattr(
+        runtime_environment,
+        "EXACT_TOOLCHAIN_CONTRACT_SHA256",
+        contract_sha256,
+    )
+    monkeypatch.setattr(
+        runtime_environment,
+        "exact_toolchain_contract_sha256",
+        lambda: contract_sha256,
+    )
+    bound = {
+        "toolchain_contract_sha256": contract_sha256,
+        "active_languages": list(runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES),
+        "deprecated_languages": list(
+            runtime_environment.EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES
+        ),
+        "toolchains": toolchains,
+        "react_runtime_receipt": runtime_receipt,
+        "flutter_build_toolchain_receipt": flutter_receipt,
+    }
+    return {
+        "schema_version": runtime_environment.EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION,
+        "kind": "elmos.polyglot-route-exact-toolchain-receipt",
+        "status": "READY",
+        "claim_ceiling": "TOOLCHAIN_READY",
+        "route_execution_status": "NOT_RUN",
+        "independent_verification_status": "NOT_RUN",
+        "certification_status": "NOT_CERTIFIED",
+        **bound,
+        "receipt_sha256": runtime_environment._route_receipt_digest(bound),
+    }
+
+
 def test_module_constants_and_default_manifest_are_repository_scoped() -> None:
     assert runtime_environment.ROOT == ROOT
     assert runtime_environment.MANIFEST_PATH == ROOT / "toolchains" / "runtime-manifest.json"
@@ -123,12 +293,65 @@ def test_module_constants_and_default_manifest_are_repository_scoped() -> None:
     assert runtime_environment.validate_manifest(manifest) == []
 
 
+def test_exact_toolchain_contract_authority_is_complete_and_self_consistent() -> None:
+    active = runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES
+
+    assert runtime_environment.EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION == "1.1.0"
+    assert tuple(runtime_environment.EXACT_TOOLCHAIN_VERSIONS) == active
+    assert tuple(runtime_environment.EXACT_TOOLCHAIN_RECORD_SHA256) == active
+    assert runtime_environment.EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES == (
+        "javascript",
+    )
+    assert all(
+        re.fullmatch(r"[0-9a-f]{64}", digest)
+        for digest in runtime_environment.EXACT_TOOLCHAIN_RECORD_SHA256.values()
+    )
+    assert re.fullmatch(
+        r"[0-9a-f]{64}",
+        runtime_environment.EXACT_TOOLCHAIN_CONTRACT_SHA256,
+    )
+    assert (
+        runtime_environment.exact_toolchain_contract_sha256()
+        == runtime_environment.EXACT_TOOLCHAIN_CONTRACT_SHA256
+    )
+
+
+def test_erlang_probe_finds_an_unlinked_homebrew_runtime() -> None:
+    assert "/opt/homebrew/opt/erlang/bin/erl" in (
+        runtime_environment.PROBE_COMMANDS["erl"].candidate_templates
+    )
+
+
 def test_load_manifest_accepts_an_explicit_path(tmp_path: Path) -> None:
     payload = {"schema_version": "test", "profiles": {}, "runtimes": []}
     path = tmp_path / "manifest.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
 
     assert runtime_environment.load_manifest(path) == payload
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_error"),
+    [
+        (
+            '{"schema_version":"1.0.0","schema_version":"2.0.0"}',
+            "RUNTIME_MANIFEST_DUPLICATE_KEY:schema_version",
+        ),
+        ('{"value":NaN}', "RUNTIME_MANIFEST_NONFINITE_NUMBER:NaN"),
+        ('{"value":Infinity}', "RUNTIME_MANIFEST_NONFINITE_NUMBER:Infinity"),
+        ('{"value":-Infinity}', "RUNTIME_MANIFEST_NONFINITE_NUMBER:-Infinity"),
+    ],
+)
+def test_load_manifest_rejects_duplicate_keys_and_nonfinite_numbers(
+    tmp_path: Path,
+    payload: str,
+    expected_error: str,
+) -> None:
+    path = tmp_path / "invalid-manifest.json"
+    path.write_text(payload, encoding="utf-8")
+
+    with pytest.raises(ValueError, match=expected_error):
+        runtime_environment.load_manifest(path)
 
 
 def test_manifest_has_only_the_governed_top_level_profiles() -> None:
@@ -171,6 +394,10 @@ def test_language_profiles_have_exact_emitter_and_route_coverage(
     for language, runtime_id in expected.items():
         assert language in runtimes[runtime_id]["languages"]
 
+    if profile == "routes-macos":
+        assert "javascript" not in expected_languages
+        assert "javascript" not in runtime_environment.ROUTE_LANGUAGES
+
 
 def test_batch_bindings_cover_every_batch_exactly_and_reference_known_runtimes() -> None:
     manifest = runtime_environment.load_manifest()
@@ -191,6 +418,7 @@ def test_batch_bindings_cover_every_batch_exactly_and_reference_known_runtimes()
     assert set().union(*observed_81_95.values()) == _profile_runtime_ids(
         manifest, "language-packs"
     )
+    assert set().union(*observed_66_80.values()) == _profile_runtime_ids(manifest, "b66-80")
 
 
 def test_validation_reports_duplicate_unknown_regex_and_batch_gaps() -> None:
@@ -209,6 +437,72 @@ def test_validation_reports_duplicate_unknown_regex_and_batch_gaps() -> None:
     assert "missing-runtime" in combined
     assert "pattern" in combined or "regex" in combined
     assert "80" in combined
+
+
+def test_validation_rejects_batch_profile_coverage_drift() -> None:
+    manifest = runtime_environment.load_manifest()
+    broken = copy.deepcopy(manifest)
+    broken["profiles"]["b66-80"]["optional"].remove("dotnet-sdk-10.0.301")
+    broken["profiles"]["language-packs"]["optional"].append("node-26.0.0")
+
+    errors = runtime_environment.validate_manifest(broken)
+
+    assert any("profile b66-80 must equal batch_bindings.b66-80" in error for error in errors)
+    assert any(
+        "profile language-packs must equal batch_bindings.b81-95" in error for error in errors
+    )
+
+
+def test_validation_rejects_claim_boundary_promotion() -> None:
+    manifest = runtime_environment.load_manifest()
+    broken = copy.deepcopy(manifest)
+    broken["claim_boundary"]["certification_status"] = "CERTIFIED"
+    broken["claim_boundary"]["unexpected"] = "field"
+
+    errors = runtime_environment.validate_manifest(broken)
+
+    assert any(
+        "claim_boundary.certification_status must be NOT_CERTIFIED" in error
+        for error in errors
+    )
+    assert any("claim_boundary keys mismatch" in error for error in errors)
+
+
+def test_validation_rejects_exact_active_profile_runtime_drift() -> None:
+    manifest = runtime_environment.load_manifest()
+
+    route_missing_compiler = copy.deepcopy(manifest)
+    route_missing_compiler["profiles"]["routes-macos"]["required"].remove(
+        "typescript-5.9.2"
+    )
+    route_errors = runtime_environment.validate_manifest(route_missing_compiler)
+    assert any(
+        "profile routes-macos required runtime ids mismatch" in error
+        and "typescript-5.9.2" in error
+        for error in route_errors
+    )
+
+    synthesis_wrong_php = copy.deepcopy(manifest)
+    synthesis_required = synthesis_wrong_php["profiles"]["synthesis"]["required"]
+    synthesis_required.remove("php-8.4.12")
+    synthesis_required.append("php-route-8.5.9")
+    synthesis_errors = runtime_environment.validate_manifest(synthesis_wrong_php)
+    assert any(
+        "profile synthesis required runtime ids mismatch" in error
+        and "php-8.4.12" in error
+        and "php-route-8.5.9" in error
+        for error in synthesis_errors
+    )
+
+    route_optional = copy.deepcopy(manifest)
+    route_required = route_optional["profiles"]["routes-macos"]["required"]
+    route_required.remove("react-19.2.7")
+    route_optional["profiles"]["routes-macos"]["optional"].append("react-19.2.7")
+    optional_errors = runtime_environment.validate_manifest(route_optional)
+    assert any(
+        "profile routes-macos optional runtimes must be empty" in error
+        for error in optional_errors
+    )
 
 
 def test_doctor_accepts_an_exact_managed_probe_and_rejects_version_drift(
@@ -259,6 +553,191 @@ def test_doctor_accepts_an_exact_managed_probe_and_rejects_version_drift(
     assert _doctor_runtime(drifted, "node-26.0.0")["status"] == "VERSION_MISMATCH"
 
 
+def test_route_receipt_validator_rejects_language_and_claim_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt = _valid_route_receipt(monkeypatch)
+    assert runtime_environment._validate_route_receipt(receipt) == receipt
+
+    language_drift = copy.deepcopy(receipt)
+    language_drift["active_languages"][-1] = "javascript"
+    with pytest.raises(ValueError, match="ROUTE_EXACT_RECEIPT_CONTRACT_INVALID"):
+        runtime_environment._validate_route_receipt(language_drift)
+
+    certification_drift = copy.deepcopy(receipt)
+    certification_drift["react_runtime_receipt"]["certification_status"] = "CERTIFIED"
+    with pytest.raises(ValueError, match="ROUTE_EXACT_RECEIPT_REACT_RUNTIME_INVALID"):
+        runtime_environment._validate_route_receipt(certification_drift)
+
+    self_consistent_stdout_drift = copy.deepcopy(receipt)
+    inner = self_consistent_stdout_drift["react_runtime_receipt"]
+    inner["stdout"] = '{"react":"0.0.0","react-dom":"19.2.7"}\n'
+    inner["receipt_sha256"] = runtime_environment._route_receipt_digest(
+        {key: value for key, value in inner.items() if key != "receipt_sha256"}
+    )
+    _rebind_route_receipt(self_consistent_stdout_drift)
+    with pytest.raises(ValueError, match="ROUTE_EXACT_RECEIPT_REACT_RUNTIME_INVALID"):
+        runtime_environment._validate_route_receipt(self_consistent_stdout_drift)
+
+    flutter_drift = copy.deepcopy(receipt)
+    flutter_drift["flutter_build_toolchain_receipt"]["trees"]["dart_sdk"][
+        "sha256"
+    ] = "0" * 64
+    with pytest.raises(ValueError, match="ROUTE_EXACT_RECEIPT_FLUTTER_BUILD_INVALID"):
+        runtime_environment._validate_route_receipt(flutter_drift)
+
+
+@pytest.mark.parametrize(
+    "language",
+    runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES,
+)
+def test_route_receipt_rejects_each_exact_toolchain_version_drift(
+    monkeypatch: pytest.MonkeyPatch,
+    language: str,
+) -> None:
+    receipt = _valid_route_receipt(monkeypatch)
+    toolchain = next(
+        item for item in receipt["toolchains"] if item["language"] == language
+    )
+    toolchain["version"] = f"exact-{language}"
+    _rebind_route_receipt(receipt)
+
+    with pytest.raises(
+        ValueError,
+        match=f"ROUTE_EXACT_RECEIPT_TOOLCHAIN_VERSION_INVALID:{language}",
+    ):
+        runtime_environment._validate_route_receipt(receipt)
+
+
+@pytest.mark.parametrize(
+    "language",
+    runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES,
+)
+def test_route_receipt_rejects_each_exact_toolchain_profile_drift(
+    monkeypatch: pytest.MonkeyPatch,
+    language: str,
+) -> None:
+    receipt = _valid_route_receipt(monkeypatch)
+    toolchain = next(
+        item for item in receipt["toolchains"] if item["language"] == language
+    )
+    toolchain["profile"].append("unexpected-profile-drift=true")
+    _rebind_route_receipt(receipt)
+
+    with pytest.raises(
+        ValueError,
+        match=f"ROUTE_EXACT_RECEIPT_TOOLCHAIN_RECORD_INVALID:{language}",
+    ):
+        runtime_environment._validate_route_receipt(receipt)
+
+
+@pytest.mark.parametrize(
+    "language",
+    runtime_environment.ROUTE_RECEIPT_ACTIVE_LANGUAGES,
+)
+def test_route_receipt_rejects_each_full_record_drift(
+    monkeypatch: pytest.MonkeyPatch,
+    language: str,
+) -> None:
+    receipt = _valid_route_receipt(monkeypatch)
+    toolchain = next(
+        item for item in receipt["toolchains"] if item["language"] == language
+    )
+    toolchain["executable"] = f"{toolchain['executable']}.drift"
+    _rebind_route_receipt(receipt)
+
+    with pytest.raises(
+        ValueError,
+        match=f"ROUTE_EXACT_RECEIPT_TOOLCHAIN_RECORD_INVALID:{language}",
+    ):
+        runtime_environment._validate_route_receipt(receipt)
+
+
+def test_route_receipt_rejects_self_consistent_contract_field_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt = _valid_route_receipt(monkeypatch)
+    receipt["toolchain_contract_sha256"] = "0" * 64
+    _rebind_route_receipt(receipt)
+
+    with pytest.raises(ValueError, match="ROUTE_EXACT_RECEIPT_CONTRACT_INVALID"):
+        runtime_environment._validate_route_receipt(receipt)
+
+
+def test_route_receipt_rejects_contract_authority_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt = _valid_route_receipt(monkeypatch)
+    monkeypatch.setattr(
+        runtime_environment,
+        "exact_toolchain_contract_sha256",
+        lambda: "0" * 64,
+    )
+
+    with pytest.raises(ValueError, match="ROUTE_EXACT_RECEIPT_AUTHORITY_INVALID"):
+        runtime_environment._validate_route_receipt(receipt)
+
+
+@pytest.mark.parametrize("profile", ["routes-macos", "all"])
+def test_route_profiles_require_the_engine_exact_receipt(
+    monkeypatch: pytest.MonkeyPatch,
+    profile: str,
+) -> None:
+    manifest = runtime_environment.load_manifest()
+
+    def ready_runtime(runtime: dict, *, required: bool, **_kwargs: object) -> dict:
+        return {
+            "id": runtime["id"],
+            "display_name": runtime["display_name"],
+            "languages": runtime["languages"],
+            "version": runtime["version"],
+            "required": required,
+            "install_policy": runtime["install_policy"],
+            "notes": runtime.get("notes"),
+            "status": "READY",
+            "blocking_reason": None,
+            "probes": [],
+        }
+
+    monkeypatch.setattr(runtime_environment, "_runtime_result", ready_runtime)
+    monkeypatch.setattr(
+        runtime_environment,
+        "_run_route_exact_receipt",
+        lambda *_args, **_kwargs: {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "BLOCKED",
+            "claim_ceiling": "NOT_RUN",
+            "blocking_reason": "fixture",
+        },
+    )
+    blocked = runtime_environment.doctor(
+        manifest,
+        profile,
+        platform_key="darwin-arm64",
+        environ={},
+    )
+    assert blocked["status"] == "BLOCKED"
+    assert blocked["claim_ceiling"] == "NOT_RUN"
+
+    monkeypatch.setattr(
+        runtime_environment,
+        "_run_route_exact_receipt",
+        lambda *_args, **_kwargs: {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "READY",
+            "claim_ceiling": "TOOLCHAIN_READY",
+        },
+    )
+    ready = runtime_environment.doctor(
+        manifest,
+        profile,
+        platform_key="darwin-arm64",
+        environ={},
+    )
+    assert ready["status"] == "READY"
+    assert ready["claim_ceiling"] == "TOOLCHAIN_READY"
+
+
 def test_doctor_never_promotes_vendor_or_external_runtimes(
     tmp_path: Path,
 ) -> None:
@@ -268,6 +747,7 @@ def test_doctor_never_promotes_vendor_or_external_runtimes(
     _write_executable(bin_dir, "cobc", "cobc 3.2.0")
     _write_executable(bin_dir, "sf", "@salesforce/cli/2.100.0 darwin-arm64 node-v26")
     _write_executable(bin_dir, "salesforce", "@salesforce/cli/2.100.0")
+    _write_executable(bin_dir, "gleam", "gleam 1.18.1")
     result = runtime_environment.doctor(
         manifest,
         "language-packs",
@@ -328,3 +808,43 @@ def test_main_validates_the_default_manifest(capsys: pytest.CaptureFixture[str])
     assert runtime_environment.main(["validate"]) == 0
     output = capsys.readouterr()
     assert "VALID" in output.out.upper()
+
+
+def test_toolchain_root_authorities_must_agree(tmp_path: Path) -> None:
+    manifest = runtime_environment.load_manifest()
+    with pytest.raises(ValueError, match="RUNTIME_TOOLCHAIN_ROOT_CONFLICT"):
+        runtime_environment._toolchain_root(
+            manifest,
+            {
+                "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT": str(tmp_path / "synthesis"),
+                "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT": str(tmp_path / "routes"),
+            },
+        )
+
+
+def test_runtime_manifest_schema_matches_fail_closed_structural_rules() -> None:
+    manifest = runtime_environment.load_manifest()
+    schema = json.loads(
+        (ROOT / "schemas" / "toolchains" / "runtime-manifest.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    Draft202012Validator.check_schema(schema)
+    validator = Draft202012Validator(schema)
+    assert list(validator.iter_errors(manifest)) == []
+    assert runtime_environment.validate_manifest(manifest) == []
+
+    invalid_documents = []
+    missing_schema = copy.deepcopy(manifest)
+    missing_schema.pop("$schema")
+    invalid_documents.append(missing_schema)
+    extra_profile = copy.deepcopy(manifest)
+    extra_profile["profiles"]["future"] = copy.deepcopy(extra_profile["profiles"]["core"])
+    invalid_documents.append(extra_profile)
+    empty_batch = copy.deepcopy(manifest)
+    empty_batch["batch_bindings"]["b66-80"]["66"] = []
+    invalid_documents.append(empty_batch)
+
+    for document in invalid_documents:
+        assert list(validator.iter_errors(document))
+        assert runtime_environment.validate_manifest(document)

@@ -1,0 +1,246 @@
+{
+  "schemaVersion": "1.0",
+  "projectName": "customer-console-react",
+  "applicationId": "customer-console",
+  "title": "客户工作台",
+  "source": {
+    "framework": "vue2",
+    "version": "2.7.16",
+    "platform": "WEB"
+  },
+  "targetFramework": "react",
+  "packageName": "customer_console",
+  "bundleId": "io.elmos.customerconsole",
+  "uiIr": {
+    "schemaVersion": "1.0",
+    "sourceSnapshotDigest": "sha256:2ff4a7658e2d6ac912f7a6ecf3f0162bc8ca612e5a1b5ff590b89c7613a3508b",
+    "routes": [
+      {
+        "id": "route.home",
+        "name": "首页",
+        "kind": "route",
+        "references": [
+          "component.home",
+          "permission.session"
+        ],
+        "sourceRefs": [
+          "src/router/index.js:12"
+        ],
+        "path": "/",
+        "componentId": "component.home",
+        "requiresAuth": true,
+        "deepLink": true
+      },
+      {
+        "id": "route.orders",
+        "name": "订单",
+        "kind": "route",
+        "references": [
+          "component.orders",
+          "permission.session",
+          "resource.orders"
+        ],
+        "sourceRefs": [
+          "src/router/index.js:20"
+        ],
+        "path": "/orders",
+        "componentId": "component.orders",
+        "requiresAuth": true,
+        "deepLink": true
+      }
+    ],
+    "components": [
+      {
+        "id": "component.home",
+        "name": "首页",
+        "kind": "page",
+        "references": [
+          "state.session"
+        ],
+        "sourceRefs": [
+          "src/views/Home.vue:1"
+        ],
+        "text": "查看当前账户、提醒和快捷入口。",
+        "accessibilityRole": "main"
+      },
+      {
+        "id": "component.orders",
+        "name": "订单",
+        "kind": "page",
+        "references": [
+          "state.orders",
+          "effect.load-orders",
+          "form.order-filter"
+        ],
+        "sourceRefs": [
+          "src/views/Orders.vue:1"
+        ],
+        "text": "筛选并查看订单状态。",
+        "accessibilityRole": "main"
+      }
+    ],
+    "views": [
+      {
+        "id": "view.home",
+        "name": "首页视图",
+        "kind": "view",
+        "references": [
+          "component.home"
+        ],
+        "sourceRefs": [
+          "src/views/Home.vue:1"
+        ]
+      },
+      {
+        "id": "view.orders",
+        "name": "订单视图",
+        "kind": "view",
+        "references": [
+          "component.orders"
+        ],
+        "sourceRefs": [
+          "src/views/Orders.vue:1"
+        ]
+      }
+    ],
+    "states": [
+      {
+        "id": "state.session",
+        "name": "会话",
+        "kind": "server-state",
+        "references": [],
+        "sourceRefs": [
+          "src/store/session.js:1"
+        ]
+      },
+      {
+        "id": "state.orders",
+        "name": "订单集合",
+        "kind": "server-state",
+        "references": [],
+        "sourceRefs": [
+          "src/store/orders.js:1"
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "action.filter-orders",
+        "name": "筛选订单",
+        "kind": "form-submit",
+        "references": [
+          "form.order-filter",
+          "effect.load-orders"
+        ],
+        "sourceRefs": [
+          "src/views/Orders.vue:48"
+        ]
+      }
+    ],
+    "effects": [
+      {
+        "id": "effect.load-orders",
+        "name": "读取订单",
+        "kind": "network",
+        "references": [
+          "resource.orders",
+          "state.orders"
+        ],
+        "sourceRefs": [
+          "src/store/orders.js:22"
+        ]
+      }
+    ],
+    "forms": [
+      {
+        "id": "form.order-filter",
+        "name": "订单筛选",
+        "kind": "form",
+        "references": [
+          "action.filter-orders"
+        ],
+        "sourceRefs": [
+          "src/views/Orders.vue:30"
+        ]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "binding.order-filter",
+        "name": "订单筛选绑定",
+        "kind": "form-binding",
+        "references": [
+          "form.order-filter",
+          "action.filter-orders"
+        ],
+        "sourceRefs": [
+          "src/views/Orders.vue:30"
+        ]
+      }
+    ],
+    "permissions": [
+      {
+        "id": "permission.session",
+        "name": "登录会话",
+        "kind": "route-guard",
+        "references": [
+          "state.session"
+        ],
+        "sourceRefs": [
+          "src/router/guards.js:8"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "id": "resource.orders",
+        "name": "订单 API",
+        "kind": "http-resource",
+        "references": [],
+        "sourceRefs": [
+          "src/api/orders.js:4"
+        ]
+      }
+    ],
+    "designTokens": [
+      {
+        "id": "token.brand",
+        "name": "品牌主题",
+        "kind": "design-token-set",
+        "references": [],
+        "sourceRefs": [
+          "src/styles/tokens.css:1"
+        ]
+      }
+    ],
+    "accessibility": [
+      {
+        "id": "a11y.main",
+        "name": "主内容与键盘焦点",
+        "kind": "accessibility-contract",
+        "references": [
+          "component.home",
+          "component.orders"
+        ],
+        "sourceRefs": [
+          "src/App.vue:1"
+        ]
+      }
+    ],
+    "nativeBoundaries": [],
+    "unknowns": [
+      {
+        "id": "unknown.visual-baseline",
+        "name": "视觉基线尚未批准",
+        "kind": "critical-unknown",
+        "references": [],
+        "sourceRefs": [
+          "NOT_RUN"
+        ],
+        "severity": "critical",
+        "description": "视觉基线与独立视觉评审尚未执行。",
+        "owner": "UX_OWNER_REQUIRED"
+      }
+    ]
+  }
+}

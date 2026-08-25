@@ -1,0 +1,74 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "Smart + exactly ten manual model options are visible from one backend source of truth.",
+      "Unknown/disabled models cannot start a run.",
+      "Smart mode demonstrably routes tasks independently.",
+      "Manual strict mode uses the selected model for every primary implementation call or stops with an explicit reselection state.",
+      "Manual fallback mode never switches outside the ten-model allowlist and records every switch.",
+      "Resume restores model selection exactly.",
+      "Final run report distinguishes user-selected, system-selected, fallback and verifier model usage."
+    ],
+    "guardrails": [
+      "Exactly ten selectable models; no provider adapter may inject an eleventh model.",
+      "Manual selection cannot disable security, budget, path, migration, concurrency or deterministic gates.",
+      "Never silently fall back in `strict` mode.",
+      "Never claim independent review when the same selected model performed both implementation and review.",
+      "Frontend model IDs must be logical aliases, not arbitrary provider IDs.",
+      "UI labels/prices are presentation metadata; backend policy remains authoritative."
+    ],
+    "inputs": [
+      "model_selection` conforming to `schemas/model-selection.schema.json",
+      "config/model-registry.yaml",
+      "config/model-selection-policy.yaml",
+      "config/router-policy.yaml",
+      "current provider availability / quotas when available"
+    ],
+    "outputs": [
+      "validated `model_selection.json",
+      "effective routing constraints for the run",
+      "UI model catalog containing exactly Smart + the ten allowlisted models",
+      "preflight warnings or blocking reasons",
+      "auditable model-switch events"
+    ],
+    "triggers": [
+      "a repository run is created from the UI/API/CLI",
+      "the user changes execution model preference before dispatch",
+      "a resumed run restores its model-selection state"
+    ]
+  },
+  "dag": {
+    "activation": "control",
+    "dependencies": [
+      "elmos-repository-orchestrator",
+      "elmos-run-state-journal"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.model-gateway",
+    "handler": "model_selection_controller",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-model-selection-controller",
+    "ordinal": 36,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/36-model-selection-controller/SKILL.md",
+    "sha256": "sha256:13bccef39b5a533ea47ce2026be569ed297e60ec3371b171d9fcca146da5185b",
+    "version": "1.1.0"
+  }
+}

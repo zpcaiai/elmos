@@ -1,0 +1,8 @@
+{
+  "exerciseId": "exerciseId-fixture",
+  "scenario": "scenario-fixture",
+  "result": "PASS",
+  "observedRecoveryTime": 0,
+  "observedRecoveryPoint": {},
+  "evidenceRefs": []
+}

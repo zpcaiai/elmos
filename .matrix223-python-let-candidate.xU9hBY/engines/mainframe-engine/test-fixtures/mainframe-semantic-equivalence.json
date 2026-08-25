@@ -1,0 +1,1 @@
+{"comparisonId":"cmp-1","sourceArtifact":"loadmod://PAYMENT1/v4","targetArtifact":"oci://payment:v2","inputSnapshot":"sha256:input","dataSnapshot":"sha256:data","status":"INCONCLUSIVE","observations":["packed-decimal-negative-boundary-not-run"],"sideEffectComparison":"NOT_RUN","evidenceRefs":[]}

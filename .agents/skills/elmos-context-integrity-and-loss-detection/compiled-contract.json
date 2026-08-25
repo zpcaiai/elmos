@@ -1,0 +1,174 @@
+{
+  "acceptance": [
+    {
+      "criterion": "目标、最新用户指令、不可违反约束和验收标准保留率为100%",
+      "evidence": [],
+      "id": "S40-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "任何关键事实缺失会阻断高风险执行并生成明确告警",
+      "evidence": [],
+      "id": "S40-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "压缩、恢复、模型切换前后都有可查询完整性报告",
+      "evidence": [],
+      "id": "S40-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "来源不可达或哈希不符不会被静默接受",
+      "evidence": [],
+      "id": "S40-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "自动重新水化或回滚后重新通过完整性门才可继续",
+      "evidence": [],
+      "id": "S40-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "对否定、数值、权限、删除和版本变化的测试全部通过",
+      "evidence": [],
+      "id": "S40-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "目标、最新用户指令、不可违反约束和验收标准保留率为100%",
+      "任何关键事实缺失会阻断高风险执行并生成明确告警",
+      "压缩、恢复、模型切换前后都有可查询完整性报告",
+      "来源不可达或哈希不符不会被静默接受",
+      "自动重新水化或回滚后重新通过完整性门才可继续",
+      "对否定、数值、权限、删除和版本变化的测试全部通过"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "context_integrity_checks",
+      "critical_fact_sets",
+      "critical_fact_items",
+      "integrity_exceptions"
+    ],
+    "deliverables": [
+      "CriticalFactSet/ContextIntegrityReport schema",
+      "阶段性完整性门与自动修复/回滚",
+      "语义漂移和来源可达性检查",
+      "对抗回归测试与完成报告集成"
+    ],
+    "dependencies": [
+      "elmos-source-anchor-and-provenance",
+      "elmos-context-checkpoint-and-recovery"
+    ],
+    "events": [
+      "context.integrity.passed",
+      "context.integrity.failed",
+      "context.loss.detected",
+      "context.integrity.restored"
+    ],
+    "failure_modes": [
+      "latest user instruction missing",
+      "negation flipped",
+      "source hash mismatch",
+      "wrong acceptance version"
+    ],
+    "inputs": [
+      "变换前后上下文",
+      "CriticalFactSet",
+      "来源锚点与哈希",
+      "任务/测试/副作用状态"
+    ],
+    "metrics": [
+      "critical_fact_retention_rate",
+      "silent_loss_count",
+      "semantic_drift_detection_rate",
+      "integrity_check_latency_ms"
+    ],
+    "name": "elmos-context-integrity-and-loss-detection",
+    "objective": "建立关键事实清单、指纹和阶段性完整性门，任何缺失、版本错配或来源断裂都在继续执行前被发现。",
+    "ordinal": 40,
+    "outputs": [
+      "ContextIntegrityReport",
+      "阻断/恢复动作",
+      "事实差异",
+      "审计证据"
+    ],
+    "responsibilities": [
+      "从当前用户指令、系统约束、验收标准、批准决策、未完成任务、安全发现和副作用账本生成 CriticalFactSet。",
+      "为事实、来源锚点、版本和内容哈希生成完整性指纹，并在每次上下文变换前后比较。",
+      "检查 P0/P1 覆盖、冲突状态、最新性、来源可达性、修改文件和测试状态。",
+      "对语义改写使用结构化字段对齐与独立验证，不仅比较字符串。",
+      "发现丢失或漂移时阻断后续高风险工具调用，自动重新水化或回滚。",
+      "把完整性报告附在检查点、压缩运行、模型切换和最终完成报告中。",
+      "区分允许的表达压缩与不允许的事实变化，并保留豁免审批。",
+      "构建对抗样本：旧要求覆盖新要求、否定词丢失、数值漂移、版本错选和来源删除。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "上下文完整性与丢失检测"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-context-integrity-and-loss-detection/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-context-integrity-and-loss-detection/SKILL.md": {
+        "bytes": 3768,
+        "mode": "0644",
+        "sha256": "57aa8bacc77291af17d96873e5adec41c5633ed83e6d0bdeccfc39d630abfa7f"
+      },
+      "skills/elmos-context-integrity-and-loss-detection/references/contract.yaml": {
+        "bytes": 2763,
+        "mode": "0644",
+        "sha256": "725b4480ab0c27002c70a7a958484c59a117ab70dd6c539a833d6e4ba08eefec"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-context-integrity-and-loss-detection/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_context_integrity_and_loss_detection",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当上下文被装载、压缩、驱逐、切换模型、恢复任务或重新水化时，需要证明关键事实没有静默丢失或篡改时使用。",
+    "name": "elmos-context-integrity-and-loss-detection",
+    "ordinal": 40,
+    "title": "上下文完整性与丢失检测"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "725b4480ab0c27002c70a7a958484c59a117ab70dd6c539a833d6e4ba08eefec",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "57aa8bacc77291af17d96873e5adec41c5633ed83e6d0bdeccfc39d630abfa7f"
+  }
+}

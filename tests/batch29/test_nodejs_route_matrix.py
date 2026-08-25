@@ -20,6 +20,7 @@ from route_sets import (  # noqa: E402
     COMPLETE_ROUTE_KEYS,
     COMPLETION_ROUTE_KEYS,
     CORE_ROUTE_KEYS,
+    DEPRECATED_ROUTE_KEYS,
     EXACT_ROUTE_SETS,
     MODULE_EQUIVALENCE_ROUTE_KEYS,
     NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
@@ -27,6 +28,8 @@ from route_sets import (  # noqa: E402
     NODEJS_NEGATIVE_COMMON_CASE_IDS,
     SPECIALIZED_ROUTE_KEYS,
     SUPPORTED_ROUTE_LANGUAGES,
+    TEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
+    TEN_LANGUAGE_MATRIX_LANGUAGES,
     nodejs_negative_case_ids,
     provenance_route_set,
 )
@@ -99,17 +102,20 @@ def not_run_module_evidence(
 
 
 class NodeJsRouteMatrixTests(unittest.TestCase):
-    def test_old_sets_are_unchanged_and_node_closes_exact_ten_language_matrix(self) -> None:
+    def test_old_sets_are_frozen_while_node_is_absent_from_the_active_matrix(self) -> None:
         self.assertEqual(len(CORE_ROUTE_KEYS), 30)
         self.assertEqual(len(SPECIALIZED_ROUTE_KEYS), 8)
         self.assertEqual(len(COMPLETION_ROUTE_KEYS), 34)
         self.assertEqual(len(NINE_LANGUAGE_COMPLETE_ROUTE_KEYS), 72)
         self.assertEqual(len(NODEJS_EXACT_ROUTE_KEYS), 18)
-        self.assertEqual(len(COMPLETE_ROUTE_KEYS), 90)
-        self.assertEqual(len(SUPPORTED_ROUTE_LANGUAGES), 10)
+        self.assertEqual(len(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS), 90)
+        self.assertEqual(len(TEN_LANGUAGE_MATRIX_LANGUAGES), 10)
+        self.assertEqual(len(COMPLETE_ROUTE_KEYS), 156)
+        self.assertEqual(len(SUPPORTED_ROUTE_LANGUAGES), 13)
+        self.assertNotIn("javascript", SUPPORTED_ROUTE_LANGUAGES)
         self.assertEqual(
             set(NINE_LANGUAGE_COMPLETE_ROUTE_KEYS) | set(NODEJS_EXACT_ROUTE_KEYS),
-            set(COMPLETE_ROUTE_KEYS),
+            set(TEN_LANGUAGE_COMPLETE_ROUTE_KEYS),
         )
         self.assertFalse(
             set(NINE_LANGUAGE_COMPLETE_ROUTE_KEYS) & set(NODEJS_EXACT_ROUTE_KEYS)
@@ -130,8 +136,10 @@ class NodeJsRouteMatrixTests(unittest.TestCase):
             NODEJS_EXACT_ROUTE_KEYS,
         )
         self.assertEqual(
-            EXACT_ROUTE_SETS["ten-language-complete-90"], COMPLETE_ROUTE_KEYS
+            EXACT_ROUTE_SETS["ten-language-complete-90"], TEN_LANGUAGE_COMPLETE_ROUTE_KEYS
         )
+        self.assertTrue(set(NODEJS_EXACT_ROUTE_KEYS) <= set(DEPRECATED_ROUTE_KEYS))
+        self.assertFalse(set(NODEJS_EXACT_ROUTE_KEYS) & set(COMPLETE_ROUTE_KEYS))
         self.assertTrue(
             all(
                 provenance_route_set(key) == "javascript-node26-completion-18"

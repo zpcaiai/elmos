@@ -18,9 +18,11 @@ const navigation: Array<{
   { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home" },
   { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow" },
   { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code" },
+  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file" },
   { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark" },
   { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "FRT G01–G30", icon: "route" },
   { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box" },
+  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow" },
   { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route" },
   { href: "/proof-loop", label: "现代化证据闭环", enLabel: "Modernization proof loop", hint: "B105–B108", icon: "shield" },
   { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans & usage", icon: "layers" },
@@ -30,13 +32,14 @@ const navigation: Array<{
 ];
 
 const mobileNavigation = navigation.filter((item) =>
-  ["/", "/spring", "/translation", "/generation", "/frontend", "/skills"].includes(item.href),
+  ["/", "/spring", "/translation", "/intake", "/generation", "/frontend", "/skills"].includes(item.href),
 );
 
 const commands = [
   ...navigation.map((item) => ({ ...item, group: "页面", keywords: `${item.label} ${item.hint}` })),
   { href: "/spring", label: "评估 Spring 老项目", hint: "XML / Java 8 / Jakarta / Boot 3.5.3", icon: "workflow" as IconName, group: "业务线", keywords: "Spring 老项目 翻新 XML Java 8 Jakarta Security JPA" },
   { href: "/translation", label: "选择跨语言方向路线", hint: "Java / C# / Go / Rust / Python / TypeScript", icon: "code" as IconName, group: "业务线", keywords: "跨语言 转换 30 routes Java C# Go Rust Python TypeScript" },
+  { href: "/intake", label: "接入多模态项目资料", hint: "Audio / Image / PDF / Word / Folder / Archive", icon: "file" as IconName, group: "业务线", keywords: "多模态 输入 音频 图片 PDF Word 文件夹 压缩包 OCR ASR" },
   { href: "/migration/sql", label: "运行国产数据库 SQL 只读预检", hint: "DM8 / KingbaseES / openGauss / TiDB / OceanBase / GaussDB", icon: "database" as IconName, group: "业务线", keywords: "ChinaDB 国产数据库 SQL 预检 转换 DM8 人大金仓 openGauss TiDB GBase 瀚高 OceanBase GaussDB GoldenDB" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
   { href: "/migration", label: "查看 M37 扩展 Marketplace", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "M37 Marketplace SDK 签名 撤销" },

@@ -1,0 +1,144 @@
+name: Large repository database design
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "skills/subskills/elmos-large-repository-database-design-v1.0.0.zip"
+      - "skills/elmos-large-repository-database-design-v1.0.0/**"
+      - ".agents/skills/large-repository-run-persistence/**"
+      - "agent-skills/runtime/large-repository-run-persistence/**"
+      - "tooling/integrate_large_repository_database_design.py"
+      - "tests/large-repository-database-design/**"
+      - "scripts/large_repository_database_design/**"
+      - "docs/large-repository-database-design/**"
+      - "Makefile"
+      - "AGENTS.md"
+      - ".github/workflows/large-repository-database-design.yml"
+  push:
+    paths:
+      - "skills/subskills/elmos-large-repository-database-design-v1.0.0.zip"
+      - "skills/elmos-large-repository-database-design-v1.0.0/**"
+      - ".agents/skills/large-repository-run-persistence/**"
+      - "agent-skills/runtime/large-repository-run-persistence/**"
+      - "tooling/integrate_large_repository_database_design.py"
+      - "tests/large-repository-database-design/**"
+      - "scripts/large_repository_database_design/**"
+      - "docs/large-repository-database-design/**"
+      - "Makefile"
+      - "AGENTS.md"
+      - ".github/workflows/large-repository-database-design.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: large-repository-database-design-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-contract:
+    name: Immutable package and static contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12.11"
+
+      - name: Install the pinned Skill frontmatter parser
+        run: python3 -m pip install --disable-pip-version-check pyyaml==6.0.2
+
+      - name: Check immutable import and dual installation
+        run: python3 tooling/integrate_large_repository_database_design.py --check
+
+      - name: Run focused repository integration tests
+        run: >-
+          python3 -m unittest discover
+          -s tests/large-repository-database-design
+          -p 'test_integration.py'
+
+      - name: Run the source static database validator
+        run: >-
+          python3
+          skills/elmos-large-repository-database-design-v1.0.0/scripts/validate_database_design.py
+
+  postgres-matrix:
+    name: PostgreSQL ${{ matrix.postgres }} isolated execution
+    needs: static-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres:
+          - "16.9"
+          - "17.5"
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres }}
+        env:
+          POSTGRES_USER: elmos
+          POSTGRES_PASSWORD: elmos-ci-password
+          POSTGRES_DB: elmos_large_repository
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready --username=elmos --dbname=elmos_large_repository"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends postgresql-client
+
+      - name: Record client version
+        run: psql --version
+
+      - name: Run compatibility-rendered migration, role, invariant, and inventory checks
+        id: postgres_validation
+        env:
+          ELMOS_LARGE_REPOSITORY_DB_DISPOSABLE_CONFIRMED: "true"
+          ELMOS_LARGE_REPOSITORY_DB_URL: postgresql://elmos:elmos-ci-password@127.0.0.1:5432/elmos_large_repository
+        run: |
+          mkdir -p "$RUNNER_TEMP/large-repository-database-design"
+          set -o pipefail
+          bash scripts/large_repository_database_design/run_postgres_validation.sh 2>&1 \
+            | tee "$RUNNER_TEMP/large-repository-database-design/postgres-${{ matrix.postgres }}.log"
+
+      - name: Record run-scoped result and conservative evidence boundary
+        if: ${{ always() }}
+        env:
+          VALIDATION_OUTCOME: ${{ steps.postgres_validation.outcome }}
+          POSTGRES_TAG: ${{ matrix.postgres }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/large-repository-database-design"
+          case "$VALIDATION_OUTCOME" in
+            success) engine_execution_status=PASSED ;;
+            failure) engine_execution_status=FAILED ;;
+            cancelled) engine_execution_status=CANCELLED ;;
+            *) engine_execution_status=NOT_RUN ;;
+          esac
+          {
+            printf 'postgres_image=postgres:%s\n' "$POSTGRES_TAG"
+            printf 'engine_execution_status=%s\n' "$engine_execution_status"
+            printf 'external_evidence_status=NOT_RUN\n'
+            printf 'certification_status=NOT_CERTIFIED\n'
+          } | tee "$RUNNER_TEMP/large-repository-database-design/status-${POSTGRES_TAG}.txt" \
+              >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve PostgreSQL output and status
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: large-repository-database-design-postgres-${{ matrix.postgres }}-${{ github.sha }}
+          path: ${{ runner.temp }}/large-repository-database-design
+          if-no-files-found: error
+          retention-days: 30

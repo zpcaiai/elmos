@@ -1,0 +1,55 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "metrics are auditable and task-class-specific"
+    ],
+    "guardrails": [
+      "Do not optimize solely for cheapness; retain quality and defect-escape metrics."
+    ],
+    "inputs": [
+      "execution records",
+      "validation outcomes",
+      "review defects"
+    ],
+    "outputs": [
+      "updated model metrics"
+    ],
+    "triggers": [
+      "task/certification completion"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-repository-certifier",
+      "elmos-run-state-journal"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.execution-intelligence",
+    "handler": "telemetry_learner",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-telemetry-learner",
+    "ordinal": 34,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/34-telemetry-learner/SKILL.md",
+    "sha256": "sha256:123422adb86dc28252395582e47bb11d7fea01ab748cd09214f79dfe1aedc266",
+    "version": "1.0.0"
+  }
+}

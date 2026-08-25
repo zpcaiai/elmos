@@ -390,6 +390,14 @@ ALLOWED_CAP_STATUS = {
     "detected-only",
     "blocked",
 }
+V3_RESEARCH_CAPABILITY_STATUS = {
+    "experimental",
+    "detected-only",
+    "blocked",
+}
+V3_TARGET_EMITTER_RELATIVE_PATH = (
+    "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+)
 LAYER_STATUSES = {"PASSED", "FAILED", "UNKNOWN", "NOT_RUN"}
 PROOF_STATUSES = {
     "PROVED",
@@ -12054,6 +12062,127 @@ def validate_nodejs_negative_evidence(
     )
 
 
+def v3_research_route_manifest_document(route_key: str) -> dict[str, Any]:
+    """Return the exact analyzer-bound, unexecuted V3 route manifest.
+
+    The analyzer and emitter paths describe components that are locally
+    available.  Empty route profiles are intentional: those component bindings
+    do not constitute evidence that this directed route has been executed.
+    """
+
+    from route_runtime_metadata import (  # local import keeps packed legacy replay portable
+        ENGINE_PATHS,
+        V3_RESEARCH_ROUTE_VERSION,
+        VERSIONS,
+    )
+    from route_sets import V3_EXACT_ROUTE_KEYS, split_route_key
+
+    if route_key not in V3_EXACT_ROUTE_KEYS:
+        raise ValueError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
+    source, target = split_route_key(route_key)
+    return {
+        "schema_version": 1,
+        "route_key": route_key,
+        "version": V3_RESEARCH_ROUTE_VERSION,
+        "status": "research",
+        "owner": "ELMOS Migration Platform",
+        "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+        "review_date": "2026-11-24",
+        "source": {
+            "language": source,
+            "versions": list(VERSIONS[source]),
+            "engine_path": ENGINE_PATHS[source],
+        },
+        "target": {
+            "language": target,
+            "versions": list(VERSIONS[target]),
+            "engine_path": V3_TARGET_EMITTER_RELATIVE_PATH,
+        },
+        "profiles": {"semantic_profile": "", "target_profile": ""},
+        "framework_profiles": [],
+        "paths": {
+            "support_matrix": "support-matrix.json",
+            "corpus": "corpus",
+            "certification": "certification",
+        },
+        "gates": {
+            "real_target_compiler": True,
+            "source_map_required": True,
+            "holdout_required": True,
+            "representative_repository_required": True,
+            "critical_unknowns_allowed": 0,
+            "critical_behavior_regressions_allowed": 0,
+        },
+    }
+
+
+def validate_v3_research_route_contract(
+    manifest: dict[str, Any],
+    support: dict[str, Any],
+    evidence: dict[str, Any],
+    certification: dict[str, Any],
+    failures: list[str],
+) -> None:
+    """Enforce the same fail-closed V3 contract as the full matrix validator."""
+
+    from route_runtime_metadata import (
+        v3_research_certification_document,
+        v3_research_evidence_document,
+    )
+    from route_sets import V3_EXACT_ROUTE_KEYS
+
+    route_key = manifest.get("route_key")
+    if not isinstance(route_key, str) or route_key not in V3_EXACT_ROUTE_KEYS:
+        failures.append("V3 route key is outside the exact research partition")
+        return
+
+    if manifest != v3_research_route_manifest_document(route_key):
+        failures.append("V3 route manifest is not the exact research contract")
+    if evidence != v3_research_evidence_document(route_key):
+        failures.append("V3 route raw evidence overclaims or drifts from NOT_RUN")
+    if certification != v3_research_certification_document(route_key):
+        failures.append("V3 route certification overclaims or drifts from NOT_CERTIFIED")
+
+    if set(support) != {"schema_version", "route_key", "capabilities"}:
+        failures.append("V3 support matrix top-level keys are not exact")
+    if support.get("schema_version") != 1 or support.get("route_key") != route_key:
+        failures.append("V3 support matrix identity is invalid")
+    capabilities = support.get("capabilities")
+    if not isinstance(capabilities, list) or not capabilities:
+        failures.append("V3 support matrix capabilities are empty")
+        return
+
+    capability_ids: list[str] = []
+    for index, capability in enumerate(capabilities):
+        label = f"V3 support capability[{index}]"
+        if not isinstance(capability, dict) or set(capability) != {
+            "id",
+            "status",
+            "strategy",
+            "reason",
+            "evidence_refs",
+        }:
+            failures.append(f"{label} keys are not exact")
+            continue
+        capability_id = capability.get("id")
+        if not isinstance(capability_id, str) or not capability_id.strip():
+            failures.append(f"{label} id is empty")
+        else:
+            capability_ids.append(capability_id)
+            if capability_id == "typed-pure-function-v1":
+                failures.append("V3 support matrix admits an unexecuted route profile")
+        if capability.get("status") not in V3_RESEARCH_CAPABILITY_STATUS:
+            failures.append(f"{label} overclaims research capability support")
+        for field in ("strategy", "reason"):
+            value = capability.get(field)
+            if not isinstance(value, str) or not value.strip():
+                failures.append(f"{label} {field} is empty")
+        if capability.get("evidence_refs") != []:
+            failures.append(f"{label} binds evidence while route execution is NOT_RUN")
+    if len(capability_ids) != len(set(capability_ids)):
+        failures.append("V3 support matrix capability ids are duplicated")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("route_dir", nargs="?")
@@ -12079,8 +12208,10 @@ def main() -> int:
     errors: list[str] = []
     manifest: dict[str, Any] = {}
     certification: dict[str, Any] = {}
+    support: dict[str, Any] = {}
     specialized = False
     nodejs = False
+    v3 = False
     module_required = False
     if not route.is_dir():
         errors.append(f"missing route dir: {route}")
@@ -12094,6 +12225,7 @@ def main() -> int:
             MODULE_EQUIVALENCE_ROUTE_KEYS,
             NODEJS_EXACT_ROUTE_KEYS,
             SPECIALIZED_ROUTE_KEYS,
+            V3_EXACT_ROUTE_KEYS,
             split_route_key,
         )
 
@@ -12111,6 +12243,7 @@ def main() -> int:
                 errors.append("route source/target tuple does not match route_key")
             specialized = route_key in SPECIALIZED_ROUTE_KEYS
             nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
+            v3 = route_key in V3_EXACT_ROUTE_KEYS
             module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
         for key in REQUIRED_ROUTE:
             if key not in manifest:
@@ -12187,6 +12320,12 @@ def main() -> int:
         errors.append(str(exc))
     try:
         support = load(route / "support-matrix.json")
+        _validate_optional_json_schema(
+            support,
+            "support-matrix.schema.json",
+            errors,
+            "support matrix",
+        )
         if support.get("route_key") != manifest.get("route_key"):
             errors.append("support matrix route_key mismatch")
         for capability in support.get("capabilities", []):
@@ -12350,6 +12489,14 @@ def main() -> int:
             != str(manifest.get("status", "")).lower()
         ):
             errors.append("route and certification statuses must match")
+        if v3:
+            validate_v3_research_route_contract(
+                manifest,
+                support,
+                route_evidence,
+                certification,
+                errors,
+            )
         _, strict_errors = validate_formal_equivalence(route, manifest, certification)
         errors.extend(strict_errors)
         _, module_errors = validate_module_equivalence(route, manifest, certification)

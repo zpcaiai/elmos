@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 8
+name: elmos-diagram-and-architecture-understanding
+title: 图表与架构图理解
+objective: 将图表转换为可编辑、可校验、可追溯的图模型，并支持生成架构文档和代码影响分析。
+dependencies:
+- elmos-image-ocr-and-preprocessing
+- elmos-source-anchor-and-provenance
+inputs:
+- 图像、图表类型提示
+outputs:
+- DiagramIR、未决问题、可编辑导出
+responsibilities:
+- 检测节点、连线、箭头、泳道、边界、图例和文字标签
+- 识别系统、服务、数据库、队列、用户和外部依赖等节点类型
+- 区分控制流、数据流、部署关系和不确定连线
+- 输出图 IR、置信度、未解析元素和来源坐标
+deliverables:
+- DiagramIR schema 与解析管线
+- 可导出 Mermaid、PlantUML、JSON 的转换器
+- 标准图、交叉线和手绘图评测
+acceptance:
+- 箭头方向和节点关系可追溯到原图
+- 无法确定的连线不会被强行确定
+- 导出后可重新渲染并做结构对比
+- 图模型可被架构和数据流工作流消费
+data_entities:
+- diagram_nodes
+- diagram_edges
+events:
+- diagram.analysis.completed
+- diagram.edge.ambiguous
+metrics:
+- node_f1
+- edge_direction_accuracy
+failure_modes:
+- 交叉线
+- 无箭头连线
+- 手写标签
+- 多图叠加
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

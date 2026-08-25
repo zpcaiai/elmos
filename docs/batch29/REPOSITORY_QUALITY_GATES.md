@@ -2,19 +2,22 @@
 
 ## Purpose and evidence boundary
 
-This gate defines the repository-level capability target for the ten languages
-currently recognized by the Batch 29 polyglot engine: Java, Python, C#,
-TypeScript, Go, Rust, C++, Objective-C, Swift, and JavaScript on the exact
-Node.js 26 / ES2022 / ESM profile. It does not infer support
-from an analyzer, emitter, single-function corpus, or reverse direction.
+This gate defines the repository-level capability target for the thirteen
+active languages recognized by the Batch 29 route authority: Java, C#, Go,
+Rust, Python, TypeScript, C++, Objective-C, Swift, PHP, Kotlin, React, and
+Flutter. It does not infer support from an analyzer, emitter, single-function
+corpus, historical campaign, or reverse direction.
 
-The contract covers all `10 × 9 = 90` ordered source-to-target directions. Each
-direction carries its own status and both a `SMALL` and `MEDIUM` workload.
-Existing per-route evidence is not rewritten or promoted by this gate.
+The contract covers all `13 × 12 = 156` active ordered source-to-target
+directions. Each direction carries its own status and both a `SMALL` and
+`MEDIUM` workload. Existing per-route evidence is not rewritten or promoted by
+this gate.
 
 The input contract is
 `schemas/batch29/repository-capability-campaign.schema.json`. The result
-contract is `schemas/batch29/repository-gate-result.schema.json`.
+contract is `schemas/batch29/repository-gate-result.schema.json`. Their current
+identities are `batch29.repository-capability-campaign.v2` with profile
+`repository-wide-v2`, and `batch29.repository-gate-result.v2`.
 
 ## Exact repository classes
 
@@ -30,28 +33,39 @@ supported-language code estate must first be decomposed into explicit directed
 workloads; otherwise a whole-repository claim could hide unconverted code.
 Every source file must contribute at least one classified unit.
 
-## Required 90-route matrix
+## Required 156-route active matrix
 
 The canonical language order is:
 
 1. `java`
-2. `python`
-3. `csharp`
-4. `typescript`
-5. `go`
-6. `rust`
+2. `csharp`
+3. `go`
+4. `rust`
+5. `python`
+6. `typescript`
 7. `cpp`
 8. `objc`
 9. `swift`
-10. `javascript`
+10. `php`
+11. `kotlin`
+12. `react`
+13. `flutter`
 
 The campaign must contain every ordered pair exactly once, must contain no
 self-route, and must not substitute one direction for its reverse. Every route
 must have status `PASSED`. `FAILED`, `SKIPPED`, `UNSUPPORTED`, and `NOT_RUN`
-are explicit non-passing states; omission is also non-passing.
+are explicit non-passing states; an unknown state, partial matrix, or omission
+is also non-passing.
 
 Each direction must contain exactly one `SMALL` and one `MEDIUM` workload, for
-180 workload records in total.
+312 workload records in total.
+
+The language tuple and all route keys are cross-checked against
+`scripts/batch29/route_sets.py`. JavaScript is deprecated and is completely
+excluded from the active tuple and its 156 directions. The former ten-language,
+90-route JavaScript campaign remains historical evidence only: its v1 campaign
+schema/profile, route count, or JavaScript records cannot produce the current
+`READY_FOR_EXTERNAL_GATE` decision.
 
 ## Gate R29-REPO-A — Source baseline
 
@@ -143,7 +157,7 @@ external review remains a separate gate.
 `scripts/batch29/run_repository_gate.py` is the only authority for this
 repository campaign result.
 
-- All 90 directions, all 180 workloads, all zero-tolerance counters, all actor
+- All 156 directions, all 312 workloads, all zero-tolerance counters, all actor
   separation checks, and all artifact checks passing yields
   `READY_FOR_EXTERNAL_GATE` with process exit `0`.
 - Any missing direction or class, malformed record, `NOT_RUN`, skip, failure,

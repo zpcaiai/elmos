@@ -5,8 +5,8 @@ supported languages.  That inventory breadth is deliberately separate from
 three other things, and this module exists to keep them from collapsing into
 each other:
 
-* **Analyzability.**  ``PENDING_ANALYZER_LANGUAGES`` are declared matrix
-  members with no analyzer.  They are routed; they cannot be lifted from.
+* **Analyzability.** ``PENDING_ANALYZER_LANGUAGES`` keeps future matrix
+  declarations from being mistaken for implemented source analyzers.
 * **Repository surface.**  ``REPOSITORY_SURFACE_LANGUAGES`` is what discovery,
   inventory, placement and build files actually handle.
 * **Evidence strength.**  The native/JVM exact-eight profile carries additional
@@ -20,11 +20,14 @@ partition are retained at their recorded values.
 
 from __future__ import annotations
 
+import importlib.util
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+from elmos_polyglot_route import cli
 from elmos_polyglot_route.assembly import _BUILD_FILES, _PLACERS
 from elmos_polyglot_route.discovery import _DECLARATION_PATTERNS
 from elmos_polyglot_route.engine import (
@@ -40,6 +43,8 @@ from elmos_polyglot_route.models import (
     ENGINE_ONLY_LANGUAGES,
     NODEJS_DIRECTED_PAIRS,
     PENDING_ANALYZER_LANGUAGES,
+    PENDING_REPOSITORY_LANGUAGES,
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
     REPOSITORY_SURFACE_LANGUAGES,
     ROUTED_LANGUAGES,
     ROUTED_PAIRS,
@@ -48,6 +53,7 @@ from elmos_polyglot_route.models import (
     RouteError,
     SemanticIR,
     is_routed_pair,
+    repository_language_lifecycle,
     requires_concrete_source_spans,
 )
 from elmos_polyglot_route.repository import _EXTENSIONS
@@ -60,11 +66,7 @@ ROUTES = REPOSITORY_ROOT / "routes"
 def test_the_split_is_a_partition_of_the_supported_set() -> None:
     assert set(ROUTED_LANGUAGES) | set(ENGINE_ONLY_LANGUAGES) == set(SUPPORTED_LANGUAGES)
     assert not set(ROUTED_LANGUAGES) & set(ENGINE_ONLY_LANGUAGES)
-    # A language the engine cannot analyse could not be a route source -- with
-    # one explicit exception.  Kotlin, React and Flutter are declared in the
-    # matrix ahead of their analyzers, so the old ``ROUTED <= ANALYZABLE``
-    # invariant is now stated with that exception named rather than silently
-    # weakened: everything routed and not pending must still be analyzable.
+    # Everything routed and not explicitly pending must be analyzable.
     assert set(ROUTED_LANGUAGES) - set(PENDING_ANALYZER_LANGUAGES) <= set(ANALYZABLE_LANGUAGES)
     assert not set(ANALYZABLE_LANGUAGES) & set(PENDING_ANALYZER_LANGUAGES)
     assert set(PENDING_ANALYZER_LANGUAGES) <= set(SUPPORTED_LANGUAGES)
@@ -107,6 +109,38 @@ def test_deprecated_language_keeps_its_engine_machinery_but_leaves_the_matrix() 
     assert not is_routed_pair("java", "javascript")
     # The retired directions are still enumerable under their own name.
     assert len(DEPRECATED_DIRECTED_PAIRS) == 20
+    # Kotlin/React/Flutter arrived after JavaScript retirement. Their six
+    # cross-pairs have no archived route identity and cannot be invented by
+    # the deprecated-replay lifecycle.
+    assert not any(
+        {source, target} & {"kotlin", "react", "flutter"}
+        for source, target in DEPRECATED_DIRECTED_PAIRS
+    )
+    assert repository_language_lifecycle("javascript", "java") == (
+        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+    )
+    assert repository_language_lifecycle("java", "javascript") == (
+        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+    )
+    for v3_language in ("kotlin", "react", "flutter"):
+        assert repository_language_lifecycle("javascript", v3_language) is None
+        assert repository_language_lifecycle(v3_language, "javascript") is None
+
+
+def test_public_cli_language_choices_are_live_active_thirteen_only() -> None:
+    parser_fields = (
+        (cli._migration_parser(), ("source_language", "target_language")),
+        (cli._inventory_parser(), ("source_language", "target_language")),
+        (cli._repository_pipeline_parser(), ("source_language", "target_language")),
+        (cli._emit_parser(), ("source_language", "target_language")),
+        (cli._check_parser(), ("target_language",)),
+        (cli._module_parser(), ("source_language", "target_language")),
+    )
+    for parser, fields in parser_fields:
+        actions = {action.dest: action for action in parser._actions}
+        for field in fields:
+            assert tuple(actions[field].choices) == SUPPORTED_LANGUAGES
+            assert "javascript" not in actions[field].choices
 
 
 def test_the_routed_set_is_not_empty_and_engine_only_is_not_everything() -> None:
@@ -116,14 +150,14 @@ def test_the_routed_set_is_not_empty_and_engine_only_is_not_everything() -> None
     assert len(ENGINE_ONLY_LANGUAGES) < len(SUPPORTED_LANGUAGES)
 
 
-def test_repository_orchestration_surface_is_exactly_the_supported_analyzable_set() -> None:
+def test_repository_orchestration_surface_is_exactly_the_completed_repository_set() -> None:
     source_inventory_languages = set(_EXTENSIONS.values())
     discovery_languages = {"python", *_DECLARATION_PATTERNS}
     target_project_languages = set(_PLACERS)
     target_build_languages = set(_BUILD_FILES)
 
     # Compared against REPOSITORY_SURFACE_LANGUAGES, not SUPPORTED_LANGUAGES.
-    # A pending-analyzer language has no extension, no declaration pattern, no
+    # A repository-pending language has no extension, no declaration pattern, no
     # placer and no build file, and adding stubs so this comparison passes
     # would assert support the engine does not have.
     assert source_inventory_languages == set(REPOSITORY_SURFACE_LANGUAGES)
@@ -132,7 +166,7 @@ def test_repository_orchestration_surface_is_exactly_the_supported_analyzable_se
     assert target_build_languages == set(REPOSITORY_SURFACE_LANGUAGES)
     assert set(REPOSITORY_SURFACE_LANGUAGES) == (
         set(SUPPORTED_LANGUAGES) | set(DEPRECATED_LANGUAGES)
-    ) - set(PENDING_ANALYZER_LANGUAGES)
+    ) - set(PENDING_REPOSITORY_LANGUAGES)
 
     directed_pairs = {
         (source, target) for source in SUPPORTED_LANGUAGES for target in SUPPORTED_LANGUAGES if source != target
@@ -178,6 +212,120 @@ def test_route_contract_is_complete_thirteen_language_matrix_with_exact_subsets(
     assert not is_routed_pair("java", "javascript")
     assert not is_routed_pair("java", "java")
     assert not is_routed_pair("unknown", "java")
+
+
+def test_exact_toolchain_receipt_uses_the_engine_language_tuple() -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_runtime_toolchain_receipt_contract",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    assert module.EXPECTED_ACTIVE_LANGUAGES == ROUTED_LANGUAGES
+
+
+def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_runtime_toolchain_receipt_portability",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    original_root = module.configured_polyglot_toolchain_root()
+    relocated_root = (tmp_path / "toolchains").resolve()
+    original = module.exact_toolchain("kotlin")
+
+    def relocate(value: str | None) -> str | None:
+        if value is None:
+            return None
+        return value.replace(str(original_root), str(relocated_root))
+
+    relocated = replace(
+        original,
+        executable=str(relocate(original.executable)),
+        auxiliary=relocate(original.auxiliary),
+        profile=tuple(str(relocate(value)) for value in original.profile),
+    )
+    monkeypatch.setattr(module, "exact_toolchain", lambda language: relocated)
+    monkeypatch.setattr(
+        module,
+        "configured_polyglot_toolchain_root",
+        lambda: relocated_root,
+    )
+
+    record = module._portable_toolchain("kotlin")
+
+    assert record["executable"].startswith("<polyglot-toolchain-root>/")
+    assert str(relocated_root) not in json.dumps(record, sort_keys=True)
+    assert module.exact_toolchain_record_sha256(record) == (
+        module.EXACT_TOOLCHAIN_RECORD_SHA256["kotlin"]
+    )
+
+
+def test_batch29_live_schemas_and_historical_module_schema_keep_separate_sets() -> None:
+    schema_root = REPOSITORY_ROOT / "schemas" / "batch29"
+    active = set(ROUTED_LANGUAGES)
+
+    for schema_name in (
+        "formal-input.schema.json",
+        "formal-input-module-function.schema.json",
+        "identifier-plan.schema.json",
+    ):
+        schema = json.loads((schema_root / schema_name).read_text(encoding="utf-8"))
+        assert set(schema["$defs"]["language"]["enum"]) == active
+        assert "javascript" not in schema["$defs"]["language"]["enum"]
+
+    module_schema = json.loads(
+        (schema_root / "module-equivalence-evidence.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    historical_module_languages = {
+        "java",
+        "csharp",
+        "go",
+        "rust",
+        "python",
+        "typescript",
+        "cpp",
+        "objc",
+        "swift",
+        "javascript",
+    }
+    module_language_enums = (
+        module_schema["$defs"]["verified_language_prelude_side"]["properties"][
+            "language"
+        ]["enum"],
+        module_schema["$defs"]["module_inventory"]["properties"][
+            "source_language"
+        ]["enum"],
+    )
+    assert all(
+        set(language_enum) == historical_module_languages
+        for language_enum in module_language_enums
+    )
+    non_java_languages = module_schema["$defs"]["verified_non_java_wrapper"][
+        "properties"
+    ]["language"]["enum"]
+    assert set(non_java_languages) == historical_module_languages - {"java"}
+    assert all("javascript" in language_enum for language_enum in module_language_enums)
+    assert "javascript" in non_java_languages
+
+    # Retained JavaScript tuples address immutable filed evidence only. They
+    # remain explicit and cannot leak back into any live language enum.
+    for definition_name in ("module_route", "exact_specialized_route"):
+        definition = module_schema["$defs"][definition_name]
+        assert "historical JavaScript" in definition["description"]
+        assert any("javascript" in route["const"].values() for route in definition["oneOf"])
 
 
 def test_concrete_span_policy_is_profile_and_route_specific() -> None:
@@ -413,6 +561,7 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     assert set(inventory["languages"]) == set(SUPPORTED_LANGUAGES)
     assert inventory["deprecated_languages"] == list(DEPRECATED_LANGUAGES)
     assert inventory["pending_analyzer_languages"] == list(PENDING_ANALYZER_LANGUAGES)
+    assert inventory["pending_repository_languages"] == list(PENDING_REPOSITORY_LANGUAGES)
     assert inventory["route_count"] == 156
     assert len(inventory["routes"]) == 156
     assert inventory["route_policy"] == {
@@ -438,7 +587,7 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     eleven_languages = legacy_languages | {"javascript", "cpp", "objc", "swift", "php"}
     ten_languages = eleven_languages - {"php"}
     nine_languages = ten_languages - {"javascript"}
-    v3_languages = set(PENDING_ANALYZER_LANGUAGES)
+    v3_languages = {"kotlin", "react", "flutter"}
 
     def complete(languages: set[str]) -> set[str]:
         return {
@@ -492,7 +641,10 @@ def test_inventory_declares_the_complete_156_with_preserved_provenance_sets() ->
     # 110 was renamed onto the 156 and 110 routes' evidence lost its address.
     assert set(route_sets["eleven-language-complete-110"]["route_keys"]) == eleven_language_keys
     assert set(route_sets["kotlin-react-flutter-completion-66"]["route_keys"]) == v3_keys
-    assert route_sets["kotlin-react-flutter-completion-66"]["analyzer_status"] == "PENDING_ANALYZER"
+    assert route_sets["kotlin-react-flutter-completion-66"]["analyzer_status"] == "LOCAL_SINGLE_UNIT_READY"
+    assert route_sets["kotlin-react-flutter-completion-66"]["repository_status"] == (
+        "LOCAL_REPOSITORY_READY"
+    )
     assert set(route_sets["thirteen-language-complete-156"]["route_keys"]) == active_keys
 
     # The active inventory carries no deprecated direction.

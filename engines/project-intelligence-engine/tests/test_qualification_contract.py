@@ -82,6 +82,43 @@ class QualificationContractTests(unittest.TestCase):
                 ):
                     validate_qualification_result(SKILL_REGISTRY[skill], forged, SCOPE)
 
+    def test_unverified_evidence_and_external_release_gate_are_value_pinned(
+        self,
+    ) -> None:
+        evidence_skill = "elmos-evidence-provenance"
+        evidence = deepcopy(_result(evidence_skill))
+        evidence["outputs"]["bindings"][0]["confidence"] = "CONFIRMED"
+        evidence["outputs"]["bindings"][0]["verification_state"] = "VERIFIED"
+        _redigest(evidence)
+        with self.assertRaisesRegex(
+            QualificationContractError, "cannot claim verified or confirmed"
+        ):
+            validate_qualification_result(
+                SKILL_REGISTRY[evidence_skill], evidence, SCOPE
+            )
+
+        release_skill = "elmos-release-certification"
+        release = deepcopy(_result(release_skill))
+        release["outputs"]["decision"] = "READY_FOR_EXTERNAL_GATE"
+        _redigest(release)
+        with self.assertRaisesRegex(QualificationContractError, "external gate"):
+            validate_qualification_result(SKILL_REGISTRY[release_skill], release, SCOPE)
+
+    def test_artifact_and_policy_authority_flags_are_literal_false(self) -> None:
+        for skill, field in (
+            ("elmos-artifact-versioning-human-lock", "version_persisted"),
+            ("elmos-artifact-versioning-human-lock", "authoritative_lock_verified"),
+            ("elmos-collaboration-governance", "enforcement_authorized"),
+        ):
+            with self.subTest(skill=skill, field=field):
+                forged = deepcopy(_result(skill))
+                forged["outputs"][field] = True
+                _redigest(forged)
+                with self.assertRaisesRegex(
+                    QualificationContractError, "literal boolean false"
+                ):
+                    validate_qualification_result(SKILL_REGISTRY[skill], forged, SCOPE)
+
     def test_digest_drift_fails_closed(self) -> None:
         skill = "elmos-project-fingerprinting"
         drifted = deepcopy(_result(skill))

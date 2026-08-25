@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elmos-software-factory-engine"
-version = "0.1.0"
-description = "Bounded local runtime for the ELMOS 7+1 commercial software-factory Skills"
+version = "0.2.0"
+description = "Bounded runtime and evidence campaigns for ELMOS 7+1 commercial software-factory Skills"
 requires-python = ">=3.11"
 dependencies = []
 

@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/software-factory/evidence-campaign/1.0",
+  "title": "ELMOS bounded local evidence campaign",
+  "type": "object",
+  "required": [
+    "schema_version", "campaign_type", "scope", "target_artifact_digest",
+    "environment_digest", "corpus_digest", "executor_id", "controls", "bindings"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "campaign_type": {
+      "enum": ["local-holdout", "provider-contract-simulation", "production-like-rehearsal"]
+    },
+    "scope": {"$ref": "#/$defs/scope"},
+    "target_artifact_digest": {"$ref": "#/$defs/digest"},
+    "environment_digest": {"$ref": "#/$defs/digest"},
+    "corpus_digest": {"$ref": "#/$defs/digest"},
+    "executor_id": {"$ref": "#/$defs/token"},
+    "controls": {
+      "type": "object",
+      "required": ["network_allowed", "provider_calls_allowed", "max_production_writes"],
+      "properties": {
+        "network_allowed": {"const": false},
+        "provider_calls_allowed": {"const": false},
+        "max_production_writes": {"const": 0}
+      },
+      "additionalProperties": false
+    },
+    "bindings": {
+      "type": "object",
+      "required": ["target_manifest", "environment_manifest", "corpus_manifest"],
+      "properties": {
+        "target_manifest": {"$ref": "#/$defs/contentReference"},
+        "environment_manifest": {"$ref": "#/$defs/contentReference"},
+        "corpus_manifest": {"$ref": "#/$defs/contentReference"},
+        "development_manifest": {"$ref": "#/$defs/contentReference"}
+      },
+      "additionalProperties": false
+    },
+    "development_case_digests": {
+      "type": "array", "minItems": 1, "maxItems": 1000,
+      "items": {"$ref": "#/$defs/digest"}, "uniqueItems": true
+    },
+    "cases": {
+      "type": "array", "minItems": 1, "maxItems": 1000,
+      "items": {"$ref": "#/$defs/holdoutCase"}
+    },
+    "provider_contract": {"$ref": "#/$defs/providerContract"},
+    "fixtures": {
+      "type": "array", "minItems": 1, "maxItems": 1000,
+      "items": {"$ref": "#/$defs/providerFixture"}
+    },
+    "rehearsal": {"$ref": "#/$defs/rehearsal"}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "campaign_type": {"const": "local-holdout"},
+        "bindings": {"required": ["development_manifest"]}
+      },
+      "required": ["development_case_digests", "cases"],
+      "not": {"anyOf": [
+        {"required": ["provider_contract"]}, {"required": ["fixtures"]},
+        {"required": ["rehearsal"]}
+      ]}
+    },
+    {
+      "properties": {
+        "campaign_type": {"const": "provider-contract-simulation"},
+        "bindings": {"not": {"required": ["development_manifest"]}}
+      },
+      "required": ["provider_contract", "fixtures"],
+      "not": {"anyOf": [
+        {"required": ["development_case_digests"]}, {"required": ["cases"]},
+        {"required": ["rehearsal"]}
+      ]}
+    },
+    {
+      "properties": {
+        "campaign_type": {"const": "production-like-rehearsal"},
+        "bindings": {"not": {"required": ["development_manifest"]}}
+      },
+      "required": ["rehearsal"],
+      "not": {"anyOf": [
+        {"required": ["development_case_digests"]}, {"required": ["cases"]},
+        {"required": ["provider_contract"]}, {"required": ["fixtures"]}
+      ]}
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "scope": {
+      "type": "object",
+      "required": ["tenant_id", "project_id", "campaign_id", "policy_revision", "source_revision"],
+      "properties": {
+        "tenant_id": {"$ref": "#/$defs/token"},
+        "project_id": {"$ref": "#/$defs/token"},
+        "campaign_id": {"$ref": "#/$defs/token"},
+        "policy_revision": {"$ref": "#/$defs/token"},
+        "source_revision": {"$ref": "#/$defs/token"}
+      },
+      "additionalProperties": false
+    },
+    "contentReference": {
+      "type": "object",
+      "required": ["path", "sha256", "size_bytes", "media_type"],
+      "properties": {
+        "path": {
+          "type": "string", "minLength": 1, "maxLength": 1024,
+          "pattern": "^(?!/)(?!\\.$)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"
+        },
+        "sha256": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1, "maximum": 8388608},
+        "media_type": {"const": "application/json"}
+      },
+      "additionalProperties": false
+    },
+    "holdoutCase": {
+      "type": "object",
+      "required": ["case_id", "skill_name", "request", "expected_status", "expected_error_code"],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/token"},
+        "skill_name": {"$ref": "#/$defs/token"},
+        "request": {"type": "object"},
+        "expected_status": {"enum": ["EXECUTED", "BLOCKED", "REQUIRES_ADAPTER", "FAILED"]},
+        "expected_error_code": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/token"}]}
+      },
+      "additionalProperties": false
+    },
+    "providerContract": {
+      "type": "object",
+      "required": ["method", "provider_id", "operation", "response_fields", "error_map"],
+      "properties": {
+        "method": {"$ref": "#/$defs/token"},
+        "provider_id": {"$ref": "#/$defs/token"},
+        "operation": {"$ref": "#/$defs/token"},
+        "response_fields": {"const": [
+          "provider_id", "operation", "request_digest", "state", "artifact_digest", "error_code"
+        ]},
+        "error_map": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/token"},
+          "additionalProperties": {"$ref": "#/$defs/token"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "providerResponse": {
+      "type": "object",
+      "required": ["provider_id", "operation", "request_digest", "state", "artifact_digest", "error_code"],
+      "properties": {
+        "provider_id": {"$ref": "#/$defs/token"},
+        "operation": {"$ref": "#/$defs/token"},
+        "request_digest": {"$ref": "#/$defs/digest"},
+        "state": {"enum": ["SUCCEEDED", "FAILED", "UNKNOWN", "TIMEOUT"]},
+        "artifact_digest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "error_code": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/token"}]}
+      },
+      "additionalProperties": false
+    },
+    "providerFixture": {
+      "type": "object",
+      "required": [
+        "case_id", "runtime_request", "provider_request", "provider_response",
+        "expected_provider_state", "expected_mapped_error"
+      ],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/token"},
+        "runtime_request": {"type": "object"},
+        "provider_request": {"type": "object"},
+        "provider_response": {"$ref": "#/$defs/providerResponse"},
+        "expected_provider_state": {"enum": ["SUCCEEDED", "FAILED", "UNKNOWN", "TIMEOUT"]},
+        "expected_mapped_error": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/token"}]}
+      },
+      "additionalProperties": false
+    },
+    "rehearsalEvent": {
+      "type": "object",
+      "required": ["case_id", "outcome"],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/token"},
+        "outcome": {"enum": ["SUCCESS", "ERROR", "UNKNOWN", "TIMEOUT"]}
+      },
+      "additionalProperties": false
+    },
+    "rehearsal": {
+      "type": "object",
+      "required": [
+        "mode", "canary_population", "initial_state", "canary_state", "rollback_state",
+        "events", "abort_error_basis_points", "expected_control_decision"
+      ],
+      "properties": {
+        "mode": {"const": "LOCAL_REHEARSAL"},
+        "canary_population": {"const": 0},
+        "initial_state": true,
+        "canary_state": true,
+        "rollback_state": true,
+        "events": {
+          "type": "array", "minItems": 1, "maxItems": 1000,
+          "items": {"$ref": "#/$defs/rehearsalEvent"}
+        },
+        "abort_error_basis_points": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "expected_control_decision": {"enum": ["PROMOTE", "ROLLBACK"]}
+      },
+      "additionalProperties": false
+    }
+  }
+}

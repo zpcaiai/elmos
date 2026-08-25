@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","crosswalkId":"customer-001-sap-sf","enterpriseObjectId":"customer-001","sourceSystem":"SAP","sourceId":"100345","targetSystem":"SALESFORCE","targetId":"001-fixture","decisionStatus":"MATCH","validFrom":"2026-01-01T00:00:00Z","provenanceRefs":["evidence://master-data/review-1"]}

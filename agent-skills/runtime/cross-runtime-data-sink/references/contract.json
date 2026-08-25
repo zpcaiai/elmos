@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "FOUNDATION-05-cross-runtime-data-sink",
+  "name": "cross-runtime-data-sink",
+  "title": "Cross-runtime Data Sink",
+  "description": "大规模 Recipe 数据留在运行地写入共享 sink，只跨 RPC 传 sink 配置。",
+  "batch": "F05",
+  "batch_slug": "repository-intelligence-cross-runtime",
+  "priority": "P0",
+  "risk": "high",
+  "path": "skills/cross-runtime-data-sink/SKILL.md",
+  "origin": "foundation",
+  "dependencies": [],
+  "outputs": [],
+  "sources": [
+    "openrewrite"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [],
+  "tests": [
+    "Execute target-repository tests before production claims."
+  ],
+  "evidence": [
+    "Target-repository executed Evidence required."
+  ],
+  "stop_conditions": [
+    "Stop when the Skill-specific acceptance contract cannot be proven."
+  ],
+  "definition_of_done": [
+    "Skill-specific acceptance criteria pass in the target repository."
+  ],
+  "production_claim_boundary": "Imported static Foundation Skill; not implementation evidence."
+}

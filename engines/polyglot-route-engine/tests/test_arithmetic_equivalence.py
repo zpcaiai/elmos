@@ -38,13 +38,14 @@ import pytest
 
 from elmos_polyglot_route.emitter import emit
 from elmos_polyglot_route.identifier_hygiene import plan_identifiers, target_ir_view
-from elmos_polyglot_route.models import SemanticIR
+from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, SemanticIR
 
 INTEGER_MAX = 2**63 - 1
 INTEGER_MIN = -(2**63)
 SAFE_MAX = 2**53 - 1
 
-def _emitted(ir: SemanticIR, language: str) -> tuple[str, Any]:
+
+def _emitted(ir: SemanticIR, language: Language) -> tuple[str, Any]:
     """Emit, and return a rewriter from source spellings to the planned ones.
 
     Identifier hygiene refuses the source spelling outright for some targets --
@@ -74,7 +75,7 @@ def _emitted(ir: SemanticIR, language: str) -> tuple[str, Any]:
     return emit(ir, language, identifier_plan=plan).content, planned
 
 
-ALL_TARGETS = ("java", "csharp", "python", "typescript", "go", "rust", "swift", "cpp", "objc")
+ALL_TARGETS: tuple[Language, ...] = ROUTED_LANGUAGES
 
 
 def _ir(function: dict[str, Any]) -> SemanticIR:
@@ -161,9 +162,10 @@ def test_rust_keeps_the_outermost_position_unparenthesised() -> None:
 
 
 @pytest.mark.parametrize("language", [t for t in ALL_TARGETS if t != "rust"])
-def test_every_other_target_already_grouped_and_still_does(language: str) -> None:
+def test_every_other_target_already_grouped_and_still_does(language: Language) -> None:
     content = emit(_ir(_SUM_TIMES), language).content
-    assert "a + b * c" not in content
+    ungrouped = "$a + $b * $c" if language == "php" else "a + b * c"
+    assert ungrouped not in content
 
 
 # --------------------------------------------------------------------------
@@ -174,21 +176,25 @@ _ADD = _function(
     "add", [("a", "integer"), ("b", "integer")], "integer", _binary("+", _name("a"), _name("b"))
 )
 
-_CHECKED_ADD_SPELLING = {
+_CHECKED_ADD_SPELLING: dict[Language, str] = {
     "java": "Math.addExact(a, b)",
     "csharp": "checked(a + b)",
     "python": "_elmos_checked_add(a, b)",
     "typescript": "_elmosRequireSafeInteger(a + b)",
+    "react": "_elmosRequireSafeInteger(a + b)",
     "go": "elmosCheckedAdd(a, b)",
     "rust": '(a).checked_add(b).expect("ELMOS_INTEGER_OVERFLOW")',
     "swift": "(a + b)",  # Int arithmetic traps on overflow by default
     "cpp": "elmos_checked_add(a, b)",
     "objc": "ElmosCheckedAdd(a, b)",
+    "php": "elmos_checked_add($a, $b)",
+    "kotlin": "Math.addExact(a, b)",
+    "flutter": "_elmosCheckedAdd(a, b)",
 }
 
 
 @pytest.mark.parametrize("language", ALL_TARGETS)
-def test_integer_addition_is_checked_in_every_target(language: str) -> None:
+def test_integer_addition_is_checked_in_every_target(language: Language) -> None:
     content, planned = _emitted(_ir(_ADD), language)
     assert planned(_CHECKED_ADD_SPELLING[language]) in content
 
@@ -239,24 +245,33 @@ def test_python_integer_division_rejects_a_zero_divisor_and_the_min_over_minus_o
         divide(INTEGER_MIN, -1)
 
 
-@pytest.mark.parametrize(
-    ("language", "expected"),
-    [
-        ("java", "Migrated.elmosNonZero(b)"),
-        ("csharp", "Migrated.ElmosNonZero(b)"),
-        ("typescript", "_elmosRequireNonZero(b)"),
-        ("go", "elmosNonZeroFloat64(b)"),
-        ("rust", "elmos_non_zero_f64(b)"),
-        ("swift", "elmosNonZero(b)"),
-        ("cpp", "elmos_non_zero(b)"),
-        ("objc", "ElmosNonZero(b)"),
-    ],
-)
+_FLOAT_DIVISION_GUARDS: dict[Language, str] = {
+    "java": "Migrated.elmosNonZero(b)",
+    "csharp": "Migrated.ElmosNonZero(b)",
+    "typescript": "_elmosRequireNonZero(b)",
+    "react": "_elmosRequireNonZero(b)",
+    "go": "elmosNonZeroFloat64(b)",
+    "rust": "elmos_non_zero_f64(b)",
+    "swift": "elmosNonZero(b)",
+    "kotlin": "elmosNonZero(b)",
+    "cpp": "elmos_non_zero(b)",
+    "objc": "ElmosNonZero(b)",
+    "php": "elmos_non_zero_float($b)",
+    "flutter": "_elmosNonZero(b)",
+}
+
+
+def test_float_division_guard_fixtures_cover_every_non_python_active_target() -> None:
+    assert set(_FLOAT_DIVISION_GUARDS) == set(ROUTED_LANGUAGES) - {"python"}
+
+
+@pytest.mark.parametrize(("language", "expected"), _FLOAT_DIVISION_GUARDS.items())
 def test_float_division_guards_the_divisor_everywhere_python_raises(
-    language: str, expected: str
+    language: Language, expected: str
 ) -> None:
-    # Python raises on 1.0 / 0.0; the other eight answer Infinity. The
-    # canonical rule makes every supported target agree on "error".
+    # Python raises on 1.0 / 0.0; the other active runtimes do not all share
+    # that behavior. The canonical rule makes every supported target agree on
+    # "error".
     content, planned = _emitted(_ir(_FLOAT_DIVIDE), language)
     assert planned(expected) in content
 
@@ -441,9 +456,12 @@ def test_rust_groups_boolean_connectives() -> None:
 
 
 @pytest.mark.parametrize("language", ALL_TARGETS)
-def test_every_target_groups_boolean_connectives(language: str) -> None:
+def test_every_target_groups_boolean_connectives(language: Language) -> None:
     content, planned = _emitted(_ir(_OR_THEN_AND), language)
-    spelling = {"python": "(a or b) and c"}.get(language, "(a || b) && c")
+    spelling = {
+        "python": "(a or b) and c",
+        "php": "($a || $b) && $c",
+    }.get(language, "(a || b) && c")
     assert planned(spelling) in content
 
 

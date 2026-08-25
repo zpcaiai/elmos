@@ -1,0 +1,46 @@
+{
+  "kind": "elmos.python-local-binding-real-repository-measurement",
+  "schema_version": "1.0.0",
+  "measurement_date": "2026-08-20",
+  "profile": "typed-pure-function-v1",
+  "repository": {
+    "path": "/Users/stephen/DevProjects/AIProjects/langgraph",
+    "commit": "49ae27c2ae983cfb92091b0dea9f7bc37a716479",
+    "worktree_clean": true
+  },
+  "method": {
+    "inventory": "git ls-files -- '*.py'",
+    "structural_filter": "top-level FunctionDef with canonical int/float/bool/str parameter and return annotations plus a local AnnAssign",
+    "semantic_check": "elmos_polyglot_route.python_analyzer.analyze_python",
+    "python_version": "3.12.12"
+  },
+  "counts": {
+    "tracked_python_files": 447,
+    "structural_candidates": 2,
+    "baseline_ready": 0,
+    "current_ready": 0,
+    "observed_ready_delta": 0
+  },
+  "results": [
+    {
+      "path": "libs/cli/langgraph_cli/config.py",
+      "function": "_resolve_compatible_api_version",
+      "current_result": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "path": "libs/cli/langgraph_cli/templates.py",
+      "function": "_choose_template",
+      "current_result": "PYTHON_UNSUPPORTED_STATEMENT:Expr"
+    }
+  ],
+  "decision": {
+    "profile_action": "KEEP_TYPED_PURE_FUNCTION_V1",
+    "reason": "No real repository function entered the complete bounded subset because of this frontend widening.",
+    "execution_status": "LOCAL_EXECUTED",
+    "certification_status": "NOT_CERTIFIED"
+  },
+  "limitations": [
+    "This is a bounded source/analyzer measurement, not a full repository conversion or route certification run.",
+    "A zero observed delta does not prove that no other authorized corpus contains a positive example."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "repo profile is sufficient for later task planning",
+      "validation commands are executable or explicitly unavailable"
+    ],
+    "guardrails": [
+      "Do not mutate repository.",
+      "Never overwrite user changes."
+    ],
+    "inputs": [
+      "repository root"
+    ],
+    "outputs": [
+      "repo profile",
+      "build/test command catalog",
+      "module map"
+    ],
+    "triggers": [
+      "start of repository run"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-requirement-normalizer"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "repository",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.repository-snapshot",
+    "handler": "repo_intake",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-repo-intake",
+    "ordinal": 2,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/02-repo-intake/SKILL.md",
+    "sha256": "sha256:e6bf0e0f4950a772386a1ee9e1aac023e6bfbfd47f1ced665ccd9cc4f8a49576",
+    "version": "1.0.0"
+  }
+}

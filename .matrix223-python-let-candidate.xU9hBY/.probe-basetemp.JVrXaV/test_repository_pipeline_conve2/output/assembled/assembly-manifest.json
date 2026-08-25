@@ -1,0 +1,294 @@
+{
+  "batch_status": "PARTIAL",
+  "build_files": [
+    "pom.xml"
+  ],
+  "build_input_count": 4,
+  "build_inputs": [
+    {
+      "bytes": 481,
+      "path": "pom.xml",
+      "sha256": "sha256:7368ba74cf67baf40c9e868139784b9061136d95bbb7a53fd1780546dc23c00a"
+    },
+    {
+      "bytes": 189,
+      "path": "src/main/java/elmos/generated/wu00001/Migrated.java",
+      "sha256": "sha256:69423bad394d4ab9a4f758238b0e020586e1de972ab20c1e9c6fefa705460c25"
+    },
+    {
+      "bytes": 194,
+      "path": "src/main/java/elmos/generated/wu00002/Migrated.java",
+      "sha256": "sha256:84478c4f5d14133c17df213404ffcff3c29bd0b26759745904f45fe1d5a01790"
+    },
+    {
+      "bytes": 194,
+      "path": "src/main/java/elmos/generated/wu00003/Migrated.java",
+      "sha256": "sha256:86f6b9edb83ace9c724f7bd6130794bb32192c7fd0ad7f77387b81a52491b80e"
+    }
+  ],
+  "build_verification": {
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "-d",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/build/classes",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/src/main/java/elmos/generated/wu00001/Migrated.java",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/src/main/java/elmos/generated/wu00002/Migrated.java",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/src/main/java/elmos/generated/wu00003/Migrated.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "toolchain_language": "java",
+    "toolchain_version": "21.0.11"
+  },
+  "build_verification_status": "PASSED",
+  "certification_status": "NOT_CERTIFIED",
+  "excluded_unit_count": 3,
+  "excluded_units": [
+    {
+      "id": "WU-00001-F002",
+      "reason": "UNSUPPORTED",
+      "status": "SKIPPED_NOT_READY"
+    },
+    {
+      "id": "WU-00002-F002",
+      "reason": "UNSUPPORTED",
+      "status": "SKIPPED_NOT_READY"
+    },
+    {
+      "id": "WU-00003-F002",
+      "reason": "UNSUPPORTED",
+      "status": "SKIPPED_NOT_READY"
+    }
+  ],
+  "external_verification_status": "NOT_RUN",
+  "included_unit_count": 3,
+  "included_units": [
+    {
+      "assembled_bytes": 189,
+      "assembled_path": "src/main/java/elmos/generated/wu00001/Migrated.java",
+      "assembled_sha256": "sha256:69423bad394d4ab9a4f758238b0e020586e1de972ab20c1e9c6fefa705460c25",
+      "function_name": "add",
+      "id": "WU-00001",
+      "identifier_plan_path": "identifier-plan.json",
+      "identifier_plan_sha256": "sha256:14189508bcb1d7fe9468d11a21ce13287677efb6a8946bd7667581ab8f5d8557",
+      "identifier_unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": "sha256:ac58967618c5d54ffe8ff85cbecf5772c0f9468fbdae14ae50972fb4d93799a1",
+        "schema_version": "1.0.0",
+        "scope": "repository-work-unit",
+        "source_logical_path": "add.php",
+        "source_sha256": "sha256:675c8621211cd2ece02c9181005ce2bdb7cd1e2a46ffffda8c2f20d6f4e046fd",
+        "work_unit_id": "WU-00001"
+      },
+      "identifier_unit_namespace_sha256": "sha256:27417d35beb4473702a51918e14a076e5404eb7e99bb1a285ba0babaf8b0a8aa",
+      "namespace": "wu00001",
+      "source_path": "add.php",
+      "source_sha256": "675c8621211cd2ece02c9181005ce2bdb7cd1e2a46ffffda8c2f20d6f4e046fd",
+      "target_function_name": "elmos_fn_80e069bf200ec120",
+      "target_path": "Migrated.java",
+      "target_sha256": "sha256:09aa9330708c55fd10e755317fd6821554620b85b79d94a01e87505411a5ce15"
+    },
+    {
+      "assembled_bytes": 194,
+      "assembled_path": "src/main/java/elmos/generated/wu00002/Migrated.java",
+      "assembled_sha256": "sha256:84478c4f5d14133c17df213404ffcff3c29bd0b26759745904f45fe1d5a01790",
+      "function_name": "multiply",
+      "id": "WU-00002",
+      "identifier_plan_path": "identifier-plan.json",
+      "identifier_plan_sha256": "sha256:121bd1e4725df455f31aa2d7f75edb1f8b2a14195bbbdf44017d91a1da61d9fc",
+      "identifier_unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": "sha256:ac58967618c5d54ffe8ff85cbecf5772c0f9468fbdae14ae50972fb4d93799a1",
+        "schema_version": "1.0.0",
+        "scope": "repository-work-unit",
+        "source_logical_path": "multiply.php",
+        "source_sha256": "sha256:72266498627f8e34eaa3343e7d24b891ce152dea93d7232cd6e6022144c45ef6",
+        "work_unit_id": "WU-00002"
+      },
+      "identifier_unit_namespace_sha256": "sha256:6b9df04c05ac199dc5acc4b1f931d3eaac06450883b5d4136a6cd9e0be52bc87",
+      "namespace": "wu00002",
+      "source_path": "multiply.php",
+      "source_sha256": "72266498627f8e34eaa3343e7d24b891ce152dea93d7232cd6e6022144c45ef6",
+      "target_function_name": "elmos_fn_0bb126c58397bbee",
+      "target_path": "Migrated.java",
+      "target_sha256": "sha256:44964f75e7398325154b6abda306387e6d2b0014d7bea9069912fe04cfa225db"
+    },
+    {
+      "assembled_bytes": 194,
+      "assembled_path": "src/main/java/elmos/generated/wu00003/Migrated.java",
+      "assembled_sha256": "sha256:86f6b9edb83ace9c724f7bd6130794bb32192c7fd0ad7f77387b81a52491b80e",
+      "function_name": "subtract",
+      "id": "WU-00003",
+      "identifier_plan_path": "identifier-plan.json",
+      "identifier_plan_sha256": "sha256:99366a126c3fd944dbb0519e1f05731a39e728c8e62adfbdd47c37a6a6eddf5d",
+      "identifier_unit_namespace": {
+        "kind": "elmos.identifier-unit-namespace",
+        "repository_snapshot_sha256": "sha256:ac58967618c5d54ffe8ff85cbecf5772c0f9468fbdae14ae50972fb4d93799a1",
+        "schema_version": "1.0.0",
+        "scope": "repository-work-unit",
+        "source_logical_path": "subtract.php",
+        "source_sha256": "sha256:10b30a50411f5ef465c4e015f12f1af68d28500e608abb9bb797b51dfbbb4fff",
+        "work_unit_id": "WU-00003"
+      },
+      "identifier_unit_namespace_sha256": "sha256:3a0146545e4bfc1d14c7e3f4e4f960f38c197cf21255d3488de57c6b1ffa99e3",
+      "namespace": "wu00003",
+      "source_path": "subtract.php",
+      "source_sha256": "10b30a50411f5ef465c4e015f12f1af68d28500e608abb9bb797b51dfbbb4fff",
+      "target_function_name": "elmos_fn_8a25d5cf50ffadeb",
+      "target_path": "Migrated.java",
+      "target_sha256": "sha256:cb276726e9271cafd177bf6a7d58d75eef3484f67769fa20523250d252a21d28"
+    }
+  ],
+  "kind": "elmos.repository-assembly-report",
+  "limitations": [
+    "Assembly only relocates already-emitted, already-verified per-unit source; it performs no additional translation.",
+    "Each unit keeps its own namespace/module; units are never merged into a shared namespace, because cross-unit name collisions (e.g. two files defining a same-named function with different behavior) are not resolved at the semantic level.",
+    "A batch_status of PARTIAL means the source repository was not fully migrated; this project covers only the included units listed above, not the whole repository.",
+    "build_verification_status reflects a real whole-project compile/build invocation, not a re-run of per-unit behavior cases; those already passed during the batch run for every included unit, and assembly does not repeat them.",
+    "build_verification_status is NOT_RUN until verify_assembled_project is executed.",
+    "build_inputs binds every manifest-owned source, auxiliary source, and project build file ",
+    "by exact path, byte count, and sha256.",
+    "verified_evidence_artifacts binds the independently parsed route, behavior, source semantic IR, identifier plan, emitted target, and optional JavaScript ESM descriptor evidence copied into this assembly.",
+    "External verification and certification remain NOT_RUN / NOT_CERTIFIED."
+  ],
+  "repository_limits": {
+    "maximum_bytes_per_file": 2097152,
+    "maximum_source_bytes": 67108864,
+    "maximum_source_files": 5000
+  },
+  "repository_ref": "local:functional-matrix/php-to-java",
+  "repository_scale": "small",
+  "route_id": "php-to-java",
+  "schema_version": "1.0.0",
+  "snapshot_sha256": "ac58967618c5d54ffe8ff85cbecf5772c0f9468fbdae14ae50972fb4d93799a1",
+  "source_language": "php",
+  "status": "ASSEMBLED",
+  "target_language": "java",
+  "verified_evidence_artifact_count": 15,
+  "verified_evidence_artifacts": [
+    {
+      "assembled_path": "evidence/WU-00001/route-evidence.json",
+      "bytes": 9188,
+      "role": "route-evidence",
+      "sha256": "sha256:b71f90a39a5f21b3d313303173b92b83cbc54de825e508b9563bd365b17f5db5",
+      "source_path": "units/WU-00001/route-evidence.json",
+      "unit_id": "WU-00001"
+    },
+    {
+      "assembled_path": "evidence/WU-00001/behavior-equivalence.json",
+      "bytes": 1097,
+      "role": "behavior-equivalence",
+      "sha256": "sha256:029dc99d87a9f26e91845fcdc7a8e919b9c24e6649da7546322341ef91f722be",
+      "source_path": "units/WU-00001/behavior-equivalence.json",
+      "unit_id": "WU-00001"
+    },
+    {
+      "assembled_path": "evidence/WU-00001/source-semantic-ir.json",
+      "bytes": 1169,
+      "role": "source-semantic-ir",
+      "sha256": "sha256:5220f99040bb47bc3f2cbb7b5b4d56f3eaa806c7510a8e8a52371c45145add80",
+      "source_path": "units/WU-00001/source-semantic-ir.json",
+      "unit_id": "WU-00001"
+    },
+    {
+      "assembled_path": "evidence/WU-00001/identifier-plan.json",
+      "bytes": 2427,
+      "role": "identifier-plan",
+      "sha256": "sha256:14189508bcb1d7fe9468d11a21ce13287677efb6a8946bd7667581ab8f5d8557",
+      "source_path": "units/WU-00001/identifier-plan.json",
+      "unit_id": "WU-00001"
+    },
+    {
+      "assembled_path": "evidence/WU-00001/Migrated.java",
+      "bytes": 155,
+      "role": "emitted-target",
+      "sha256": "sha256:09aa9330708c55fd10e755317fd6821554620b85b79d94a01e87505411a5ce15",
+      "source_path": "units/WU-00001/Migrated.java",
+      "unit_id": "WU-00001"
+    },
+    {
+      "assembled_path": "evidence/WU-00002/route-evidence.json",
+      "bytes": 9235,
+      "role": "route-evidence",
+      "sha256": "sha256:c229f703a2b2acea98cb9e32445ee2ca8868b65238ba1bb055a8283acccd5a86",
+      "source_path": "units/WU-00002/route-evidence.json",
+      "unit_id": "WU-00002"
+    },
+    {
+      "assembled_path": "evidence/WU-00002/behavior-equivalence.json",
+      "bytes": 1109,
+      "role": "behavior-equivalence",
+      "sha256": "sha256:94ab713c0465f16ca90fc407c2b7818349bb484f016cd39e67bd938787b575cb",
+      "source_path": "units/WU-00002/behavior-equivalence.json",
+      "unit_id": "WU-00002"
+    },
+    {
+      "assembled_path": "evidence/WU-00002/source-semantic-ir.json",
+      "bytes": 1217,
+      "role": "source-semantic-ir",
+      "sha256": "sha256:0dde156bf7c2d5d816a9907ae1025bb99760189fb196844b7b9e9d58cb4d7593",
+      "source_path": "units/WU-00002/source-semantic-ir.json",
+      "unit_id": "WU-00002"
+    },
+    {
+      "assembled_path": "evidence/WU-00002/identifier-plan.json",
+      "bytes": 2442,
+      "role": "identifier-plan",
+      "sha256": "sha256:121bd1e4725df455f31aa2d7f75edb1f8b2a14195bbbdf44017d91a1da61d9fc",
+      "source_path": "units/WU-00002/identifier-plan.json",
+      "unit_id": "WU-00002"
+    },
+    {
+      "assembled_path": "evidence/WU-00002/Migrated.java",
+      "bytes": 160,
+      "role": "emitted-target",
+      "sha256": "sha256:44964f75e7398325154b6abda306387e6d2b0014d7bea9069912fe04cfa225db",
+      "source_path": "units/WU-00002/Migrated.java",
+      "unit_id": "WU-00002"
+    },
+    {
+      "assembled_path": "evidence/WU-00003/route-evidence.json",
+      "bytes": 9217,
+      "role": "route-evidence",
+      "sha256": "sha256:b67338208d765d4f8bd5f441da1eab93685e184ba37d46fa5714e8b260a6d022",
+      "source_path": "units/WU-00003/route-evidence.json",
+      "unit_id": "WU-00003"
+    },
+    {
+      "assembled_path": "evidence/WU-00003/behavior-equivalence.json",
+      "bytes": 1091,
+      "role": "behavior-equivalence",
+      "sha256": "sha256:1825b7a68140a41dfdc0f400ff5e65554906e384c2997b787b673b5d7dfcb8d5",
+      "source_path": "units/WU-00003/behavior-equivalence.json",
+      "unit_id": "WU-00003"
+    },
+    {
+      "assembled_path": "evidence/WU-00003/source-semantic-ir.json",
+      "bytes": 1217,
+      "role": "source-semantic-ir",
+      "sha256": "sha256:69db904b0f4a692971131db1414f917318ec637b3e557db50f5bbe5a7169398a",
+      "source_path": "units/WU-00003/source-semantic-ir.json",
+      "unit_id": "WU-00003"
+    },
+    {
+      "assembled_path": "evidence/WU-00003/identifier-plan.json",
+      "bytes": 2442,
+      "role": "identifier-plan",
+      "sha256": "sha256:99366a126c3fd944dbb0519e1f05731a39e728c8e62adfbdd47c37a6a6eddf5d",
+      "source_path": "units/WU-00003/identifier-plan.json",
+      "unit_id": "WU-00003"
+    },
+    {
+      "assembled_path": "evidence/WU-00003/Migrated.java",
+      "bytes": 160,
+      "role": "emitted-target",
+      "sha256": "sha256:cb276726e9271cafd177bf6a7d58d75eef3484f67769fa20523250d252a21d28",
+      "source_path": "units/WU-00003/Migrated.java",
+      "unit_id": "WU-00003"
+    }
+  ]
+}

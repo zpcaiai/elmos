@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "pack_id": "REPLACE",
+  "tenant_id": "REPLACE",
+  "project_id": "REPLACE",
+  "created_at": "REPLACE",
+  "source_snapshot_digest": {
+    "algorithm": "sha256",
+    "hex": "REPLACE_WITH_64_HEX",
+    "size_bytes": 0
+  },
+  "target_snapshot_digest": {
+    "algorithm": "sha256",
+    "hex": "REPLACE_WITH_64_HEX",
+    "size_bytes": 0
+  },
+  "items": [],
+  "known_deviations": [],
+  "missing_evidence": [],
+  "certification": {
+    "level": "NONE",
+    "status": "BLOCKED",
+    "scope": "REPLACE",
+    "reasons": [
+      "No executed evidence yet"
+    ]
+  },
+  "signatures": [],
+  "manifest_digest": {
+    "algorithm": "sha256",
+    "hex": "REPLACE_WITH_64_HEX",
+    "size_bytes": 0
+  }
+}

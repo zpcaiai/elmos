@@ -505,6 +505,42 @@ def transpile(request: TranspileRequest) -> TranspileResult:
             target_emit="FAILED",
             target_reparse="FAILED" if code == "TARGET_REPARSE_FAILED" else "NOT_RUN",
         )
+    except RuntimeError:
+        # Adapter-identity integrity violations are not subset boundaries. They
+        # mean the registry and the emission disagree about who produced the SQL,
+        # so they must stay loud instead of being laundered into a BLOCKED result.
+        raise
+    except Exception as error:  # noqa: BLE001 - deliberate fail-closed backstop
+        # Anything else escaping emission or reparse is a DEFECT, in this path or
+        # in the pinned parser. Batch 31 requires target emission to fail closed,
+        # so it is reported as a blocked result with its own code rather than
+        # propagating a raw exception to the caller -- and with a code distinct
+        # from UNSUPPORTED_SEMANTICS, so a defect can never be counted as a
+        # declared boundary.
+        #
+        # Real instance this guards: an aggregate FILTER combined with an explicit
+        # window frame reaches sqlglot's `ordered_sql`, which calls `sql_name()` on
+        # a `Filter` node that does not have it. Reproduced in bare sqlglot at both
+        # 30.13.0 and 30.14.0, so pinning forward does not remove the need for this.
+        #
+        # Only the exception TYPE is recorded: a message could carry fragments of
+        # the customer's SQL, and `rawSourceSqlPersisted` is false by contract.
+        return _blocked_result(
+            request,
+            diagnostic=Diagnostic(
+                code="TARGET_EMISSION_FAULTED",
+                severity="ERROR",
+                statement_index=len(statement_irs),
+                message=(
+                    f"Target emission raised an unexpected {type(error).__name__} and was "
+                    "failed closed. This is a defect in the emission path or its pinned "
+                    "parser, not a declared subset boundary; please report it."
+                ),
+            ),
+            syntax_parse="PASSED",
+            target_emit="FAILED",
+            target_reparse="NOT_RUN",
+        )
 
     target_sql = ";\n\n".join(target_sql_parts) + ";\n"
     all_obligations = sorted(

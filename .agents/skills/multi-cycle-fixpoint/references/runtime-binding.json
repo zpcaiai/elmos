@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "multi-cycle-fixpoint",
+  "source_contract_sha256": "sha256:ad8bffa2a8b8806f848d6ed5546544822578d3b5bb0895c04d47dc46fe2ba8ec",
+  "source_id": "FOUNDATION-02-multi-cycle-fixpoint",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

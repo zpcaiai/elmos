@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "elmos-build-cache-tenant-isolation-implementation-v1.2",
+  "repository_base_commit": "5b6cb5468ac81da3a65bd01b30853896ec742dd2",
+  "branch_observed": "perf/analyzer-build-cache-and-batching",
+  "scope_note": "Exact selected implementation closure for P0 tenant, principal, cache evidence, and project ownership controls; this manifest references implementation bytes and does not copy them.",
+  "files": [
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/affinity.py",
+      "byte_count": 22525,
+      "sha256": "sha256:9106c646acc5dc63df3ccab7726480c4b4900298a56bf823ffe6fd1cf3b67458"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/api.py",
+      "byte_count": 43913,
+      "sha256": "sha256:f8ab9a32c87e602c0189be5afa2d4c64f5e6b36ffc8db0efc536165f30ffa088"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/config.py",
+      "byte_count": 24292,
+      "sha256": "sha256:5a99d7995f17dc4555b977a9ec06bbad6e7c600563bc9af0980688219a186ef7"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/context_compaction.py",
+      "byte_count": 50656,
+      "sha256": "sha256:3bffe739cc54a1b31a123480dcbcdca1508b76e10c84757a719d20fc6b158683"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/context_ledger.py",
+      "byte_count": 27633,
+      "sha256": "sha256:02a5b7a68ff0543e898aa1fed6da94ace08361eb8346427b771d8ce368ce3ab4"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/coordinator.py",
+      "byte_count": 76680,
+      "sha256": "sha256:7cfc92faf45bd569217b212285b673f04c3717f656d84103c99b039ee08e84d1"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/environment_cache.py",
+      "byte_count": 18124,
+      "sha256": "sha256:e204e4b3f3fe0698c2e2517c301e3bb30a8c3b8e17995b0d53b9472d13fec934"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/environment_service.py",
+      "byte_count": 50490,
+      "sha256": "sha256:f7217577b9b7d7d9541dd41a08c8c54aaf2f6708de6a2ed864346e2e1dba1c0f"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/miss_diagnostics.py",
+      "byte_count": 15845,
+      "sha256": "sha256:1d1d6ac5518d78c08e29e0ef1173adbbf6264b956a41c0ffa55b4b2e7d82f7e9"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/parity.py",
+      "byte_count": 15298,
+      "sha256": "sha256:fec23640a70c5bdaf9a7dd3398b90e1cbbe3345fd2f5dc604b83aea36be8525c"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/parity_api.py",
+      "byte_count": 58909,
+      "sha256": "sha256:8dbda5cde8f4764e3a867b66fe78f9498e17d048e854b117f21829f620135455"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/parity_harness.py",
+      "byte_count": 34171,
+      "sha256": "sha256:08ad651e627ac71d2bb7381f74373ad71202f7e23a49fceca97d38535c29747e"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/parity_runtime.py",
+      "byte_count": 24258,
+      "sha256": "sha256:294f9684134e828799dc4df8002be1826d32da621ee93400fa0bd6c8267acc6f"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/parity_store.py",
+      "byte_count": 49723,
+      "sha256": "sha256:4654cc1c1313824824c90ca6e612200a3b886168ae3976525f419e1a21fc1c53"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/prompt_cache.py",
+      "byte_count": 43586,
+      "sha256": "sha256:e6da46272742d1291bfd98b251e36083ab352c23a23584c9f97f6ae803f90d14"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/prompt_tools.py",
+      "byte_count": 8060,
+      "sha256": "sha256:7ce2490282366190059f1c2fd08a421ae377cd8c448c48239adcd7a23718019d"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/slo_autotune.py",
+      "byte_count": 13147,
+      "sha256": "sha256:b60bf6c9e5e02f588e542d70efd3b9dd373f2aa3bc0ce772dd6f88323b5a587a"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/db/store.py",
+      "byte_count": 78687,
+      "sha256": "sha256:edc87f334e735984ed5979b159f5919faec0f6fd5bd8c887b8657a759c379baa"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/_data/migrations/sqlite/0006_project_tenant_scope.sql",
+      "byte_count": 8150,
+      "sha256": "sha256:88676bb445884ada4fab2830455f19a73f855008f5d2c234854dfa1fa52c31dc"
+    },
+    {
+      "path": "engines/build-cache-engine/src/elmos_build_cache/_data/migrations/postgres/0008_project_tenant_scope.sql",
+      "byte_count": 3831,
+      "sha256": "sha256:8fd0425149f7907bb25b79c3b61c3bc86ccecca48975f0addd56862f06fe0c52"
+    }
+  ]
+}

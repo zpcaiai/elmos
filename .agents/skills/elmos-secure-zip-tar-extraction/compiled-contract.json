@@ -1,0 +1,176 @@
+{
+  "acceptance": [
+    {
+      "criterion": "支持格式的正常归档正确展开并保留目录",
+      "evidence": [],
+      "id": "S44-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "归档处理期间不执行脚本、宏、安装钩子、Dockerfile 或二进制",
+      "evidence": [],
+      "id": "S44-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "所有写入目标在写入前确认位于沙箱根内",
+      "evidence": [],
+      "id": "S44-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "密码不出现在普通日志、持久明文、trace 或模型上下文",
+      "evidence": [],
+      "id": "S44-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "嵌套归档每层重新扫描并受累计限额",
+      "evidence": [],
+      "id": "S44-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "任一危险条目不会造成沙箱外文件创建或主机访问",
+      "evidence": [],
+      "id": "S44-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "支持格式的正常归档正确展开并保留目录",
+      "归档处理期间不执行脚本、宏、安装钩子、Dockerfile 或二进制",
+      "所有写入目标在写入前确认位于沙箱根内",
+      "密码不出现在普通日志、持久明文、trace 或模型上下文",
+      "嵌套归档每层重新扫描并受累计限额",
+      "任一危险条目不会造成沙箱外文件创建或主机访问"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "archive_inspections",
+      "archive_extraction_jobs",
+      "archive_entries",
+      "archive_password_sessions"
+    ],
+    "deliverables": [
+      "ZIP/TAR/TAR.GZ/TGZ/GZIP 流式检查与解压适配器",
+      "隔离沙箱和资源限制配置",
+      "加密密码短期秘密处理",
+      "恶意归档语料与跨平台回归测试"
+    ],
+    "dependencies": [
+      "elmos-malware-quarantine-and-sandbox",
+      "elmos-archive-bomb-and-path-traversal-defense",
+      "elmos-project-package-manifest"
+    ],
+    "events": [
+      "archive.inspection.started",
+      "archive.password.required",
+      "archive.extraction.started",
+      "archive.extraction.completed",
+      "archive.entry.quarantined"
+    ],
+    "failure_modes": [
+      "unsupported method",
+      "corrupt archive",
+      "password invalid",
+      "sandbox resource exceeded",
+      "dangerous entry found"
+    ],
+    "inputs": [
+      "原始归档对象",
+      "归档/租户安全策略",
+      "可选短期密码句柄"
+    ],
+    "metrics": [
+      "archive_extraction_success_rate",
+      "sandbox_escape_count",
+      "password_leak_count",
+      "extracted_bytes_per_second"
+    ],
+    "name": "elmos-secure-zip-tar-extraction",
+    "objective": "在不执行任何内容的前提下对归档先检查后解压，产生可验证清单并隔离所有危险条目。",
+    "ordinal": 44,
+    "outputs": [
+      "安全解压对象集",
+      "归档检查报告",
+      "解压后 manifest",
+      "隔离/拒绝条目"
+    ],
+    "responsibilities": [
+      "通过扩展名、MIME 和文件魔数识别 ZIP/TAR/GZIP 及组合格式，拒绝类型伪装。",
+      "先流式检查目录、声明大小、条目类型、嵌套归档和加密状态，再决定是否解压。",
+      "在无网络、只读基础镜像、受限CPU/内存/磁盘/进程和硬超时的沙箱中解压。",
+      "逐条执行安全路径解析、配额、压缩比、链接和特殊文件策略；不得先写入再检查。",
+      "默认不创建或跟随符号链接/硬链接，不创建设备、FIFO、socket 或 setuid 条目。",
+      "加密包仅接受用户提供密码，密码放入短期秘密通道，不落普通日志/数据库/模型上下文。",
+      "每层嵌套归档重新检查；默认只自动展开第一层，深层需策略或用户批准。",
+      "完成后计算内容哈希、构建解压清单、重新恶意扫描并原子发布到隔离对象区。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "安全 ZIP/TAR 解压"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-secure-zip-tar-extraction/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-secure-zip-tar-extraction/SKILL.md": {
+        "bytes": 3688,
+        "mode": "0644",
+        "sha256": "34669cbfb19dcdafd53474bb97311cd751ce2e3ea4a19d4e5079399e45eea026"
+      },
+      "skills/elmos-secure-zip-tar-extraction/references/contract.yaml": {
+        "bytes": 2793,
+        "mode": "0644",
+        "sha256": "742a7d76627ec13d268dc627180faad03c4c464c153e744f847d1cd281ea1761"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-secure-zip-tar-extraction/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_secure_zip_tar_extraction",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "project-package",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当用户上传 ZIP、TAR、TAR.GZ、TGZ 或 GZIP，需要检查、解密并在隔离环境中安全展开时使用。",
+    "name": "elmos-secure-zip-tar-extraction",
+    "ordinal": 44,
+    "title": "安全 ZIP/TAR 解压"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "742a7d76627ec13d268dc627180faad03c4c464c153e744f847d1cd281ea1761",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "34669cbfb19dcdafd53474bb97311cd751ce2e3ea4a19d4e5079399e45eea026"
+  }
+}

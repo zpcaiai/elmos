@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 18
+name: elmos-prompt-injection-defense
+title: 多模态提示注入防护
+objective: 把所有资产内容视为不可信数据，分离系统策略、用户授权和文档内指令，并在工具调用前实施能力与参数级控制。
+dependencies:
+- elmos-source-anchor-and-provenance
+- elmos-downstream-agent-integration
+inputs:
+- Content IR、工具请求、权限策略
+outputs:
+- TrustLabel、SecurityFinding、PolicyDecision
+responsibilities:
+- 检测文档内越权、忽略指令、泄密、外传和工具诱导模式
+- 为上下文块附加 trust label 与来源边界
+- 在 Tool Gateway 实施白名单、参数策略、租户权限和审批
+- 对发现采取标记、隔离、降权或阻断，而非盲目删除业务文本
+deliverables:
+- InjectionClassifier 与 trust metadata
+- 工具调用策略执行点
+- 跨模态红队样本与防绕过测试
+acceptance:
+- 文档内容不能修改系统策略或租户权限
+- 高风险动作必须经过独立授权或审批
+- 检测器失效时默认保持最小权限
+- 安全拦截有可审计原因且不泄露内部策略细节
+data_entities:
+- prompt_injection_findings
+- tool_policy_decisions
+events:
+- injection.detected
+- tool.call.blocked
+- tool.call.approval_required
+metrics:
+- attack_block_rate
+- false_positive_rate
+failure_modes:
+- 隐写指令
+- 多步诱导
+- 检测器不可用
+- 参数绕过
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

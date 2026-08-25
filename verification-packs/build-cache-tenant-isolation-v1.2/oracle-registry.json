@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "pack_key": "build-cache-tenant-isolation-v1-2",
+  "oracles": [
+    {
+      "oracle_id": "oracle.security-contract",
+      "type": "contract",
+      "owner": "ELMOS security architecture",
+      "scope": [
+        "claim.trusted-authentication",
+        "claim.tenant-noninterference",
+        "claim.evidence-and-attestation-scope",
+        "claim.repository-input-no-execution-authority"
+      ],
+      "independence": "independent",
+      "trust_level": "authoritative",
+      "version": "batch35-security-and-data-boundaries-v1",
+      "evidence_refs": [
+        "../../docs/batch35/SECURITY_AND_DATA_BOUNDARIES.md",
+        "security/principal-resource-action-matrix.json"
+      ]
+    },
+    {
+      "oracle_id": "oracle.database-project-scope",
+      "type": "invariant",
+      "owner": "ELMOS cache data maintainers",
+      "scope": [
+        "claim.tenant-noninterference"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "build-cache-project-scope-migrations-v1",
+      "evidence_refs": [
+        "artifacts/target-artifact.json"
+      ]
+    },
+    {
+      "oracle_id": "oracle.crypto-trust-contract",
+      "type": "contract",
+      "owner": "ELMOS cache security maintainers",
+      "scope": [
+        "claim.evidence-and-attestation-scope"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "strong",
+      "version": "ed25519-exact-scope-v1.2",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "corpus/negative/manifest.json"
+      ]
+    },
+    {
+      "oracle_id": "oracle.denied-side-effect-sentinel",
+      "type": "test",
+      "owner": "ELMOS verification maintainers",
+      "scope": [
+        "claim.trusted-authentication",
+        "claim.tenant-noninterference",
+        "claim.evidence-and-attestation-scope",
+        "claim.repository-input-no-execution-authority"
+      ],
+      "independence": "partially-independent",
+      "trust_level": "supporting",
+      "version": "not-run-v1",
+      "evidence_refs": [
+        "corpus/negative/manifest.json",
+        "certification/local-test-manifest.json"
+      ]
+    }
+  ],
+  "precedence_rules": [
+    {
+      "claim_type": "security-authorization",
+      "ordered_oracles": [
+        "oracle.security-contract",
+        "oracle.crypto-trust-contract",
+        "oracle.database-project-scope",
+        "oracle.denied-side-effect-sentinel"
+      ],
+      "rule": "A runtime test cannot weaken an authoritative fail-closed security contract; any conflict blocks the claim."
+    }
+  ],
+  "conflicts": [],
+  "approvals": []
+}

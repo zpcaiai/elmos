@@ -1,0 +1,178 @@
+{
+  "schema_version": "1.0",
+  "campaign_type": "local-holdout",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "campaign_id": "local-holdout-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
+  "target_artifact_digest": "sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+  "corpus_digest": "sha256:2d62fa6039a1fb12627685785a9a344bd8ecdf6f1c07e0425e9d61c5589ca18e",
+  "executor_id": "repository-local-runner",
+  "controls": {
+    "network_allowed": false,
+    "provider_calls_allowed": false,
+    "max_production_writes": 0
+  },
+  "bindings": {
+    "target_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/artifacts/target-artifacts.json",
+      "sha256": "sha256:108f38e6547603c68a7ea7a93b53ff8bf23009d4a7769bb7157dbb418e6dcb9e",
+      "size_bytes": 11246,
+      "media_type": "application/json"
+    },
+    "environment_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/environment/local-validation-environment.json",
+      "sha256": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
+      "size_bytes": 1285,
+      "media_type": "application/json"
+    },
+    "corpus_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/corpus/local-holdout/manifest.json",
+      "sha256": "sha256:182078c28e18eeed5b98fc29db7cf745d70150943aa1938cdf2d089f1bd122f3",
+      "size_bytes": 1216,
+      "media_type": "application/json"
+    },
+    "development_manifest": {
+      "path": "verification-packs/elmos-7plus1-local-contract-v1/corpus/development/cases.json",
+      "sha256": "sha256:a00847153d2b6698c59e1334d4721ea9c10fefa5b8169a2df0898522f20f474b",
+      "size_bytes": 4538,
+      "media_type": "application/json"
+    }
+  },
+  "development_case_digests": [
+    "sha256:e700624f3b86e2f2c4910804ffd2e235737da6af1b4ff7e40fa4024bae2b4187",
+    "sha256:8b7aa40b917fb3571dbdaf2a3d2ebd53d15968d8e96812c32175ccfe9512748f",
+    "sha256:0822d59eef022f23fbfb43dbf4a4d627736d36d65ea3c2b244b4f45f38689977"
+  ],
+  "cases": [
+    {
+      "case_id": "holdout-001-local-handler",
+      "skill_name": "elmos-architecture-invariant-linter",
+      "request": {
+        "contract_version": "1.0",
+        "tenant_id": "elmos-local",
+        "project_id": "elmos-7plus1",
+        "correlation_id": "local-holdout-v1",
+        "idempotency_key": "holdout-001",
+        "policy_revision": "local-evidence-policy-v1",
+        "source_revision": "working-tree-qualification-v2",
+        "payload": {
+          "action": "compile-workflow",
+          "nodes": [],
+          "invariants": []
+        },
+        "policy": {
+          "allowed_skills": [
+            "elmos-architecture-invariant-linter"
+          ],
+          "allowed_actions": [
+            "compile-workflow"
+          ],
+          "allowed_permissions": [
+            "read"
+          ],
+          "approval_required_actions": [],
+          "approved_actions": [],
+          "allowed_sandbox_modes": [
+            "read-only"
+          ],
+          "allowed_providers": [],
+          "allowed_data_classes": [
+            "public"
+          ],
+          "max_nodes": 64,
+          "max_parallelism": 1,
+          "max_retries": 0,
+          "max_cost_micros": 0,
+          "min_quality_basis_points": 0,
+          "allow_global_knowledge": false
+        },
+        "dependencies": [],
+        "observations": []
+      },
+      "expected_status": "EXECUTED",
+      "expected_error_code": null
+    },
+    {
+      "case_id": "holdout-002-invalid-request",
+      "skill_name": "elmos-architecture-invariant-linter",
+      "request": {
+        "contract_version": "1.0",
+        "tenant_id": "elmos-local",
+        "project_id": "elmos-7plus1",
+        "correlation_id": "local-holdout-v1",
+        "idempotency_key": "holdout key with spaces",
+        "policy_revision": "local-evidence-policy-v1",
+        "source_revision": "working-tree-qualification-v2",
+        "payload": {
+          "action": "compile-workflow",
+          "nodes": [],
+          "invariants": []
+        },
+        "policy": {
+          "allowed_skills": [
+            "elmos-architecture-invariant-linter"
+          ],
+          "allowed_actions": [
+            "compile-workflow"
+          ]
+        },
+        "dependencies": [],
+        "observations": []
+      },
+      "expected_status": "FAILED",
+      "expected_error_code": "REQUEST_INVALID"
+    },
+    {
+      "case_id": "holdout-003-adapter-boundary",
+      "skill_name": "elmos-release-certification",
+      "request": {
+        "contract_version": "1.0",
+        "tenant_id": "elmos-local",
+        "project_id": "elmos-7plus1",
+        "correlation_id": "local-holdout-v1",
+        "idempotency_key": "holdout-003",
+        "policy_revision": "local-evidence-policy-v1",
+        "source_revision": "working-tree-qualification-v2",
+        "payload": {
+          "action": "certify-release",
+          "evidence_bundle": {}
+        },
+        "policy": {
+          "allowed_skills": [
+            "elmos-release-certification"
+          ],
+          "allowed_actions": [
+            "certify-release"
+          ],
+          "allowed_permissions": [
+            "read"
+          ],
+          "approval_required_actions": [],
+          "approved_actions": [],
+          "allowed_sandbox_modes": [
+            "read-only"
+          ],
+          "allowed_providers": [],
+          "allowed_data_classes": [
+            "public"
+          ],
+          "max_nodes": 64,
+          "max_parallelism": 1,
+          "max_retries": 0,
+          "max_cost_micros": 0,
+          "min_quality_basis_points": 0,
+          "allow_global_knowledge": false
+        },
+        "dependencies": [],
+        "observations": []
+      },
+      "expected_status": "REQUIRES_ADAPTER",
+      "expected_error_code": "ADAPTER_REQUIRED"
+    }
+  ]
+}

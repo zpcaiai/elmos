@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.cross-tenant-identity-substitution-denies.v1",
+  "claim_id": "claim.tenant-noninterference",
+  "owner": "ELMOS cache security maintainers",
+  "preconditions": [
+    "baseline request is authorized for tenant A and project A",
+    "resource digest and operation payload remain byte-identical"
+  ],
+  "transformation": {
+    "kind": "substitute-authenticated-tenant-or-principal",
+    "preserve": [
+      "resource-digest",
+      "project-label",
+      "idempotency-key",
+      "operation-payload"
+    ]
+  },
+  "expected_relation": {
+    "kind": "authorized-becomes-denied-with-noninterference",
+    "denied_side_effects": "NONE"
+  },
+  "oracle_refs": [
+    "oracle.security-contract",
+    "oracle.denied-side-effect-sentinel"
+  ],
+  "non_applicable": [],
+  "execution_status": "NOT_RUN"
+}

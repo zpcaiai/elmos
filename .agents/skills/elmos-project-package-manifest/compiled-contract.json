@@ -1,0 +1,175 @@
+{
+  "acceptance": [
+    {
+      "criterion": "相同条目集无论遍历顺序都产生相同 manifest digest",
+      "evidence": [],
+      "id": "S43-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "原始清单不可变，策略变化只产生新分析视图或版本",
+      "evidence": [],
+      "id": "S43-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "大小写与 Unicode 路径碰撞被显式检测",
+      "evidence": [],
+      "id": "S43-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "每个分析文件可追溯到上传或归档条目",
+      "evidence": [],
+      "id": "S43-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "多项目根和资料角色可配置且进入清单",
+      "evidence": [],
+      "id": "S43-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "清单规模大时支持分页/流式处理，不需全部载入内存",
+      "evidence": [],
+      "id": "S43-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "相同条目集无论遍历顺序都产生相同 manifest digest",
+      "原始清单不可变，策略变化只产生新分析视图或版本",
+      "大小写与 Unicode 路径碰撞被显式检测",
+      "每个分析文件可追溯到上传或归档条目",
+      "多项目根和资料角色可配置且进入清单",
+      "清单规模大时支持分页/流式处理，不需全部载入内存"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "input_packages",
+      "input_package_versions",
+      "package_manifests",
+      "package_entries",
+      "package_manifest_views"
+    ],
+    "deliverables": [
+      "ProjectPackageManifest JSON Schema",
+      "规范化、碰撞检测、digest/Merkle 计算实现",
+      "原始/解压/分析视图和版本数据库模型",
+      "清单 API、差异和完整性测试"
+    ],
+    "dependencies": [
+      "elmos-file-type-detection-and-validation",
+      "elmos-source-anchor-and-provenance"
+    ],
+    "events": [
+      "package.manifest.created",
+      "package.manifest.verified",
+      "package.manifest.view.created",
+      "package.manifest.conflict.detected"
+    ],
+    "failure_modes": [
+      "non-deterministic digest",
+      "path normalization collision",
+      "entry omitted silently",
+      "manifest too large for memory"
+    ],
+    "inputs": [
+      "上传文件条目或归档检查结果",
+      "路径规范化策略",
+      "分类/安全结果",
+      "项目根角色"
+    ],
+    "metrics": [
+      "manifest_verification_success_rate",
+      "path_collision_count",
+      "manifest_build_files_per_second",
+      "untraceable_entry_count"
+    ],
+    "name": "elmos-project-package-manifest",
+    "objective": "用规范化 ProjectPackageManifest 描述全部条目、根目录、角色、安全状态和内容哈希，支撑解压、索引、增量更新与审计。",
+    "ordinal": 43,
+    "outputs": [
+      "不可变 ProjectPackageManifest",
+      "manifest digest/Merkle root",
+      "分析视图",
+      "清单差异"
+    ],
+    "responsibilities": [
+      "定义 Package、PackageVersion、Manifest、Entry 和 RootCandidate 契约，覆盖目录、普通文件、链接、归档和特殊条目。",
+      "对相对路径执行统一规范化，同时保留原始显示名，检测重复、冲突、大小写碰撞和 Unicode碰撞。",
+      "为每个条目记录大小、哈希、MIME、编码、修改时间、来源、处理状态、分类和安全发现引用。",
+      "计算条目排序稳定的 manifest digest 和 Merkle 根，用于完整性和增量比较。",
+      "区分原始上传清单、解压后清单、过滤后分析视图和当前项目版本，禁止互相覆盖。",
+      "支持多个项目根、文档根、测试数据根、参考项目和历史版本角色。",
+      "将忽略/隔离/metadata-only 决策作为视图策略，不从原始清单删除条目。",
+      "提供清单查询、分页目录树、导出和版本差异接口。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "项目包清单"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-project-package-manifest/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-project-package-manifest/SKILL.md": {
+        "bytes": 3722,
+        "mode": "0644",
+        "sha256": "04d10e4a45a91bfb24a021547e921cc6039d7a0b487fd731d5cca4430d7369d9"
+      },
+      "skills/elmos-project-package-manifest/references/contract.yaml": {
+        "bytes": 2832,
+        "mode": "0644",
+        "sha256": "92f7be6a91871ff955ace51987fa337fe0b58b1b4b9da04587590c52d4249cbe"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-project-package-manifest/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_project_package_manifest",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "project-package",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当文件夹或归档需要形成不可变、可比较、可签名的项目包目录树和版本事实来源时使用。",
+    "name": "elmos-project-package-manifest",
+    "ordinal": 43,
+    "title": "项目包清单"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "92f7be6a91871ff955ace51987fa337fe0b58b1b4b9da04587590c52d4249cbe",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "04d10e4a45a91bfb24a021547e921cc6039d7a0b487fd731d5cca4430d7369d9"
+  }
+}

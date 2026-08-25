@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-fixture",
+  "contractId": "orders-http-v1",
+  "contractType": "HTTP_OPENAPI",
+  "producerId": "java-orders",
+  "producerVersion": "2.0.0",
+  "consumers": [
+    {
+      "consumerId": "dotnet-inventory",
+      "language": "DOTNET",
+      "currentVersion": "1.0.0",
+      "targetVersion": "2.0.0",
+      "compatibility": "BREAKING",
+      "external": false,
+      "evidenceRefs": ["evidence:consumer:inventory"]
+    }
+  ],
+  "overallCompatibility": "BREAKING",
+  "blockers": ["CONTRACT_BREAKING"],
+  "evidenceRefs": ["evidence:openapi-diff:orders"]
+}

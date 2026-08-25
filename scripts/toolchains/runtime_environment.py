@@ -9,6 +9,7 @@ data cannot turn the doctor into a generic command runner.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -26,8 +27,26 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
+BATCH29_SCRIPT_ROOT = ROOT / "scripts" / "batch29"
+sys.path.insert(0, str(BATCH29_SCRIPT_ROOT))
+
+from route_runtime_metadata import (  # noqa: E402
+    EXACT_TOOLCHAIN_ACTIVE_LANGUAGES,
+    EXACT_TOOLCHAIN_CONTRACT_SHA256,
+    EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES,
+    EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION,
+    EXACT_TOOLCHAIN_RECORD_SHA256,
+    EXACT_TOOLCHAIN_VERSIONS,
+    exact_toolchain_contract_sha256,
+    exact_toolchain_record_sha256,
+)
+
 MANIFEST_PATH = ROOT / "toolchains" / "runtime-manifest.json"
 INSTALLER_PATH = ROOT / "scripts" / "toolchains" / "install_project_synthesis_toolchains.sh"
+ROUTE_INSTALLER_PATH = ROOT / "scripts" / "toolchains" / "install_polyglot_route_toolchains.sh"
+ROUTE_RECEIPT_PATH = (
+    ROOT / "engines" / "polyglot-route-engine" / "tools" / "runtime_toolchain_receipt.py"
+)
 
 ACTIVE_POLICIES = frozenset({"managed-or-host", "repository-lock", "host-apple"})
 NON_EXECUTING_POLICIES = frozenset(
@@ -40,27 +59,102 @@ REQUIRED_PROFILES = frozenset(
 SYNTHESIS_LANGUAGES = frozenset(
     {"java", "python", "csharp", "typescript", "go", "kotlin", "php", "rust"}
 )
+SYNTHESIS_REQUIRED_RUNTIME_IDS = frozenset(
+    {
+        "java-21",
+        "maven-3.9.10",
+        "python-3.12.12",
+        "uv-0.11.16",
+        "dotnet-sdk-10.0.301",
+        "node-26.0.0",
+        "pnpm-10.12.4",
+        "go-1.25.0",
+        "kotlin-2.2.20",
+        "php-8.4.12",
+        "rust-1.89.0",
+        "postgresql-17.5",
+    }
+)
 ROUTE_LANGUAGES = frozenset(
     {
         "java",
         "python",
         "csharp",
         "typescript",
-        "javascript",
         "go",
         "rust",
         "cpp",
         "objc",
         "swift",
+        "php",
+        "kotlin",
+        "react",
+        "flutter",
     }
 )
+ROUTE_REQUIRED_RUNTIME_IDS = frozenset(
+    {
+        "java-21",
+        "python-3.12.12",
+        "dotnet-sdk-10.0.301",
+        "node-26.0.0",
+        "typescript-5.9.2",
+        "go-1.25.0",
+        "rust-1.89.0",
+        "apple-clang-21",
+        "objective-c-apple",
+        "swift-6.3.3",
+        "php-route-8.5.9",
+        "kotlin-route-2.2.20",
+        "react-19.2.7",
+        "flutter-3.44.1",
+    }
+)
+CLAIM_BOUNDARY_STATES = {
+    "maximum_local_state": "TOOLCHAIN_READY",
+    "external_evidence_status": "NOT_RUN",
+    "certification_status": "NOT_CERTIFIED",
+}
+CLAIM_BOUNDARY_KEYS = frozenset({*CLAIM_BOUNDARY_STATES, "limitations"})
+MANIFEST_KEYS = frozenset(
+    {
+        "$schema",
+        "schema_version",
+        "manifest_id",
+        "description",
+        "toolchain_root_env",
+        "default_toolchain_root",
+        "claim_boundary",
+        "profiles",
+        "runtimes",
+        "batch_bindings",
+    }
+)
+PROFILE_KEYS = frozenset({"description", "platforms", "required", "optional"})
+RUNTIME_KEYS = frozenset(
+    {
+        "id",
+        "display_name",
+        "languages",
+        "version",
+        "install_policy",
+        "platforms",
+        "required_by",
+        "notes",
+        "probes",
+        "observational_probes",
+    }
+)
+PROBE_KEYS = frozenset({"id", "expected", "pattern"})
 KNOWN_APPLICATION_LANGUAGES = SYNTHESIS_LANGUAGES | ROUTE_LANGUAGES
-# Node is shared by the TypeScript synthesis toolchain and the independent
-# JavaScript route toolchain.  Its manifest language list is intentionally
-# broader than the synthesis product surface, so profile validation must not
-# turn runtime availability into a JavaScript Project Synthesis claim.
+# Node is shared by the TypeScript synthesis toolchain and retained deprecated
+# JavaScript compatibility metadata. Its manifest language list is intentionally
+# broader than either active product surface, so profile validation must not
+# turn runtime availability into a JavaScript synthesis or route claim.
 SYNTHESIS_EXCLUDED_SHARED_LANGUAGES = frozenset({"javascript"})
 AUTOMATED_INSTALL_PROFILES = frozenset({"core", "synthesis", "routes-macos", "all"})
+ROUTE_RECEIPT_ACTIVE_LANGUAGES = EXACT_TOOLCHAIN_ACTIVE_LANGUAGES
+MAX_ROUTE_RECEIPT_BYTES = 8 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -187,6 +281,13 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         ("{toolchain_root}/gradle/8.14.3/bin/gradle", "/opt/homebrew/bin/gradle"),
         executable_env="ELMOS_GRADLE",
     ),
+    "kotlinc": ProbeCommand(
+        "kotlinc",
+        ("-version",),
+        ("kotlinc",),
+        ("{toolchain_root}/kotlin/2.2.20/bin/kotlinc",),
+        executable_env="ELMOS_KOTLINC",
+    ),
     "php": ProbeCommand(
         "php",
         ("--version",),
@@ -200,6 +301,36 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         ("php",),
         ("{toolchain_root}/php/8.4.12/bin/php", "/opt/homebrew/bin/php"),
         executable_env="ELMOS_PHP",
+    ),
+    "php-route": ProbeCommand(
+        "php",
+        ("--version",),
+        (),
+        (
+            "{toolchain_root}/php/8.5.9/bin/php",
+            "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        ),
+        executable_env="ELMOS_ROUTE_PHP",
+    ),
+    "php-route-modules": ProbeCommand(
+        "php",
+        ("-n", "-m"),
+        (),
+        (
+            "{toolchain_root}/php/8.5.9/bin/php",
+            "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+        ),
+        executable_env="ELMOS_ROUTE_PHP",
+    ),
+    "react-package": ProbeCommand(
+        "node",
+        (
+            "-p",
+            "require('./engines/frontend-client-engine/node_modules/react/package.json').version",
+        ),
+        (),
+        ("{toolchain_root}/node/26.0.0/bin/node", "/opt/homebrew/bin/node"),
+        executable_env="ELMOS_NODE26",
     ),
     "rustc": ProbeCommand(
         "rustc",
@@ -248,7 +379,13 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
     ),
     "clang": ProbeCommand("xcrun", ("clang", "--version"), (), ("/usr/bin/xcrun",)),
     "swift": ProbeCommand("xcrun", ("swiftc", "--version"), (), ("/usr/bin/xcrun",)),
-    "flutter": ProbeCommand("flutter", ("--version",), ("flutter",), ("/opt/homebrew/bin/flutter",)),
+    "dart-flutter": ProbeCommand(
+        "dart",
+        ("--version",),
+        (),
+        ("/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",),
+        executable_env="ELMOS_FLUTTER_DART",
+    ),
     "bash": ProbeCommand("bash", ("--version",), ("bash",), ("/opt/homebrew/bin/bash", "/bin/bash")),
     "zsh": ProbeCommand("zsh", ("--version",), ("zsh",), ("/bin/zsh",)),
     "pwsh": ProbeCommand(
@@ -282,13 +419,29 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         "erl",
         ("-noshell", "-eval", 'io:format("~s", [erlang:system_info(otp_release)]).', "-s", "init", "stop"),
         ("erl",),
-        ("/opt/homebrew/bin/erl",),
+        ("/opt/homebrew/bin/erl", "/opt/homebrew/opt/erlang/bin/erl"),
     ),
     "elixir": ProbeCommand("elixir", ("--version",), ("elixir",)),
     "mix": ProbeCommand("mix", ("--version",), ("mix",)),
+    "gleam": ProbeCommand(
+        "gleam", ("--version",), ("gleam",), ("/opt/homebrew/bin/gleam",)
+    ),
     "lua": ProbeCommand("lua", ("-v",), ("lua",), ("/opt/homebrew/bin/lua",)),
     "openresty": ProbeCommand("openresty", ("-V",), ("openresty",)),
 }
+
+
+def _strict_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"RUNTIME_MANIFEST_DUPLICATE_KEY:{key}")
+        value[key] = item
+    return value
+
+
+def _reject_nonfinite_json(value: str) -> Any:
+    raise ValueError(f"RUNTIME_MANIFEST_NONFINITE_NUMBER:{value}")
 
 
 def load_manifest(path: Path = MANIFEST_PATH) -> dict[str, Any]:
@@ -297,7 +450,11 @@ def load_manifest(path: Path = MANIFEST_PATH) -> dict[str, Any]:
     candidate = Path(path)
     if candidate.is_symlink() or not candidate.is_file():
         raise ValueError(f"RUNTIME_MANIFEST_UNSAFE_OR_MISSING:{candidate}")
-    value = json.loads(candidate.read_text(encoding="utf-8"))
+    value = json.loads(
+        candidate.read_text(encoding="utf-8"),
+        object_pairs_hook=_strict_json_object,
+        parse_constant=_reject_nonfinite_json,
+    )
     if not isinstance(value, dict):
         raise ValueError("RUNTIME_MANIFEST_ROOT_MUST_BE_OBJECT")
     return value
@@ -340,10 +497,51 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
     """Apply fail-closed semantic validation using only the standard library."""
 
     errors: list[str] = []
+    if set(manifest) != MANIFEST_KEYS:
+        errors.append(
+            "manifest keys mismatch: "
+            f"missing={','.join(sorted(MANIFEST_KEYS - set(manifest))) or '-'};"
+            f"extra={','.join(sorted(set(manifest) - MANIFEST_KEYS)) or '-'}"
+        )
+    if manifest.get("$schema") != "../schemas/toolchains/runtime-manifest.schema.json":
+        errors.append("$schema must bind the repository runtime manifest schema")
     if manifest.get("schema_version") != "1.0.0":
         errors.append("schema_version must be 1.0.0")
-    if not isinstance(manifest.get("manifest_id"), str) or not manifest.get("manifest_id"):
-        errors.append("manifest_id must be a non-empty string")
+    manifest_id = manifest.get("manifest_id")
+    if not isinstance(manifest_id, str) or re.fullmatch(r"[a-z0-9][a-z0-9-]+", manifest_id) is None:
+        errors.append("manifest_id must be a governed lowercase identifier")
+    if not isinstance(manifest.get("description"), str) or not manifest.get("description"):
+        errors.append("description must be a non-empty string")
+    if manifest.get("toolchain_root_env") != "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT":
+        errors.append("toolchain_root_env is not the governed environment variable")
+    if not isinstance(manifest.get("default_toolchain_root"), str) or not manifest.get(
+        "default_toolchain_root"
+    ):
+        errors.append("default_toolchain_root must be a non-empty string")
+    claim_boundary = manifest.get("claim_boundary")
+    if not isinstance(claim_boundary, dict):
+        errors.append("claim_boundary must be an object")
+    else:
+        observed_keys = set(claim_boundary)
+        if observed_keys != CLAIM_BOUNDARY_KEYS:
+            errors.append(
+                "claim_boundary keys mismatch: "
+                f"missing={','.join(sorted(CLAIM_BOUNDARY_KEYS - observed_keys)) or '-'};"
+                f"extra={','.join(sorted(observed_keys - CLAIM_BOUNDARY_KEYS)) or '-'}"
+            )
+        for field, expected in CLAIM_BOUNDARY_STATES.items():
+            observed = claim_boundary.get(field)
+            if observed != expected:
+                errors.append(
+                    f"claim_boundary.{field} must be {expected}: observed={observed!r}"
+                )
+        limitations = claim_boundary.get("limitations")
+        if not (
+            isinstance(limitations, list)
+            and limitations
+            and all(isinstance(item, str) and item for item in limitations)
+        ):
+            errors.append("claim_boundary.limitations must be a non-empty string array")
     profiles = manifest.get("profiles")
     if not isinstance(profiles, dict):
         errors.append("profiles must be an object")
@@ -351,6 +549,9 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
     missing_profiles = sorted(REQUIRED_PROFILES - set(profiles))
     if missing_profiles:
         errors.append(f"missing required profiles: {','.join(missing_profiles)}")
+    extra_profiles = sorted(set(profiles) - REQUIRED_PROFILES)
+    if extra_profiles:
+        errors.append(f"unsupported profiles: {','.join(extra_profiles)}")
 
     runtimes = manifest.get("runtimes")
     if not isinstance(runtimes, list) or not runtimes:
@@ -366,15 +567,51 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
             errors.append(f"runtime[{position}] has an invalid id")
             continue
         identifiers.append(identifier)
+        extra_runtime_fields = set(runtime) - RUNTIME_KEYS
+        required_runtime_fields = {
+            "id",
+            "display_name",
+            "languages",
+            "version",
+            "install_policy",
+            "platforms",
+            "required_by",
+        }
+        missing_runtime_fields = required_runtime_fields - set(runtime)
+        if missing_runtime_fields or extra_runtime_fields:
+            errors.append(
+                f"runtime {identifier} fields mismatch: "
+                f"missing={','.join(sorted(missing_runtime_fields)) or '-'};"
+                f"extra={','.join(sorted(extra_runtime_fields)) or '-'}"
+            )
+        for field in ("display_name", "version"):
+            if not isinstance(runtime.get(field), str) or not runtime.get(field):
+                errors.append(f"runtime {identifier} {field} must be a non-empty string")
         policy = runtime.get("install_policy")
         if policy not in INSTALL_POLICIES:
             errors.append(f"runtime {identifier} has unsupported install_policy: {policy}")
         platforms = runtime.get("platforms")
         if not isinstance(platforms, list) or not platforms or not all(isinstance(item, str) for item in platforms):
             errors.append(f"runtime {identifier} must declare platforms")
+        elif len(platforms) != len(set(platforms)):
+            errors.append(f"runtime {identifier} platforms must be unique")
         languages = runtime.get("languages")
         if not isinstance(languages, list) or not all(isinstance(item, str) and item for item in languages):
             errors.append(f"runtime {identifier} languages must be strings")
+        elif len(languages) != len(set(languages)):
+            errors.append(f"runtime {identifier} languages must be unique")
+        required_by = runtime.get("required_by")
+        if (
+            not isinstance(required_by, list)
+            or not required_by
+            or not all(isinstance(item, str) and item for item in required_by)
+            or len(required_by) != len(set(required_by))
+        ):
+            errors.append(f"runtime {identifier} required_by must be a unique non-empty string array")
+        if "notes" in runtime and (
+            not isinstance(runtime.get("notes"), str) or not runtime.get("notes")
+        ):
+            errors.append(f"runtime {identifier} notes must be a non-empty string")
         probes = runtime.get("probes", [])
         observations = runtime.get("observational_probes", [])
         if policy in ACTIVE_POLICIES and not isinstance(probes, list):
@@ -391,12 +628,18 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
                 if not isinstance(probe, dict):
                     errors.append(f"runtime {identifier} {label}[{probe_position}] must be an object")
                     continue
+                if set(probe) != PROBE_KEYS:
+                    errors.append(
+                        f"runtime {identifier} {label}[{probe_position}] fields must be id,expected,pattern"
+                    )
                 probe_id = probe.get("id")
                 if probe_id not in PROBE_COMMANDS:
                     errors.append(f"runtime {identifier} uses unallowlisted probe: {probe_id}")
                 pattern = probe.get("pattern")
                 if not isinstance(pattern, str) or not pattern:
                     errors.append(f"runtime {identifier} probe {probe_id} has no pattern")
+                elif len(pattern) > 512:
+                    errors.append(f"runtime {identifier} probe {probe_id} pattern is too long")
                 else:
                     try:
                         re.compile(pattern)
@@ -413,11 +656,29 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
         if not isinstance(profile, dict):
             errors.append(f"profile {profile_name} must be an object")
             continue
+        allowed_profile_keys = PROFILE_KEYS if "platforms" in profile else PROFILE_KEYS - {"platforms"}
+        if set(profile) != allowed_profile_keys:
+            errors.append(f"profile {profile_name} fields are invalid")
+        if not isinstance(profile.get("description"), str) or not profile.get("description"):
+            errors.append(f"profile {profile_name} description must be a non-empty string")
+        declared_platforms = profile.get("platforms")
+        if declared_platforms is not None and (
+            not isinstance(declared_platforms, list)
+            or not declared_platforms
+            or not all(isinstance(item, str) for item in declared_platforms)
+            or len(declared_platforms) != len(set(declared_platforms))
+        ):
+            errors.append(f"profile {profile_name} platforms must be a unique non-empty string array")
         required = profile.get("required", [])
         optional = profile.get("optional", [])
         if not isinstance(required, list) or not isinstance(optional, list):
             errors.append(f"profile {profile_name} required/optional must be arrays")
             continue
+        if not all(isinstance(item, str) for item in [*required, *optional]):
+            errors.append(f"profile {profile_name} runtime ids must be strings")
+            continue
+        if len(required) != len(set(required)) or len(optional) != len(set(optional)):
+            errors.append(f"profile {profile_name} runtime ids must be unique")
         missing = sorted((set(required) | set(optional)) - known_ids)
         if missing:
             errors.append(f"profile {profile_name} references unknown runtimes: {','.join(missing)}")
@@ -433,6 +694,26 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
             errors.append(
                 f"profile {profile_name} cannot require unresolved external runtimes: {','.join(external_required)}"
             )
+
+    for profile_name, expected_ids in (
+        ("synthesis", SYNTHESIS_REQUIRED_RUNTIME_IDS),
+        ("routes-macos", ROUTE_REQUIRED_RUNTIME_IDS),
+    ):
+        profile = profiles.get(profile_name)
+        if not isinstance(profile, dict):
+            continue
+        required = profile.get("required")
+        optional = profile.get("optional")
+        if isinstance(required, list) and all(isinstance(item, str) for item in required):
+            observed_ids = frozenset(required)
+            if observed_ids != expected_ids or len(required) != len(expected_ids):
+                errors.append(
+                    f"profile {profile_name} required runtime ids mismatch: "
+                    f"missing={','.join(sorted(expected_ids - observed_ids)) or '-'};"
+                    f"extra={','.join(sorted(observed_ids - expected_ids)) or '-'}"
+                )
+        if isinstance(optional, list) and optional:
+            errors.append(f"profile {profile_name} optional runtimes must be empty")
 
     synthesis_languages = (
         _profile_languages(manifest, "synthesis") & KNOWN_APPLICATION_LANGUAGES
@@ -453,6 +734,8 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
     if not isinstance(bindings, dict):
         errors.append("batch_bindings must be an object")
         bindings = {}
+    elif set(bindings) != {"b66-80", "b81-95"}:
+        errors.append("batch_bindings must contain exactly b66-80 and b81-95")
     for namespace, expected_numbers in (
         ("b66-80", {str(number) for number in range(66, 81)}),
         ("b81-95", {str(number) for number in range(81, 96)}),
@@ -475,6 +758,28 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
                 errors.append(
                     f"batch_bindings.{namespace}.{batch} references unknown runtimes: {','.join(unknown)}"
                 )
+    for namespace, profile_name in (("b66-80", "b66-80"), ("b81-95", "language-packs")):
+        declared = bindings.get(namespace, {})
+        profile = profiles.get(profile_name, {})
+        if not isinstance(declared, dict) or not isinstance(profile, dict):
+            continue
+        bound_ids = {
+            str(runtime_id)
+            for runtime_ids in declared.values()
+            if isinstance(runtime_ids, list)
+            for runtime_id in runtime_ids
+        }
+        profile_ids = {
+            str(runtime_id)
+            for field in ("required", "optional")
+            for runtime_id in profile.get(field, [])
+        }
+        if profile_ids != bound_ids:
+            errors.append(
+                f"profile {profile_name} must equal batch_bindings.{namespace}: "
+                f"missing={','.join(sorted(bound_ids - profile_ids)) or '-'};"
+                f"extra={','.join(sorted(profile_ids - bound_ids)) or '-'}"
+            )
     return errors
 
 
@@ -494,9 +799,19 @@ def _platform_key() -> str:
 def _toolchain_root(manifest: Mapping[str, Any], environ: Mapping[str, str]) -> Path:
     variable = str(manifest.get("toolchain_root_env", "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT"))
     configured = environ.get(variable, "").strip()
+    route_configured = environ.get("ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT", "").strip()
+    if configured and route_configured and configured != route_configured:
+        raise ValueError("RUNTIME_TOOLCHAIN_ROOT_CONFLICT")
+    configured = configured or route_configured
     raw = configured or str(manifest.get("default_toolchain_root", "~/.local/share/elmos/toolchains"))
     candidate = Path(raw).expanduser()
-    if not candidate.is_absolute() or candidate == Path("/") or candidate == Path.home():
+    normalized = Path(os.path.normpath(str(candidate)))
+    if (
+        not candidate.is_absolute()
+        or candidate != normalized
+        or candidate == Path("/")
+        or candidate == Path.home()
+    ):
         raise ValueError(f"RUNTIME_TOOLCHAIN_ROOT_UNSAFE:{candidate}")
     return candidate
 
@@ -715,6 +1030,391 @@ def _runtime_result(
     return {**base, "status": status, "blocking_reason": reason, "probes": probe_results}
 
 
+def _route_receipt_python(runtime_results: Sequence[Mapping[str, Any]]) -> Path | None:
+    for runtime in runtime_results:
+        if runtime.get("id") != "python-3.12.12" or runtime.get("status") != "READY":
+            continue
+        probes = runtime.get("probes")
+        if not isinstance(probes, list):
+            return None
+        for probe in probes:
+            if not isinstance(probe, dict) or probe.get("id") != "python312":
+                continue
+            selected = probe.get("selected_executable")
+            if isinstance(selected, str) and selected:
+                return Path(selected)
+    return None
+
+
+def _route_receipt_digest(value: object) -> str:
+    import hashlib
+
+    return hashlib.sha256(
+        json.dumps(
+            value,
+            ensure_ascii=True,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("ascii")
+    ).hexdigest()
+
+
+def _validate_route_receipt(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError("ROUTE_EXACT_RECEIPT_ROOT_INVALID")
+    if (
+        EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION != "1.1.0"
+        or tuple(EXACT_TOOLCHAIN_VERSIONS) != ROUTE_RECEIPT_ACTIVE_LANGUAGES
+        or tuple(EXACT_TOOLCHAIN_RECORD_SHA256) != ROUTE_RECEIPT_ACTIVE_LANGUAGES
+        or EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES != ("javascript",)
+        or not isinstance(EXACT_TOOLCHAIN_CONTRACT_SHA256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", EXACT_TOOLCHAIN_CONTRACT_SHA256) is None
+        or exact_toolchain_contract_sha256() != EXACT_TOOLCHAIN_CONTRACT_SHA256
+    ):
+        raise ValueError("ROUTE_EXACT_RECEIPT_AUTHORITY_INVALID")
+    expected_keys = {
+        "schema_version",
+        "kind",
+        "status",
+        "claim_ceiling",
+        "route_execution_status",
+        "independent_verification_status",
+        "certification_status",
+        "toolchain_contract_sha256",
+        "active_languages",
+        "deprecated_languages",
+        "toolchains",
+        "react_runtime_receipt",
+        "flutter_build_toolchain_receipt",
+        "receipt_sha256",
+    }
+    toolchains = value.get("toolchains")
+    if (
+        set(value) != expected_keys
+        or value.get("schema_version") != EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION
+        or value.get("kind") != "elmos.polyglot-route-exact-toolchain-receipt"
+        or value.get("status") != "READY"
+        or value.get("claim_ceiling") != "TOOLCHAIN_READY"
+        or value.get("route_execution_status") != "NOT_RUN"
+        or value.get("independent_verification_status") != "NOT_RUN"
+        or value.get("certification_status") != "NOT_CERTIFIED"
+        or value.get("toolchain_contract_sha256")
+        != EXACT_TOOLCHAIN_CONTRACT_SHA256
+        or value.get("active_languages") != list(ROUTE_RECEIPT_ACTIVE_LANGUAGES)
+        or value.get("deprecated_languages")
+        != list(EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES)
+        or not isinstance(toolchains, list)
+        or len(toolchains) != len(ROUTE_RECEIPT_ACTIVE_LANGUAGES)
+    ):
+        raise ValueError("ROUTE_EXACT_RECEIPT_CONTRACT_INVALID")
+    observed_languages = [
+        item.get("language") if isinstance(item, dict) else None
+        for item in toolchains
+    ]
+    if observed_languages != list(ROUTE_RECEIPT_ACTIVE_LANGUAGES):
+        raise ValueError("ROUTE_EXACT_RECEIPT_LANGUAGE_SET_INVALID")
+    for item in toolchains:
+        language = item.get("language") if isinstance(item, dict) else None
+        if (
+            not isinstance(item, dict)
+            or set(item)
+            != {
+                "language",
+                "version",
+                "executable",
+                "auxiliary",
+                "profile",
+                "executable_sha256",
+                "auxiliary_sha256",
+            }
+            or not isinstance(item.get("version"), str)
+            or not item["version"]
+            or not isinstance(item.get("executable"), str)
+            or not item["executable"]
+            or not isinstance(item.get("profile"), list)
+            or not item["profile"]
+            or any(not isinstance(fact, str) or not fact for fact in item["profile"])
+        ):
+            raise ValueError("ROUTE_EXACT_RECEIPT_TOOLCHAIN_INVALID")
+        if item.get("version") != EXACT_TOOLCHAIN_VERSIONS.get(str(language)):
+            raise ValueError(
+                f"ROUTE_EXACT_RECEIPT_TOOLCHAIN_VERSION_INVALID:{language}"
+            )
+        for field in ("executable_sha256", "auxiliary_sha256"):
+            digest = item.get(field)
+            if digest is not None and (
+                not isinstance(digest, str)
+                or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+            ):
+                raise ValueError("ROUTE_EXACT_RECEIPT_TOOLCHAIN_DIGEST_INVALID")
+        expected_record_sha256 = EXACT_TOOLCHAIN_RECORD_SHA256.get(str(language))
+        if (
+            not isinstance(expected_record_sha256, str)
+            or re.fullmatch(r"[0-9a-f]{64}", expected_record_sha256) is None
+            or exact_toolchain_record_sha256(item) != expected_record_sha256
+        ):
+            raise ValueError(
+                f"ROUTE_EXACT_RECEIPT_TOOLCHAIN_RECORD_INVALID:{language}"
+            )
+    react_toolchain = next(
+        item
+        for item in toolchains
+        if isinstance(item, dict) and item.get("language") == "react"
+    )
+    react_runtime = value.get("react_runtime_receipt")
+    react_runtime_keys = {
+        "schema_version",
+        "kind",
+        "status",
+        "toolchain_language",
+        "toolchain_version",
+        "dependency_profile_sha256",
+        "probe_source_sha256",
+        "versions",
+        "command",
+        "stdout",
+        "stderr",
+        "browser_execution_status",
+        "independent_verification_status",
+        "certification_status",
+        "receipt_sha256",
+    }
+    react_profile = react_toolchain.get("profile")
+    dependency_profile_values = (
+        [
+            item.split("=", 1)[1]
+            for item in react_profile
+            if isinstance(item, str) and item.startswith("react-dependency-profile-sha256=")
+        ]
+        if isinstance(react_profile, list)
+        else []
+    )
+    command = react_runtime.get("command") if isinstance(react_runtime, dict) else None
+    stdout = react_runtime.get("stdout") if isinstance(react_runtime, dict) else None
+    try:
+        stdout_versions = json.loads(
+            stdout if isinstance(stdout, str) else "",
+            object_pairs_hook=_strict_json_object,
+            parse_constant=_reject_nonfinite_json,
+        )
+    except (json.JSONDecodeError, ValueError):
+        stdout_versions = None
+    if (
+        not isinstance(react_runtime, dict)
+        or set(react_runtime) != react_runtime_keys
+        or react_runtime.get("schema_version") != "1.0.0"
+        or react_runtime.get("kind") != "elmos.react-runtime-import-receipt"
+        or react_runtime.get("status") != "PASSED"
+        or react_runtime.get("toolchain_language") != "react"
+        or react_toolchain.get("version") != EXACT_TOOLCHAIN_VERSIONS["react"]
+        or react_runtime.get("toolchain_version") != react_toolchain.get("version")
+        or len(dependency_profile_values) != 1
+        or re.fullmatch(r"[0-9a-f]{64}", dependency_profile_values[0]) is None
+        or react_runtime.get("dependency_profile_sha256") != dependency_profile_values[0]
+        or react_runtime.get("versions")
+        != {"react": "19.2.7", "react-dom": "19.2.7"}
+        or stdout_versions != react_runtime.get("versions")
+        or not isinstance(stdout, str)
+        or len(stdout.encode("utf-8")) > 2_000
+        or not isinstance(command, list)
+        or len(command) != 6
+        or command[0] != react_toolchain.get("executable")
+        or command[1:3] != ["--input-type=module", "--eval"]
+        or not isinstance(command[3], str)
+        or react_runtime.get("probe_source_sha256")
+        != hashlib.sha256(command[3].encode("utf-8")).hexdigest()
+        or any(not isinstance(item, str) or not item for item in command[4:])
+        or react_runtime.get("stderr") != ""
+        or react_runtime.get("browser_execution_status") != "NOT_RUN"
+        or react_runtime.get("independent_verification_status") != "NOT_RUN"
+        or react_runtime.get("certification_status") != "NOT_CERTIFIED"
+    ):
+        raise ValueError("ROUTE_EXACT_RECEIPT_REACT_RUNTIME_INVALID")
+    react_bound = {
+        key: item for key, item in react_runtime.items() if key != "receipt_sha256"
+    }
+    if react_runtime.get("receipt_sha256") != _route_receipt_digest(react_bound):
+        raise ValueError("ROUTE_EXACT_RECEIPT_REACT_RUNTIME_DIGEST_INVALID")
+    flutter_toolchain = next(
+        item
+        for item in toolchains
+        if isinstance(item, dict) and item.get("language") == "flutter"
+    )
+    flutter_receipt = value.get("flutter_build_toolchain_receipt")
+    flutter_profile = flutter_toolchain.get("profile")
+    if not isinstance(flutter_profile, list):
+        raise ValueError("ROUTE_EXACT_RECEIPT_FLUTTER_PROFILE_INVALID")
+
+    def profile_value(prefix: str) -> str | None:
+        matches = [
+            item.split("=", 1)[1]
+            for item in flutter_profile
+            if isinstance(item, str) and item.startswith(prefix + "=")
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    flutter_keys = {
+        "schema_version",
+        "kind",
+        "language",
+        "version",
+        "closure_sha256",
+        "profile_sha256",
+        "trees",
+    }
+    trees = flutter_receipt.get("trees") if isinstance(flutter_receipt, dict) else None
+    dart_sdk = trees.get("dart_sdk") if isinstance(trees, dict) else None
+    dart_sdk_keys = {
+        "root",
+        "sha256",
+        "record_count",
+        "file_count",
+        "directory_count",
+        "bytes",
+    }
+    closure_document = {
+        "schema": "v1",
+        "trees": {"dart_sdk": dart_sdk},
+    }
+    flutter_auxiliary = flutter_toolchain.get("auxiliary")
+    expected_dart_root = (
+        Path(str(flutter_auxiliary)).resolve().parent.parent
+    )
+    if (
+        not isinstance(flutter_receipt, dict)
+        or set(flutter_receipt) != flutter_keys
+        or flutter_receipt.get("schema_version") != 1
+        or flutter_receipt.get("kind")
+        != "elmos.flutter-dart-build-toolchain-receipt"
+        or flutter_receipt.get("language") != "flutter"
+        or flutter_receipt.get("version") != flutter_toolchain.get("version")
+        or not isinstance(flutter_auxiliary, str)
+        or not Path(flutter_auxiliary).is_absolute()
+        or not isinstance(trees, dict)
+        or set(trees) != {"dart_sdk"}
+        or not isinstance(dart_sdk, dict)
+        or set(dart_sdk) != dart_sdk_keys
+        or dart_sdk.get("root") != str(expected_dart_root)
+        or not isinstance(dart_sdk.get("sha256"), str)
+        or re.fullmatch(r"[0-9a-f]{64}", str(dart_sdk.get("sha256"))) is None
+        or any(
+            type(dart_sdk.get(field)) is not int or int(dart_sdk[field]) <= 0
+            for field in ("record_count", "file_count", "directory_count", "bytes")
+        )
+        or int(dart_sdk["record_count"])
+        != int(dart_sdk["file_count"]) + int(dart_sdk["directory_count"])
+        or flutter_receipt.get("profile_sha256")
+        != _route_receipt_digest(flutter_profile)
+        or flutter_receipt.get("closure_sha256")
+        != _route_receipt_digest(closure_document)
+        or profile_value("flutter-build-closure-schema") != "v1"
+        or profile_value("flutter-build-closure-sha256")
+        != flutter_receipt.get("closure_sha256")
+        or profile_value("flutter-dart-sdk-tree-sha256") != dart_sdk.get("sha256")
+        or "repository-build=pure-dart-import-free" not in flutter_profile
+        or "flutter-ui-semantics=UNSUPPORTED" not in flutter_profile
+    ):
+        raise ValueError("ROUTE_EXACT_RECEIPT_FLUTTER_BUILD_INVALID")
+    bound = {
+        "toolchain_contract_sha256": value["toolchain_contract_sha256"],
+        "active_languages": value["active_languages"],
+        "deprecated_languages": value["deprecated_languages"],
+        "toolchains": value["toolchains"],
+        "react_runtime_receipt": value["react_runtime_receipt"],
+        "flutter_build_toolchain_receipt": value[
+            "flutter_build_toolchain_receipt"
+        ],
+    }
+    if value.get("receipt_sha256") != _route_receipt_digest(bound):
+        raise ValueError("ROUTE_EXACT_RECEIPT_DIGEST_INVALID")
+    return value
+
+
+def _run_route_exact_receipt(
+    runtime_results: Sequence[Mapping[str, Any]],
+    environ: Mapping[str, str],
+) -> dict[str, Any]:
+    python = _route_receipt_python(runtime_results)
+    if python is None:
+        return {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "NOT_RUN",
+            "blocking_reason": "EXACT_PYTHON_3_12_PROBE_NOT_READY",
+            "claim_ceiling": "NOT_RUN",
+        }
+    try:
+        before = ROUTE_RECEIPT_PATH.lstat()
+        if (
+            ROUTE_RECEIPT_PATH.is_symlink()
+            or not stat.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or stat.S_IMODE(before.st_mode) & 0o002
+            or before.st_size > MAX_ROUTE_RECEIPT_BYTES
+        ):
+            raise OSError("unsafe receipt script")
+        command = [str(python), "-I", str(ROUTE_RECEIPT_PATH)]
+        completed = subprocess.run(  # noqa: S603
+            command,
+            cwd=ROOT,
+            env=_probe_environment(python, environ),
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=300,
+        )
+        after = ROUTE_RECEIPT_PATH.lstat()
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "BLOCKED",
+            "blocking_reason": f"ROUTE_EXACT_RECEIPT_PROCESS_FAILED:{type(error).__name__}",
+            "claim_ceiling": "NOT_RUN",
+        }
+    if (
+        (before.st_dev, before.st_ino, before.st_mode, before.st_size, before.st_mtime_ns)
+        != (after.st_dev, after.st_ino, after.st_mode, after.st_size, after.st_mtime_ns)
+        or len(completed.stdout.encode("utf-8")) > MAX_ROUTE_RECEIPT_BYTES
+        or len(completed.stderr.encode("utf-8")) > MAX_ROUTE_RECEIPT_BYTES
+    ):
+        return {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "BLOCKED",
+            "blocking_reason": "ROUTE_EXACT_RECEIPT_SOURCE_OR_OUTPUT_UNSAFE",
+            "claim_ceiling": "NOT_RUN",
+        }
+    try:
+        parsed = json.loads(
+            completed.stdout,
+            object_pairs_hook=_strict_json_object,
+            parse_constant=_reject_nonfinite_json,
+        )
+        receipt = _validate_route_receipt(parsed)
+    except (json.JSONDecodeError, ValueError) as error:
+        detail = str(error)[:300]
+        return {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "BLOCKED",
+            "blocking_reason": f"ROUTE_EXACT_RECEIPT_INVALID:{detail}",
+            "claim_ceiling": "NOT_RUN",
+            "exit_code": completed.returncode,
+        }
+    if completed.returncode != 0 or completed.stderr.strip():
+        return {
+            "kind": "route-engine-exact-toolchain-receipt",
+            "status": "BLOCKED",
+            "blocking_reason": "ROUTE_EXACT_RECEIPT_COMMAND_NOT_PASSED",
+            "claim_ceiling": "NOT_RUN",
+            "exit_code": completed.returncode,
+        }
+    return {
+        "kind": "route-engine-exact-toolchain-receipt",
+        "status": "READY",
+        "claim_ceiling": "TOOLCHAIN_READY",
+        "command": command,
+        "receipt": receipt,
+    }
+
+
 def doctor(
     manifest: Mapping[str, Any],
     profile: str,
@@ -744,6 +1444,7 @@ def doctor(
             "claim_ceiling": "NOT_RUN",
             "summary": {"READY": 0, "NOT_APPLICABLE": 1},
             "runtimes": [],
+            "profile_checks": [],
             "claim_boundary": manifest["claim_boundary"],
         }
     effective_environ = dict(os.environ if environ is None else environ)
@@ -767,7 +1468,23 @@ def doctor(
     optional_gaps = [
         result for result in runtime_results if not result["required"] and result["status"] != "READY"
     ]
-    if required_failures:
+    profile_checks: list[dict[str, Any]] = []
+    if profile in {"routes-macos", "all"}:
+        if required_failures:
+            profile_checks.append(
+                {
+                    "kind": "route-engine-exact-toolchain-receipt",
+                    "status": "NOT_RUN",
+                    "blocking_reason": "CENTRAL_ROUTE_RUNTIME_PROBES_NOT_READY",
+                    "claim_ceiling": "NOT_RUN",
+                }
+            )
+        else:
+            profile_checks.append(_run_route_exact_receipt(runtime_results, effective_environ))
+    failed_profile_checks = [
+        check for check in profile_checks if check.get("status") != "READY"
+    ]
+    if required_failures or failed_profile_checks:
         overall = "BLOCKED"
     elif not required_ids and optional_gaps:
         overall = "NOT_RUN"
@@ -789,6 +1506,7 @@ def doctor(
         "claim_ceiling": "TOOLCHAIN_READY" if overall in {"READY", "PARTIAL"} else "NOT_RUN",
         "summary": summary,
         "runtimes": runtime_results,
+        "profile_checks": profile_checks,
         "claim_boundary": manifest["claim_boundary"],
     }
 
@@ -869,8 +1587,12 @@ def render_env(
         candidates.append(root / "go" / "1.25.0" / "bin")
     if "kotlin-2.2.20" in selected_ids:
         candidates.append(root / "gradle" / "8.14.3" / "bin")
+    if "kotlin-route-2.2.20" in selected_ids:
+        candidates.append(root / "kotlin" / "2.2.20" / "bin")
     if "php-8.4.12" in selected_ids:
         candidates.append(root / "php" / "8.4.12" / "bin")
+    if "php-route-8.5.9" in selected_ids:
+        candidates.append(root / "php" / "8.5.9" / "bin")
     if "rust-1.89.0" in selected_ids:
         candidates.append(root / "rust" / "1.89.0" / "bin")
     if "maven-3.9.10" in selected_ids:
@@ -949,6 +1671,7 @@ def _install_steps(profile: str) -> list[list[str]]:
             ]
         )
     if profile in {"routes-macos", "all"}:
+        steps.append([str(ROUTE_INSTALLER_PATH)])
         steps.append(
             [
                 "pnpm",
@@ -956,9 +1679,30 @@ def _install_steps(profile: str) -> list[list[str]]:
                 str(ROOT / "engines" / "frontend-client-engine"),
                 "install",
                 "--frozen-lockfile",
+                "--ignore-scripts",
             ]
         )
     return steps
+
+
+def _exact_install_step(
+    manifest: Mapping[str, Any],
+    step: Sequence[str],
+    environ: Mapping[str, str],
+) -> list[str] | None:
+    if not step:
+        return None
+    if step[0] == "uv":
+        executable = _matching_executable_for_probe(manifest, "uv-0.11.16", "uv", environ)
+    elif step[0] == "pnpm":
+        executable = _matching_executable_for_probe(
+            manifest, "pnpm-10.12.4", "pnpm", environ
+        )
+    else:
+        return list(step)
+    if executable is None:
+        return None
+    return [str(executable), *step[1:]]
 
 
 def _run_install(
@@ -992,6 +1736,28 @@ def _run_install(
         "toolchain_root": str(root),
         "steps": steps,
     }
+    if profile in {"routes-macos", "all"}:
+        plan.update(
+            {
+                "provisioning_scope": "MANAGED_COMPONENTS_PLUS_EXACT_HOST_ADMISSION",
+                "managed_route_components": [
+                    "kotlin-route-2.2.20",
+                    "react-19.2.7-locked-packages",
+                ],
+                "host_prerequisite_runtime_ids": [
+                    "apple-clang-21",
+                    "objective-c-apple",
+                    "swift-6.3.3",
+                    "php-route-8.5.9",
+                    "flutter-3.44.1",
+                ],
+                "completion_rule": (
+                    "READY only after the post-install doctor and exact route "
+                    "receipt verify every required active13 runtime; install steps "
+                    "do not claim to provision host prerequisites."
+                ),
+            }
+        )
     if dry_run:
         return 0, plan
     root.parent.mkdir(parents=True, exist_ok=True)
@@ -1008,19 +1774,31 @@ def _run_install(
     effective_env.setdefault("ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT", str(root))
     executed: list[dict[str, Any]] = []
     for step in steps:
-        executable = Path(step[0]) if os.path.sep in step[0] else None
+        exact_step = _exact_install_step(manifest, step, effective_env)
+        if exact_step is None:
+            return 2, {
+                **plan,
+                "status": "BLOCKED",
+                "blocking_reason": f"EXACT_INSTALL_EXECUTABLE_NOT_READY:{step[0]}",
+                "executed": executed,
+            }
+        executable = Path(exact_step[0]) if os.path.sep in exact_step[0] else None
         if executable is not None and (not executable.is_file() or not os.access(executable, os.X_OK)):
             return 2, {
                 **plan,
                 "status": "BLOCKED",
-                "blocking_reason": f"INSTALLER_NOT_AVAILABLE:{step[0]}",
+                "blocking_reason": f"INSTALLER_NOT_AVAILABLE:{exact_step[0]}",
                 "executed": executed,
             }
         try:
             completed = subprocess.run(  # noqa: S603
-                step,
+                exact_step,
                 cwd=ROOT,
-                env=effective_env,
+                env=(
+                    _probe_environment(Path(exact_step[0]), effective_env)
+                    if step[0] in {"uv", "pnpm"}
+                    else effective_env
+                ),
                 text=True,
                 capture_output=True,
                 check=False,
@@ -1034,7 +1812,7 @@ def _run_install(
                 "executed": executed,
             }
         record = {
-            "command": step,
+            "command": exact_step,
             "exit_code": completed.returncode,
             "output": (completed.stdout + completed.stderr).strip()[-16_384:],
         }
@@ -1048,9 +1826,15 @@ def _run_install(
             }
     report = doctor(manifest, profile, environ=effective_env)
     failures = _required_runtime_failures(report)
-    return (0 if not failures else 1), {
+    profile_failures = [
+        check
+        for check in report.get("profile_checks", [])
+        if isinstance(check, dict) and check.get("status") != "READY"
+    ]
+    passed = not failures and not profile_failures
+    return (0 if passed else 1), {
         **plan,
-        "status": "READY" if not failures else "BLOCKED",
+        "status": "READY" if passed else "BLOCKED",
         "executed": executed,
         "doctor": report,
     }
@@ -1098,6 +1882,14 @@ def _print_human_report(report: Mapping[str, Any]) -> None:
         print(
             f"{runtime.get('status', 'UNKNOWN'):18} {marker:8} "
             f"{runtime.get('id')} ({runtime.get('version')}){observed}"
+        )
+    for check in report.get("profile_checks", []):
+        if not isinstance(check, Mapping):
+            continue
+        print(
+            f"profile-check {check.get('kind', 'unknown')}: "
+            f"{check.get('status', 'BLOCKED')} "
+            f"{check.get('blocking_reason') or '-'}"
         )
 
 

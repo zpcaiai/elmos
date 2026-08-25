@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/spring-project-equivalence-evidence.schema.json",
+  "title": "Batch 30 Spring per-project equivalence evidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_id",
+    "tuple_sha256",
+    "corpus_role",
+    "evaluation_scope",
+    "outcome",
+    "source_snapshot_digest",
+    "source_snapshot_size_bytes",
+    "target_snapshot_digest",
+    "target_snapshot_size_bytes",
+    "external_bindings",
+    "checks",
+    "observation_count",
+    "regression_count",
+    "unknowns"
+  ],
+  "properties": {
+    "schema_version": {"const": "elmos.spring-project-equivalence-evidence.v1"},
+    "project_id": {"$ref": "#/$defs/identity"},
+    "tuple_sha256": {"$ref": "#/$defs/digest"},
+    "corpus_role": {
+      "enum": ["development", "holdout", "representative", "customer"]
+    },
+    "evaluation_scope": {"enum": ["EXACT_FIXTURE", "WHOLE_REPOSITORY"]},
+    "outcome": {"enum": ["EQUIVALENT", "NOT_EQUIVALENT", "INCONCLUSIVE", "NOT_RUN"]},
+    "source_snapshot_digest": {"$ref": "#/$defs/digest"},
+    "source_snapshot_size_bytes": {"type": "integer", "minimum": 1},
+    "target_snapshot_digest": {"$ref": "#/$defs/digest"},
+    "target_snapshot_size_bytes": {"type": "integer", "minimum": 1},
+    "external_bindings": {
+      "oneOf": [
+        {"$ref": "#/$defs/externalBindings"},
+        {"type": "null"}
+      ]
+    },
+    "checks": {
+      "type": "object",
+      "required": [
+        "source_build",
+        "target_build",
+        "source_startup",
+        "target_startup",
+        "behavior_oracle",
+        "test_integrity"
+      ],
+      "properties": {
+        "source_build": {"$ref": "#/$defs/checkStatus"},
+        "target_build": {"$ref": "#/$defs/checkStatus"},
+        "source_startup": {"$ref": "#/$defs/checkStatus"},
+        "target_startup": {"$ref": "#/$defs/checkStatus"},
+        "behavior_oracle": {"$ref": "#/$defs/checkStatus"},
+        "test_integrity": {"$ref": "#/$defs/checkStatus"}
+      },
+      "additionalProperties": false
+    },
+    "observation_count": {"type": "integer", "minimum": 0},
+    "regression_count": {"type": "integer", "minimum": 0},
+    "unknowns": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["corpus_role"],
+        "properties": {"corpus_role": {"const": "development"}}
+      },
+      "then": {"properties": {"external_bindings": {"type": "null"}}},
+      "else": {"properties": {"external_bindings": {"$ref": "#/$defs/externalBindings"}}}
+    },
+    {
+      "if": {
+        "required": ["corpus_role"],
+        "properties": {"corpus_role": {"const": "customer"}}
+      },
+      "then": {
+        "properties": {
+          "external_bindings": {
+            "allOf": [
+              {"$ref": "#/$defs/externalBindings"},
+              {
+                "properties": {
+                  "supporting_evidence_digests": {
+                    "required": ["customer_acceptance"]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["corpus_role"],
+        "properties": {
+          "corpus_role": {"enum": ["holdout", "representative"]}
+        }
+      },
+      "then": {
+        "properties": {
+          "external_bindings": {
+            "allOf": [
+              {"$ref": "#/$defs/externalBindings"},
+              {
+                "properties": {
+                  "supporting_evidence_digests": {"maxProperties": 0}
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "checkStatus": {
+      "enum": ["PASS", "FAIL", "INCONCLUSIVE", "NOT_RUN"]
+    },
+    "externalBindings": {
+      "type": "object",
+      "required": [
+        "artifact_digest",
+        "execution_profile_digest",
+        "runnable_evidence_digests",
+        "supporting_evidence_digests"
+      ],
+      "properties": {
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "execution_profile_digest": {"$ref": "#/$defs/digest"},
+        "runnable_evidence_digests": {
+          "type": "object",
+          "required": ["rootless_runner", "rootless_transformer", "rootless_verifier"],
+          "properties": {
+            "rootless_runner": {"$ref": "#/$defs/digest"},
+            "rootless_transformer": {"$ref": "#/$defs/digest"},
+            "rootless_verifier": {"$ref": "#/$defs/digest"}
+          },
+          "additionalProperties": false
+        },
+        "supporting_evidence_digests": {
+          "type": "object",
+          "properties": {
+            "customer_acceptance": {"$ref": "#/$defs/digest"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/runtime-estimate.schema.json",
+  "title": "ELMOS Runtime Estimate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "estimate_id",
+    "as_of",
+    "system_runtime",
+    "human_equivalent",
+    "human_in_loop_delay",
+    "assumptions",
+    "coverage"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "estimate_id": {
+      "type": "string"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "system_runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "p50_seconds",
+        "p80_seconds",
+        "p95_seconds",
+        "confidence",
+        "queue_seconds_p50",
+        "execution_seconds_p50",
+        "critical_path"
+      ],
+      "properties": {
+        "p50_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p80_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "p95_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "queue_seconds_p50": {
+          "type": "number",
+          "minimum": 0
+        },
+        "execution_seconds_p50": {
+          "type": "number",
+          "minimum": 0
+        },
+        "critical_path": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "components": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "human_equivalent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engineering_hours_p50",
+        "review_hours_p50"
+      ],
+      "properties": {
+        "engineering_hours_p50": {
+          "type": "number",
+          "minimum": 0
+        },
+        "review_hours_p50": {
+          "type": "number",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "human_in_loop_delay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "excluded_from_system_runtime",
+        "risks"
+      ],
+      "properties": {
+        "excluded_from_system_runtime": {
+          "const": true
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "historical_runs",
+        "segment_match",
+        "calibration_date"
+      ],
+      "properties": {
+        "historical_runs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "segment_match": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "calibration_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "actual": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wall_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "variance_from_p50_seconds": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

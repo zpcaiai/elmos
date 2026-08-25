@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "skill-marketplace-certification",
+  "source_contract_sha256": "sha256:23d758a4f4396b277553b42e02d078fc2cfd92aadec2bb73752c3dde8c1a3103",
+  "source_id": "FOUNDATION-10-skill-marketplace-certification",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

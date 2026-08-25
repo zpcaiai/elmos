@@ -1,0 +1,69 @@
+schema_version: 1.0.0
+ordinal: 49
+name: elmos-project-package-version-and-incremental-update
+title: 项目包版本与增量更新
+objective: 以内容寻址和不可变版本管理项目包，使更新高效、可审计、可回滚且不破坏已有任务证据。
+dependencies:
+- elmos-project-package-manifest
+- elmos-repository-map-and-symbol-indexing
+- elmos-project-memory-and-retrieval
+inputs:
+- 父/新 manifest
+- 内容哈希和文件对象
+- 项目/索引历史版本
+- 更新策略
+outputs:
+- PackageDiff
+- 新不可变版本
+- 增量重建计划
+- 一致性/回滚报告
+responsibilities:
+- 为每次导入创建不可变 PackageVersion，关联父版本、manifest digest、项目根和分析视图。
+- 通过路径与内容哈希识别新增、修改、删除、未变；用相似度和哈希识别重命名/移动候选。
+- 根据文件、构建配置、ignore 规则和项目根变化计算索引/画像/需求/安全扫描的影响集合。
+- 未变对象与解析产物通过内容寻址复用，变化内容创建新版本，不原地覆盖。
+- 增量更新后执行 manifest、RepositoryMap、全文/向量/符号索引一致性验证。
+- 正在运行任务固定到输入版本；升级需显式 rebase/继续旧版/新建任务，不能中途静默切换。
+- 支持比较、回滚、保留、删除传播和审计。
+- 统计复用率、重建范围、机器执行时间和成本节省。
+deliverables:
+- PackageVersion/PackageDiff schema 与版本存储
+- hash diff、rename detection 和影响分析
+- 增量重建协调器与一致性门
+- 版本比较/回滚 API 和端到端测试
+acceptance:
+- 新增、修改、删除和未变文件识别准确；重命名以候选和置信度表达
+- 未变化文件不重复上传或解析
+- 运行中任务不会静默切换项目版本
+- 增量结果与相同版本全量重建在定义字段上一致
+- 历史版本可恢复且来源锚点仍有效
+- 删除/保留策略可正确传播到派生索引和对象
+data_entities:
+- package_diff_runs
+- package_entry_versions
+- package_version_parents
+- incremental_rebuild_plans
+events:
+- package.version.created
+- package.diff.completed
+- package.reindex.incremental.started
+- package.version.rolled_back
+metrics:
+- unchanged_artifact_reuse_ratio
+- incremental_vs_full_speedup
+- rename_detection_precision
+- version_consistency_failure_count
+failure_modes:
+- running task silently rebased
+- deleted symbol remains
+- rename misclassified
+- derived index points old version
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

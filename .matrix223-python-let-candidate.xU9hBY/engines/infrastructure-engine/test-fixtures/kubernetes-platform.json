@@ -1,0 +1,15 @@
+{
+  "clusterId": "ephemeral-cluster-1",
+  "platformProfile": "platform-v1",
+  "workloadProfile": "orders-v1",
+  "podSecurityTarget": "RESTRICTED",
+  "networkPolicyConfigured": true,
+  "networkPolicyEnforced": true,
+  "topologyValidated": true,
+  "backupRestoreValidated": true,
+  "status": "PASS",
+  "evidenceRefs": [
+    "artifact://kubernetes/sha256-d"
+  ]
+}
+

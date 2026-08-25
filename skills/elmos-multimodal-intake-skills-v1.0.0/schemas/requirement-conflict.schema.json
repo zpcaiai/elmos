@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/requirement-conflict.schema.json",
+  "title": "Elmos RequirementConflict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "conflict_id",
+    "package_version_id",
+    "topic",
+    "conflict_type",
+    "statements",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "conflict_id": {
+      "type": "string"
+    },
+    "package_version_id": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conflict_type": {
+      "enum": [
+        "VALUE",
+        "SCOPE",
+        "PRIORITY",
+        "VERSION",
+        "ACCEPTANCE",
+        "SECURITY",
+        "UI_BEHAVIOR",
+        "TECHNICAL_CONSTRAINT",
+        "OTHER"
+      ]
+    },
+    "statements": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/statement"
+      }
+    },
+    "status": {
+      "enum": [
+        "OPEN",
+        "NEEDS_REVIEW",
+        "RESOLVED",
+        "ACCEPTED_AMBIGUITY",
+        "SUPERSEDED"
+      ]
+    },
+    "recommended_resolution": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resolution": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "decision_id": {
+          "type": "string"
+        },
+        "selected_statement_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "resolved_by": {
+          "type": "string"
+        },
+        "resolved_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "decision_id",
+        "rationale",
+        "resolved_by",
+        "resolved_at"
+      ],
+      "additionalProperties": false
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "statement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement_id",
+        "value",
+        "source_anchor_ids",
+        "package_version_id"
+      ],
+      "properties": {
+        "statement_id": {
+          "type": "string"
+        },
+        "value": {},
+        "normalized_value": {},
+        "source_anchor_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "package_version_id": {
+          "type": "string"
+        },
+        "effective_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "approved": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

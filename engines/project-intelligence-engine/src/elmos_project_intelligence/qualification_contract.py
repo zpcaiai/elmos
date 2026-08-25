@@ -162,9 +162,11 @@ _OUTPUT_KEYS = {
     ),
     "elmos-artifact-versioning-human-lock": (
         "artifact_id",
+        "authoritative_lock_verified",
+        "caller_reported_human_locked",
         "content_digest",
-        "human_locked",
-        "version",
+        "proposed_version",
+        "version_persisted",
     ),
     "elmos-git-pr-automation": (
         "changed_paths",
@@ -174,19 +176,21 @@ _OUTPUT_KEYS = {
         "title",
     ),
     "elmos-collaboration-governance": (
-        "allowed",
         "audit_digest",
-        "missing_roles",
-        "tenant_match",
+        "enforcement_authorized",
+        "simulated_missing_roles",
+        "simulated_tenant_match",
     ),
     "elmos-integrations-mcp": (
         "connector_called",
         "connector_id",
+        "enforcement_authorized",
         "forbidden_scopes",
         "scopes",
     ),
     "elmos-large-repository-scaling": (
         "distributed_execution",
+        "oversized_paths",
         "shards",
         "total_files",
     ),
@@ -227,14 +231,17 @@ _OUTPUT_KEYS = {
         "release_authorized",
     ),
     "elmos-commercial-packaging": (
-        "allowed_features",
         "billing_performed",
-        "denied_features",
+        "caller_reported_allowed_features",
+        "caller_reported_denied_features",
+        "caller_reported_entitled_features",
         "edition",
+        "enforcement_authorized",
         "usage_record_digest",
     ),
     "elmos-debug-adapter-gateway": (
         "adapter_started",
+        "enforcement_authorized",
         "forbidden",
         "negotiated",
         "unsupported",
@@ -267,8 +274,16 @@ _AUTHORITY_FALSE_PATHS: Final[Mapping[str, tuple[tuple[str, ...], ...]]] = (
             "elmos-runtime-trace-fusion": (("collector_executed",),),
             "elmos-presentation-generation": (("pptx_generated",),),
             "elmos-security-threat-model": (("secrets_disclosed",),),
+            "elmos-artifact-versioning-human-lock": (
+                ("authoritative_lock_verified",),
+                ("version_persisted",),
+            ),
             "elmos-git-pr-automation": (("git_mutated",), ("push_performed",)),
-            "elmos-integrations-mcp": (("connector_called",),),
+            "elmos-collaboration-governance": (("enforcement_authorized",),),
+            "elmos-integrations-mcp": (
+                ("connector_called",),
+                ("enforcement_authorized",),
+            ),
             "elmos-large-repository-scaling": (("distributed_execution",),),
             "elmos-observability-slo": (("production_slo_claimed",),),
             "elmos-conversion-integration": (("conversion_executed",),),
@@ -277,8 +292,14 @@ _AUTHORITY_FALSE_PATHS: Final[Mapping[str, tuple[tuple[str, ...], ...]]] = (
                 ("certified",),
                 ("release_authorized",),
             ),
-            "elmos-commercial-packaging": (("billing_performed",),),
-            "elmos-debug-adapter-gateway": (("adapter_started",),),
+            "elmos-commercial-packaging": (
+                ("billing_performed",),
+                ("enforcement_authorized",),
+            ),
+            "elmos-debug-adapter-gateway": (
+                ("adapter_started",),
+                ("enforcement_authorized",),
+            ),
             "elmos-debug-sandbox-orchestration": (("sandbox_started",),),
             "elmos-online-debug-workbench": (("ui_rendered",),),
             "elmos-debug-learning-copilot": (("model_used",), ("side_effects",)),
@@ -300,6 +321,7 @@ _EXPECTED_STATE: Final[Mapping[str, str]] = MappingProxyType(
 
 _AUTHORITY_NAME_MARKERS: Final[tuple[str, ...]] = (
     "authoriz",
+    "authoritative_lock",
     "approv",
     "certif",
     "external_effect",
@@ -327,6 +349,7 @@ _AUTHORITY_NAME_MARKERS: Final[tuple[str, ...]] = (
     "production_slo_claimed",
     "pptx_generated",
     "automatic_effects",
+    "version_persisted",
 )
 
 
@@ -497,6 +520,43 @@ def validate_qualification_result(
         if outputs["runtime_activity"] != "NOT_RUN":
             raise QualificationContractError(
                 "outputs.runtime_activity must remain NOT_RUN"
+            )
+    if binding.skill == "elmos-evidence-provenance":
+        bindings = outputs["bindings"]
+        if type(bindings) is not list:
+            raise QualificationContractError("outputs.bindings must be a list")
+        for item in bindings:
+            if type(item) is not dict or set(item) != {
+                "claim_id",
+                "confidence",
+                "evidence_refs",
+                "verification_state",
+            }:
+                raise QualificationContractError(
+                    "evidence binding does not match the exact unverified contract"
+                )
+            if item["verification_state"] != "NOT_RUN" or item["confidence"] not in {
+                "REFERENCED_UNVERIFIED",
+                "UNKNOWN",
+            }:
+                raise QualificationContractError(
+                    "evidence binding cannot claim verified or confirmed evidence"
+                )
+            if type(item["evidence_refs"]) is not list:
+                raise QualificationContractError(
+                    "evidence binding references must be a list"
+                )
+            expected_confidence = (
+                "REFERENCED_UNVERIFIED" if item["evidence_refs"] else "UNKNOWN"
+            )
+            if item["confidence"] != expected_confidence:
+                raise QualificationContractError(
+                    "evidence binding confidence does not match its references"
+                )
+    if binding.skill == "elmos-release-certification":
+        if outputs["decision"] != "EXTERNAL_GATE_REQUIRED":
+            raise QualificationContractError(
+                "local release fixture must require the external gate"
             )
 
     supplied_digest = result["result_digest"]

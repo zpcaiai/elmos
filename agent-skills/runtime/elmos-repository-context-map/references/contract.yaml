@@ -1,0 +1,67 @@
+schema_version: 1.0.0
+ordinal: 38
+name: elmos-repository-context-map
+title: 仓库上下文地图
+objective: 生成面向上下文规划的分层仓库地图，以低成本概览全局并按影响范围深入到具体符号和证据。
+dependencies:
+- elmos-source-anchor-and-provenance
+- elmos-storage-index-and-retrieval
+inputs:
+- 项目文件清单
+- 源代码与构建配置
+- 版本控制差异
+- 任务目标
+outputs:
+- 分层 RepositoryContextMap
+- 依赖/调用/测试图
+- 任务影响候选集
+- 增量更新报告
+responsibilities:
+- 扫描仓库目录、模块、构建系统、语言、框架、入口点、API、数据实体、消息、部署与测试资产。
+- 建立 L0项目全局、L1领域/模块、L2当前工作流、L3文件、L4符号、L5原始证据的层次。
+- 解析 import、调用、继承、实现、配置引用、API契约、数据库和消息依赖。
+- 为每个节点保存摘要、token 成本、版本、哈希、生成/第三方分类和 source anchor。
+- 根据 git diff、文件哈希和依赖影响增量更新地图。
+- 为任务生成影响候选集、直接/间接依赖和对应测试集合。
+- 检测解析不完整、动态语言不确定性和生成代码边界，并标记置信度。
+- 向长上下文排序器提供结构化候选，不把整个仓库无差别塞入模型。
+deliverables:
+- RepositoryContextMap schema 与分层图
+- 多语言/框架扫描和增量更新器
+- 任务影响范围查询 API
+- 仓库地图可视化与准确度评测
+acceptance:
+- 可识别 monorepo、多模块和多语言仓库
+- 变更后仅重建受影响节点并保持图一致性
+- 任务影响范围包含直接修改点、依赖和关键测试
+- 动态/不可解析关系明确标为不确定而非伪造
+- 所有地图节点可回到文件路径和代码范围
+- 超大仓库地图生成和查询满足性能SLO
+data_entities:
+- repository_context_maps
+- repository_map_nodes
+- repository_map_edges
+- repository_impact_queries
+events:
+- repository.context_map.created
+- repository.context_map.updated
+- repository.impact.calculated
+metrics:
+- symbol_coverage_ratio
+- dependency_edge_precision
+- incremental_reindex_ratio
+- impact_test_recall
+failure_modes:
+- wrong project root
+- generated code dominates
+- dynamic dependency missed
+- stale graph
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

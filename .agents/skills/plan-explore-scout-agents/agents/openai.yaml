@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Explore Scout Agents"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $plan-explore-scout-agents for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

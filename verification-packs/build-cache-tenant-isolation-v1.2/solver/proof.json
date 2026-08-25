@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "proof_id": "proof.build-cache-tenant-noninterference.v1",
+  "property_id": "property.build-cache-tenant-noninterference.v1",
+  "solver": {
+    "name": "none",
+    "version": "not-installed",
+    "options": {},
+    "timeout_ms": 10000
+  },
+  "status": "unsupported",
+  "assumptions": [
+    "no formal encoding or solver-independent certificate exists for this pack"
+  ],
+  "input_digest": "sha256:dde312b55a95cbc7af6753ec88f07833e93ffa296b782ddcf3ef1a6470b73cb7",
+  "evidence_refs": [],
+  "execution_status": "NOT_RUN",
+  "claim_boundary": "finite runtime tests cannot be promoted to formal proof"
+}

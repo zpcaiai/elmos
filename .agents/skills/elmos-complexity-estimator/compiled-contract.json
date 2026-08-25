@@ -1,0 +1,54 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "complexity dimensions recorded with rationale"
+    ],
+    "guardrails": [
+      "Never infer low risk solely from low LOC."
+    ],
+    "inputs": [
+      "task",
+      "repo profile"
+    ],
+    "outputs": [
+      "complexity vector",
+      "token/context estimate"
+    ],
+    "triggers": [
+      "before model routing"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-contract-boundary-generator"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.execution-intelligence",
+    "handler": "complexity_estimator",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-complexity-estimator",
+    "ordinal": 9,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/09-complexity-estimator/SKILL.md",
+    "sha256": "sha256:5df8822ba82f3a002271494acd286023679e6d8d7c4de3ba6798d8b620323db5",
+    "version": "1.0.0"
+  }
+}

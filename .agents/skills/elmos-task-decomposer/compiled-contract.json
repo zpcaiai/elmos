@@ -1,0 +1,57 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "each task has one objective",
+      "each task has local acceptance evidence",
+      "cross-task invariants explicitly represented"
+    ],
+    "guardrails": [
+      "Do not split transactional invariants across independently mergeable tasks.",
+      "Do not split solely to make task count larger."
+    ],
+    "inputs": [
+      "requirement spec",
+      "impact map",
+      "architecture index"
+    ],
+    "outputs": [
+      "atomic task candidates"
+    ],
+    "triggers": [
+      "impact map ready"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-change-impact-analyzer"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.durable-runtime",
+    "handler": "task_decomposer",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-task-decomposer",
+    "ordinal": 5,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/05-task-decomposer/SKILL.md",
+    "sha256": "sha256:4e9caec366f1d562c42b8938c6c3e0114adfe3c83fc81ecaf0858f274a1b681a",
+    "version": "1.0.0"
+  }
+}

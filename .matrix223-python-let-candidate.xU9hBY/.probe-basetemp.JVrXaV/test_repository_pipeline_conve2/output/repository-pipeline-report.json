@@ -1,0 +1,347 @@
+{
+  "artifact": {
+    "bytes": 72608,
+    "path": "repository-migration-artifact.zip",
+    "sha256": "84b034166ec1f0a1c98fce72c998d6bee208e529750632c9ff37faa241038524"
+  },
+  "behavior_coverage": {
+    "accounted_work_unit_count": 6,
+    "attempted_work_unit_count": 3,
+    "behavior_case_count": 6,
+    "behavior_case_count_scope": "PASSED_WORK_UNITS_ONLY",
+    "complete": false,
+    "evidence_strength": "LOCAL_SOURCE_TARGET_RUNTIME_COMPARISON",
+    "external_verification_status": "NOT_RUN",
+    "independent_verification_status": "NOT_RUN",
+    "pass_rate": 0.5,
+    "profile": "typed-pure-function-v1",
+    "status": "NOT_RUN",
+    "status_counts": {
+      "FAILED": 0,
+      "NOT_RUN": 3,
+      "PASSED": 3,
+      "UNKNOWN": 0
+    },
+    "units": [
+      {
+        "batch_status": "PASSED",
+        "behavior_case_count": 2,
+        "evidence_path": "units/WU-00001/route-evidence.json",
+        "evidence_sha256": "sha256:b71f90a39a5f21b3d313303173b92b83cbc54de825e508b9563bd365b17f5db5",
+        "function_name": "add",
+        "id": "WU-00001",
+        "identifier_plan_path": "identifier-plan.json",
+        "identifier_plan_sha256": "sha256:14189508bcb1d7fe9468d11a21ce13287677efb6a8946bd7667581ab8f5d8557",
+        "source_path": "add.php",
+        "status": "PASSED",
+        "target_function_name": "elmos_fn_80e069bf200ec120"
+      },
+      {
+        "batch_status": "SKIPPED_NOT_READY",
+        "behavior_case_count": null,
+        "evidence_path": null,
+        "evidence_sha256": null,
+        "function_name": null,
+        "id": "WU-00001-F002",
+        "identifier_plan_path": null,
+        "identifier_plan_sha256": null,
+        "source_path": "add.php",
+        "status": "NOT_RUN",
+        "target_function_name": null
+      },
+      {
+        "batch_status": "PASSED",
+        "behavior_case_count": 2,
+        "evidence_path": "units/WU-00002/route-evidence.json",
+        "evidence_sha256": "sha256:c229f703a2b2acea98cb9e32445ee2ca8868b65238ba1bb055a8283acccd5a86",
+        "function_name": "multiply",
+        "id": "WU-00002",
+        "identifier_plan_path": "identifier-plan.json",
+        "identifier_plan_sha256": "sha256:121bd1e4725df455f31aa2d7f75edb1f8b2a14195bbbdf44017d91a1da61d9fc",
+        "source_path": "multiply.php",
+        "status": "PASSED",
+        "target_function_name": "elmos_fn_0bb126c58397bbee"
+      },
+      {
+        "batch_status": "SKIPPED_NOT_READY",
+        "behavior_case_count": null,
+        "evidence_path": null,
+        "evidence_sha256": null,
+        "function_name": null,
+        "id": "WU-00002-F002",
+        "identifier_plan_path": null,
+        "identifier_plan_sha256": null,
+        "source_path": "multiply.php",
+        "status": "NOT_RUN",
+        "target_function_name": null
+      },
+      {
+        "batch_status": "PASSED",
+        "behavior_case_count": 2,
+        "evidence_path": "units/WU-00003/route-evidence.json",
+        "evidence_sha256": "sha256:b67338208d765d4f8bd5f441da1eab93685e184ba37d46fa5714e8b260a6d022",
+        "function_name": "subtract",
+        "id": "WU-00003",
+        "identifier_plan_path": "identifier-plan.json",
+        "identifier_plan_sha256": "sha256:99366a126c3fd944dbb0519e1f05731a39e728c8e62adfbdd47c37a6a6eddf5d",
+        "source_path": "subtract.php",
+        "status": "PASSED",
+        "target_function_name": "elmos_fn_8a25d5cf50ffadeb"
+      },
+      {
+        "batch_status": "SKIPPED_NOT_READY",
+        "behavior_case_count": null,
+        "evidence_path": null,
+        "evidence_sha256": null,
+        "function_name": null,
+        "id": "WU-00003-F002",
+        "identifier_plan_path": null,
+        "identifier_plan_sha256": null,
+        "source_path": "subtract.php",
+        "status": "NOT_RUN",
+        "target_function_name": null
+      }
+    ],
+    "unresolved_work_unit_count": 3,
+    "work_unit_count": 6,
+    "work_unit_denominator": 6
+  },
+  "build_verification": {
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "-d",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/build/classes",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/src/main/java/elmos/generated/wu00001/Migrated.java",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/src/main/java/elmos/generated/wu00002/Migrated.java",
+          "/Users/stephen/DevProjects/AIProjects/elmos/.matrix223-python-let-candidate.xU9hBY/.probe-basetemp.JVrXaV/test_repository_pipeline_conve2/output/assembled.staging/src/main/java/elmos/generated/wu00003/Migrated.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "language": "java",
+      "version": "21.0.11"
+    }
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "conversion_coverage": {
+    "complete": false,
+    "inventory_status": "PASSED",
+    "profile": "compiler-semantic-symbol-coverage-v1",
+    "reason": "NOT_EVERY_INDEXED_SUBJECT_PASSED",
+    "source_language": "php",
+    "status": "LIMITED",
+    "status_counts": {
+      "BLOCKED": 3,
+      "FAILED": 0,
+      "NOT_RUN": 0,
+      "PASSED": 3,
+      "UNKNOWN": 0
+    },
+    "subject_count": 6,
+    "subjects": [
+      {
+        "batch_status": "PASSED",
+        "blocker_codes": [],
+        "coverage_key": "php:sha256:0232157c6dab48f84d630a3db2d6b7840fd33ac0c1ea5ddc0623b6c14250f8a4",
+        "node_id": "elmos:symbol:sha256:aa596fdb8dc52748e4bd28f4b2130172e03e98546b95f741db1e3340cb58e871",
+        "path": "subtract.php",
+        "qualified_name": "subtract",
+        "ready_unit_ids": [
+          "WU-00003"
+        ],
+        "reason": null,
+        "source_location": {
+          "end_column": 72,
+          "end_line": 5,
+          "path": "subtract.php",
+          "start_column": 0,
+          "start_line": 5
+        },
+        "status": "PASSED",
+        "subject_kind": "function"
+      },
+      {
+        "batch_status": "PASSED",
+        "blocker_codes": [],
+        "coverage_key": "php:sha256:0f80020c6ed86319dea54e03f4660f042fd8872c3c22f99521f92ed3db849f68",
+        "node_id": "elmos:symbol:sha256:237490b9e00288ab29837b3f983972ece33936a18f3917ebeb5949bb525c0885",
+        "path": "add.php",
+        "qualified_name": "add",
+        "ready_unit_ids": [
+          "WU-00001"
+        ],
+        "reason": null,
+        "source_location": {
+          "end_column": 67,
+          "end_line": 5,
+          "path": "add.php",
+          "start_column": 0,
+          "start_line": 5
+        },
+        "status": "PASSED",
+        "subject_kind": "function"
+      },
+      {
+        "batch_status": null,
+        "blocker_codes": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "coverage_key": "php:sha256:1af45afed7053bcd63df1793bb607aa20b1a685dd4fd25508135fe82f0068466",
+        "node_id": "elmos:effect:sha256:3341de42ee2dc79e5a755daf5f42848fe5171c336385532b4f82d6c63c31c85d",
+        "path": "add.php",
+        "qualified_name": "<declare>",
+        "ready_unit_ids": [],
+        "reason": "EXPLICIT_DISCOVERY_BLOCKER",
+        "source_location": {
+          "end_column": 24,
+          "end_line": 3,
+          "path": "add.php",
+          "start_column": 0,
+          "start_line": 3
+        },
+        "status": "BLOCKED",
+        "subject_kind": "module-obligation"
+      },
+      {
+        "batch_status": "PASSED",
+        "blocker_codes": [],
+        "coverage_key": "php:sha256:2978c82868c7fe2b7957a46939fc4bcd82f7b548f5b61c3966ac1aa4f6f83a44",
+        "node_id": "elmos:symbol:sha256:224b3cc9c49982d06f4ee173b5587a8330e8fc87fff0e28e60036765a77ff0e0",
+        "path": "multiply.php",
+        "qualified_name": "multiply",
+        "ready_unit_ids": [
+          "WU-00002"
+        ],
+        "reason": null,
+        "source_location": {
+          "end_column": 72,
+          "end_line": 5,
+          "path": "multiply.php",
+          "start_column": 0,
+          "start_line": 5
+        },
+        "status": "PASSED",
+        "subject_kind": "function"
+      },
+      {
+        "batch_status": null,
+        "blocker_codes": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "coverage_key": "php:sha256:8e21a04b9234bb2af9b3b23065a5f10de12f5a529ca5ce4f3f2b81e5064dd511",
+        "node_id": "elmos:effect:sha256:b94e3b4d305aa242825523eb407a064046e479b2d2ac7b023870c2d320c493e7",
+        "path": "multiply.php",
+        "qualified_name": "<declare>",
+        "ready_unit_ids": [],
+        "reason": "EXPLICIT_DISCOVERY_BLOCKER",
+        "source_location": {
+          "end_column": 24,
+          "end_line": 3,
+          "path": "multiply.php",
+          "start_column": 0,
+          "start_line": 3
+        },
+        "status": "BLOCKED",
+        "subject_kind": "module-obligation"
+      },
+      {
+        "batch_status": null,
+        "blocker_codes": [
+          "NATIVE_MODULE_DECLARATION_CONVERSION_UNCOVERED"
+        ],
+        "coverage_key": "php:sha256:da7097f0abe1ff866541e2dc60abd9e6ad0b7c0560515baa3dc8d15384b3cb18",
+        "node_id": "elmos:effect:sha256:d90159d89e46cb4f73c832bdd4bee2e10aa1c75d6afe0920202727084678aae3",
+        "path": "subtract.php",
+        "qualified_name": "<declare>",
+        "ready_unit_ids": [],
+        "reason": "EXPLICIT_DISCOVERY_BLOCKER",
+        "source_location": {
+          "end_column": 24,
+          "end_line": 3,
+          "path": "subtract.php",
+          "start_column": 0,
+          "start_line": 3
+        },
+        "status": "BLOCKED",
+        "subject_kind": "module-obligation"
+      }
+    ]
+  },
+  "excluded_units": [
+    {
+      "id": "WU-00001-F002",
+      "reason": "UNSUPPORTED",
+      "status": "SKIPPED_NOT_READY"
+    },
+    {
+      "id": "WU-00002-F002",
+      "reason": "UNSUPPORTED",
+      "status": "SKIPPED_NOT_READY"
+    },
+    {
+      "id": "WU-00003-F002",
+      "reason": "UNSUPPORTED",
+      "status": "SKIPPED_NOT_READY"
+    }
+  ],
+  "external_verification_status": "NOT_RUN",
+  "included_unit_count": 3,
+  "independent_verification_status": "NOT_RUN",
+  "kind": "elmos.repository-pipeline-report",
+  "limitations": [
+    "The result covers typed-pure-function-v1 only.",
+    "Cross-file calls, shared state, original build dependencies, resources, and configuration must be represented by a project graph and remain blocking when unresolved.",
+    "A locally passing unit batch remains LIMITED while any project-graph obligation is open.",
+    "Every compiler-indexed declaration and module effect must bind to one READY unit that PASSED.",
+    "PARTIAL means at least one repository unit was skipped or failed and blocks a whole-repository claim.",
+    "Local exact-toolchain execution is engineering evidence, not independent or external certification."
+  ],
+  "local_execution_evidence": "LIMITED",
+  "profile": "typed-pure-function-v1",
+  "project_graph": {
+    "completeness_status": "INCOMPLETE",
+    "excluded_count": 0,
+    "excluded_status": "PASSED",
+    "graph_id": "elmos:project-graph:sha256:0461964d8641e159a16a5400aa7c8f9bb50e39aeb1651ad6be025675efe31640",
+    "graph_sha256": "0461964d8641e159a16a5400aa7c8f9bb50e39aeb1651ad6be025675efe31640",
+    "obligation_count": 3,
+    "obligation_status_counts": {
+      "FAILED": 0,
+      "NOT_RUN": 0,
+      "PASSED": 0,
+      "UNKNOWN": 3
+    },
+    "path": "project-graph.json",
+    "repository_complete": false,
+    "snapshot_sha256": "bcacdacf5e252b34b3759c2c2834c8a877947009a9cca0e92def00310a935b56",
+    "verification_status": "PASSED"
+  },
+  "ready_count": 3,
+  "repository_complete": false,
+  "repository_execution_status": "LIMITED",
+  "repository_limits": {
+    "maximum_bytes_per_file": 2097152,
+    "maximum_source_bytes": 67108864,
+    "maximum_source_files": 5000
+  },
+  "repository_ref": "local:functional-matrix/php-to-java",
+  "repository_scale": "small",
+  "resumed_count": 0,
+  "route_id": "php-to-java",
+  "schema_version": "1.0.0",
+  "snapshot_sha256": "ac58967618c5d54ffe8ff85cbecf5772c0f9468fbdae14ae50972fb4d93799a1",
+  "source_language": "php",
+  "status": "PARTIAL",
+  "status_counts": {
+    "PASSED": 3,
+    "SKIPPED_NOT_READY": 3
+  },
+  "target_language": "java",
+  "unit_batch_status": "PARTIAL",
+  "work_unit_count": 6
+}

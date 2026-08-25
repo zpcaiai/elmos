@@ -1,0 +1,1 @@
+{"schemaVersion":"1.0","targets":["KEEP_AND_OPTIMIZE","API_ENABLE","MODULARIZE_COBOL","HYBRID_EXTRACT","COBOL_TO_JAVA","REPLATFORM_RUNTIME","DATA_ONLY_MODERNIZATION","PACKAGE_REPLACEMENT","RETIRE"],"defaultTarget":null,"rules":{"noDefaultCobolToJava":true,"onlineAndBatchSeparate":true,"testReadinessRequired":true,"uniqueDataAuthorityRequired":true,"blockedIsValidOutcome":true}}

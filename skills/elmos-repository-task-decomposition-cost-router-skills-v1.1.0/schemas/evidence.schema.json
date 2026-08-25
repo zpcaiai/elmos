@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElmosEvidence",
+  "type": "object",
+  "required": [
+    "kind",
+    "command_or_check",
+    "result"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string"
+    },
+    "command_or_check": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "artifact": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  }
+}

@@ -15,6 +15,11 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.batch29 import route_sets as ROUTE_SETS  # noqa: E402
+
 GATE_PATH = ROOT / "scripts" / "batch29" / "run_repository_gate.py"
 CAMPAIGN_SCHEMA = (
     ROOT / "schemas" / "batch29" / "repository-capability-campaign.schema.json"
@@ -157,14 +162,18 @@ class CampaignFixture:
     ) -> dict[str, Any]:
         route_id = f"{source}-to-{target}"
         repository_id = f"{route_id}-{repository_class.lower()}"
-        units = 10 if repository_class == "SMALL" else 501
+        # Keep the all-route fixture bounded: MEDIUM is established by exact
+        # measured source bytes rather than by manufacturing 501 source units
+        # for every one of the 156 directions.
+        units = 10
+        source_unit_bytes = 100 if repository_class == "SMALL" else 1024 * 1024
         source_files = [
             {
                 "path": f"src/unit_{index:04d}.source",
                 "language": source,
                 "sha256": "sha256:"
                 + hashlib.sha256(f"source-{index}".encode()).hexdigest(),
-                "bytes": 100,
+                "bytes": source_unit_bytes,
             }
             for index in range(units)
         ]
@@ -265,7 +274,7 @@ class CampaignFixture:
                 "repository_class": repository_class,
                 "file_count": units,
                 "source_file_count": units,
-                "source_bytes": units * 100,
+                "source_bytes": units * source_unit_bytes,
                 "snapshot": snapshot,
             },
             "source_baseline": {
@@ -322,12 +331,12 @@ class CampaignFixture:
                     }
                 )
         return {
-            "schema_version": "batch29.repository-capability-campaign.v1",
+            "schema_version": "batch29.repository-capability-campaign.v2",
             "kind": "elmos.batch29.repository-capability-campaign",
             "campaign_id": self.campaign_id,
             "languages": list(GATE.LANGUAGES),
             "scope": {
-                "profile": "repository-wide-v1",
+                "profile": "repository-wide-v2",
                 "repository_classes": ["SMALL", "MEDIUM"],
                 "execution_boundary": "LOCAL_ENGINEERING",
             },
@@ -349,10 +358,39 @@ class RepositoryGateTests(unittest.TestCase):
     def test_schemas_are_valid_json_and_bind_the_exact_matrix(self) -> None:
         campaign_schema = json.loads(CAMPAIGN_SCHEMA.read_text(encoding="utf-8"))
         result_schema = json.loads(RESULT_SCHEMA.read_text(encoding="utf-8"))
-        self.assertEqual(90, campaign_schema["properties"]["routes"]["minItems"])
-        self.assertEqual(90, campaign_schema["properties"]["routes"]["maxItems"])
+        self.assertEqual(13, len(GATE.LANGUAGES))
+        self.assertEqual(156, len(GATE.EXPECTED_ROUTE_KEYS))
+        self.assertEqual(
+            tuple(ROUTE_SETS.SUPPORTED_ROUTE_LANGUAGES), GATE.LANGUAGES
+        )
+        self.assertEqual(
+            tuple(ROUTE_SETS.COMPLETE_ROUTE_KEYS), GATE.EXPECTED_ROUTE_KEYS
+        )
+        self.assertNotIn("javascript", GATE.LANGUAGES)
+        self.assertTrue(
+            all("javascript" not in route for route in GATE.EXPECTED_ROUTE_KEYS)
+        )
+        self.assertEqual(156, campaign_schema["properties"]["routes"]["minItems"])
+        self.assertEqual(156, campaign_schema["properties"]["routes"]["maxItems"])
         self.assertEqual(
             list(GATE.LANGUAGES), campaign_schema["properties"]["languages"]["const"]
+        )
+        self.assertEqual(
+            list(GATE.LANGUAGES), campaign_schema["$defs"]["language"]["enum"]
+        )
+        self.assertEqual(
+            "batch29.repository-capability-campaign.v2",
+            campaign_schema["properties"]["schema_version"]["const"],
+        )
+        self.assertEqual(
+            "batch29.repository-gate-result.v2",
+            result_schema["properties"]["schema_version"]["const"],
+        )
+        self.assertEqual(
+            156, result_schema["properties"]["expected_route_count"]["const"]
+        )
+        self.assertEqual(
+            312, result_schema["properties"]["expected_workload_count"]["const"]
         )
         self.assertEqual(
             "NOT_CERTIFIED",
@@ -390,7 +428,7 @@ class RepositoryGateTests(unittest.TestCase):
             )
         )
 
-    def test_complete_90_route_small_and_medium_campaign_is_ready_only_externally(
+    def test_complete_156_route_small_and_medium_campaign_is_ready_only_externally(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -401,12 +439,14 @@ class RepositoryGateTests(unittest.TestCase):
         self.assertEqual([], result["failures"])
         self.assertEqual("PASSED_LOCAL_ENGINEERING", result["gate_status"])
         self.assertEqual("READY_FOR_EXTERNAL_GATE", result["decision"])
-        self.assertEqual(90, result["observed_route_count"])
-        self.assertEqual(180, result["observed_workload_count"])
-        self.assertEqual(90, result["route_status_counts"]["PASSED"])
-        self.assertEqual({"SMALL": 90, "MEDIUM": 90}, result["repository_class_counts"])
-        self.assertEqual(1_440, result["verified_artifact_reference_count"])
-        self.assertEqual(1_440, result["unique_verified_artifact_count"])
+        self.assertEqual(156, result["observed_route_count"])
+        self.assertEqual(312, result["observed_workload_count"])
+        self.assertEqual(156, result["route_status_counts"]["PASSED"])
+        self.assertEqual(
+            {"SMALL": 156, "MEDIUM": 156}, result["repository_class_counts"]
+        )
+        self.assertEqual(2_496, result["verified_artifact_reference_count"])
+        self.assertEqual(2_496, result["unique_verified_artifact_count"])
         self.assertTrue(result["actor_separation_passed"])
         self.assert_not_certified(result)
         self.assertEqual(canonical_digest(campaign), result["campaign_digest"])
@@ -428,6 +468,62 @@ class RepositoryGateTests(unittest.TestCase):
         jsonschema.Draft202012Validator(
             json.loads(RESULT_SCHEMA.read_text(encoding="utf-8"))
         ).validate(result)
+
+    def test_legacy_90_route_javascript_campaign_is_historical_only(self) -> None:
+        legacy_languages = (
+            "java",
+            "python",
+            "csharp",
+            "typescript",
+            "go",
+            "rust",
+            "cpp",
+            "objc",
+            "swift",
+            "javascript",
+        )
+        legacy_routes = [
+            {
+                "route_id": f"{source}-to-{target}",
+                "source_language": source,
+                "target_language": target,
+                "status": "PASSED",
+                "workloads": [],
+            }
+            for source in legacy_languages
+            for target in legacy_languages
+            if source != target
+        ]
+        legacy_campaign = {
+            "schema_version": "batch29.repository-capability-campaign.v1",
+            "kind": "elmos.batch29.repository-capability-campaign",
+            "campaign_id": "legacy-repository-campaign-90",
+            "languages": list(legacy_languages),
+            "scope": {
+                "profile": "repository-wide-v1",
+                "repository_classes": ["SMALL", "MEDIUM"],
+                "execution_boundary": "LOCAL_ENGINEERING",
+            },
+            "routes": legacy_routes,
+            "external_verification_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            result = self.evaluate(legacy_campaign, Path(directory))
+
+        self.assertEqual(90, result["observed_route_count"])
+        self.assertEqual(156, result["expected_route_count"])
+        self.assertEqual(312, result["expected_workload_count"])
+        self.assertEqual("FAILED", result["gate_status"])
+        self.assertEqual("LIMITED", result["decision"])
+        self.assertTrue(
+            any("historical-only" in failure for failure in result["failures"])
+        )
+        self.assertTrue(
+            any("deprecated JavaScript" in failure for failure in result["failures"])
+        )
+        self.assert_not_certified(result)
 
     def test_role_only_eight_file_fixture_can_never_be_ready(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -579,7 +675,7 @@ class RepositoryGateTests(unittest.TestCase):
         self.assertNotEqual(0, absent.returncode)
         self.assertIn("NOT_RUN / NOT_CERTIFIED", absent.stdout + absent.stderr)
 
-    def test_missing_or_not_run_direction_fails_closed(self) -> None:
+    def test_missing_partial_or_not_run_direction_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture = CampaignFixture(root)
@@ -599,7 +695,7 @@ class RepositoryGateTests(unittest.TestCase):
             any("status is NOT_RUN" in item for item in not_run_result["failures"])
         )
         self.assertEqual("FAILED", missing_result["gate_status"])
-        self.assertEqual(89, missing_result["observed_route_count"])
+        self.assertEqual(155, missing_result["observed_route_count"])
         self.assertTrue(
             any("missing directed pairs" in item for item in missing_result["failures"])
         )
@@ -611,8 +707,9 @@ class RepositoryGateTests(unittest.TestCase):
             root = Path(directory)
             campaign = CampaignFixture(root).campaign()
             classification = campaign["routes"][0]["workloads"][0]["classification"]
-            classification["ready_units"] -= 1
+            classification["ready_units"] -= 2
             classification["unsupported_units"] = 1
+            classification["unknown_units"] = 1
             result = self.evaluate(campaign, root)
 
         self.assertEqual("FAILED", result["gate_status"])
@@ -621,6 +718,9 @@ class RepositoryGateTests(unittest.TestCase):
         )
         self.assertTrue(
             any("unsupported_units must be zero" in item for item in result["failures"])
+        )
+        self.assertTrue(
+            any("unknown_units must be zero" in item for item in result["failures"])
         )
         self.assert_not_certified(result)
 

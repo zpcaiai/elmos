@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "fixtures": [
+    { "schema": "contracts/database-estate-schema/database-object.schema.json", "instance": "database-object.json" },
+    { "schema": "contracts/database-type-schema/database-type-mapping.schema.json", "instance": "database-type-mapping.json" },
+    { "schema": "contracts/cdc-schema/cdc-status.schema.json", "instance": "cdc-status.json" },
+    { "schema": "contracts/data-quality-schema/data-quality-result.schema.json", "instance": "data-quality-result.json" },
+    { "schema": "contracts/semantic-metric-schema/semantic-metric.schema.json", "instance": "semantic-metric.json" }
+  ]
+}

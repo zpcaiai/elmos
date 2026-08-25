@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "pack_key": "multimodal-intake-authorization-v1",
+  "capabilities": [
+    {
+      "key": "principal-resource-action-context-authorization",
+      "status": "experimental",
+      "owner": "elmos-multimodal-intake-security",
+      "evidence_refs": ["security/principal-resource-action-matrix.json"],
+      "limitations": ["Local engineering validation only; independent security review is NOT_RUN."]
+    },
+    {
+      "key": "tenant-project-actor-isolation",
+      "status": "experimental",
+      "owner": "elmos-multimodal-intake-security",
+      "evidence_refs": ["security/principal-resource-action-matrix.json"],
+      "limitations": ["Representative production tenancy and external identity-provider evidence are NOT_RUN."]
+    },
+    {
+      "key": "deny-before-side-effect",
+      "status": "experimental",
+      "owner": "elmos-multimodal-intake-security",
+      "evidence_refs": ["security/principal-resource-action-matrix.json"],
+      "limitations": ["Provider, browser/device, and production side-effect observations are NOT_RUN."]
+    },
+    {
+      "key": "append-only-human-review-correction",
+      "status": "experimental",
+      "owner": "elmos-multimodal-intake",
+      "evidence_refs": [],
+      "limitations": ["Local SQLite behavior only; external review workflow and independent holdout are NOT_RUN."]
+    },
+    {
+      "key": "external-provider-and-independent-verification",
+      "status": "blocked",
+      "owner": "elmos-multimodal-intake",
+      "evidence_refs": [],
+      "limitations": ["OCR, ASR, vision, antivirus, strong sandbox, downstream-agent, browser/device, and independent-verifier evidence are NOT_RUN."]
+    }
+  ]
+}

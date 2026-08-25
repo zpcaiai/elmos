@@ -11,7 +11,10 @@ from typing import Any, cast
 import pytest
 
 from elmos_polyglot_route import assembly as assembly_module
-from elmos_polyglot_route.assembly import assemble_project, verify_archived_assembly_closure
+from elmos_polyglot_route.assembly import (
+    assemble_project as _assemble_project,
+    verify_archived_assembly_closure,
+)
 from elmos_polyglot_route.equivalence import behavior_equivalence
 from elmos_polyglot_route.identifier_hygiene import (
     identifier_plan_bytes,
@@ -20,7 +23,27 @@ from elmos_polyglot_route.identifier_hygiene import (
     standalone_artifact_unit_namespace,
     target_function_view,
 )
-from elmos_polyglot_route.models import Language, RouteError, SemanticIR
+from elmos_polyglot_route.models import (
+    Language,
+    RouteError,
+    SemanticIR,
+    repository_language_lifecycle,
+)
+
+
+def assemble_project(
+    report: dict[str, Any],
+    batch_output: Path,
+    destination: Path,
+) -> dict[str, Any]:
+    """Authorize archived JavaScript only inside explicit historical fixtures."""
+
+    return _assemble_project(
+        report,
+        batch_output,
+        destination,
+        allow_deprecated_replay=(report.get("source_language") == "javascript"),
+    )
 
 
 def _digest(content: bytes) -> str:
@@ -225,6 +248,10 @@ def _fixture(
     report = {
         "schema_version": "1.0.0",
         "kind": "elmos.repository-batch-report",
+        "language_lifecycle": repository_language_lifecycle(
+            source_language,
+            target_language,
+        ),
         "status": "COMPLETE",
         "repository_ref": "local:focused-child-evidence",
         "snapshot_sha256": "a" * 64,
@@ -518,6 +545,27 @@ def test_plain_js_descriptor_is_independently_bound_into_assembly(tmp_path: Path
 
     assert manifest["verified_evidence_artifact_count"] == 6
     assert manifest["verified_evidence_artifacts"][-1]["role"] == "source-javascript-esm-descriptor"
+
+
+def test_default_assembly_api_rejects_deprecated_replay_aggregation(
+    tmp_path: Path,
+) -> None:
+    report, batch = _fixture(
+        tmp_path,
+        source_language="javascript",
+        source_path="src/identity.js",
+        javascript_descriptor=True,
+    )
+
+    with pytest.raises(
+        RouteError,
+        match="^ASSEMBLY_DEPRECATED_REPLAY_EXPLICIT_AUTHORITY_REQUIRED$",
+    ):
+        assembly_module.assemble_project(
+            report,
+            batch,
+            tmp_path / "default-assembled",
+        )
 
 
 @pytest.mark.parametrize(

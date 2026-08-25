@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "relation_id": "relation.cross-tenant-substitution-denies-without-effects",
+  "claim_id": "claim.deny-no-side-effects",
+  "owner": "elmos-multimodal-intake-security",
+  "preconditions": [
+    "baseline request is authorized for tenant A",
+    "substitution changes only the resource tenant or tenant-bound project alias"
+  ],
+  "transformation": {
+    "kind": "cross-tenant-resource-substitution"
+  },
+  "expected_relation": {
+    "kind": "deny-and-preserve-pre-request-state"
+  },
+  "oracle_refs": [
+    "oracle.negative-tests",
+    "oracle.independent-review"
+  ],
+  "non_applicable": []
+}

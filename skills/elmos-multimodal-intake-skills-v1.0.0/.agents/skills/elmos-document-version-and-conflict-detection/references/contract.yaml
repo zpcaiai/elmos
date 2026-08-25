@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+ordinal: 16
+name: elmos-document-version-and-conflict-detection
+title: 文档版本与冲突检测
+objective: 把冲突作为一等数据对象，依据可配置优先级给出建议但不静默替用户决策。
+dependencies:
+- elmos-multi-asset-content-fusion
+- elmos-source-anchor-and-provenance
+inputs:
+- 融合内容、版本元数据、优先级策略
+outputs:
+- ConflictGroup、VersionGraph、ResolutionDecision
+responsibilities:
+- 检测文件版本、修订、时间、批准状态和内容差异
+- 在需求、接口、字段、流程和 UI 层识别冲突陈述
+- 应用用户指定、已批准、最新决策等可配置优先级
+- 生成冲突组、影响范围、建议和待确认项
+deliverables:
+- VersionGraph、Conflict schema
+- 差异与冲突检测服务
+- 冲突审阅 UI、API 和测试集
+acceptance:
+- 任何被覆盖陈述仍保留来源和版本
+- 未解决冲突不能被标记为已确定需求
+- 优先级规则可配置并有审计记录
+- 用户决策后能更新依赖需求和上下文
+data_entities:
+- input_conflicts
+- document_versions
+- conflict_resolutions
+events:
+- conflict.detected
+- conflict.resolved
+- version.superseded
+metrics:
+- conflict_detection_precision
+- unresolved_conflict_count
+failure_modes:
+- 假阳性冲突
+- 日期缺失
+- 跨模态粒度不一致
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

@@ -9,7 +9,6 @@ from .capabilities import CAPABILITY_CONTRACTS, CapabilityContract
 from .canonical import canonical_digest, strict_json_copy
 from .handlers import HandlerContext, HandlerOutcome, handle
 from .models import (
-    CONTRACT_VERSION,
     ContractError,
     ExecutionError,
     ExecutionRequest,
@@ -18,7 +17,7 @@ from .models import (
     ScopeEnvelope,
 )
 from .public_methods import PUBLIC_METHODS, PublicMethodBinding, public_method
-from .registry import SkillBinding, SkillRegistry, load_registry
+from .registry import DEFAULT_SKILL_REGISTRY, SkillBinding, SkillRegistry
 
 
 _ARRAY_INPUTS = frozenset(
@@ -115,7 +114,7 @@ def _unresolved_envelope(document: object) -> ScopeEnvelope:
 
 class SoftwareFactoryEngine:
     def __init__(self, registry: SkillRegistry | None = None) -> None:
-        self.registry = registry or load_registry()
+        self.registry = registry or DEFAULT_SKILL_REGISTRY
         if set(CAPABILITY_CONTRACTS) != set(self.registry.bindings):
             missing = sorted(set(self.registry.bindings) - set(CAPABILITY_CONTRACTS))
             extra = sorted(set(CAPABILITY_CONTRACTS) - set(self.registry.bindings))

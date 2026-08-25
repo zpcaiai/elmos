@@ -26,7 +26,7 @@ import pytest
 from elmos_polyglot_route import assembly
 from elmos_polyglot_route.assembly import (
     MANIFEST_NAME,
-    assemble_project,
+    assemble_project as _assemble_project,
     verify_assembled_project,
     write_assembly_deployment_guidance,
 )
@@ -38,8 +38,32 @@ from elmos_polyglot_route.identifier_hygiene import (
     repository_work_unit_namespace,
     target_function_view,
 )
-from elmos_polyglot_route.models import Language, RouteError, SemanticIR
+from elmos_polyglot_route.models import (
+    REPOSITORY_SURFACE_LANGUAGES,
+    Language,
+    RouteError,
+    SemanticIR,
+    repository_language_lifecycle,
+)
 from elmos_polyglot_route.repository import plan_repository
+
+
+def assemble_project(
+    report: dict[str, Any],
+    batch_output: Path,
+    destination: Path,
+) -> dict[str, Any]:
+    """Authorize archived JavaScript only inside explicit historical fixtures."""
+
+    return _assemble_project(
+        report,
+        batch_output,
+        destination,
+        allow_deprecated_replay=(
+            "javascript"
+            in {report.get("source_language"), report.get("target_language")}
+        ),
+    )
 
 
 def _digest(content: str) -> str:
@@ -143,12 +167,16 @@ def _target_language(target_path: str) -> Language:
         ".py": "python",
         ".cs": "csharp",
         ".ts": "typescript",
+        ".tsx": "react",
         ".mjs": "javascript",
         ".go": "go",
         ".rs": "rust",
         ".cpp": "cpp",
         ".m": "objc",
         ".swift": "swift",
+        ".php": "php",
+        ".kt": "kotlin",
+        ".dart": "flutter",
     }
     return suffixes[Path(filename).suffix]
 
@@ -353,6 +381,10 @@ def _batch_report(target_language: str, units: list[dict[str, Any]]) -> dict[str
     return {
         "schema_version": "1.0.0",
         "kind": "elmos.repository-batch-report",
+        "language_lifecycle": repository_language_lifecycle(
+            source_language,
+            target_language,
+        ),
         "status": "COMPLETE" if complete else "PARTIAL",
         "repository_ref": "local:customer-repository",
         "snapshot_sha256": _FIXTURE_SNAPSHOT,
@@ -380,7 +412,7 @@ CSHARP_UNIT = (
     "}\n"
 )
 
-ADDITIONAL_TARGET_UNITS = {
+ADDITIONAL_TARGET_UNITS: dict[Language, tuple[str, str]] = {
     "javascript": (
         "migrated.mjs",
         "export function calculate(a, b) { return a + b; }\n",
@@ -396,7 +428,22 @@ ADDITIONAL_TARGET_UNITS = {
         "#import <Foundation/Foundation.h>\n\nlong long calculate(long long a, long long b) { return a + b; }\n",
     ),
     "swift": ("migrated.swift", "func calculate(_ a: Int, _ b: Int) -> Int { a + b }\n"),
+    "php": (
+        "migrated.php",
+        "<?php\ndeclare(strict_types=1);\n\nfunction calculate(int $a, int $b): int { return $a + $b; }\n",
+    ),
+    "kotlin": ("migrated.kt", "fun calculate(a: Long, b: Long): Long = a + b\n"),
+    "react": (
+        "migrated.tsx",
+        "export function calculate(a: number, b: number): number { return a + b; }\n",
+    ),
+    "flutter": ("migrated.dart", "int calculate(int a, int b) => a + b;\n"),
 }
+
+
+def test_additional_target_units_cover_every_non_primary_repository_language() -> None:
+    primary = {"java", "python", "csharp", "typescript"}
+    assert set(ADDITIONAL_TARGET_UNITS) == set(REPOSITORY_SURFACE_LANGUAGES) - primary
 
 
 def test_assemble_places_python_units_under_collision_free_modules(tmp_path: Path) -> None:
@@ -465,20 +512,42 @@ def test_csharp_build_compiles_only_assembled_sources_not_evidence_copies(tmp_pa
     assert verify_assembled_project("csharp", destination)["build_verification_status"] == "PASSED"
 
 
+_ADDITIONAL_TARGET_PROJECT_SHAPES: dict[Language, tuple[str, set[str]]] = {
+    "javascript": ("src/generated/wu00001.mjs", {"package.json"}),
+    "go": ("units/wu00001/migrated.go", {"go.mod"}),
+    "rust": ("src/wu00001.rs", {"Cargo.toml", "src/lib.rs"}),
+    "cpp": ("src/wu00001/migrated.cpp", {"CMakeLists.txt"}),
+    "objc": ("src/wu00001/migrated.m", {"CMakeLists.txt"}),
+    "swift": ("Sources/Wu00001/migrated.swift", {"Package.swift"}),
+    "php": ("src/wu00001/migrated.php", {"composer.json"}),
+    "kotlin": (
+        "src/main/kotlin/elmos/generated/wu00001/migrated.kt",
+        {"kotlinc.args"},
+    ),
+    "react": ("src/generated/wu00001.tsx", {"package.json", "tsconfig.json"}),
+    "flutter": (
+        "lib/generated/wu00001/migrated.dart",
+        {"pubspec.yaml", "analysis_options.yaml", ".dart_tool/package_config.json"},
+    ),
+}
+
+
+def test_additional_target_project_shapes_cover_every_additional_unit() -> None:
+    assert set(_ADDITIONAL_TARGET_PROJECT_SHAPES) == set(ADDITIONAL_TARGET_UNITS)
+
+
 @pytest.mark.parametrize(
     ("target_language", "expected_path", "build_files"),
     [
-        ("javascript", "src/generated/wu00001.mjs", {"package.json"}),
-        ("go", "units/wu00001/migrated.go", {"go.mod"}),
-        ("rust", "src/wu00001.rs", {"Cargo.toml", "src/lib.rs"}),
-        ("cpp", "src/wu00001/migrated.cpp", {"CMakeLists.txt"}),
-        ("objc", "src/wu00001/migrated.m", {"CMakeLists.txt"}),
-        ("swift", "Sources/Wu00001/migrated.swift", {"Package.swift"}),
+        (language, expected_path, build_files)
+        for language, (expected_path, build_files) in (
+            _ADDITIONAL_TARGET_PROJECT_SHAPES.items()
+        )
     ],
 )
 def test_assemble_supports_every_additional_target_project_shape(
     tmp_path: Path,
-    target_language: str,
+    target_language: Language,
     expected_path: str,
     build_files: set[str],
 ) -> None:
@@ -505,6 +574,11 @@ def test_assemble_supports_every_additional_target_project_shape(
         cmake = (destination / "CMakeLists.txt").read_text(encoding="utf-8")
         assert "add_library(elmos_migrated SHARED" in cmake
         assert expected_path in cmake
+    if target_language == "php":
+        composer = json.loads(
+            (destination / "composer.json").read_text(encoding="utf-8")
+        )
+        assert composer["require"]["php"] == "8.5.9"
 
 
 @pytest.mark.parametrize("target_language", ["cpp", "objc"])
@@ -540,7 +614,7 @@ def test_native_assembly_links_all_units_in_one_target_to_expose_symbol_collisio
 
 
 @pytest.mark.parametrize("target_language", ["javascript", "go", "rust", "cpp", "objc", "swift"])
-def test_verify_assembled_project_builds_every_additional_target(
+def test_verify_assembled_project_builds_the_shared_legacy_target_fixture(
     tmp_path: Path,
     target_language: Language,
 ) -> None:

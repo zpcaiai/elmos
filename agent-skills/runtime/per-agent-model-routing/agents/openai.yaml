@@ -1,0 +1,4 @@
+interface:
+  display_name: "Per Agent Model Routing"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $per-agent-model-routing for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

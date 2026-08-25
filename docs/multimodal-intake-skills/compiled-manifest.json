@@ -1,0 +1,2373 @@
+{
+  "acceptance_criteria_executed": false,
+  "archive": {
+    "archive_scripts_executed": false,
+    "case_and_unicode_collisions_rejected": true,
+    "compressed_bytes": 664179,
+    "crc32_verified": true,
+    "entries": 346,
+    "internal_checksums": 345,
+    "manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "modes_verified": true,
+    "path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "uncompressed_bytes": 1117974
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "compiler": {
+    "path": "tooling/integrate_multimodal_intake_skills.py",
+    "sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1"
+  },
+  "contracts": {
+    "acceptance": 240,
+    "cyclic_sccs": [
+      [
+        "elmos-context-budget-manager",
+        "elmos-multimodal-token-accounting"
+      ],
+      [
+        "elmos-context-checkpoint-and-recovery",
+        "elmos-context-integrity-and-loss-detection",
+        "elmos-context-pressure-monitor",
+        "elmos-structured-context-compaction"
+      ],
+      [
+        "elmos-downstream-agent-integration",
+        "elmos-prompt-injection-defense"
+      ]
+    ],
+    "deliverables": 170,
+    "dependency_edges": 95,
+    "global_gates": [
+      {
+        "evidence": "scripts/validate_package.py",
+        "evidence_files": [],
+        "id": "G-01",
+        "requirement": "Exactly 50 canonical Skills and valid mirrors",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "long-context and package E2E",
+        "evidence_files": [],
+        "id": "G-02",
+        "requirement": "No silent truncation or silent input omission",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "provenance report",
+        "evidence_files": [],
+        "id": "G-03",
+        "requirement": "Critical source anchor coverage is 100%",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "isolation security suite",
+        "evidence_files": [],
+        "id": "G-04",
+        "requirement": "No cross-tenant data leak",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "archive attack corpus",
+        "evidence_files": [],
+        "id": "G-05",
+        "requirement": "No archive sandbox escape or uncontrolled bomb",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "fault-injection ledger report",
+        "evidence_files": [],
+        "id": "G-06",
+        "requirement": "No duplicate external effect/provider charge on recovery",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "runtime metrics",
+        "evidence_files": [],
+        "id": "G-07",
+        "requirement": "Machine wall-clock ETA and actuals are recorded",
+        "status": "NOT_RUN"
+      },
+      {
+        "evidence": "redaction scans",
+        "evidence_files": [],
+        "id": "G-08",
+        "requirement": "No secrets/passwords in logs, traces, events or prompts",
+        "status": "NOT_RUN"
+      }
+    ],
+    "skills": 50
+  },
+  "engine": {
+    "handler_count": 50,
+    "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "registry": "SKILL_REGISTRY",
+    "sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-manifest",
+  "operation_registry": {
+    "document_sha256": "4eeeeb5d921048a8c3dad6964956cf6fa171f4b13c3ffa711584ce4c08443eaa",
+    "operation_count": 147,
+    "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/operation_registry.py",
+    "schema_version": "multimodal-operation-registry-v1",
+    "skill_count": 50,
+    "skills": [
+      "elmos-archive-bomb-and-path-traversal-defense",
+      "elmos-audio-asr-and-diarization",
+      "elmos-codex-context-capacity-parity",
+      "elmos-context-budget-manager",
+      "elmos-context-checkpoint-and-recovery",
+      "elmos-context-integrity-and-loss-detection",
+      "elmos-context-pressure-monitor",
+      "elmos-context-rehydration",
+      "elmos-data-retention-and-governance",
+      "elmos-diagram-and-architecture-understanding",
+      "elmos-document-version-and-conflict-detection",
+      "elmos-downstream-agent-integration",
+      "elmos-durable-processing-and-recovery",
+      "elmos-file-type-detection-and-validation",
+      "elmos-folder-tree-input",
+      "elmos-human-review-and-correction",
+      "elmos-ignore-generated-vendored-file-classification",
+      "elmos-image-ocr-and-preprocessing",
+      "elmos-ingestion-api-and-sdk",
+      "elmos-long-context-packing-and-ranking",
+      "elmos-malware-quarantine-and-sandbox",
+      "elmos-markdown-text-log-parser",
+      "elmos-model-capability-discovery",
+      "elmos-multi-asset-content-fusion",
+      "elmos-multimodal-evaluation-framework",
+      "elmos-multimodal-input-orchestrator",
+      "elmos-multimodal-input-workbench-ui",
+      "elmos-multimodal-observability",
+      "elmos-multimodal-requirement-extraction",
+      "elmos-multimodal-token-accounting",
+      "elmos-pdf-layout-table-parser",
+      "elmos-processing-cost-and-eta-estimation",
+      "elmos-project-memory-and-retrieval",
+      "elmos-project-package-manifest",
+      "elmos-project-package-preview-and-review-ui",
+      "elmos-project-package-version-and-incremental-update",
+      "elmos-project-root-language-framework-detection",
+      "elmos-prompt-injection-defense",
+      "elmos-provider-routing-and-fallback",
+      "elmos-repository-context-map",
+      "elmos-repository-map-and-symbol-indexing",
+      "elmos-resumable-multi-file-folder-upload",
+      "elmos-secure-resumable-upload",
+      "elmos-secure-zip-tar-extraction",
+      "elmos-source-anchor-and-provenance",
+      "elmos-storage-index-and-retrieval",
+      "elmos-structured-context-compaction",
+      "elmos-unified-multimodal-content-ir",
+      "elmos-visual-ui-understanding",
+      "elmos-word-document-parser"
+    ],
+    "source_sha256": "1209b9efd457bdad22e3658effdf988cec0e58d5d589a1d621790972ea35aa8b",
+    "static_ast_validated": true
+  },
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "runtime": {
+    "implementation": {
+      "aggregate_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+      "file_count": 102,
+      "files": [
+        {
+          "bytes": 32286,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/README.md",
+          "sha256": "dae9e2fdfe7db38272be1888fd61e9ad681f4b85bd9fa3b1e92da9db4588a30b"
+        },
+        {
+          "bytes": 13160,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/001_initial.sql",
+          "sha256": "a0c391187edab520e238be85b72a51f8eed07c433c679b56f27799118c3f6484"
+        },
+        {
+          "bytes": 7246,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/004_persistent_knowledge.sql",
+          "sha256": "eb74235671c5c4e70cea005a39e6c00c093ff34741e56085c0eb286dfb0de182"
+        },
+        {
+          "bytes": 650,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/005_knowledge_worker_evidence.sql",
+          "sha256": "6d59f535e90dd776db882221bf33a0ca656fa0d43aeb22c3f24a6b6064cb59f7"
+        },
+        {
+          "bytes": 2263,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/006_knowledge_source_tombstones.sql",
+          "sha256": "91da91171f1f4e41185bb41582ae543d7a5ea13c00f1dc299835acf89e0140d3"
+        },
+        {
+          "bytes": 178,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/007_progress_job_version.sql",
+          "sha256": "52b8b45f666b42096b103bde42414d4b27bb000b902e3dcbf75272a5351fdd8d"
+        },
+        {
+          "bytes": 3227,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/008_knowledge_outbox_delivery_state.sql",
+          "sha256": "30d934d04b1d69abefba648ceb1ab55c8ea193bf27d9445cf5d088df336430de"
+        },
+        {
+          "bytes": 710,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/009_skill_execution_dispatch_phase.sql",
+          "sha256": "76f051c763aaae5281a9f1f5e2869a26b6c0d5f5bd1d8c4fb7267a3f6539a0f3"
+        },
+        {
+          "bytes": 2032,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/010_human_review_corrections.sql",
+          "sha256": "190989508f42c306d72ea6c6539a067fd403d8c66fdf1b4cc2e689e0f3c11c5d"
+        },
+        {
+          "bytes": 15020,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/011_human_review_workflow.sql",
+          "sha256": "35c13974dce6ed37bac55b5139206d1a4ef56a82f3da7f41ac852a82fc1dbc1a"
+        },
+        {
+          "bytes": 587,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/012_skill_execution_response_digest.sql",
+          "sha256": "bd82a5cd27f64c204bab2cc5f575b890658109a26de99e6399d6f451bff90494"
+        },
+        {
+          "bytes": 590,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/013_core_outbox_payload_integrity.sql",
+          "sha256": "216af471f1319bb7b731717f9578989c29ff3b2fb875ff68cebb53db635e6d03"
+        },
+        {
+          "bytes": 14668,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/014_human_review_authoritative_sources.sql",
+          "sha256": "2d06a0a83dfa2e41fe39e70ec524af24aa7f17017fb241212c78de94d159a4f9"
+        },
+        {
+          "bytes": 2737,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/015_human_review_enqueue_recovery.sql",
+          "sha256": "bd4bdf291143c7367f9cf38627920458797143cfd24dab63ea9d796df4fb36d5"
+        },
+        {
+          "bytes": 18814,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/016_human_review_target_head_reservations.sql",
+          "sha256": "5a7779593a63dc86155186868c6db7fbfc1ab6dba8a3720743e801656b5cf3b3"
+        },
+        {
+          "bytes": 7818,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/017_archive_expansion_lineage.sql",
+          "sha256": "9e8bd1fce2f091e70d931412004cf5d3ee13ba7e7f644665d185ac25e38a484a"
+        },
+        {
+          "bytes": 9780,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/018_governance_deletion_workflow.sql",
+          "sha256": "7ad530079d5a822db4f593805763c27682b6586009aeb5b1d3ac7ee8758f46fb"
+        },
+        {
+          "bytes": 9216,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/019_context_lifecycle.sql",
+          "sha256": "cd69535b6b0d92404f860b8c553134ac564f781aacabf6a7d1b22c9e3602d298"
+        },
+        {
+          "bytes": 6206,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/020_project_package_lifecycle.sql",
+          "sha256": "c17202f07ca059bbb5022fa17301a8f0b19faa7db7dc4a0a68541d0549cde309"
+        },
+        {
+          "bytes": 7792,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/021_telemetry_cost_ledger.sql",
+          "sha256": "04728f4767ba271bd0309ae6c36f4ba90e0d00dc5320a15260fbcc54c1a08f46"
+        },
+        {
+          "bytes": 13953,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/022_downstream_agent_integration.sql",
+          "sha256": "7d6969fbd9800f566458215a0f69538e77030f063052cfee11d4f7da8b35b7e7"
+        },
+        {
+          "bytes": 2456,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/023_processing_job_cancellation.sql",
+          "sha256": "7d88583471e7d8537d8208b175320ba2035afc9a0c780b1d413ae85d87e15e21"
+        },
+        {
+          "bytes": 1690,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/migrations/024_core_outbox_delivery_receipts.sql",
+          "sha256": "d3b0e9614299fba3c92e84d15159420de9d51ab4d9f17208bb8d1aea979ddae7"
+        },
+        {
+          "bytes": 106797,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/openapi/operation-input-contracts.schema.json",
+          "sha256": "753d89a0e0535f9e9a4302cab53c84683f65c8dc790e193f06618d7679394b65"
+        },
+        {
+          "bytes": 106629,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/openapi/multimodal-intake-v1.openapi.yaml",
+          "sha256": "8bf907e3394206b91605134c8a4be6a45df4e4e99982fe0d616a3880a9b48388"
+        },
+        {
+          "bytes": 679,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/pyproject.toml",
+          "sha256": "7ed9b4f1239a2f1d5818943e2531a7323baedb915f7fae3a9b3ac3530393d0fb"
+        },
+        {
+          "bytes": 71456,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/__init__.py",
+          "sha256": "fdbce40dd79351db07d1ae0b0d04364eca0b97e94a1ff4c6612d153413fd3748"
+        },
+        {
+          "bytes": 106797,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/_data/openapi/operation-input-contracts.schema.json",
+          "sha256": "753d89a0e0535f9e9a4302cab53c84683f65c8dc790e193f06618d7679394b65"
+        },
+        {
+          "bytes": 4810,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/_migrations.py",
+          "sha256": "0c3b7ce367e26c5fdc38abca563251bdbcfe473d5d20fc5b815b599ff7dc0e7d"
+        },
+        {
+          "bytes": 6280,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/api.py",
+          "sha256": "a7689afe782771538080f928f1b9a294299689e69825d24ca5f099ebac39019e"
+        },
+        {
+          "bytes": 62639,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/archive_publication.py",
+          "sha256": "fbaea16dfbc518cdb4f871b5336c7a36c6e8c452b651d75104d9dd1ce8d6b7f2"
+        },
+        {
+          "bytes": 6731,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/acceptance_catalog.py",
+          "sha256": "93ed9f338b39a8e60e4e89c8e16628bd42f8152486f56f522cfb6e5e96d4ca84"
+        },
+        {
+          "bytes": 8928,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/canonical.py",
+          "sha256": "b91215930ac170353b702cc6639f6e1ad9a9d4917a2f966708c7693c789beafe"
+        },
+        {
+          "bytes": 77929,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/cli.py",
+          "sha256": "95c3e567198799f8343abe1c79ccd1ceeae6a6ea950fe8e9295dab86154afc07"
+        },
+        {
+          "bytes": 66400,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/content.py",
+          "sha256": "9d3d886ce8c538d3c18069f640d440bf910207bce5cce4921d77d906700b5121"
+        },
+        {
+          "bytes": 30952,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/content_projection.py",
+          "sha256": "44af6647eac6c3598ecff4fac4e24d94e6b91ffbc368e33a2097af6ce255cc23"
+        },
+        {
+          "bytes": 65174,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/context.py",
+          "sha256": "0cb25a6371f5b7cf201e5f38cb29a96e625b865906fafa4abd8887bf55343e71"
+        },
+        {
+          "bytes": 44550,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/context_lifecycle.py",
+          "sha256": "221ac63ed18ab880af273dcf411577e14e91bffa5598f377f4086231680cde8f"
+        },
+        {
+          "bytes": 13708,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/contracts.py",
+          "sha256": "91130810f0cbd7b9f708009cc0c46dc295def3a1e97416599748340ae81ab560"
+        },
+        {
+          "bytes": 71899,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/durable_evaluation.py",
+          "sha256": "01ad554e7d4a769678f863c5c4e32cf56affa61de0f4dca1f9f597a090355694"
+        },
+        {
+          "bytes": 71523,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/downstream_agent.py",
+          "sha256": "8b553a12f986a3da5d144dbe9afb2fc886a2e7d24399acdad4713532535c3f3d"
+        },
+        {
+          "bytes": 1704,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/errors.py",
+          "sha256": "eb3a1c9902430843fd3ce1d961297463462958e363d555dd7249270d595f9465"
+        },
+        {
+          "bytes": 1354,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/evaluation.py",
+          "sha256": "10077b8a9784acc8843c43d8e7ff0d398d84a618da38912746ccd7dde3105577"
+        },
+        {
+          "bytes": 26212,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/governance.py",
+          "sha256": "abdcade047f489d6883409a00f8a306068875d4ae4cec52577d01fbb1f1521b2"
+        },
+        {
+          "bytes": 34119,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/human_review.py",
+          "sha256": "95d7445c187bbcf444249d71d34c62c0903e72a7c474559b37f2c69bda2b130a"
+        },
+        {
+          "bytes": 295882,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/human_review_workflow.py",
+          "sha256": "1f369f0c07cbdb7865b87cd52d5a7f2db041df9c1c394c47e6bef59dcf9f5b49"
+        },
+        {
+          "bytes": 41704,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/http_server.py",
+          "sha256": "fd14d1bd853a83fff8355d5e1ee2e9d7903a67feda8eb55554c63425187ed0fc"
+        },
+        {
+          "bytes": 26928,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/knowledge_worker.py",
+          "sha256": "5a7cbc18d89be58082eda8d65615c0bf16f7e6ed4f2748e692e8b5e00f8afc98"
+        },
+        {
+          "bytes": 14155,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/models.py",
+          "sha256": "16942e265e555147c76e90b0a5bfc822f96d554925b069500bd98dcde8e44484"
+        },
+        {
+          "bytes": 13160,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/001_initial.sql",
+          "sha256": "a0c391187edab520e238be85b72a51f8eed07c433c679b56f27799118c3f6484"
+        },
+        {
+          "bytes": 7246,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/004_persistent_knowledge.sql",
+          "sha256": "eb74235671c5c4e70cea005a39e6c00c093ff34741e56085c0eb286dfb0de182"
+        },
+        {
+          "bytes": 650,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/005_knowledge_worker_evidence.sql",
+          "sha256": "6d59f535e90dd776db882221bf33a0ca656fa0d43aeb22c3f24a6b6064cb59f7"
+        },
+        {
+          "bytes": 2263,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/006_knowledge_source_tombstones.sql",
+          "sha256": "91da91171f1f4e41185bb41582ae543d7a5ea13c00f1dc299835acf89e0140d3"
+        },
+        {
+          "bytes": 178,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/007_progress_job_version.sql",
+          "sha256": "52b8b45f666b42096b103bde42414d4b27bb000b902e3dcbf75272a5351fdd8d"
+        },
+        {
+          "bytes": 3227,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/008_knowledge_outbox_delivery_state.sql",
+          "sha256": "30d934d04b1d69abefba648ceb1ab55c8ea193bf27d9445cf5d088df336430de"
+        },
+        {
+          "bytes": 710,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/009_skill_execution_dispatch_phase.sql",
+          "sha256": "76f051c763aaae5281a9f1f5e2869a26b6c0d5f5bd1d8c4fb7267a3f6539a0f3"
+        },
+        {
+          "bytes": 2032,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/010_human_review_corrections.sql",
+          "sha256": "190989508f42c306d72ea6c6539a067fd403d8c66fdf1b4cc2e689e0f3c11c5d"
+        },
+        {
+          "bytes": 15020,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/011_human_review_workflow.sql",
+          "sha256": "35c13974dce6ed37bac55b5139206d1a4ef56a82f3da7f41ac852a82fc1dbc1a"
+        },
+        {
+          "bytes": 587,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/012_skill_execution_response_digest.sql",
+          "sha256": "bd82a5cd27f64c204bab2cc5f575b890658109a26de99e6399d6f451bff90494"
+        },
+        {
+          "bytes": 590,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/013_core_outbox_payload_integrity.sql",
+          "sha256": "216af471f1319bb7b731717f9578989c29ff3b2fb875ff68cebb53db635e6d03"
+        },
+        {
+          "bytes": 14668,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/014_human_review_authoritative_sources.sql",
+          "sha256": "2d06a0a83dfa2e41fe39e70ec524af24aa7f17017fb241212c78de94d159a4f9"
+        },
+        {
+          "bytes": 2737,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/015_human_review_enqueue_recovery.sql",
+          "sha256": "bd4bdf291143c7367f9cf38627920458797143cfd24dab63ea9d796df4fb36d5"
+        },
+        {
+          "bytes": 18814,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/016_human_review_target_head_reservations.sql",
+          "sha256": "5a7779593a63dc86155186868c6db7fbfc1ab6dba8a3720743e801656b5cf3b3"
+        },
+        {
+          "bytes": 7818,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/017_archive_expansion_lineage.sql",
+          "sha256": "9e8bd1fce2f091e70d931412004cf5d3ee13ba7e7f644665d185ac25e38a484a"
+        },
+        {
+          "bytes": 9780,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/018_governance_deletion_workflow.sql",
+          "sha256": "7ad530079d5a822db4f593805763c27682b6586009aeb5b1d3ac7ee8758f46fb"
+        },
+        {
+          "bytes": 9216,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/019_context_lifecycle.sql",
+          "sha256": "cd69535b6b0d92404f860b8c553134ac564f781aacabf6a7d1b22c9e3602d298"
+        },
+        {
+          "bytes": 6206,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/020_project_package_lifecycle.sql",
+          "sha256": "c17202f07ca059bbb5022fa17301a8f0b19faa7db7dc4a0a68541d0549cde309"
+        },
+        {
+          "bytes": 7792,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/021_telemetry_cost_ledger.sql",
+          "sha256": "04728f4767ba271bd0309ae6c36f4ba90e0d00dc5320a15260fbcc54c1a08f46"
+        },
+        {
+          "bytes": 13953,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/022_downstream_agent_integration.sql",
+          "sha256": "7d6969fbd9800f566458215a0f69538e77030f063052cfee11d4f7da8b35b7e7"
+        },
+        {
+          "bytes": 2456,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/023_processing_job_cancellation.sql",
+          "sha256": "7d88583471e7d8537d8208b175320ba2035afc9a0c780b1d413ae85d87e15e21"
+        },
+        {
+          "bytes": 1690,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/migrations/024_core_outbox_delivery_receipts.sql",
+          "sha256": "d3b0e9614299fba3c92e84d15159420de9d51ab4d9f17208bb8d1aea979ddae7"
+        },
+        {
+          "bytes": 20133,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/observability.py",
+          "sha256": "fb656cb9a731f4e7f18f2b2386fa21f46dbe459af93a2ce3e653b981588d528d"
+        },
+        {
+          "bytes": 24116,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/operation_registry.py",
+          "sha256": "1209b9efd457bdad22e3658effdf988cec0e58d5d589a1d621790972ea35aa8b"
+        },
+        {
+          "bytes": 50232,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/parsers.py",
+          "sha256": "2aa6601a66c731b008f2605ae97ea968bc81f780560976a6b1fef5def0226abe"
+        },
+        {
+          "bytes": 146809,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/persistent_knowledge.py",
+          "sha256": "3ec9cf7cbc7c48a2e3fa095e8482d75a6cbad65257d879d7937c5bc0665f8bf8"
+        },
+        {
+          "bytes": 15467,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/progress_stream.py",
+          "sha256": "07df36495016ba3f43cf1ec7b3a13386aedb691a439440d2515496a6ac2e1bd4"
+        },
+        {
+          "bytes": 44841,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/project_package_lifecycle.py",
+          "sha256": "4444d580bde246e4d976f25f5f8c905fb9de1cf6a66ef196fb02f86c632c7eaa"
+        },
+        {
+          "bytes": 90983,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/projects.py",
+          "sha256": "5e6c4236cf1305f75a1268dfd426ff5dcd0511c4eeac2affecb2a8a1ed320f83"
+        },
+        {
+          "bytes": 26431,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/providers.py",
+          "sha256": "1a55fe41c2c4c0dbb87ee7b698e21260e9dfdaeff7e65e251aa8b245a7acf181"
+        },
+        {
+          "bytes": 78179,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/sdk.py",
+          "sha256": "95050cd2be39ca5947662f37ac28e257717b1b8a139bb929aad65e5ff761d8c0"
+        },
+        {
+          "bytes": 26696,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/security.py",
+          "sha256": "6418195b587a1e3fcaeff549bbc12a28d922f26b3d4ceb3c875d8794fe0a540c"
+        },
+        {
+          "bytes": 44937,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+          "sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c"
+        },
+        {
+          "bytes": 460487,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/store.py",
+          "sha256": "5ad0fd4086afc7c2383e5819958663d9640d0a32961e64444b17789605ee9275"
+        },
+        {
+          "bytes": 55942,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/surface_bridge.py",
+          "sha256": "56b112ea1714c0c7f64cc0db705c1e9644fa1c266e56fd8c7cfd93773d11172a"
+        },
+        {
+          "bytes": 25327,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/telemetry_lifecycle.py",
+          "sha256": "1f89a6ad79831b004817158deac0940f3f45d0090b9b062d051226fc5f86aacd"
+        },
+        {
+          "bytes": 11775,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/uploads.py",
+          "sha256": "9cfd3e23df94281f07597b0a51733f1091a5605f69ea5feaef687aaf3435f7f3"
+        },
+        {
+          "bytes": 14328,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/webhooks.py",
+          "sha256": "b137bd960993db00893e7d5e797c1192f161a48dc11a003f9e1d8d97d21f7448"
+        },
+        {
+          "bytes": 61716,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/workflow.py",
+          "sha256": "022c2e398a99708a919c9a138dd75bfd70da9c705fcde57599e5578a1fc7b526"
+        },
+        {
+          "bytes": 4279,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tools/render_operation_input_schema.py",
+          "sha256": "9a0614805660ba95e6c4a54feed49e9098bd68bb49e0675c4978519ea649da34"
+        },
+        {
+          "bytes": 4291,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tools/verify_sdks.py",
+          "sha256": "d6af134edf675dfec2f2a4f16734f74002f56dfbdb14ac92aa3cbeb2d4731c64"
+        },
+        {
+          "bytes": 4636,
+          "mode": "0644",
+          "path": "apps/web-console/app/api/multimodal-intake/v1/execute/route.ts",
+          "sha256": "a51893fcb8894da5203d971d596fc3dc44eea7978d14312fc39d16718653e24d"
+        },
+        {
+          "bytes": 3323,
+          "mode": "0644",
+          "path": "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/route.ts",
+          "sha256": "8ef8d48b28c9404b707259ef5549695aa5fee0dfeca60f8bc8268c06b875bb0d"
+        },
+        {
+          "bytes": 8078,
+          "mode": "0644",
+          "path": "apps/web-console/app/intake/MultimodalIntakeWorkbench.module.css",
+          "sha256": "b716eff979e5962bcf75800dd7b4d10062dd5c1a00b98fa993ab9603d290dc19"
+        },
+        {
+          "bytes": 241369,
+          "mode": "0644",
+          "path": "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
+          "sha256": "2116ac344e8bff9551f28388582ad926d9f4a0f8d8a3a4d6caaa6999c3f1c8ac"
+        },
+        {
+          "bytes": 278,
+          "mode": "0644",
+          "path": "apps/web-console/app/intake/page.tsx",
+          "sha256": "74043ecc35875e8ba9d95fe35d1c223546de0edbd38c7c5e6f9f3891cde03666"
+        },
+        {
+          "bytes": 5026,
+          "mode": "0644",
+          "path": "apps/web-console/app/intake/useMicrophoneRecorder.ts",
+          "sha256": "bb32b275cffdebe20e91200f72fd992f758f8bfa89a6c2b284e607833a632a87"
+        },
+        {
+          "bytes": 12339,
+          "mode": "0644",
+          "path": "apps/web-console/app/lib/multimodalSkillCatalog.ts",
+          "sha256": "53742e4d83e7c87552d6f3a276af51645565ace7de5d88fb21914b63525e857f"
+        },
+        {
+          "bytes": 38140,
+          "mode": "0644",
+          "path": "apps/web-console/app/lib/server/multimodalIntakeRunner.ts",
+          "sha256": "7b67eca89ad5f28779bb21c5a2e5ca629a3048977956fa90ae4c718f42af96bc"
+        },
+        {
+          "bytes": 6868,
+          "mode": "0644",
+          "path": "apps/web-console/lib/multimodal-intake/strictJson.ts",
+          "sha256": "6f7c2a9edc0c941449a0dedd0916aae49c0e4128c932d0760e449fcc542506aa"
+        },
+        {
+          "bytes": 5245,
+          "mode": "0644",
+          "path": "contracts/multimodal-intake/asyncapi-v1.yaml",
+          "sha256": "5869eca02e992ea225fec3ad6f653da87a55a9fc778d3d3a11609182191859b7"
+        },
+        {
+          "bytes": 91378,
+          "mode": "0644",
+          "path": "sdk/multimodal-intake/typescript/client.ts",
+          "sha256": "ce1ff05e30d465a6c3ff0f343dff377fcd5ffcf7b92295a33f1b2d47ac3f81eb"
+        },
+        {
+          "bytes": 112332,
+          "mode": "0644",
+          "path": "sdk/multimodal-intake/java/src/main/java/dev/elmos/intake/MultimodalIntakeClient.java",
+          "sha256": "ae0b006dad3bed2731f366bb5e4de12cfe2e10162c900b972f632b547660fc59"
+        }
+      ]
+    },
+    "root": ".",
+    "roots": [
+      "engines/multimodal-intake-engine",
+      "apps/web-console",
+      "tests/multimodal-intake"
+    ],
+    "tests": {
+      "aggregate_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a",
+      "execution_status": "NOT_RUN",
+      "file_count": 31,
+      "files": [
+        {
+          "bytes": 22218,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_all_skill_handlers.py",
+          "sha256": "16f27566b09f83fde77286d1cfbac464c399af63483f051127103e70c8e517af"
+        },
+        {
+          "bytes": 56072,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_api_sdk.py",
+          "sha256": "8d2010fc0ef4ae1f7930ec8a7d3302b9755c6043e3db26707757bdc49b6ed904"
+        },
+        {
+          "bytes": 46820,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_archive_publication.py",
+          "sha256": "03e6e0335f20d2aca18d72b8ae78de05545c01b60f176d91c1b6aff19e41d792"
+        },
+        {
+          "bytes": 73876,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_cli_http.py",
+          "sha256": "a5a893cce54829a899b73949dcd578da852c388a56a0a1e03afe154ac5cac2b9"
+        },
+        {
+          "bytes": 6762,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_content_security.py",
+          "sha256": "2b9915035807f27878c5dfdb58d1c12ad06ab5bbe1ad6cec65097cc4286564ea"
+        },
+        {
+          "bytes": 25411,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_content_projection.py",
+          "sha256": "b0a051532512faa5d39d0a6ac8eb4dd149478d5c959c20396655d6fa1c934633"
+        },
+        {
+          "bytes": 46962,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_context_projects.py",
+          "sha256": "6d1f19904005a02e9e85fee8a10521951447ee53f80d10f6b669c3a41f1e6b1a"
+        },
+        {
+          "bytes": 110892,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_core_intake.py",
+          "sha256": "6eeed8ccf478b1e112385485770a8686fd5c404a35bf43b6d32bab6b500f4a1b"
+        },
+        {
+          "bytes": 13315,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_core_outbox_delivery_integrity.py",
+          "sha256": "cd78329f7361f1f05780f1d77a0766c346f6ace0f4d5f4b9d0e2277a47bd3e3c"
+        },
+        {
+          "bytes": 15565,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_durable_evaluation.py",
+          "sha256": "a073255d7f13c429a522b4b7ef4cd3b3de63e504b22f0d53d17ce595c355de49"
+        },
+        {
+          "bytes": 10219,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_engine_closeout_contracts.py",
+          "sha256": "0b8529c761dabe0a47237639433147108e2253965d6cffe2afd90261eb7b8304"
+        },
+        {
+          "bytes": 21856,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_downstream_agent.py",
+          "sha256": "ef3b2328020400687531e063b2bb23e188755adab52f19d27e6c7474ccfccafb"
+        },
+        {
+          "bytes": 11382,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_governance_deletion.py",
+          "sha256": "f2144b3a1db69786761c569bc1244e8ddcd7f261ae2888fdc24b71ca21f632f0"
+        },
+        {
+          "bytes": 14432,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_context_lifecycle.py",
+          "sha256": "a28dba4c63eafed641d38f3f95404a6ae8c0fb3c8b805c5a0bb9e14e5823ccae"
+        },
+        {
+          "bytes": 28002,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_human_review.py",
+          "sha256": "ec33628559803a624bf8f1fb9c5eab1da1fb4d19fbde4568b833cfa66f43bf7c"
+        },
+        {
+          "bytes": 100902,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_human_review_workflow.py",
+          "sha256": "3e67e2130e0a1620ceeefaf2bd28527a2918ea1176cdaa89e702aa75d24bdb25"
+        },
+        {
+          "bytes": 21792,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_knowledge_archive_bridge.py",
+          "sha256": "a34c35294e7d30efd7a4c48195ace070c0b34852fbaf591f44028a910e4c6aed"
+        },
+        {
+          "bytes": 19357,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_knowledge_outbox_delivery.py",
+          "sha256": "6f1ab1a56c0f3a49d88750972f05668868b700a83c587a2a60468724791381df"
+        },
+        {
+          "bytes": 9629,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_observability.py",
+          "sha256": "ce3e8c18108c2ac73c2deaedf878bfc9883b6912ca919e2c791781f09c3397cb"
+        },
+        {
+          "bytes": 12848,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_operation_registry_contract.py",
+          "sha256": "b786bd532ca26738ba7390453526070025fe08fbf9e68a5f39f755d261b01805"
+        },
+        {
+          "bytes": 17201,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_project_package_lifecycle.py",
+          "sha256": "c709611240aff35d8efebac3aaf930ef2425e2c95ea1f72eb3220861827e5bd7"
+        },
+        {
+          "bytes": 42304,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_persistent_knowledge.py",
+          "sha256": "3a43e3d8e0060c6b8b61cbccd2a380fcb93d04ac95c741b3582121be2c10ba6d"
+        },
+        {
+          "bytes": 6558,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_projects_review.py",
+          "sha256": "c167aad97d8b8c99a9cc43477ed6afa9a3828aab99b440e1b298da74518b8fb0"
+        },
+        {
+          "bytes": 26258,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_progress_http_security.py",
+          "sha256": "68bf43037bb2d323bcd19337e061389da76939660f2f7e9b812b7892c74e3ea7"
+        },
+        {
+          "bytes": 15168,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_progress_stream_integrity.py",
+          "sha256": "d0f7c82f5f98f6f04739014677cbda20722df8c6a6c398a1fbf7ac26a4920060"
+        },
+        {
+          "bytes": 38967,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_skill_runtime.py",
+          "sha256": "3c6b42ed3657f669c78536ac054240367f78100da10716b180d31265250adf06"
+        },
+        {
+          "bytes": 23096,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_surface_bridge.py",
+          "sha256": "cf2d9a4f589a2ff50e228a405dfa36fa31ecdcf4055a5d3c06a9b7660c20e69e"
+        },
+        {
+          "bytes": 9285,
+          "mode": "0644",
+          "path": "engines/multimodal-intake-engine/tests/test_telemetry_lifecycle.py",
+          "sha256": "905cbb5c3b2453b8585fad13e66567a45710e3326a60d9ebb96e42f29865af1c"
+        },
+        {
+          "bytes": 139171,
+          "mode": "0644",
+          "path": "apps/web-console/e2e/multimodal-intake.spec.ts",
+          "sha256": "b7218653986245c107d0f9ee80d71b205d2ae6eba51acd5a9fd0fa299fd18b22"
+        },
+        {
+          "bytes": 44696,
+          "mode": "0644",
+          "path": "apps/web-console/app/lib/server/multimodalIntakeRunner.verify.mjs",
+          "sha256": "de76f0ac0bb094635ca9d33313a2b25da4481619b9b5acf50ee76daed748282f"
+        },
+        {
+          "bytes": 60203,
+          "mode": "0644",
+          "path": "tests/multimodal-intake/test_integration.py",
+          "sha256": "941aa4e8291267684f03af2ea11eb66a3d1b7d95bc9ee0ca177a80f69e88f642"
+        }
+      ]
+    }
+  },
+  "schema_version": "1.0.0",
+  "skills": [
+    {
+      "acceptance_ids": [
+        "S01-01",
+        "S01-02",
+        "S01-03",
+        "S01-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "d7838bd2cf423f2e98c6efa3f75af392c19aa378feb74f7926bfbc50cb14daf6",
+      "contract_sha256": "7bee0bc845ceb53e05ff5a709d05b746f659567a3940c1569495ac337fd1d67d",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-unified-multimodal-content-ir",
+        "elmos-source-anchor-and-provenance",
+        "elmos-durable-processing-and-recovery"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multimodal_input_orchestrator",
+      "installed_tree_sha256": "4604392c439b2dd9f3222ffc09bd2f20a6072fa48074ba04533130c52c2e4f70",
+      "name": "elmos-multimodal-input-orchestrator",
+      "ordinal": 1,
+      "phase": "secure-intake",
+      "skill_md_sha256": "f50c3a346442b19f7f119a4cb856f8ff58c7841032d5e722e037abdd934e257c",
+      "title": "统一多模态输入总控"
+    },
+    {
+      "acceptance_ids": [
+        "S02-01",
+        "S02-02",
+        "S02-03",
+        "S02-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "47999926c747f512647eaad62fae6512f5750d19d94942e2e0282186f157e57d",
+      "contract_sha256": "1f51d4796f048d8d6fa72f4eb94af86a87c36b994143be2b7328dc90a3dbc3bc",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_secure_resumable_upload",
+      "installed_tree_sha256": "ba4541a8fa98b2ed450d6cecf0a5fd4b9cf61aaa010cd778ac2cd3aabebceabb",
+      "name": "elmos-secure-resumable-upload",
+      "ordinal": 2,
+      "phase": "secure-intake",
+      "skill_md_sha256": "7ade10c0c93deedcc513bc744aeb4df0b793a3afcf7a84472c9d677120e67136",
+      "title": "安全断点续传"
+    },
+    {
+      "acceptance_ids": [
+        "S03-01",
+        "S03-02",
+        "S03-03",
+        "S03-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "7c4e61132c562a7204682aceb7dfd7c69fbffdf3ce5708091f855b23d52b82c1",
+      "contract_sha256": "70c6c2e60e4dec7d6077de2bb62960d9aeb29bdb32151a311aa1dd7d0b6c0a77",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_file_type_detection_and_validation",
+      "installed_tree_sha256": "f171da6b9b5d9d1fb2db3021d344270c6ab0999a230b98c8d14296de95f5abae",
+      "name": "elmos-file-type-detection-and-validation",
+      "ordinal": 3,
+      "phase": "secure-intake",
+      "skill_md_sha256": "15f1d936feb655d7705244f198968dc8ff036d9a49e27c69bd0d249ca88afdaa",
+      "title": "文件类型识别与验证"
+    },
+    {
+      "acceptance_ids": [
+        "S04-01",
+        "S04-02",
+        "S04-03",
+        "S04-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "94312fdd11524f07bcd4a7c13725aa6bb987f629ddcc5c657ac8b04a4f7a937d",
+      "contract_sha256": "97f9380e0e4795c7f92a63a74dd8896ba1f98f0c2f99be0b8faa3bb09acd99ac",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-file-type-detection-and-validation"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_malware_quarantine_and_sandbox",
+      "installed_tree_sha256": "cdcd6fd8e895cfc074afb02a8a13d6eb07ec30dac057cfd0a20398cb0395ae11",
+      "name": "elmos-malware-quarantine-and-sandbox",
+      "ordinal": 4,
+      "phase": "secure-intake",
+      "skill_md_sha256": "65ce842005dd135ac65812c496ab56d10a1514e0006b004d0402f4eeec0ef2bb",
+      "title": "恶意文件隔离与解析沙箱"
+    },
+    {
+      "acceptance_ids": [
+        "S05-01",
+        "S05-02",
+        "S05-03",
+        "S05-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "6803bc672b977dbd45cfffb63c118d64e6705b92d4dc279a16d4c6655ef63ecf",
+      "contract_sha256": "c10041100d5befa2197b924be1aabbffd7391e0b87a139c40449e77550a28aa7",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-provider-routing-and-fallback",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_audio_asr_and_diarization",
+      "installed_tree_sha256": "2c1671bd3929be7e9dfc93d6b5f32511af8acd00e092a73dc0f0f15fc6e5943e",
+      "name": "elmos-audio-asr-and-diarization",
+      "ordinal": 5,
+      "phase": "secure-intake",
+      "skill_md_sha256": "8f880bef26ae68fb48162c0c36e5a149aea51ed49ab588021554e3f4bd359219",
+      "title": "音频识别与说话人分离"
+    },
+    {
+      "acceptance_ids": [
+        "S06-01",
+        "S06-02",
+        "S06-03",
+        "S06-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "27585ec0627bb455901fd8a1ac37bebeb0c3f5f6401f64959a5eb4048787d3ac",
+      "contract_sha256": "2f963e9dc4170e6e5329de7165a20f2c3422d20232e5bfcd41657e0074d9d05f",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-provider-routing-and-fallback",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_image_ocr_and_preprocessing",
+      "installed_tree_sha256": "85d08be06c82ede24320ce890a654fe0c33eddbd47322e327d2df0a8ad663dc5",
+      "name": "elmos-image-ocr-and-preprocessing",
+      "ordinal": 6,
+      "phase": "secure-intake",
+      "skill_md_sha256": "c2cb9402bf8edf38deb1792ea86cadfed71291a854a5bce9f7c83882cae38c0c",
+      "title": "图片 OCR 与预处理"
+    },
+    {
+      "acceptance_ids": [
+        "S07-01",
+        "S07-02",
+        "S07-03",
+        "S07-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "7fbcd02b0cf450697a75a9c1fc8b7ad9c8f412e744efe148c1e65afe9fba943d",
+      "contract_sha256": "f842deb8e647f273e2392d9740975a8673e95a66b1169c67dfac84402084d585",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-image-ocr-and-preprocessing",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_visual_ui_understanding",
+      "installed_tree_sha256": "14a3b84d217d24f1ad13084341ad37d6ad1012b5d7f7c83b67aeb0340a59a591",
+      "name": "elmos-visual-ui-understanding",
+      "ordinal": 7,
+      "phase": "content",
+      "skill_md_sha256": "e3dfc4dbfe7507860174ace35fc6d569d6b9c8fbbe86bfc55952a5bf20e55102",
+      "title": "UI 截图理解"
+    },
+    {
+      "acceptance_ids": [
+        "S08-01",
+        "S08-02",
+        "S08-03",
+        "S08-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "384ff7b6372a6525c375d33aaf1503bb9b6f353498e886e551096a883562ea18",
+      "contract_sha256": "cfc58acb66fcb61c8d4f61166a165a5f01fe99e97c1c0a3e3c7ea9aefae2ec56",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-image-ocr-and-preprocessing",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_diagram_and_architecture_understanding",
+      "installed_tree_sha256": "94728c758bfeaceaf8dc62fad3be4534fcd2b852994b9871dff8702d863530da",
+      "name": "elmos-diagram-and-architecture-understanding",
+      "ordinal": 8,
+      "phase": "content",
+      "skill_md_sha256": "f32f9008bea533fa7673c6a2d321e039af7f9e0c002599aaaab4e5d3050d9a05",
+      "title": "图表与架构图理解"
+    },
+    {
+      "acceptance_ids": [
+        "S09-01",
+        "S09-02",
+        "S09-03",
+        "S09-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "54a30e1823f229ebed4482ef20fbaddbcbfb72aae8107fddfa380418b68891f2",
+      "contract_sha256": "c3e6bfc9359783f268b06ba3930ac2995a758e1071d2dbb56e2fddb5b4aaa487",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-image-ocr-and-preprocessing",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_pdf_layout_table_parser",
+      "installed_tree_sha256": "77a319073ae2d0a1cfe0a655d9ad86f50158b7efc32ebe0fd0b2d126b5ce2d7c",
+      "name": "elmos-pdf-layout-table-parser",
+      "ordinal": 9,
+      "phase": "secure-intake",
+      "skill_md_sha256": "6463557b36005aa66af862cf91c1987890c8b399a572ee560bc0cc5bcd72cec7",
+      "title": "PDF 版面与表格解析"
+    },
+    {
+      "acceptance_ids": [
+        "S10-01",
+        "S10-02",
+        "S10-03",
+        "S10-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "77473d790b6b7db6c574a3d513de0b2a56f5c99f5d1c60f6620bac7e910434bf",
+      "contract_sha256": "7cea2972a88c7f25bc733c78dbb11b6f315fced7f728f6157aa11ac7056cbd5e",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-malware-quarantine-and-sandbox",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_word_document_parser",
+      "installed_tree_sha256": "b6d3585206294aa26afd0e13d3f4a675cc2b1184bf8c73cf091a4d0168ce3d65",
+      "name": "elmos-word-document-parser",
+      "ordinal": 10,
+      "phase": "secure-intake",
+      "skill_md_sha256": "59f51a183a114c40e274f12f5d6a2078d66a293a4b98d9893d89f21f75adf884",
+      "title": "Word 文档解析"
+    },
+    {
+      "acceptance_ids": [
+        "S11-01",
+        "S11-02",
+        "S11-03",
+        "S11-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "786c8a9ae413f8d1698ebb1c778bc2616b2cd9996043fe5f75dd1009fad8b7e7",
+      "contract_sha256": "207d5f683d62eea24e8f770d185eb08fe23616aacc4d611a5f2dbd64ac355959",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_markdown_text_log_parser",
+      "installed_tree_sha256": "ee0410bf64cda30b901aeb496ef02eb5721d28bbd4b7d3e8a67db7c66fd6ca09",
+      "name": "elmos-markdown-text-log-parser",
+      "ordinal": 11,
+      "phase": "secure-intake",
+      "skill_md_sha256": "a9ca779f9bfb96d6259159afc1e33eab4fb86eef0e21a97edb0e87383358a7c7",
+      "title": "Markdown、TXT 与日志解析"
+    },
+    {
+      "acceptance_ids": [
+        "S12-01",
+        "S12-02",
+        "S12-03",
+        "S12-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "d6d7a61fb8fb39931c9fe6768217f9e4112cd6b273d8b8c1c544bba26ed5b602",
+      "contract_sha256": "a8497f0282b0bb2a6d1aac4293e1fb97427b01c8da51fce2e50ccd545133d59c",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_unified_multimodal_content_ir",
+      "installed_tree_sha256": "665defcbd51a42ea09e3da82bed4b63cc89a4a6337c1fce9790cb955d2d6ab7d",
+      "name": "elmos-unified-multimodal-content-ir",
+      "ordinal": 12,
+      "phase": "normalization",
+      "skill_md_sha256": "61d2dbeafd3632bcaddde66724888bc786837b7f4a7f1013c95ab7fba4e50f4e",
+      "title": "统一多模态内容 IR"
+    },
+    {
+      "acceptance_ids": [
+        "S13-01",
+        "S13-02",
+        "S13-03",
+        "S13-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "316107a8ecd7e75473191e5b2a5984d56333a9cbfac8acad6d3137103a40f633",
+      "contract_sha256": "62c2921fefcdd7efd9fc51b4a1523c2253efca4a0bcd9f90e3652a4c662a9543",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-unified-multimodal-content-ir"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_source_anchor_and_provenance",
+      "installed_tree_sha256": "3560eab56a23344c0254e974edb66267b6c2d6485263d4b180effcb276f5c331",
+      "name": "elmos-source-anchor-and-provenance",
+      "ordinal": 13,
+      "phase": "normalization",
+      "skill_md_sha256": "259c64b30c4ddb09492e3ab26c58db14dd9754f6d47a4fedcbe58bdfdc99ca0f",
+      "title": "来源锚点与证据链"
+    },
+    {
+      "acceptance_ids": [
+        "S14-01",
+        "S14-02",
+        "S14-03",
+        "S14-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "32995df127d06726c64c09a1d446910d366870897bff2bb648eadae07f85631e",
+      "contract_sha256": "b309293191641c2eb6e10aeccb8c63a76cc3f5a3541bc892c06dae8e29fb0ed3",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance",
+        "elmos-multi-asset-content-fusion"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multimodal_requirement_extraction",
+      "installed_tree_sha256": "b638405a09afb238c8aec1af8d234cff52fc107b4ec663d247872bd1c97b17bb",
+      "name": "elmos-multimodal-requirement-extraction",
+      "ordinal": 14,
+      "phase": "content",
+      "skill_md_sha256": "d75776adca935c3aaddc8d66866eedb2378dbdebfb4ea1d01e7f843ea2e2665f",
+      "title": "多模态需求提取"
+    },
+    {
+      "acceptance_ids": [
+        "S15-01",
+        "S15-02",
+        "S15-03",
+        "S15-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "2cbe52b2e97b3e0246fec28a823953d5a0168a3840c2485d8d42cd48eab9591e",
+      "contract_sha256": "87b1e857324aacbad1954af7a438277138ecc47096e7ef0e03309edd86b7e410",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-unified-multimodal-content-ir",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multi_asset_content_fusion",
+      "installed_tree_sha256": "67fa819b9b4b9794963f6ca73b8f54d9b9aba02239d84ba68bed9d6328dee6c8",
+      "name": "elmos-multi-asset-content-fusion",
+      "ordinal": 15,
+      "phase": "content",
+      "skill_md_sha256": "33a7206818c42aee29c340bbfc02eb4d7a7ac3bbd189d0779e7bf816e3197d3c",
+      "title": "多资产内容融合"
+    },
+    {
+      "acceptance_ids": [
+        "S16-01",
+        "S16-02",
+        "S16-03",
+        "S16-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "9910e7246b3096f32ed6344b53f285096f39dfd27efbb768398b21bfcfcda29b",
+      "contract_sha256": "205e684c47109f5136ea7f920475f8913f7ecaaee6d87bf0479d6b767bdaaadf",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-multi-asset-content-fusion",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_document_version_and_conflict_detection",
+      "installed_tree_sha256": "6b2f0b09971c46e92f6cdf1ba1757fff769acaea26408fdee4efa649e022a811",
+      "name": "elmos-document-version-and-conflict-detection",
+      "ordinal": 16,
+      "phase": "content",
+      "skill_md_sha256": "e475d1ea867b5f17ac6c057477360093789eb729b430a9ca53467c908da223b3",
+      "title": "文档版本与冲突检测"
+    },
+    {
+      "acceptance_ids": [
+        "S17-01",
+        "S17-02",
+        "S17-03",
+        "S17-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "dd8ebe7a9902e5776877fdc9b45b92c1c61323c1b3ce42440181ec48534dafef",
+      "contract_sha256": "619c65c9ecd4d02afb40450eb8c242d10294c8deb08c9ccf4933b3191163f95a",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_human_review_and_correction",
+      "installed_tree_sha256": "e89d817cbcaa1e75fe4b2d42437960ed9630fa3e56b58b7fea543df0ca80ef6d",
+      "name": "elmos-human-review-and-correction",
+      "ordinal": 17,
+      "phase": "review",
+      "skill_md_sha256": "dc43719f3a2dd43f6cc783b92ea09788b84d2b687e396c35caded2ec57da5262",
+      "title": "人工审阅与纠错"
+    },
+    {
+      "acceptance_ids": [
+        "S18-01",
+        "S18-02",
+        "S18-03",
+        "S18-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "1031331d4f132e72ae28aa91964822e8812cf3296749f3ce940222b1efefd5ec",
+      "contract_sha256": "47bfe1ceaf0fdab8087dea542c795cd12313010f7d6189f2770187c331e10574",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance",
+        "elmos-downstream-agent-integration"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_prompt_injection_defense",
+      "installed_tree_sha256": "1e385ad82992f81f53628ff659a87702fbfed6fba91eaf407689d1496e33027b",
+      "name": "elmos-prompt-injection-defense",
+      "ordinal": 18,
+      "phase": "governance",
+      "skill_md_sha256": "3a2f8ba8d08d084085c424270f3ffc3ff9cb3b1942dc1ef444ed5ddb6ca28e8a",
+      "title": "多模态提示注入防护"
+    },
+    {
+      "acceptance_ids": [
+        "S19-01",
+        "S19-02",
+        "S19-03",
+        "S19-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "bdaf7ed7ef9f4d727b8c59f7f673ebe4ca8c7f4d2e6ed724535b432b9476d1b6",
+      "contract_sha256": "2939ab4b47b384462e9b55b7588e789b21d7b924057195e5c43cb8f48844a7d4",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_provider_routing_and_fallback",
+      "installed_tree_sha256": "a16fbcdd7f30243ab0b6585f514fc69e7b5b04b2551117fc21093406bb015363",
+      "name": "elmos-provider-routing-and-fallback",
+      "ordinal": 19,
+      "phase": "governance",
+      "skill_md_sha256": "0cf02ab3aafafab37b38dbf7872c2ced5a3a41e83b47bac7b21cffc4bd107aff",
+      "title": "解析与模型供应商路由"
+    },
+    {
+      "acceptance_ids": [
+        "S20-01",
+        "S20-02",
+        "S20-03",
+        "S20-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "e0f7900133f0e6bdc917cea29b90b2285de52db01d819581ba17e8f52f0b301e",
+      "contract_sha256": "faa14f8804c70ccf99ad91b032af28556aaa491955d8d83724fdc55c6666f12f",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-unified-multimodal-content-ir",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_storage_index_and_retrieval",
+      "installed_tree_sha256": "213867813a2f9674edbd342120fa2068c83e5baec480776d65e46bbfc0b12c03",
+      "name": "elmos-storage-index-and-retrieval",
+      "ordinal": 20,
+      "phase": "indexing",
+      "skill_md_sha256": "74503cd1b2d864d71c7edd926a5b5302ba717e9fbb51aea6314b4ed9a3fb4e88",
+      "title": "存储、索引与检索"
+    },
+    {
+      "acceptance_ids": [
+        "S21-01",
+        "S21-02",
+        "S21-03",
+        "S21-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "a61dd9ccd08172e36d1b6d69c2762281b250199c8962995fef537868e5c7a76c",
+      "contract_sha256": "830751a815922a7591a8251050e1815491c986d76be402cfc91580d7071fc961",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_durable_processing_and_recovery",
+      "installed_tree_sha256": "8d3451f204151470df5ceb7d47c01212534e72002cd3c5e062f19e97ba578f74",
+      "name": "elmos-durable-processing-and-recovery",
+      "ordinal": 21,
+      "phase": "governance",
+      "skill_md_sha256": "fe8046da66ac46711de909cde6ec4ef211b4a09163d5d22e5606ee665b784061",
+      "title": "持久任务执行与恢复"
+    },
+    {
+      "acceptance_ids": [
+        "S22-01",
+        "S22-02",
+        "S22-03",
+        "S22-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "396b52f50bca9595ad017cac07fad5317d82634e44c471f0d851bc70ddca8e4e",
+      "contract_sha256": "454dc4529e5c8fcd5aed3ff730d7dcd23150e48929eed28f7f36dc32fe5b5665",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-durable-processing-and-recovery",
+        "elmos-multimodal-observability"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_processing_cost_and_eta_estimation",
+      "installed_tree_sha256": "9fbe1d555e06c502602b243190bb34e2d6735ef897de77f8c75e1ae40a5f4d44",
+      "name": "elmos-processing-cost-and-eta-estimation",
+      "ordinal": 22,
+      "phase": "evaluation",
+      "skill_md_sha256": "323b505f3689c6b5ae35e2a2877acc04f80f19f08e253502f1eab3fca2ef89e6",
+      "title": "处理成本与机器 ETA"
+    },
+    {
+      "acceptance_ids": [
+        "S23-01",
+        "S23-02",
+        "S23-03",
+        "S23-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "ba836b997597c9cca13d26820f53815e64c8781f6a6babe2211b4bb4ec65ec98",
+      "contract_sha256": "fcf736053c72a9158d511c1ec0e7f8720553069e83ab4d680376c8bf25282afb",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multimodal_observability",
+      "installed_tree_sha256": "c59b85df7b38e0db106282537f8fc3707dfe1a3e4dfd33e8c41ecfa0b98c0e93",
+      "name": "elmos-multimodal-observability",
+      "ordinal": 23,
+      "phase": "evaluation",
+      "skill_md_sha256": "57a4ae6103c533c0bf1dc1c2e52bdd60373b67f7c576d6a582707f28b48288c2",
+      "title": "多模态可观测性"
+    },
+    {
+      "acceptance_ids": [
+        "S24-01",
+        "S24-02",
+        "S24-03",
+        "S24-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "f1ef8423c6a0056d7521648b6aaeac0dc1952a3630d39d5af449f2f78d9d7a69",
+      "contract_sha256": "ab935dd117800c15fbc6f930421d10d7a24370b032a6a8a879923f32f7fe24ea",
+      "deliverable_count": 3,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multimodal_evaluation_framework",
+      "installed_tree_sha256": "56d8f40c4c80589c3f7ed5d74d25f209b56d4e32a3a433e6c47ff0311cbccb7f",
+      "name": "elmos-multimodal-evaluation-framework",
+      "ordinal": 24,
+      "phase": "evaluation",
+      "skill_md_sha256": "886865beebcabbda9d978eaa1bb0ab1f128ca5004b6b38ad7f1d4a9320e23537",
+      "title": "多模态评测框架"
+    },
+    {
+      "acceptance_ids": [
+        "S25-01",
+        "S25-02",
+        "S25-03",
+        "S25-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "f8150019e5eea14bd7d30844f74ea5e6b9028b0559ec3ca2ad2ed49d44f668ef",
+      "contract_sha256": "555da5a04d57b65189b0600e49c7e29228dbee73efb898f14ec520cde20f8caa",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-ingestion-api-and-sdk",
+        "elmos-human-review-and-correction"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multimodal_input_workbench_ui",
+      "installed_tree_sha256": "c30dceb663583407495b86aa55f8a1a2ea0f2a94921d03a77f85cc5b7b5e01b0",
+      "name": "elmos-multimodal-input-workbench-ui",
+      "ordinal": 25,
+      "phase": "review",
+      "skill_md_sha256": "2f23ff564adcec591d005051faee66c6faed7e8b3985f694e1ace997eea2db82",
+      "title": "多模态输入工作台 UI"
+    },
+    {
+      "acceptance_ids": [
+        "S26-01",
+        "S26-02",
+        "S26-03",
+        "S26-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "cfecca863f8bb4da5068dd5b65f81edcbd760702fd46731ca61616657dd60771",
+      "contract_sha256": "bd3df9e1a20f4cc351e2fb1d39fcf708cc3eaf90dea056ca8969faeda7095bda",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-multimodal-input-orchestrator",
+        "elmos-secure-resumable-upload"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_ingestion_api_and_sdk",
+      "installed_tree_sha256": "9107bd780f07a4177f245d1724d04636540c286762632ecd3344b405dd7ec8b9",
+      "name": "elmos-ingestion-api-and-sdk",
+      "ordinal": 26,
+      "phase": "delivery",
+      "skill_md_sha256": "cc2eaafc55be53262855e0976307214d779a3793099e8aef1a9aa7d68d12ba57",
+      "title": "接入 API 与 SDK"
+    },
+    {
+      "acceptance_ids": [
+        "S27-01",
+        "S27-02",
+        "S27-03",
+        "S27-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "4674e950e5d8ca51d79b13cd47e788977fbd7fb61e361d16cc550767447e3774",
+      "contract_sha256": "29875261be12c2253af438d7d105b306ddf93e47db6d95853aac16796c01cfd5",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-storage-index-and-retrieval"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_data_retention_and_governance",
+      "installed_tree_sha256": "f4df1ccf0ee28e118ceb3b1de0fee2b0b1ef993a77d7294fe8bc906aaf044474",
+      "name": "elmos-data-retention-and-governance",
+      "ordinal": 27,
+      "phase": "governance",
+      "skill_md_sha256": "124fe26b52d2b06c37e2e0dc49abff8f030d43bda8ed079181f3da0c7db7c765",
+      "title": "数据保留与治理"
+    },
+    {
+      "acceptance_ids": [
+        "S28-01",
+        "S28-02",
+        "S28-03",
+        "S28-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "31e03e6c9f8afd5fffab12679d261227f3fcaa8edca9a909b20fed7ecee6855d",
+      "contract_sha256": "5a9762357ccb02318f5adfd48782f12c593eab2656d0bc74e08f0c31238223dc",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-prompt-injection-defense",
+        "elmos-context-budget-manager",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_downstream_agent_integration",
+      "installed_tree_sha256": "9c0a8e3f13b384e2148b4c6675096e044a4155e2a9d18672ca6f5772156b1cbc",
+      "name": "elmos-downstream-agent-integration",
+      "ordinal": 28,
+      "phase": "delivery",
+      "skill_md_sha256": "edd791e0151cdbb11ef98a262629577e67a81206db88fa2c0d954f4d25c92af9",
+      "title": "下游 Agent 集成"
+    },
+    {
+      "acceptance_ids": [
+        "S29-01",
+        "S29-02",
+        "S29-03",
+        "S29-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "8f891baee2b8c11fc4d4cf8517ed6ab2a0fb81d70278715494814752dc787f31",
+      "contract_sha256": "a92bce277fffc7bfd2d0b416f4ec918defb60828df1cc48275fafd4caf46dbff",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-model-capability-discovery",
+        "elmos-context-budget-manager"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_codex_context_capacity_parity",
+      "installed_tree_sha256": "efce955beb724bd15936da6c61d3309a1bdbf942d88d810d4062be1cf97acb3f",
+      "name": "elmos-codex-context-capacity-parity",
+      "ordinal": 29,
+      "phase": "context",
+      "skill_md_sha256": "e47ce6b554c96c469c7ca25486cc30c6ec70205ae6a14391ad09e6c843e482c0",
+      "title": "Codex 同级上下文容量"
+    },
+    {
+      "acceptance_ids": [
+        "S30-01",
+        "S30-02",
+        "S30-03",
+        "S30-04"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "d1678db269c44088494c529200a742b04df06ecddd3a311d0f568975de1eec00",
+      "contract_sha256": "bfdbabf12c16716873207643a414293c577f8ee475ea3c44c3481fa43d9b1ab6",
+      "deliverable_count": 3,
+      "dependencies": [
+        "elmos-model-capability-discovery",
+        "elmos-multimodal-token-accounting"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_context_budget_manager",
+      "installed_tree_sha256": "5a161a7ab53683802123a6e752541d528b2a3dc6622ea5b74b81da776fe21b87",
+      "name": "elmos-context-budget-manager",
+      "ordinal": 30,
+      "phase": "context",
+      "skill_md_sha256": "14428b8f21f200a579a19bcc62dddc313504bf714e68e5fe6c5cdeb3254a4790",
+      "title": "上下文预算管理器"
+    },
+    {
+      "acceptance_ids": [
+        "S31-01",
+        "S31-02",
+        "S31-03",
+        "S31-04",
+        "S31-05",
+        "S31-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "540c3dd280199f3674fd2fce3ed68ea05d4d01ed410cda0034ddb24aae916879",
+      "contract_sha256": "83e6edad5bc3a84c871f9e51f8619859b39c22b30bc2cbf0e15d9da394ecce1e",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-context-budget-manager",
+        "elmos-model-capability-discovery"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_multimodal_token_accounting",
+      "installed_tree_sha256": "822c6a51131a37f795f981887a232b39b5af786295cd6863b181f2848e7def87",
+      "name": "elmos-multimodal-token-accounting",
+      "ordinal": 31,
+      "phase": "context",
+      "skill_md_sha256": "988d3af3568e3a5cdafc4036ac140dc3cb6b008e793bf2f2a023b1d89ab1ef27",
+      "title": "多模态 Token 计量"
+    },
+    {
+      "acceptance_ids": [
+        "S32-01",
+        "S32-02",
+        "S32-03",
+        "S32-04",
+        "S32-05",
+        "S32-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "4ab2523204e343440e2cefefd753613bf9b2d4398d85f3c5a2581ffc6619499a",
+      "contract_sha256": "0803136c67aab71cf6f9430dd684b6a4cab4056d63812e872d0e34b535c19a23",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-context-budget-manager",
+        "elmos-multimodal-token-accounting",
+        "elmos-source-anchor-and-provenance",
+        "elmos-repository-context-map"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_long_context_packing_and_ranking",
+      "installed_tree_sha256": "f5bb98d52e5f37a331d4bd8455a8469a2d6889a228d0efe750bd8e96a70df26d",
+      "name": "elmos-long-context-packing-and-ranking",
+      "ordinal": 32,
+      "phase": "context",
+      "skill_md_sha256": "880833e3f0ac2439037fe4c385dc92b7f4eaf0943673b5f2b9df22bd3b8711d4",
+      "title": "长上下文装箱与排序"
+    },
+    {
+      "acceptance_ids": [
+        "S33-01",
+        "S33-02",
+        "S33-03",
+        "S33-04",
+        "S33-05",
+        "S33-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "0be6e1378fa041cfbbfb71448ac0e7dfd51c2df23ae473d8e510431a9fb4f140",
+      "contract_sha256": "c1ae8cfbd72eb6fd58d6694bdb5b8cdda01023416642148a128bf94da0397a4f",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-context-budget-manager",
+        "elmos-multimodal-token-accounting",
+        "elmos-structured-context-compaction"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_context_pressure_monitor",
+      "installed_tree_sha256": "ec975ba9baa9213d579ddf98d18e37999f920e9a30924295c4f3cd1a9a7a3c8c",
+      "name": "elmos-context-pressure-monitor",
+      "ordinal": 33,
+      "phase": "context",
+      "skill_md_sha256": "65838ec56878f56b17c8981036b03aa0317b6701628231a144c1c254ff8ed4db",
+      "title": "上下文压力监控"
+    },
+    {
+      "acceptance_ids": [
+        "S34-01",
+        "S34-02",
+        "S34-03",
+        "S34-04",
+        "S34-05",
+        "S34-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "fe912f5564ab01379198777581a405776fb6f8c8303ca06c4f00edb5cc07ed0c",
+      "contract_sha256": "86edb88206fa6b431626560f8833c766473b4c79a660177efdd3ec36047fcb55",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-context-pressure-monitor",
+        "elmos-source-anchor-and-provenance",
+        "elmos-context-integrity-and-loss-detection"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_structured_context_compaction",
+      "installed_tree_sha256": "aa8285fa7bda1eb524a27e76fcdec661788d690012745d73c8320e4afe1ff969",
+      "name": "elmos-structured-context-compaction",
+      "ordinal": 34,
+      "phase": "context",
+      "skill_md_sha256": "05399235e11a2bd56a7975f456f94944ea8a07fb08a91eebdc145e8103ac66ce",
+      "title": "结构化上下文压缩"
+    },
+    {
+      "acceptance_ids": [
+        "S35-01",
+        "S35-02",
+        "S35-03",
+        "S35-04",
+        "S35-05",
+        "S35-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "cf3bceb5e88abdcb1555e7485b7435e72f7b662628224c068dc89ea4b5c562f8",
+      "contract_sha256": "17e255876a3eb5a2fbc976932e9ef0e02906275b60903dbc253dd09dcc60b6d9",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-durable-processing-and-recovery",
+        "elmos-structured-context-compaction",
+        "elmos-context-integrity-and-loss-detection"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_context_checkpoint_and_recovery",
+      "installed_tree_sha256": "a6c1f467ff5da8870b69b6a37b20f07f4cafdd09ca705071d98a3c8fcea5e1d3",
+      "name": "elmos-context-checkpoint-and-recovery",
+      "ordinal": 35,
+      "phase": "context",
+      "skill_md_sha256": "026005f42281ceca0b1bce5a8c3afd7c556ce0234150955e63ac8a1336d7bfa5",
+      "title": "上下文检查点与恢复"
+    },
+    {
+      "acceptance_ids": [
+        "S36-01",
+        "S36-02",
+        "S36-03",
+        "S36-04",
+        "S36-05",
+        "S36-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "9489ba4abbf2dd67697939f8d5ee6300d9deaae0c00581b5492be6f55d9b9e2f",
+      "contract_sha256": "765b116d4c4b9e51363e021ef6a75187e785668e527be58b503f89cb30d64aae",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance",
+        "elmos-storage-index-and-retrieval",
+        "elmos-long-context-packing-and-ranking",
+        "elmos-context-checkpoint-and-recovery"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_context_rehydration",
+      "installed_tree_sha256": "e900ac3d37b1fd68f7c5cc84c6837d1277f8a5fe47e39af79d72416e7e67c16e",
+      "name": "elmos-context-rehydration",
+      "ordinal": 36,
+      "phase": "context",
+      "skill_md_sha256": "b2a1fdb5b604a42a97b982a33f940e4ccb7b33cdea21309bcfc8584808472070",
+      "title": "上下文重新水化"
+    },
+    {
+      "acceptance_ids": [
+        "S37-01",
+        "S37-02",
+        "S37-03",
+        "S37-04",
+        "S37-05",
+        "S37-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "96b812a7f1716f55fbfe04f1f9f3cd8aaaa03ed0640e3243d82a89f14d20922e",
+      "contract_sha256": "9ba76c8a380debc7c40c60fb1574de0beeccbc65ca40d0e24dbc59dfb5763e5d",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-storage-index-and-retrieval",
+        "elmos-source-anchor-and-provenance",
+        "elmos-data-retention-and-governance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_project_memory_and_retrieval",
+      "installed_tree_sha256": "a619bee8b5f75cc4e657be2f7d8bafa8612dfa3f9e2fa2d7a478b1448c01b6e6",
+      "name": "elmos-project-memory-and-retrieval",
+      "ordinal": 37,
+      "phase": "context",
+      "skill_md_sha256": "36456025a937cf7b05a8328c473a2506110823626820da0e3cde9236f64d952b",
+      "title": "项目长期记忆与检索"
+    },
+    {
+      "acceptance_ids": [
+        "S38-01",
+        "S38-02",
+        "S38-03",
+        "S38-04",
+        "S38-05",
+        "S38-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "680cbabfd92d7befc8b79626fb7e6b3cf45e2aaf52ff7d21eea26a0b4ba40d00",
+      "contract_sha256": "d0fbe357a7e75d2b4108613a2f84f4ab4c593ec66c67ea3375acfa95104fe0bd",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance",
+        "elmos-storage-index-and-retrieval"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_repository_context_map",
+      "installed_tree_sha256": "de135ef95afc16d2113c1bcb484dbefc0b8ce7c4bb49113123b2d9d4fcd3e159",
+      "name": "elmos-repository-context-map",
+      "ordinal": 38,
+      "phase": "indexing",
+      "skill_md_sha256": "ae2479864dbd96fc93b00c7fd86ad3d5498958d978737eaa722f57c135e7e497",
+      "title": "仓库上下文地图"
+    },
+    {
+      "acceptance_ids": [
+        "S39-01",
+        "S39-02",
+        "S39-03",
+        "S39-04",
+        "S39-05",
+        "S39-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "7b1a96700cb30e7589cdb02cb24b2ef371133bea678c1f4a65b01e3016f11202",
+      "contract_sha256": "f7d86fd77b929b3988bbb579a4bb49cc19de8cd25ec34d8d6d6eb57733f0d003",
+      "deliverable_count": 4,
+      "dependencies": [],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_model_capability_discovery",
+      "installed_tree_sha256": "f5765ef5ffd3b9e4b528206cb9bb3d2305f66576d0376d7058888e03b451c51f",
+      "name": "elmos-model-capability-discovery",
+      "ordinal": 39,
+      "phase": "context",
+      "skill_md_sha256": "acb8795b2c2318c5721d4bc8138de4bbdaf3b3e08e16f1a01c8d5e266d2f1467",
+      "title": "模型能力发现与注册"
+    },
+    {
+      "acceptance_ids": [
+        "S40-01",
+        "S40-02",
+        "S40-03",
+        "S40-04",
+        "S40-05",
+        "S40-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "db0b68b31365e4d1e698727719ef90b476708f177e8747a290b6f47bc89be47b",
+      "contract_sha256": "725b4480ab0c27002c70a7a958484c59a117ab70dd6c539a833d6e4ba08eefec",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-source-anchor-and-provenance",
+        "elmos-context-checkpoint-and-recovery"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_context_integrity_and_loss_detection",
+      "installed_tree_sha256": "dddd347b336ac2e8116d86318630c1b7b51a0b70a63f5bd97ee01fb4410c4b4d",
+      "name": "elmos-context-integrity-and-loss-detection",
+      "ordinal": 40,
+      "phase": "context",
+      "skill_md_sha256": "57aa8bacc77291af17d96873e5adec41c5633ed83e6d0bdeccfc39d630abfa7f",
+      "title": "上下文完整性与丢失检测"
+    },
+    {
+      "acceptance_ids": [
+        "S41-01",
+        "S41-02",
+        "S41-03",
+        "S41-04",
+        "S41-05",
+        "S41-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "377c678751c057021ee0e9ff8b50676b703d4247bcd9093ff69766cb0fbf3e60",
+      "contract_sha256": "5a92fad1add7cbe07d8ae61ac6deb961eaf62ecc3dea458a967065042c7dfd6f",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-multimodal-input-orchestrator",
+        "elmos-secure-resumable-upload",
+        "elmos-project-package-manifest"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_folder_tree_input",
+      "installed_tree_sha256": "01701f2602abac7de7abc518e20314789b3657760581e33ca458769b187c53da",
+      "name": "elmos-folder-tree-input",
+      "ordinal": 41,
+      "phase": "project-package",
+      "skill_md_sha256": "d9ec1e32abd3a58a572a5e3ca84c3c252fa34a033fae94a496ca8d448a2e7b50",
+      "title": "文件夹树输入"
+    },
+    {
+      "acceptance_ids": [
+        "S42-01",
+        "S42-02",
+        "S42-03",
+        "S42-04",
+        "S42-05",
+        "S42-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "4c34f60f1ec6aa6452f2b6cf1b5afd38206e87054f1046a47e0ffd9ed5d7a9c4",
+      "contract_sha256": "da6c01e7b739a1ff898d769e7347ebb1d67def154635c9dd8d650a82dd0f755c",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-secure-resumable-upload",
+        "elmos-folder-tree-input"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_resumable_multi_file_folder_upload",
+      "installed_tree_sha256": "36cd127b2f7df7e0903a6f118aabf69bb0848458cf699f2e17dd1bcc682dd1dd",
+      "name": "elmos-resumable-multi-file-folder-upload",
+      "ordinal": 42,
+      "phase": "project-package",
+      "skill_md_sha256": "ccb7656cadf08413ed387efd6dd46ab0a3dfe23260991a193399d26776f06d62",
+      "title": "多文件夹断点续传"
+    },
+    {
+      "acceptance_ids": [
+        "S43-01",
+        "S43-02",
+        "S43-03",
+        "S43-04",
+        "S43-05",
+        "S43-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "10408e52728c9f8048b119883125479db6a65a45c2113cd9ff83587d4dd890b3",
+      "contract_sha256": "92f7be6a91871ff955ace51987fa337fe0b58b1b4b9da04587590c52d4249cbe",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-file-type-detection-and-validation",
+        "elmos-source-anchor-and-provenance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_project_package_manifest",
+      "installed_tree_sha256": "33bd620a53852b3d600ffa9b61fe3e744e7c4736029574c909ac345a381d2b2d",
+      "name": "elmos-project-package-manifest",
+      "ordinal": 43,
+      "phase": "project-package",
+      "skill_md_sha256": "04d10e4a45a91bfb24a021547e921cc6039d7a0b487fd731d5cca4430d7369d9",
+      "title": "项目包清单"
+    },
+    {
+      "acceptance_ids": [
+        "S44-01",
+        "S44-02",
+        "S44-03",
+        "S44-04",
+        "S44-05",
+        "S44-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "7d320ab23948081087edb776200396f921a37b0b1fdc2f4067f8fb45e6a503cb",
+      "contract_sha256": "742a7d76627ec13d268dc627180faad03c4c464c153e744f847d1cd281ea1761",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-malware-quarantine-and-sandbox",
+        "elmos-archive-bomb-and-path-traversal-defense",
+        "elmos-project-package-manifest"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_secure_zip_tar_extraction",
+      "installed_tree_sha256": "5fce2aa0a68470cf5a6ff9da214ea56d8fc4f63e347140c6a99bc1c816499fe3",
+      "name": "elmos-secure-zip-tar-extraction",
+      "ordinal": 44,
+      "phase": "project-package",
+      "skill_md_sha256": "34669cbfb19dcdafd53474bb97311cd751ce2e3ea4a19d4e5079399e45eea026",
+      "title": "安全 ZIP/TAR 解压"
+    },
+    {
+      "acceptance_ids": [
+        "S45-01",
+        "S45-02",
+        "S45-03",
+        "S45-04",
+        "S45-05",
+        "S45-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "a38a5cb734905aa0f0c29d57424ef9942bc135d94faade4d987693b79091ae44",
+      "contract_sha256": "b8502509eff7f4b3c9bf0caa8561003a290d8cd856d8811b4aee2c51a84c2205",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-file-type-detection-and-validation",
+        "elmos-malware-quarantine-and-sandbox"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_archive_bomb_and_path_traversal_defense",
+      "installed_tree_sha256": "90f59a177552843641c3823044b57fdf68e619cfd52d65c258cf8c4bde45e14d",
+      "name": "elmos-archive-bomb-and-path-traversal-defense",
+      "ordinal": 45,
+      "phase": "secure-intake",
+      "skill_md_sha256": "106b43fcb49faef97d3babdc3cd5b82c9dfbf009ed6233278df8b05f3b317e62",
+      "title": "归档炸弹与路径穿越防御"
+    },
+    {
+      "acceptance_ids": [
+        "S46-01",
+        "S46-02",
+        "S46-03",
+        "S46-04",
+        "S46-05",
+        "S46-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "052164cd1e7dbfb52231030c72eebd02b931a535148a994003d75a3dc694fea0",
+      "contract_sha256": "af98c2801f203eff43c751eba060f5e6e549fb052977e5ed6ef78c99071525d5",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-project-package-manifest",
+        "elmos-ignore-generated-vendored-file-classification"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_project_root_language_framework_detection",
+      "installed_tree_sha256": "f06a6d2421c5e329d56e1447137939ebf6d35f0205e9380c31712775251740da",
+      "name": "elmos-project-root-language-framework-detection",
+      "ordinal": 46,
+      "phase": "project-package",
+      "skill_md_sha256": "9cf233254a36eab451a25392af7aa48908c4286ec9ebd7ac6e06ff6ff73d3e77",
+      "title": "项目根、语言与框架识别"
+    },
+    {
+      "acceptance_ids": [
+        "S47-01",
+        "S47-02",
+        "S47-03",
+        "S47-04",
+        "S47-05",
+        "S47-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "b2d66d49c3042d2a80f9c87b76030c9979847a0b0b95438f62499321e29df843",
+      "contract_sha256": "020cda71206d71a5388dcbefbf0c15762297f66ac4a152955715673aee83f020",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-project-package-manifest",
+        "elmos-data-retention-and-governance"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_ignore_generated_vendored_file_classification",
+      "installed_tree_sha256": "5c404775ad373504959543a3c0a20d1fa85af5ef40102557d89cd55e745683e9",
+      "name": "elmos-ignore-generated-vendored-file-classification",
+      "ordinal": 47,
+      "phase": "project-package",
+      "skill_md_sha256": "492d42006230c6c863a3ca2058ee3a7ee6dc93cc26da8ca4fa47381ac5189e5c",
+      "title": "忽略、生成与第三方文件分类"
+    },
+    {
+      "acceptance_ids": [
+        "S48-01",
+        "S48-02",
+        "S48-03",
+        "S48-04",
+        "S48-05",
+        "S48-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "1b7b25dbb90ffdcfeab6c278d8c9750b01e2e8ddda391e2cb6a9aa3f61ea5765",
+      "contract_sha256": "bab9d413001d9678e8bc4f3b5ee203d6a1b1af7764b9dc54d4e214c11ce4d4fb",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-project-root-language-framework-detection",
+        "elmos-ignore-generated-vendored-file-classification",
+        "elmos-repository-context-map"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_repository_map_and_symbol_indexing",
+      "installed_tree_sha256": "6fb8146040b3ee69cbb4cf67798c9c074e3e7111fc88bdf8bd03a216b81c6b8c",
+      "name": "elmos-repository-map-and-symbol-indexing",
+      "ordinal": 48,
+      "phase": "indexing",
+      "skill_md_sha256": "33d1d772cca1d6e7a0a030b687db8f9c507fb45b294b0afc75ac0dbdb199b09e",
+      "title": "仓库地图与符号索引"
+    },
+    {
+      "acceptance_ids": [
+        "S49-01",
+        "S49-02",
+        "S49-03",
+        "S49-04",
+        "S49-05",
+        "S49-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "d2a80f721f6bd6e81eb45eaaa54316547c3987c7271d1ef6741e90d7c34f7075",
+      "contract_sha256": "a9d826d42438a62d71eb59a40e2118eb0ec76de758d65608c86ee99851f1570b",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-project-package-manifest",
+        "elmos-repository-map-and-symbol-indexing",
+        "elmos-project-memory-and-retrieval"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_project_package_version_and_incremental_update",
+      "installed_tree_sha256": "d11b97cf236e64e37d4cc7ea3cad793a37a4a5e06164c478533c6e34d7ae069a",
+      "name": "elmos-project-package-version-and-incremental-update",
+      "ordinal": 49,
+      "phase": "project-package",
+      "skill_md_sha256": "b0fdbdfaf69461ad15fe573feafc480f1373898626a59841bfcfb54e8b234328",
+      "title": "项目包版本与增量更新"
+    },
+    {
+      "acceptance_ids": [
+        "S50-01",
+        "S50-02",
+        "S50-03",
+        "S50-04",
+        "S50-05",
+        "S50-06"
+      ],
+      "acceptance_status": "NOT_RUN",
+      "certification_status": "NOT_CERTIFIED",
+      "compiled_contract_sha256": "b3ee558f46a80036d5302e67fcd1ddeb2905ce5e2bbeed285f612d33b38b3b65",
+      "contract_sha256": "c6f7c09fe1dfa2abab5b8b2e2a7bb444fb5241ef60514064e263d8e7bf54a845",
+      "deliverable_count": 4,
+      "dependencies": [
+        "elmos-multimodal-input-workbench-ui",
+        "elmos-project-package-manifest",
+        "elmos-project-root-language-framework-detection",
+        "elmos-ignore-generated-vendored-file-classification"
+      ],
+      "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+      "engine_sha256": "61277e83901571999c5db2129facc753766ff637a1ffecc4feac7ec375a24f1c",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "execute_project_package_preview_and_review_ui",
+      "installed_tree_sha256": "e4c28690bf28471e68fa5dade9bbaeb0187c311cafc3bd3f4f8942251fc65193",
+      "name": "elmos-project-package-preview-and-review-ui",
+      "ordinal": 50,
+      "phase": "review",
+      "skill_md_sha256": "ba6b33c43aaf1a0adfd735a5bb6f1a650c8599f7ad9b6516c67a15691b869471",
+      "title": "项目包预览与审查界面"
+    }
+  ]
+}

@@ -7,9 +7,15 @@ from pathlib import Path
 import pytest
 
 from elmos_polyglot_route.engine import migrate
-from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
-from elmos_polyglot_route.native import analyze
+from elmos_polyglot_route.identifier_hygiene import repository_work_unit_namespace
+from elmos_polyglot_route.models import (
+    REPOSITORY_SURFACE_LANGUAGES,
+    SUPPORTED_LANGUAGES,
+    Language,
+    RouteError,
+)
 from elmos_polyglot_route.repository import plan_repository
+from elmos_polyglot_route.source_analyzer import analyze
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTENSIONS = {
@@ -23,6 +29,10 @@ EXTENSIONS = {
     "cpp": "cpp",
     "objc": "m",
     "swift": "swift",
+    "php": "php",
+    "kotlin": "kt",
+    "react": "tsx",
+    "flutter": "dart",
 }
 FILES = {
     "java": "Pricing",
@@ -35,11 +45,27 @@ FILES = {
     "cpp": "pricing",
     "objc": "pricing",
     "swift": "pricing",
+    "php": "pricing",
+    "kotlin": "pricing",
+    "react": "pricing",
+    "flutter": "pricing",
 }
 
 
+def test_route_fixture_catalog_covers_the_complete_repository_surface() -> None:
+    assert set(EXTENSIONS) == set(FILES) == set(REPOSITORY_SURFACE_LANGUAGES)
+    for language in REPOSITORY_SURFACE_LANGUAGES:
+        assert (ROOT / "fixtures" / language / f"{FILES[language]}.{EXTENSIONS[language]}").is_file()
+        assert (
+            ROOT / "fixtures" / "holdout" / language / f"clamp.{EXTENSIONS[language]}"
+        ).is_file()
+        assert (
+            ROOT / "fixtures" / "representative" / language / f"difference.{EXTENSIONS[language]}"
+        ).is_file()
+
+
 @pytest.mark.parametrize("language", REPOSITORY_SURFACE_LANGUAGES)
-def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language) -> None:
+def test_source_analyzers_emit_the_same_typed_semantic_slice(language: Language) -> None:
     source = ROOT / "fixtures" / language / f"{FILES[language]}.{EXTENSIONS[language]}"
     semantic = analyze(source, language, "calculate")
     function = semantic.functions[0]
@@ -53,9 +79,9 @@ def test_native_analyzers_emit_the_same_typed_semantic_slice(language: Language)
     ("source_language", "target_language"),
     [
         (source, target)
-        for source in REPOSITORY_SURFACE_LANGUAGES
-        for target in REPOSITORY_SURFACE_LANGUAGES
-        if source != target and {source, target} != {"javascript", "typescript"}
+        for source in SUPPORTED_LANGUAGES
+        for target in SUPPORTED_LANGUAGES
+        if source != target
     ],
 )
 def test_every_repository_direction_compiles_and_matches_behavior(
@@ -65,6 +91,7 @@ def test_every_repository_direction_compiles_and_matches_behavior(
 ) -> None:
     source = ROOT / "fixtures" / source_language / f"{FILES[source_language]}.{EXTENSIONS[source_language]}"
     output = tmp_path / f"{source_language}-to-{target_language}"
+    source_sha256 = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
     report = migrate(
         source,
         source_language,
@@ -73,6 +100,14 @@ def test_every_repository_direction_compiles_and_matches_behavior(
         ROOT / "fixtures" / "behavior-cases.json",
         output,
         repository_execution_mode=True,
+        identifier_unit_namespace=repository_work_unit_namespace(
+            repository_snapshot_sha256="sha256:" + hashlib.sha256(
+                f"fixture:{source_language}:{target_language}".encode()
+            ).hexdigest(),
+            work_unit_id="WU-00001",
+            source_logical_path=source.name,
+            source_sha256=source_sha256,
+        ),
     )
     assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["behavior_pass_rate"] == 1.0
@@ -94,9 +129,9 @@ def test_every_repository_direction_compiles_and_matches_behavior(
     ("source_language", "target_language"),
     [
         (source, target)
-        for source in REPOSITORY_SURFACE_LANGUAGES
-        for target in REPOSITORY_SURFACE_LANGUAGES
-        if source != target and {source, target} != {"javascript", "typescript"}
+        for source in SUPPORTED_LANGUAGES
+        for target in SUPPORTED_LANGUAGES
+        if source != target
     ],
 )
 def test_independent_corpora_compile_and_match_behavior(
@@ -109,6 +144,7 @@ def test_independent_corpora_compile_and_match_behavior(
 ) -> None:
     source_base = file_name if source_language in {"java", "csharp"} else file_name.lower()
     source = ROOT / "fixtures" / corpus / source_language / f"{source_base}.{EXTENSIONS[source_language]}"
+    source_sha256 = "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest()
     report = migrate(
         source,
         source_language,
@@ -117,6 +153,14 @@ def test_independent_corpora_compile_and_match_behavior(
         ROOT / "fixtures" / corpus / "cases.json",
         tmp_path / corpus / f"{source_language}-to-{target_language}",
         repository_execution_mode=True,
+        identifier_unit_namespace=repository_work_unit_namespace(
+            repository_snapshot_sha256="sha256:" + hashlib.sha256(
+                f"{corpus}:{source_language}:{target_language}".encode()
+            ).hexdigest(),
+            work_unit_id="WU-00001",
+            source_logical_path=source.name,
+            source_sha256=source_sha256,
+        ),
     )
     assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
     assert report["behavior_case_count"] == 3
@@ -126,7 +170,7 @@ def test_independent_corpora_compile_and_match_behavior(
     ("source_language", "target_language"),
     [("javascript", "typescript"), ("typescript", "javascript")],
 )
-def test_javascript_typescript_repository_route_uses_finite_number_transport_contract(
+def test_deprecated_javascript_cannot_enter_live_repository_execution_mode(
     tmp_path: Path,
     source_language: Language,
     target_language: Language,
@@ -158,24 +202,18 @@ def test_javascript_typescript_repository_route_uses_finite_number_transport_con
     )
     output = tmp_path / "output"
 
-    report = migrate(
-        source,
-        source_language,
-        target_language,
-        "identity",
-        cases,
-        output,
-        repository_execution_mode=True,
-    )
+    with pytest.raises(RouteError, match="^DEPRECATED_REPLAY_LIFECYCLE_REQUIRED$"):
+        migrate(
+            source,
+            source_language,
+            target_language,
+            "identity",
+            cases,
+            output,
+            repository_execution_mode=True,
+        )
 
-    assert report["status"] == "PASSED_LOCAL_UNCERTIFIED"
-    assert report["behavior_pass_rate"] == 1.0
-    assert report["behavior_equivalence"]["status"] == "PASSED"
-    assert [observation["raw"] for observation in report["validation"]["observations"]] == [
-        "8000000000000000",
-        "7fefffffffffffff",
-        "0000000000000001",
-    ]
+    assert not output.exists()
 
 
 def test_unsupported_python_side_effect_fails_closed(tmp_path: Path) -> None:

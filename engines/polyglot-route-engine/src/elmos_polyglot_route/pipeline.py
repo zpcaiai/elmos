@@ -30,7 +30,7 @@ from .assembly import (
 )
 from .batch import run_batch
 from .discovery import discover_repository
-from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
+from .models import REPOSITORY_SURFACE_LANGUAGES, SUPPORTED_LANGUAGES, Language, RouteError
 from .project_graph import build_project_graph, verify_project_graph
 from .repository import plan_repository
 
@@ -404,6 +404,61 @@ def _project_graph_summary(graph: dict[str, object]) -> dict[str, Any]:
         "excluded_status": "NOT_RUN" if excluded_count else "PASSED",
         "verification_status": "PASSED",
     }
+
+
+def _neutral_project_snapshot(graph: dict[str, object]) -> str:
+    """Bind invocation-time repository bytes without contextual language labels.
+
+    React discovery legitimately reclassifies project-local ``.ts`` files from
+    TypeScript to React.  Comparing the graph's own snapshot across that
+    boundary would therefore report a false drift, while taking the
+    post-discovery graph as the baseline would let changes during compiler
+    discovery disappear into a new snapshot.  This identity includes every
+    scanned file and excluded entry, but intentionally omits semantic labels
+    and discovery-derived attributes.
+    """
+
+    _project_graph_summary(graph)
+    nodes = graph.get("nodes")
+    inventory = graph.get("inventory")
+    if not isinstance(nodes, list) or not isinstance(inventory, dict):
+        raise RouteError("PROJECT_GRAPH_NEUTRAL_SNAPSHOT_INVALID")
+    files: list[list[object]] = []
+    seen: set[str] = set()
+    for node in nodes:
+        if not isinstance(node, dict) or node.get("kind") != "file":
+            continue
+        path = node.get("path")
+        attributes = node.get("attributes")
+        if not isinstance(path, str) or not isinstance(attributes, dict) or path in seen:
+            raise RouteError("PROJECT_GRAPH_NEUTRAL_SNAPSHOT_INVALID")
+        seen.add(path)
+        files.append(
+            [
+                path,
+                attributes.get("role"),
+                attributes.get("sha256"),
+                attributes.get("byte_count"),
+                attributes.get("read_status"),
+            ]
+        )
+    excluded = inventory.get("excluded_entries")
+    if not isinstance(excluded, list):
+        raise RouteError("PROJECT_GRAPH_NEUTRAL_SNAPSHOT_INVALID")
+    excluded_identity: list[list[object]] = []
+    for entry in excluded:
+        if not isinstance(entry, dict):
+            raise RouteError("PROJECT_GRAPH_NEUTRAL_SNAPSHOT_INVALID")
+        excluded_identity.append(
+            [entry.get("path"), entry.get("reason"), entry.get("verification_status")]
+        )
+    payload = {
+        "files": sorted(files, key=lambda item: str(item[0])),
+        "excluded_entries": sorted(excluded_identity, key=lambda item: str(item[0])),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
 
 
 def _write_and_verify_project_graph(output: Path, graph: dict[str, object]) -> dict[str, Any]:
@@ -817,7 +872,7 @@ def _run_repository_pipeline_attempt(
     recomputed from the read-only source on every invocation so source drift is
     detected before prior work is reused.
     """
-    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
+    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -833,14 +888,28 @@ def _run_repository_pipeline_attempt(
     if cases_directory.is_symlink() or not cases.is_dir():
         raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
 
-    project_graph = build_project_graph(root, repository_ref)
-    initial_graph_summary = _project_graph_summary(project_graph)
-
+    invocation_graph = build_project_graph(root, repository_ref)
+    invocation_snapshot = _neutral_project_snapshot(invocation_graph)
     plan = plan_repository(root, repository_ref, source_language, target_language)
+    discovery: dict[str, Any] | None = None
+    if source_language == "react":
+        # React's repository identity is project-contextual: an exact React
+        # project may contain both .tsx and .ts helpers, and its package and
+        # tsconfig bytes are part of repository completeness.  The compiler-
+        # backed discovery receipt is therefore required before the graph can
+        # classify those .ts files as React or close the two descriptors.
+        discovery = discover_repository(plan, root)
+        project_graph = build_project_graph(root, repository_ref, discovery)
+        if _neutral_project_snapshot(project_graph) != invocation_snapshot:
+            raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
+    else:
+        project_graph = invocation_graph
+    initial_graph_summary = _project_graph_summary(project_graph)
     _bind_project_graph_to_plan(project_graph, plan)
     _write_json(output / "repository-route-plan.json", plan)
 
-    discovery = discover_repository(plan, root)
+    if discovery is None:
+        discovery = discover_repository(plan, root)
     _write_json(output / "repository-discovery-report.json", discovery)
 
     batch_output = _owned_directory(output, "batch")
@@ -856,7 +925,16 @@ def _run_repository_pipeline_attempt(
     assembly = assemble_project(batch, batch_output, assembly_staging)
     assembly = verify_assembled_project(target_language, assembly_staging)
 
-    replayed_graph = build_project_graph(root, repository_ref)
+    replayed_graph = build_project_graph(
+        root,
+        repository_ref,
+        discovery if source_language == "react" else None,
+    )
+    if _neutral_project_snapshot(replayed_graph) != invocation_snapshot:
+        if assembly_staging.is_symlink() or not assembly_staging.is_dir():
+            raise RouteError("PIPELINE_STAGING_DIRECTORY_INVALID")
+        shutil.rmtree(assembly_staging)
+        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
     replayed_summary = _project_graph_summary(replayed_graph)
     if replayed_summary != initial_graph_summary:
         if assembly_staging.is_symlink() or not assembly_staging.is_dir():
@@ -870,7 +948,10 @@ def _run_repository_pipeline_attempt(
     )
     assembly = verify_assembly_closure(target_language, assembled_output)
     semantic_graph = build_project_graph(root, repository_ref, discovery)
-    if semantic_graph.get("snapshot_sha256") != project_graph.get("snapshot_sha256"):
+    if (
+        _neutral_project_snapshot(semantic_graph) != invocation_snapshot
+        or semantic_graph.get("snapshot_sha256") != project_graph.get("snapshot_sha256")
+    ):
         raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
     _bind_project_graph_to_plan(semantic_graph, plan)
     graph_summary = _write_and_verify_project_graph(output, semantic_graph)

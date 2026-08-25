@@ -1,0 +1,20 @@
+{
+  "externalStatus": "NOT_RUN",
+  "scenarios": [
+    {"id":1,"expected":"IP_BASED_TRUST"},{"id":2,"expected":"SHARED_PRIVILEGED_IDENTITY"},
+    {"id":3,"expected":"EXPOSED"},{"id":4,"expected":"CERTIFICATE_EXPIRING_HIGH"},
+    {"id":5,"expected":"INCOMPLETE"},{"id":6,"expected":"UNTRUSTED_BUILDER"},
+    {"id":7,"expected":"VEX_EVIDENCE_INSUFFICIENT"},{"id":8,"expected":"COVERAGE_INSUFFICIENT"},
+    {"id":9,"expected":"ONE_ROOT_FINDING"},{"id":10,"expected":"SECURITY_TEST_AUTHORIZATION_REQUIRED"},
+    {"id":11,"expected":"CROSS_TENANT_ACCESS"},{"id":12,"expected":"BUSINESS_LOGIC_ABUSE"},
+    {"id":13,"expected":"KEV_SIGNAL_NOT_DEPLOYED_EXPOSURE"},{"id":14,"expected":"CRITICAL_BUSINESS_RISK"},
+    {"id":15,"expected":"INEFFECTIVE"},{"id":16,"expected":"OVERPRIVILEGED_ROLE"},
+    {"id":17,"expected":"NOT_IMPLEMENTED"},{"id":18,"expected":"RUNTIME_SHELL_HIGH"},
+    {"id":19,"expected":"DATA_EXPOSURE_FINDING"},{"id":20,"expected":"PROMPT_DLP_BLOCK"},
+    {"id":21,"expected":"DELETION_CONTROL_FAILED"},{"id":22,"expected":"REASSESSMENT_REQUIRED"},
+    {"id":23,"expected":"PARTIAL"},{"id":24,"expected":"OTHER_THAN_SATISFIED"},
+    {"id":25,"expected":"REFERENCE_INTEGRITY_FAILED"},{"id":26,"expected":"REASSESSMENT_REQUIRED_OR_SUSPENDED"},
+    {"id":27,"expected":"REASSESSMENT_REQUIRED"},{"id":28,"expected":"HUMAN_REVIEW_REQUIRED"},
+    {"id":29,"expected":"INTERNAL_CONTROL_ASSESSMENT_PASSED"},{"id":30,"expected":"ROOT_CAUSE_GOVERNANCE_OPEN"}
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/digest.schema.json",
+  "title": "Digest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "algorithm",
+    "hex",
+    "size_bytes"
+  ],
+  "properties": {
+    "algorithm": {
+      "const": "sha256"
+    },
+    "hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/evidence-pack-manifest.schema.json",
+  "title": "Evidence Pack Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "tenant_id",
+    "project_id",
+    "created_at",
+    "source_snapshot_digest",
+    "target_snapshot_digest",
+    "items",
+    "known_deviations",
+    "missing_evidence",
+    "certification",
+    "manifest_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "pack_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_snapshot_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "target_snapshot_digest": {
+      "$ref": "digest.schema.json"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "type",
+          "schema_version",
+          "digest",
+          "sensitivity",
+          "producer"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+          },
+          "type": {
+            "type": "string"
+          },
+          "schema_version": {
+            "type": "string"
+          },
+          "digest": {
+            "$ref": "digest.schema.json"
+          },
+          "sensitivity": {
+            "enum": [
+              "PUBLIC",
+              "INTERNAL",
+              "CONFIDENTIAL",
+              "RESTRICTED"
+            ]
+          },
+          "producer": {
+            "type": "string"
+          },
+          "mandatory": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "known_deviations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "description",
+          "risk",
+          "approved"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "risk": {
+            "type": "string"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "approval_ref": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "missing_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "reason",
+          "impact"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "certification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "status",
+        "scope",
+        "reasons"
+      ],
+      "properties": {
+        "level": {
+          "enum": [
+            "NONE",
+            "E1",
+            "E2",
+            "E3",
+            "E4",
+            "E5"
+          ]
+        },
+        "status": {
+          "enum": [
+            "CERTIFIED",
+            "LIMITED",
+            "EXPERIMENTAL",
+            "BLOCKED"
+          ]
+        },
+        "scope": {
+          "type": "string"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signer",
+          "algorithm",
+          "signature_ref"
+        ],
+        "properties": {
+          "signer": {
+            "type": "string"
+          },
+          "algorithm": {
+            "type": "string"
+          },
+          "signature_ref": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "manifest_digest": {
+      "$ref": "digest.schema.json"
+    }
+  }
+}

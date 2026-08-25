@@ -1,0 +1,175 @@
+{
+  "acceptance": [
+    {
+      "criterion": "可从 PDF 页、Word 段落、音频时间段、图片框、文本行和代码符号准确恢复",
+      "evidence": [],
+      "id": "S36-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "恢复前执行租户权限与版本检查",
+      "evidence": [],
+      "id": "S36-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "加载后上下文不超过预算且不移除 P0/P1",
+      "evidence": [],
+      "id": "S36-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "被恢复内容与原始哈希或可验证派生链一致",
+      "evidence": [],
+      "id": "S36-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "找不到来源时不得把摘要当原始事实",
+      "evidence": [],
+      "id": "S36-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "关键水化请求成功率和延迟满足SLO",
+      "evidence": [],
+      "id": "S36-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "可从 PDF 页、Word 段落、音频时间段、图片框、文本行和代码符号准确恢复",
+      "恢复前执行租户权限与版本检查",
+      "加载后上下文不超过预算且不移除 P0/P1",
+      "被恢复内容与原始哈希或可验证派生链一致",
+      "找不到来源时不得把摘要当原始事实",
+      "关键水化请求成功率和延迟满足SLO"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "context_rehydration_runs",
+      "rehydration_items",
+      "rehydration_cache_entries"
+    ],
+    "deliverables": [
+      "RehydrationRequest/Result schema",
+      "按各类 SourceAnchor 的精确加载适配器",
+      "版本/权限/哈希校验与预算集成",
+      "水化事件、审计和端到端测试"
+    ],
+    "dependencies": [
+      "elmos-source-anchor-and-provenance",
+      "elmos-storage-index-and-retrieval",
+      "elmos-long-context-packing-and-ranking",
+      "elmos-context-checkpoint-and-recovery"
+    ],
+    "events": [
+      "context.rehydration.started",
+      "context.rehydration.completed",
+      "context.rehydration.partial",
+      "context.rehydration.failed"
+    ],
+    "failure_modes": [
+      "source deleted",
+      "anchor drift",
+      "wrong project version",
+      "budget cannot fit evidence"
+    ],
+    "inputs": [
+      "RehydrationRequest",
+      "来源锚点/检索键",
+      "资产和项目版本",
+      "上下文预算"
+    ],
+    "metrics": [
+      "rehydration_success_rate",
+      "exact_anchor_hit_rate",
+      "rehydration_latency_ms",
+      "stale_source_rejection_count"
+    ],
+    "name": "elmos-context-rehydration",
+    "objective": "通过来源锚点与检索键精确恢复原始证据，并在装载前验证版本、冲突和预算。",
+    "ordinal": 36,
+    "outputs": [
+      "恢复的原始证据块",
+      "更新后的 ContextLoadPlan",
+      "版本/冲突报告",
+      "审计记录"
+    ],
+    "responsibilities": [
+      "从任务目标、缺失事实、符号、requirement id、source anchor 或检查点生成 RehydrationRequest。",
+      "优先精确定位原始资产、页码、段落、时间区间、图片区域、文件路径、符号或测试运行，而非只加载旧摘要。",
+      "验证资产未删除、权限仍有效、版本符合当前项目视图且哈希匹配。",
+      "对候选证据执行混合检索、相邻上下文扩展、冲突检测和 token 预算检查。",
+      "将恢复内容纳入新的 ContextLoadPlan，并明确替换/驱逐项。",
+      "记录何时、为何、由谁、加载了什么以及对任务结论的影响。",
+      "缓存可重用的派生块但不替代不可变原始证据。",
+      "在来源缺失或版本冲突时阻断未经证实的事实，并升级人工处理。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "上下文重新水化"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-context-rehydration/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-context-rehydration/SKILL.md": {
+        "bytes": 3626,
+        "mode": "0644",
+        "sha256": "b2a1fdb5b604a42a97b982a33f940e4ccb7b33cdea21309bcfc8584808472070"
+      },
+      "skills/elmos-context-rehydration/references/contract.yaml": {
+        "bytes": 2638,
+        "mode": "0644",
+        "sha256": "765b116d4c4b9e51363e021ef6a75187e785668e527be58b503f89cb30d64aae"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-context-rehydration/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_context_rehydration",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当当前任务需要之前已压缩、驱逐或仅索引保存的需求、代码、图表、录音、测试或决策时使用。",
+    "name": "elmos-context-rehydration",
+    "ordinal": 36,
+    "title": "上下文重新水化"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "765b116d4c4b9e51363e021ef6a75187e785668e527be58b503f89cb30d64aae",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "b2a1fdb5b604a42a97b982a33f940e4ccb7b33cdea21309bcfc8584808472070"
+  }
+}

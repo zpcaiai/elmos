@@ -1,0 +1,69 @@
+schema_version: 1.0.0
+ordinal: 42
+name: elmos-resumable-multi-file-folder-upload
+title: 多文件夹断点续传
+objective: 使文件夹上传在断网、页面关闭、客户端重启和服务故障后可靠继续，不因单个文件失败重传整个项目。
+dependencies:
+- elmos-secure-resumable-upload
+- elmos-folder-tree-input
+inputs:
+- FolderManifest
+- 待上传文件流
+- 服务端已有哈希集合
+- 租户配额
+outputs:
+- 已验证项目对象
+- 文件/分片进度
+- 失败清单
+- 上传完成凭证
+responsibilities:
+- 先扫描并提交带哈希、大小和相对路径的 manifest，再由服务端返回已存在、缺失和需分片条目。
+- 小文件批量上传，大文件分片上传；分别配置并发、背压、重试和超时。
+- 每个文件和分片使用内容哈希、序号、上传会话和幂等键验证。
+- 将客户端进度与服务端已确认进度分开，重连后以服务端事实恢复。
+- 支持暂停、恢复、取消和过期清理；已完成内容在安全范围内可跨版本复用。
+- 对上传期间发生变化的文件检测 size/mtime/hash 变化并要求重新扫描该文件。
+- 失败只隔离对应文件，包可进入 PARTIALLY_UPLOADED，但不能误报完整。
+- 提供速率、剩余机器时间、失败原因和配额使用的实时事件。
+deliverables:
+- 目录 manifest 协商与去重 API
+- 小文件批量/大文件分片上传器
+- 暂停恢复、重连和过期会话清理
+- 大目录、断网、重复分片和并发压力测试
+acceptance:
+- 网络中断和页面重开后可从服务端确认位置继续
+- 相同分片重复提交不会产生重复对象或重复费用
+- 单文件失败不要求重传已完成文件
+- 服务端最终对象哈希与 manifest 一致，否则拒绝完成
+- 上传期间变化的文件不会以混合版本进入包
+- 10万级文件目录在定义硬件基线上满足吞吐与内存SLO
+data_entities:
+- package_upload_sessions
+- package_file_uploads
+- package_file_parts
+- upload_dedup_records
+events:
+- folder.upload.negotiated
+- folder.file.uploaded
+- folder.upload.paused
+- folder.upload.resumed
+- folder.upload.completed
+metrics:
+- upload_resume_success_rate
+- deduplicated_bytes
+- failed_file_retry_count
+- effective_upload_throughput_bps
+failure_modes:
+- mixed file version
+- orphan multipart upload
+- server/client progress divergence
+- quota exhausted
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

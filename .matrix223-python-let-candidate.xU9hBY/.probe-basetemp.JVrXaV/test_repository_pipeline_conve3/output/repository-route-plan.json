@@ -1,0 +1,150 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "execution_status": "NOT_RUN",
+  "external_verification_status": "NOT_RUN",
+  "file_count": 5,
+  "ignored_symlink_count": 0,
+  "javascript_esm_descriptors": [],
+  "kind": "elmos.repository-route-plan",
+  "language_counts": {
+    "cpp": 0,
+    "csharp": 0,
+    "go": 0,
+    "java": 0,
+    "javascript": 0,
+    "objc": 0,
+    "php": 5,
+    "python": 0,
+    "rust": 0,
+    "swift": 0,
+    "typescript": 0
+  },
+  "limitations": [
+    "Inventory and work-unit decomposition do not execute source code.",
+    "Every discovered function requires an independent behavior-case corpus.",
+    "Repository-wide success cannot be inferred from typed-pure-function-v1 evidence."
+  ],
+  "repository_limits": {
+    "maximum_bytes_per_file": 2097152,
+    "maximum_source_bytes": 67108864,
+    "maximum_source_files": 5000
+  },
+  "repository_ref": "local:medium-functional-matrix/php-to-java",
+  "repository_scale": "medium",
+  "route_id": "php-to-java",
+  "schema_version": "1.0.0",
+  "snapshot_consistency": "STABLE_READ_ONLY_SCAN",
+  "snapshot_sha256": "b6e5c72091bb3c5d7beb8b6ee40a9a981b98f0400dc2a1a8f732d96f934ec94a",
+  "source_bytes": 8500919,
+  "source_file_count": 5,
+  "source_language": "php",
+  "status": "PLANNED",
+  "target_language": "java",
+  "work_units": [
+    {
+      "declared_profile": "typed-pure-function-v1",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00001",
+      "required_inputs": [
+        "behavior_cases_json_per_discovered_function"
+      ],
+      "route_id": "php-to-java",
+      "source_bytes": 1700165,
+      "source_path": "add.php",
+      "source_sha256": "7eb527e783923fc1b57a8a3097c9516ce24e22a2dad034c823e8243f7abea31a",
+      "status": "DISCOVERY_REQUIRED",
+      "unsupported_until_discovered": [
+        "object_graph",
+        "exceptions",
+        "async_io",
+        "framework",
+        "database",
+        "concurrency"
+      ]
+    },
+    {
+      "declared_profile": "typed-pure-function-v1",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00002",
+      "required_inputs": [
+        "behavior_cases_json_per_discovered_function"
+      ],
+      "route_id": "php-to-java",
+      "source_bytes": 1700207,
+      "source_path": "maximum.php",
+      "source_sha256": "5ea545b4b16b247c401713cc2d8a89037af56826af440e2f2bec6459aeeec2ea",
+      "status": "DISCOVERY_REQUIRED",
+      "unsupported_until_discovered": [
+        "object_graph",
+        "exceptions",
+        "async_io",
+        "framework",
+        "database",
+        "concurrency"
+      ]
+    },
+    {
+      "declared_profile": "typed-pure-function-v1",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00003",
+      "required_inputs": [
+        "behavior_cases_json_per_discovered_function"
+      ],
+      "route_id": "php-to-java",
+      "source_bytes": 1700207,
+      "source_path": "minimum.php",
+      "source_sha256": "abedee043a4e425e8d9f3fc28630507129b1702c26db4c4abf0dc5b7e1bd56ad",
+      "status": "DISCOVERY_REQUIRED",
+      "unsupported_until_discovered": [
+        "object_graph",
+        "exceptions",
+        "async_io",
+        "framework",
+        "database",
+        "concurrency"
+      ]
+    },
+    {
+      "declared_profile": "typed-pure-function-v1",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00004",
+      "required_inputs": [
+        "behavior_cases_json_per_discovered_function"
+      ],
+      "route_id": "php-to-java",
+      "source_bytes": 1700170,
+      "source_path": "multiply.php",
+      "source_sha256": "0977951ff1a2eac3ee5bf24f1c9b93eb9adcb6095c4770791ab0443c7a0c063a",
+      "status": "DISCOVERY_REQUIRED",
+      "unsupported_until_discovered": [
+        "object_graph",
+        "exceptions",
+        "async_io",
+        "framework",
+        "database",
+        "concurrency"
+      ]
+    },
+    {
+      "declared_profile": "typed-pure-function-v1",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00005",
+      "required_inputs": [
+        "behavior_cases_json_per_discovered_function"
+      ],
+      "route_id": "php-to-java",
+      "source_bytes": 1700170,
+      "source_path": "subtract.php",
+      "source_sha256": "3e40949c153058ff2603c6abd8c6b78ec8dea10d0104a9acc154541c65ecedd2",
+      "status": "DISCOVERY_REQUIRED",
+      "unsupported_until_discovered": [
+        "object_graph",
+        "exceptions",
+        "async_io",
+        "framework",
+        "database",
+        "concurrency"
+      ]
+    }
+  ]
+}

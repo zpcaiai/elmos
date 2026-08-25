@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-provider-contract-fixtures-v1",
+  "campaign_type": "provider-contract-simulation",
+  "corpus_role": "IMMUTABLE_OFFLINE_FIXTURE_INPUT",
+  "input_state": "LOCAL_SELF_AUTHORED_FIXTURE_ONLY",
+  "campaign_ref": "verification-packs/elmos-7plus1-local-contract-v1/campaigns/provider-contract-simulation-v1.json",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "campaign_id": "provider-contract-simulation-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
+  "corpus_digest": "sha256:d6a71c18f686e150a3d46eaccd42f106e2599095b8bac030a84d507814e1df53",
+  "case_count": 2,
+  "case_ids": [
+    "provider-001-failure-map",
+    "provider-002-success"
+  ],
+  "provider_execution_state": "NOT_RUN",
+  "limitations": [
+    "These are deterministic offline request-response fixtures; no provider, credential, network, adapter executable, or remote system is invoked.",
+    "Execution state and receipt identity are recorded outside this immutable input descriptor to avoid a digest cycle."
+  ]
+}

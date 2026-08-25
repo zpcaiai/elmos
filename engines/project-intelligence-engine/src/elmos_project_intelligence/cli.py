@@ -77,12 +77,15 @@ def main(argv: list[str] | None = None) -> int:
         json.JSONDecodeError,
         ValueError,
         SkillRuntimeError,
-    ) as exc:
+    ):
         _write_json(
             {
                 "state": "BLOCKED",
                 "code": "CLI_REQUEST_REJECTED",
-                "error": {"type": type(exc).__name__, "message": str(exc)},
+                "error": {
+                    "type": "REQUEST_REJECTED",
+                    "message": "CLI request rejected",
+                },
                 "external_effects_performed": False,
                 "external_evidence": "NOT_RUN",
                 "certification": "NOT_CERTIFIED",

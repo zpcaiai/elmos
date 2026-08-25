@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "minimal-lockfile-delta",
+  "source_contract_sha256": "sha256:e17afae3abbbd2b3138ff3ed1f268b30d5d2ef6954534d8b44026b23faa20b7c",
+  "source_id": "FOUNDATION-04-minimal-lockfile-delta",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "case_key": "multimodal-intake-authorization-v1-assurance-v1",
+  "version": 1,
+  "owner": "elmos-multimodal-intake-security",
+  "top_claim": "The local multimodal intake implementation is bounded and fail-closed within its exact engineering-validation scope.",
+  "claims": [
+    {
+      "claim_id": "claim.identity-scope-binding",
+      "statement": "Tenant, project, actor, resource, and alias identity are derived from trusted bindings.",
+      "status": "unsupported",
+      "evidence_refs": [],
+      "assumptions": [],
+      "limitations": [
+        "Local tests and independent security review have not yet been recorded."
+      ]
+    },
+    {
+      "claim_id": "claim.operation-authorization",
+      "statement": "Every operation requires its exact trusted permission and unknown pairs fail closed.",
+      "status": "unsupported",
+      "evidence_refs": [],
+      "assumptions": [],
+      "limitations": [
+        "Local tests and mutation execution have not yet been recorded."
+      ]
+    },
+    {
+      "claim_id": "claim.deny-no-side-effects",
+      "statement": "Denied adversarial requests create no runtime or downstream side effects.",
+      "status": "unsupported",
+      "evidence_refs": ["security/principal-resource-action-matrix.json"],
+      "assumptions": [],
+      "limitations": [
+        "Provider and production side-effect observations are NOT_RUN."
+      ]
+    },
+    {
+      "claim_id": "claim.untrusted-content-boundary",
+      "statement": "Raw content cannot become execution or authorization authority.",
+      "status": "unsupported",
+      "evidence_refs": [],
+      "assumptions": [],
+      "limitations": [
+        "Independent archive and document attack corpora are NOT_RUN."
+      ]
+    },
+    {
+      "claim_id": "claim.append-only-corrections",
+      "statement": "Corrections preserve immutable originals and require optimistic version continuity.",
+      "status": "unsupported",
+      "evidence_refs": [],
+      "assumptions": [],
+      "limitations": [
+        "External review approval and rebuild evidence are NOT_RUN."
+      ]
+    }
+  ],
+  "evidence": ["security/principal-resource-action-matrix.json"],
+  "residual_risks": [
+    {
+      "risk": "Independent P0 security review is NOT_RUN.",
+      "owner": "elmos-multimodal-intake-security",
+      "status": "open"
+    },
+    {
+      "risk": "OCR, ASR, vision, antivirus, strong-sandbox, vector, and downstream-agent provider evidence are NOT_RUN.",
+      "owner": "elmos-multimodal-intake",
+      "status": "open"
+    },
+    {
+      "risk": "Independent holdout and representative production workloads are NOT_RUN.",
+      "owner": "elmos-multimodal-intake",
+      "status": "open"
+    }
+  ],
+  "monitoring_obligations": [
+    "Re-run the exact local validation manifest on every bound source change.",
+    "Reject certification while any P0 claim lacks independent evidence."
+  ],
+  "approvals": []
+}

@@ -77,9 +77,14 @@ RUNTIME_PYTHONPATH = "engines/software-factory-engine/src"
 RUNTIME_ARTIFACTS = (
     "engines/software-factory-engine/src/elmos_software_factory/__init__.py",
     "engines/software-factory-engine/src/elmos_software_factory/__main__.py",
+    "engines/software-factory-engine/src/elmos_software_factory/archive_contracts.py",
+    "engines/software-factory-engine/src/elmos_software_factory/artifact_binding.py",
     "engines/software-factory-engine/src/elmos_software_factory/canonical.py",
     "engines/software-factory-engine/src/elmos_software_factory/capabilities.py",
+    "engines/software-factory-engine/src/elmos_software_factory/campaigns.py",
     "engines/software-factory-engine/src/elmos_software_factory/cli.py",
+    "engines/software-factory-engine/src/elmos_software_factory/evidence_intake.py",
+    "engines/software-factory-engine/src/elmos_software_factory/evidence_models.py",
     "engines/software-factory-engine/src/elmos_software_factory/handlers.py",
     "engines/software-factory-engine/src/elmos_software_factory/models.py",
     "engines/software-factory-engine/src/elmos_software_factory/public_methods.py",
@@ -88,6 +93,17 @@ RUNTIME_ARTIFACTS = (
     RUNTIME_SKILL_REGISTRY,
     RUNTIME_CAPABILITY_REGISTRY,
     RUNTIME_PUBLIC_METHOD_REGISTRY,
+    "engines/software-factory-engine/schemas/archive-contract-inspection.schema.json",
+    "engines/software-factory-engine/schemas/dependency-receipt.schema.json",
+    "engines/software-factory-engine/schemas/evidence-campaign-receipt.schema.json",
+    "engines/software-factory-engine/schemas/evidence-campaign.schema.json",
+    "engines/software-factory-engine/schemas/evidence-intake-decision.schema.json",
+    "engines/software-factory-engine/schemas/evidence-intake-policy.schema.json",
+    "engines/software-factory-engine/schemas/external-evidence-receipt.schema.json",
+    "engines/software-factory-engine/schemas/external-observation.schema.json",
+    "engines/software-factory-engine/schemas/external-preflight.schema.json",
+    "engines/software-factory-engine/schemas/request.schema.json",
+    "engines/software-factory-engine/schemas/result.schema.json",
 )
 EXPECTED_RUNTIME_REGISTRY_SHA256 = {
     RUNTIME_SKILL_REGISTRY: "sha256:c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2",
@@ -97,7 +113,16 @@ EXPECTED_RUNTIME_REGISTRY_SHA256 = {
 
 NEUTRALIZED_SOURCE_PATHS = {
     "AGENTS.md": "_neutralized-instruction-data/AGENTS.md.source-data",
+    "scripts/score_readiness.py": (
+        "_neutralized-executable-data/scripts/score_readiness.py.source-data"
+    ),
+    "scripts/validate_packages.py": (
+        "_neutralized-executable-data/scripts/validate_packages.py.source-data"
+    ),
 }
+NEUTRALIZED_EXECUTABLE_SOURCE_PATHS = frozenset(
+    {"scripts/score_readiness.py", "scripts/validate_packages.py"}
+)
 DIRECTORY_MODE = 0o755
 RUNTIME_FILE_MODE = 0o644
 MAX_RUNTIME_ARTIFACT_BYTES = 2 * 1024 * 1024
@@ -624,6 +649,92 @@ def _validate_member_metadata(info: zipfile.ZipInfo) -> int:
     return mode
 
 
+def _read_bounded_regular_file(path: Path, *, maximum_bytes: int) -> bytes:
+    """Read one pinned regular file without following its final path component."""
+
+    no_follow = getattr(os, "O_NOFOLLOW", None)
+    directory = getattr(os, "O_DIRECTORY", None)
+    if not isinstance(no_follow, int) or no_follow <= 0:
+        raise IntegrationError("safe archive reads require os.O_NOFOLLOW")
+    if not isinstance(directory, int) or directory <= 0:
+        raise IntegrationError("safe archive reads require os.O_DIRECTORY")
+    if os.open not in os.supports_dir_fd or os.stat not in os.supports_dir_fd:
+        raise IntegrationError("safe archive reads require descriptor-relative open/stat support")
+    if isinstance(maximum_bytes, bool) or not isinstance(maximum_bytes, int) or maximum_bytes < 0:
+        raise IntegrationError("safe archive read budget is invalid")
+    if path.name in {"", ".", ".."}:
+        raise IntegrationError(f"archive path has no safe final component: {path}")
+
+    try:
+        resolved_parent = path.parent.resolve(strict=True)
+    except OSError as exc:
+        raise IntegrationError(f"cannot resolve archive parent {path.parent}: {exc}") from exc
+    close_on_exec = getattr(os, "O_CLOEXEC", 0)
+    if not isinstance(close_on_exec, int):
+        close_on_exec = 0
+    parent_fd = -1
+    file_fd = -1
+    try:
+        parent_fd = os.open(
+            resolved_parent,
+            os.O_RDONLY | directory | no_follow | close_on_exec,
+        )
+        parent_identity = os.fstat(parent_fd)
+        if not stat.S_ISDIR(parent_identity.st_mode):
+            raise IntegrationError(f"archive parent is not a directory: {resolved_parent}")
+        path_parent_identity = os.stat(resolved_parent, follow_symlinks=False)
+        if (parent_identity.st_dev, parent_identity.st_ino) != (
+            path_parent_identity.st_dev,
+            path_parent_identity.st_ino,
+        ):
+            raise IntegrationError(f"archive parent binding changed before open: {resolved_parent}")
+
+        file_fd = os.open(
+            path.name,
+            os.O_RDONLY | no_follow | close_on_exec,
+            dir_fd=parent_fd,
+        )
+        initial = os.fstat(file_fd)
+        if not stat.S_ISREG(initial.st_mode):
+            raise IntegrationError(f"archive must be a regular file: {path}")
+        if initial.st_size < 0 or initial.st_size > maximum_bytes:
+            raise IntegrationError(f"archive exceeds the compressed-byte budget: {path}")
+
+        chunks: list[bytes] = []
+        observed_size = 0
+        while True:
+            remaining = maximum_bytes + 1 - observed_size
+            if remaining <= 0:
+                raise IntegrationError(f"archive exceeds the compressed-byte budget: {path}")
+            chunk = os.read(file_fd, min(64 * 1024, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            observed_size += len(chunk)
+        if observed_size != initial.st_size:
+            raise IntegrationError(f"archive size changed while reading: {path}")
+
+        final = os.fstat(file_fd)
+        bound = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+        stable_fields = ("st_dev", "st_ino", "st_mode", "st_size", "st_mtime_ns", "st_ctime_ns")
+        if any(getattr(initial, field) != getattr(final, field) for field in stable_fields):
+            raise IntegrationError(f"archive bytes changed while reading: {path}")
+        if (final.st_dev, final.st_ino) != (bound.st_dev, bound.st_ino):
+            raise IntegrationError(f"archive path binding changed while reading: {path}")
+        if path.parent.resolve(strict=True) != resolved_parent:
+            raise IntegrationError(f"archive parent binding changed while reading: {path.parent}")
+        return b"".join(chunks)
+    except IntegrationError:
+        raise
+    except OSError as exc:
+        raise IntegrationError(f"cannot safely read archive {path}: {exc}") from exc
+    finally:
+        if file_fd >= 0:
+            os.close(file_fd)
+        if parent_fd >= 0:
+            os.close(parent_fd)
+
+
 def inspect_archive(
     archive_path: Path,
     *,
@@ -635,11 +746,10 @@ def inspect_archive(
 ) -> tuple[bytes, Mapping[str, ArchiveRecord]]:
     """Read a bounded ZIP snapshot without extracting or executing its content."""
 
-    if not archive_path.is_file() or archive_path.is_symlink():
-        raise IntegrationError(f"archive must be a regular file: {archive_path}")
-    archive_bytes = archive_path.read_bytes()
-    if len(archive_bytes) > MAX_ARCHIVE_BYTES:
-        raise IntegrationError(f"archive exceeds the compressed-byte budget: {archive_path}")
+    archive_bytes = _read_bounded_regular_file(
+        archive_path,
+        maximum_bytes=MAX_ARCHIVE_BYTES,
+    )
     observed_sha256 = _sha256(archive_bytes)
     if trusted_sha256 is not None and observed_sha256 != trusted_sha256:
         raise IntegrationError(
@@ -1780,11 +1890,14 @@ def _render_docs_readme() -> bytes:
 This integration treats the eight archives in
 `skills/subskills/archives/` as immutable, untrusted source data. The importer
 validates and merges them without importing or executing archive code.
-Archive Skill descriptions and bodies remain inert canonical data; installed
-`SKILL.md` files contain repository-authored instructions only. All 101 source
-`SKILL.md` files and the shared archive `AGENTS.md` are materialized under
-neutralized data filenames with an explicit digest-bound
-logical-to-materialized mapping.
+Archive Skill descriptions, bodies, and scripts remain inert canonical data;
+installed `SKILL.md` files contain repository-authored instructions only. All
+101 source `SKILL.md` files, the shared archive `AGENTS.md`, and both archive
+Python scripts are materialized under neutralized data filenames with an
+explicit digest-bound logical-to-materialized mapping. The two scripts lose
+their executable bits and are not imported, compiled, or run by the repository
+importer or recorded qualification path; no historical or manual-execution
+claim is made.
 
 ## Implemented scope
 
@@ -1810,6 +1923,9 @@ logical-to-materialized mapping.
   registries and exact 50-method public API registry, then binds all three plus
   required runtime modules by byte digest without importing or executing
   runtime Python.
+- Repository-owned archive inspection and evidence campaigns bind exact source,
+  target, environment, corpus, loaded-runtime, case-result, and replay digests.
+  The neutralized archive scripts remain data and are never execution authority.
 
 ## Evidence boundary
 
@@ -1996,15 +2112,26 @@ def _materialize_source_tree(
             raise IntegrationError(
                 f"materialized canonical source collision: {materialized_path}"
             )
-        materialized[materialized_path] = payload
+        materialized_payload = (
+            FilePayload(payload.content, RUNTIME_FILE_MODE)
+            if logical_path in NEUTRALIZED_EXECUTABLE_SOURCE_PATHS
+            else payload
+        )
+        materialized[materialized_path] = materialized_payload
         if logical_path != materialized_path:
             mapping.append(
                 {
                     "logical_path": logical_path,
                     "materialized_path": materialized_path,
                     "sha256": _digest(payload.content),
-                    "mode": f"{payload.mode:04o}",
-                    "reason": "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED",
+                    "mode": f"{materialized_payload.mode:04o}",
+                    "source_mode": f"{payload.mode:04o}",
+                    "materialized_mode": f"{materialized_payload.mode:04o}",
+                    "reason": (
+                        "ARCHIVE_EXECUTABLE_NEUTRALIZED"
+                        if logical_path in NEUTRALIZED_EXECUTABLE_SOURCE_PATHS
+                        else "ARCHIVE_INSTRUCTION_FILENAME_NEUTRALIZED"
+                    ),
                 }
             )
     return dict(sorted(materialized.items())), tuple(mapping)
@@ -2158,6 +2285,10 @@ def build_expected(
             "installed_skills": len(skill_trees),
             "installed_name_overrides": len(installed_name_resolutions),
             "package_dependency_edges": EXPECTED_PACKAGE_DEPENDENCY_EDGES,
+            "neutralized_archive_executables": len(
+                NEUTRALIZED_EXECUTABLE_SOURCE_PATHS
+            ),
+            "active_archive_executables": 0,
         },
         "canonical_source": {
             "path": SOURCE_RELATIVE.as_posix(),
@@ -2168,6 +2299,7 @@ def build_expected(
             "shared_merge_policy": "BYTE_AND_MODE_IDENTICAL_ONLY",
             "path_mapping": list(source_path_mapping),
             "active_archive_instruction_filenames": [],
+            "active_archive_executables": [],
         },
         "package_topological_order": list(snapshot.package_topological_order),
         "installed_name_resolutions": installed_name_resolutions,
@@ -2227,6 +2359,7 @@ def build_expected(
         "logical_source_tree_sha256": logical_source_tree_sha256,
         "canonical_source_path_mapping": list(source_path_mapping),
         "active_archive_instruction_filenames": [],
+        "active_archive_executables": [],
         "immutable_source": True,
         "source_archive_count": len(snapshot.packages),
         "source_archive_entry_count": sum(

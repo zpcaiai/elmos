@@ -1,0 +1,143 @@
+{
+  "acceptance": [
+    {
+      "criterion": "重复内容不会在上下文中无意义占用多份",
+      "evidence": [],
+      "id": "S15-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "来源差异仍可单独查看",
+      "evidence": [],
+      "id": "S15-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "自动角色分类可被用户覆盖并审计",
+      "evidence": [],
+      "id": "S15-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "融合结果不改变原始资产",
+      "evidence": [],
+      "id": "S15-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "重复内容不会在上下文中无意义占用多份",
+      "来源差异仍可单独查看",
+      "自动角色分类可被用户覆盖并审计",
+      "融合结果不改变原始资产"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "asset_roles",
+      "asset_relations",
+      "fusion_runs"
+    ],
+    "deliverables": [
+      "FusionService 与角色分类器",
+      "AssetRelation、EntityLink 模型",
+      "重复、互补和矛盾资料融合测试"
+    ],
+    "dependencies": [
+      "elmos-unified-multimodal-content-ir",
+      "elmos-source-anchor-and-provenance"
+    ],
+    "events": [
+      "asset.fusion.completed",
+      "asset.role.inferred"
+    ],
+    "failure_modes": [
+      "错误合并",
+      "实体同名异义",
+      "版本顺序不明"
+    ],
+    "inputs": [
+      "多个 Asset、Content IR"
+    ],
+    "metrics": [
+      "deduplication_precision",
+      "entity_link_f1"
+    ],
+    "name": "elmos-multi-asset-content-fusion",
+    "objective": "建立可解释的资产角色、实体关系和内容聚合，保留每个来源而不把差异抹平。",
+    "ordinal": 15,
+    "outputs": [
+      "FusedInputPackage、AssetRole、EntityLink"
+    ],
+    "responsibilities": [
+      "识别主需求、补充资料、UI 参考、测试报告、日志和历史版本等角色",
+      "基于内容哈希、语义和结构去重但保留版本关系",
+      "关联跨文件实体、接口、页面、模块和决策",
+      "输出融合包、未解析关联和质量报告"
+    ],
+    "schema_version": "1.0.0",
+    "title": "多资产内容融合"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-multi-asset-content-fusion/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-multi-asset-content-fusion/SKILL.md": {
+        "bytes": 2763,
+        "mode": "0644",
+        "sha256": "33a7206818c42aee29c340bbfc02eb4d7a7ac3bbd189d0779e7bf816e3197d3c"
+      },
+      "skills/elmos-multi-asset-content-fusion/references/contract.yaml": {
+        "bytes": 1516,
+        "mode": "0644",
+        "sha256": "87b1e857324aacbad1954af7a438277138ecc47096e7ef0e03309edd86b7e410"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-multi-asset-content-fusion/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_multi_asset_content_fusion",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "content",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "将一次提交中的多个文件、图片、音频和项目目录融合为统一项目上下文；当任务涉及跨文件关联、去重或资料角色识别时使用。",
+    "name": "elmos-multi-asset-content-fusion",
+    "ordinal": 15,
+    "title": "多资产内容融合"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "87b1e857324aacbad1954af7a438277138ecc47096e7ef0e03309edd86b7e410",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "33a7206818c42aee29c340bbfc02eb4d7a7ac3bbd189d0779e7bf816e3197d3c"
+  }
+}

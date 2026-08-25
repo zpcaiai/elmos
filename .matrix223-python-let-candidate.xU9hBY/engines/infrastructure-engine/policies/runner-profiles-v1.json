@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "defaultNetwork": "DENY",
+  "credentialLease": "SHORT_LIVED_PROVIDER_SCOPED",
+  "productionWrites": "NAMED_APPROVAL_REQUIRED",
+  "profiles": [
+    {
+      "type": "INFRASTRUCTURE_DISCOVERY",
+      "status": "NOT_CONFIGURED",
+      "readOnly": true,
+      "tools": [
+        "SSH",
+        "WINRM",
+        "VM_API",
+        "HYPERVISOR_API",
+        "CLOUD_API",
+        "CMDB",
+        "SNMP",
+        "MIDDLEWARE_CLI"
+      ]
+    },
+    {
+      "type": "VM_IMAGE_BUILDER",
+      "status": "NOT_CONFIGURED",
+      "readOnly": false,
+      "tools": [
+        "PACKER_COMPATIBLE",
+        "LINUX_IMAGE_BUILDER",
+        "WINDOWS_IMAGE_BUILDER"
+      ]
+    },
+    {
+      "type": "CONTAINER_BUILD",
+      "status": "NOT_CONFIGURED",
+      "readOnly": false,
+      "tools": [
+        "ROOTLESS_BUILDKIT",
+        "OCI",
+        "SBOM",
+        "SIGNATURE",
+        "VULNERABILITY_SCAN"
+      ]
+    },
+    {
+      "type": "KUBERNETES_VALIDATION",
+      "status": "NOT_CONFIGURED",
+      "readOnly": false,
+      "tools": [
+        "EPHEMERAL_CLUSTER",
+        "HELM",
+        "KUSTOMIZE",
+        "GATEWAY_API",
+        "POLICY_ENGINE"
+      ]
+    },
+    {
+      "type": "SERVERLESS_VALIDATION",
+      "status": "NOT_CONFIGURED",
+      "readOnly": false,
+      "tools": [
+        "FUNCTION_EMULATOR",
+        "KNATIVE",
+        "EVENT_SOURCE",
+        "COLD_START_TEST"
+      ]
+    },
+    {
+      "type": "MULTICLOUD_TEST",
+      "status": "NOT_CONFIGURED",
+      "readOnly": false,
+      "tools": [
+        "PROVIDER_SANDBOX",
+        "PRIVATE_CLOUD",
+        "CONNECTIVITY_TEST",
+        "RESTORE_TEST"
+      ]
+    }
+  ]
+}
+

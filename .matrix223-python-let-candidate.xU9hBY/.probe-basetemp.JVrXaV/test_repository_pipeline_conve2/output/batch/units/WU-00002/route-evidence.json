@@ -1,0 +1,255 @@
+{
+  "behavior_case_count": 2,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:94ab713c0465f16ca90fc407c2b7818349bb484f016cd39e67bd938787b575cb",
+    "case_count": 2,
+    "oracle_conflict_count": 0,
+    "pass_count": 2,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
+  "certification_status": "EXPERIMENTAL",
+  "chunk_equivalence": {
+    "reason": "directed-route-has-no-layered-route-pack",
+    "status": "UNSUPPORTED"
+  },
+  "critical_unknown_semantics": 1,
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "reason": "directed-route-has-no-layered-route-pack",
+    "status": "UNSUPPORTED"
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "reason": "repository-local-execution-mode",
+      "status": "NOT_RUN"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:121bd1e4725df455f31aa2d7f75edb1f8b2a14195bbbdf44017d91a1da61d9fc",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:5a41219e79deac95c5e407a65ec09c5cb89512924e01dfdd5dcea6043323280c",
+    "raw_target_relift": {
+      "reason": "repository-local-execution-mode",
+      "status": "NOT_RUN"
+    },
+    "renamed": true,
+    "source_function_name": "multiply",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_0bb126c58397bbee",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": "sha256:ac58967618c5d54ffe8ff85cbecf5772c0f9468fbdae14ae50972fb4d93799a1",
+      "schema_version": "1.0.0",
+      "scope": "repository-work-unit",
+      "source_logical_path": "multiply.php",
+      "source_sha256": "sha256:72266498627f8e34eaa3343e7d24b891ce152dea93d7232cd6e6022144c45ef6",
+      "work_unit_id": "WU-00002"
+    },
+    "unit_namespace_sha256": "sha256:6b9df04c05ac199dc5acc4b1f931d3eaac06450883b5d4136a6cd9e0be52bc87"
+  },
+  "layered_equivalence": {
+    "reason": "directed-route-has-no-layered-route-pack",
+    "status": "UNSUPPORTED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": true,
+  "route": "php-to-java",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "reason": "directed-route-has-no-layered-route-pack",
+    "status": "UNSUPPORTED"
+  },
+  "semantic_ir_sha256": "sha256:0dde156bf7c2d5d816a9907ae1025bb99760189fb196844b7b9e9d58cb4d7593",
+  "source": {
+    "analyzer": "php/ext-tokenizer Zend token stream",
+    "analyzer_version": "php-8.5.9;tokenizer=8.5.9;zend-ast=ABSENT;analyzer-sha256=eb32e4983dce7f992a059d1de71de8ad304fd8308d283508fdf05fe0950b8cdf;interpreter-sha256=6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218;interpreter-version=PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
+    "function_name": "multiply",
+    "language": "php",
+    "path": "multiply.php",
+    "sha256": "sha256:72266498627f8e34eaa3343e7d24b891ce152dea93d7232cd6e6022144c45ef6"
+  },
+  "source_map_coverage": 0.0,
+  "source_validation": {
+    "artifact_path": "multiply.php",
+    "artifact_sha256": "sha256:72266498627f8e34eaa3343e7d24b891ce152dea93d7232cd6e6022144c45ef6",
+    "case_count": 2,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "multiply.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in multiply.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "-l",
+          "source_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "No syntax errors detected in source_harness.php\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+          "-n",
+          "-d",
+          "error_reporting=E_ALL",
+          "-d",
+          "precision=17",
+          "-d",
+          "serialize_precision=-1",
+          "-d",
+          "opcache.enable_cli=0",
+          "source_harness.php"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t12\nELMOS_OBSERVATION\t1\ti64-dec\t-10\n"
+      }
+    ],
+    "language": "php",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "12",
+        "status": "RETURNED",
+        "value": 12
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "-10",
+        "status": "RETURNED",
+        "value": -10
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/php/8.5.9/bin/php",
+      "executable_sha256": "6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218",
+      "language": "php",
+      "profile": [
+        "php-toolchain-closure-schema=v1",
+        "platform=Darwin/arm64",
+        "php-root=/opt/homebrew/Cellar/php/8.5.9",
+        "php-tree-sha256=4d1c6db642797e84f37e736da203423f013807abf5a334f7ba59ae99e4badefb",
+        "php-tree-record-count=643",
+        "php-tree-file-count=532",
+        "php-tree-directory-count=109",
+        "php-tree-bytes=129955913",
+        "php-tree-symlink-count=1",
+        "php-tree-unbound-symlink-count=1",
+        "php-tree-unbound-symlink=pecl->/opt/homebrew/lib/php/pecl",
+        "php-runtime-identity-sha256=4d932570ac531f0886895fe7be8440ba5764c7db61446c4f3f1d90a12f002f5e",
+        "integer=int64",
+        "number=binary64",
+        "strict-types=1",
+        "php-zts=False",
+        "php-debug=False",
+        "php-extensions=Core,FFI,PDO,PDO_ODBC,Phar,Reflection,SPL,SimpleXML,Zend OPcache,bcmath,bz2,calendar,ctype,curl,date,dba,dom,exif,fileinfo,filter,ftp,gd,gettext,gmp,hash,iconv,intl,json,ldap,lexbor,libxml,mbstring,mysqli,mysqlnd,odbc,openssl,pcntl,pcre,pdo_dblib,pdo_mysql,pdo_pgsql,pdo_sqlite,pgsql,posix,random,readline,session,shmop,snmp,soap,sockets,sodium,sqlite3,standard,sysvmsg,sysvsem,sysvshm,tidy,tokenizer,uri,xml,xmlreader,xmlwriter,xsl,zip,zlib",
+        "php-tokenizer=builtin",
+        "php-runtime-semantic-soundness=NOT_RUN"
+      ],
+      "version": "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)"
+    }
+  },
+  "status": "PASSED_LOCAL_UNCERTIFIED",
+  "target": {
+    "function_name": "elmos_fn_0bb126c58397bbee",
+    "language": "java",
+    "path": "Migrated.java",
+    "sha256": "sha256:44964f75e7398325154b6abda306387e6d2b0014d7bea9069912fe04cfa225db"
+  },
+  "validation": {
+    "case_count": 2,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+          "Migrated.java",
+          "RouteHarness.java"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+          "-cp",
+          ".",
+          "RouteHarness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t12\nELMOS_OBSERVATION\t1\ti64-dec\t-10\n"
+      }
+    ],
+    "language": "java",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "12",
+        "status": "RETURNED",
+        "value": 12
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "-10",
+        "status": "RETURNED",
+        "value": -10
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/javac",
+      "auxiliary_sha256": "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db",
+      "executable": "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home/bin/java",
+      "executable_sha256": "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42",
+      "language": "java",
+      "profile": [
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-openjdk@21",
+        "jdk-home=/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home",
+        "jdk-cdhash-full=5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8",
+        "jdk-modules-sha256=5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee",
+        "libjvm-sha256=bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588",
+        "release-sha256=7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+      ],
+      "version": "21.0.11"
+    }
+  }
+}

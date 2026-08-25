@@ -1141,6 +1141,7 @@
       "additionalProperties": false
     },
     "module_route": {
+      "description": "Active exact-eight module routes plus immutable historical JavaScript module-evidence routes. JavaScript is not an active language.",
       "oneOf": [
         {"const": {"source_language": "cpp", "target_language": "objc"}},
         {"const": {"source_language": "objc", "target_language": "cpp"}},
@@ -1341,7 +1342,7 @@
       "properties": {
         "status": {"const": "EXACT_AND_CLOSED"},
         "role": {"enum": ["source", "target"]},
-        "language": {"enum": ["java", "csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"]},
+        "language": {"enum": ["java", "csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"], "description": "Exact module-profile languages, including immutable historical JavaScript evidence; this is not the live route-language enum."},
         "directives": {"type": "array", "items": {"$ref": "#/$defs/language_directive"}}
       },
       "additionalProperties": false
@@ -1411,7 +1412,7 @@
       "properties": {
         "status": {"const": "NOT_APPLICABLE"},
         "role": {"enum": ["source", "target"]},
-        "language": {"enum": ["csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"]},
+        "language": {"enum": ["csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"], "description": "Non-Java exact module-profile languages, including immutable historical JavaScript evidence."},
         "file": {"type": "string", "minLength": 1}
       },
       "additionalProperties": false
@@ -1438,7 +1439,7 @@
         "schema_version": {"const": "1.0.0"},
         "kind": {"const": "elmos.typed-pure-module-inventory"},
         "profile": {"const": "typed-pure-module-v1"},
-        "source_language": {"enum": ["java", "csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"]},
+        "source_language": {"enum": ["java", "csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"], "description": "Exact module-profile inventory language, including immutable historical JavaScript evidence."},
         "source_file": {"type": "string", "minLength": 1},
         "analyzer": {"type": "string", "minLength": 1},
         "analyzer_version": {"type": "string", "minLength": 1},
@@ -1620,6 +1621,7 @@
       "additionalProperties": false
     },
     "exact_specialized_route": {
+      "description": "Active exact-eight module routes plus immutable historical JavaScript module-evidence routes. JavaScript is not an active language.",
       "oneOf": [
         {"const": {"route_key": "cpp-to-objc", "source_language": "cpp", "target_language": "objc"}},
         {"const": {"route_key": "objc-to-cpp", "source_language": "objc", "target_language": "cpp"}},

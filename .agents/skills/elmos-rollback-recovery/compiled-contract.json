@@ -1,0 +1,60 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "resume point deterministic and repository consistent"
+    ],
+    "guardrails": [
+      "Never discard unrelated user changes."
+    ],
+    "inputs": [
+      "run journal",
+      "task branches",
+      "integration log"
+    ],
+    "outputs": [
+      "resumed state or rollback state"
+    ],
+    "triggers": [
+      "run interruption",
+      "bad integration",
+      "provider/network failure"
+    ]
+  },
+  "dag": {
+    "activation": "exception",
+    "dependencies": [
+      "elmos-repository-orchestrator",
+      "elmos-worktree-manager",
+      "elmos-worker-executor",
+      "elmos-integration-manager",
+      "elmos-run-state-journal"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "scm",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.workspace-scm",
+    "handler": "rollback_recovery",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-rollback-recovery",
+    "ordinal": 32,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/32-rollback-recovery/SKILL.md",
+    "sha256": "sha256:123d02f5c34a1e28eb5f45194cf3e8bdfcda67f5ad36f5d3c0dd2873a1e9e20a",
+    "version": "1.0.0"
+  }
+}

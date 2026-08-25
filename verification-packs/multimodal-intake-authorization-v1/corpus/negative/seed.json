@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "cases": [
+    "anonymous",
+    "cross-tenant",
+    "permission-escalation",
+    "confused-deputy",
+    "unknown-operation",
+    "deny-with-no-side-effect"
+  ]
+}

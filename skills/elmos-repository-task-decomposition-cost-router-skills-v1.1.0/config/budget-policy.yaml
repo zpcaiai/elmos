@@ -1,0 +1,17 @@
+version: 1
+budgets:
+  run:
+    hard_cost: null
+    soft_cost: null
+    hard_wall_clock_minutes: null
+  task:
+    max_prompt_tokens: null
+    max_output_tokens: null
+control:
+  reserve_percent_for_integration_and_certification: 20
+  reserve_percent_for_escalation: 15
+  stop_new_leaf_tasks_when_remaining_percent_below: 10
+eta:
+  report: autonomous_machine_wall_clock
+  include_human_comparison: true
+  human_comparison_is_informational_only: true

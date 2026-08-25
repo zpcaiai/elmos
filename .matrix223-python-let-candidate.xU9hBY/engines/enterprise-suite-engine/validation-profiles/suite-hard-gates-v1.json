@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1.0",
+  "hardGates": ["MASTER_DATA", "FINANCIAL_RECONCILIATION", "INVENTORY_RECONCILIATION", "PROCESS_EQUIVALENCE", "ROLE_MAPPING", "SOD", "REPORT_SECURITY", "INTEGRATION", "ROLLBACK", "BUSINESS_OWNER_APPROVAL"],
+  "notRunCanPass": false,
+  "inconclusiveCanPass": false,
+  "singleModulePassCanAuthorizeCutover": false
+}

@@ -1,0 +1,53 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "run can be reconstructed from journal + repository"
+    ],
+    "guardrails": [
+      "Journal must be durable before acknowledging completion of a step."
+    ],
+    "inputs": [
+      "run/task event"
+    ],
+    "outputs": [
+      "event log",
+      "state snapshot"
+    ],
+    "triggers": [
+      "every state transition"
+    ]
+  },
+  "dag": {
+    "activation": "control",
+    "dependencies": [
+      "elmos-repository-orchestrator"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.durable-runtime",
+    "handler": "run_state_journal",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-run-state-journal",
+    "ordinal": 33,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/33-run-state-journal/SKILL.md",
+    "sha256": "sha256:de0cc96f5f0b268551a53b46b4422d84b790119c808b367879f1b1e517a682f4",
+    "version": "1.0.0"
+  }
+}

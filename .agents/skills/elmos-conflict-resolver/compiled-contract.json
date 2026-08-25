@@ -1,0 +1,55 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "both task intents preserved or explicit supersession recorded"
+    ],
+    "guardrails": [
+      "No automatic choose-ours/theirs on semantic files."
+    ],
+    "inputs": [
+      "conflicting patches",
+      "task contracts",
+      "architecture index"
+    ],
+    "outputs": [
+      "resolved patch",
+      "conflict evidence"
+    ],
+    "triggers": [
+      "integration conflict"
+    ]
+  },
+  "dag": {
+    "activation": "conditional",
+    "dependencies": [
+      "elmos-integration-manager"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "scm",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.workspace-scm",
+    "handler": "conflict_resolver",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-conflict-resolver",
+    "ordinal": 29,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/29-conflict-resolver/SKILL.md",
+    "sha256": "sha256:7e285ab6cfa02372e6f8e9fbc93c51cd8ff1b4710d581bb022ba9243ac85342c",
+    "version": "1.0.0"
+  }
+}

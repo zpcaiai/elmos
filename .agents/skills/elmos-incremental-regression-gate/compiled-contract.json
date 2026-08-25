@@ -1,0 +1,55 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "wave passes selected regression set"
+    ],
+    "guardrails": [
+      "Do not rely solely on changed-file tests for high-centrality modules."
+    ],
+    "inputs": [
+      "impact map",
+      "changed paths",
+      "test catalog"
+    ],
+    "outputs": [
+      "wave regression evidence"
+    ],
+    "triggers": [
+      "wave integrated"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-integration-manager",
+      "elmos-conflict-resolver"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "runner",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.runner",
+    "handler": "incremental_regression_gate",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-incremental-regression-gate",
+    "ordinal": 30,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/30-incremental-regression-gate/SKILL.md",
+    "sha256": "sha256:33d977773bc2e57dcd5a523aa3436f5f8297b257768d8a2b3991fc2602d6d8b6",
+    "version": "1.0.0"
+  }
+}

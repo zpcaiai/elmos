@@ -1,5 +1,7 @@
 import type {
+  TranslationDeprecatedExcludedFile,
   TranslationLanguageId,
+  TranslationRepositoryInventoryLanguageId,
   TranslationRepositoryPlan,
   TranslationRepositoryWorkUnit,
 } from "../contracts";
@@ -19,6 +21,25 @@ const MAX_SOURCE_BYTES = 64 * 1024 * 1024;
 const MAX_WORK_UNIT_BYTES = 2 * 1024 * 1024;
 const SHA256 = /^[0-9a-f]{64}$/;
 const REPOSITORY_WORKSPACE_REF = /^repository-workspace:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}@[0-9a-f]{40}$/;
+const ACTIVE_LANGUAGE_IDS = [
+  "java",
+  "python",
+  "csharp",
+  "typescript",
+  "go",
+  "rust",
+  "cpp",
+  "objc",
+  "swift",
+  "php",
+  "kotlin",
+  "react",
+  "flutter",
+] as const satisfies readonly TranslationLanguageId[];
+const REPOSITORY_INVENTORY_LANGUAGE_IDS = [
+  ...ACTIVE_LANGUAGE_IDS,
+  "javascript",
+] as const satisfies readonly TranslationRepositoryInventoryLanguageId[];
 
 export class RepositoryPlanError extends Error {
   readonly errorCode: string;
@@ -36,6 +57,49 @@ function fail(errorCode: string, message: string): never {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function safeRepositoryRelativePath(value: unknown): value is string {
+  return typeof value === "string"
+    && value.length > 0
+    && value.length <= 500
+    && !value.startsWith("/")
+    && !value.includes("\\")
+    && !value.split("/").some((segment) => segment === "" || segment === "." || segment === "..");
+}
+
+function parseDeprecatedExcludedFile(
+  value: unknown,
+  index: number,
+): TranslationDeprecatedExcludedFile {
+  if (!isRecord(value)) {
+    fail("PLAN_DEPRECATED_EXCLUSION_INVALID", `deprecated_excluded_files[${index}] 不是对象。`);
+  }
+  const expectedKeys = ["bytes", "language", "path", "reason", "sha256", "status"];
+  if (Object.keys(value).sort().join(",") !== expectedKeys.join(",")) {
+    fail("PLAN_DEPRECATED_EXCLUSION_SHAPE_INVALID", `deprecated_excluded_files[${index}] 字段不精确。`);
+  }
+  if (
+    !safeRepositoryRelativePath(value.path)
+    || value.language !== "javascript"
+    || typeof value.sha256 !== "string"
+    || !SHA256.test(value.sha256)
+    || !Number.isInteger(value.bytes)
+    || (value.bytes as number) < 0
+    || (value.bytes as number) > MAX_WORK_UNIT_BYTES
+    || value.status !== "EXCLUDED_FROM_ACTIVE_ROUTE"
+    || value.reason !== "DEPRECATED_LANGUAGE_REQUIRES_EXPLICIT_HISTORICAL_REPLAY"
+  ) {
+    fail("PLAN_DEPRECATED_EXCLUSION_INVALID", `deprecated_excluded_files[${index}] 未绑定已废弃 JavaScript 排除证据。`);
+  }
+  return {
+    path: value.path,
+    language: "javascript",
+    sha256: value.sha256,
+    bytes: value.bytes as number,
+    status: "EXCLUDED_FROM_ACTIVE_ROUTE",
+    reason: "DEPRECATED_LANGUAGE_REQUIRES_EXPLICIT_HISTORICAL_REPLAY",
+  };
 }
 
 export function isSafeRepositoryRef(value: string): boolean {
@@ -177,6 +241,12 @@ export function validateRepositoryPlan(
   if (route.source !== context.sourceLanguage || route.target !== context.targetLanguage) {
     fail("PLAN_ROUTE_DIRECTION_MISMATCH", "清单路线方向与源/目标语言不一致。");
   }
+  if (raw.language_lifecycle !== "ACTIVE") {
+    fail(
+      "PLAN_LANGUAGE_LIFECYCLE_INVALID",
+      "Web 仓库入口只接受 13 个活动语言的 ACTIVE 生命周期，不重放已废弃 JavaScript 路线。",
+    );
+  }
   if (route.localExecution !== "PASSED") {
     fail(
       "PLAN_ROUTE_LOCAL_PROFILE_NOT_PASSED",
@@ -234,11 +304,56 @@ export function validateRepositoryPlan(
 
   const counts = raw.language_counts;
   if (!isRecord(counts)) fail("PLAN_LANGUAGE_COUNTS_INVALID", "清单缺少 language_counts。");
-  for (const language of capability.languages) {
-    const value = counts[language.id];
+  const countKeys = Object.keys(counts).sort();
+  const expectedCountKeys = [...REPOSITORY_INVENTORY_LANGUAGE_IDS].sort();
+  if (
+    countKeys.length !== expectedCountKeys.length
+    || countKeys.some((key, index) => key !== expectedCountKeys[index])
+  ) {
+    fail(
+      "PLAN_LANGUAGE_COUNT_KEY_SET_INVALID",
+      "language_counts 必须精确包含 13 个活动语言与只读历史 JavaScript 键。",
+    );
+  }
+  for (const language of REPOSITORY_INVENTORY_LANGUAGE_IDS) {
+    const value = counts[language];
     if (!Number.isInteger(value) || (value as number) < 0) {
-      fail("PLAN_LANGUAGE_COUNT_INVALID", `清单 language_counts.${language.id} 非法。`);
+      fail("PLAN_LANGUAGE_COUNT_INVALID", `清单 language_counts.${language} 非法。`);
     }
+  }
+  const typedCounts = counts as Record<TranslationRepositoryInventoryLanguageId, number>;
+  const countedFiles = REPOSITORY_INVENTORY_LANGUAGE_IDS.reduce(
+    (total, language) => total + typedCounts[language],
+    0,
+  );
+  if (countedFiles !== fileCount || typedCounts[context.sourceLanguage] !== sourceFileCount) {
+    fail(
+      "PLAN_LANGUAGE_COUNTS_NOT_CLOSED",
+      "language_counts 未与 file_count/source_file_count 闭合。",
+    );
+  }
+
+  if (!Array.isArray(raw.deprecated_excluded_files)) {
+    fail("PLAN_DEPRECATED_EXCLUSIONS_INVALID", "清单缺少 deprecated_excluded_files 数组。");
+  }
+  const deprecatedExcludedFiles = raw.deprecated_excluded_files.map(parseDeprecatedExcludedFile);
+  const deprecatedPaths = new Set<string>();
+  let deprecatedBytes = 0;
+  for (const entry of deprecatedExcludedFiles) {
+    if (deprecatedPaths.has(entry.path)) {
+      fail("PLAN_DEPRECATED_EXCLUSION_DUPLICATED", `已废弃排除重复声明 ${entry.path}。`);
+    }
+    deprecatedPaths.add(entry.path);
+    deprecatedBytes += entry.bytes;
+  }
+  if (
+    deprecatedExcludedFiles.length !== typedCounts.javascript
+    || deprecatedBytes > (sourceBytes as number)
+  ) {
+    fail(
+      "PLAN_DEPRECATED_EXCLUSIONS_NOT_CLOSED",
+      "deprecated_excluded_files 未与 JavaScript 计数或仓库字节上限闭合。",
+    );
   }
 
   if (!Array.isArray(raw.work_units)) fail("PLAN_WORK_UNITS_INVALID", "清单缺少 work_units 数组。");
@@ -249,6 +364,12 @@ export function validateRepositoryPlan(
   const seenPaths = new Set<string>();
   let aggregateBytes = 0;
   for (const unit of workUnits) {
+    if (deprecatedPaths.has(unit.source_path)) {
+      fail(
+        "PLAN_DEPRECATED_EXCLUSION_WORK_UNIT_CONFLICT",
+        `已废弃 JavaScript 排除文件 ${unit.source_path} 不得同时成为活动路线工作单元。`,
+      );
+    }
     if (seenPaths.has(unit.source_path)) {
       fail("PLAN_WORK_UNIT_PATH_DUPLICATED", `清单重复声明了源文件 ${unit.source_path}。`);
     }
@@ -279,12 +400,14 @@ export function validateRepositoryPlan(
     route_id: route.id,
     source_language: context.sourceLanguage,
     target_language: context.targetLanguage,
+    language_lifecycle: "ACTIVE",
     file_count: fileCount as number,
     source_file_count: sourceFileCount as number,
     source_bytes: sourceBytes as number,
     repository_scale: expectedScale,
     repository_limits: expectedLimits,
-    language_counts: counts as Record<TranslationLanguageId, number>,
+    language_counts: typedCounts,
+    deprecated_excluded_files: deprecatedExcludedFiles,
     ignored_symlink_count: raw.ignored_symlink_count as number,
     work_units: workUnits,
     execution_status: "NOT_RUN",

@@ -1,0 +1,51 @@
+schema_version: 1.0.0
+ordinal: 1
+name: elmos-multimodal-input-orchestrator
+title: 统一多模态输入总控
+objective: 建立所有输入类型共享的会话、状态机、路由、错误隔离和下游交付边界，使下游 Agent 只消费统一内容模型。
+dependencies:
+- elmos-unified-multimodal-content-ir
+- elmos-source-anchor-and-provenance
+- elmos-durable-processing-and-recovery
+inputs:
+- 用户提交、上传清单、租户策略、模型能力
+outputs:
+- InputPackage、处理事件、下游任务句柄
+responsibilities:
+- 创建 InputSession/InputAsset/InputPackage 聚合根与持久状态机
+- 按文件类型、风险、租户策略和资源需求选择解析流水线
+- 支持部分成功、重试、取消、恢复、幂等和进度事件
+- 将原始资产、解析结果、来源锚点和质量报告原子化提交给下游
+deliverables:
+- 编排服务与端口适配器
+- 状态机、事件和数据库迁移
+- 跨模态端到端测试与运行手册
+acceptance:
+- 同一幂等键不会创建重复任务或副作用
+- 单资产失败不阻塞同包其他资产，包状态准确反映部分就绪
+- 所有 READY 内容具备来源锚点和处理报告
+- 下游无需感知 PDF、Word、音频等原始格式
+data_entities:
+- input_sessions
+- input_assets
+- processing_jobs
+events:
+- input.session.created
+- input.package.ready
+- input.package.partially_ready
+metrics:
+- package_ready_latency_p95
+- asset_success_rate
+failure_modes:
+- 重复提交
+- 解析器不可用
+- 部分资产永久失败
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

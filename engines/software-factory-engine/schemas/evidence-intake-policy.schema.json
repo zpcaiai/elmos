@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/software-factory/evidence-intake-policy/1.0",
+  "title": "Local quarantine admission policy",
+  "type": "object",
+  "required": [
+    "schema_version", "policy_id", "tenant_id", "project_id", "allowed_evidence_kinds",
+    "allowed_receipt_digests", "allowed_organizations", "revoked_principals",
+    "require_distinct_organizations", "trust_root_state"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "policy_id": {"$ref": "#/$defs/token"},
+    "tenant_id": {"$ref": "#/$defs/token"},
+    "project_id": {"$ref": "#/$defs/token"},
+    "allowed_evidence_kinds": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "#/$defs/token"}, "uniqueItems": true
+    },
+    "allowed_receipt_digests": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "#/$defs/digest"}, "uniqueItems": true
+    },
+    "allowed_organizations": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "#/$defs/token"}, "uniqueItems": true
+    },
+    "revoked_principals": {
+      "type": "array", "maxItems": 4096,
+      "items": {"$ref": "#/$defs/token"}, "uniqueItems": true
+    },
+    "require_distinct_organizations": {"type": "boolean"},
+    "trust_root_state": {"const": "NOT_CONFIGURED"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,191}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

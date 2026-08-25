@@ -7,13 +7,23 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError
+from .models import (
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+    REPOSITORY_SURFACE_LANGUAGES,
+    SUPPORTED_LANGUAGES,
+    Language,
+    RouteError,
+    repository_language_lifecycle,
+)
+from .react_repository import react_project_descriptor
 
 _EXTENSIONS: dict[str, Language] = {
     ".java": "java",
+    ".kt": "kotlin",
     ".py": "python",
     ".cs": "csharp",
     ".ts": "typescript",
+    ".tsx": "react",
     ".cjs": "javascript",
     ".js": "javascript",
     ".mjs": "javascript",
@@ -28,6 +38,7 @@ _EXTENSIONS: dict[str, Language] = {
     ".m": "objc",
     ".swift": "swift",
     ".php": "php",
+    ".dart": "flutter",
 }
 _IGNORED_DIRECTORIES = {
     ".git",
@@ -194,8 +205,19 @@ def plan_repository(
     repository_ref: str,
     source_language: Language,
     target_language: Language,
+    *,
+    allow_deprecated_replay: bool = False,
 ) -> dict[str, Any]:
-    if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
+    language_lifecycle = repository_language_lifecycle(
+        source_language,
+        target_language,
+    )
+    if language_lifecycle is None:
+        raise RouteError("UNSUPPORTED_LANGUAGE")
+    if (
+        language_lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+        and not allow_deprecated_replay
+    ):
         raise RouteError("UNSUPPORTED_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
@@ -205,6 +227,8 @@ def plan_repository(
     safe_ref = _repository_ref(repository_ref)
     inventory: list[dict[str, Any]] = []
     javascript_esm_descriptors: list[dict[str, Any]] = []
+    deprecated_excluded_files: list[dict[str, Any]] = []
+    react_descriptor = react_project_descriptor(root) if source_language == "react" else None
     language_counts = {language: 0 for language in REPOSITORY_SURFACE_LANGUAGES}
     ignored_symlink_count = 0
     total_bytes = 0
@@ -226,8 +250,17 @@ def plan_repository(
             if path.is_symlink():
                 ignored_symlink_count += 1
                 continue
-            language = _EXTENSIONS.get(path.suffix.lower())
+            suffix = path.suffix.lower()
+            language = (
+                "react"
+                if suffix == ".tsx" or source_language == "react" and suffix == ".ts"
+                else _EXTENSIONS.get(suffix)
+            )
             if language is None:
+                continue
+            if language not in language_counts:
+                # A declared-but-repository-pending identity is not silently
+                # counted as an active surface before models promotes it.
                 continue
             relative = path.relative_to(root).as_posix()
             content = _read_stable(path)
@@ -245,10 +278,37 @@ def plan_repository(
                 "lines": content.count(b"\n") + (1 if content and not content.endswith(b"\n") else 0),
             }
             if language == "javascript":
-                descriptor = javascript_esm_descriptor(path, root)
-                if descriptor is not None:
-                    entry["javascript_esm_descriptor"] = descriptor
-                    javascript_esm_descriptors.append({"source_path": relative, **descriptor})
+                if (
+                    language_lifecycle
+                    == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+                ):
+                    descriptor = javascript_esm_descriptor(path, root)
+                    entry["language_lifecycle"] = (
+                        REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY
+                    )
+                    if descriptor is not None:
+                        entry["javascript_esm_descriptor"] = descriptor
+                        javascript_esm_descriptors.append(
+                            {"source_path": relative, **descriptor}
+                        )
+                else:
+                    # JavaScript remains visible and content-addressed in an
+                    # active mixed repository, but its retired ESM/CJS route
+                    # admission rules must not veto an unrelated active pair.
+                    # No work unit can be scheduled for this entry.
+                    entry["language_lifecycle"] = "DEPRECATED_EXCLUDED"
+                    deprecated_excluded_files.append(
+                        {
+                            "path": relative,
+                            "language": "javascript",
+                            "sha256": entry["sha256"],
+                            "bytes": entry["bytes"],
+                            "status": "EXCLUDED_FROM_ACTIVE_ROUTE",
+                            "reason": "DEPRECATED_LANGUAGE_REQUIRES_EXPLICIT_HISTORICAL_REPLAY",
+                        }
+                    )
+            if language == "react" and react_descriptor is not None:
+                entry["react_project_descriptor"] = react_descriptor
             inventory.append(entry)
 
     source_files = [entry for entry in inventory if entry["language"] == source_language]
@@ -261,6 +321,24 @@ def plan_repository(
             f"descriptor:{entry['source_path']}:{entry['path']}:{entry['sha256']}:{entry['bytes']}"
             for entry in javascript_esm_descriptors
         ]
+        + [
+            "deprecated-excluded:"
+            f"{entry['path']}:{entry['sha256']}:{entry['bytes']}:"
+            f"{entry['status']}:{entry['reason']}"
+            for entry in deprecated_excluded_files
+        ]
+        + (
+            [
+                "react-package:"
+                f"{react_descriptor['package']['sha256']}:"
+                f"{react_descriptor['package']['bytes']}",
+                "react-tsconfig:"
+                f"{react_descriptor['tsconfig']['sha256']}:"
+                f"{react_descriptor['tsconfig']['bytes']}",
+            ]
+            if react_descriptor is not None
+            else []
+        )
     )
     snapshot_sha256 = hashlib.sha256(snapshot_payload.encode("utf-8")).hexdigest()
     route_id = f"{source_language}-to-{target_language}"
@@ -274,6 +352,11 @@ def plan_repository(
             **(
                 {"javascript_esm_descriptor": entry["javascript_esm_descriptor"]}
                 if "javascript_esm_descriptor" in entry
+                else {}
+            ),
+            **(
+                {"react_project_descriptor": entry["react_project_descriptor"]}
+                if "react_project_descriptor" in entry
                 else {}
             ),
             "status": "DISCOVERY_REQUIRED",
@@ -301,6 +384,7 @@ def plan_repository(
         "route_id": route_id,
         "source_language": source_language,
         "target_language": target_language,
+        "language_lifecycle": language_lifecycle,
         "file_count": len(inventory),
         "source_file_count": len(source_files),
         "source_bytes": total_bytes,
@@ -312,6 +396,8 @@ def plan_repository(
         },
         "language_counts": language_counts,
         "javascript_esm_descriptors": javascript_esm_descriptors,
+        "deprecated_excluded_files": deprecated_excluded_files,
+        "react_project_descriptor": react_descriptor,
         "ignored_symlink_count": ignored_symlink_count,
         "work_units": work_units,
         "execution_status": "NOT_RUN",
@@ -321,5 +407,6 @@ def plan_repository(
             "Inventory and work-unit decomposition do not execute source code.",
             "Every discovered function requires an independent behavior-case corpus.",
             "Repository-wide success cannot be inferred from typed-pure-function-v1 evidence.",
+            "Deprecated-language files are inventoried and content-addressed but excluded from active-route work units.",
         ],
     }

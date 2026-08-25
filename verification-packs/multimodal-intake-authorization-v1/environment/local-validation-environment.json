@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_CAPTURED_SELF_ATTESTED",
+  "environment_digest": "sha256:e7f91fd09ed5470ea35bb13feb134a8d7e323243630932c1ecde3a920225efe7",
+  "digest_algorithm": "sha256 of UTF-8 RFC 8259 JSON with sorted keys and compact separators over digest_input",
+  "digest_input": {
+    "schema_version": 1,
+    "environment_key": "multimodal-intake-local-validation-darwin-arm64-v1",
+    "bound_target_artifact_digest": "sha256:2ed935793e08ed399f1fc8640c546cb99afa8a529bf39e1f9394dfd0fbf72433",
+    "platform": {
+      "os": "macOS",
+      "product_version": "26.6.2",
+      "build_version": "25G83",
+      "kernel": "Darwin 25.6.0",
+      "architecture": "arm64"
+    },
+    "tools": [
+      {
+        "name": "python",
+        "version": "CPython 3.12.14",
+        "identity": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "bytes": 34640,
+        "sha256": "sha256:30b2a6bf9706029b609327ca5db722cd458239df96efc87e1f8e37beed49db2e"
+      },
+      {
+        "name": "uv",
+        "version": "0.11.16",
+        "identity": "/opt/homebrew/Cellar/uv/0.11.16/bin/uv",
+        "bytes": 46541136,
+        "sha256": "sha256:d4182a7bba32f331b2c5a74568cf1c88aa50f31fe643a2c56118c6610db0aff0"
+      },
+      {
+        "name": "mypy",
+        "version": "2.1.0",
+        "identity": "/opt/homebrew/bin/mypy",
+        "bytes": 206,
+        "sha256": "sha256:43f253320db95c821e09626788e88a93f6fedea90d20c65735e02dda54a7e9fc"
+      },
+      {
+        "name": "ruff",
+        "version": "0.15.20",
+        "identity": "/opt/homebrew/bin/ruff",
+        "bytes": 23885248,
+        "sha256": "sha256:1edd2e6e57286bdddedb1fb55493a91dc17f42838f3d6be488ded7cfe2a4f3a1"
+      },
+      {
+        "name": "node",
+        "version": "26.0.0",
+        "identity": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+        "bytes": 68672,
+        "sha256": "sha256:73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb"
+      },
+      {
+        "name": "npm",
+        "version": "11.12.1",
+        "identity": "/opt/homebrew/lib/node_modules/npm/bin/npm-cli.js",
+        "bytes": 54,
+        "sha256": "sha256:8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7"
+      }
+    ],
+    "validation_dependencies": [
+      {
+        "name": "pytest",
+        "version": "8.4.1",
+        "identity": "python-module:pytest/__init__.py",
+        "bytes": 5373,
+        "sha256": "sha256:66993a5e3905005e0981159b4794d10b1adacf341a58a44d696ad2c4442dcdc6"
+      },
+      {
+        "name": "jsonschema",
+        "version": "4.25.1",
+        "identity": "python-module:jsonschema/__init__.py",
+        "bytes": 3941,
+        "sha256": "sha256:a7e470e134bfd0e3c76482722260d6b1d5a099de823d61cc5cbabb06e4314c67"
+      }
+    ]
+  },
+  "source_archive_sha256": "sha256:23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+  "external_providers": "NOT_RUN",
+  "browser_device_evidence": "NOT_RUN",
+  "independent_verifier": "NOT_RUN",
+  "notes": [
+    "This manifest records a bounded local workstation and tool identity only; it is self-attested engineering evidence.",
+    "It does not prove a reproducible hermetic environment, provider behavior, browser/device execution, independent review, deployment, production readiness, or certification."
+  ]
+}

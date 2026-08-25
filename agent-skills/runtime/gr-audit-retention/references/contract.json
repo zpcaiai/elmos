@@ -1,0 +1,71 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-072",
+  "name": "gr-audit-retention",
+  "title": "Audit Retention Redaction",
+  "description": "管理源码、模型上下文、日志、Evidence、账单与 Proof 的访问、保留、删除和 Legal Hold。",
+  "batch": "19",
+  "batch_slug": "data-evidence-observability-economics",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/gr-audit-retention/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [
+    "gr-evidence-store",
+    "gr-data-model"
+  ],
+  "outputs": [
+    "retention-policy.yaml",
+    "audit-report.json",
+    "deletion-certificate.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "Data classification",
+    "RBAC/audit",
+    "Lifecycle/deletion proof",
+    "Redacted views",
+    "Model data policy"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "跨租户访问零泄漏",
+    "历史事件 replay 一致",
+    "Evidence 篡改被检测",
+    "失败/重试成本不丢失"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: retention-policy.yaml, audit-report.json, deletion-certificate.json"
+  ],
+  "stop_conditions": [
+    "RLS/backup/restore 失败",
+    "Evidence hash mismatch",
+    "价格/usage 缺失却试图输出 actual",
+    "保留/法律策略冲突"
+  ],
+  "definition_of_done": [
+    "每个 run 可从事件和 Evidence 审计",
+    "每个成本归因到执行单元",
+    "客户状态与 durable state/claims 一致"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

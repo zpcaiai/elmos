@@ -1,0 +1,21 @@
+{
+  "expected_execution_digest": "sha256:d5ce662ca322c95e2de17a92c846903abd9de298a4a8720864b16657e1a1262a",
+  "expected_manifest_digest": "sha256:fb1a5829cc36e86a7ce80f67bf03ebc89cfa7d2d399fd648ed4f6e5149728abe",
+  "expected_receipt_digest": "sha256:205c21fa3796330ffcb923f9e41e71190b59f70fc048e0a131abe64a6ebdcf64",
+  "external_states": {
+    "archive_scripts_executed": false,
+    "external_certification": "NOT_CERTIFIED",
+    "independent_holdout": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "production_canary": "NOT_RUN",
+    "production_deployment": "NOT_RUN",
+    "production_writes": "NOT_RUN",
+    "provider_execution": "NOT_RUN"
+  },
+  "manifest_digest": "sha256:fb1a5829cc36e86a7ce80f67bf03ebc89cfa7d2d399fd648ed4f6e5149728abe",
+  "observed_execution_digest": "sha256:d5ce662ca322c95e2de17a92c846903abd9de298a4a8720864b16657e1a1262a",
+  "observed_receipt_digest": "sha256:205c21fa3796330ffcb923f9e41e71190b59f70fc048e0a131abe64a6ebdcf64",
+  "reason": null,
+  "schema_version": "1.0",
+  "status": "MATCHED"
+}

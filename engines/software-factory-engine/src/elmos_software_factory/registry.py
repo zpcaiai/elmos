@@ -229,3 +229,7 @@ class SkillRegistry:
 
 def load_registry(path: str | Path | None = None) -> SkillRegistry:
     return SkillRegistry.load(path)
+
+
+DEFAULT_SKILL_REGISTRY = load_registry()
+SKILL_REGISTRY_DIGEST = DEFAULT_SKILL_REGISTRY.registry_digest

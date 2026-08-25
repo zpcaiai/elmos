@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/large-run-read-model.schema.json",
+  "title": "Elmos Large Repository Run Read Model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tenant_id", "job", "run", "revisions", "progress", "repository", "coverage", "financials", "eta"],
+  "properties": {
+    "tenant_id": {"$ref": "#/$defs/uuid"},
+    "job": {
+      "type": "object",
+      "required": ["id", "kind", "status", "current_run_id"],
+      "properties": {
+        "id": {"$ref": "#/$defs/uuid"},
+        "kind": {"enum": ["project_generation", "repository_conversion", "modernization", "analysis", "verification"]},
+        "status": {"type": "string"},
+        "current_run_id": {"$ref": "#/$defs/uuid"}
+      },
+      "additionalProperties": true
+    },
+    "run": {
+      "type": "object",
+      "required": ["id", "run_kind", "status", "run_no", "started_at"],
+      "properties": {
+        "id": {"$ref": "#/$defs/uuid"},
+        "run_kind": {"type": "string"},
+        "status": {"type": "string"},
+        "run_no": {"type": "integer", "minimum": 1},
+        "started_at": {"type": "string", "format": "date-time"},
+        "last_progress_at": {"type": ["string", "null"], "format": "date-time"},
+        "completion_gate_evaluation_id": {"oneOf": [{"$ref": "#/$defs/uuid"}, {"type": "null"}]}
+      },
+      "additionalProperties": true
+    },
+    "revisions": {
+      "type": "object",
+      "required": ["source_repository_revision_id", "requirements_revision_id", "policy_revision_id", "workflow_revision_id", "model_route_revision_id", "toolchain_revision_id", "environment_revision_id"],
+      "additionalProperties": {"oneOf": [{"$ref": "#/$defs/uuid"}, {"type": "null"}]}
+    },
+    "progress": {
+      "type": "object",
+      "required": ["basis_points", "tasks", "last_event_seq"],
+      "properties": {
+        "basis_points": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "tasks": {
+          "type": "object",
+          "required": ["total", "pending", "running", "succeeded", "failed", "blocked"],
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "last_event_seq": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "repository": {
+      "type": "object",
+      "required": ["file_count", "source_file_count", "total_bytes", "parse_gap_count", "capability_count"],
+      "properties": {
+        "file_count": {"type": "integer", "minimum": 0},
+        "source_file_count": {"type": "integer", "minimum": 0},
+        "total_bytes": {"type": "integer", "minimum": 0},
+        "parse_gap_count": {"type": "integer", "minimum": 0},
+        "capability_count": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "latest_checkpoint": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {"$ref": "#/$defs/uuid"},
+        "checkpoint_no": {"type": "integer", "minimum": 1},
+        "manifest_id": {"$ref": "#/$defs/uuid"},
+        "sealed_at": {"type": "string", "format": "date-time"}
+      },
+      "required": ["id", "checkpoint_no", "manifest_id", "sealed_at"],
+      "additionalProperties": true
+    },
+    "target_revision": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {"$ref": "#/$defs/uuid"},
+        "revision_no": {"type": "integer", "minimum": 1},
+        "tree_sha256": {"$ref": "#/$defs/sha256"},
+        "status": {"type": "string"}
+      },
+      "required": ["id", "revision_no", "tree_sha256", "status"],
+      "additionalProperties": true
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["requirements_total", "requirements_verified", "capabilities_total", "capabilities_verified", "critical_open_gaps", "unknown_open_gaps"],
+      "properties": {
+        "requirements_total": {"type": "integer", "minimum": 0},
+        "requirements_verified": {"type": "integer", "minimum": 0},
+        "capabilities_total": {"type": "integer", "minimum": 0},
+        "capabilities_verified": {"type": "integer", "minimum": 0},
+        "critical_open_gaps": {"type": "integer", "minimum": 0},
+        "unknown_open_gaps": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "gate": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {"$ref": "#/$defs/uuid"},
+        "decision": {"enum": ["pass", "fail", "blocked", "error"]},
+        "evidence_bundle_id": {"$ref": "#/$defs/uuid"},
+        "evaluated_at": {"type": "string", "format": "date-time"}
+      },
+      "required": ["id", "decision", "evidence_bundle_id", "evaluated_at"],
+      "additionalProperties": true
+    },
+    "financials": {
+      "type": "object",
+      "required": ["total_cost_microunits", "total_revenue_microunits", "model_calls", "total_tokens", "cached_tokens"],
+      "properties": {
+        "total_cost_microunits": {"type": "integer"},
+        "total_revenue_microunits": {"type": "integer"},
+        "model_calls": {"type": "integer", "minimum": 0},
+        "total_tokens": {"type": "integer", "minimum": 0},
+        "cached_tokens": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "eta": {
+      "type": "object",
+      "required": ["machine_wall_clock_remaining_p50_seconds", "machine_wall_clock_remaining_p90_seconds", "expected_hitl_wait_seconds", "human_equivalent_p50_hours", "generated_at"],
+      "properties": {
+        "machine_wall_clock_remaining_p50_seconds": {"type": ["integer", "null"], "minimum": 0},
+        "machine_wall_clock_remaining_p90_seconds": {"type": ["integer", "null"], "minimum": 0},
+        "expected_hitl_wait_seconds": {"type": "integer", "minimum": 0},
+        "human_equivalent_p50_hours": {"type": ["number", "null"], "minimum": 0},
+        "generated_at": {"type": "string", "format": "date-time"}
+      },
+      "additionalProperties": true
+    },
+    "unresolved_side_effects": {"type": "integer", "minimum": 0}
+  },
+  "$defs": {
+    "uuid": {"type": "string", "format": "uuid"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

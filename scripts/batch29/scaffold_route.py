@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import stat
 from pathlib import Path
 
 from route_sets import EVIDENCED_ROUTE_KEYS, SUPPORTED_ROUTE_LANGUAGES
@@ -15,19 +17,37 @@ def main() -> int:
     p.add_argument("--source", required=True, choices=sorted(LANGUAGES))
     p.add_argument("--target", required=True, choices=sorted(LANGUAGES))
     p.add_argument("--repo-root", default=".")
-    p.add_argument("--force", action="store_true")
+    p.add_argument(
+        "--force",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     a = p.parse_args()
+    if a.force:
+        p.error(
+            "--force is disabled: existing route packs are immutable; use the "
+            "canonical inventory synchronizer for governed metadata updates"
+        )
     if a.source == a.target:
         p.error("source and target must differ")
     root = Path(a.repo_root).resolve()
     route_key = f"{a.source}-to-{a.target}"
     if route_key not in EVIDENCED_ROUTE_KEYS:
         p.error("route is outside the approved explicit thirteen-language directed matrix")
-    route = root / "routes" / route_key
-    if route.exists() and not a.force:
+    routes_root = root / "routes"
+    if routes_root.exists() or routes_root.is_symlink():
+        metadata = routes_root.lstat()
+        if routes_root.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
+            p.error("routes root must be a real in-repository directory")
+    else:
+        routes_root.mkdir(mode=0o755, parents=True)
+    if routes_root.resolve(strict=True).parent != root:
+        p.error("routes root escapes the resolved repository root")
+    route = routes_root / route_key
+    if route.exists() or route.is_symlink():
         print(f"EXISTS: {route}")
         return 0
-    route.mkdir(parents=True, exist_ok=True)
+    route.mkdir(mode=0o755, exist_ok=False)
     for rel in [
         "lowering",
         "mappings",
@@ -72,12 +92,20 @@ def main() -> int:
         route / "certification" / "certification.json": certification,
     }
     for path, data in files.items():
-        if path.exists() and not a.force:
-            continue
-        path.write_text(json.dumps(data, indent=2) + "\n")
-    (route / "README.md").write_text(
-        f"# {route_key}\n\nDirected Batch 29 migration route. Reverse direction is a separate route.\n"
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0)
+        descriptor = os.open(path, flags, 0o644)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(json.dumps(data, indent=2) + "\n")
+    readme = route / "README.md"
+    descriptor = os.open(
+        readme,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+        0o644,
     )
+    with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+        stream.write(
+            f"# {route_key}\n\nDirected Batch 29 migration route. Reverse direction is a separate route.\n"
+        )
     print(route)
     return 0
 

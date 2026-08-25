@@ -1,0 +1,126 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/model-selection-resolved.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "locked_by_user": {
+            "const": false
+          },
+          "selected_model": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "manual"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "locked_by_user": {
+            "const": true
+          },
+          "selected_model": {
+            "enum": [
+              "gpt-5.6-sol-max",
+              "claude-opus-5-max",
+              "claude-fable-5",
+              "grok-4.6",
+              "kimi-k3-max",
+              "glm-5.3-max",
+              "qwen3.8-max",
+              "deepseek-v4-pro-0813",
+              "gemini-3.7-flash-high",
+              "claude-sonnet-5"
+            ],
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "description": "Server-resolved, registry-bound selection record. A NOT_CONFIGURED result with absent registry provenance is not a resolved record.",
+  "properties": {
+    "fallback_policy": {
+      "enum": [
+        "strict",
+        "smart_within_allowlist"
+      ]
+    },
+    "locked_by_user": {
+      "type": "boolean"
+    },
+    "mode": {
+      "enum": [
+        "smart",
+        "manual"
+      ]
+    },
+    "optimization_profile": {
+      "enum": [
+        "cost_performance",
+        "lowest_cost",
+        "max_quality",
+        "fastest"
+      ]
+    },
+    "registry_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "resolved_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "selected_model": {
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    },
+    "selection_source": {
+      "enum": [
+        "ui",
+        "api",
+        "cli",
+        "resume"
+      ]
+    },
+    "verification_policy": {
+      "enum": [
+        "system_required_verifiers",
+        "selected_model_only"
+      ]
+    }
+  },
+  "required": [
+    "mode",
+    "selected_model",
+    "optimization_profile",
+    "fallback_policy",
+    "verification_policy",
+    "selection_source",
+    "locked_by_user",
+    "resolved_at",
+    "registry_digest"
+  ],
+  "type": "object"
+}

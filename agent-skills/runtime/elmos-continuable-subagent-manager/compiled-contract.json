@@ -34,7 +34,7 @@
       "prompt",
       "limits"
     ],
-    "runtime_artifact_set_sha256": "sha256:23a0d7b74b8c27c62ba237eaa75e0132a3818f3c515e0f5c6137f525a5e0e51d",
+    "runtime_artifact_set_sha256": "sha256:9f5c17b1f79893c2c62e627587cc80035b57b15c2b50420ac2db8129b92d8818",
     "skill_name": "elmos-continuable-subagent-manager",
     "skill_registry": {
       "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",

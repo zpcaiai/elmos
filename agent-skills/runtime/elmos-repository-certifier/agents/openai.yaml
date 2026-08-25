@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Repository Certifier"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-repository-certifier to perform its bounded repository workflow with provenance and fail-closed evidence."

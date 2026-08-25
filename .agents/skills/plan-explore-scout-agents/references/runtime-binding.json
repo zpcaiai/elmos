@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "plan-explore-scout-agents",
+  "source_contract_sha256": "sha256:9bf0b11e97c9329c4e6197f003c5303e466868f7ae10f0cd6c8cca1d88a9bf14",
+  "source_id": "FOUNDATION-06-plan-explore-scout-agents",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Large Repository Run Persistence"
+  short_description: "Apply the pinned ELMOS PostgreSQL persistence contract"
+  default_prompt: "Use $large-repository-run-persistence with the pinned database design; keep runtime and certification evidence fail-closed."

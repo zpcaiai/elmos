@@ -216,7 +216,20 @@ _KOTLIN_RESERVED = _words(
     """
 )
 
-_KOTLIN_DIALECT = "kotlin-2.4.10-jvm"
+_KOTLIN_DIALECT = "kotlin-2.2.20-jvm"
+
+_DART_RESERVED = _words(
+    """
+    abstract as assert async await augment base break case catch class const
+    continue covariant default deferred do dynamic else enum export extends
+    extension external factory false final finally for Function get hide if
+    implements import in interface is late library macro mixin new null of on
+    operator part required rethrow return sealed set show static super switch
+    sync this throw true try type typedef var void when while with yield
+    """
+)
+
+_FLUTTER_DART_DIALECT = "flutter-3.44.1-dart-3.12.1-native-pure-module"
 
 _FORBIDDEN: dict[Language, frozenset[str]] = {
     "java": _words(
@@ -242,6 +255,13 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
     "typescript": _words(
         """
         Math Number Object RangeError TypeError Error migrated actual0
+        _elmosRequireSafeInteger _elmosRequireFiniteNumber _elmosRequireNonZero
+        """
+    ),
+    "react": _words(
+        """
+        Math Number Object RangeError TypeError Error migrated actual0
+        React ReactDOM JSX useEffect useLayoutEffect useMemo useState
         _elmosRequireSafeInteger _elmosRequireFiniteNumber _elmosRequireNonZero
         """
     ),
@@ -314,7 +334,7 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
     # `maxOf`/`minOf` are the only `kotlin.*` top-level functions whose signature
     # a migrated function can match *exactly* over the canonical types --
     # `maxOf(Long, Long): Long`, `maxOf(Double, Double): Double`. Verified with
-    # kotlinc 2.1.21: a file declaring `fun maxOf(a: Long, b: Long): Long`
+    # kotlinc 2.2.20: a file declaring `fun maxOf(a: Long, b: Long): Long`
     # compiles, and an unqualified `maxOf(7L, 2L)` elsewhere in the module then
     # resolves to the migrated function -- 3, not 7 -- with no diagnostic.
     # The rest of the default-imported surface (`run`, `let`, `repeat`,
@@ -331,6 +351,16 @@ _FORBIDDEN: dict[Language, frozenset[str]] = {
         maxOf minOf
         """
     ),
+    "flutter": _words(
+        """
+        main BigInt RangeError ArgumentError IntegerDivisionByZeroException
+        int double bool String num Object
+        _elmosInIntegerRange _elmosCheckedAdd _elmosCheckedSub
+        _elmosCheckedMul _elmosCheckedDiv _elmosCheckedMod _elmosNonZero
+        _elmosHarnessFp64 _elmosHarnessSameFp64 _elmosHarnessHexUtf8
+        actual0
+        """
+    ),
 }
 
 _RESERVED: dict[Language, frozenset[str]] = {
@@ -338,6 +368,7 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "python": _PYTHON_RESERVED,
     "csharp": _CSHARP_RESERVED,
     "typescript": _TYPESCRIPT_RESERVED,
+    "react": _TYPESCRIPT_RESERVED,
     "javascript": _ECMASCRIPT_RESERVED,
     "go": _GO_RESERVED,
     "rust": _RUST_RESERVED,
@@ -346,6 +377,7 @@ _RESERVED: dict[Language, frozenset[str]] = {
     "swift": _SWIFT_RESERVED,
     "php": _PHP_RESERVED,
     "kotlin": _KOTLIN_RESERVED,
+    "flutter": _DART_RESERVED,
 }
 
 _DIALECT: dict[Language, str] = {
@@ -353,6 +385,7 @@ _DIALECT: dict[Language, str] = {
     "python": "python-3.12.12",
     "csharp": "csharp-roslyn-5.6.0",
     "typescript": "typescript-5.9.2-node-26.0.0-esm-strict",
+    "react": "react-19.2.7-typescript-5.9.2-node-26.0.0-typed-pure",
     "javascript": "javascript-node-26.0.0-es2022-esm-strict-jsdoc",
     "go": "go-1.25.0",
     "rust": "rust-1.89.0-edition-2021",
@@ -361,11 +394,16 @@ _DIALECT: dict[Language, str] = {
     "swift": "swift-6.3.3",
     "php": _PHP_DIALECT,
     "kotlin": _KOTLIN_DIALECT,
+    "flutter": _FLUTTER_DART_DIALECT,
 }
 
 _RESERVED_PATTERNS: dict[Language, tuple[str, ...]] = {
     "cpp": (r"^__", r"^_[A-Z]"),
     "objc": (r"^__", r"^_[A-Z]"),
+    # A leading underscore is library-private in Dart. Repository assembly
+    # imports every generated function from ``lib/main.dart`` to force it into
+    # the Flutter kernel build, so target binders must be public spellings.
+    "flutter": (r"^_",),
     # The case-folded enforcement of _PHP_RESERVED, plus PHP's reserved
     # `__`-prefixed magic-method namespace.
     "php": (

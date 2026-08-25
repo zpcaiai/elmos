@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://elmos.dev/schemas/batch29/repository-gate-result.schema.json",
   "title": "Batch29RepositoryGateResult",
+  "description": "Authoritative local gate result for the 13-language, 156-route active repository matrix and its 312 SMALL/MEDIUM workloads.",
   "type": "object",
   "required": [
     "schema_version",
@@ -31,7 +32,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "batch29.repository-gate-result.v1"
+      "const": "batch29.repository-gate-result.v2"
     },
     "kind": {
       "const": "elmos.batch29.repository-gate-result"
@@ -87,14 +88,14 @@
       "const": "NOT_RUN"
     },
     "expected_route_count": {
-      "const": 90
+      "const": 156
     },
     "observed_route_count": {
       "type": "integer",
       "minimum": 0
     },
     "expected_workload_count": {
-      "const": 180
+      "const": 312
     },
     "observed_workload_count": {
       "type": "integer",

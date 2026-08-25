@@ -4,7 +4,7 @@
   "technique": "archive-security-negative-control",
   "claim_id": "claim.archive-identity-and-nonexecution",
   "failure_fingerprint": "sha256:b4a5fb184d236c153a133824b0be8d8b1984b4aec5aeca01d99654af68885aa6",
-  "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
   "artifact_digests": [
     "sha256:89c1a63927a6a316ebcfeeac260e836225eeccf5701805314f91346e703166fd"
   ],

@@ -100,19 +100,21 @@
 
 ## Gate R29-H — Small/medium whole-repository matrix
 
-- the repository capability campaign contains every one of the ten-language matrix's 90 directed routes exactly once and keeps each direction independent
-- every route contains one measured `SMALL` and one measured `MEDIUM` workload, for 180 explicit workload results
+- the repository capability campaign uses the exact thirteen active languages and all 156 directed routes from `scripts/batch29/route_sets.py`; deprecated JavaScript is absent and each direction remains independent
+- every route contains one measured `SMALL` and one measured `MEDIUM` workload, for 312 explicit workload results
 - each workload binds a passing source baseline build/test, complete source-unit classification, zero skipped/failed/unsupported/unknown units, complete conversion, and a passing whole-target-repository build/test
 - every referenced JSON artifact binds campaign/route/repository/class/stage/role in both its reference and verified bytes; IDs, paths, and hard-linked inodes cannot be reused across subjects
 - raw inventory, classification, conversion, test, and target-manifest detail is parsed to recompute all self-reported counts; swaps or counter-only claims fail
 - executor and verifier identities differ per run and their role sets remain disjoint across the campaign
 - only `scripts/batch29/run_repository_gate.py` may derive repository capability readiness; complete local evidence reaches at most `READY_FOR_EXTERNAL_GATE / NOT_CERTIFIED`
 - `make b29-repository-contract-check` validates the checked-in schemas, command, tests, and documentation without manufacturing execution evidence
-- `make b29-repository-gate B29_REPOSITORY_CAMPAIGN=<campaign.json>` requires an explicit real campaign; a missing campaign, `NOT_RUN`, partial route/class matrix, or any zero-tolerance failure exits nonzero and remains `LIMITED / NOT_CERTIFIED`
+- `make b29-repository-gate B29_REPOSITORY_CAMPAIGN=<campaign.json>` requires an explicit real current campaign; a missing campaign, `NOT_RUN`, unknown or partial route/class matrix, deprecated JavaScript record, or any zero-tolerance failure exits nonzero and remains `LIMITED / NOT_CERTIFIED`
 
 The detailed contract and bounded repository-size rules are in
-`docs/batch29/REPOSITORY_QUALITY_GATES.md`. No checked-in campaign currently
-claims that all 90 routes have passed; its absence is `NOT_RUN`, not success.
+`docs/batch29/REPOSITORY_QUALITY_GATES.md`. Former ten-language/90-route
+JavaScript evidence is historical-only and cannot satisfy this gate. No
+checked-in campaign currently claims that all 156 active routes have passed;
+its absence is `NOT_RUN`, not success.
 
 ## Certification outcomes
 

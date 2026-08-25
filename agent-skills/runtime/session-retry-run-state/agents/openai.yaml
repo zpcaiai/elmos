@@ -1,0 +1,4 @@
+interface:
+  display_name: "Session Retry Run State"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $session-retry-run-state for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

@@ -1,27 +1,21 @@
-Command: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/elmos-7plus1-commercial-skills -p 'test_*.py' -v
-Date: 2026-08-24
-Exit code: 0
+test_archive_casefold_duplicate_is_rejected (test_integration.ElmosSevenPlusOneIntegrationTest.test_archive_casefold_duplicate_is_rejected) ... ok
+test_archive_file_read_is_bounded_pinned_and_nofollow (test_integration.ElmosSevenPlusOneIntegrationTest.test_archive_file_read_is_bounded_pinned_and_nofollow) ... ok
+test_archive_scripts_are_data_and_are_not_executed (test_integration.ElmosSevenPlusOneIntegrationTest.test_archive_scripts_are_data_and_are_not_executed) ... ok
+test_archive_skill_instructions_never_enter_active_wrappers (test_integration.ElmosSevenPlusOneIntegrationTest.test_archive_skill_instructions_never_enter_active_wrappers) ... ok
+test_drift_and_unowned_collision_are_refused (test_integration.ElmosSevenPlusOneIntegrationTest.test_drift_and_unowned_collision_are_refused) ... ok
+test_exact_archive_identity_union_and_source_skill_inventory (test_integration.ElmosSevenPlusOneIntegrationTest.test_exact_archive_identity_union_and_source_skill_inventory) ... ok
+test_install_check_wrappers_and_conservative_statuses (test_integration.ElmosSevenPlusOneIntegrationTest.test_install_check_wrappers_and_conservative_statuses) ... ok
+test_internal_final_component_symlink_is_refused_without_touching_target (test_integration.ElmosSevenPlusOneIntegrationTest.test_internal_final_component_symlink_is_refused_without_touching_target) ... ok
+test_managed_directories_are_0755_under_restrictive_umask (test_integration.ElmosSevenPlusOneIntegrationTest.test_managed_directories_are_0755_under_restrictive_umask) ... ok
+test_manifest_version_subskill_name_and_dag_drift_are_rejected (test_integration.ElmosSevenPlusOneIntegrationTest.test_manifest_version_subskill_name_and_dag_drift_are_rejected) ... ok
+test_owned_name_collisions_install_as_aliases_without_overwrite (test_integration.ElmosSevenPlusOneIntegrationTest.test_owned_name_collisions_install_as_aliases_without_overwrite) ... ok
+test_path_member_and_zip_bomb_guards_fail_closed (test_integration.ElmosSevenPlusOneIntegrationTest.test_path_member_and_zip_bomb_guards_fail_closed) ... ok
+test_runtime_registries_and_artifacts_fail_closed_without_execution (test_integration.ElmosSevenPlusOneIntegrationTest.test_runtime_registries_and_artifacts_fail_closed_without_execution) ... ok
+test_shared_file_mismatch_is_never_silently_merged (test_integration.ElmosSevenPlusOneIntegrationTest.test_shared_file_mismatch_is_never_silently_merged) ... ok
+test_stale_namespace_wrapper_is_detected_without_deletion (test_integration.ElmosSevenPlusOneIntegrationTest.test_stale_namespace_wrapper_is_detected_without_deletion) ... ok
+test_unknown_archive_member_is_rejected (test_integration.ElmosSevenPlusOneIntegrationTest.test_unknown_archive_member_is_rejected) ... ok
 
-test_archive_casefold_duplicate_is_rejected ... ok
-test_archive_scripts_are_data_and_are_not_executed ... ok
-test_archive_skill_instructions_never_enter_active_wrappers ... ok
-test_drift_and_unowned_collision_are_refused ... ok
-test_exact_archive_identity_union_and_source_skill_inventory ... ok
-test_install_check_wrappers_and_conservative_statuses ... ok
-test_internal_final_component_symlink_is_refused_without_touching_target ... ok
-test_managed_directories_are_0755_under_restrictive_umask ... ok
-test_manifest_version_subskill_name_and_dag_drift_are_rejected ... ok
-test_owned_name_collisions_install_as_aliases_without_overwrite ... ok
-test_path_member_and_zip_bomb_guards_fail_closed ... ok
-test_runtime_registries_and_artifacts_fail_closed_without_execution ... ok
-test_shared_file_mismatch_is_never_silently_merged ... ok
-test_stale_namespace_wrapper_is_detected_without_deletion ... ok
-test_unknown_archive_member_is_rejected ... ok
-
-Ran 15 tests in 59.279s
+----------------------------------------------------------------------
+Ran 16 tests in 25.221s
 
 OK
-
-Evidence classification: LOCAL_EXECUTED_SELF_ATTESTED
-The install/check behavior was exercised only against disposable temporary roots; no repository installation was performed.
-This transcript is bounded local engineering evidence, not independent evidence or certification.

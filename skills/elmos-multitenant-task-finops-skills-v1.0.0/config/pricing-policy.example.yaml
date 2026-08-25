@@ -1,0 +1,32 @@
+schema_version: '1.0'
+base_currency: USD
+price_book_version: 2026-08-19
+items:
+  - provider: model-provider
+    sku: model-a-input
+    usage_type: MODEL_INPUT_TOKEN
+    unit: token
+    unit_price: '0.00000100'
+    currency: USD
+  - provider: model-provider
+    sku: model-a-output
+    usage_type: MODEL_OUTPUT_TOKEN
+    unit: token
+    unit_price: '0.00000400'
+    currency: USD
+  - provider: elmos-runtime
+    sku: cpu-standard
+    usage_type: COMPUTE_VCPU_SECOND
+    unit: vcpu_second
+    unit_price: '0.00001200'
+    currency: USD
+  - provider: object-store
+    sku: standard-storage
+    usage_type: STORAGE_GB_HOUR
+    unit: gb_hour
+    unit_price: '0.00003200'
+    currency: USD
+shared_cost_allocation:
+  method: weighted_usage
+  cadence: daily
+  include_idle_capacity: true

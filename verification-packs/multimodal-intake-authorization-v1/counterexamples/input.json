@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "fixture": "cross-tenant-write-negative-control",
+  "principal_tenant": "tenant-a",
+  "resource_tenant": "tenant-b",
+  "action": "execute",
+  "expected": "DENY_WITHOUT_SIDE_EFFECT"
+}

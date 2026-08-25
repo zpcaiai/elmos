@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "FOUNDATION-10-verification-fixpoint-completion-proof",
+  "name": "verification-fixpoint-completion-proof",
+  "title": "Verification Fixpoint & Completion Proof",
+  "description": "以可证明的零剩余违规/测试通过/需求覆盖替代 Agent 自报完成。",
+  "batch": "F10",
+  "batch_slug": "elmos-fusion",
+  "priority": "P0",
+  "risk": "high",
+  "path": "skills/verification-fixpoint-completion-proof/SKILL.md",
+  "origin": "foundation",
+  "dependencies": [],
+  "outputs": [],
+  "sources": [
+    "openrewrite",
+    "opencode"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [],
+  "tests": [
+    "Execute target-repository tests before production claims."
+  ],
+  "evidence": [
+    "Target-repository executed Evidence required."
+  ],
+  "stop_conditions": [
+    "Stop when the Skill-specific acceptance contract cannot be proven."
+  ],
+  "definition_of_done": [
+    "Skill-specific acceptance criteria pass in the target repository."
+  ],
+  "production_claim_boundary": "Imported static Foundation Skill; not implementation evidence."
+}

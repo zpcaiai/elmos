@@ -22,11 +22,12 @@ from typing import Any, cast
 import pytest
 
 from elmos_polyglot_route import engine, native
+from elmos_polyglot_route.batch import run_batch
 from elmos_polyglot_route.discovery import discover_repository
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.pipeline import run_repository_pipeline
-from elmos_polyglot_route.project_graph import ProjectGraphError, build_project_graph
+from elmos_polyglot_route.project_graph import build_project_graph
 from elmos_polyglot_route.repository import plan_repository
 from elmos_polyglot_route.toolchains import ExactToolchain
 from elmos_polyglot_route.validation import validate_source
@@ -61,7 +62,13 @@ def test_plain_js_binds_nearest_byte_addressed_esm_descriptor_across_all_stages(
         "type": "module",
     }
 
-    plan = plan_repository(repository, "local:javascript-esm-descriptor", "javascript", "python")
+    plan = plan_repository(
+        repository,
+        "local:javascript-esm-descriptor",
+        "javascript",
+        "python",
+        allow_deprecated_replay=True,
+    )
     assert plan["work_units"][0]["javascript_esm_descriptor"] == expected
     assert plan["javascript_esm_descriptors"] == [{"source_path": "identity.js", **expected}]
 
@@ -292,14 +299,13 @@ def test_node_descriptor_negative_inputs_never_create_target_artifacts(
     cases.mkdir()
     output = tmp_path / "output"
 
-    with pytest.raises(ProjectGraphError, match=f"^{error}"):
-        run_repository_pipeline(
+    with pytest.raises(RouteError, match=f"^{error}"):
+        plan_repository(
             repository,
             "local:javascript-esm-negative",
             "javascript",
             "python",
-            cases,
-            output,
+            allow_deprecated_replay=True,
         )
 
     assert not (output / "repository-migration-artifact.zip").exists()
@@ -308,7 +314,13 @@ def test_node_descriptor_negative_inputs_never_create_target_artifacts(
 
 def test_descriptor_drift_between_plan_and_discovery_fails_closed(tmp_path: Path) -> None:
     repository, _source = _repository(tmp_path)
-    plan = plan_repository(repository, "local:javascript-esm-drift", "javascript", "python")
+    plan = plan_repository(
+        repository,
+        "local:javascript-esm-drift",
+        "javascript",
+        "python",
+        allow_deprecated_replay=True,
+    )
     (repository / "package.json").write_text('{"type":"module","name":"drift"}\n', encoding="utf-8")
 
     with pytest.raises(RouteError, match="^JAVASCRIPT_ESM_DESCRIPTOR_CHANGED:identity\\.js$"):
@@ -345,40 +357,50 @@ def test_descriptor_drift_during_native_execution_fails_closed(
         native._run_trusted_javascript_analyzer(toolchain, source, "identity")
 
 
-def test_plain_js_to_python_repository_pipeline_preserves_descriptor_artifact(tmp_path: Path) -> None:
+def test_plain_js_to_python_repository_pipeline_is_retired_before_artifacts(tmp_path: Path) -> None:
     repository, _source = _repository(tmp_path)
     cases = tmp_path / "cases"
     cases.mkdir()
     (cases / "WU-00001.json").write_text('[{"args":[3],"expected":3}]\n', encoding="utf-8")
     output = tmp_path / "output"
 
-    report = run_repository_pipeline(
+    with pytest.raises(RouteError, match="^UNSUPPORTED_LANGUAGE$"):
+        run_repository_pipeline(
+            repository,
+            "local:javascript-esm-positive",
+            "javascript",
+            "python",
+            cases,
+            output,
+        )
+
+    assert not (output / "repository-migration-artifact.zip").exists()
+    assert not (output / "repository-pipeline-report.json").exists()
+
+
+def test_historical_javascript_discovery_cannot_enter_repository_batch(
+    tmp_path: Path,
+) -> None:
+    repository, _source = _repository(tmp_path)
+    plan = plan_repository(
         repository,
-        "local:javascript-esm-positive",
+        "local:javascript-explicit-historical-replay",
         "javascript",
         "python",
-        cases,
-        output,
+        allow_deprecated_replay=True,
     )
+    discovery = discover_repository(plan, repository)
+    cases = tmp_path / "cases"
+    cases.mkdir()
+    output = tmp_path / "batch-output"
 
-    unit_evidence = json.loads(
-        (output / "batch" / "units" / "WU-00001" / "route-evidence.json").read_text(encoding="utf-8")
-    )
-    descriptor = unit_evidence["javascript_esm_descriptor"]
-    artifact = output / "batch" / "units" / "WU-00001" / descriptor["artifact_path"]
-    assert report["status_counts"] == {"PASSED": 1}
-    assert descriptor["logical_path"] == "package.json"
-    assert unit_evidence["javascript_esm_descriptor_observation"] == unit_evidence[
-        "source_validation"
-    ]["javascript_esm_descriptor_observation"]
-    assert unit_evidence["javascript_esm_descriptor_observation"] != {
-        "observed_origin_path": str(repository / "package.json")
-    }
-    assert descriptor["snapshot_path"] == "source/package.json"
-    assert descriptor["sha256"] == "sha256:" + hashlib.sha256(artifact.read_bytes()).hexdigest()
-    assert descriptor["bytes"] == artifact.stat().st_size
-    assert artifact.read_bytes() == (repository / "package.json").read_bytes()
-    assert (output / "repository-migration-artifact.zip").is_file()
+    with pytest.raises(
+        RouteError,
+        match="^DEPRECATED_REPLAY_AGGREGATION_FORBIDDEN$",
+    ):
+        run_batch(discovery, repository, cases, output)
+
+    assert not output.exists()
 
 
 @JAVASCRIPT_ROUTE_RETIRED

@@ -9,7 +9,7 @@
 | 业务线 | 已跑通的范围 | 明确**不**支持 | 最高本地结论 |
 | --- | --- | --- | --- |
 | Spring 老项目现代化 | 4 条 Maven 路线，各绑定**一个精确元组**（Boot 1.5.22/Java 8、2.3.12/Java 11、2.7.18/Java 17、3.4.1/Java 17）→ Boot 3.5.3/Java 21，端到端源构建 + OpenRewrite + 目标构建 + 行为探针；Gradle 2.x 执行驱动已实现 | 元组以外的区间版本（需显式 experimental 开关）；Gradle 精确真实元组仍为 `NOT_RUN` | `PASSED_LOCAL`（仅四个 Maven 精确元组） |
-| 跨语言转换 | 9 种引擎语言的 72 个方向已在 **`typed-pure-function-v1`** 单函数仓库夹具上完成本机源运行、目标编译/运行与行为比对；72 个有向 Route Pack 已全部显式纳管为 `limited` | **对象图、跨文件调用语义、异常、async、I/O、框架、数据库、并发、依赖/资源/配置/测试迁移均未闭合**；这不是通用仓库转换 | 实验执行 `PASSED_LOCAL_UNCERTIFIED`；当前 Route Pack/仓库证据均为 `NOT_RUN` |
+| 跨语言转换 | Java、Python、C#、TypeScript、Go、Rust、C++、Objective-C、Swift、PHP、Kotlin、React、Flutter 共 **13 种活动语言、156 个有向 Route Pack** 已接入精确运行时、源分析器与仓库编排；其中既有 90 条为 `limited`，新增 66 条保持 `research` | **当前 156 条 Route Pack 的路线执行、仓库执行与独立验证证据均为 `NOT_RUN`**；React UI 和 Flutter framework/UI/插件/设备语义不在纯函数子集内，对象图、异常、async、I/O、框架、数据库、并发、依赖/资源/配置/测试迁移也未闭合 | `TOOLCHAIN_READY` / `NOT_CERTIFIED`；不得把分析器或聚焦仓库测试提升为路线认证 |
 | 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口 | 本地原生检查不等于跨目标语义/行为等价，也不替代独立或外部验证 | `PASSED_LOCAL` / `limited` |
 
 附属能力的实测覆盖率同样是子集而非全集：SQL 方言转写对本仓库 64 个真实迁移文件实测 **174/1015 = 17.1%**，
@@ -40,7 +40,7 @@ Java/Spring 专用现代化链路已覆盖 Batch 1–10；Batch 11/12 在同一�
 
 ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill 将自然语言请求整理为带来源、假设、问题、验收标准和审批哈希的规格，再由 `engines/project-synthesis-engine` 生成可运行项目。内置 Emitter 覆盖八个精确目标：Java 21 / Spring Boot、Python 3.12 / FastAPI、C# / .NET 10 / ASP.NET Core、TypeScript / NestJS-Fastify、Go / net-http、Kotlin / Ktor、PHP 原生 HTTP 与 Rust / Axum。权威成熟度矩阵是 [`docs/project-synthesis/bundled-emitter-support.json`](docs/project-synthesis/bundled-emitter-support.json)，由 `scripts/operations/validate_generation_support_matrix.py` 对引擎、请求 Schema、Rootless Runner、Web Console 与 Skill 做失败关闭的一致性校验。生成器只接受已批准且未被篡改的规格，保护用户修改，并输出配置、测试、OpenAPI、CI、非 root 容器、Kubernetes、追踪关系和内容寻址清单。每个生成包还包含实际项目结构图、声明依赖图、需求到生成物的语义映射、逐目标原生行为检查和完整语言对矩阵；控制台与 `docs/PROJECT_INSIGHTS.md` 分维度显示精确分母，未执行的直接语义/行为等价、独立验证和认证继续保持 `NOT_RUN` / `NOT_CERTIFIED`，不会被一个汇总百分比掩盖。
 
-仓库语言环境通过 [`toolchains/runtime-manifest.json`](toolchains/runtime-manifest.json) 统一声明并按任务选择，避免把 Python 3.12/3.14、Node 22/24/26、Maven 3.9.10/3.9.11 或 JDK 8/11/17/21 压成一个全局版本。`make toolchains-check` 严格检查核心、八语言生成与 macOS 九语言 Route 运行时；`make toolchains-install PROFILE=synthesis` 只安装安全且精确的本地子集；`make toolchains-doctor PROFILE=all` 会把厂商、许可证、远端系统和真实设备环境继续显示为 `NOT_RUN`。完整用法和证据边界见 [`docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md`](docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md)。
+仓库语言环境通过 [`toolchains/runtime-manifest.json`](toolchains/runtime-manifest.json) 统一声明并按任务选择，避免把 Python 3.12/3.14、Node 22/24/26、Maven 3.9.10/3.9.11 或 JDK 8/11/17/21 压成一个全局版本。`make toolchains-check` 严格检查核心、八语言生成与 macOS 13 种活动 Route 运行时；JavaScript 仅保留在 deprecated 历史分区，不计入活动矩阵。`make toolchains-install PROFILE=synthesis` 只安装安全且精确的本地子集；`make toolchains-doctor PROFILE=all` 会把厂商、许可证、远端系统和真实设备环境继续显示为 `NOT_RUN`。完整用法和证据边界见 [`docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md`](docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md)。
 
 `/repositories` 可从 GitHub、Gitee 或允许列表内的通用 HTTPS Git 服务建立精确提交工作区，读取/修改代码、说明、配置与部署文件，并交接到项目生成、跨语言转换和 Spring 现代化三条业务线。Commit、非强制 Push 与 GitHub/Gitee PR 分别校验权限、路径、HEAD、短期凭据、远端 SHA、审计和幂等回执；合并与部署不会自动执行。完整软硬件要求、配置及逐步操作见 [`docs/GIT_REPOSITORY_WORKSPACES.md`](docs/GIT_REPOSITORY_WORKSPACES.md)。
 
@@ -110,7 +110,7 @@ SOURCE_PACKAGE_ABSENT=<package> reason=missing:<manifest> …
 make verify
 ```
 
-`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、9 种语言的 72 个显式有向 Route Pack、Polyglot 引擎语言集与 Web Console 一致，禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证），并禁止路线矩阵硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
+`make business-line-contracts` 是三条核心业务线的失败关闭一致性门禁：`validate_spring_route_contract.py` 校验 `SpringUpgradeModels` 的精确元组与 OpenRewrite Recipe 资源、Recipe ID、归档名、引擎与控制台部署指引、Console 代理回退完全一致，并禁止 Spring 页面把版本号硬编码进 JSX；`validate_translation_route_matrix.py` 校验 `routes/inventory.json`、13 种活动语言的 156 个显式有向 Route Pack、Polyglot 引擎语言集与 Web Console 一致，同时把 JavaScript 固定在 deprecated 历史分区、把 66 条 V3 路线固定为 `research / NOT_RUN / NOT_CERTIFIED`，并禁止证据倒挂（独立验证不得先于本地通过、外部认证不得先于独立验证）或硬编码 `LOCAL PASS`。生成线的等价门禁是 `scripts/operations/validate_generation_support_matrix.py`，由 `make project-synthesis` 执行。
 
 `make backend` 使用 Java 21 执行单元测试、契约测试和 ArchUnit 边界测试；`make dotnet` 使用锁定的 .NET 10 SDK；`make python` 使用 Python 3.14 与 uv 锁执行 pytest、Ruff 和 mypy；`make frontend` 验证独立的 TypeScript/Node 客户端引擎；`make web` 执行 Next.js/TypeScript 静态检查。
 

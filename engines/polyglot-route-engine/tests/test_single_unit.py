@@ -10,13 +10,22 @@ guard runs before analysis.
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
+import elmos_polyglot_route.single_unit as single_unit_module
 from elmos_polyglot_route.cli import main
-from elmos_polyglot_route.models import RouteError
+from elmos_polyglot_route.models import (
+    DEPRECATED_LANGUAGES,
+    REPOSITORY_SURFACE_LANGUAGES,
+    SUPPORTED_LANGUAGES,
+    Language,
+    RouteError,
+)
 from elmos_polyglot_route.single_unit import check_only, emit_only
+from elmos_polyglot_route.toolchains import ExactToolchain
 
 
 def test_emit_only_rejects_a_same_language_route(tmp_path: Path) -> None:
@@ -94,6 +103,156 @@ def test_check_only_fails_closed_for_invalid_syntax(tmp_path: Path) -> None:
     assert report["status"] == "FAILED"
     assert report["diagnostics"]
     assert report["diagnostics"][0]
+
+
+def _static_check_toolchain(
+    language: Language,
+    tmp_path: Path,
+    *,
+    auxiliary: bool,
+) -> ExactToolchain:
+    profile: tuple[str, ...] = ()
+    if language in {"cpp", "objc", "swift"}:
+        profile = (f"sdk-path={tmp_path}",)
+    return ExactToolchain(
+        language=language,
+        version=f"exact-{language}",
+        executable=f"/exact/{language}",
+        auxiliary=f"/exact/{language}-auxiliary" if auxiliary else None,
+        profile=profile,
+        executable_sha256="a" * 64,
+        auxiliary_sha256="b" * 64 if auxiliary else None,
+    )
+
+
+@pytest.mark.parametrize(
+    ("language", "target_name", "command_marker", "requires_auxiliary"),
+    [
+        ("java", "Migrated.java", "-Xlint:all", True),
+        ("python", "migrated.py", "py_compile", False),
+        ("csharp", "Migrated.cs", "StaticCheck.csproj", False),
+        ("typescript", "migrated.ts", "tsconfig.json", True),
+        ("go", "migrated.go", "-buildmode=archive", False),
+        ("rust", "migrated.rs", "--crate-type", False),
+        ("cpp", "migrated.cpp", "-fsyntax-only", False),
+        ("objc", "migrated.m", "objective-c", False),
+        ("swift", "migrated.swift", "-typecheck", False),
+        ("php", "migrated.php", "-l", False),
+        ("kotlin", "Migrated.kt", "-jvm-target", False),
+        ("react", "migrated.tsx", "tsconfig.json", True),
+        ("flutter", "migrated.dart", "analyze", True),
+    ],
+)
+def test_check_only_dispatches_every_repository_surface_to_its_exact_static_compiler(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    language: Language,
+    target_name: str,
+    command_marker: str,
+    requires_auxiliary: bool,
+) -> None:
+    toolchain = _static_check_toolchain(
+        language,
+        tmp_path,
+        auxiliary=requires_auxiliary,
+    )
+    commands: list[list[str]] = []
+
+    def selected(requested: Language) -> ExactToolchain:
+        assert requested == language
+        return toolchain
+
+    def run(
+        command: list[str],
+        cwd: Path,
+        *,
+        toolchain: ExactToolchain,
+        timeout: int = 120,
+    ) -> subprocess.CompletedProcess[str]:
+        assert cwd == tmp_path / language
+        assert toolchain == selected(language)
+        assert timeout == 120
+        commands.append(command)
+        stdout = '{"version":1,"diagnostics":[]}' if language == "flutter" else ""
+        return subprocess.CompletedProcess(command, 0, stdout, "")
+
+    monkeypatch.setattr(single_unit_module, "exact_toolchain", selected)
+    monkeypatch.setattr(single_unit_module, "_run", run)
+    monkeypatch.setattr(
+        single_unit_module,
+        "verify_flutter_build_toolchain",
+        lambda selected_toolchain: {"language": selected_toolchain.language},
+    )
+    monkeypatch.setattr(
+        single_unit_module,
+        "flutter_build_command",
+        lambda selected_toolchain, *arguments: [
+            selected_toolchain.auxiliary or "",
+            *arguments,
+        ],
+    )
+
+    output = tmp_path / language
+    report = check_only(language, "exact target source\n", output)
+
+    assert report["status"] == "PASSED"
+    assert report["check_scope"] == "syntax-symbol-type-only"
+    assert report["executed"] is False
+    assert report["diagnostics"] == []
+    assert (output / target_name).read_text(encoding="utf-8") == "exact target source\n"
+    assert len(commands) == 1
+    assert command_marker in commands[0]
+    expected_executable = toolchain.auxiliary if requires_auxiliary else toolchain.executable
+    assert commands[0][0] == expected_executable
+
+
+def test_internal_static_dispatch_catalog_retains_archived_javascript() -> None:
+    expected = set(SUPPORTED_LANGUAGES) | set(DEPRECATED_LANGUAGES)
+
+    assert expected == set(REPOSITORY_SURFACE_LANGUAGES)
+    assert set(single_unit_module._SOURCE_EXTENSION) == expected
+    assert set(single_unit_module._TARGET_FILE) == expected
+
+
+def test_public_single_unit_apis_reject_deprecated_javascript_before_toolchain_use(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        single_unit_module,
+        "exact_toolchain",
+        lambda language: pytest.fail(f"unexpected toolchain selection: {language}"),
+    )
+    source = tmp_path / "source.mjs"
+    source.write_text("export function identity(value) { return value; }\n")
+
+    with pytest.raises(RouteError, match="^UNSUPPORTED_LANGUAGE$"):
+        emit_only(source, "javascript", "python", "identity", tmp_path / "emit")
+    with pytest.raises(RouteError, match="^UNSUPPORTED_LANGUAGE$"):
+        emit_only(source, "python", "javascript", "identity", tmp_path / "emit")
+    with pytest.raises(RouteError, match="^UNSUPPORTED_LANGUAGE$"):
+        check_only("javascript", "export const value = 1;\n", tmp_path / "check")
+
+
+@pytest.mark.parametrize("language", ["java", "typescript", "react", "flutter"])
+def test_check_only_fails_explicitly_when_a_required_auxiliary_compiler_is_absent(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    language: Language,
+) -> None:
+    toolchain = _static_check_toolchain(language, tmp_path, auxiliary=False)
+    invoked = False
+
+    def unexpected_run(*args: object, **kwargs: object) -> None:
+        nonlocal invoked
+        invoked = True
+
+    monkeypatch.setattr(single_unit_module, "exact_toolchain", lambda requested: toolchain)
+    monkeypatch.setattr(single_unit_module, "_run", unexpected_run)
+
+    with pytest.raises(RouteError, match=rf"^STATIC_CHECK_AUXILIARY_REQUIRED:{language}$"):
+        check_only(language, "target source\n", tmp_path / "check")
+    assert invoked is False
 
 
 def test_cli_recognizes_emit_and_check_as_subcommands_and_fails_closed(

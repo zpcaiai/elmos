@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "local-evidence-intake-v1",
+  "tenant_id": "elmos-local",
+  "project_id": "elmos-7plus1",
+  "allowed_evidence_kinds": [],
+  "allowed_receipt_digests": [],
+  "allowed_organizations": [],
+  "revoked_principals": [],
+  "require_distinct_organizations": true,
+  "trust_root_state": "NOT_CONFIGURED"
+}

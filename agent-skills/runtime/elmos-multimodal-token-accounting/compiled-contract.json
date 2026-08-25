@@ -1,0 +1,171 @@
+{
+  "acceptance": [
+    {
+      "criterion": "同一输入与模型版本重复计量结果确定且可审计",
+      "evidence": [],
+      "id": "S31-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "文本计量与目标 tokenizer 的误差在定义阈值内，近似计量明确给出误差上界",
+      "evidence": [],
+      "id": "S31-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "图像、音频等不确定模态不得被记为零",
+      "evidence": [],
+      "id": "S31-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "当前活动上下文、累计输入输出消耗和费用三者不会混用",
+      "evidence": [],
+      "id": "S31-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "模型切换或内容变更后预算自动重算",
+      "evidence": [],
+      "id": "S31-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "每项计量可追溯到来源、计量器版本和时间",
+      "evidence": [],
+      "id": "S31-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "同一输入与模型版本重复计量结果确定且可审计",
+      "文本计量与目标 tokenizer 的误差在定义阈值内，近似计量明确给出误差上界",
+      "图像、音频等不确定模态不得被记为零",
+      "当前活动上下文、累计输入输出消耗和费用三者不会混用",
+      "模型切换或内容变更后预算自动重算",
+      "每项计量可追溯到来源、计量器版本和时间"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "token_estimates",
+      "context_usage_snapshots",
+      "provider_usage_records"
+    ],
+    "deliverables": [
+      "ContextUsage/TokenEstimate schema 与数据库迁移",
+      "各模态 tokenizer adapter 和模型特定计量器",
+      "预算预检 API、事件与可观测面板",
+      "黄金样本、误差校准和回归测试"
+    ],
+    "dependencies": [
+      "elmos-context-budget-manager",
+      "elmos-model-capability-discovery"
+    ],
+    "events": [
+      "token.estimated",
+      "token.measured",
+      "token.estimate.reconciled",
+      "context.usage.updated"
+    ],
+    "failure_modes": [
+      "tokenizer unavailable",
+      "provider usage missing",
+      "image pricing rule unknown",
+      "double counted tool result"
+    ],
+    "inputs": [
+      "待装载的多模态内容块",
+      "模型能力快照",
+      "工具和 Skill 定义",
+      "供应商 usage 响应"
+    ],
+    "metrics": [
+      "token_estimate_error_ratio",
+      "unmetered_content_count",
+      "usage_reconciliation_lag_seconds"
+    ],
+    "name": "elmos-multimodal-token-accounting",
+    "objective": "建立按模型、模态、来源和任务阶段可复现的 Token/等价预算计量层，使上下文控制、报价、路由与审计使用同一事实来源。",
+    "ordinal": 31,
+    "outputs": [
+      "分来源 ContextUsage",
+      "TokenEstimate 及误差区间",
+      "费用计量输入",
+      "预算告警"
+    ],
+    "responsibilities": [
+      "定义统一 ContextUsage 与 TokenEstimate 数据契约，区分实测、估算和安全上界。",
+      "为文本、代码、聊天历史、Skills、工具 schema、工具结果、OCR、ASR、图像和结构化表格实现可插拔计量器。",
+      "优先调用目标模型官方 tokenizer 或计费接口；不可用时记录估算器版本、误差区间和保守系数。",
+      "在内容规范化、装载、压缩、重新水化和模型切换后重新计量。",
+      "按 input package、asset、content block、source、task、agent turn 和 provider execution 聚合使用量。",
+      "将上下文占用与累计计费 Token 分开存储，避免把历史消耗误当当前窗口占用。",
+      "提供超预算预检、差异解释和监控指标。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "多模态 Token 计量"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-multimodal-token-accounting/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-multimodal-token-accounting/SKILL.md": {
+        "bytes": 3688,
+        "mode": "0644",
+        "sha256": "988d3af3568e3a5cdafc4036ac140dc3cb6b008e793bf2f2a023b1d89ab1ef27"
+      },
+      "skills/elmos-multimodal-token-accounting/references/contract.yaml": {
+        "bytes": 2640,
+        "mode": "0644",
+        "sha256": "83e6edad5bc3a84c871f9e51f8619859b39c22b30bc2cbf0e15d9da394ecce1e"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-multimodal-token-accounting/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_multimodal_token_accounting",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当 Elmos 需要估算文本、代码、OCR、音频转录、图像、工具定义与工具结果对模型上下文和费用的占用时使用。",
+    "name": "elmos-multimodal-token-accounting",
+    "ordinal": 31,
+    "title": "多模态 Token 计量"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "83e6edad5bc3a84c871f9e51f8619859b39c22b30bc2cbf0e15d9da394ecce1e",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "988d3af3568e3a5cdafc4036ac140dc3cb6b008e793bf2f2a023b1d89ab1ef27"
+  }
+}

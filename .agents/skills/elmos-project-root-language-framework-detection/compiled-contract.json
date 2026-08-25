@@ -1,0 +1,174 @@
+{
+  "acceptance": [
+    {
+      "criterion": "Java/Kotlin/Python/C#/Go/Rust/C++/PHP/TS/JS/React/Vue/ObjC/Swift/Flutter 等目标语言有探测覆盖",
+      "evidence": [],
+      "id": "S46-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "能正确识别 monorepo、多模块和多个独立项目",
+      "evidence": [],
+      "id": "S46-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "每个结论都有文件证据与置信度",
+      "evidence": [],
+      "id": "S46-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "低置信度或冲突不会静默选择错误根",
+      "evidence": [],
+      "id": "S46-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "vendor、node_modules、build 输出不会主导项目画像",
+      "evidence": [],
+      "id": "S46-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "用户修正可追溯、可撤销并在新版本中重新验证",
+      "evidence": [],
+      "id": "S46-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "Java/Kotlin/Python/C#/Go/Rust/C++/PHP/TS/JS/React/Vue/ObjC/Swift/Flutter 等目标语言有探测覆盖",
+      "能正确识别 monorepo、多模块和多个独立项目",
+      "每个结论都有文件证据与置信度",
+      "低置信度或冲突不会静默选择错误根",
+      "vendor、node_modules、build 输出不会主导项目画像",
+      "用户修正可追溯、可撤销并在新版本中重新验证"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "package_project_roots",
+      "package_language_profiles",
+      "package_framework_profiles",
+      "project_profile_corrections"
+    ],
+    "deliverables": [
+      "ProjectProfile/ProjectRootCandidate schema",
+      "语言、框架、构建系统和根目录探测器",
+      "monorepo/多项目分类与用户修正流程",
+      "多语言公开/合成仓库基准测试"
+    ],
+    "dependencies": [
+      "elmos-project-package-manifest",
+      "elmos-ignore-generated-vendored-file-classification"
+    ],
+    "events": [
+      "project.root.detected",
+      "project.profile.created",
+      "project.profile.conflict",
+      "project.profile.corrected"
+    ],
+    "failure_modes": [
+      "nested repo mistaken as root",
+      "vendor package dominates",
+      "generated manifest misleading",
+      "ambiguous multi-project package"
+    ],
+    "inputs": [
+      "项目包 manifest",
+      "文件内容抽样",
+      "默认和用户探测策略",
+      "历史项目画像"
+    ],
+    "metrics": [
+      "project_root_top1_accuracy",
+      "language_detection_f1",
+      "framework_detection_f1",
+      "manual_correction_rate"
+    ],
+    "name": "elmos-project-root-language-framework-detection",
+    "objective": "基于多信号而非单一扩展名生成带置信度和证据的项目画像，并允许用户校正。",
+    "ordinal": 46,
+    "outputs": [
+      "ProjectProfile",
+      "根目录候选",
+      "语言/框架/构建系统画像",
+      "用户审查项"
+    ],
+    "responsibilities": [
+      "从 manifest 中寻找构建清单、工作区配置、源码分布、README、版本控制根和部署文件，生成根目录候选。",
+      "识别 monorepo、多模块、多个独立项目、文档包、测试数据包和历史版本目录。",
+      "综合文件扩展名、内容抽样、构建文件、依赖清单、目录惯例和框架特征识别语言与框架。",
+      "识别 Maven/Gradle/.NET/Cargo/Go Modules/CMake/npm/pnpm/Yarn/Bun/Poetry/uv/Flutter/SPM 等构建和包管理体系。",
+      "发现应用、库、服务、CLI、移动端、前端、基础设施和数据项目入口。",
+      "输出候选、置信度、证据和冲突；低置信度时允许用户指定根及角色。",
+      "将用户修正版本化为项目知识，并在后续增量包中重新验证而非永久盲信。",
+      "对生成/第三方目录降低权重，避免 node_modules 或 vendor 被误判为主项目。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "项目根、语言与框架识别"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-project-root-language-framework-detection/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-project-root-language-framework-detection/SKILL.md": {
+        "bytes": 3791,
+        "mode": "0644",
+        "sha256": "9cf233254a36eab451a25392af7aa48908c4286ec9ebd7ac6e06ff6ff73d3e77"
+      },
+      "skills/elmos-project-root-language-framework-detection/references/contract.yaml": {
+        "bytes": 2816,
+        "mode": "0644",
+        "sha256": "af98c2801f203eff43c751eba060f5e6e549fb052977e5ed6ef78c99071525d5"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-project-root-language-framework-detection/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_project_root_language_framework_detection",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "project-package",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当文件夹或归档解包后需要自动判断真实项目根、monorepo/多项目结构、编程语言、框架、构建系统和入口点时使用。",
+    "name": "elmos-project-root-language-framework-detection",
+    "ordinal": 46,
+    "title": "项目根、语言与框架识别"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "af98c2801f203eff43c751eba060f5e6e549fb052977e5ed6ef78c99071525d5",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "9cf233254a36eab451a25392af7aa48908c4286ec9ebd7ac6e06ff6ff73d3e77"
+  }
+}

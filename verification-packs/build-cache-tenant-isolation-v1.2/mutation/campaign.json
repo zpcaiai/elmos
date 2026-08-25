@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "campaign_key": "mutation.build-cache-tenant-isolation.v1",
+  "owner": "ELMOS verification maintainers",
+  "target_scope": [
+    "engines/build-cache-engine/src/elmos_build_cache/api.py",
+    "engines/build-cache-engine/src/elmos_build_cache/affinity.py",
+    "engines/build-cache-engine/src/elmos_build_cache/parity_store.py",
+    "engines/build-cache-engine/src/elmos_build_cache/environment_service.py",
+    "engines/build-cache-engine/src/elmos_build_cache/context_compaction.py"
+  ],
+  "operators": [
+    {
+      "key": "remove-trusted-authenticated-context-check",
+      "risk": "P0"
+    },
+    {
+      "key": "accept-caller-claimed-tenant-or-principal",
+      "risk": "P0"
+    },
+    {
+      "key": "remove-tenant-project-query-predicate",
+      "risk": "P0"
+    },
+    {
+      "key": "skip-CAS-ownership-or-signature-verification",
+      "risk": "P0"
+    },
+    {
+      "key": "permit-denied-action-quarantine-side-effect",
+      "risk": "P0"
+    }
+  ],
+  "budgets": {
+    "max_mutants": 20,
+    "max_minutes": 20,
+    "isolated_worktree_required": true
+  },
+  "required_tests": [
+    "corpus/negative/manifest.json",
+    "corpus/holdout/manifest.json"
+  ],
+  "equivalent_mutant_policy": "independent-human-reviewed",
+  "execution_status": "NOT_RUN",
+  "surviving_critical_mutants": "UNKNOWN"
+}

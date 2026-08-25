@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/multitenant-task-finops/1.0/usage-event.schema.json",
+  "title": "Elmos Usage Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "usage_event_id",
+    "idempotency_key",
+    "tenant_id",
+    "account_id",
+    "task_id",
+    "task_run_id",
+    "provider",
+    "sku",
+    "usage_type",
+    "unit",
+    "quantity",
+    "price_book_version",
+    "unit_price",
+    "original_currency",
+    "original_cost",
+    "base_currency",
+    "fx_rate",
+    "base_cost",
+    "cost_status",
+    "calculation_version",
+    "occurred_at",
+    "ingested_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "usage_event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "account_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "task_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "task_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "node_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "node_attempt_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provider_receipt_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provider_request_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sku": {
+      "type": "string",
+      "minLength": 1
+    },
+    "usage_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "price_book_item_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "price_book_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit_price": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "original_currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "original_cost": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "base_currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "fx_rate": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "base_cost": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "cost_status": {
+      "enum": [
+        "ESTIMATE",
+        "POSTED",
+        "FINAL",
+        "CORRECTION"
+      ]
+    },
+    "calculation_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trace_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "raw_usage": {
+      "type": "object"
+    }
+  }
+}

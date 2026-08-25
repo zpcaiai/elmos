@@ -1,0 +1,176 @@
+asyncapi: 3.0.0
+info:
+  title: ELMOS Multimodal Intake Progress Events
+  version: 1.0.0
+  description: >-
+    Tenant/project/job-bound progress delivery. The body digest and signature
+    are verified before a receiver accepts sequence advancement.
+defaultContentType: application/json
+channels:
+  intakeProgress:
+    address: intake.progress.{tenantId}.{projectId}.{jobId}
+    parameters:
+      tenantId:
+        description: Authenticated tenant identifier; never derived from message content.
+      projectId:
+        description: Authorized project identifier bound to the tenant.
+      jobId:
+        description: Durable intake job identifier.
+    messages:
+      progress:
+        $ref: '#/components/messages/ProgressEvent'
+operations:
+  receiveProgress:
+    action: receive
+    channel:
+      $ref: '#/channels/intakeProgress'
+    messages:
+      - $ref: '#/channels/intakeProgress/messages/progress'
+components:
+  messages:
+    ProgressEvent:
+      name: IntakeProgressEvent
+      title: Signed intake progress delivery
+      summary: Idempotent, ordered progress update for one tenant/project/job scope.
+      correlationId:
+        location: $message.payload#/trace_id
+      headers:
+        $ref: '#/components/schemas/DeliveryHeaders'
+      payload:
+        $ref: '#/components/schemas/ProgressEnvelope'
+  schemas:
+    DeliveryHeaders:
+      type: object
+      additionalProperties: false
+      required:
+        - x-elmos-delivery-id
+        - x-elmos-delivery-attempt
+        - x-elmos-body-sha256
+        - x-elmos-signature
+        - x-elmos-key-id
+        - x-elmos-timestamp
+      properties:
+        x-elmos-delivery-id:
+          type: string
+          pattern: '^delivery-[0-9a-f]{40}$'
+        x-elmos-delivery-attempt:
+          type: string
+          pattern: '^[1-9][0-9]{0,9}$'
+        x-elmos-body-sha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        x-elmos-signature:
+          type: string
+          description: HMAC-SHA256 v2 over scope, key, delivery, timestamp, and exact body bytes.
+          pattern: '^v2=[0-9a-f]{64}$'
+        x-elmos-key-id:
+          type: string
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$'
+        x-elmos-timestamp:
+          type: string
+          description: Non-negative Unix timestamp used by the replay window.
+          pattern: '^(0|[1-9][0-9]{0,11})$'
+    ProgressEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - event_id
+        - event_type
+        - tenant_id
+        - project_id
+        - job_id
+        - sequence
+        - occurred_at
+        - trace_id
+        - state
+        - progress
+        - payload_digest
+        - event_digest
+        - payload
+      properties:
+        schema_version:
+          type: string
+          const: 1.0.0
+        event_id:
+          type: string
+          pattern: '^event-[0-9a-f]{40}$'
+        event_type:
+          type: string
+          pattern: '^intake\.[a-z0-9][a-z0-9_.-]{0,120}$'
+        tenant_id:
+          $ref: '#/components/schemas/ResourceId'
+        project_id:
+          $ref: '#/components/schemas/ResourceId'
+        job_id:
+          $ref: '#/components/schemas/ResourceId'
+        sequence:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        occurred_at:
+          type: string
+          format: date-time
+        trace_id:
+          type: string
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$'
+        state:
+          type: string
+          enum: [PENDING, RUNNING, PARTIAL, SUCCEEDED, BLOCKED, FAILED, CANCELLED]
+        progress:
+          $ref: '#/components/schemas/ProgressValue'
+        payload_digest:
+          type: string
+          description: SHA-256 of the canonical payload object.
+          pattern: '^[0-9a-f]{64}$'
+        event_digest:
+          type: string
+          description: SHA-256 of the canonical progress envelope excluding event_digest itself.
+          pattern: '^[0-9a-f]{64}$'
+        payload:
+          $ref: '#/components/schemas/ProgressPayload'
+    ResourceId:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$'
+    ProgressValue:
+      type: object
+      additionalProperties: false
+      required: [completed_units, total_units, percent]
+      properties:
+        completed_units:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        total_units:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        percent:
+          type: number
+          minimum: 0
+          maximum: 100
+    ProgressPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        asset_id:
+          $ref: '#/components/schemas/ResourceId'
+        asset_version:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        checkpoint_id:
+          $ref: '#/components/schemas/ResourceId'
+        code:
+          type: string
+          pattern: '^[A-Z][A-Z0-9_:-]{0,127}$'
+        message:
+          type: string
+          maxLength: 2048
+        result_digest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        retryable:
+          type: boolean

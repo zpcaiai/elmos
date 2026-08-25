@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "campaign_key": "fuzz.build-cache-auth-scope-envelope.v1",
+  "owner": "ELMOS verification maintainers",
+  "targets": [
+    "authenticated WSGI context decoder",
+    "tenant/project scoped parity request decoders",
+    "affinity authorization and attestation envelope",
+    "environment and parity evidence references"
+  ],
+  "seed_corpus": [
+    "corpus/negative/manifest.json"
+  ],
+  "coverage_signal": "planned-branch-and-denied-side-effect-sentinel",
+  "budgets": {
+    "max_seconds": 120,
+    "max_memory_mb": 1024,
+    "max_input_bytes": 1048576,
+    "production_network": false
+  },
+  "sanitizers": [],
+  "dictionary_refs": [],
+  "execution_status": "NOT_RUN"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elmos Telemetry Learner"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-telemetry-learner to perform its bounded repository workflow with provenance and fail-closed evidence."

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "scenarios": [
+    {"id": 1, "name": "unreproducible-requirements", "expected": "capture-before-lock"},
+    {"id": 2, "name": "python-version-conflict", "expected": "separate-version-evidence"},
+    {"id": 3, "name": "python2-string-boundary", "expected": "text-binary-findings"},
+    {"id": 4, "name": "legacy-2to3", "expected": "candidate-only-legacy-adapter"},
+    {"id": 5, "name": "codemod-comment-preservation", "expected": "libcst-fixpoint"},
+    {"id": 6, "name": "django-multi-version", "expected": "incremental-feature-dag"},
+    {"id": 7, "name": "django-plugin-blocker", "expected": "target-blocked"},
+    {"id": 8, "name": "flask-context-regression", "expected": "context-risk"},
+    {"id": 9, "name": "notebook-hidden-state", "expected": "clean-kernel-fail"},
+    {"id": 10, "name": "numpy-dtype", "expected": "dtype-and-value-compare"},
+    {"id": 11, "name": "pandas-string", "expected": "dtype-null-codemod"},
+    {"id": 12, "name": "native-extension-abi", "expected": "source-or-wheel-required"},
+    {"id": 13, "name": "tensorflow1", "expected": "staged-compat-v1"},
+    {"id": 14, "name": "pytorch-hardware", "expected": "approved-tolerance"},
+    {"id": 15, "name": "sklearn-joblib", "expected": "isolated-load-matrix"},
+    {"id": 16, "name": "test-disappearance", "expected": "gate-fail"},
+    {"id": 17, "name": "gpu-wheel-mismatch", "expected": "compatibility-block"},
+    {"id": 18, "name": "unified-portfolio", "expected": "cross-engine-dependency-graph"}
+  ]
+}
+

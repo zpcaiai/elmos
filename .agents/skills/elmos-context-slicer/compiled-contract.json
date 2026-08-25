@@ -1,0 +1,55 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "worker can execute without whole-repo dump",
+      "context pack has provenance"
+    ],
+    "guardrails": [
+      "Do not omit architectural invariants referenced by risk classifier."
+    ],
+    "inputs": [
+      "task",
+      "architecture index",
+      "repo"
+    ],
+    "outputs": [
+      "context pack manifest"
+    ],
+    "triggers": [
+      "task ready for routing"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-contract-boundary-generator"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.context-builder",
+    "handler": "context_slicer",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-context-slicer",
+    "ordinal": 11,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/11-context-slicer/SKILL.md",
+    "sha256": "sha256:f4d5a0b36648121f305bd643cbae891f12ce295821ce04e17221ddb3d130c4e7",
+    "version": "1.0.0"
+  }
+}

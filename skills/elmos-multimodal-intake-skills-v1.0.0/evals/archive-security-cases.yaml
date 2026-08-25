@@ -1,0 +1,212 @@
+schema_version: 1.0.0
+purpose: Security regression cases for ZIP/TAR/TAR.GZ/TGZ/GZIP inspection and extraction
+global_assertions:
+- no write outside sandbox root
+- no host path disclosure
+- no link following
+- no special file creation
+- actual resource counters enforced
+- stable security code emitted
+- package never marked READY after a blocking finding
+cases:
+- id: ARC-001
+  name: parent traversal
+  formats:
+  - ZIP
+  - TAR
+  entry: ../../outside.txt
+  expected: REJECT
+  code: ARCHIVE_PATH_TRAVERSAL
+- id: ARC-002
+  name: absolute POSIX path
+  formats:
+  - ZIP
+  - TAR
+  entry: /etc/cron.d/pwn
+  expected: REJECT
+  code: ARCHIVE_ABSOLUTE_PATH
+- id: ARC-003
+  name: Windows drive path
+  formats:
+  - ZIP
+  entry: C:\\Windows\\System32\\pwn
+  expected: REJECT
+  code: ARCHIVE_WINDOWS_DRIVE_PATH
+- id: ARC-004
+  name: UNC path
+  formats:
+  - ZIP
+  entry: \\\\server\\share\\pwn
+  expected: REJECT
+  code: ARCHIVE_UNC_PATH
+- id: ARC-005
+  name: encoded dot-dot components
+  formats:
+  - ZIP
+  - TAR
+  entry: safe/%2e%2e/outside
+  expected: REJECT_OR_SAFE_LITERAL
+  code: ARCHIVE_PATH_AMBIGUOUS
+- id: ARC-006
+  name: NUL byte/name truncation
+  formats:
+  - ZIP
+  - TAR
+  entry: safe.txt\u0000.exe
+  expected: REJECT
+  code: ARCHIVE_INVALID_NAME
+- id: ARC-007
+  name: symlink then child write
+  formats:
+  - TAR
+  entries:
+  - link -> ../../outside
+  - link/file.txt
+  expected: REJECT
+  code: ARCHIVE_LINK_ESCAPE
+- id: ARC-008
+  name: hardlink outside root
+  formats:
+  - TAR
+  entry: hardlink -> /etc/passwd
+  expected: REJECT
+  code: ARCHIVE_HARDLINK_BLOCKED
+- id: ARC-009
+  name: device/FIFO/socket
+  formats:
+  - TAR
+  entry_types:
+  - block_device
+  - char_device
+  - fifo
+  - socket
+  expected: REJECT
+  code: ARCHIVE_SPECIAL_ENTRY
+- id: ARC-010
+  name: setuid mode
+  formats:
+  - TAR
+  mode: '04755'
+  expected: REJECT_OR_STRIP_METADATA
+  code: ARCHIVE_UNSAFE_MODE
+- id: ARC-011
+  name: duplicate overwrite
+  formats:
+  - ZIP
+  - TAR
+  entries:
+  - a.txt
+  - a.txt
+  expected: REJECT_OR_DETERMINISTIC_NO_OVERWRITE
+  code: ARCHIVE_PATH_COLLISION
+- id: ARC-012
+  name: case collision
+  formats:
+  - ZIP
+  - TAR
+  entries:
+  - A.txt
+  - a.txt
+  expected: REVIEW_OR_REJECT_ON_CASE_INSENSITIVE_TARGET
+  code: ARCHIVE_CASE_COLLISION
+- id: ARC-013
+  name: Unicode normalization collision
+  formats:
+  - ZIP
+  - TAR
+  entries:
+  - é.txt
+  - é.txt
+  expected: REVIEW_OR_REJECT
+  code: ARCHIVE_UNICODE_COLLISION
+- id: ARC-014
+  name: false declared size
+  formats:
+  - ZIP
+  - TAR_GZ
+  declared_bytes: 1
+  actual_bytes: 1073741824
+  expected: STOP_AT_ACTUAL_LIMIT
+  code: ARCHIVE_LIMIT_EXCEEDED
+- id: ARC-015
+  name: extreme compression ratio
+  formats:
+  - ZIP
+  - TAR_GZ
+  ratio: 1000000
+  expected: EARLY_STOP_QUARANTINE
+  code: ARCHIVE_BOMB_SUSPECTED
+- id: ARC-016
+  name: millions of tiny entries
+  formats:
+  - ZIP
+  - TAR
+  entry_count: 5000000
+  expected: STOP_AT_ENTRY_LIMIT
+  code: ARCHIVE_ENTRY_LIMIT
+- id: ARC-017
+  name: deep directory
+  formats:
+  - ZIP
+  - TAR
+  depth: 10000
+  expected: STOP_AT_DEPTH_LIMIT
+  code: ARCHIVE_DIRECTORY_DEPTH_LIMIT
+- id: ARC-018
+  name: nested budget reset attempt
+  formats:
+  - ZIP
+  nested_depth: 10
+  aggregate_uncompressed_bytes: 1099511627776
+  expected: GLOBAL_BUDGET_STOP
+  code: ARCHIVE_NESTED_LIMIT
+- id: ARC-019
+  name: sparse file expansion
+  formats:
+  - TAR
+  logical_size: 1099511627776
+  expected: REJECT_OR_LIMIT
+  code: ARCHIVE_SPARSE_FILE_LIMIT
+- id: ARC-020
+  name: encrypted archive without password
+  formats:
+  - ZIP
+  expected: PASSWORD_REQUIRED
+  code: ARCHIVE_PASSWORD_REQUIRED
+- id: ARC-021
+  name: wrong password
+  formats:
+  - ZIP
+  expected: PASSWORD_INVALID
+  code: ARCHIVE_PASSWORD_INVALID
+- id: ARC-022
+  name: corrupt directory/header
+  formats:
+  - ZIP
+  - TAR
+  expected: REJECT
+  code: ARCHIVE_CORRUPT
+- id: ARC-023
+  name: archive format spoof
+  extension: .zip
+  magic: ELF
+  expected: QUARANTINE
+  code: FILE_TYPE_MISMATCH
+- id: ARC-024
+  name: script in normal archive
+  formats:
+  - ZIP
+  - TAR_GZ
+  entry: postinstall.sh
+  expected: EXTRACT_AS_NONEXECUTABLE_DATA_ONLY
+  code: NONE_OR_SCRIPT_METADATA
+- id: ARC-025
+  name: valid ordinary archive
+  formats:
+  - ZIP
+  - TAR
+  - TAR_GZ
+  - TGZ
+  - GZIP
+  expected: ALLOW
+  code: OK

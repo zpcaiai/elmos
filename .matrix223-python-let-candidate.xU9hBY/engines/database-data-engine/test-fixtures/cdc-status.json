@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "organizationId": "org-fixture",
+  "streamId": "orders-cdc",
+  "provider": "ORACLE_GOLDENGATE",
+  "offsetType": "ORACLE_SCN",
+  "sourcePosition": "123456789",
+  "appliedPosition": "123456789",
+  "offsetRecoverable": true,
+  "openTransactions": 0,
+  "timeLagSeconds": 0.4,
+  "recordLag": 0,
+  "status": "CAUGHT_UP",
+  "evidenceRefs": ["artifact://cdc/orders-frontier"]
+}

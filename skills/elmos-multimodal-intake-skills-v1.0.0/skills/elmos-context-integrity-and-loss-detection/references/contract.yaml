@@ -1,0 +1,68 @@
+schema_version: 1.0.0
+ordinal: 40
+name: elmos-context-integrity-and-loss-detection
+title: 上下文完整性与丢失检测
+objective: 建立关键事实清单、指纹和阶段性完整性门，任何缺失、版本错配或来源断裂都在继续执行前被发现。
+dependencies:
+- elmos-source-anchor-and-provenance
+- elmos-context-checkpoint-and-recovery
+inputs:
+- 变换前后上下文
+- CriticalFactSet
+- 来源锚点与哈希
+- 任务/测试/副作用状态
+outputs:
+- ContextIntegrityReport
+- 阻断/恢复动作
+- 事实差异
+- 审计证据
+responsibilities:
+- 从当前用户指令、系统约束、验收标准、批准决策、未完成任务、安全发现和副作用账本生成 CriticalFactSet。
+- 为事实、来源锚点、版本和内容哈希生成完整性指纹，并在每次上下文变换前后比较。
+- 检查 P0/P1 覆盖、冲突状态、最新性、来源可达性、修改文件和测试状态。
+- 对语义改写使用结构化字段对齐与独立验证，不仅比较字符串。
+- 发现丢失或漂移时阻断后续高风险工具调用，自动重新水化或回滚。
+- 把完整性报告附在检查点、压缩运行、模型切换和最终完成报告中。
+- 区分允许的表达压缩与不允许的事实变化，并保留豁免审批。
+- 构建对抗样本：旧要求覆盖新要求、否定词丢失、数值漂移、版本错选和来源删除。
+deliverables:
+- CriticalFactSet/ContextIntegrityReport schema
+- 阶段性完整性门与自动修复/回滚
+- 语义漂移和来源可达性检查
+- 对抗回归测试与完成报告集成
+acceptance:
+- 目标、最新用户指令、不可违反约束和验收标准保留率为100%
+- 任何关键事实缺失会阻断高风险执行并生成明确告警
+- 压缩、恢复、模型切换前后都有可查询完整性报告
+- 来源不可达或哈希不符不会被静默接受
+- 自动重新水化或回滚后重新通过完整性门才可继续
+- 对否定、数值、权限、删除和版本变化的测试全部通过
+data_entities:
+- context_integrity_checks
+- critical_fact_sets
+- critical_fact_items
+- integrity_exceptions
+events:
+- context.integrity.passed
+- context.integrity.failed
+- context.loss.detected
+- context.integrity.restored
+metrics:
+- critical_fact_retention_rate
+- silent_loss_count
+- semantic_drift_detection_rate
+- integrity_check_latency_ms
+failure_modes:
+- latest user instruction missing
+- negation flipped
+- source hash mismatch
+- wrong acceptance version
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

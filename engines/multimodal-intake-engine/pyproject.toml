@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elmos-multimodal-intake"
+version = "0.1.0"
+description = "Dependency-free durable multimodal intake core for ELMOS"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+elmos_multimodal_intake = [
+    "migrations/*.sql",
+    "_data/openapi/*.json",
+    "_data/openapi/*.yaml",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 110
+
+[tool.mypy]
+python_version = "3.12"
+strict = true

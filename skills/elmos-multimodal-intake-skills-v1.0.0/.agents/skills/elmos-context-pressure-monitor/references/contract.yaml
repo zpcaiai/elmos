@@ -1,0 +1,68 @@
+schema_version: 1.0.0
+ordinal: 33
+name: elmos-context-pressure-monitor
+title: 上下文压力监控
+objective: 通过实时压力状态机和提前量预测，在达到硬限制前安全触发去重、压缩、检查点或阶段切换。
+dependencies:
+- elmos-context-budget-manager
+- elmos-multimodal-token-accounting
+- elmos-structured-context-compaction
+inputs:
+- 实时 ContextUsage
+- 待装载/工具输出预测
+- 模型能力
+- 上下文策略
+outputs:
+- 压力状态
+- 预测时间线
+- 保护动作命令
+- 告警与审计事件
+responsibilities:
+- 依据目标模型有效窗口、当前实测占用、待处理队列、预留输出和安全余量计算 pressure ratio。
+- 实现可配置 NORMAL、ELEVATED、HIGH、CRITICAL 阈值和迟滞，避免状态抖动。
+- 预测未来若干 agent turn、工具结果和测试日志的容量增长，而不只看当前值。
+- 在各等级触发不同动作：去重、工具结果外置、结构化压缩、检查点、重新规划或阻止继续装载。
+- 状态变更通过事件、Trace 和用户界面公开，记录触发原因及执行结果。
+- 检测计量缺失、异常突增、预留容量不足和模型能力变化。
+- 为不同模型、任务类型和租户策略提供版本化阈值。
+- 建立故障注入测试，验证压力骤升和模型降级场景。
+deliverables:
+- ContextPressure 状态机与策略配置
+- 增长预测器和告警规则
+- 压力事件、仪表盘和审计记录
+- 阈值/迟滞/故障注入测试
+acceptance:
+- 达到硬限制前必然进入 HIGH 或 CRITICAL 并执行保护动作
+- 阈值可配置且变更有版本与审计
+- 状态迟滞避免反复压缩和事件风暴
+- 压力保护不删除 P0/P1 内容
+- 计量缺失时采取保守失败而非继续无限装载
+- 每次自动动作可关联压力快照、执行结果和恢复路径
+data_entities:
+- context_pressure_snapshots
+- context_pressure_transitions
+- context_protection_actions
+events:
+- context.pressure.elevated
+- context.pressure.high
+- context.pressure.critical
+- context.pressure.normalized
+metrics:
+- overflow_prevention_rate
+- pressure_action_latency_ms
+- false_critical_rate
+- compaction_thrash_count
+failure_modes:
+- hard overflow without alert
+- oscillating thresholds
+- missing usage snapshot
+- protection action failed
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

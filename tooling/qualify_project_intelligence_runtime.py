@@ -9,6 +9,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import platform
 import stat
 import sys
 import tempfile
@@ -21,6 +22,7 @@ ENGINE_SRC = ENGINE / "src"
 TEST_FIXTURE = ENGINE / "tests/test_runtime.py"
 RECEIPT = ENGINE / "qualification/local-qualification.json"
 SELF_RELATIVE = Path("tooling/qualify_project_intelligence_runtime.py")
+_QUALIFICATION_SECRET_SENTINEL = "must-not-leak"
 
 
 class QualificationError(RuntimeError):
@@ -174,6 +176,31 @@ def engine_inventory() -> list[dict[str, Any]]:
     return values
 
 
+def runtime_environment() -> dict[str, Any]:
+    executable = Path(sys.executable)
+    try:
+        resolved = executable.resolve(strict=True)
+    except OSError as exc:
+        raise QualificationError("cannot resolve the qualification interpreter") from exc
+    if not resolved.is_file() or not stat.S_ISREG(resolved.stat().st_mode):
+        raise QualificationError("qualification interpreter is not a regular file")
+    version = sys.version_info
+    return {
+        "implementation": sys.implementation.name,
+        "version": f"{version.major}.{version.minor}.{version.micro}",
+        "release_level": version.releaselevel,
+        "serial": version.serial,
+        "cache_tag": sys.implementation.cache_tag,
+        "hexversion": sys.hexversion,
+        "platform": sys.platform,
+        "machine": platform.machine(),
+        "byteorder": sys.byteorder,
+        "executable": executable.as_posix(),
+        "resolved_executable": resolved.as_posix(),
+        "executable_sha256": sha256_file(resolved),
+    }
+
+
 def load_fixture_module() -> Any:
     spec = importlib.util.spec_from_file_location(
         "project_intelligence_runtime_fixture", TEST_FIXTURE
@@ -230,17 +257,23 @@ def build_receipt() -> dict[str, Any]:
                 "status": "PASSED" if passed else "FAILED",
             }
         )
+    failed_skills = [item["skill"] for item in results if item["status"] != "PASSED"]
+    if failed_skills:
+        raise QualificationError(
+            "qualification contract failed for "
+            f"{len(failed_skills)} handler(s): {failed_skills[:5]}"
+        )
+    if _QUALIFICATION_SECRET_SENTINEL in json.dumps(
+        results, ensure_ascii=False, sort_keys=True
+    ):
+        raise QualificationError("qualification results disclosed the secret sentinel")
     inventory = engine_inventory()
     receipt = {
-        "schema_version": "elmos.project-intelligence.local-qualification.v1",
+        "schema_version": "elmos.project-intelligence.local-qualification.v2",
         "source_package": "elmos-project-intelligence-skills",
         "source_version": "1.1.0",
         "qualification_scope": "bounded-local-fixture-handlers",
-        "qualification_status": (
-            "PASSED"
-            if all(item["status"] == "PASSED" for item in results)
-            else "FAILED"
-        ),
+        "qualification_status": "PASSED",
         "engine_tree_sha256": canonical_digest(inventory),
         "engine_files": inventory,
         "qualifier_path": SELF_RELATIVE.as_posix(),
@@ -253,11 +286,12 @@ def build_receipt() -> dict[str, Any]:
         ),
         "executor": "repository-local-self-attested",
         "effect_guard": "PYTHON_AUDIT_DENY_FILESYSTEM_PROCESS_NETWORK_DURING_DISPATCH",
+        "runtime_environment": runtime_environment(),
         "independent_verifier": None,
         "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
         "external_evidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
-        "counts": {"skills": 50, "local": 21, "partial": 24, "plan": 5},
+        "counts": {"skills": 50, "local": 20, "partial": 25, "plan": 5},
         "results": results,
     }
     receipt["receipt_digest"] = canonical_digest(receipt)
@@ -312,8 +346,8 @@ def main(argv: list[str] | None = None) -> int:
                 "status": "PASS",
                 "mode": "write" if args.write else "check",
                 "skills": 50,
-                "local": 21,
-                "partial": 24,
+                "local": 20,
+                "partial": 25,
                 "plan": 5,
                 "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
                 "external_evidence": "NOT_RUN",

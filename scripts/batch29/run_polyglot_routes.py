@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 import platform
 import shutil
 import stat
@@ -243,11 +244,17 @@ if __name__ == "__main__":
 
 from elmos_polyglot_route.emitter import _SWIFT_HELPERS  # noqa: E402
 from elmos_polyglot_route.engine import migrate, migrate_module  # noqa: E402
-from elmos_polyglot_route.models import Language, RouteError, SemanticIR  # noqa: E402
+from elmos_polyglot_route.models import (  # noqa: E402
+    PENDING_ANALYZER_LANGUAGES,
+    PENDING_REPOSITORY_LANGUAGES,
+    Language,
+    RouteError,
+    SemanticIR,
+)
 from elmos_polyglot_route.native import (  # noqa: E402
-    analyze,
     swift_analyzer_build_receipt,
 )
+from elmos_polyglot_route.source_analyzer import analyze  # noqa: E402
 from route_sets import (  # noqa: E402
     ALL_DECLARED_ROUTE_KEYS,
     COMPLETE_ROUTE_KEYS,
@@ -259,12 +266,15 @@ from route_sets import (  # noqa: E402
     ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     ELEVEN_LANGUAGE_MATRIX_LANGUAGES,
     EVIDENCED_ROUTE_KEYS,
+    EXECUTABLE_ROUTE_SETS,
     EXACT_ROUTE_SETS,
     MODULE_EQUIVALENCE_ROUTE_KEYS,
     NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
     NINE_LANGUAGE_MATRIX_LANGUAGES,
     NODEJS_EXACT_ROUTE_KEYS,
     PHP_EXACT_ROUTE_KEYS,
+    PREPARABLE_ROUTE_SETS,
+    READ_ONLY_ROUTE_SETS,
     ROUTE_PROVENANCE_PARTITIONS,
     SPECIALIZED_ROUTE_KEYS,
     SUPPORTED_ROUTE_LANGUAGES,
@@ -275,6 +285,14 @@ from route_sets import (  # noqa: E402
     nodejs_negative_case_ids,
     provenance_route_set,
     split_route_key,
+)
+from route_runtime_metadata import (  # noqa: E402
+    ENGINE_PATHS,
+    SHORT_VERSIONS,
+    V3_RESEARCH_ROUTE_VERSION,
+    VERSIONS,
+    v3_research_certification_document,
+    v3_research_evidence_document,
 )
 
 B16_LANGUAGES: tuple[Language, ...] = CORE_LANGUAGES  # type: ignore[assignment]
@@ -312,8 +330,10 @@ LEGACY_REPLAY_ASSET_IDENTITIES = {
         "bytes": 11_670,
     },
 }
-MUTABLE_ROUTE_KEYS = tuple(
-    route_key for route_key in COMPLETE_ROUTE_KEYS if route_key not in CORE_ROUTE_KEYS
+EXECUTABLE_MUTABLE_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in COMPLETE_ROUTE_KEYS
+    if route_key not in CORE_ROUTE_KEYS and route_key not in V3_EXACT_ROUTE_KEYS
 )
 NOT_RUN_PREPARED_AT = "2026-08-09T00:00:00+00:00"
 MODULE_SINGLE_ARTIFACT_ROLES = frozenset(
@@ -454,79 +474,6 @@ def nodejs_route_types(source: Language, target: Language) -> list[str]:
     return ["integer", "number", "boolean"]
 
 
-VERSIONS = {
-    "java": ["Java 21.0.11", "JDK Compiler Tree API"],
-    "python": ["Python 3.12.12", "CPython AST"],
-    "csharp": ["C# 14", ".NET SDK 10.0.301", "Roslyn 5.6.0"],
-    "typescript": ["TypeScript 5.9.2", "Node.js 26.0.0"],
-    "javascript": [
-        "JavaScript ES2022",
-        "Node.js 26.0.0",
-        "ECMAScript Modules (ESM)",
-        "exact JSDoc canonical types",
-    ],
-    "go": ["Go 1.25.0", "go/parser AST"],
-    "rust": ["Rust 1.89.0", "syn 2.0.119"],
-    "cpp": [
-        "C++20",
-        "Apple clang version 21.0.0 (clang-2100.1.1.101)",
-        "arm64-apple-darwin25.6.0",
-    ],
-    "objc": [
-        "Objective-C",
-        "Apple clang version 21.0.0 (clang-2100.1.1.101)",
-        "arm64-apple-darwin25.6.0",
-        "Foundation",
-    ],
-    "swift": [
-        "Apple Swift 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)",
-        "arm64-apple-macosx26.0",
-        "SwiftSyntax 600.0.1",
-    ],
-    "php": [
-        "PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)",
-        "ext/tokenizer Zend token stream",
-        "strict_types=1",
-    ],
-    # Declared matrix members with no pinned toolchain yet.  These strings are
-    # deliberately not plausible version numbers: an inventory that reported
-    # "Kotlin 2.x" here would claim a pin that does not exist.
-    "kotlin": ["PENDING_ANALYZER"],
-    "react": ["PENDING_ANALYZER"],
-    "flutter": ["PENDING_ANALYZER"],
-}
-ENGINE_PATHS = {
-    "java": "engines/polyglot-route-engine/native/java/Analyzer.java",
-    "python": "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py",
-    "csharp": "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli",
-    "typescript": "engines/frontend-client-engine/src/polyglot.ts",
-    "javascript": "engines/polyglot-route-engine/native/javascript/analyzer.mjs",
-    "go": "engines/polyglot-route-engine/native/go/analyzer.go",
-    "rust": "engines/polyglot-route-engine/native/rust/src/main.rs",
-    "cpp": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
-    "objc": "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py",
-    "swift": "engines/polyglot-route-engine/native/swift/Sources/ElmosSwiftAnalyzer/main.swift",
-    "php": "engines/polyglot-route-engine/native/php/analyzer.php",
-    "kotlin": None,
-    "react": None,
-    "flutter": None,
-}
-SHORT_VERSIONS = {
-    "java": "21.0.11",
-    "python": "3.12.12",
-    "csharp": "10.0.301",
-    "typescript": "5.9.2 / Node 26.0.0",
-    "javascript": "Node.js 26.0.0 / ES2022 / ESM",
-    "go": "1.25.0",
-    "rust": "1.89.0",
-    "cpp": "C++20 / Apple clang 21.0.0 / arm64-apple-darwin25.6.0",
-    "objc": "Objective-C / Apple clang 21.0.0 / arm64-apple-darwin25.6.0",
-    "swift": "Swift 6.3.3 / arm64-apple-macosx26.0",
-    "php": "PHP 8.5.9 (NTS) / ext/tokenizer",
-    "kotlin": "PENDING_ANALYZER",
-    "react": "PENDING_ANALYZER",
-    "flutter": "PENDING_ANALYZER",
-}
 EXTENSIONS = {
     "java": "java",
     "python": "py",
@@ -863,12 +810,425 @@ EXCLUDED_REBUILDABLE_PATTERNS = [
 ]
 
 
-def write_json(path: Path, value: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+def _json_bytes(value: dict[str, Any]) -> bytes:
+    return (
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    ).encode("utf-8")
+
+
+def _support_matrix_markdown(
+    route_key: str,
+    source_bytes: bytes,
+    document: dict[str, Any],
+) -> bytes:
+    """Render the human-readable matrix from the exact JSON authority."""
+
+    capabilities = document.get("capabilities")
+    if (
+        set(document) != {"schema_version", "route_key", "capabilities"}
+        or document.get("schema_version") != 1
+        or document.get("route_key") != route_key
+        or not isinstance(capabilities, list)
+        or not capabilities
+    ):
+        raise RuntimeError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}")
+
+    def prose(value: str) -> str:
+        return (
+            value.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\r", " ")
+            .replace("\n", " ")
+        )
+
+    sections: list[str] = []
+    for raw in capabilities:
+        if not isinstance(raw, dict) or set(raw) != {
+            "id",
+            "status",
+            "strategy",
+            "reason",
+            "evidence_refs",
+        }:
+            raise RuntimeError(f"SUPPORT_MATRIX_CAPABILITY_INVALID:{route_key}")
+        capability_id = raw.get("id")
+        status = raw.get("status")
+        strategy = raw.get("strategy")
+        reason = raw.get("reason")
+        evidence_refs = raw.get("evidence_refs")
+        if (
+            not all(
+                isinstance(value, str) and value
+                for value in (capability_id, status, strategy, reason)
+            )
+            or not isinstance(evidence_refs, list)
+            or any(not isinstance(value, str) or not value for value in evidence_refs)
+        ):
+            raise RuntimeError(f"SUPPORT_MATRIX_CAPABILITY_INVALID:{route_key}")
+        evidence = ", ".join(f"`{value}`" for value in evidence_refs) or "None"
+        sections.append(
+            "\n".join(
+                (
+                    f"## {prose(capability_id)}",
+                    "",
+                    f"- Status: `{prose(status)}`",
+                    f"- Strategy: `{prose(strategy)}`",
+                    f"- Evidence: {evidence}",
+                    f"- Reason: {prose(reason)}",
+                )
+            )
+        )
+    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    content = (
+        f"# Support matrix: {route_key}\n\n"
+        "Generated from the route's authoritative `../support-matrix.json`; "
+        "this view does not create execution or certification evidence.\n\n"
+        f"- Source SHA-256: `sha256:{source_sha256}`\n"
+        f"- Source bytes: `{len(source_bytes)}`\n\n"
+        + "\n\n".join(sections)
+        + "\n"
     )
+    return content.encode("utf-8")
+
+
+def _stable_regular_file_bytes(
+    root: Path,
+    path: Path,
+    *,
+    label: str,
+    require_nonempty: bool = True,
+) -> bytes:
+    """Read one confined, standalone regular file through a stable descriptor."""
+
+    try:
+        resolved_root = root.resolve(strict=True)
+        root_metadata = root.lstat()
+        relative = path.relative_to(root)
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        raise RuntimeError(f"{label}_UNSAFE:{path}") from exc
+    if root.is_symlink() or not stat.S_ISDIR(root_metadata.st_mode):
+        raise RuntimeError(f"{label}_UNSAFE:{path}")
+
+    current = root
+    try:
+        for part in relative.parts[:-1]:
+            current = current / part
+            metadata = current.lstat()
+            if current.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
+                raise RuntimeError
+        before = path.lstat()
+        resolved = path.resolve(strict=True)
+        resolved.relative_to(resolved_root)
+    except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
+        raise RuntimeError(f"{label}_UNSAFE:{path}") from exc
+    if (
+        path.is_symlink()
+        or not stat.S_ISREG(before.st_mode)
+        or before.st_nlink != 1
+    ):
+        raise RuntimeError(f"{label}_UNSAFE:{path}")
+
+    flags = os.O_RDONLY
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    descriptor = -1
+    try:
+        descriptor = os.open(path, flags)
+        opened = os.fstat(descriptor)
+        with os.fdopen(descriptor, "rb", closefd=True) as stream:
+            descriptor = -1
+            content = stream.read()
+            after_descriptor = os.fstat(stream.fileno())
+        after_path = path.lstat()
+    except OSError as exc:
+        raise RuntimeError(f"{label}_UNSAFE:{path}") from exc
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+    def identity(metadata: os.stat_result) -> tuple[int, ...]:
+        return (
+            metadata.st_dev,
+            metadata.st_ino,
+            metadata.st_mode,
+            metadata.st_size,
+            metadata.st_uid,
+            metadata.st_gid,
+            metadata.st_nlink,
+            metadata.st_mtime_ns,
+            metadata.st_ctime_ns,
+        )
+
+    if (
+        identity(before) != identity(opened)
+        or identity(opened) != identity(after_descriptor)
+        or identity(after_descriptor) != identity(after_path)
+        or after_path.st_nlink != 1
+        or len(content) != after_path.st_size
+        or (require_nonempty and not content)
+    ):
+        raise RuntimeError(f"{label}_CHANGED_DURING_READ:{path}")
+    return content
+
+
+def _safe_atomic_write_parent(path: Path) -> tuple[Path, os.stat_result]:
+    """Return a stable direct parent, creating only missing plain directories."""
+
+    parent = path.parent
+    missing: list[Path] = []
+    current = parent
+    while True:
+        try:
+            metadata = current.lstat()
+        except FileNotFoundError:
+            missing.append(current)
+            if current.parent == current:
+                raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+            current = current.parent
+            continue
+        if current.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+        break
+    for directory in reversed(missing):
+        try:
+            directory.mkdir()
+            metadata = directory.lstat()
+        except OSError as exc:
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
+        if directory.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+    for ancestor in (parent, *parent.parents):
+        try:
+            ancestor_metadata = ancestor.lstat()
+        except OSError as exc:
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
+        if ancestor.is_symlink() or not stat.S_ISDIR(ancestor_metadata.st_mode):
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+    try:
+        parent_metadata = parent.lstat()
+        resolved_parent = parent.resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
+    if parent.is_symlink() or not stat.S_ISDIR(parent_metadata.st_mode):
+        raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+    return resolved_parent, parent_metadata
+
+
+def _atomic_write_bytes_impl(path: Path, content: bytes) -> None:
+    resolved_parent, parent_before = _safe_atomic_write_parent(path)
+    try:
+        existing = path.lstat()
+    except FileNotFoundError:
+        existing = None
+    except OSError as exc:
+        raise RuntimeError(f"ATOMIC_WRITE_TARGET_UNSAFE:{path}") from exc
+    if existing is not None and (
+        path.is_symlink()
+        or not stat.S_ISREG(existing.st_mode)
+        or existing.st_nlink != 1
+    ):
+        raise RuntimeError(f"ATOMIC_WRITE_TARGET_UNSAFE:{path}")
+
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=resolved_parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        temporary.chmod(0o644)
+        parent_after = path.parent.lstat()
+        if (
+            path.parent.is_symlink()
+            or not stat.S_ISDIR(parent_after.st_mode)
+            or (parent_before.st_dev, parent_before.st_ino)
+            != (parent_after.st_dev, parent_after.st_ino)
+        ):
+            raise RuntimeError(f"ATOMIC_WRITE_PARENT_CHANGED:{path.parent}")
+        try:
+            current = path.lstat()
+        except FileNotFoundError:
+            current = None
+        except OSError as exc:
+            raise RuntimeError(f"ATOMIC_WRITE_TARGET_CHANGED:{path}") from exc
+        if existing is None:
+            if current is not None:
+                raise RuntimeError(f"ATOMIC_WRITE_TARGET_CHANGED:{path}")
+        elif current is None or (
+            path.is_symlink()
+            or not stat.S_ISREG(current.st_mode)
+            or current.st_nlink != 1
+            or (
+                existing.st_dev,
+                existing.st_ino,
+                existing.st_mode,
+                existing.st_size,
+                existing.st_nlink,
+                existing.st_mtime_ns,
+                existing.st_ctime_ns,
+            )
+            != (
+                current.st_dev,
+                current.st_ino,
+                current.st_mode,
+                current.st_size,
+                current.st_nlink,
+                current.st_mtime_ns,
+                current.st_ctime_ns,
+            )
+        ):
+            raise RuntimeError(f"ATOMIC_WRITE_TARGET_CHANGED:{path}")
+        os.replace(temporary, resolved_parent / path.name)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _atomic_write_bytes(path: Path, content: bytes) -> None:
+    _atomic_write_bytes_impl(path, content)
+
+
+def _transaction_target_original(root: Path, path: Path) -> bytes | None:
+    """Return exact original bytes, or ``None`` for a safely absent target."""
+
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+        relative = path.relative_to(root)
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        raise RuntimeError(f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}") from exc
+    if (
+        root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or not relative.parts
+    ):
+        raise RuntimeError(f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}")
+
+    current = root
+    for index, part in enumerate(relative.parts):
+        current = current / part
+        try:
+            metadata = current.lstat()
+        except FileNotFoundError:
+            # Once a confined ancestor is absent, the destination is absent as
+            # well.  Directory creation remains deferred until transaction
+            # commit so this snapshot phase has zero side effects.
+            return None
+        except OSError as exc:
+            raise RuntimeError(
+                f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}"
+            ) from exc
+        if current.is_symlink():
+            raise RuntimeError(f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}")
+        if index < len(relative.parts) - 1:
+            if not stat.S_ISDIR(metadata.st_mode):
+                raise RuntimeError(
+                    f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}"
+                )
+            try:
+                current.resolve(strict=True).relative_to(resolved_root)
+            except (OSError, ValueError) as exc:
+                raise RuntimeError(
+                    f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}"
+                ) from exc
+            continue
+        return _stable_regular_file_bytes(
+            root,
+            path,
+            label="DOCUMENT_TRANSACTION_SOURCE",
+            require_nonempty=False,
+        )
+    raise RuntimeError(f"DOCUMENT_TRANSACTION_SOURCE_UNSAFE:{path}")
+
+
+def _remove_transaction_created_file(
+    root: Path, path: Path, expected_content: bytes
+) -> None:
+    """Remove only a confined standalone file written by this transaction."""
+
+    observed = _transaction_target_original(root, path)
+    if observed is None:
+        return
+    if observed != expected_content:
+        raise RuntimeError(f"DOCUMENT_TRANSACTION_ROLLBACK_TARGET_CHANGED:{path}")
+    try:
+        before = path.lstat()
+        resolved_parent, parent_before = _safe_atomic_write_parent(path)
+        current = path.lstat()
+        parent_current = path.parent.lstat()
+    except OSError as exc:
+        raise RuntimeError(
+            f"DOCUMENT_TRANSACTION_ROLLBACK_REMOVE_FAILED:{path}"
+        ) from exc
+    def identity(metadata: os.stat_result) -> tuple[int, ...]:
+        return (
+            metadata.st_dev,
+            metadata.st_ino,
+            metadata.st_mode,
+            metadata.st_size,
+            metadata.st_uid,
+            metadata.st_gid,
+            metadata.st_nlink,
+            metadata.st_mtime_ns,
+            metadata.st_ctime_ns,
+        )
+    if (
+        path.is_symlink()
+        or not stat.S_ISREG(current.st_mode)
+        or current.st_nlink != 1
+        or identity(before) != identity(current)
+        or (parent_before.st_dev, parent_before.st_ino)
+        != (parent_current.st_dev, parent_current.st_ino)
+    ):
+        raise RuntimeError(f"DOCUMENT_TRANSACTION_ROLLBACK_TARGET_CHANGED:{path}")
+    try:
+        os.unlink(resolved_parent / path.name)
+        path.lstat()
+    except FileNotFoundError:
+        return
+    except OSError as exc:
+        raise RuntimeError(
+            f"DOCUMENT_TRANSACTION_ROLLBACK_REMOVE_FAILED:{path}"
+        ) from exc
+    raise RuntimeError(f"DOCUMENT_TRANSACTION_ROLLBACK_REMOVE_FAILED:{path}")
+
+
+def _transactional_write_bytes(
+    root: Path, documents: tuple[tuple[Path, bytes], ...]
+) -> None:
+    """Create/replace a prebuilt set or restore every original path state."""
+
+    paths = tuple(path for path, _ in documents)
+    if not paths or len(paths) != len(set(paths)):
+        raise RuntimeError("DOCUMENT_TRANSACTION_SELECTION_INVALID")
+    originals = {path: _transaction_target_original(root, path) for path in paths}
+    attempted: list[tuple[Path, bytes]] = []
+    try:
+        for path, content in documents:
+            attempted.append((path, content))
+            _atomic_write_bytes(path, content)
+    except BaseException as error:
+        rollback_failures: list[str] = []
+        for path, content in reversed(attempted):
+            try:
+                original = originals[path]
+                if original is None:
+                    _remove_transaction_created_file(root, path, content)
+                else:
+                    _atomic_write_bytes_impl(path, original)
+            except BaseException as rollback_error:  # pragma: no cover - host I/O loss
+                rollback_failures.append(f"{path}:{rollback_error}")
+        if rollback_failures:
+            raise RuntimeError(
+                "DOCUMENT_TRANSACTION_ROLLBACK_FAILED:" + " | ".join(rollback_failures)
+            ) from error
+        raise
+
+
+def write_json(path: Path, value: dict[str, Any]) -> None:
+    _atomic_write_bytes(path, _json_bytes(value))
 
 
 def validate_portable_swift_analyzer_receipt(receipt: dict[str, Any]) -> None:
@@ -1665,6 +2025,7 @@ def build_formal_equivalence_evidence(
     """
 
     route_key = f"{source}-to-{target}"
+    assert_route_mutation_allowed(route, source, target)
     formal_root = route / "certification" / "formal-artifacts"
     formal_root.mkdir(parents=True, exist_ok=True)
     normalized_runs: list[dict[str, Any]] = []
@@ -2674,6 +3035,7 @@ def write_not_run_route_scaffold(
     """Create a complete, non-passing route record before native execution."""
 
     route_key = f"{source}-to-{target}"
+    assert_route_mutation_allowed(route, source, target)
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
     nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
     module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
@@ -2833,6 +3195,13 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
     route_key = f"{source}-to-{target}"
     if route_key not in EVIDENCED_ROUTE_KEYS:
         raise RuntimeError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
+    if route_key in V3_EXACT_ROUTE_KEYS:
+        # Kotlin/React/Flutter directions remain an explicit research
+        # partition. Their analyzers, emitters and repository surfaces are
+        # locally executable, but the 66 route packs have no route-specific
+        # native campaign. Reusing the limited-route writer here would
+        # silently promote every prepared V3 scaffold to `limited`.
+        raise RuntimeError(f"V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:{route_key}")
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
     nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
     module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
@@ -3329,10 +3698,360 @@ def configure_route(repo: Path, source: Language, target: Language) -> Path:
     return route
 
 
+def assert_limited_route_execution_allowed(
+    route_key: str, *, allow_immutable_core: bool = False
+) -> None:
+    """Reject routes without a bounded, route-specific executable campaign.
+
+    V3 route manifests are synchronized as research scaffolds only.  Keeping
+    this check at every mutation boundary prevents a caller from bypassing
+    ``configure_route`` and writing LIMITED/PASSED evidence for those routes.
+    """
+
+    if route_key in V3_EXACT_ROUTE_KEYS:
+        raise RuntimeError(f"V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:{route_key}")
+    if route_key not in EVIDENCED_ROUTE_KEYS:
+        raise RuntimeError(f"INACTIVE_OR_UNDECLARED_ROUTE_EXECUTION:{route_key}")
+    if route_key in CORE_ROUTE_KEYS and not allow_immutable_core:
+        raise RuntimeError(
+            f"LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:{route_key}"
+        )
+
+
+def assert_route_mutation_allowed(
+    route: Path, source: Language, target: Language
+) -> str:
+    """Bind a direct mutation call to one active, mutable route directory."""
+
+    route_key = f"{source}-to-{target}"
+    if route.name != route_key:
+        raise RuntimeError(
+            f"ROUTE_MUTATION_PATH_BINDING_INVALID:{route.name}:{route_key}"
+        )
+    assert_limited_route_execution_allowed(route_key)
+    try:
+        metadata = route.lstat()
+    except OSError as exc:
+        raise RuntimeError(f"ROUTE_MUTATION_DIRECTORY_UNSAFE:{route_key}") from exc
+    if route.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
+        raise RuntimeError(f"ROUTE_MUTATION_DIRECTORY_UNSAFE:{route_key}")
+    return route_key
+
+
+def preflight_route_set_execution(route_keys: tuple[str, ...]) -> None:
+    """Validate an entire execution selection before any route-side effects."""
+
+    historical = sorted(set(route_keys) & set(DEPRECATED_ROUTE_KEYS))
+    if historical:
+        raise RuntimeError(
+            "HISTORICAL_ROUTE_SET_READ_ONLY:" + ",".join(historical)
+        )
+    for route_key in route_keys:
+        assert_limited_route_execution_allowed(
+            route_key, allow_immutable_core=True
+        )
+
+
+def _preflight_route_directory(
+    repo: Path, route_key: str, *, allow_missing: bool
+) -> Path:
+    """Validate one existing or prospective route tree without mutating it."""
+
+    routes_root = repo / "routes"
+    route = routes_root / route_key
+    try:
+        routes_metadata = routes_root.lstat()
+        resolved_routes = routes_root.resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError(f"ROUTE_PREPARE_ROOT_UNSAFE:{route_key}") from exc
+    if routes_root.is_symlink() or not stat.S_ISDIR(routes_metadata.st_mode):
+        raise RuntimeError(f"ROUTE_PREPARE_ROOT_UNSAFE:{route_key}")
+    try:
+        route_metadata = route.lstat()
+    except FileNotFoundError:
+        if allow_missing:
+            return route
+        raise RuntimeError(f"ROUTE_PREPARE_DIRECTORY_MISSING:{route_key}") from None
+    except OSError as exc:
+        raise RuntimeError(f"ROUTE_PREPARE_DIRECTORY_UNSAFE:{route_key}") from exc
+    try:
+        resolved_route = route.resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError(f"ROUTE_PREPARE_DIRECTORY_UNSAFE:{route_key}") from exc
+    if (
+        route.is_symlink()
+        or not stat.S_ISDIR(route_metadata.st_mode)
+        or resolved_route.parent != resolved_routes
+    ):
+        raise RuntimeError(f"ROUTE_PREPARE_DIRECTORY_UNSAFE:{route_key}")
+    for candidate in sorted(route.rglob("*")):
+        try:
+            metadata = candidate.lstat()
+            resolved = candidate.resolve(strict=True)
+            resolved.relative_to(resolved_route)
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise RuntimeError(f"ROUTE_PREPARE_TREE_UNSAFE:{route_key}") from exc
+        if candidate.is_symlink() or not (
+            stat.S_ISDIR(metadata.st_mode) or stat.S_ISREG(metadata.st_mode)
+        ):
+            raise RuntimeError(f"ROUTE_PREPARE_TREE_UNSAFE:{route_key}")
+        if stat.S_ISREG(metadata.st_mode) and metadata.st_nlink != 1:
+            raise RuntimeError(f"ROUTE_PREPARE_TREE_UNSAFE:{route_key}")
+    return route
+
+
+def preflight_route_set_preparation(
+    repo: Path, route_set_name: str, route_keys: tuple[str, ...]
+) -> None:
+    """Validate a complete prepare selection before its first route write."""
+
+    if set(route_keys) & set(DEPRECATED_ROUTE_KEYS):
+        raise RuntimeError(f"HISTORICAL_ROUTE_SET_READ_ONLY:{route_set_name}")
+    if (
+        not route_keys
+        or len(route_keys) != len(set(route_keys))
+        or set(route_keys) - set(EVIDENCED_ROUTE_KEYS)
+    ):
+        raise RuntimeError(f"ROUTE_SET_PREPARE_SELECTION_INVALID:{route_set_name}")
+    for route_key in route_keys:
+        if route_key in CORE_ROUTE_KEYS:
+            continue
+        _preflight_route_directory(repo, route_key, allow_missing=True)
+        if route_key in V3_EXACT_ROUTE_KEYS:
+            _v3_research_route_documents(repo, route_key)
+        else:
+            assert_limited_route_execution_allowed(route_key)
+
+
+def verify_route_set_read_only(
+    repo: Path,
+    route_set_name: str,
+    route_keys: tuple[str, ...],
+) -> None:
+    """Validate one immutable set without executing or rewriting a route."""
+
+    if (
+        not route_keys
+        or len(route_keys) != len(set(route_keys))
+        or set(route_keys) - set(ALL_DECLARED_ROUTE_KEYS)
+    ):
+        raise RuntimeError(f"ROUTE_SET_READ_ONLY_SELECTION_INVALID:{route_set_name}")
+    routes_root = repo / "routes"
+    for route_key in route_keys:
+        route = _preflight_route_directory(repo, route_key, allow_missing=False)
+        required_json = {
+            "route": route / "route.json",
+            "support": route / "support-matrix.json",
+            "evidence": route / "certification" / "evidence.json",
+            "certification": route / "certification" / "certification.json",
+        }
+        documents: dict[str, dict[str, Any]] = {}
+        raw_support = b""
+        for label, path in required_json.items():
+            payload = _stable_regular_file_bytes(
+                routes_root,
+                path,
+                label=f"ROUTE_SET_READ_ONLY_{label.upper()}:{route_key}",
+            )
+            try:
+                raw = json.loads(payload.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise RuntimeError(
+                    f"ROUTE_SET_READ_ONLY_DOCUMENT_INVALID:{route_key}:{label}"
+                ) from exc
+            if not isinstance(raw, dict) or raw.get("route_key") != route_key:
+                raise RuntimeError(
+                    f"ROUTE_SET_READ_ONLY_DOCUMENT_INVALID:{route_key}:{label}"
+                )
+            documents[label] = raw
+            if label == "support":
+                raw_support = payload
+        route_version = documents["route"].get("version")
+        if (
+            documents["evidence"].get("route_version") != route_version
+            or documents["certification"].get("route_version") != route_version
+        ):
+            raise RuntimeError(f"ROUTE_SET_READ_ONLY_VERSION_DRIFT:{route_key}")
+        expected_markdown = _support_matrix_markdown(
+            route_key,
+            raw_support,
+            documents["support"],
+        )
+        observed_markdown = _stable_regular_file_bytes(
+            routes_root,
+            route / "certification" / "support-matrix.md",
+            label=f"ROUTE_SET_READ_ONLY_SUPPORT_VIEW:{route_key}",
+        )
+        if observed_markdown != expected_markdown:
+            raise RuntimeError(f"ROUTE_SUPPORT_MATRIX_VIEW_DRIFT:{route_key}")
+        if route_key in V3_EXACT_ROUTE_KEYS and (
+            documents["route"]
+            != _v3_research_route_manifest(repo, route_key)[2]
+            or documents["evidence"]
+            != v3_research_evidence_document(route_key)
+            or documents["certification"]
+            != v3_research_certification_document(route_key)
+        ):
+            raise RuntimeError(f"V3_ROUTE_CAMPAIGN_OVERCLAIM:{route_key}")
+
+
+def _v3_research_route_manifest(
+    repo: Path, route_key: str
+) -> tuple[Path, Path, dict[str, Any]]:
+    """Preflight and build one exact V3 research manifest in memory.
+
+    This is metadata synchronization only. It deliberately leaves the
+    semantic and target profiles empty and the status at ``research``: exact
+    analyzer/emitter paths and versions prove that the declared components
+    exist, not that this directed route has completed its own corpus, replay,
+    independent verification or certification gate.
+    """
+
+    if route_key not in V3_EXACT_ROUTE_KEYS:
+        raise RuntimeError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
+    source, target = split_route_key(route_key)
+    routes_root = repo / "routes"
+    route = routes_root / route_key
+    manifest_path = route / "route.json"
+    try:
+        resolved_routes = routes_root.resolve(strict=True)
+        resolved_route = route.resolve(strict=True)
+        manifest_bytes = _stable_regular_file_bytes(
+            routes_root,
+            manifest_path,
+            label="V3_ROUTE_MANIFEST",
+        )
+    except (OSError, RuntimeError) as error:
+        raise RuntimeError(f"V3_ROUTE_PACK_MISSING_OR_UNSAFE:{route_key}") from error
+    if (
+        routes_root.is_symlink()
+        or route.is_symlink()
+        or resolved_route.parent != resolved_routes
+        or not resolved_route.is_dir()
+    ):
+        raise RuntimeError(f"V3_ROUTE_PACK_MISSING_OR_UNSAFE:{route_key}")
+    try:
+        manifest = json.loads(manifest_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"V3_ROUTE_MANIFEST_INVALID:{route_key}") from error
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("route_key") != route_key
+        or manifest.get("version") != V3_RESEARCH_ROUTE_VERSION
+    ):
+        raise RuntimeError(f"V3_ROUTE_MANIFEST_INVALID:{route_key}")
+    document: dict[str, Any] = {
+        "schema_version": 1,
+        "route_key": route_key,
+        "version": V3_RESEARCH_ROUTE_VERSION,
+        "status": "research",
+        "owner": "ELMOS Migration Platform",
+        "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+        "review_date": "2026-11-24",
+        "source": {
+            "language": source,
+            "versions": list(VERSIONS[source]),
+            "engine_path": ENGINE_PATHS[source],
+        },
+        "target": {
+            "language": target,
+            "versions": list(VERSIONS[target]),
+            "engine_path": (
+                "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+            ),
+        },
+        "profiles": {"semantic_profile": "", "target_profile": ""},
+        "framework_profiles": [],
+        "paths": {
+            "support_matrix": "support-matrix.json",
+            "corpus": "corpus",
+            "certification": "certification",
+        },
+        "gates": {
+            "real_target_compiler": True,
+            "source_map_required": True,
+            "holdout_required": True,
+            "representative_repository_required": True,
+            "critical_unknowns_allowed": 0,
+            "critical_behavior_regressions_allowed": 0,
+        },
+    }
+    return route, manifest_path, document
+
+
+def _v3_research_route_documents(
+    repo: Path, route_key: str
+) -> tuple[Path, tuple[tuple[Path, dict[str, Any]], ...]]:
+    """Build the manifest, raw evidence, and decision before any V3 write."""
+
+    route, manifest_path, manifest = _v3_research_route_manifest(repo, route_key)
+    certification_root = route / "certification"
+    return route, (
+        (manifest_path, manifest),
+        (
+            certification_root / "evidence.json",
+            v3_research_evidence_document(route_key),
+        ),
+        (
+            certification_root / "certification.json",
+            v3_research_certification_document(route_key),
+        ),
+    )
+
+
+def synchronize_v3_research_route_manifest(repo: Path, route_key: str) -> Path:
+    """Bind one V3 route to the conservative metadata/evidence authority."""
+
+    route, documents = _v3_research_route_documents(repo, route_key)
+    _transactional_write_bytes(
+        repo / "routes",
+        tuple((path, _json_bytes(document)) for path, document in documents),
+    )
+    return route
+
+
+def synchronize_v3_research_route_manifests(
+    repo: Path, route_keys: tuple[str, ...] = V3_EXACT_ROUTE_KEYS
+) -> tuple[Path, ...]:
+    """Preflight then atomically synchronize the exact 66-key partition.
+
+    All documents are constructed before the first write. A process-level
+    write failure restores the exact original bytes; an abrupt host failure can
+    expose only complete per-file replacements, never truncated JSON.
+    """
+
+    if (
+        not route_keys
+        or len(route_keys) != len(set(route_keys))
+        or set(route_keys) - set(V3_EXACT_ROUTE_KEYS)
+    ):
+        raise RuntimeError("V3_ROUTE_SYNC_SELECTION_INVALID")
+    prepared = tuple(
+        _v3_research_route_documents(repo, route_key) for route_key in route_keys
+    )
+    documents = tuple(
+        (path, _json_bytes(document))
+        for _, route_documents in prepared
+        for path, document in route_documents
+    )
+    _transactional_write_bytes(repo / "routes", documents)
+    return tuple(route for route, _ in prepared)
+
+
 def populate_corpus(route: Path, fixtures: Path, source: Language) -> None:
+    direction = route.name.split("-to-")
+    if len(direction) != 2 or not all(direction):
+        raise RuntimeError(f"INACTIVE_OR_UNDECLARED_ROUTE_EXECUTION:{route.name}")
+    route_source, route_target = direction
+    assert_route_mutation_allowed(
+        route, cast(Language, route_source), cast(Language, route_target)
+    )
+    if source != route_source:
+        raise RuntimeError(
+            f"ROUTE_MUTATION_SOURCE_BINDING_INVALID:{route.name}:{source}"
+        )
     specialized = route.name in SPECIALIZED_ROUTE_KEYS
     nodejs = route.name in NODEJS_EXACT_ROUTE_KEYS
-    route_source, route_target = split_route_key(route.name)
     nodejs_typescript = nodejs and is_nodejs_typescript_route(
         cast(Language, route_source), cast(Language, route_target)
     )
@@ -3417,9 +4136,19 @@ def populate_corpus(route: Path, fixtures: Path, source: Language) -> None:
 def populate_module_corpus(route: Path, fixtures: Path, source: Language) -> None:
     """Copy the exact, explicitly mapped module fixture into one route pack."""
 
+    direction = route.name.split("-to-")
+    if len(direction) != 2 or not all(direction):
+        raise RuntimeError(f"INACTIVE_OR_UNDECLARED_ROUTE_EXECUTION:{route.name}")
+    route_source, route_target = direction
+    assert_route_mutation_allowed(
+        route, cast(Language, route_source), cast(Language, route_target)
+    )
+    if source != route_source:
+        raise RuntimeError(
+            f"ROUTE_MUTATION_SOURCE_BINDING_INVALID:{route.name}:{source}"
+        )
     fixture_root = fixtures / "module"
     nodejs = route.name in NODEJS_EXACT_ROUTE_KEYS
-    route_source, route_target = split_route_key(route.name)
     nodejs_typescript = nodejs and is_nodejs_typescript_route(
         cast(Language, route_source), cast(Language, route_target)
     )
@@ -3482,6 +4211,7 @@ def execute_module_route(
 ) -> tuple[dict[str, str | int], dict[str, str | int]]:
     """Run and persist the real three-function module verification campaign."""
 
+    assert_route_mutation_allowed(route, source, target)
     populate_module_corpus(route, fixtures, source)
     module_root = route / "corpus" / "module"
     module_manifest = json.loads(
@@ -3617,10 +4347,7 @@ def execute_route(
     repo: Path, fixtures: Path, source: Language, target: Language
 ) -> None:
     route_key = f"{source}-to-{target}"
-    if route_key in CORE_ROUTE_KEYS:
-        raise RuntimeError(
-            f"LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:{route_key}"
-        )
+    assert_limited_route_execution_allowed(route_key)
     swift_receipt: dict[str, Any] | None = None
     if "swift" in {source, target}:
         swift_receipt = swift_analyzer_build_receipt()
@@ -3806,6 +4533,7 @@ def execute_route(
 
 def write_route_gate_documents(route: Path, source: Language, target: Language) -> None:
     route_key = f"{source}-to-{target}"
+    assert_limited_route_execution_allowed(route_key)
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
     nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
     nodejs_typescript = nodejs and is_nodejs_typescript_route(source, target)
@@ -4688,6 +5416,7 @@ def execute_negative(
     route: Path, fixtures: Path, source: Language, target: Language
 ) -> str:
     route_key = f"{source}-to-{target}"
+    assert_limited_route_execution_allowed(route_key)
     if route_key in SPECIALIZED_ROUTE_KEYS:
         return execute_specialized_negative(route, fixtures, source, target)
     if route_key in NODEJS_EXACT_ROUTE_KEYS:
@@ -4918,40 +5647,139 @@ def current_engine_source_binding(repo: Path, route_root: Path) -> tuple[bool, s
 
 def write_inventory(repo: Path) -> None:
     legacy_authority = legacy_campaign_authority(repo)
+    prepared_v3_routes = tuple(
+        _v3_research_route_documents(repo, route_key)
+        for route_key in V3_EXACT_ROUTE_KEYS
+    )
+    v3_documents = {
+        route.name: {
+            path.name: document
+            for path, document in documents
+        }
+        for route, documents in prepared_v3_routes
+    }
+    routes_root = repo / "routes"
+    support_matrix_documents: list[tuple[Path, bytes]] = []
+    for route_key in ALL_DECLARED_ROUTE_KEYS:
+        support_path = routes_root / route_key / "support-matrix.json"
+        support_bytes = _stable_regular_file_bytes(
+            routes_root,
+            support_path,
+            label=f"ROUTE_SUPPORT_MATRIX:{route_key}",
+        )
+        try:
+            raw_support = json.loads(support_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RuntimeError(
+                f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}"
+            ) from exc
+        if not isinstance(raw_support, dict):
+            raise RuntimeError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}")
+        support_matrix_documents.append(
+            (
+                routes_root
+                / route_key
+                / "certification"
+                / "support-matrix.md",
+                _support_matrix_markdown(route_key, support_bytes, raw_support),
+            )
+        )
     routes: list[dict[str, Any]] = []
     for route_key in EVIDENCED_ROUTE_KEYS:
         source_value, target_value = split_route_key(route_key)
         route_root = repo / "routes" / route_key
-        manifest = json.loads((route_root / "route.json").read_text(encoding="utf-8"))
-        evidence = json.loads(
-            (route_root / "certification" / "evidence.json").read_text(encoding="utf-8")
-        )
-        module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
-        function_passed = evidence.get("execution_status") == "PASSED_LOCAL"
-        module_passed = (
-            evidence.get("module_execution_status") == "PASSED_LOCAL"
-            if module_required
-            else True
-        )
-        source_binding_current, source_binding_reason = current_engine_source_binding(
-            repo, route_root
-        )
-        if function_passed and module_passed and source_binding_current:
-            local_status = "PASSED_LOCAL"
-        elif (
-            evidence.get("execution_status") == "FAILED"
-            or evidence.get("module_execution_status") == "FAILED"
-        ):
-            local_status = "FAILED"
+        v3_route_documents = v3_documents.get(route_key)
+        if v3_route_documents is None:
+            try:
+                manifest = json.loads(
+                    _stable_regular_file_bytes(
+                        routes_root,
+                        route_root / "route.json",
+                        label=f"ROUTE_MANIFEST:{route_key}",
+                    ).decode("utf-8")
+                )
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise RuntimeError(
+                    f"ROUTE_DOCUMENT_INVALID:{route_key}:route.json"
+                ) from exc
         else:
+            manifest = v3_route_documents["route.json"]
+        evidence_path = route_root / "certification" / "evidence.json"
+        certification_path = route_root / "certification" / "certification.json"
+        if v3_route_documents is None:
+            try:
+                evidence = json.loads(
+                    _stable_regular_file_bytes(
+                        routes_root,
+                        evidence_path,
+                        label=f"ROUTE_EVIDENCE:{route_key}",
+                    ).decode("utf-8")
+                )
+                certification = json.loads(
+                    _stable_regular_file_bytes(
+                        routes_root,
+                        certification_path,
+                        label=f"ROUTE_CERTIFICATION:{route_key}",
+                    ).decode("utf-8")
+                )
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise RuntimeError(
+                    f"ROUTE_DOCUMENT_INVALID:{route_key}:certification"
+                ) from exc
+        else:
+            evidence = v3_route_documents["evidence.json"]
+            certification = v3_route_documents["certification.json"]
+        if (
+            not isinstance(manifest, dict)
+            or not isinstance(evidence, dict)
+            or not isinstance(certification, dict)
+            or manifest.get("route_key") != route_key
+            or evidence.get("route_key") != route_key
+            or certification.get("route_key") != route_key
+            or evidence.get("route_version") != manifest.get("version")
+            or certification.get("route_version") != manifest.get("version")
+        ):
+            raise RuntimeError(f"ROUTE_DOCUMENT_BINDING_DRIFT:{route_key}")
+        module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
+        if route_key in V3_EXACT_ROUTE_KEYS:
+            if (
+                manifest.get("status") != "research"
+                or evidence != v3_research_evidence_document(route_key)
+                or certification
+                != v3_research_certification_document(route_key)
+            ):
+                raise RuntimeError(f"V3_ROUTE_CAMPAIGN_OVERCLAIM:{route_key}")
+            function_passed = False
+            module_passed = False
+            source_binding_current = False
             local_status = "NOT_RUN"
-        local_execution_reason = (
-            "LOCAL_EXECUTION_FAILED"
-            if local_status == "FAILED"
-            else source_binding_reason
-            if function_passed and module_passed
-            else "LOCAL_EXECUTION_NOT_RUN"
-        )
+            local_execution_reason = "V3_ROUTE_CAMPAIGN_NOT_RUN"
+        else:
+            function_passed = evidence.get("execution_status") == "PASSED_LOCAL"
+            module_passed = (
+                evidence.get("module_execution_status") == "PASSED_LOCAL"
+                if module_required
+                else True
+            )
+            source_binding_current, source_binding_reason = current_engine_source_binding(
+                repo, route_root
+            )
+            if function_passed and module_passed and source_binding_current:
+                local_status = "PASSED_LOCAL"
+            elif (
+                evidence.get("execution_status") == "FAILED"
+                or evidence.get("module_execution_status") == "FAILED"
+            ):
+                local_status = "FAILED"
+            else:
+                local_status = "NOT_RUN"
+            local_execution_reason = (
+                "LOCAL_EXECUTION_FAILED"
+                if local_status == "FAILED"
+                else source_binding_reason
+                if function_passed and module_passed
+                else "LOCAL_EXECUTION_NOT_RUN"
+            )
         routes.append(
             {
                 "route_key": route_key,
@@ -4993,9 +5821,11 @@ def write_inventory(repo: Path) -> None:
         status: sum(1 for entry in routes if entry["status"] == status)
         for status in ("research", "experimental", "limited", "blocked", "certified")
     }
-    write_json(
-        repo / "routes" / "inventory.json",
-        {
+    # Prebuild the inventory, all 198 V3 documents and all human-readable
+    # support-matrix views before the first write. They form one process-level
+    # transaction: any injected or ordinary write failure restores every
+    # target's exact original bytes.
+    inventory_document = {
             "schema_version": "1.4.0",
             "route_policy": {
                 "mode": "complete-directed-matrix",
@@ -5035,15 +5865,16 @@ def write_inventory(repo: Path) -> None:
                     "native_reexecution_status": "NOT_RUN",
                 },
                 "javascript-node26-completion-18": {
-                    "policy": "current-versioned-route-evidence",
+                    "policy": "historical-read-only-route-evidence",
                     "native_reexecution_status": "NOT_RUN",
                 },
                 "php-php85-completion-20": {
-                    "policy": "current-versioned-route-evidence",
+                    "policy": "mixed-provenance-read-only-route-evidence",
+                    "active_execution_selection": "php-php85-active-completion-18",
                     "native_reexecution_status": "NOT_RUN",
                 },
                 "kotlin-react-flutter-completion-66": {
-                    "policy": "declared-ahead-of-analyzer",
+                    "policy": "local-analyzers-and-repository-surfaces-ready",
                     "native_reexecution_status": "NOT_RUN",
                 },
             },
@@ -5111,8 +5942,10 @@ def write_inventory(repo: Path) -> None:
                     "languages": list(SUPPORTED_ROUTE_LANGUAGES),
                     "route_count": len(V3_EXACT_ROUTE_KEYS),
                     "route_keys": list(V3_EXACT_ROUTE_KEYS),
-                    "analyzer_status": "PENDING_ANALYZER",
-                    "pending_analyzer_languages": list(V3_LANGUAGES),
+                    "analyzer_status": "LOCAL_SINGLE_UNIT_READY",
+                    "pending_analyzer_languages": list(PENDING_ANALYZER_LANGUAGES),
+                    "repository_status": "LOCAL_REPOSITORY_READY",
+                    "pending_repository_languages": list(PENDING_REPOSITORY_LANGUAGES),
                 },
                 "thirteen-language-complete-156": {
                     "policy": "complete-directed-permutation",
@@ -5134,15 +5967,24 @@ def write_inventory(repo: Path) -> None:
             "module_profile": "typed-pure-module-v1",
             "console_exposed_languages": list(SUPPORTED_ROUTE_LANGUAGES),
             "deprecated_languages": list(DEPRECATED_ROUTE_LANGUAGES),
-            "pending_analyzer_languages": list(V3_LANGUAGES),
+            "pending_analyzer_languages": list(PENDING_ANALYZER_LANGUAGES),
+            "pending_repository_languages": list(PENDING_REPOSITORY_LANGUAGES),
             "languages": {
                 language: {
                     "version": SHORT_VERSIONS[language],
+                    "exact_versions": list(VERSIONS[language]),
                     "engine_path": ENGINE_PATHS[language],
                     **(
                         {"analyzer_status": "PENDING_ANALYZER"}
+                        if language in PENDING_ANALYZER_LANGUAGES
+                        else {"analyzer_status": "LOCAL_SINGLE_UNIT_READY"}
                         if language in V3_LANGUAGES
                         else {}
+                    ),
+                    **(
+                        {"repository_status": "PENDING_REPOSITORY_SURFACE"}
+                        if language in PENDING_REPOSITORY_LANGUAGES
+                        else {"repository_status": "LOCAL_REPOSITORY_READY"}
                     ),
                 }
                 for language in SUPPORTED_ROUTE_LANGUAGES
@@ -5150,15 +5992,23 @@ def write_inventory(repo: Path) -> None:
             "deprecated_language_details": {
                 language: {
                     "version": SHORT_VERSIONS[language],
+                    "exact_versions": list(VERSIONS[language]),
                     "engine_path": ENGINE_PATHS[language],
                     "status": "DEPRECATED",
                     "retained_route_set": "javascript-node26-completion-18",
                 }
                 for language in DEPRECATED_ROUTE_LANGUAGES
             },
-            "routes": routes,
-        },
+        "routes": routes,
+    }
+    transaction_documents = tuple(
+        (path, _json_bytes(document))
+        for _, documents in prepared_v3_routes
+        for path, document in documents
+    ) + tuple(support_matrix_documents) + (
+        (repo / "routes" / "inventory.json", _json_bytes(inventory_document)),
     )
+    _transactional_write_bytes(routes_root, transaction_documents)
 
 
 def run_route_checks(repo: Path, route: Path) -> int:
@@ -5210,13 +6060,18 @@ def main() -> int:
     mode.add_argument("--negative-only", action="store_true")
     mode.add_argument(
         "--route-set",
-        choices=sorted(EXACT_ROUTE_SETS),
-        help="execute one immutable declared route set without inferring other pairs",
+        choices=sorted(EXECUTABLE_ROUTE_SETS),
+        help="execute one active campaign selection without inferring other pairs",
     )
     mode.add_argument(
         "--prepare-route-set",
-        choices=sorted(EXACT_ROUTE_SETS),
+        choices=sorted(PREPARABLE_ROUTE_SETS),
         help="prepare complete NOT_RUN route scaffolds without claiming native execution",
+    )
+    mode.add_argument(
+        "--verify-route-set",
+        choices=sorted(READ_ONLY_ROUTE_SETS),
+        help="verify an exact active or historical route set without writing or executing it",
     )
     mode.add_argument(
         "--route",
@@ -5230,15 +6085,37 @@ def main() -> int:
         write_inventory(repo)
         print("PASS: exact limited route inventory updated")
         return 0
+    if args.verify_route_set is not None:
+        verify_route_set_read_only(
+            repo,
+            args.verify_route_set,
+            READ_ONLY_ROUTE_SETS[args.verify_route_set],
+        )
+        print(
+            f"PASS: exact route set {args.verify_route_set} verified read-only; "
+            "route execution remains NOT_RUN"
+        )
+        return 0
     fixtures = repo / "engines" / "polyglot-route-engine" / "fixtures"
     if args.prepare_route_set is not None:
-        prepared_route_keys = EXACT_ROUTE_SETS[args.prepare_route_set]
+        prepared_route_keys = PREPARABLE_ROUTE_SETS[args.prepare_route_set]
+        preflight_route_set_preparation(
+            repo, args.prepare_route_set, prepared_route_keys
+        )
         if set(prepared_route_keys) & set(CORE_ROUTE_KEYS):
             legacy_campaign_authority(repo)
+        v3_prepared_route_keys = tuple(
+            route_key
+            for route_key in prepared_route_keys
+            if route_key in V3_EXACT_ROUTE_KEYS
+        )
+        if v3_prepared_route_keys:
+            synchronize_v3_research_route_manifests(repo, v3_prepared_route_keys)
         for route_key in (
             route_key
             for route_key in prepared_route_keys
             if route_key not in CORE_ROUTE_KEYS
+            and route_key not in V3_EXACT_ROUTE_KEYS
         ):
             ensure_route_scaffold(repo, route_key)
             source_value, target_value = split_route_key(route_key)
@@ -5260,7 +6137,7 @@ def main() -> int:
         return 0
     if args.negative_only:
         legacy_campaign_authority(repo)
-        for route_key in MUTABLE_ROUTE_KEYS:
+        for route_key in EXECUTABLE_MUTABLE_ROUTE_KEYS:
             source, target = split_route_key(route_key)
             route = repo / "routes" / route_key
             reference = execute_negative(route, fixtures, source, target)  # type: ignore[arg-type]
@@ -5269,13 +6146,14 @@ def main() -> int:
             evidence["negative_runs"] = [reference]
             write_json(evidence_path, evidence)
         print(
-            f"PASS: {len(MUTABLE_ROUTE_KEYS)} mutable declared route negatives failed closed; "
+            f"PASS: {len(EXECUTABLE_MUTABLE_ROUTE_KEYS)} executable mutable route negatives failed closed; "
             "immutable legacy 30 verified read-only"
         )
         return 0
     if args.route is not None:
         source, target = args.route
         requested_route_key = f"{source}-to-{target}"
+        preflight_route_set_execution((requested_route_key,))
         if requested_route_key in CORE_ROUTE_KEYS:
             legacy_campaign_authority(repo)
             raise RuntimeError(
@@ -5285,7 +6163,8 @@ def main() -> int:
         selected = [args.route]
     else:
         selected_name = args.route_set or "legacy-complete-30"
-        requested_route_keys = EXACT_ROUTE_SETS[selected_name]
+        requested_route_keys = EXECUTABLE_ROUTE_SETS[selected_name]
+        preflight_route_set_execution(requested_route_keys)
         if set(requested_route_keys) & set(CORE_ROUTE_KEYS):
             legacy_campaign_authority(repo)
         selected = [

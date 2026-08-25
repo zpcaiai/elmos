@@ -1,0 +1,65 @@
+{
+  "$schema": "../schemas/skill-contract.schema.json",
+  "contract_version": "2.0.0",
+  "id": "ELMOS-GR-001",
+  "name": "elmos-product-category",
+  "title": "Elmos Product Category",
+  "description": "将 Elmos 定义为 AI 原生仓库现代化、转换、验证与交付操作系统，而非普通 Coding Agent。",
+  "batch": "11",
+  "batch_slug": "product-strategy-boundaries",
+  "priority": "P0",
+  "risk": "critical",
+  "path": "skills/elmos-product-category/SKILL.md",
+  "origin": "commercial-extension",
+  "dependencies": [],
+  "outputs": [
+    "product-category.yaml",
+    "value-proposition.md",
+    "claim-boundaries.json"
+  ],
+  "sources": [
+    "Elmos conversation synthesis",
+    "Elmos existing validated Skills packages",
+    "OpenRewrite/OpenCode official architecture and documentation"
+  ],
+  "permissions": {
+    "default": "deny",
+    "read_repository": "allow",
+    "write_repository": "ask",
+    "network": "ask",
+    "external_side_effect": "ask",
+    "production": "dual-approval-or-policy"
+  },
+  "capabilities": [
+    "客户购买结果与责任边界",
+    "完整仓库交付单位",
+    "Completion Proof 作为产品核心",
+    "当前能力与目标能力分离"
+  ],
+  "tests": [
+    "单元测试覆盖正常、边界、无效输入和结构化错误。",
+    "集成测试必须使用真实或等价容器化依赖，不得只依赖 mock。",
+    "至少包含一次故障注入、重复请求、取消或恢复场景（按 Skill 适用范围）。",
+    "所有 mandatory 检查被跳过、disabled 或未执行时不得计为 PASS。",
+    "许可证未知时必须 fail closed",
+    "Roadmap 能力不得被 current capability 查询返回",
+    "scope change 必须触发重新评估/报价"
+  ],
+  "evidence": [
+    "保存输入快照、配置/规则/模型版本、执行命令、退出码和结构化结果。",
+    "保存 Artifact URI、SHA-256、producer、schema version、sensitivity 和时间戳。",
+    "任何 PASS/完成声明必须链接到不可变 Evidence；无证据只能是 unknown/partial/blocked。",
+    "Required outputs: product-category.yaml, value-proposition.md, claim-boundaries.json"
+  ],
+  "stop_conditions": [
+    "许可证、责任或商业转售权不明确",
+    "客户请求超出认证 Route 且拒绝变更单",
+    "公开声明缺少执行 Evidence"
+  ],
+  "definition_of_done": [
+    "产品、报价、执行、验收和市场宣传使用同一版本化契约",
+    "核心自研/外部集成边界和退出计划明确",
+    "Spring Golden Route 获得 owner、预算与 L3 目标"
+  ],
+  "production_claim_boundary": "Static package validation is not target-repository implementation or customer migration evidence."
+}

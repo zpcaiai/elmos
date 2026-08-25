@@ -1,16 +1,20 @@
 {
   "schema_version": 1,
-  "artifact_set": "elmos-7plus1-local-contract-runtime-v1.0.0",
+  "artifact_set": "elmos-7plus1-local-contract-runtime-v1.2.0",
   "aggregate_algorithm": "SHA-256 over UTF-8 lines '<sha256>\\t<size_bytes>\\t<repository_relative_path>\\n' in LC_ALL=C path order",
-  "aggregate_sha256": "4620844c7d549cde507a28a131a11d5b42fa770bab514e36ad4649d167767819",
-  "file_count": 25,
-  "total_size_bytes": 1074287,
+  "aggregate_sha256": "439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4",
+  "file_count": 44,
+  "total_size_bytes": 1385264,
   "scope": [
     "repository-owned safe importer",
     "standard-library runtime and CLI",
+    "descriptor-pinned archive traversal and executable neutralization",
+    "content-resolved local holdout, provider-contract fixture, and production-like rehearsal campaigns",
+    "deterministic campaign receipt and replay implementation with exact request/result/registry binding",
+    "external receipt quarantine, revocation, full-input preflight digest, and structural preflight",
     "three machine-readable registries",
-    "four runtime JSON schemas",
-    "focused importer and runtime tests",
+    "eleven runtime and evidence JSON schemas with nested runtime parity",
+    "focused importer, runtime, archive-race, campaign, evidence-intake, and CLI negative tests",
     "repository integration documentation",
     "compiled and installed manifests that transitively bind the canonical source tree and both 102-Skill install roots"
   ],
@@ -18,11 +22,11 @@
     "status": "LOCAL_INSTALLED_AND_CHECKED_SELF_ATTESTED",
     "compiled_manifest": {
       "path": "docs/elmos-7plus1-commercial-skills/compiled-manifest.json",
-      "sha256": "452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc"
+      "sha256": "898640a2b615e8736d966aabc297471a1531644fe24f49938a75900eeef2c6ca"
     },
     "installed_manifest": {
       "path": "docs/elmos-7plus1-commercial-skills/installed-manifest.json",
-      "sha256": "13727100a92ba3b639ff5c9ee333f93bac8be6378d63677d32fb9fe1ac171138"
+      "sha256": "a36cb7c849db5181a9ba221caaa0907d2b824849e50792a548b915b7b94c5ff1"
     },
     "transitive_scope": [
       "skills/elmos-7plus1-commercial-skills-v1.0.0",
@@ -36,28 +40,33 @@
   "files": [
     {
       "path": "docs/elmos-7plus1-commercial-skills/README.md",
-      "size_bytes": 2718,
-      "sha256": "f53cf68b52f36b0ab6996eaac80539cdd45f2fafe64b9ea7937caff7a07a5ad7"
+      "size_bytes": 3189,
+      "sha256": "7d45dbd480498bd529dd11096a54f6beb365c2672b0b77a2ffeb6a20d5d15196"
     },
     {
       "path": "docs/elmos-7plus1-commercial-skills/compiled-manifest.json",
-      "size_bytes": 375153,
-      "sha256": "452438cf9d06d10211c2e4f9a98238eea33f0e1d74d494369e45b1d3a3ff82cc"
+      "size_bytes": 385547,
+      "sha256": "898640a2b615e8736d966aabc297471a1531644fe24f49938a75900eeef2c6ca"
     },
     {
       "path": "docs/elmos-7plus1-commercial-skills/installed-manifest.json",
-      "size_bytes": 312491,
-      "sha256": "13727100a92ba3b639ff5c9ee333f93bac8be6378d63677d32fb9fe1ac171138"
+      "size_bytes": 322360,
+      "sha256": "a36cb7c849db5181a9ba221caaa0907d2b824849e50792a548b915b7b94c5ff1"
     },
     {
       "path": "engines/software-factory-engine/README.md",
-      "size_bytes": 3602,
-      "sha256": "ee326de9c68c3db240823b3caf65cbad4b438ebc532e04a8a4615e3f8cb324c5"
+      "size_bytes": 7800,
+      "sha256": "8b44e37ec9e8ba5dd5b11c50e3013a2f4a0fbd75edcf1c9a83faebbe61765c64"
     },
     {
       "path": "engines/software-factory-engine/pyproject.toml",
-      "size_bytes": 793,
-      "sha256": "36c67289293d66bf0f5424f354a75a635eb1bd336306d1b15dac0fd27fa82e96"
+      "size_bytes": 806,
+      "sha256": "912c0bb1d40fcfe286eac356c9e9cc579ac99959dfd6b383349fb8fb89189285"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/archive-contract-inspection.schema.json",
+      "size_bytes": 8888,
+      "sha256": "b2db410a95d11a1498f1bf96a1d069f69088d54bc6afc7c7c18a7d4f154a4d15"
     },
     {
       "path": "engines/software-factory-engine/schemas/dependency-receipt.schema.json",
@@ -65,9 +74,39 @@
       "sha256": "698e1eb09bbce33ad4ba4834e1a0bcd1f5365ba2e2126998405bf065472c1ce8"
     },
     {
+      "path": "engines/software-factory-engine/schemas/evidence-campaign-receipt.schema.json",
+      "size_bytes": 8341,
+      "sha256": "a0937e1426ad9c052d09624c8ef2a3b8e8e881aa1e33392ee48abf9a719f0474"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/evidence-campaign.schema.json",
+      "size_bytes": 8113,
+      "sha256": "0cab5a6d8df4026c1bba2e39627b06c7bedc8ac6538f35011ebbfb3259341097"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/evidence-intake-decision.schema.json",
+      "size_bytes": 2904,
+      "sha256": "d71991842d519b8cfb8bb38e6ccb791512e807190c60c013b6155f7f84e9dc33"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/evidence-intake-policy.schema.json",
+      "size_bytes": 1536,
+      "sha256": "3f3df6820f2109eed2881aff7030526da8c597956a10a474ad967b11ce8b94da"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/external-evidence-receipt.schema.json",
+      "size_bytes": 2759,
+      "sha256": "cee5abc26cca7c459ddf342d073770d999f1298c81680827e11209e7a5820e75"
+    },
+    {
       "path": "engines/software-factory-engine/schemas/external-observation.schema.json",
       "size_bytes": 1546,
       "sha256": "7b09d1ec898555899af8b952b6e2a41a67154965b52daa1a47a2e7b06e286308"
+    },
+    {
+      "path": "engines/software-factory-engine/schemas/external-preflight.schema.json",
+      "size_bytes": 4139,
+      "sha256": "b728ab998bba7e49cbe1f4740054d804f3d0cc302038ca10daadb8122584112e"
     },
     {
       "path": "engines/software-factory-engine/schemas/request.schema.json",
@@ -81,8 +120,8 @@
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/__init__.py",
-      "size_bytes": 1624,
-      "sha256": "6e4c59e0b24d76dbc548602e3dc04d67e058d854b1a479e3245ab78396f9f049"
+      "size_bytes": 2602,
+      "sha256": "48b6cda097810fdf9edd41105d6fa23edfc204e7b67586b8a42996c0e5ac3764"
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/__main__.py",
@@ -90,9 +129,24 @@
       "sha256": "0f7d54f3fbb1f79a85eb8110f11793db99da6f3c61ee979de5abe9a1b5f3fdb3"
     },
     {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/archive_contracts.py",
+      "size_bytes": 35553,
+      "sha256": "82a60326635b1f138818e3e552cb0b0a836f4920b71bc4c9fbbaf361fdcbcd77"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/artifact_binding.py",
+      "size_bytes": 7332,
+      "sha256": "47a53bcadf9ed26b8a9339628a16a936e18c372122bb0350daea4d39565026c1"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/campaigns.py",
+      "size_bytes": 58543,
+      "sha256": "06ed285e23b348b4141e52f1e173a56e4616e0cdb7babfaa1cd6d2fe04abbadd"
+    },
+    {
       "path": "engines/software-factory-engine/src/elmos_software_factory/canonical.py",
-      "size_bytes": 3011,
-      "sha256": "3ffdb587fc9e8e978279d0a92f746f55114690eb281e6c0e5dd8bc13ba9e7c6a"
+      "size_bytes": 3032,
+      "sha256": "0a2f4b661e6bb755a7169defc40141ace8782ced5e781d9ba5bdc8ca219dce0f"
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/capabilities.py",
@@ -106,13 +160,23 @@
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/cli.py",
-      "size_bytes": 5730,
-      "sha256": "e6b202e9ba2202f293d700ee82394d54c1ea178e19f0bd486c8bb1101c363d9d"
+      "size_bytes": 10038,
+      "sha256": "164321ac6e32138f52dbf47fa64e080403fe61c346de3866fd5d10ee4d5f94ed"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/evidence_intake.py",
+      "size_bytes": 16100,
+      "sha256": "9ef75e912ae88716d9c396d81d825c96c17bc7316dd26fd5555d3ff6d3e5652c"
+    },
+    {
+      "path": "engines/software-factory-engine/src/elmos_software_factory/evidence_models.py",
+      "size_bytes": 21946,
+      "sha256": "51338eb7f5dee0c609c28ba102f9f02f949fb372e77bd5085dab5c356678013d"
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/handlers.py",
-      "size_bytes": 38422,
-      "sha256": "edb7cdc23599bb5a1439004db51f3ae8d9627aaaaa98377b3d044d0e4f5683ef"
+      "size_bytes": 38412,
+      "sha256": "04976c4cd4b9de56fd3497460af14f03b929d3d4c646b4450f8e461fa8ac2cb7"
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/models.py",
@@ -131,13 +195,13 @@
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/registry.py",
-      "size_bytes": 9265,
-      "sha256": "e7d4be4354f20b91fbf1146dd9c21d51ed8fc869fe1f69e583cbb28ac27839de"
+      "size_bytes": 9371,
+      "sha256": "86fabd99064e042f7851ba8894fa4942072f7c2f852fd192b54efd0a1fba0614"
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/runtime.py",
-      "size_bytes": 25187,
-      "sha256": "fb6f6bc0f7b1d4aa80c4c887242c3cd520c936197799c4448911cf1f0feb069a"
+      "size_bytes": 25181,
+      "sha256": "96bf85574f8d69a91879fca93922297ec55297ee00b96dbeca5a428360aaf710"
     },
     {
       "path": "engines/software-factory-engine/src/elmos_software_factory/skill_registry.json",
@@ -145,19 +209,54 @@
       "sha256": "c54404d806e3ced3f217c16f53bb2f36b5237d4aeb0558b3ea15c9d6dfa1d8f2"
     },
     {
+      "path": "engines/software-factory-engine/tests/test_archive_hardening.py",
+      "size_bytes": 4352,
+      "sha256": "b552dd709615c8daa2a0d3ecfa516f746d1700252ed04ea45d85ad6148804eed"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_archive_schema_honesty.py",
+      "size_bytes": 4749,
+      "sha256": "ff851fce788a785048fb7ad3c7aaa1dab4d0dca0d94f65fdbb517e91a3a63fdb"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_artifact_flag_hardening.py",
+      "size_bytes": 3767,
+      "sha256": "5b3e1614f30a3e2d056ee52bb547fe9ed4f0302b26501b886cd0070b807088ac"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_campaign_hardening.py",
+      "size_bytes": 25492,
+      "sha256": "0480dce3ce790b8e294359f064bcf9137785f642ca27c62068e9c7fa2c946376"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_evidence.py",
+      "size_bytes": 34758,
+      "sha256": "00612d471375025a74c93d5876b4051c995b1cc1dd761fa67f8fa91ce2e688a7"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_external_cli_hardening.py",
+      "size_bytes": 14859,
+      "sha256": "d474f07d9cdc000b972873306889cab4482606b201d0ae88be611cb0a31582c5"
+    },
+    {
+      "path": "engines/software-factory-engine/tests/test_receipt_parser_hardening.py",
+      "size_bytes": 7096,
+      "sha256": "1f6b8aa33bb85d15b6ac71ecdba572a6819da1a64a7abf2cd241125579dd80b5"
+    },
+    {
       "path": "engines/software-factory-engine/tests/test_runtime.py",
-      "size_bytes": 35699,
-      "sha256": "a009a5f60a7206e68f1d60f76da5dc775544d4367b0aca4b3e456cc4e24fd8f9"
+      "size_bytes": 35641,
+      "sha256": "301dbc78fbc4698e4a89f42c7e3c30f41312f3fcb3749bab041147e60146366c"
     },
     {
       "path": "tests/elmos-7plus1-commercial-skills/test_integration.py",
-      "size_bytes": 37592,
-      "sha256": "7dd4a8ce36b5f345cc1d21a471d1c3563b2c8a659b9b6f9ae747050ab609d7c1"
+      "size_bytes": 40283,
+      "sha256": "34aff0fc18088f22cb99e3065959a3233f91d7fb4b99d34fb0631ca0fbf8533a"
     },
     {
       "path": "tooling/integrate_elmos_7plus1_skills.py",
-      "size_bytes": 112434,
-      "sha256": "bc3838ab6c1301361615cb3bf6a28b1794fc0ce20e8855f6462d657bad080c5b"
+      "size_bytes": 119209,
+      "sha256": "a00f79a137e0f12e7e30eb57ad7f4132a20e1bae84c5bd06f2cf83947bd69418"
     }
   ]
 }

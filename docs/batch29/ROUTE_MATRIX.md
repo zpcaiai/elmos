@@ -1,45 +1,53 @@
 # Batch 29 directed route matrix
 
-`routes/inventory.json` is authoritative. Batch 29 preserves the legacy 30,
-specialized 8, nine-language completion 34, and preserved nine-language
-complete 72 provenance sets
-without rewriting them. The independent `javascript-node26-completion-18` set
-adds Node.js 26 as language identifier `javascript`; its union with the old 72
-is `ten-language-complete-90`. Engine support alone never creates a passing
-route claim.
+`routes/inventory.json` is authoritative. The active matrix is the exact
+directed permutation of 13 language identities: `java`, `csharp`, `go`,
+`rust`, `python`, `typescript`, `cpp`, `objc`, `swift`, `php`, `kotlin`,
+`react`, and `flutter`. Batch 29 preserves the historical 30, 8, 34, 72, 90,
+and 110 provenance sets without rewriting their identities. JavaScript remains
+addressable only as deprecated historical evidence and is not an active source
+or target. Engine support alone never creates a passing route claim.
+
+The generated registry retains these exact set identities:
+`legacy-complete-30`, `cpp-objc-swift-java-exact-8`,
+`nine-language-completion-34`, `nine-language-complete-72`,
+`javascript-node26-completion-18`, `ten-language-complete-90`,
+`php-php85-completion-20`, `eleven-language-complete-110`,
+`kotlin-react-flutter-completion-66`, and
+`thirteen-language-complete-156`.
 
 > ### Route-count provenance — read before quoting any denominator (K6)
 >
-> Verified 2026-08-18, after `a2f6f6577 feat(route-engine): add php as the
-> eleventh language` landed. `routes/inventory.json` is the only authority.
+> Verified 2026-08-24 against the generated inventory. `routes/inventory.json`
+> is the only route-record authority.
 >
-> **Current surface: 110 directed routes across 11 languages** (11 × 10, no
-> self-routes), committed and matching the working tree.
+> **Current surface: 156 directed routes across 13 active languages**
+> (13 × 12, no self-routes).
 >
-> `/72` and `/90` are both dead as denominators. They survive only as retained
-> provenance sets — `nine-language-complete-72`, `ten-language-complete-90` —
-> so historical evidence stays attributable, and neither describes the current
-> surface. The 182-node figure is the *pipeline test suite*; it is not a route
-> count and must never be added to or compared against one.
+> `/72`, `/90`, and `/110` survive only as retained provenance-set
+> denominators. None describes the active surface. The 182-direction figure is
+> the repository compatibility test matrix (13 active identities plus retained
+> JavaScript machinery); it is not a governed route count.
 
 ## Evidence boundary
 
-- Engine languages: 10 (`java`, `csharp`, `go`, `rust`, `python`,
-  `typescript`, `cpp`, `objc`, `swift`, `javascript`).
-- Governed directed routes: 90 = old complete 72 + Node.js completion 18.
-- Matrix expansion is exact and explicit: 10 × 9, with no self routes.
-- Local maturity ceiling: `limited`.
-- Current local execution: all 90 routes are `NOT_RUN`. Thirty-eight old routes
+- Active engine languages: 13; deprecated engine compatibility languages: one
+  (`javascript`).
+- Governed directed routes: 156 = 90 active non-V3 directions plus the exact
+  66 directions that have Kotlin, React, or Flutter on at least one side.
+- Matrix expansion is exact and explicit: 13 × 12, with no self routes.
+- Local maturity distribution: 90 `limited`, 66 `research`, 0 `certified`.
+- Current local execution: all 156 routes are `NOT_RUN`. Thirty-eight old routes
   retain historical local artifacts, but their captured engine-source bytes no
   longer match the live engine snapshot; inventory generation invalidates those
-  results instead of advertising stale `PASSED_LOCAL` evidence. The 34 old
-  completion routes and all 18 Node.js routes have not run.
-- Repository execution: all 90 governed routes are `NOT_RUN`.
+  results instead of advertising stale `PASSED_LOCAL` evidence. The new 66
+  directions have not been replayed as route evidence.
+- Repository execution: all 156 governed routes are `NOT_RUN`.
 - Independent verification and external/customer certification: `NOT_RUN`.
 - Certification decision: `NOT_CERTIFIED` for every route.
 
-Inventory summary: 90 `limited`, 0 `certified`; current execution contains 0
-`PASSED_LOCAL` routes.
+Inventory summary: 90 `limited`, 66 `research`, 0 `certified`; current
+execution contains 0 `PASSED_LOCAL` routes.
 A fresh route replay may record `PASSED_LOCAL` only while its captured engine
 source bundle still matches the live bytes; it never raises certification.
 
@@ -113,14 +121,13 @@ claiming execution. They use the bounded function profile and start at
 | Objective-C | `objc-to-java`, `objc-to-csharp`, `objc-to-go`, `objc-to-rust`, `objc-to-python`, `objc-to-typescript` |
 | Swift | `swift-to-java`, `swift-to-csharp`, `swift-to-go`, `swift-to-rust`, `swift-to-python`, `swift-to-typescript` |
 
-## Node.js 26 exact completion 18
+## Deprecated Node.js 26 completion 18
 
-Node.js is an independent `javascript` language, not a TypeScript alias. Each
-direction requires Node.js `26.0.0`, ES2022 ESM, exact JSDoc canonical types on
-JavaScript, concrete UTF-8 spans, native source analysis, target relift and
-build, negative cases, three separate behavior corpora, and a
-`typed-pure-module-v1` composition campaign. Every route begins and remains
-`limited / NOT_RUN / NOT_CERTIFIED` until its own evidence is executed.
+Node.js is an independent historical `javascript` identity, not a TypeScript
+alias. These 18 keys and their filed evidence are retained under
+`javascript-node26-completion-18`, but they are deprecated and excluded from
+the active 156-route matrix. They cannot be selected by the active route
+parser. Retention does not upgrade their `NOT_RUN / NOT_CERTIFIED` evidence.
 
 | Source | Node.js-directed target(s) |
 | --- | --- |
@@ -149,10 +156,29 @@ and the pinned ECMAScript strict string equality/concatenation subset. Their
 integer semantics stay explicitly blocked, including when a JavaScript source
 uses an `integer` JSDoc declaration.
 
+## PHP and V3 completion
+
+`php-php85-completion-20` retains the PHP 8.5 route expansion and its historical
+JavaScript-facing keys. The active matrix uses PHP 8.5.9 only for active route
+execution; the central synthesis profile separately retains PHP 8.4.12.
+
+`kotlin-react-flutter-completion-66` is the exact set of active directions with
+Kotlin, React, or Flutter on at least one side. Its local compiler/parser and
+repository surfaces are engineering readiness only. Every one of the 66 route
+records remains `research / NOT_RUN / NOT_CERTIFIED` until its own route replay
+and independent evidence exist. Flutter readiness is deliberately the
+dependency-free, import-free pure-Dart subset: the exact Flutter-bundled Dart
+SDK analyzes, compiles and executes a linked kernel. Widget/UI, engine bundle,
+plugin, asset, platform, emulator and device behavior remains `NOT_RUN`.
+
 ## Repository experiment boundary
 
-The local engine can attempt all 90 governed directions under the bounded
-`typed-pure-function-v1` repository execution mode and real target build tools.
+The local engine exposes analyzer, emitter, repository-assembly, and exact
+target-build surfaces for all 13 active identities. The repository campaign
+therefore enumerates all 156 directions, but the 66 V3 directions are not yet
+admitted route packs: direct route execution fails closed until a bounded
+semantic/target Profile and route-specific corpus are approved. Individual
+repository-pipeline engineering probes do not upgrade those research records.
 Route-pack completeness is still not a general repository-semantics claim.
 Project-graph completeness, every
 source symbol, excluded input, resource, dependency, configuration, and test
@@ -162,7 +188,7 @@ raised any route's repository execution status above `NOT_RUN`.
 
 ## Exact replay
 
-Replay one declared route without touching the other 89:
+Replay one active declared route without touching the other 155:
 
 ```bash
 python3 scripts/batch29/run_polyglot_routes.py --repo-root . \
@@ -195,18 +221,21 @@ creates deterministic NOT_RUN scaffolds and validates the matrix. Target
 nine-language complete 72. Neither
 target changes independent or certification evidence.
 
-Prepare only the 18 Node.js routes, or explicitly replay that set:
+The following historical targets retain deprecated JavaScript scaffolds for
+evidence lookup only; they do not add those directions back to the active
+matrix:
 
 ```bash
-make -f Makefile.batch29 b29-nodejs-prepare
-make -f Makefile.batch29 b29-nodejs-replay
+make -f Makefile.batch29 b29-nodejs-verify
+make -f Makefile.batch29 b29-ten-language-verify
 ```
 
-The prepare target creates discoverable route packs with `NOT_RUN` evidence;
-it does not execute native analyzers or turn the gate green. The replay target
-is the separate, long-running local campaign. An explicit all-90 replay uses
-`--route-set ten-language-complete-90`; no set inherits execution or
-certification credit from another set.
+These commands only verify immutable pack structure and binding; they never
+prepare, execute, or rewrite historical evidence. The active 156 can be
+synchronized as research/NOT_RUN metadata with
+`--prepare-route-set thirteen-language-complete-156`, but its V3 directions
+remain research-only and therefore the full set is not an executable replay
+selection. No set inherits execution or certification credit from another.
 
 After all eight route validators and gates pass from one final source snapshot,
 build the separate exact-eight Batch 35 pack without regenerating the immutable

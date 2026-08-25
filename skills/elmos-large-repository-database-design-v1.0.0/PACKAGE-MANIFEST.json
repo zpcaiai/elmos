@@ -1,0 +1,16 @@
+{
+  "name": "elmos-large-repository-database-design",
+  "version": "1.0.0",
+  "created_at": "2026-08-21",
+  "database": "PostgreSQL 16+",
+  "migration_tool": "Flyway",
+  "migration_count": 11,
+  "business_schema_count": 13,
+  "parent_table_count": 136,
+  "foreign_key_count_checked": 523,
+  "runtime_function_count": 31,
+  "read_model_count": 8,
+  "minimum_core_table_count": 34,
+  "completion_authority": "verify.complete_run_with_gate",
+  "deployment_authority": "ops.complete_deployment_with_gate"
+}

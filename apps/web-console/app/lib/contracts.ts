@@ -591,7 +591,25 @@ export type TranslationLanguageId =
   | "swift"
   | "python"
   | "typescript"
-  | "javascript";
+  | "php"
+  | "kotlin"
+  | "react"
+  | "flutter";
+
+/**
+ * Repository inventory retains deprecated JavaScript files for digest-bound
+ * exclusion evidence, but JavaScript is not an active source/target choice.
+ */
+export type TranslationRepositoryInventoryLanguageId = TranslationLanguageId | "javascript";
+
+export type TranslationDeprecatedExcludedFile = {
+  path: string;
+  language: "javascript";
+  sha256: string;
+  bytes: number;
+  status: "EXCLUDED_FROM_ACTIVE_ROUTE";
+  reason: "DEPRECATED_LANGUAGE_REQUIRES_EXPLICIT_HISTORICAL_REPLAY";
+};
 
 export type TranslationLanguage = {
   id: TranslationLanguageId;
@@ -610,7 +628,7 @@ export type DirectedLanguageRoute = {
   source: TranslationLanguageId;
   target: TranslationLanguageId;
   skill: string;
-  status: "EXPERIMENTAL" | "LIMITED" | "SUPPORTED" | "CERTIFIED" | "BLOCKED";
+  status: "RESEARCH" | "EXPERIMENTAL" | "LIMITED" | "SUPPORTED" | "CERTIFIED" | "BLOCKED";
   readiness: "LOCAL_PROFILE_PASSED" | "NOT_RUN";
   localExecution: RouteEvidenceStatus;
   repositoryExecutionStatus: RepositoryRouteExecutionStatus;
@@ -823,6 +841,7 @@ export type TranslationRepositoryPlan = {
   route_id: string;
   source_language: TranslationLanguageId;
   target_language: TranslationLanguageId;
+  language_lifecycle: "ACTIVE";
   file_count: number;
   source_file_count: number;
   source_bytes: number;
@@ -832,7 +851,8 @@ export type TranslationRepositoryPlan = {
     maximum_source_bytes: number;
     maximum_bytes_per_file: number;
   };
-  language_counts: Record<TranslationLanguageId, number>;
+  language_counts: Record<TranslationRepositoryInventoryLanguageId, number>;
+  deprecated_excluded_files: TranslationDeprecatedExcludedFile[];
   ignored_symlink_count: number;
   work_units: TranslationRepositoryWorkUnit[];
   execution_status: "NOT_RUN";

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "dataAssetId": "orders-table",
+  "organizationId": "org-fixture",
+  "authoritativeWriter": "java-orders-legacy",
+  "authoritativeStore": "orders-postgres-legacy",
+  "state": "LEGACY_WRITE_NEW_REPLICA",
+  "effectiveAt": "2026-07-21T00:00:00Z",
+  "replicas": ["orders-postgres-new"],
+  "evidenceRefs": ["evidence:cdc:orders"]
+}

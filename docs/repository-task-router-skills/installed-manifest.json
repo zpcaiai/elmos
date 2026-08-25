@@ -1,0 +1,2384 @@
+{
+  "archive": {
+    "bytes": 72565,
+    "directories": 45,
+    "entries": 108,
+    "files": 63,
+    "path": "skills/subskills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0.zip",
+    "sha256": "sha256:c5842c93d268f2ebc7126d743a2fce6fba9f92071ea7e6556c11349d4896337a",
+    "single_root": "elmos_repo_orchestrator_skills",
+    "uncompressed_bytes": 101831
+  },
+  "canonical_source": {
+    "directories": [
+      {
+        "installed_mode": "0755",
+        "path": ".",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "config",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "docs",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "examples",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "schemas",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "scripts",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/00-repository-orchestrator",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/01-requirement-normalizer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/02-repo-intake",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/03-architecture-indexer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/04-change-impact-analyzer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/05-task-decomposer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/06-atomicity-validator",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/07-task-dag-builder",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/08-contract-boundary-generator",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/09-complexity-estimator",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/10-risk-classifier",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/11-context-slicer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/12-model-registry-guard",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/13-model-capability-profiler",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/14-cost-performance-router",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/15-budget-planner",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/16-eta-estimator",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/17-wave-scheduler",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/18-worktree-manager",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/19-worker-prompt-builder",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/20-worker-executor",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/21-deterministic-validator",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/22-failure-classifier",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/23-retry-escalation-controller",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/24-patch-reviewer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/25-security-auth-gate",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/26-data-migration-gate",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/27-concurrency-idempotency-gate",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/28-integration-manager",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/29-conflict-resolver",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/30-incremental-regression-gate",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/31-repository-certifier",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/32-rollback-recovery",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/33-run-state-journal",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/34-telemetry-learner",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/35-routing-policy-optimizer",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "skills/36-model-selection-controller",
+        "source_mode": "2755"
+      },
+      {
+        "installed_mode": "0755",
+        "path": "tests",
+        "source_mode": "2755"
+      }
+    ],
+    "files": [
+      {
+        "bytes": 1657,
+        "compressed_bytes": 875,
+        "installed_mode": "0644",
+        "path": "AGENTS.md",
+        "sha256": "sha256:7f60b66a0d11341ab63c328b56498510a7d1f3c5a3a1f6240618ac87d6e70002",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 791,
+        "compressed_bytes": 452,
+        "installed_mode": "0644",
+        "path": "CHANGELOG.md",
+        "sha256": "sha256:b0f237e723564e255f93bd608293abe1daedeee4df152085f91373960dd35392",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1669,
+        "compressed_bytes": 883,
+        "installed_mode": "0644",
+        "path": "CLAUDE.md",
+        "sha256": "sha256:6ebf1d975419fa6f87f158d17f4f60eb0d4ecf11cc240b3272bdbe086ef161d2",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 6161,
+        "compressed_bytes": 2805,
+        "installed_mode": "0644",
+        "path": "README.md",
+        "sha256": "sha256:37e668acf2ed279e1dda1e03afdb26cb8a031c66d5feefbad46ef730e3ac0dad",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 447,
+        "compressed_bytes": 235,
+        "installed_mode": "0644",
+        "path": "config/budget-policy.yaml",
+        "sha256": "sha256:28548a418e1ed7177d2754aa5e1c99490bbc0991fd20d795c7bb407605fe0333",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 669,
+        "compressed_bytes": 359,
+        "installed_mode": "0644",
+        "path": "config/gates.yaml",
+        "sha256": "sha256:0c6484214a24444a41a12de43acb486e1598ee382cc064dad125ed972014a7f3",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 5046,
+        "compressed_bytes": 639,
+        "installed_mode": "0644",
+        "path": "config/model-registry.yaml",
+        "sha256": "sha256:55148c7d095479537a730ae828de6fd5962ffba9bedbb47cd8e09e37b98b3a7a",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1918,
+        "compressed_bytes": 841,
+        "installed_mode": "0644",
+        "path": "config/model-selection-policy.yaml",
+        "sha256": "sha256:3ce9729cffea0d38f916c820ea3e50f198ac54e93f25a31aa52cbb318fb0af78",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 2752,
+        "compressed_bytes": 1009,
+        "installed_mode": "0644",
+        "path": "config/router-policy.yaml",
+        "sha256": "sha256:11cd87b4f34bfeb3bc0fa2390e15303819471e0a7e532c9de370abba40856f80",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1418,
+        "compressed_bytes": 739,
+        "installed_mode": "0644",
+        "path": "docs/architecture.md",
+        "sha256": "sha256:0f02ae673ad753964466a56f07cb7ef6af8efce8e26018998dd734f7a2fd5283",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 3180,
+        "compressed_bytes": 1569,
+        "installed_mode": "0644",
+        "path": "docs/model-selection-ui.md",
+        "sha256": "sha256:d045a571b3e42c6880e439113c388e3e1d56bac33b5934dc9a36052542a70b12",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1067,
+        "compressed_bytes": 591,
+        "installed_mode": "0644",
+        "path": "docs/rollout.md",
+        "sha256": "sha256:c037cb32d51a75a86018d31c155162a8c1f00f5c3345a4d33d6525ae54bb2689",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1958,
+        "compressed_bytes": 941,
+        "installed_mode": "0644",
+        "path": "docs/routing.md",
+        "sha256": "sha256:f97b6de88e3839b29bbac67a2bfaf7a169961f9a431fa2ce464fd715e3f58962",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 2293,
+        "compressed_bytes": 659,
+        "installed_mode": "0644",
+        "path": "examples/example-task-plan.json",
+        "sha256": "sha256:91a780c3c8458520dbcfbf615a3faa3533fd1009ac23f4c1612fb0abf24564e0",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1123,
+        "compressed_bytes": 401,
+        "installed_mode": "0644",
+        "path": "examples/full-repository-workflow.yaml",
+        "sha256": "sha256:39e8d2ec300f41df17f3b3270d943bed305a9e890a540c82131c58287952d225",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 846,
+        "compressed_bytes": 215,
+        "installed_mode": "0644",
+        "path": "examples/model-selection-examples.json",
+        "sha256": "sha256:ec64ab8f3d9f703253b20c2704829c12600333fb30c7e67178cbaeacc0cbeb30",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 971,
+        "compressed_bytes": 508,
+        "installed_mode": "0644",
+        "path": "manifest.json",
+        "sha256": "sha256:e4258aaf42b1447e6a76d2d6aff56b007f58ef220a1667a400325dcda07bd2a2",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 428,
+        "compressed_bytes": 194,
+        "installed_mode": "0644",
+        "path": "schemas/dag.schema.json",
+        "sha256": "sha256:d161f20d1ddf88559f3def3e95411aa54029540238beb4b07170b525a1e514f3",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 480,
+        "compressed_bytes": 201,
+        "installed_mode": "0644",
+        "path": "schemas/evidence.schema.json",
+        "sha256": "sha256:a54558feda81ad519487c81e49ff1826296340f5e49e9fd72075f253523c7665",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 2221,
+        "compressed_bytes": 507,
+        "installed_mode": "0644",
+        "path": "schemas/execution-record.schema.json",
+        "sha256": "sha256:7e345ab10b0ca702f269aecdf1b72927a9eae414b8c9a1389e02c339d9525713",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1870,
+        "compressed_bytes": 574,
+        "installed_mode": "0644",
+        "path": "schemas/model-selection.schema.json",
+        "sha256": "sha256:720bb56b1594e7f0847c12f27012c907250f0f903dde604aaa132f4821d5a166",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1357,
+        "compressed_bytes": 344,
+        "installed_mode": "0644",
+        "path": "schemas/task.schema.json",
+        "sha256": "sha256:debd221adf287c53db460f012a11c75f6bed8478da82dc1ecc8268502e1f8001",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 956,
+        "compressed_bytes": 503,
+        "installed_mode": "0644",
+        "path": "scripts/simulate_routing.py",
+        "sha256": "sha256:a47c5eb40ccd82d2f323a58df65892d3dea09363ea10c089d514f67b5d34e109",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 3416,
+        "compressed_bytes": 1419,
+        "installed_mode": "0644",
+        "path": "scripts/validate_package.py",
+        "sha256": "sha256:72e6ae07dbe3d3a9819d2ff35da74d610290b47cb4e3b71e3af6a3b2a601063c",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 2088,
+        "compressed_bytes": 984,
+        "installed_mode": "0644",
+        "path": "skills/00-repository-orchestrator/SKILL.md",
+        "sha256": "sha256:6d5d84c5ef465914224d7b0010c8e6df6b5d60cea541364e7f2129054bc08010",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1549,
+        "compressed_bytes": 730,
+        "installed_mode": "0644",
+        "path": "skills/01-requirement-normalizer/SKILL.md",
+        "sha256": "sha256:69f5f54e8fedf77585ef8d8cb0e584db415be1a23dbc67574dbcf868c85a0305",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1336,
+        "compressed_bytes": 686,
+        "installed_mode": "0644",
+        "path": "skills/02-repo-intake/SKILL.md",
+        "sha256": "sha256:e6bf0e0f4950a772386a1ee9e1aac023e6bfbfd47f1ced665ccd9cc4f8a49576",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1239,
+        "compressed_bytes": 642,
+        "installed_mode": "0644",
+        "path": "skills/03-architecture-indexer/SKILL.md",
+        "sha256": "sha256:e6643ee25fbc5800d976c6e514cad9d4bd974d518b0e769b8a48b2e07770638d",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1296,
+        "compressed_bytes": 649,
+        "installed_mode": "0644",
+        "path": "skills/04-change-impact-analyzer/SKILL.md",
+        "sha256": "sha256:d93ba127ccc683787b6eb517351c97a59006324e2ae87d3cbd7078d87fe8be8c",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1519,
+        "compressed_bytes": 765,
+        "installed_mode": "0644",
+        "path": "skills/05-task-decomposer/SKILL.md",
+        "sha256": "sha256:4e9caec366f1d562c42b8938c6c3e0114adfe3c83fc81ecaf0858f274a1b681a",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1396,
+        "compressed_bytes": 700,
+        "installed_mode": "0644",
+        "path": "skills/06-atomicity-validator/SKILL.md",
+        "sha256": "sha256:f7e495f04d0fe0c0794b774e71319831cc12bd035f4ec2c97a021a5caf2b9e36",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1259,
+        "compressed_bytes": 649,
+        "installed_mode": "0644",
+        "path": "skills/07-task-dag-builder/SKILL.md",
+        "sha256": "sha256:c4b6058426bd52a0b73f28b6cbc86502d81ae3b03f69b97d82e0589bea11320d",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1315,
+        "compressed_bytes": 674,
+        "installed_mode": "0644",
+        "path": "skills/08-contract-boundary-generator/SKILL.md",
+        "sha256": "sha256:b265a780ca516b7139b297eb8918cebfed6048af8862a98c61849cb770af3a1a",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1257,
+        "compressed_bytes": 633,
+        "installed_mode": "0644",
+        "path": "skills/09-complexity-estimator/SKILL.md",
+        "sha256": "sha256:5df8822ba82f3a002271494acd286023679e6d8d7c4de3ba6798d8b620323db5",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1285,
+        "compressed_bytes": 639,
+        "installed_mode": "0644",
+        "path": "skills/10-risk-classifier/SKILL.md",
+        "sha256": "sha256:08feca8cc1b702217ee5fd87d530a43754d17cf72673047882b58f0d4c99d5f7",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1277,
+        "compressed_bytes": 662,
+        "installed_mode": "0644",
+        "path": "skills/11-context-slicer/SKILL.md",
+        "sha256": "sha256:f4d5a0b36648121f305bd643cbae891f12ce295821ce04e17221ddb3d130c4e7",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1288,
+        "compressed_bytes": 642,
+        "installed_mode": "0644",
+        "path": "skills/12-model-registry-guard/SKILL.md",
+        "sha256": "sha256:3bd387c83d0d1a34a4f24b1385e795c597ad011cf596361daab0097c165eab21",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1248,
+        "compressed_bytes": 648,
+        "installed_mode": "0644",
+        "path": "skills/13-model-capability-profiler/SKILL.md",
+        "sha256": "sha256:5d95a6a2a57aca11355f538bad69732327406dc36af27d2c0c461fe6900bdb8a",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 2057,
+        "compressed_bytes": 990,
+        "installed_mode": "0644",
+        "path": "skills/14-cost-performance-router/SKILL.md",
+        "sha256": "sha256:b1f8d50af1b06a569f49b0f04134d96260f8680aa0f11c5400cd306f7da356af",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1231,
+        "compressed_bytes": 629,
+        "installed_mode": "0644",
+        "path": "skills/15-budget-planner/SKILL.md",
+        "sha256": "sha256:26e4dc6ef488fc2694859b829a2a4e99c992f57947c72d1f4142bbdf388cee94",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1291,
+        "compressed_bytes": 640,
+        "installed_mode": "0644",
+        "path": "skills/16-eta-estimator/SKILL.md",
+        "sha256": "sha256:db97bada0f2e77299557027eed9faf1338e2168c90f2e3305daa4d73779f11f2",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1216,
+        "compressed_bytes": 616,
+        "installed_mode": "0644",
+        "path": "skills/17-wave-scheduler/SKILL.md",
+        "sha256": "sha256:3ffec64f45bca31e1311fab3c41f16bc2e06d3fc89bc89d1cd40788618445f90",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1199,
+        "compressed_bytes": 618,
+        "installed_mode": "0644",
+        "path": "skills/18-worktree-manager/SKILL.md",
+        "sha256": "sha256:3c89bc2f958b411aa2b3416dc87cb5986223a601807360109e4b34c16a49a0ba",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1261,
+        "compressed_bytes": 652,
+        "installed_mode": "0644",
+        "path": "skills/19-worker-prompt-builder/SKILL.md",
+        "sha256": "sha256:38f52e250f108b43073d3518321335e19d6576d656367577b396338c4b820258",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1421,
+        "compressed_bytes": 716,
+        "installed_mode": "0644",
+        "path": "skills/20-worker-executor/SKILL.md",
+        "sha256": "sha256:5f40feba6802620b1466f02bf08ec6aeb5709dcb8bb02330210559d3945708a0",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1189,
+        "compressed_bytes": 616,
+        "installed_mode": "0644",
+        "path": "skills/21-deterministic-validator/SKILL.md",
+        "sha256": "sha256:b0e3b1285296188bcf1c0b139a99c22ea890b09e5b352428dfb4d512cba68eae",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1229,
+        "compressed_bytes": 630,
+        "installed_mode": "0644",
+        "path": "skills/22-failure-classifier/SKILL.md",
+        "sha256": "sha256:c1cb61bac4c5d394eee851fa73f32be18a28724febe19f4149612aaa58e586c3",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1810,
+        "compressed_bytes": 888,
+        "installed_mode": "0644",
+        "path": "skills/23-retry-escalation-controller/SKILL.md",
+        "sha256": "sha256:0cb2527b36ec7703374bd49c65673245e8ab3770c503fb1ad09e3f49b6cb710a",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1210,
+        "compressed_bytes": 627,
+        "installed_mode": "0644",
+        "path": "skills/24-patch-reviewer/SKILL.md",
+        "sha256": "sha256:2b9362520631f76b2e7236baaf388de3223fe47a39e9e33e7af64d6e5e92856c",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1144,
+        "compressed_bytes": 600,
+        "installed_mode": "0644",
+        "path": "skills/25-security-auth-gate/SKILL.md",
+        "sha256": "sha256:4f1594fc168a06aefe93698f6c07465cca59b16d4610dbad06cf84ee4e32ba0d",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1235,
+        "compressed_bytes": 615,
+        "installed_mode": "0644",
+        "path": "skills/26-data-migration-gate/SKILL.md",
+        "sha256": "sha256:020b22e8c36f741a26ab12920e9edbfff2d5ce10580940ecd162df11bf1c7ff1",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1249,
+        "compressed_bytes": 639,
+        "installed_mode": "0644",
+        "path": "skills/27-concurrency-idempotency-gate/SKILL.md",
+        "sha256": "sha256:5d6d2267040a8f1a46f710dd68388f830c082ce5434d44fcb70719ea3fd03346",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1230,
+        "compressed_bytes": 612,
+        "installed_mode": "0644",
+        "path": "skills/28-integration-manager/SKILL.md",
+        "sha256": "sha256:6d1daa2e6430b61de41d481a2294f5e44eaa7c2bd28ae30c1fdfc5b79eb17f52",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1202,
+        "compressed_bytes": 614,
+        "installed_mode": "0644",
+        "path": "skills/29-conflict-resolver/SKILL.md",
+        "sha256": "sha256:7e285ab6cfa02372e6f8e9fbc93c51cd8ff1b4710d581bb022ba9243ac85342c",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1214,
+        "compressed_bytes": 620,
+        "installed_mode": "0644",
+        "path": "skills/30-incremental-regression-gate/SKILL.md",
+        "sha256": "sha256:33d977773bc2e57dcd5a523aa3436f5f8297b257768d8a2b3991fc2602d6d8b6",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1321,
+        "compressed_bytes": 689,
+        "installed_mode": "0644",
+        "path": "skills/31-repository-certifier/SKILL.md",
+        "sha256": "sha256:ff49131d3072a17c2e33b0226b7fbf45e8677a8ad4e1c58e3d0981215cde4bcc",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1230,
+        "compressed_bytes": 627,
+        "installed_mode": "0644",
+        "path": "skills/32-rollback-recovery/SKILL.md",
+        "sha256": "sha256:123d02f5c34a1e28eb5f45194cf3e8bdfcda67f5ad36f5d3c0dd2873a1e9e20a",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1176,
+        "compressed_bytes": 598,
+        "installed_mode": "0644",
+        "path": "skills/33-run-state-journal/SKILL.md",
+        "sha256": "sha256:de0cc96f5f0b268551a53b46b4422d84b790119c808b367879f1b1e517a682f4",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1276,
+        "compressed_bytes": 664,
+        "installed_mode": "0644",
+        "path": "skills/34-telemetry-learner/SKILL.md",
+        "sha256": "sha256:123422adb86dc28252395582e47bb11d7fea01ab748cd09214f79dfe1aedc266",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1461,
+        "compressed_bytes": 727,
+        "installed_mode": "0644",
+        "path": "skills/35-routing-policy-optimizer/SKILL.md",
+        "sha256": "sha256:53a7b046290b409998b90fd181ffd0dadfe0809cd6569a4b22342a4bc0e1023c",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 7453,
+        "compressed_bytes": 3011,
+        "installed_mode": "0644",
+        "path": "skills/36-model-selection-controller/SKILL.md",
+        "sha256": "sha256:13bccef39b5a533ea47ce2026be569ed297e60ec3371b171d9fcca146da5185b",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 405,
+        "compressed_bytes": 285,
+        "installed_mode": "0644",
+        "path": "tests/test_allowlist.py",
+        "sha256": "sha256:8b88210057467ee0381b2ef0395cec4e2f97624f0237e367a5ec6657d41f339b",
+        "source_mode": "0644"
+      },
+      {
+        "bytes": 1075,
+        "compressed_bytes": 522,
+        "installed_mode": "0644",
+        "path": "tests/test_model_selection.py",
+        "sha256": "sha256:7df88281ffe7c31c448168469ae498c9a1fd1b2d6293b9cd63b272348ffdaec7",
+        "source_mode": "0644"
+      }
+    ],
+    "immutable": true,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0",
+    "tree_sha256": "sha256:b2f5941789ba431202383fae7935cd10c656db4b625006d63b33b7bb2c152dd3"
+  },
+  "certification_status": "NOT_CERTIFIED",
+  "dependency_dag": {
+    "acyclic": true,
+    "authority": "repository-compiled-contract",
+    "edges": 84,
+    "nodes": 37,
+    "path": "docs/repository-task-router-skills/dependency-dag.json",
+    "sha256": "sha256:18a4fdc49f54e4b870212bfc484271d246335d98c818523fd56f0d8ebb2a6791"
+  },
+  "dual_root_byte_identical": true,
+  "external_evidence_status": "NOT_RUN",
+  "implementation_states": {
+    "DECLARED": 0,
+    "IMPLEMENTED": 37
+  },
+  "install_roots": [
+    "agent-skills/runtime",
+    ".agents/skills"
+  ],
+  "installed_skill_count_per_root": 37,
+  "installed_tree_sha256_per_root": "sha256:b624d528ecf2468da71146a82253fd719b140dd25dafd10ac2275af3295f463b",
+  "local_evidence_status": "NOT_RUN",
+  "managed_output": {
+    "archive_sha256": "sha256:c5842c93d268f2ebc7126d743a2fce6fba9f92071ea7e6556c11349d4896337a",
+    "directories": [
+      "compiled-schemas"
+    ],
+    "files_excluding_manifest": [
+      {
+        "bytes": 2091,
+        "mode": "0644",
+        "path": "README.md",
+        "sha256": "sha256:2fb44fe4620e0824e1e59537598e43c07c92d106b9499959a2e50561c662e90e"
+      },
+      {
+        "bytes": 4199,
+        "mode": "0644",
+        "path": "compiled-schemas/dag.schema.json",
+        "sha256": "sha256:28685d7322ef3fbf859b029c80212b8d570b5b21396fb0bbd7857636ce17d395"
+      },
+      {
+        "bytes": 1237,
+        "mode": "0644",
+        "path": "compiled-schemas/evidence.schema.json",
+        "sha256": "sha256:83f627d12766efbeb726c214c3ba5bf070867de96e4001f5ec51892f159ec711"
+      },
+      {
+        "bytes": 4957,
+        "mode": "0644",
+        "path": "compiled-schemas/execution-record.schema.json",
+        "sha256": "sha256:d2cee400efd262c79e6a339133a04a849ea35e74100781869a4969136fa2c065"
+      },
+      {
+        "bytes": 2091,
+        "mode": "0644",
+        "path": "compiled-schemas/model-selection-request.schema.json",
+        "sha256": "sha256:70c55da75447dc301915292f1214c549522f09325f7d26284b6e97a5749dc1d4"
+      },
+      {
+        "bytes": 2706,
+        "mode": "0644",
+        "path": "compiled-schemas/model-selection-resolved.schema.json",
+        "sha256": "sha256:51d32853d495e1ee2befea8fc0bb5bfb9a83ff398f88f45e66a49aa48477ebd5"
+      },
+      {
+        "bytes": 2618,
+        "mode": "0644",
+        "path": "compiled-schemas/task.schema.json",
+        "sha256": "sha256:74d3c6c52fb9c34368e6c862b35d1171c53032da824a9ec286701b2539a32f86"
+      },
+      {
+        "bytes": 10142,
+        "mode": "0644",
+        "path": "dependency-dag.json",
+        "sha256": "sha256:18a4fdc49f54e4b870212bfc484271d246335d98c818523fd56f0d8ebb2a6791"
+      }
+    ],
+    "generator": "tooling/integrate_repository_task_router_skills.py",
+    "root": "docs/repository-task-router-skills",
+    "schema_version": "elmos.repository-task-router.generated-tree.v1"
+  },
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_registry": {
+    "callable": "dispatch",
+    "declared_handlers": 37,
+    "module": "elmos_repository_orchestrator.runtime",
+    "path": "packages/repository-orchestrator/config/handler-registry.json",
+    "present": true,
+    "sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.installed-manifest.v1",
+  "skills": [
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3988,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:770e20ebd8a157d9a54bb357e35209965e5e3d9b6d73445f379fc4dc350e808a"
+        },
+        {
+          "bytes": 272,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:9f38969bc3972c16a505ee559738c5b910ea9991fe35da21d771ff5f60463a37"
+        },
+        {
+          "bytes": 2299,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:7d0fa8d5acfa345a9c2d46c2d225b249fe5d7338775fb8ce4dc14873f39ec956"
+        }
+      ],
+      "installed_tree_sha256": "sha256:960d62a6e383afd860e9b8b939349ec02d9ace5ab37d183a88f909c9967381a6",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-repository-orchestrator",
+      "ordinal": 0,
+      "runtime_handler": "repository_orchestrator",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/00-repository-orchestrator/SKILL.md",
+      "source_sha256": "sha256:6d5d84c5ef465914224d7b0010c8e6df6b5d60cea541364e7f2129054bc08010",
+      "source_version": "1.1.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.requirement-baseline",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-repository-orchestrator",
+        "elmos-run-state-journal",
+        "elmos-model-selection-controller"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3451,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:65d497cc7f74e79f1793d9711f66552e86d5f7ac600d125deebb1ecbbaa54daf"
+        },
+        {
+          "bytes": 270,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:bbc3c7f7b6c4ac2dfde57e2858e0cc0cbfe306f030fa67d89bee5435d19c19f8"
+        },
+        {
+          "bytes": 1984,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:3d4ed4bfeea2903ab0135fa32d461ff8cff8ec1b3f97cf25da56d147dd4e6035"
+        }
+      ],
+      "installed_tree_sha256": "sha256:2fad37bddcf1917f791995fea74d576bb75e24c3ec5efbb62fb16d48a31889a5",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-requirement-normalizer",
+      "ordinal": 1,
+      "runtime_handler": "requirement_normalizer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/01-requirement-normalizer/SKILL.md",
+      "source_sha256": "sha256:69f5f54e8fedf77585ef8d8cb0e584db415be1a23dbc67574dbcf868c85a0305",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": "repository",
+      "canonical_owner": "canonical.elmos.repository-snapshot",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-requirement-normalizer"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3204,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:31a091e9064d165660da7bd26ab7da5fb0764581c34794edc4490090a2be054f"
+        },
+        {
+          "bytes": 248,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:f9cf86c19f28b61dac11e4de5a5e0886bc9787e37dcdcc3a3b56807f9e48a16b"
+        },
+        {
+          "bytes": 1762,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:c6f34dc34183a19592217ab985a5b1b91d68c6a34baf95d9f504c2115eed196a"
+        }
+      ],
+      "installed_tree_sha256": "sha256:37027259c1f179fbe3c17216a4649a47b060fdb6325f540265633ddcd47da3d8",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-repo-intake",
+      "ordinal": 2,
+      "runtime_handler": "repo_intake",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/02-repo-intake/SKILL.md",
+      "source_sha256": "sha256:e6bf0e0f4950a772386a1ee9e1aac023e6bfbfd47f1ced665ccd9cc4f8a49576",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.semantic-index",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-repo-intake"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3129,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:a7dc9f4fb1defcf25395547526244787e6b3dee5a0be0585e9aac7f0e3540fda"
+        },
+        {
+          "bytes": 266,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:0fe9aacf0bd222b5b8fe448ace1578dba629f3f684498d2d3cc83af07fe574ce"
+        },
+        {
+          "bytes": 1730,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:9bb3bcf66d6257b267e85e6895ac46120e4621e40d1dec643fa1c54883076352"
+        }
+      ],
+      "installed_tree_sha256": "sha256:65ff690a6a18b94dcd4d2e2ff28be85eafc9e5428a9781f7fb18d2c618baa1c5",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-architecture-indexer",
+      "ordinal": 3,
+      "runtime_handler": "architecture_indexer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/03-architecture-indexer/SKILL.md",
+      "source_sha256": "sha256:e6643ee25fbc5800d976c6e514cad9d4bd974d518b0e769b8a48b2e07770638d",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.impact-graph",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-requirement-normalizer",
+        "elmos-architecture-indexer"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3190,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:c8a4b0d365b8dc7ae0cf04db5f925b4030ee476b3acddc49f2a806de6496207c"
+        },
+        {
+          "bytes": 270,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:b26df909385764c1cd8ae92e94a1683b11b4badb3f394d7206486c6ccb0081e0"
+        },
+        {
+          "bytes": 1814,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:6cca917029a1e9fe6988c31dcb3de67eb40a82af73dcec3bc05b99745b78f204"
+        }
+      ],
+      "installed_tree_sha256": "sha256:c4ed02806902e106d733c9dd7d72f64e40a50daad7a5c0972d7961990bf3e066",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-change-impact-analyzer",
+      "ordinal": 4,
+      "runtime_handler": "change_impact_analyzer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/04-change-impact-analyzer/SKILL.md",
+      "source_sha256": "sha256:d93ba127ccc683787b6eb517351c97a59006324e2ae87d3cbd7078d87fe8be8c",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-change-impact-analyzer"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3395,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:fe34c7dacb40feefb20a9991d01110cf9b2668289ef2a19ba0a31282aef1e419"
+        },
+        {
+          "bytes": 256,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:4dc2a4c8259ad0c2f6cb2b402fc05177c7bb57507445c6bd3ace879dc81aaad5"
+        },
+        {
+          "bytes": 1835,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:b33940b771c2401c21ab43b7823b4e43b8a0391271b49d1771e18ed50f3747c8"
+        }
+      ],
+      "installed_tree_sha256": "sha256:fba1fa7ed55a315d2835984a99b9c4fbf321b27a31e84d579215ee06c2d44b78",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-task-decomposer",
+      "ordinal": 5,
+      "runtime_handler": "task_decomposer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/05-task-decomposer/SKILL.md",
+      "source_sha256": "sha256:4e9caec366f1d562c42b8938c6c3e0114adfe3c83fc81ecaf0858f274a1b681a",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-task-decomposer"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3284,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:48323bf7a52486d28995b1f9d3226f9bc561dc3f104e7401d31fb82c4781d4dc"
+        },
+        {
+          "bytes": 264,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:a9e9a69dbc9f2c4ce5317157449e60dd3a9114e31e3b9c3fc0d9d51c5f647917"
+        },
+        {
+          "bytes": 1735,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:e8aca965bd06d3d6281eabf09b062032c0cc1fe87e05a2688516a50da9e8b673"
+        }
+      ],
+      "installed_tree_sha256": "sha256:be3c8ef68016b27f6caa7911f736c167bf9a33dee5001cc7a0546522a041c56d",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-atomicity-validator",
+      "ordinal": 6,
+      "runtime_handler": "atomicity_validator",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/06-atomicity-validator/SKILL.md",
+      "source_sha256": "sha256:f7e495f04d0fe0c0794b774e71319831cc12bd035f4ec2c97a021a5caf2b9e36",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-atomicity-validator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3138,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:d2557ddd6bb101f018e182aa16450662828cdd2b12fab0597cf3bbb24d5463f1"
+        },
+        {
+          "bytes": 258,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:c31658cb6c1dc1f0749abe6635c1298c3d526657ddc52097e2d55f700f5d50e8"
+        },
+        {
+          "bytes": 1725,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:9ff73cdcac58ef27e9a2419e5403b63149fb5d265353039f8904f7ca909ccde7"
+        }
+      ],
+      "installed_tree_sha256": "sha256:0cd4fa1bab1ac8582eabea2fdee8bc2e7d56cae2588a26973c2beb76dbe267b9",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-task-dag-builder",
+      "ordinal": 7,
+      "runtime_handler": "task_dag_builder",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/07-task-dag-builder/SKILL.md",
+      "source_sha256": "sha256:c4b6058426bd52a0b73f28b6cbc86502d81ae3b03f69b97d82e0589bea11320d",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.contract-registry",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-task-dag-builder"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3229,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:d7f5838faccedf85f88cf674afcd61bffe9cf2fcc8601dbac274b0e8673f3dde"
+        },
+        {
+          "bytes": 280,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:6f278ee570f41a1680734bfc3fc6b48d0968adcec72407dee7da7f1838ea6a08"
+        },
+        {
+          "bytes": 1782,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:6d2a3011a0ef5c5e4ac30a1f5976673ddfc719d149c2377f0a9cbf03d147e5d4"
+        }
+      ],
+      "installed_tree_sha256": "sha256:bd93173a75cbafc566f2ab74529739e31e69f2d0c13f750eaaac03d62bd467ba",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-contract-boundary-generator",
+      "ordinal": 8,
+      "runtime_handler": "contract_boundary_generator",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/08-contract-boundary-generator/SKILL.md",
+      "source_sha256": "sha256:b265a780ca516b7139b297eb8918cebfed6048af8862a98c61849cb770af3a1a",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.execution-intelligence",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-contract-boundary-generator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3155,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:5e2ad35d0d3e566de864576d5305aa10465f906f0067cf26e4555c2d21757b83"
+        },
+        {
+          "bytes": 266,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:b5be1ae6195d12205fe18c075453b41caf12b29796898076c02f5373f7b5584b"
+        },
+        {
+          "bytes": 1680,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:289cc7e116d28fbb98c126f58967519a535a3d6fa819a0d61f603c5e970ce6ef"
+        }
+      ],
+      "installed_tree_sha256": "sha256:fd9d9c2026dd74d6783e12c8ddd536df8b6d8928786466e73c9e4e37fcf0218f",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-complexity-estimator",
+      "ordinal": 9,
+      "runtime_handler": "complexity_estimator",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/09-complexity-estimator/SKILL.md",
+      "source_sha256": "sha256:5df8822ba82f3a002271494acd286023679e6d8d7c4de3ba6798d8b620323db5",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.identity-policy",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-contract-boundary-generator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3161,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:5b40c2653f8579596fb333763776b86d60e263d1715506ed5d8c6ced78707562"
+        },
+        {
+          "bytes": 256,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:55e68aac171632ea86c559444d8e3670e4a8bc137159b110fa27ef5d7b2ec79f"
+        },
+        {
+          "bytes": 1683,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:d10346569e33e8c3b94e57cd0faeeabac62e7a8fd8eeeaed2ff4c2e72a0d2d95"
+        }
+      ],
+      "installed_tree_sha256": "sha256:f36e3b3bb6eefc9a9abc48dd4a15a33c1da3094ab031c80e5bed34eabc8e1ad1",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-risk-classifier",
+      "ordinal": 10,
+      "runtime_handler": "risk_classifier",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/10-risk-classifier/SKILL.md",
+      "source_sha256": "sha256:08feca8cc1b702217ee5fd87d530a43754d17cf72673047882b58f0d4c99d5f7",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.context-builder",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-contract-boundary-generator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3150,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:f46cefa1400f7e80de6a2b4dfe04ea3a74bf75ae1f46b2c677a86afa89b65d45"
+        },
+        {
+          "bytes": 254,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:f1dfd01468e04222a47d23938d2dbb24b1b5894540e68d04faa7e3126a88ff16"
+        },
+        {
+          "bytes": 1710,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:f327fd57794314767b072f7cc8e0e887219bc018bdb47be14e89fd3ceff1e31d"
+        }
+      ],
+      "installed_tree_sha256": "sha256:d2c80522f5b1fde176daa3aaee6a86d0cf124eaabe42682139dca3478202ca03",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-context-slicer",
+      "ordinal": 11,
+      "runtime_handler": "context_slicer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/11-context-slicer/SKILL.md",
+      "source_sha256": "sha256:f4d5a0b36648121f305bd643cbae891f12ce295821ce04e17221ddb3d130c4e7",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "control",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.model-gateway",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-run-state-journal",
+        "elmos-model-selection-controller"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3177,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:daea605731f64534545aab0054095c350afc05a7f452dc0b6415e15616a26e08"
+        },
+        {
+          "bytes": 266,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:46109226e27f9b50d0a5ae8efc9fab142c7133031aff710b0ced3cd50e7736d0"
+        },
+        {
+          "bytes": 1708,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:9f34bd4296bcf8a0af046e1f7f39b21ffd3afa635f45268c946e3e8c055e731c"
+        }
+      ],
+      "installed_tree_sha256": "sha256:2760a1d2bfd809e2c8b6bb1dd2876da9cc56aa4651d2ff0bcf31103c57706945",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-model-registry-guard",
+      "ordinal": 12,
+      "runtime_handler": "model_registry_guard",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/12-model-registry-guard/SKILL.md",
+      "source_sha256": "sha256:3bd387c83d0d1a34a4f24b1385e795c597ad011cf596361daab0097c165eab21",
+      "source_version": "1.1.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.model-gateway",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-model-registry-guard"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3152,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:c1121d433fcf274333286a410f7be5365aa5ac9698a808d27459c44dfeda1321"
+        },
+        {
+          "bytes": 276,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:9e8c3c21db72739f169a65d33209ba1d2006385ffe55e43a5061596dae72c932"
+        },
+        {
+          "bytes": 1749,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:0b989c1e2916db8ec40ca9ee6de81160c870d0b260bfbc7140c191163337a62b"
+        }
+      ],
+      "installed_tree_sha256": "sha256:62450d2d2f7194d2ffc376c4b4c2a12cda9e90e31e1d979afe4569075e37a3ce",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-model-capability-profiler",
+      "ordinal": 13,
+      "runtime_handler": "model_capability_profiler",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/13-model-capability-profiler/SKILL.md",
+      "source_sha256": "sha256:5d95a6a2a57aca11355f538bad69732327406dc36af27d2c0c461fe6900bdb8a",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.model-gateway",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-complexity-estimator",
+        "elmos-risk-classifier",
+        "elmos-context-slicer",
+        "elmos-model-registry-guard",
+        "elmos-model-capability-profiler",
+        "elmos-model-selection-controller"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3955,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:c21fded681d66e59f2e6dbdcd1353717d0dd495b2f6ec75206b60b56499b375f"
+        },
+        {
+          "bytes": 272,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:19572b2e423134c6571348176f6a6c38bc2ebb71f3cbf016c17d6109cb69d5f7"
+        },
+        {
+          "bytes": 2305,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:a1c9f75ed056052db9246db0b422d87aea96279d055d568459454d6790e662cc"
+        }
+      ],
+      "installed_tree_sha256": "sha256:8c2d92c22c454894bdc5ad2654c4202d67a2b40345f193433fa1e794699c814a",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-cost-performance-router",
+      "ordinal": 14,
+      "runtime_handler": "cost_performance_router",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/14-cost-performance-router/SKILL.md",
+      "source_sha256": "sha256:b1f8d50af1b06a569f49b0f04134d96260f8680aa0f11c5400cd306f7da356af",
+      "source_version": "1.1.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.budget-ledger",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-cost-performance-router"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3102,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:0da67a0e7736c25fba4ee469bdbcaa0c4cbed667bbd5d861c46bfff6ffa501a1"
+        },
+        {
+          "bytes": 254,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:f021b44caef7e5dc9c4d1b9c22bdbf88ecdca122a646f8bae572a79ec730a3cb"
+        },
+        {
+          "bytes": 1770,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:86a4123cf3c00a4042602802e9fd5779cc0e7c04289ee7fa4ee35676e84d9486"
+        }
+      ],
+      "installed_tree_sha256": "sha256:21a7fdc5e0d87af6c21b81c25216511d191417162b747519b9d8a544d67d34c3",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-budget-planner",
+      "ordinal": 15,
+      "runtime_handler": "budget_planner",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/15-budget-planner/SKILL.md",
+      "source_sha256": "sha256:26e4dc6ef488fc2694859b829a2a4e99c992f57947c72d1f4142bbdf388cee94",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.execution-intelligence",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-budget-planner"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3168,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:87ad2b292b6c98c8f27eb538674f723844920edf59a303aa77873555a3c9dc00"
+        },
+        {
+          "bytes": 252,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:9bc1412805e09d69506b0ded170fd5e25d387368ad254e72cd7e85f742ebba19"
+        },
+        {
+          "bytes": 1767,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:4391670d9f85feb4eec1ef6e6e11a032746d3b0cd65c9aee47ba5ba23374cadc"
+        }
+      ],
+      "installed_tree_sha256": "sha256:8b13de12f86b3f870e8470822f3c125258aae936ce42a01138aa43a70b2a0e8f",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-eta-estimator",
+      "ordinal": 16,
+      "runtime_handler": "eta_estimator",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/16-eta-estimator/SKILL.md",
+      "source_sha256": "sha256:db97bada0f2e77299557027eed9faf1338e2168c90f2e3305daa4d73779f11f2",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-task-dag-builder",
+        "elmos-budget-planner",
+        "elmos-eta-estimator",
+        "elmos-run-state-journal"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3089,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:c5851e37e417a76a06091f78ea4ec8c59eb969a8933f2fe90b4ca5d0d2ed63d8"
+        },
+        {
+          "bytes": 254,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:b8b5ff0556e25da6260c431583d0c7a12243fb1cf2542244be9d5b0c9b13cfa0"
+        },
+        {
+          "bytes": 1756,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:b94a29aa30f89b315eff3e0f31dca1e6d7c1876a4a025a72b86f8d05cf3deb4a"
+        }
+      ],
+      "installed_tree_sha256": "sha256:4619a13c2c670ed051f67da4355b629c545413d8e4f73f2f7537d592709aa3cd",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-wave-scheduler",
+      "ordinal": 17,
+      "runtime_handler": "wave_scheduler",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/17-wave-scheduler/SKILL.md",
+      "source_sha256": "sha256:3ffec64f45bca31e1311fab3c41f16bc2e06d3fc89bc89d1cd40788618445f90",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": "worktree",
+      "canonical_owner": "canonical.elmos.workspace-scm",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-wave-scheduler"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3076,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:7c8288d96c661993cb852ef20f70753417eb1108dd803328e50604e52d049170"
+        },
+        {
+          "bytes": 258,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:ec630d72641f09aaad6627c4a4b534cb2afeadd97f563d26fb01aaf3d85b58b9"
+        },
+        {
+          "bytes": 1703,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:5645742bf0bf0b350cda0e7c5074c39aceef0784bf58533d9a320dafe64b6b86"
+        }
+      ],
+      "installed_tree_sha256": "sha256:d14a3010efaa58b5572cb686285f78088916296809dda40ab9420559c1a406e1",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-worktree-manager",
+      "ordinal": 18,
+      "runtime_handler": "worktree_manager",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/18-worktree-manager/SKILL.md",
+      "source_sha256": "sha256:3c89bc2f958b411aa2b3416dc87cb5986223a601807360109e4b34c16a49a0ba",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.context-builder",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-contract-boundary-generator",
+        "elmos-context-slicer",
+        "elmos-worktree-manager"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3155,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:18f45841c1c9be5a80c32c8aeeb2cb0365341b8e6121964d7865c529772d6b98"
+        },
+        {
+          "bytes": 268,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:02e202e6b719f65f941ce7d9773d3948d52bb0ca7be34d671a2681054101cbd6"
+        },
+        {
+          "bytes": 1791,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:0086c959d95f9ad7b9fb0af61837e57c659a845eae94ffe90b39da7a49a49df9"
+        }
+      ],
+      "installed_tree_sha256": "sha256:c194e6efda13aac6be830d1c26f7357aa37d5bae285cb52fc89ff333a3363746",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-worker-prompt-builder",
+      "ordinal": 19,
+      "runtime_handler": "worker_prompt_builder",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/19-worker-prompt-builder/SKILL.md",
+      "source_sha256": "sha256:38f52e250f108b43073d3518321335e19d6576d656367577b396338c4b820258",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": "provider",
+      "canonical_owner": "canonical.elmos.model-gateway",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-cost-performance-router",
+        "elmos-worktree-manager",
+        "elmos-worker-prompt-builder",
+        "elmos-model-selection-controller"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3295,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:aa7f9b1f0bde167f3fbeea5865548f71b7e129fc359ae9401d9b0e9b5383ea14"
+        },
+        {
+          "bytes": 256,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:4da16e3c287b5e32972c8e0d89d48a2fc1c129c334d982b995465fe084a1038a"
+        },
+        {
+          "bytes": 1976,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:b0e70748716614db72728b3f53e60d09648379e77d673fcdc7b1d73be03bad89"
+        }
+      ],
+      "installed_tree_sha256": "sha256:80629398a2cbbe26850c3c549cae223bdd22bbb167d16671dbc501fb0cdb6e74",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-worker-executor",
+      "ordinal": 20,
+      "runtime_handler": "worker_executor",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/20-worker-executor/SKILL.md",
+      "source_sha256": "sha256:5f40feba6802620b1466f02bf08ec6aeb5709dcb8bb02330210559d3945708a0",
+      "source_version": "1.1.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": "runner",
+      "canonical_owner": "canonical.elmos.runner",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-worker-executor"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3080,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:a3ea9f96f211658b772243ef9616a461ebd05e91e25479a0c58db08088adea7c"
+        },
+        {
+          "bytes": 272,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:002aa1331c0355ae3bb2802945bc486ac5174520ede476dedfad612da2c49b24"
+        },
+        {
+          "bytes": 1754,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:c41e6496a1bde911ae2e8914699a84264b7ea21c69395782d4bb850b3030706c"
+        }
+      ],
+      "installed_tree_sha256": "sha256:2b1c907ea1b63d9c1c7d307a0dd3cee52c5c862151cdf76e2a2ec15c151322ed",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-deterministic-validator",
+      "ordinal": 21,
+      "runtime_handler": "deterministic_validator",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/21-deterministic-validator/SKILL.md",
+      "source_sha256": "sha256:b0e3b1285296188bcf1c0b139a99c22ea890b09e5b352428dfb4d512cba68eae",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-worker-executor",
+        "elmos-deterministic-validator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3114,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:c4204b339385e6807b3b3fa98d4359b4896663b8cc2424dbf1e15a7ba6402b5a"
+        },
+        {
+          "bytes": 262,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:911715dd26d662f16d7958d0c25b5c718f7fa6bd49c3b2e33c67ee8006ae1e33"
+        },
+        {
+          "bytes": 1726,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:1be27d2db1680b0b7c649c4f6f50302fbe068bd1f2c6d3828f26a1a3c2707402"
+        }
+      ],
+      "installed_tree_sha256": "sha256:f20eab90442c5868a0fbe71266b65dd7eea6db5514e38c760f02ceb0f6207123",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-failure-classifier",
+      "ordinal": 22,
+      "runtime_handler": "failure_classifier",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/22-failure-classifier/SKILL.md",
+      "source_sha256": "sha256:c1cb61bac4c5d394eee851fa73f32be18a28724febe19f4149612aaa58e586c3",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-cost-performance-router",
+        "elmos-failure-classifier",
+        "elmos-model-selection-controller"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3722,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:3e02aa6857cf867ca320a6671440e48abfbd7e4af7523e3ad61296a1e534cf41"
+        },
+        {
+          "bytes": 280,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:397cb52f2d818fbe17cf71bb0f33e61a6d5d0a211dd56ae1d509b0939a01d2a2"
+        },
+        {
+          "bytes": 1965,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:3e481fff70a1ec4af375fb44b6189d8dcac5fab5c0982224870c60476ac1ddd0"
+        }
+      ],
+      "installed_tree_sha256": "sha256:824b91039c6c4bd938c131ccaaf3994b6f1d0ba254b92f042a4917fdd7775f91",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-retry-escalation-controller",
+      "ordinal": 23,
+      "runtime_handler": "retry_escalation_controller",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/23-retry-escalation-controller/SKILL.md",
+      "source_sha256": "sha256:0cb2527b36ec7703374bd49c65673245e8ab3770c503fb1ad09e3f49b6cb710a",
+      "source_version": "1.1.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": "provider",
+      "canonical_owner": "canonical.elmos.verification-fabric",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-model-registry-guard",
+        "elmos-deterministic-validator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3087,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:7fc55d5db2fa6aed7bf2c8d24b3947fe1c2b764cf19a73889965d51efe704ee3"
+        },
+        {
+          "bytes": 254,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:2ccccf58f89d96fca3ba8122852abf10a350052af692e6b14ea8daa2af83fd64"
+        },
+        {
+          "bytes": 1776,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:b6d053e1f1b4ec0f3b33ff4a8d747d5f48ac6527d31d57d547b46035b160da8b"
+        }
+      ],
+      "installed_tree_sha256": "sha256:5505e42bb0acfa03a344f2a0b28e8f1af560b86571b49ebb11d3290e9dfe57a9",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-patch-reviewer",
+      "ordinal": 24,
+      "runtime_handler": "patch_reviewer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/24-patch-reviewer/SKILL.md",
+      "source_sha256": "sha256:2b9362520631f76b2e7236baaf388de3223fe47a39e9e33e7af64d6e5e92856c",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": "external",
+      "canonical_owner": "canonical.elmos.verification-fabric",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-deterministic-validator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3033,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:891f4f6f49fce95dff111788e9e232d975944d63da33f3bb5977697c79092fe0"
+        },
+        {
+          "bytes": 262,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:589d0e6955307d07ace5efa11a209b3a3ba1ca76b4d7a49f7f6fc00fee20d289"
+        },
+        {
+          "bytes": 1736,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:e83d42413ef9a73440d67e5b3f83f8be6bc8e6b48cf1c965317ede53a7dd54e0"
+        }
+      ],
+      "installed_tree_sha256": "sha256:476995ecc0f54ba615f4ff456911efe419f8e62f206662ba702ce59a65ccd325",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-security-auth-gate",
+      "ordinal": 25,
+      "runtime_handler": "security_auth_gate",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/25-security-auth-gate/SKILL.md",
+      "source_sha256": "sha256:4f1594fc168a06aefe93698f6c07465cca59b16d4610dbad06cf84ee4e32ba0d",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": "external",
+      "canonical_owner": "canonical.elmos.verification-fabric",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-deterministic-validator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3127,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:85fce495c98ba9ff934705860e3185beb08b81fbd127aa43e065d2f65d26e8f2"
+        },
+        {
+          "bytes": 264,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:e7c81613e67eec4de86cb42282ba47aa66fa0981bae6171acfc7bf9adcc79962"
+        },
+        {
+          "bytes": 1765,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:2f3ffed5b5d2019bf0fa5a979384d0a735af036a5bf946579470e310d938c431"
+        }
+      ],
+      "installed_tree_sha256": "sha256:facc577c7172320a7ee78675a708d8ae33eb1bf10bc7a048a30a00fd8e03b3f3",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-data-migration-gate",
+      "ordinal": 26,
+      "runtime_handler": "data_migration_gate",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/26-data-migration-gate/SKILL.md",
+      "source_sha256": "sha256:020b22e8c36f741a26ab12920e9edbfff2d5ce10580940ecd162df11bf1c7ff1",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": "external",
+      "canonical_owner": "canonical.elmos.verification-fabric",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-risk-classifier",
+        "elmos-deterministic-validator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3168,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:d41d2a8d16426dd6614a10daff6fcd0bc454576b248348b4e125f83fcfe40c58"
+        },
+        {
+          "bytes": 282,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:5a6455c0de50b29e2cd471ca12d3f2720280089d92e430e5e1ad45a3dea674d4"
+        },
+        {
+          "bytes": 1790,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:41d2bc2d7047c89a0f5d7c961475ac9daae0caa5962b69a42028044852134e73"
+        }
+      ],
+      "installed_tree_sha256": "sha256:a5e789011d33debbf6292e33603c45aaac2dbe618ded29f30507502bb045b723",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-concurrency-idempotency-gate",
+      "ordinal": 27,
+      "runtime_handler": "concurrency_idempotency_gate",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/27-concurrency-idempotency-gate/SKILL.md",
+      "source_sha256": "sha256:5d6d2267040a8f1a46f710dd68388f830c082ce5434d44fcb70719ea3fd03346",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": "scm",
+      "canonical_owner": "canonical.elmos.workspace-scm",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-deterministic-validator",
+        "elmos-patch-reviewer",
+        "elmos-security-auth-gate",
+        "elmos-data-migration-gate",
+        "elmos-concurrency-idempotency-gate",
+        "elmos-run-state-journal"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3116,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:2c16d708efb13fdfbae2f1ad6e7e942c983f9589f3d8fb4d9bb463b87cb209f8"
+        },
+        {
+          "bytes": 264,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:7aace14ea250653d3ecfc117b79bb32cf18581361965dad28a0b4441781c9e7c"
+        },
+        {
+          "bytes": 1901,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:3072a6e076e6aa72da4443efd950c2d9b51b13e2de961bf9ab465d6b773e591f"
+        }
+      ],
+      "installed_tree_sha256": "sha256:c2f8266d336665f905e9f2293672bd66d2fa080be8b21759bd5ed200b1f0f043",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-integration-manager",
+      "ordinal": 28,
+      "runtime_handler": "integration_manager",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/28-integration-manager/SKILL.md",
+      "source_sha256": "sha256:6d1daa2e6430b61de41d481a2294f5e44eaa7c2bd28ae30c1fdfc5b79eb17f52",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "conditional",
+      "adapter_requirement": "scm",
+      "canonical_owner": "canonical.elmos.workspace-scm",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-integration-manager"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3082,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:e5f14fb77be2bf138ee6fd67c24e85382aaa0815613102d98a5504404f59f025"
+        },
+        {
+          "bytes": 260,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:f915142d72c5f06579faeeaf7c4d3c9a6f36654e12d55ca4c63646ab8bddeea5"
+        },
+        {
+          "bytes": 1721,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:b7871daf95e90a3556ae0f9371f99dd14acff6997222ec16a54233c169f0b85c"
+        }
+      ],
+      "installed_tree_sha256": "sha256:6abac7674391d5269075808e88cb2f202a56dcf0ad9c99906724bc927e6e3afe",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-conflict-resolver",
+      "ordinal": 29,
+      "runtime_handler": "conflict_resolver",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/29-conflict-resolver/SKILL.md",
+      "source_sha256": "sha256:7e285ab6cfa02372e6f8e9fbc93c51cd8ff1b4710d581bb022ba9243ac85342c",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": "runner",
+      "canonical_owner": "canonical.elmos.runner",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-integration-manager",
+        "elmos-conflict-resolver"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3117,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:67037065c052cfb5512ca25ae604a6baf226900f48eb45da7b59d40203920bae"
+        },
+        {
+          "bytes": 280,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:958581fe49ca44607d35e0069c0d9b1b4249dd0d9f4228349858a1d064f194ab"
+        },
+        {
+          "bytes": 1732,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:222fa6d2a4642c76e38e7722681a458dae39ab8edaa8cc913e6ac1b8ca2ccde5"
+        }
+      ],
+      "installed_tree_sha256": "sha256:da7b3249e79a57aec1819d97e3b89afd3444d386fbc62840d66a9ad12c895df8",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-incremental-regression-gate",
+      "ordinal": 30,
+      "runtime_handler": "incremental_regression_gate",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/30-incremental-regression-gate/SKILL.md",
+      "source_sha256": "sha256:33d977773bc2e57dcd5a523aa3436f5f8297b257768d8a2b3991fc2602d6d8b6",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.local-verification-gate",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-security-auth-gate",
+        "elmos-data-migration-gate",
+        "elmos-concurrency-idempotency-gate",
+        "elmos-incremental-regression-gate"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3220,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:4f282504164482855b86b86829698cdd6b13b373f873db2f29bbc9c75755f588"
+        },
+        {
+          "bytes": 266,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:bd779ae6950b7098ff6a6b06e6a38f277dee32bd2ff1d7266cfe563ee91b8967"
+        },
+        {
+          "bytes": 1916,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:c660b5d79341e74eaf7122d1f0997bc557e31bf1d3383b857191e0937bfbbf4d"
+        }
+      ],
+      "installed_tree_sha256": "sha256:424c61bbc75e81ea6aa9c161f7196a61f78d55061e7fcb58fea3884d6b564854",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-repository-certifier",
+      "ordinal": 31,
+      "runtime_handler": "repository_certifier",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/31-repository-certifier/SKILL.md",
+      "source_sha256": "sha256:ff49131d3072a17c2e33b0226b7fbf45e8677a8ad4e1c58e3d0981215cde4bcc",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "exception",
+      "adapter_requirement": "scm",
+      "canonical_owner": "canonical.elmos.workspace-scm",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-repository-orchestrator",
+        "elmos-worktree-manager",
+        "elmos-worker-executor",
+        "elmos-integration-manager",
+        "elmos-run-state-journal"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3110,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:823a070055e99ca43741528dcb0ac5bce6fd56f2a85e16279eecd84d41d126ac"
+        },
+        {
+          "bytes": 260,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:316e052d1b80e6933fa53a7bcd93315640631344acf6718860a4c163d0af8d74"
+        },
+        {
+          "bytes": 1865,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:d11b4b1f4042f0c9560f338c0e2ebd775892d852f8c87b63118fa178d153d60e"
+        }
+      ],
+      "installed_tree_sha256": "sha256:91e3c62a84f16510315b29a0c2201cd94057d5f44fef456756ef18176bd4f668",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-rollback-recovery",
+      "ordinal": 32,
+      "runtime_handler": "rollback_recovery",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/32-rollback-recovery/SKILL.md",
+      "source_sha256": "sha256:123d02f5c34a1e28eb5f45194cf3e8bdfcda67f5ad36f5d3c0dd2873a1e9e20a",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "control",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.durable-runtime",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-repository-orchestrator"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3058,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:baa67cae85d4416d706d9570c0034f2049d7213de23171069a241d53fb13c522"
+        },
+        {
+          "bytes": 260,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:50fe22747667021d25c073891aa97dd4e107dfa0b0ef67f44c00072f4d6e8494"
+        },
+        {
+          "bytes": 1664,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:f32a44ab925a9ac3a4d6ae77a9314f6e68f4708d60ed7b639c1e55690e84f6f8"
+        }
+      ],
+      "installed_tree_sha256": "sha256:e15e6215c075c3528b13bde957d96af51d6e3fdea5a8cbe32c5c8332cf872c7d",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-run-state-journal",
+      "ordinal": 33,
+      "runtime_handler": "run_state_journal",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/33-run-state-journal/SKILL.md",
+      "source_sha256": "sha256:de0cc96f5f0b268551a53b46b4422d84b790119c808b367879f1b1e517a682f4",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "required",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.execution-intelligence",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-repository-certifier",
+        "elmos-run-state-journal"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3165,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:b5074f9044584601cf493fce03ed6937a76be84d2dd25ad0f95e5f8fad8dff30"
+        },
+        {
+          "bytes": 260,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:0e1151bc0c0b4236de4d497fb8d950d4a568c41c1e032ce8d38d500196e0c712"
+        },
+        {
+          "bytes": 1761,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:76e0c0b00a11331ff77a7523de12ecb313c8f55e57ecd21b9e6d9264b220bca5"
+        }
+      ],
+      "installed_tree_sha256": "sha256:5f78135f9d3fa0c5a3358e0a0c5f88de77df924e37857a5bd5c6f1801e01ddbb",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-telemetry-learner",
+      "ordinal": 34,
+      "runtime_handler": "telemetry_learner",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/34-telemetry-learner/SKILL.md",
+      "source_sha256": "sha256:123422adb86dc28252395582e47bb11d7fea01ab748cd09214f79dfe1aedc266",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "offline",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.model-gateway",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-model-registry-guard",
+        "elmos-cost-performance-router",
+        "elmos-telemetry-learner"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 3362,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:86880e343251f5c1bdf0998a7a15d40e8db27f241de015998f2923139d3a6464"
+        },
+        {
+          "bytes": 274,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:5a816976f8fd23e9a292639b12b347cf1090f9774e5f12d78011025c443e3cf7"
+        },
+        {
+          "bytes": 1925,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:1e1d248ec5091b9279f8f8d344099925e4bd67f0a9c9bc44cf6c2bd9bed3b8cd"
+        }
+      ],
+      "installed_tree_sha256": "sha256:448fb7c4ea3c4e1a0aa821a03e0fbfb211ab4e13758d3baebf2700865b3192e5",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-routing-policy-optimizer",
+      "ordinal": 35,
+      "runtime_handler": "routing_policy_optimizer",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/35-routing-policy-optimizer/SKILL.md",
+      "source_sha256": "sha256:53a7b046290b409998b90fd181ffd0dadfe0809cd6569a4b22342a4bc0e1023c",
+      "source_version": "1.0.0"
+    },
+    {
+      "activation": "control",
+      "adapter_requirement": null,
+      "canonical_owner": "canonical.elmos.model-gateway",
+      "certification_status": "NOT_CERTIFIED",
+      "depends_on": [
+        "elmos-repository-orchestrator",
+        "elmos-run-state-journal"
+      ],
+      "external_evidence_status": "NOT_RUN",
+      "implementation_state": "IMPLEMENTED",
+      "installed_files": [
+        {
+          "bytes": 9360,
+          "mode": "0644",
+          "path": "SKILL.md",
+          "sha256": "sha256:3385e5bd2d40c822414dcf088551142e39deeb1565266145f78f571983b727e5"
+        },
+        {
+          "bytes": 278,
+          "mode": "0644",
+          "path": "agents/openai.yaml",
+          "sha256": "sha256:9f166aafbfe762bf0e26b61dd50ec2df370f3af40a51501cb9a212baddffc750"
+        },
+        {
+          "bytes": 3327,
+          "mode": "0644",
+          "path": "compiled-contract.json",
+          "sha256": "sha256:158a6883bc598201c6b804722011c9e3433199733e58c177dbf0d1aeedf35094"
+        }
+      ],
+      "installed_tree_sha256": "sha256:cfc5a656a25513425ce6f93a0a022576f79444bfaca72291488ca44f31df534c",
+      "local_evidence_status": "NOT_RUN",
+      "name": "elmos-model-selection-controller",
+      "ordinal": 36,
+      "runtime_handler": "model_selection_controller",
+      "source_path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/36-model-selection-controller/SKILL.md",
+      "source_sha256": "sha256:13bccef39b5a533ea47ce2026be569ed297e60ec3371b171d9fcca146da5185b",
+      "source_version": "1.1.0"
+    }
+  ],
+  "source_absence_facts": {
+    "checksums_inventory": false,
+    "cryptographic_signature": false,
+    "license": false,
+    "provenance_attestation": false,
+    "sbom": false
+  },
+  "source_content_executed": false,
+  "source_findings": [
+    {
+      "affected_tasks": 5,
+      "code": "SOURCE_TASK_EXAMPLE_SCHEMA_MISMATCH",
+      "compiled_contract_repaired": true,
+      "immutable_source_rewritten": false,
+      "missing_fields_per_task": [
+        "acceptance",
+        "complexity",
+        "objective",
+        "status"
+      ],
+      "paths": [
+        "examples/example-task-plan.json",
+        "schemas/task.schema.json"
+      ]
+    },
+    {
+      "code": "SOURCE_MANUAL_NULL_MODEL_ACCEPTED",
+      "compiled_contract_repaired": true,
+      "immutable_source_rewritten": false,
+      "path": "schemas/model-selection.schema.json"
+    },
+    {
+      "code": "SOURCE_EXECUTION_MODEL_ALIAS_UNCONSTRAINED",
+      "compiled_contract_repaired": true,
+      "immutable_source_rewritten": false,
+      "path": "schemas/execution-record.schema.json"
+    },
+    {
+      "code": "SOURCE_MANIFEST_HAS_NO_DEPENDENCY_DAG",
+      "compiled_contract_repaired": true,
+      "compiled_dag_skill_count": 37,
+      "immutable_source_rewritten": false,
+      "path": "manifest.json",
+      "source_workflow_skill_count": 27
+    }
+  ],
+  "source_instructions_promoted_to_repository_authority": false
+}

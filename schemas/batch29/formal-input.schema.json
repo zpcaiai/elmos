@@ -58,12 +58,15 @@
         "python",
         "csharp",
         "typescript",
-        "javascript",
         "go",
         "rust",
         "cpp",
         "objc",
-        "swift"
+        "swift",
+        "php",
+        "kotlin",
+        "react",
+        "flutter"
       ]
     },
     "relative_path": {

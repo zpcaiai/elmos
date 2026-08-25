@@ -1,0 +1,175 @@
+{
+  "acceptance": [
+    {
+      "criterion": "客户端断线后任务按策略继续并可重新订阅进度",
+      "evidence": [],
+      "id": "S35-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "服务进程被终止后可从最后安全点恢复",
+      "evidence": [],
+      "id": "S35-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "同一检查点重复恢复不会重复外部副作用或成本记账",
+      "evidence": [],
+      "id": "S35-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "恢复前后 P0/P1、待办、修改文件和测试状态一致",
+      "evidence": [],
+      "id": "S35-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "损坏或不兼容检查点被拒绝并给出安全恢复路径",
+      "evidence": [],
+      "id": "S35-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "所有恢复尝试有 trace、操作者、原因和结果",
+      "evidence": [],
+      "id": "S35-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "客户端断线后任务按策略继续并可重新订阅进度",
+      "服务进程被终止后可从最后安全点恢复",
+      "同一检查点重复恢复不会重复外部副作用或成本记账",
+      "恢复前后 P0/P1、待办、修改文件和测试状态一致",
+      "损坏或不兼容检查点被拒绝并给出安全恢复路径",
+      "所有恢复尝试有 trace、操作者、原因和结果"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "task_checkpoints",
+      "checkpoint_artifacts",
+      "recovery_attempts",
+      "side_effect_ledger"
+    ],
+    "deliverables": [
+      "TaskCheckpoint/RecoveryAttempt 数据模型",
+      "检查点创建、恢复、回滚和幂等协调器",
+      "事务事件/outbox 与重复投递防护",
+      "故障注入与恢复一致性报告"
+    ],
+    "dependencies": [
+      "elmos-durable-processing-and-recovery",
+      "elmos-structured-context-compaction",
+      "elmos-context-integrity-and-loss-detection"
+    ],
+    "events": [
+      "context.checkpoint.created",
+      "context.recovery.started",
+      "context.recovery.completed",
+      "context.recovery.blocked"
+    ],
+    "failure_modes": [
+      "partial checkpoint",
+      "duplicate billing",
+      "stale asset version",
+      "incompatible tool schema"
+    ],
+    "inputs": [
+      "任务执行状态",
+      "ContextLoadPlan/CompactionCheckpoint",
+      "工具副作用账本",
+      "模型与资产版本"
+    ],
+    "metrics": [
+      "checkpoint_recovery_success_rate",
+      "duplicate_side_effect_count",
+      "recovery_point_objective_seconds",
+      "recovery_time_seconds"
+    ],
+    "name": "elmos-context-checkpoint-and-recovery",
+    "objective": "持久保存可重放的任务与上下文状态，使恢复精确、幂等且不重复副作用或计费。",
+    "ordinal": 35,
+    "outputs": [
+      "持久检查点",
+      "恢复计划",
+      "恢复结果",
+      "幂等/补偿记录"
+    ],
+    "responsibilities": [
+      "定义任务检查点，包含任务状态、工作流节点、ContextLoadPlan、压缩引用、变量、工具幂等键和成本账游标。",
+      "在安全边界、外部副作用前后、压缩前后和阶段完成时创建一致性检查点。",
+      "使用事务/outbox 或等价机制原子提交状态与事件，防止数据库与队列分裂。",
+      "恢复时验证租户、权限、输入资产版本、模型能力、工具版本和检查点完整性。",
+      "根据工具幂等键判断重放、跳过、补偿或人工审批，禁止重复支付、发送或写入。",
+      "客户端断开只改变订阅状态，不取消服务端任务；服务重启从最后安全检查点继续。",
+      "提供检查点列表、差异、恢复、回滚和保留策略。",
+      "通过 kill -9、网络分区、队列重复投递和数据库故障注入验证恢复。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "上下文检查点与恢复"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-context-checkpoint-and-recovery/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-context-checkpoint-and-recovery/SKILL.md": {
+        "bytes": 3688,
+        "mode": "0644",
+        "sha256": "026005f42281ceca0b1bce5a8c3afd7c556ce0234150955e63ac8a1336d7bfa5"
+      },
+      "skills/elmos-context-checkpoint-and-recovery/references/contract.yaml": {
+        "bytes": 2747,
+        "mode": "0644",
+        "sha256": "17e255876a3eb5a2fbc976932e9ef0e02906275b60903dbc253dd09dcc60b6d9"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-context-checkpoint-and-recovery/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_context_checkpoint_and_recovery",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当任务要跨会话、客户端断线、进程重启、模型故障或上下文阶段边界继续执行时使用。",
+    "name": "elmos-context-checkpoint-and-recovery",
+    "ordinal": 35,
+    "title": "上下文检查点与恢复"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "17e255876a3eb5a2fbc976932e9ef0e02906275b60903dbc253dd09dcc60b6d9",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "026005f42281ceca0b1bce5a8c3afd7c556ce0234150955e63ac8a1336d7bfa5"
+  }
+}

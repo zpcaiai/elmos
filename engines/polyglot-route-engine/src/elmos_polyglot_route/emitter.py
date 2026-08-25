@@ -47,6 +47,7 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
     "python": {"integer": "int", "number": "float", "boolean": "bool", "string": "str"},
     "csharp": {"integer": "long", "number": "double", "boolean": "bool", "string": "string"},
     "typescript": {"integer": "number", "number": "number", "boolean": "boolean", "string": "string"},
+    "react": {"integer": "number", "number": "number", "boolean": "boolean", "string": "string"},
     # JavaScript's JSDoc contract uses canonical names rather than pretending
     # its dynamic runtime has TypeScript declarations.
     "javascript": {
@@ -70,6 +71,10 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
         "string": "NSString *",
     },
     "swift": {"integer": "Int64", "number": "Double", "boolean": "Bool", "string": "String"},
+    # The active Flutter route deliberately emits import-free pure Dart. Dart
+    # native ``int`` is the route's signed 64-bit integer; checked helpers use
+    # ``BigInt`` intermediates so VM wraparound can never become a wrong value.
+    "flutter": {"integer": "int", "number": "double", "boolean": "bool", "string": "String"},
     # Kotlin/JVM: `Long` is the same 64-bit signed integer Java's `long` is, and
     # `Double` the same binary64. Emission targets the JVM, so the arithmetic
     # semantics below are Java's.
@@ -83,9 +88,24 @@ _TYPE_SPELLING: dict[Language, dict[str, str]] = {
 #: Languages whose emitted source is brace-delimited and statement-terminated
 #: with `;`. Swift is brace-delimited but takes no terminator.
 _BRACE_LANGUAGES = frozenset(
-    {"java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "php"}
+    {
+        "java",
+        "csharp",
+        "typescript",
+        "react",
+        "javascript",
+        "go",
+        "rust",
+        "cpp",
+        "objc",
+        "swift",
+        "php",
+        "flutter",
+    }
 )
-_SEMICOLON_LANGUAGES = frozenset({"java", "csharp", "typescript", "javascript", "rust", "cpp", "objc", "php"})
+_SEMICOLON_LANGUAGES = frozenset(
+    {"java", "csharp", "typescript", "react", "javascript", "rust", "cpp", "objc", "php", "flutter"}
+)
 
 #: Targets that place the function body inside a type declaration, so the
 #: body is indented one extra level.
@@ -405,6 +425,70 @@ _KOTLIN_HELPERS: dict[str, str] = {
 }
 
 
+# Dart native integer arithmetic can wrap at the signed 64-bit boundary.
+# ``BigInt`` is part of the bundled Dart SDK and provides an exact intermediate
+# without adding a package dependency or an import.  Every helper is
+# library-private, and emitted helper bytes are separately content-bound by
+# the whole-file closure.
+_DART_HELPERS: dict[str, str] = {
+    "integer_range": (
+        "int _elmosInIntegerRange(BigInt value) {\n"
+        "  final minimum = BigInt.from(-9223372036854775808);\n"
+        "  final maximum = BigInt.from(9223372036854775807);\n"
+        "  if (value < minimum || value > maximum) {\n"
+        f"    throw RangeError('{_OVERFLOW_MESSAGE}');\n"
+        "  }\n"
+        "  return value.toInt();\n"
+        "}"
+    ),
+    "checked_add": (
+        "int _elmosCheckedAdd(int left, int right) {\n"
+        "  return _elmosInIntegerRange(BigInt.from(left) + BigInt.from(right));\n"
+        "}"
+    ),
+    "checked_sub": (
+        "int _elmosCheckedSub(int left, int right) {\n"
+        "  return _elmosInIntegerRange(BigInt.from(left) - BigInt.from(right));\n"
+        "}"
+    ),
+    "checked_mul": (
+        "int _elmosCheckedMul(int left, int right) {\n"
+        "  return _elmosInIntegerRange(BigInt.from(left) * BigInt.from(right));\n"
+        "}"
+    ),
+    "checked_div": (
+        "int _elmosCheckedDiv(int left, int right) {\n"
+        "  if (right == 0) {\n"
+        "    throw IntegerDivisionByZeroException();\n"
+        "  }\n"
+        "  if (left == -9223372036854775808 && right == -1) {\n"
+        f"    throw RangeError('{_OVERFLOW_MESSAGE}');\n"
+        "  }\n"
+        "  return left ~/ right;\n"
+        "}"
+    ),
+    "checked_mod": (
+        "int _elmosCheckedMod(int left, int right) {\n"
+        "  if (right == 0) {\n"
+        "    throw IntegerDivisionByZeroException();\n"
+        "  }\n"
+        "  if (left == -9223372036854775808 && right == -1) {\n"
+        f"    throw RangeError('{_OVERFLOW_MESSAGE}');\n"
+        "  }\n"
+        "  return left.remainder(right);\n"
+        "}"
+    ),
+    "non_zero_double": (
+        "double _elmosNonZero(double value) {\n"
+        "  if (value == 0.0) {\n"
+        f"    throw ArgumentError('{_DIVIDE_BY_ZERO_MESSAGE}');\n"
+        "  }\n"
+        "  return value;\n"
+        "}"
+    ),
+}
+
+
 #: C# `checked` covers +, - and *; `/` and `%` already throw
 #: DivideByZeroException on a zero divisor and OverflowException on
 #: long.MinValue with -1, so only the float guard is left to add.
@@ -669,6 +753,7 @@ _HELPERS: dict[Language, dict[str, str]] = {
     "python": _PYTHON_HELPERS,
     "kotlin": _KOTLIN_HELPERS,
     "typescript": _TYPESCRIPT_HELPERS,
+    "react": _TYPESCRIPT_HELPERS,
     "javascript": _JAVASCRIPT_HELPERS,
     "go": _GO_HELPERS,
     "java": _JAVA_HELPERS,
@@ -678,6 +763,7 @@ _HELPERS: dict[Language, dict[str, str]] = {
     "cpp": _CPP_HELPERS,
     "objc": _OBJC_HELPERS,
     "php": _PHP_HELPERS,
+    "flutter": _DART_HELPERS,
 }
 
 #: Deterministic emission order, so the same IR always produces byte-identical
@@ -777,7 +863,7 @@ def _variable(language: Language, name: str) -> str:
 def _integer_literal(language: Language, value: int) -> str:
     if not types.INTEGER_MIN <= value <= types.INTEGER_MAX:
         raise RouteError(f"INTEGER_LITERAL_OUTSIDE_CERTIFIED_RANGE:{value}")
-    if language in {"typescript", "javascript"} and abs(value) > types.TYPESCRIPT_SAFE_INTEGER_MAX:
+    if language in {"typescript", "react", "javascript"} and abs(value) > types.TYPESCRIPT_SAFE_INTEGER_MAX:
         # A JavaScript/TypeScript `number` cannot hold this exactly: 9007199254740993
         # silently becomes 9007199254740992.
         raise RouteError(f"INTEGER_LITERAL_UNSAFE_FOR_{language.upper()}:{value}")
@@ -793,6 +879,8 @@ def _integer_literal(language: Language, value: int) -> str:
         # fails to compile -- a bug that only shows up once an integer literal
         # meets a checked-arithmetic call site.
         return f"{value}L"
+    if language == "flutter":
+        return str(value)
     if language in {"java", "csharp"} and not -(2**31) <= value <= 2**31 - 1:
         # Without the suffix this is an `int` literal in Java and C#, and
         # `long big() { return 9007199254740993; }` does not compile
@@ -850,6 +938,11 @@ def _string_literal(language: Language, value: str) -> str:
         # from Java -- and it is silent, not a parse failure, whenever the name
         # after it happens to resolve.
         return encoded.replace("$", "\\$")
+    if language == "flutter":
+        # `$` starts interpolation in a Dart string literal. JSON's remaining
+        # escapes are valid Dart escapes, so only the interpolation sigil has
+        # to be neutralized.
+        return encoded.replace("$", "\\$")
     if language == "swift":
         # Swift spells a unicode escape `\u{XXXX}`, not JSON's `\uXXXX`.
         # ensure_ascii=False leaves printable non-ASCII raw, so this only
@@ -877,7 +970,7 @@ def _literal(language: Language, value: str | int | float | bool | None) -> str:
             # TypeScript `Infinity`), and `str()` emits `inf`, which none of
             # them parse.
             raise RouteError(f"NON_FINITE_LITERAL_OUTSIDE_CERTIFIED_SUBSET:{value}")
-        if language in {"typescript", "javascript"} and value == 0.0 and math.copysign(1.0, value) < 0:
+        if language in {"typescript", "react", "javascript"} and value == 0.0 and math.copysign(1.0, value) < 0:
             raise RouteError(f"{language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED")
         return repr(value)
     raise RouteError("NULL_LITERAL_OUTSIDE_CERTIFIED_SUBSET")
@@ -905,6 +998,13 @@ _CHECKED_INTEGER_CALL: dict[Language, dict[str, tuple[str, tuple[str, ...]]]] = 
         # of a wrapper type the way Java's are.
         "/": ("elmosCheckedDiv", ("checked_div",)),
         "%": ("elmosCheckedMod", ("checked_mod",)),
+    },
+    "flutter": {
+        "+": ("_elmosCheckedAdd", ("integer_range", "checked_add")),
+        "-": ("_elmosCheckedSub", ("integer_range", "checked_sub")),
+        "*": ("_elmosCheckedMul", ("integer_range", "checked_mul")),
+        "/": ("_elmosCheckedDiv", ("checked_div",)),
+        "%": ("_elmosCheckedMod", ("checked_mod",)),
     },
     "python": {
         "+": ("_elmos_checked_add", ("integer_range", "checked_add")),
@@ -960,6 +1060,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "java": ("Migrated.elmosNonZero", "non_zero_double"),
     "csharp": ("Migrated.ElmosNonZero", "non_zero_double"),
     "typescript": ("_elmosRequireNonZero", "non_zero"),
+    "react": ("_elmosRequireNonZero", "non_zero"),
     "javascript": ("_elmosRequireNonZero", "non_zero"),
     "go": ("elmosNonZeroFloat64", "non_zero_float"),
     "rust": ("elmos_non_zero_f64", "non_zero_f64"),
@@ -968,6 +1069,7 @@ _FLOAT_NON_ZERO_GUARD: dict[Language, tuple[str, str]] = {
     "cpp": ("elmos_non_zero", "non_zero_double"),
     "objc": ("ElmosNonZero", "non_zero_double"),
     "php": ("elmos_non_zero_float", "non_zero_float"),
+    "flutter": ("_elmosNonZero", "non_zero_double"),
 }
 
 
@@ -1018,6 +1120,13 @@ def _binary(
         elif left_type == "integer" and right_type == "number":
             context.normalization_rules.add("swift.cast.integer-to-number")
             left = f"Double({left})"
+    elif language == "flutter":
+        if left_type == "number" and right_type == "integer":
+            context.normalization_rules.add("flutter.cast.integer-to-number")
+            right = f"({right}).toDouble()"
+        elif left_type == "integer" and right_type == "number":
+            context.normalization_rules.add("flutter.cast.integer-to-number")
+            left = f"({left}).toDouble()"
     both_integer = left_type == "integer" and right_type == "integer"
 
     # R1/R2 for integer arithmetic. Every arm below fails loudly on overflow,
@@ -1033,7 +1142,7 @@ def _binary(
             method, message = _RUST_CHECKED_METHOD[operator]
             context.normalization_rules.add(f"rust.integer.{operator}.checked-method:{method}:{message}")
             return f'({left}).{method}({right}).expect("{message}")'
-        if language in {"typescript", "javascript"}:
+        if language in {"typescript", "react", "javascript"}:
             # A TypeScript `number` cannot hold the canonical range, so the
             # honest guard is the narrower one: fail at 2^53-1 rather than
             # return a rounded value. `/` additionally has to truncate, and a
@@ -1091,8 +1200,11 @@ def _binary(
             # other targets do -- `%` *is* the truncating remainder, so it maps
             # directly, but it still needs grouping like any other infix form.
             return _group(language, f"{left} % {right}", top_level)
+        if language == "flutter":
+            context.normalization_rules.add("flutter.number.%.remainder")
+            return f"({left}).remainder({right})"
         value = _group(language, f"{left} % {right}", top_level)
-        if language in {"typescript", "javascript"} and "number" in {left_type, right_type}:
+        if language in {"typescript", "react", "javascript"} and "number" in {left_type, right_type}:
             _require_helper(context, "finite_number")
             context.normalization_rules.add(f"{language}.number.%.finite-result")
             return f"_elmosRequireFiniteNumber({value})"
@@ -1141,14 +1253,14 @@ def _binary(
     rendered = operator
     if language == "python":
         rendered = {"&&": "and", "||": "or"}.get(operator, operator)
-    elif language in {"typescript", "javascript"}:
+    elif language in {"typescript", "react", "javascript"}:
         # Strict equality only: JavaScript's == applies type coercion.
         if operator in types.EQUALITY_OPERATORS:
             context.normalization_rules.add(f"{language}.equality.{operator}.strict")
         rendered = {"==": "===", "!=": "!=="}.get(operator, operator)
     value = _group(language, f"{left} {rendered} {right}", top_level)
     if (
-        language in {"typescript", "javascript"}
+        language in {"typescript", "react", "javascript"}
         and operator in types.ARITHMETIC_OPERATORS
         and "number"
         in {
@@ -1197,6 +1309,7 @@ _LET_SPELLING: dict[Language, str] = {
     "csharp": "{type} {name} = {value}",
     "python": "{name}: {type} = {value}",
     "typescript": "const {name}: {type} = {value}",
+    "react": "const {name}: {type} = {value}",
     "javascript": "const {name} = {value}",
     "go": "var {name} {type} = {value}",
     "rust": "let {name}: {type} = {value}",
@@ -1205,6 +1318,7 @@ _LET_SPELLING: dict[Language, str] = {
     "swift": "let {name}: {type} = {value}",
     "php": "{name} = {value}",
     "kotlin": "val {name}: {type} = {value}",
+    "flutter": "final {type} {name} = {value}",
 }
 
 
@@ -1248,7 +1362,7 @@ def _statements(
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
             value = _expression(context, statement.expression, environment, top_level=True)
             if (
-                language in {"rust", "swift", "kotlin"}
+                language in {"rust", "swift", "kotlin", "flutter"}
                 and return_type == "number"
                 and types.infer(statement.expression, environment) == "integer"
             ):
@@ -1270,16 +1384,19 @@ def _statements(
                     # true the moment the expression form changes.
                     context.normalization_rules.add("kotlin.return.integer-to-number")
                     value = f"({value}).toDouble()"
+                elif language == "flutter":
+                    context.normalization_rules.add("flutter.return.integer-to-number")
+                    value = f"({value}).toDouble()"
                 else:
                     context.normalization_rules.add("swift.return.integer-to-number")
                     value = f"Double({value})"
-            if language in {"typescript", "javascript"} and return_type == "integer":
+            if language in {"typescript", "react", "javascript"} and return_type == "integer":
                 _require_helper(context, "safe_integer")
                 context.normalization_rules.add(f"{language}.return.integer.safe-integer")
                 if language == "javascript":
                     context.normalization_rules.add("javascript.return.integer.negative-zero-normalized")
                 value = f"_elmosRequireSafeInteger({value})"
-            elif language in {"typescript", "javascript"} and return_type == "number":
+            elif language in {"typescript", "react", "javascript"} and return_type == "number":
                 _require_helper(context, "finite_number")
                 context.normalization_rules.add(f"{language}.return.number.finite")
                 value = f"_elmosRequireFiniteNumber({value})"
@@ -1340,7 +1457,7 @@ def _signature(language: Language, function: Function) -> str:
     if language == "python":
         parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
         return f"def {function.name}({parameters}) -> {return_type}:"
-    if language == "typescript":
+    if language in {"typescript", "react"}:
         parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
         return f"export function {function.name}({parameters}): {return_type} {{"
     if language == "javascript":
@@ -1363,6 +1480,9 @@ def _signature(language: Language, function: Function) -> str:
     if language == "kotlin":
         parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
         return f"fun {function.name}({parameters}): {return_type} {{"
+    if language == "flutter":
+        parameters = ", ".join(f"{_type(language, item.type)} {item.name}" for item in function.parameters)
+        return f"{return_type} {function.name}({parameters}) {{"
     if language == "swift":
         # `_` on every parameter keeps call sites positional, which is what
         # every other target and the behaviour harness emit.
@@ -1382,12 +1502,12 @@ def _function(context: _Context, function: Function) -> str:
     language = context.language
     environment = types.check_function(function)
     lines = [_signature(language, function)]
-    if language == "typescript":
+    if language in {"typescript", "react"}:
         for parameter in function.parameters:
             if parameter.type == "integer":
                 _require_helper(context, "safe_integer")
-                context.normalization_rules.add("typescript.parameter.integer.safe-integer")
-                context.normalization_rules.add("typescript.parameter.integer.negative-zero-normalized")
+                context.normalization_rules.add(f"{language}.parameter.integer.safe-integer")
+                context.normalization_rules.add(f"{language}.parameter.integer.negative-zero-normalized")
                 lines.append(f"    {parameter.name} = _elmosRequireSafeInteger({parameter.name});")
     if language == "javascript":
         parameter_guards = {
@@ -1472,6 +1592,9 @@ def emit(
         # `Migrated` stem so the harness locates it the same way everywhere.
         body = "\n\n".join([*helpers, functions])
         return _emitted_file(context, "Migrated.kt", body + "\n")
+    if target == "flutter":
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(context, "migrated.dart", body + "\n")
     if target == "cpp":
         # <cstdint> for std::int64_t and <string> for std::string: both are
         # required by the canonical type spellings, so both are always
@@ -1505,4 +1628,7 @@ def emit(
     if target == "typescript":
         body = "\n\n".join([*helpers, functions])
         return _emitted_file(context, "migrated.ts", f"{body}\n")
+    if target == "react":
+        body = "\n\n".join([*helpers, functions])
+        return _emitted_file(context, "migrated.tsx", f"{body}\n")
     raise RouteError(f"UNSUPPORTED_EMISSION_TARGET:{target}")

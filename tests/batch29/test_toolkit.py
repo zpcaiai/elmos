@@ -3221,20 +3221,29 @@ print('\\n'.join(failures))
                 failures,
             )
 
-    def test_route_inventory_is_exact_ten_language_complete_90(self):
+    def test_route_inventory_is_exact_thirteen_language_complete_156(self):
         matrix = load_matrix_validator()
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         routes = matrix.check_inventory_shape(inventory)
-        self.assertEqual(len(routes), 90)
+        self.assertEqual(len(routes), 156)
         self.assertEqual(
             {route["route_key"] for route in routes},
             set(matrix.EVIDENCED_ROUTE_KEYS),
         )
+        self.assertEqual(inventory["pending_analyzer_languages"], [])
+        self.assertEqual(inventory["pending_repository_languages"], [])
+        self.assertNotIn("javascript", inventory["languages"])
+        self.assertEqual(inventory["deprecated_languages"], ["javascript"])
+        matrix.check_route_packs(
+            routes,
+            str(inventory["semantic_profile"]),
+            inventory["languages"],
+        )
 
         missing = copy.deepcopy(inventory)
-        missing["routes"].pop()
-        missing["route_count"] = 89
-        missing["limited_route_count"] = 89
+        removed = missing["routes"].pop()
+        missing["route_count"] -= 1
+        missing[f"{removed['status']}_route_count"] -= 1
         with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_EXPLICIT_COUNT_DRIFT"):
             matrix.check_inventory_shape(missing)
 
@@ -3245,8 +3254,8 @@ print('\\n'.join(failures))
                 "route_key": "duplicate-java-to-csharp",
             }
         )
-        expanded["route_count"] = 91
-        expanded["limited_route_count"] = 91
+        expanded["route_count"] += 1
+        expanded[f"{expanded['routes'][0]['status']}_route_count"] += 1
         with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_EXPLICIT_COUNT_DRIFT"):
             matrix.check_inventory_shape(expanded)
 
@@ -3258,14 +3267,48 @@ print('\\n'.join(failures))
         with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_SELF_DIRECTED"):
             matrix.check_inventory_shape(self_directed)
 
+        analyzer_regression = copy.deepcopy(inventory)
+        analyzer_regression["pending_analyzer_languages"] = ["kotlin"]
+        with self.assertRaisesRegex(
+            matrix.MatrixError, "PENDING_ANALYZER_LANGUAGE_SET_DRIFT"
+        ):
+            matrix.check_inventory_shape(analyzer_regression)
+
+        repository_regression = copy.deepcopy(inventory)
+        repository_regression["pending_repository_languages"] = ["kotlin"]
+        with self.assertRaisesRegex(
+            matrix.MatrixError, "PENDING_REPOSITORY_LANGUAGE_SET_DRIFT"
+        ):
+            matrix.check_inventory_shape(repository_regression)
+
+        dropped_deprecated_partition = copy.deepcopy(inventory)
+        del dropped_deprecated_partition["route_provenance_partition"]["sets"][
+            "javascript-node26-completion-18"
+        ]
+        with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_PROVENANCE_SETS_DRIFT"):
+            matrix.check_inventory_shape(dropped_deprecated_partition)
+
     def test_route_matrix_document_covers_inventory_without_certification_overclaim(
         self,
     ):
         inventory = json.loads((ROOT / "routes" / "inventory.json").read_text())
         document = (ROOT / "docs" / "batch29" / "ROUTE_MATRIX.md").read_text()
-        for route in inventory["routes"]:
-            self.assertIn(f"`{route['route_key']}`", document)
-        self.assertIn("90 `limited`, 0 `certified`", document)
+        self.assertEqual(len(inventory["routes"]), 156)
+        self.assertIn("156 directed routes across 13 active languages", document)
+        for route_set in (
+            "legacy-complete-30",
+            "cpp-objc-swift-java-exact-8",
+            "nine-language-completion-34",
+            "nine-language-complete-72",
+            "javascript-node26-completion-18",
+            "ten-language-complete-90",
+            "php-php85-completion-20",
+            "eleven-language-complete-110",
+            "kotlin-react-flutter-completion-66",
+            "thirteen-language-complete-156",
+        ):
+            self.assertIn(f"`{route_set}`", document)
+        self.assertIn("90 `limited`, 66 `research`, 0 `certified`", document)
         self.assertIn("`PASSED_LOCAL`", document)
         self.assertIn("`NOT_CERTIFIED`", document)
         self.assertIn("Independent verification: `NOT_RUN`", document)
@@ -3278,17 +3321,491 @@ print('\\n'.join(failures))
         )
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
+        self.assertEqual(
+            runner.parse_route_key("kotlin-to-react"), ("kotlin", "react")
+        )
+        self.assertEqual(
+            runner.parse_route_key("react-to-flutter"), ("react", "flutter")
+        )
+        self.assertEqual(
+            runner.parse_route_key("flutter-to-kotlin"), ("flutter", "kotlin")
+        )
         for invalid in (
             "python",
             "python-to-python",
             "Python-to-typescript",
-            "java-to-kotlin",
+            "java-to-javascript",
         ):
             with (
                 self.subTest(invalid=invalid),
                 self.assertRaises(argparse.ArgumentTypeError),
             ):
                 runner.parse_route_key(invalid)
+
+        with (
+            tempfile.TemporaryDirectory() as td,
+            self.assertRaisesRegex(
+                RuntimeError,
+                "V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:java-to-kotlin",
+            ),
+        ):
+            runner.configure_route(Path(td), "java", "kotlin")
+
+        self.assertEqual(len(runner.EXECUTABLE_MUTABLE_ROUTE_KEYS), 60)
+        self.assertFalse(
+            set(runner.EXECUTABLE_MUTABLE_ROUTE_KEYS)
+            & set(runner.V3_EXACT_ROUTE_KEYS)
+        )
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:java-to-kotlin",
+        ):
+            runner.preflight_route_set_execution(
+                runner.EXACT_ROUTE_SETS["thirteen-language-complete-156"]
+            )
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            route = root / "routes" / "java-to-kotlin"
+            route.mkdir(parents=True)
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:java-to-kotlin",
+            ):
+                runner.execute_negative(
+                    route,
+                    root / "fixtures",
+                    "java",
+                    "kotlin",
+                )
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:java-to-kotlin",
+            ):
+                runner.write_route_gate_documents(route, "java", "kotlin")
+            self.assertEqual(list(route.iterdir()), [])
+
+    def test_v3_route_sync_rejects_route_directory_symlink(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td) / "repo"
+            external = Path(td) / "external" / "java-to-kotlin"
+            (repo / "routes").mkdir(parents=True)
+            external.mkdir(parents=True)
+            (external / "route.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "route_key": "java-to-kotlin",
+                        "version": "0.1.0",
+                    }
+                )
+            )
+            (repo / "routes" / "java-to-kotlin").symlink_to(
+                external, target_is_directory=True
+            )
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "V3_ROUTE_PACK_MISSING_OR_UNSAFE:java-to-kotlin",
+            ):
+                runner.synchronize_v3_research_route_manifest(
+                    repo, "java-to-kotlin"
+                )
+
+    def test_atomic_writer_rejects_hardlink_and_symlink_parent(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            target = root / "target.json"
+            alternate = root / "alternate.json"
+            target.write_bytes(b"original\n")
+            os.link(target, alternate)
+            with self.assertRaisesRegex(RuntimeError, "ATOMIC_WRITE_TARGET_UNSAFE"):
+                runner._atomic_write_bytes(target, b"replacement\n")
+            self.assertEqual(target.read_bytes(), b"original\n")
+            self.assertEqual(alternate.read_bytes(), b"original\n")
+
+            external = root / "external"
+            external.mkdir()
+            unsafe_parent = root / "certification"
+            unsafe_parent.symlink_to(external, target_is_directory=True)
+            with self.assertRaisesRegex(RuntimeError, "ATOMIC_WRITE_PARENT_UNSAFE"):
+                runner._atomic_write_bytes(
+                    unsafe_parent / "certification.json", b"blocked\n"
+                )
+            self.assertEqual(list(external.iterdir()), [])
+
+    def test_matrix_validator_rejects_linked_inventory_and_certification_dir(self):
+        matrix = load_matrix_validator()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            routes = root / "routes"
+            routes.mkdir()
+            external_inventory = root / "external-inventory.json"
+            external_inventory.write_text("{}\n")
+            inventory = routes / "inventory.json"
+            os.link(external_inventory, inventory)
+            with (
+                mock.patch.object(matrix, "ROOT", root),
+                mock.patch.object(matrix, "INVENTORY", inventory),
+                self.assertRaisesRegex(matrix.MatrixError, "ROUTE_INVENTORY_UNSAFE"),
+            ):
+                matrix.load_inventory()
+
+            inventory.unlink()
+            inventory.symlink_to(external_inventory)
+            with (
+                mock.patch.object(matrix, "ROOT", root),
+                mock.patch.object(matrix, "INVENTORY", inventory),
+                self.assertRaisesRegex(matrix.MatrixError, "ROUTE_INVENTORY_UNSAFE"),
+            ):
+                matrix.load_inventory()
+
+            route = routes / "python-to-typescript"
+            route.mkdir()
+            external_certification = root / "external-certification"
+            external_certification.mkdir()
+            certification = route / "certification"
+            certification.symlink_to(external_certification, target_is_directory=True)
+            with self.assertRaisesRegex(
+                matrix.MatrixError, "ROUTE_CERTIFICATION_DIRECTORY_UNSAFE"
+            ):
+                matrix.require_safe_directory(
+                    routes,
+                    certification,
+                    "ROUTE_CERTIFICATION_DIRECTORY_UNSAFE",
+                )
+
+    def test_internal_route_mutation_boundaries_fail_closed_before_writes(self):
+        runner = load_polyglot_runner()
+        boundaries = {
+            "formal": lambda repo, route, fixtures, source, target: (
+                runner.build_formal_equivalence_evidence(
+                    repo, route, source, target, {}, None
+                )
+            ),
+            "scaffold": lambda repo, route, fixtures, source, target: (
+                runner.write_not_run_route_scaffold(route, source, target)
+            ),
+            "corpus": lambda repo, route, fixtures, source, target: (
+                runner.populate_corpus(route, fixtures, source)
+            ),
+            "module-corpus": lambda repo, route, fixtures, source, target: (
+                runner.populate_module_corpus(route, fixtures, source)
+            ),
+            "module-execution": lambda repo, route, fixtures, source, target: (
+                runner.execute_module_route(
+                    repo, route, fixtures, source, target, None
+                )
+            ),
+        }
+        rejected = (
+            (
+                "java-to-kotlin",
+                "java",
+                "kotlin",
+                "V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN",
+            ),
+            (
+                "java-to-csharp",
+                "java",
+                "csharp",
+                "LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION",
+            ),
+            (
+                "java-to-javascript",
+                "java",
+                "javascript",
+                "INACTIVE_OR_UNDECLARED_ROUTE_EXECUTION",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            fixtures = repo / "fixtures"
+            for boundary_name, invoke in boundaries.items():
+                for route_key, source, target, expected in rejected:
+                    route = repo / boundary_name / route_key
+                    route.mkdir(parents=True)
+                    with self.subTest(boundary=boundary_name, route=route_key):
+                        with self.assertRaisesRegex(RuntimeError, expected):
+                            invoke(repo, route, fixtures, source, target)
+                        self.assertEqual(list(route.iterdir()), [])
+
+    def test_prepare_historical_set_rejects_before_any_side_effect(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            sentinel = repo / "sentinel.bin"
+            sentinel.write_bytes(b"unchanged\x00bytes")
+            with (
+                mock.patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "run_polyglot_routes.py",
+                        "--repo-root",
+                        str(repo),
+                        "--prepare-route-set",
+                        "javascript-node26-completion-18",
+                    ],
+                ),
+                mock.patch.object(runner, "legacy_campaign_authority") as legacy,
+                mock.patch.object(
+                    runner, "synchronize_v3_research_route_manifests"
+                ) as synchronize,
+                mock.patch.object(runner, "ensure_route_scaffold") as scaffold,
+                mock.patch.object(runner, "configure_route") as configure,
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "HISTORICAL_ROUTE_SET_READ_ONLY:javascript-node26-completion-18",
+                ),
+            ):
+                runner.main()
+            self.assertEqual(sentinel.read_bytes(), b"unchanged\x00bytes")
+            legacy.assert_not_called()
+            synchronize.assert_not_called()
+            scaffold.assert_not_called()
+            configure.assert_not_called()
+
+    def test_prepare_preflights_every_mutable_route_directory_before_writes(self):
+        runner = load_polyglot_runner()
+        route_keys = runner.EXACT_ROUTE_SETS["cpp-objc-swift-java-exact-8"]
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            routes = repo / "routes"
+            routes.mkdir(parents=True)
+            for route_key in route_keys[:-1]:
+                (routes / route_key).mkdir()
+            sentinel = routes / route_keys[0] / "sentinel.bin"
+            sentinel.write_bytes(b"unchanged\n")
+            external = repo / "external-route"
+            external.mkdir()
+            (routes / route_keys[-1]).symlink_to(external, target_is_directory=True)
+            with (
+                mock.patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "run_polyglot_routes.py",
+                        "--repo-root",
+                        str(repo),
+                        "--prepare-route-set",
+                        "cpp-objc-swift-java-exact-8",
+                    ],
+                ),
+                mock.patch.object(runner, "ensure_route_scaffold") as scaffold,
+                mock.patch.object(runner, "configure_route") as configure,
+                self.assertRaisesRegex(RuntimeError, "ROUTE_PREPARE_DIRECTORY_UNSAFE"),
+            ):
+                runner.main()
+            self.assertEqual(sentinel.read_bytes(), b"unchanged\n")
+            scaffold.assert_not_called()
+            configure.assert_not_called()
+
+    def test_write_inventory_failure_restores_v3_and_inventory_exact_bytes(self):
+        runner = load_polyglot_runner()
+        route_keys = ("java-to-kotlin", "kotlin-to-java")
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            routes_root = repo / "routes"
+            routes_root.mkdir(parents=True)
+            existing_paths: list[Path] = []
+            initially_missing_paths: list[Path] = []
+            for index, route_key in enumerate(route_keys):
+                route = routes_root / route_key
+                certification = route / "certification"
+                route.mkdir(parents=True)
+                write_json(
+                    route / "route.json",
+                    {
+                        "schema_version": 1,
+                        "route_key": route_key,
+                        "version": "0.1.0",
+                        "original": index,
+                    },
+                )
+                existing_paths.append(route / "route.json")
+                if index == 0:
+                    certification.mkdir()
+                    (certification / "evidence.json").write_bytes(
+                        b"original evidence exact bytes\x00\n"
+                    )
+                    (certification / "certification.json").write_bytes(
+                        b"original certification exact bytes\x00\n"
+                    )
+                    existing_paths.extend(
+                        (
+                            certification / "evidence.json",
+                            certification / "certification.json",
+                        )
+                    )
+                else:
+                    initially_missing_paths.extend(
+                        (
+                            certification / "evidence.json",
+                            certification / "certification.json",
+                        )
+                    )
+            inventory_path = routes_root / "inventory.json"
+            inventory_path.write_bytes(b"original inventory exact bytes\x00\n")
+            existing_paths.append(inventory_path)
+            originals = {path: path.read_bytes() for path in existing_paths}
+            real_atomic_write = runner._atomic_write_bytes
+            calls = 0
+
+            def fail_sixth_write(path: Path, content: bytes) -> None:
+                nonlocal calls
+                calls += 1
+                if calls == 6:
+                    raise OSError("injected transaction failure")
+                real_atomic_write(path, content)
+
+            with (
+                mock.patch.object(runner, "V3_EXACT_ROUTE_KEYS", route_keys),
+                mock.patch.object(runner, "EVIDENCED_ROUTE_KEYS", route_keys),
+                mock.patch.object(
+                    runner,
+                    "legacy_campaign_authority",
+                    return_value={"authority_sha256": "sha256:test"},
+                ),
+                mock.patch.object(
+                    runner,
+                    "provenance_route_set",
+                    return_value="kotlin-react-flutter-completion-66",
+                ),
+                mock.patch.object(
+                    runner, "_atomic_write_bytes", side_effect=fail_sixth_write
+                ),
+                self.assertRaisesRegex(OSError, "injected transaction failure"),
+            ):
+                runner.write_inventory(repo)
+            self.assertEqual(calls, 6)
+            self.assertEqual(
+                {path: path.read_bytes() for path in existing_paths}, originals
+            )
+            self.assertTrue(
+                all(not path.exists() for path in initially_missing_paths)
+            )
+
+    def test_v3_first_materialization_creates_exact_non_vacuous_not_run_contract(
+        self,
+    ):
+        from jsonschema import Draft202012Validator
+
+        runner = load_polyglot_runner()
+        matrix = load_matrix_validator()
+        with tempfile.TemporaryDirectory() as td:
+            repo = (Path(td) / "repo").resolve()
+            route = repo / "routes" / "java-to-kotlin"
+            certification_root = route / "certification"
+            route.mkdir(parents=True)
+            write_json(
+                route / "route.json",
+                {
+                    "schema_version": 1,
+                    "route_key": "java-to-kotlin",
+                    "version": "0.1.0",
+                },
+            )
+            self.assertFalse(certification_root.exists())
+
+            runner.synchronize_v3_research_route_manifest(repo, "java-to-kotlin")
+            manifest = json.loads((route / "route.json").read_text())
+            evidence = json.loads(
+                (certification_root / "evidence.json").read_text()
+            )
+            certification = json.loads(
+                (certification_root / "certification.json").read_text()
+            )
+
+            self.assertEqual(
+                evidence,
+                runner.v3_research_evidence_document("java-to-kotlin"),
+            )
+            self.assertEqual(
+                certification,
+                runner.v3_research_certification_document("java-to-kotlin"),
+            )
+            self.assertEqual(
+                certification["gate_results"],
+                {
+                    "local_execution": "NOT_RUN",
+                    "external_execution": "NOT_RUN",
+                    "independent_verification": "NOT_RUN",
+                },
+            )
+            self.assertTrue(certification["gate_results"])
+            self.assertTrue(
+                all(value is None for value in evidence["metrics"].values())
+            )
+            matrix.check_v3_research_route_documents(
+                "java-to-kotlin", manifest, certification, evidence
+            )
+
+            manifest_schema = json.loads(
+                (
+                    ROOT
+                    / "schemas"
+                    / "batch29"
+                    / "route-manifest.schema.json"
+                ).read_text()
+            )
+            certification_schema = json.loads(
+                (
+                    ROOT
+                    / "schemas"
+                    / "batch29"
+                    / "route-certification.schema.json"
+                ).read_text()
+            )
+            Draft202012Validator.check_schema(manifest_schema)
+            Draft202012Validator.check_schema(certification_schema)
+            manifest_validator = Draft202012Validator(manifest_schema)
+            certification_validator = Draft202012Validator(certification_schema)
+            self.assertEqual(list(manifest_validator.iter_errors(manifest)), [])
+            self.assertEqual(
+                list(certification_validator.iter_errors(certification)), []
+            )
+
+            empty_versions = copy.deepcopy(manifest)
+            empty_versions["source"]["versions"] = []
+            self.assertTrue(list(manifest_validator.iter_errors(empty_versions)))
+            blank_version = copy.deepcopy(manifest)
+            blank_version["target"]["versions"] = ["   "]
+            self.assertTrue(list(manifest_validator.iter_errors(blank_version)))
+            blank_route_version = copy.deepcopy(certification)
+            blank_route_version["route_version"] = "   "
+            self.assertTrue(
+                list(certification_validator.iter_errors(blank_route_version))
+            )
+            forged_decision = copy.deepcopy(certification)
+            forged_decision["certification_decision"] = "CERTIFIED"
+            self.assertTrue(
+                list(certification_validator.iter_errors(forged_decision))
+            )
+
+            vacuous_gate = copy.deepcopy(certification)
+            vacuous_gate["gate_results"] = {}
+            self.assertTrue(
+                list(certification_validator.iter_errors(vacuous_gate))
+            )
+            with self.assertRaisesRegex(
+                matrix.MatrixError,
+                "V3_ROUTE_CERTIFICATION_OVERCLAIM:java-to-kotlin",
+            ):
+                matrix.check_v3_research_route_documents(
+                    "java-to-kotlin", manifest, vacuous_gate, evidence
+                )
+
+            missing_execution = copy.deepcopy(evidence)
+            del missing_execution["execution_status"]
+            with self.assertRaisesRegex(
+                matrix.MatrixError,
+                "V3_ROUTE_RAW_EVIDENCE_OVERCLAIM:java-to-kotlin",
+            ):
+                matrix.check_v3_research_route_documents(
+                    "java-to-kotlin", manifest, certification, missing_execution
+                )
 
     def test_local_route_status_requires_current_engine_source_bytes(self):
         runner = load_polyglot_runner()

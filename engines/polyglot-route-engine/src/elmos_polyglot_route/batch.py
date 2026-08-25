@@ -24,7 +24,16 @@ from typing import Any
 
 from .engine import migrate
 from .identifier_hygiene import repository_work_unit_namespace
-from .models import REPOSITORY_SURFACE_LANGUAGES, RouteError
+from .models import (
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
+    REPOSITORY_SURFACE_LANGUAGES,
+    RouteError,
+    repository_language_lifecycle,
+)
+from .react_repository import (
+    react_project_descriptor,
+    validate_react_repository_verification,
+)
 
 SCHEMA_VERSION = "1.0.0"
 CHECKPOINT_NAME = "batch-checkpoint.jsonl"
@@ -266,6 +275,14 @@ def run_batch(
     target_language = discovery.get("target_language")
     if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_LANGUAGE")
+    language_lifecycle = repository_language_lifecycle(source_language, target_language)
+    if (
+        language_lifecycle is None
+        or discovery.get("language_lifecycle") != language_lifecycle
+    ):
+        raise RouteError("DISCOVERY_LANGUAGE_LIFECYCLE_INVALID")
+    if language_lifecycle == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY:
+        raise RouteError("DEPRECATED_REPLAY_AGGREGATION_FORBIDDEN")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
     results = discovery.get("results")
@@ -277,6 +294,32 @@ def run_batch(
         raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
 
     root = repository_root.resolve(strict=True)
+    declared_react_descriptor: dict[str, Any] | None = None
+    declared_react_verification: dict[str, Any] | None = None
+    declared_react_source_paths: list[str] | None = None
+    if source_language == "react":
+        raw_descriptor = discovery.get("react_project_descriptor")
+        if not isinstance(raw_descriptor, dict):
+            raise RouteError("REACT_PROJECT_DESCRIPTOR_REQUIRED")
+        declared_react_descriptor = raw_descriptor
+        if react_project_descriptor(root) != declared_react_descriptor:
+            raise RouteError("REACT_PROJECT_DESCRIPTOR_CHANGED")
+        raw_paths = discovery.get("react_project_source_paths")
+        raw_verification = discovery.get("react_project_verification")
+        if (
+            not isinstance(raw_paths, list)
+            or not raw_paths
+            or any(not isinstance(value, str) or not value for value in raw_paths)
+            or not isinstance(raw_verification, dict)
+        ):
+            raise RouteError("REACT_PROJECT_VERIFICATION_REQUIRED")
+        declared_react_source_paths = raw_paths
+        declared_react_verification = validate_react_repository_verification(
+            root,
+            declared_react_source_paths,
+            declared_react_descriptor,
+            raw_verification,
+        )
     if output.exists() and (output.is_symlink() or not output.is_dir()):
         raise RouteError("BATCH_OUTPUT_DIRECTORY_UNSAFE")
     output.mkdir(parents=True, exist_ok=True)
@@ -372,6 +415,7 @@ def run_batch(
                         case_path,
                         unit_output,
                         repository_execution_mode=True,
+                        repository_language_lifecycle=language_lifecycle,
                         identifier_unit_namespace=identifier_unit_namespace,
                     )
                     if _stable_sha256(source, "WORK_UNIT_SOURCE") != identity["source_sha256"]:
@@ -444,6 +488,10 @@ def run_batch(
         "route_id": discovery.get("route_id"),
         "source_language": source_language,
         "target_language": target_language,
+        "language_lifecycle": language_lifecycle,
+        "react_project_descriptor": declared_react_descriptor,
+        "react_project_source_paths": declared_react_source_paths,
+        "react_project_verification": declared_react_verification,
         "profile": discovery.get("profile"),
         "work_unit_count": len(results),
         "selected_count": len(selected),
@@ -452,6 +500,7 @@ def run_batch(
         "unattempted_count": unattempted,
         "status_counts": counts,
         "units": outcomes,
+        "react_project_descriptor": declared_react_descriptor,
         "external_verification_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
         "limitations": [
@@ -461,6 +510,11 @@ def run_batch(
         ],
     }
     report_path = output / REPORT_NAME
+    if (
+        declared_react_descriptor is not None
+        and react_project_descriptor(root) != declared_react_descriptor
+    ):
+        raise RouteError("REACT_PROJECT_DESCRIPTOR_CHANGED")
     if report_path.is_symlink() or (report_path.exists() and not report_path.is_file()):
         raise RouteError("BATCH_REPORT_OUTPUT_UNSAFE")
     report_path.write_text(

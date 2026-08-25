@@ -1,0 +1,143 @@
+{
+  "acceptance": [
+    {
+      "criterion": "宏与嵌入可执行对象绝不运行",
+      "evidence": [],
+      "id": "S10-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "用户可选择修订视图且输出可复现",
+      "evidence": [],
+      "id": "S10-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "批注、删除和插入内容不被静默丢弃",
+      "evidence": [],
+      "id": "S10-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "关键块可定位到段落、表格、书签或页面近似位置",
+      "evidence": [],
+      "id": "S10-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "宏与嵌入可执行对象绝不运行",
+      "用户可选择修订视图且输出可复现",
+      "批注、删除和插入内容不被静默丢弃",
+      "关键块可定位到段落、表格、书签或页面近似位置"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "word_blocks",
+      "word_revisions",
+      "word_comments"
+    ],
+    "deliverables": [
+      "WordParser 与修订策略接口",
+      "WordBlock、Revision、Comment 模型",
+      "复杂表格、批注、修订和旧 DOC 安全转换测试"
+    ],
+    "dependencies": [
+      "elmos-malware-quarantine-and-sandbox",
+      "elmos-source-anchor-and-provenance"
+    ],
+    "events": [
+      "word.document.parsed",
+      "word.revision.detected"
+    ],
+    "failure_modes": [
+      "损坏 OOXML",
+      "旧 DOC 转换失败",
+      "嵌入对象风险"
+    ],
+    "inputs": [
+      "DOCX/DOC 资产、修订读取模式"
+    ],
+    "metrics": [
+      "structure_preservation_rate",
+      "revision_coverage"
+    ],
+    "name": "elmos-word-document-parser",
+    "objective": "保留 Word 逻辑结构、修订语义和来源位置，并在隔离环境中安全处理旧 DOC。",
+    "ordinal": 10,
+    "outputs": [
+      "ParsedDocument、Revision、Comment"
+    ],
+    "responsibilities": [
+      "直接解析 DOCX OOXML，旧 DOC 仅在隔离环境转换",
+      "保留标题、编号、表格、图片、脚注、超链接和书签",
+      "支持最终版、全部修订、删除历史等读取模式",
+      "将批注和未接受修订提取为待办或审阅项"
+    ],
+    "schema_version": "1.0.0",
+    "title": "Word 文档解析"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-word-document-parser/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-word-document-parser/SKILL.md": {
+        "bytes": 2749,
+        "mode": "0644",
+        "sha256": "59f51a183a114c40e274f12f5d6a2078d66a293a4b98d9893d89f21f75adf884"
+      },
+      "skills/elmos-word-document-parser/references/contract.yaml": {
+        "bytes": 1557,
+        "mode": "0644",
+        "sha256": "7cea2972a88c7f25bc733c78dbb11b6f315fced7f728f6157aa11ac7056cbd5e"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-word-document-parser/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_word_document_parser",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "secure-intake",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "解析 DOCX/DOC 的标题、表格、图片、批注、修订、脚注和链接；当任务涉及 Word 需求、UAT 报告或版本差异时使用。",
+    "name": "elmos-word-document-parser",
+    "ordinal": 10,
+    "title": "Word 文档解析"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "7cea2972a88c7f25bc733c78dbb11b6f315fced7f728f6157aa11ac7056cbd5e",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "59f51a183a114c40e274f12f5d6a2078d66a293a4b98d9893d89f21f75adf884"
+  }
+}

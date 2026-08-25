@@ -1,0 +1,144 @@
+{
+  "acceptance": [
+    {
+      "criterion": "所有文本块保留行号范围",
+      "evidence": [],
+      "id": "S11-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "代码块不会被当作系统命令执行",
+      "evidence": [],
+      "id": "S11-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "重复日志可聚合但原始行仍可回查",
+      "evidence": [],
+      "id": "S11-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "流式解析受内存上限约束",
+      "evidence": [],
+      "id": "S11-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "所有文本块保留行号范围",
+      "代码块不会被当作系统命令执行",
+      "重复日志可聚合但原始行仍可回查",
+      "流式解析受内存上限约束"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "text_blocks",
+      "log_events",
+      "log_patterns"
+    ],
+    "deliverables": [
+      "TextParser/LogParser 适配器",
+      "line-range 来源锚点与日志事件模型",
+      "多编码、超大文件、混合日志和恶意 Markdown 测试"
+    ],
+    "dependencies": [
+      "elmos-source-anchor-and-provenance"
+    ],
+    "events": [
+      "text.parsed",
+      "log.pattern.detected",
+      "text.encoding.uncertain"
+    ],
+    "failure_modes": [
+      "混合编码",
+      "超长行",
+      "无时间戳日志",
+      "截断文件"
+    ],
+    "inputs": [
+      "Markdown、TXT、LOG 资产、编码提示"
+    ],
+    "metrics": [
+      "line_anchor_coverage",
+      "encoding_detection_accuracy"
+    ],
+    "name": "elmos-markdown-text-log-parser",
+    "objective": "保留 Markdown 语义和纯文本行号，对日志、配置和结构化文本做可逆的类型推断。",
+    "ordinal": 11,
+    "outputs": [
+      "ParsedDocument、LogEvent、ConfigBlock"
+    ],
+    "responsibilities": [
+      "解析 front matter、标题、表格、链接、任务列表、代码块、Mermaid 和 MDX 边界",
+      "识别 UTF-8、UTF-16、GBK 等编码并保留原始字节哈希",
+      "识别日志时间戳、级别、堆栈、重复模式和相关 ID",
+      "对 JSON、YAML、XML、CSV 式文本做安全结构推断但不执行内容"
+    ],
+    "schema_version": "1.0.0",
+    "title": "Markdown、TXT 与日志解析"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-markdown-text-log-parser/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-markdown-text-log-parser/SKILL.md": {
+        "bytes": 2773,
+        "mode": "0644",
+        "sha256": "a9ca779f9bfb96d6259159afc1e33eab4fb86eef0e21a97edb0e87383358a7c7"
+      },
+      "skills/elmos-markdown-text-log-parser/references/contract.yaml": {
+        "bytes": 1596,
+        "mode": "0644",
+        "sha256": "207d5f683d62eea24e8f770d185eb08fe23616aacc4d611a5f2dbd64ac355959"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-markdown-text-log-parser/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_markdown_text_log_parser",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "secure-intake",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "解析 Markdown/MDX、TXT、配置和日志文件；当任务涉及代码块、行号、日志堆栈、编码识别或超大文本流处理时使用。",
+    "name": "elmos-markdown-text-log-parser",
+    "ordinal": 11,
+    "title": "Markdown、TXT 与日志解析"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "207d5f683d62eea24e8f770d185eb08fe23616aacc4d611a5f2dbd64ac355959",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "a9ca779f9bfb96d6259159afc1e33eab4fb86eef0e21a97edb0e87383358a7c7"
+  }
+}

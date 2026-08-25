@@ -57,8 +57,9 @@ import argparse
 import json
 import sys
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -66,7 +67,7 @@ from elmos_polyglot_route.models import (  # noqa: E402
     COMPLETE_MATRIX_LANGUAGES,
     DEPRECATED_LANGUAGES,
     PENDING_ANALYZER_LANGUAGES,
-    Language,
+    PENDING_REPOSITORY_LANGUAGES,
     RouteError,
 )
 
@@ -125,10 +126,9 @@ _SOURCE_FIXTURES: dict[str, tuple[str, str]] = {
     "objc": ("subject.m", "long long clamp(long long v) { return v; }\n"),
     "swift": ("subject.swift", "func clamp(_ v: Int64) -> Int64 {\n    return v\n}\n"),
     "php": ("subject.php", "<?php\n\ndeclare(strict_types=1);\n\nfunction clamp(int $v): int\n{\n    return $v;\n}\n"),
-    # The three languages with no analyzer still get a fixture. Reporting
-    # NO_FIXTURE for them made "nobody wrote a fixture" and "there is no
-    # frontend" the same cell, which is the ambiguity this probe exists to
-    # remove: every cell has to be something the engine actually said.
+    # Framework-aware analyzers also get fixtures. Reporting NO_FIXTURE would
+    # make "nobody wrote a fixture" and "the frontend rejected it" the same
+    # cell, which is the ambiguity this probe exists to remove.
     "kotlin": ("subject.kt", "fun clamp(v: Long): Long {\n    return v\n}\n"),
     "react": ("subject.tsx", "export function clamp(v: number): number {\n  return v;\n}\n"),
     "flutter": ("subject.dart", "int clamp(int v) {\n  return v;\n}\n"),
@@ -191,7 +191,7 @@ def probe_emission() -> dict[str, str]:
 
 def probe_lifting(directory: Path) -> dict[str, str]:
     """Can each declared language be a source? Needs that language's pinned toolchain."""
-    from elmos_polyglot_route.native import analyze
+    from elmos_polyglot_route.source_analyzer import analyze
 
     results: dict[str, str] = {}
     for language in COMPLETE_MATRIX_LANGUAGES:
@@ -202,13 +202,15 @@ def probe_lifting(directory: Path) -> dict[str, str]:
         name, body = fixture
         path = directory / f"lift-{language}-{name}"
         path.write_text(body, encoding="utf-8")
-        results[language] = _verdict(lambda p=path, l=language: analyze(p, l, "clamp"))
+        results[language] = _verdict(
+            lambda p=path, language_id=language: analyze(p, language_id, "clamp")
+        )
     return results
 
 
 def probe_module_enumeration(directory: Path) -> dict[str, str]:
     """Can each language's whole file be enumerated? This is what file closure rests on."""
-    from elmos_polyglot_route.native import inventory_module
+    from elmos_polyglot_route.source_analyzer import inventory_module
 
     results: dict[str, str] = {}
     for language in COMPLETE_MATRIX_LANGUAGES:
@@ -219,7 +221,9 @@ def probe_module_enumeration(directory: Path) -> dict[str, str]:
         name, body = fixture
         path = directory / f"inv-{language}-{name}"
         path.write_text(body, encoding="utf-8")
-        results[language] = _verdict(lambda p=path, l=language: inventory_module(p, l))
+        results[language] = _verdict(
+            lambda p=path, language_id=language: inventory_module(p, language_id)
+        )
     return results
 
 
@@ -248,6 +252,7 @@ def run() -> dict[str, Any]:
             "kind": KIND,
             "declared_languages": list(COMPLETE_MATRIX_LANGUAGES),
             "declared_pending_analyzer": list(PENDING_ANALYZER_LANGUAGES),
+            "declared_pending_repository": list(PENDING_REPOSITORY_LANGUAGES),
             "declared_deprecated": list(DEPRECATED_LANGUAGES),
             "emission": probe_emission(),
             "module_enumeration": probe_module_enumeration(directory),
@@ -278,10 +283,11 @@ def run() -> dict[str, Any]:
 def _cross_check(report: dict[str, Any]) -> dict[str, Any]:
     """Does the inventory's declared route count match what just executed?
 
-    `routes/inventory.json` publishes `limited_route_count` as the number of
-    routes whose two endpoints both work. This recomputes it from probes that
-    actually ran. The two agreeing is the point: a divergence means one of them
-    is stale, and until now nothing would have said which.
+    `routes/inventory.json` publishes `route_count` for the complete active
+    directed matrix.  This recomputes that execution-surface cardinality from
+    endpoints that actually worked in both directions.  Maturity fields such
+    as `limited_route_count` and `research_route_count` describe per-route
+    evidence tiers; they are deliberately not endpoint cardinalities.
 
     Only meaningful on a machine where every language could be probed -- a run
     full of NOT_PROBED has nothing to compare, and says so rather than
@@ -295,12 +301,15 @@ def _cross_check(report: dict[str, Any]) -> dict[str, Any]:
             "status": "NOT_PROBED:INCOMPLETE_RUN",
             "detail": "some languages could not be probed here, so the count is not comparable",
         }
-    declared = json.loads(inventory_path.read_text(encoding="utf-8")).get("limited_route_count")
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    declared = inventory.get("route_count")
     executed = report["summary"]["routes_between_bidirectional"]
     return {
         "status": "MATCH" if declared == executed else "MISMATCH",
-        "declared_limited_route_count": declared,
+        "declared_route_count": declared,
         "executed_bidirectional_routes": executed,
+        "declared_limited_route_count": inventory.get("limited_route_count"),
+        "declared_research_route_count": inventory.get("research_route_count"),
     }
 
 
@@ -323,10 +332,13 @@ def _table(report: dict[str, Any]) -> str:
     summary = report["summary"]
     check = report["declaration_cross_check"]
     if check["status"] == "MATCH":
-        cross = f"MATCH  declared={check['declared_limited_route_count']} executed={check['executed_bidirectional_routes']}"
+        cross = (
+            f"MATCH  declared={check['declared_route_count']} "
+            f"executed={check['executed_bidirectional_routes']}"
+        )
     elif check["status"] == "MISMATCH":
         cross = (
-            f"MISMATCH  inventory declares {check['declared_limited_route_count']}, "
+            f"MISMATCH  inventory declares {check['declared_route_count']}, "
             f"this run executed {check['executed_bidirectional_routes']}"
         )
     else:

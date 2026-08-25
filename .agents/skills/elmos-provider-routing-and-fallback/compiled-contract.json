@@ -1,0 +1,143 @@
+{
+  "acceptance": [
+    {
+      "criterion": "单 provider 故障不会导致无界重试",
+      "evidence": [],
+      "id": "S19-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "未经授权的数据不会回退到外部云模型",
+      "evidence": [],
+      "id": "S19-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "相同请求可复现所用 provider、版本和参数",
+      "evidence": [],
+      "id": "S19-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "路由决策和成本可审计",
+      "evidence": [],
+      "id": "S19-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "单 provider 故障不会导致无界重试",
+      "未经授权的数据不会回退到外部云模型",
+      "相同请求可复现所用 provider、版本和参数",
+      "路由决策和成本可审计"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "provider_capabilities",
+      "provider_executions",
+      "provider_health"
+    ],
+    "deliverables": [
+      "ProviderRegistry、Router",
+      "策略配置与 provider 适配器",
+      "故障、限流、隐私禁止和成本预算测试"
+    ],
+    "dependencies": [],
+    "events": [
+      "provider.selected",
+      "provider.fallback",
+      "provider.circuit_open"
+    ],
+    "failure_modes": [
+      "限流",
+      "模型下线",
+      "质量不足",
+      "隐私策略冲突"
+    ],
+    "inputs": [
+      "任务需求、数据分类、预算、provider 状态"
+    ],
+    "metrics": [
+      "provider_success_rate",
+      "fallback_rate",
+      "cost_per_asset"
+    ],
+    "name": "elmos-provider-routing-and-fallback",
+    "objective": "基于能力、隐私、准确率、成本、负载和时延选择 provider，并确保回退不改变数据治理边界。",
+    "ordinal": 19,
+    "outputs": [
+      "ProviderExecution、路由决策、结果"
+    ],
+    "responsibilities": [
+      "定义 provider capability registry 和统一接口",
+      "实现策略路由、健康检查、限流、熔断、重试和 fallback chain",
+      "支持本地、私有和经授权云端模型层级",
+      "记录每次调用的版本、配置、token、时长、成本和质量"
+    ],
+    "schema_version": "1.0.0",
+    "title": "解析与模型供应商路由"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-provider-routing-and-fallback/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-provider-routing-and-fallback/SKILL.md": {
+        "bytes": 2815,
+        "mode": "0644",
+        "sha256": "0cf02ab3aafafab37b38dbf7872c2ced5a3a41e83b47bac7b21cffc4bd107aff"
+      },
+      "skills/elmos-provider-routing-and-fallback/references/contract.yaml": {
+        "bytes": 1566,
+        "mode": "0644",
+        "sha256": "2939ab4b47b384462e9b55b7588e789b21d7b924057195e5c43cb8f48844a7d4"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-provider-routing-and-fallback/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_provider_routing_and_fallback",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "governance",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "为 ASR、OCR、视觉、嵌入和 LLM 提供可替换供应商路由、熔断和降级；当任务涉及模型选择、成本、隐私约束或 provider 故障时使用。",
+    "name": "elmos-provider-routing-and-fallback",
+    "ordinal": 19,
+    "title": "解析与模型供应商路由"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "2939ab4b47b384462e9b55b7588e789b21d7b924057195e5c43cb8f48844a7d4",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "0cf02ab3aafafab37b38dbf7872c2ced5a3a41e83b47bac7b21cffc4bd107aff"
+  }
+}

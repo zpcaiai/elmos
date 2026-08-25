@@ -1,0 +1,41 @@
+schema_version: '1.0'
+plan_id: elmos-java-production-loop
+title: First billable Java modernization vertical
+status: DRAFT
+selected_skills:
+- elmos-java-migration-production-loop
+- elmos-identity-tenant-security
+- elmos-temporal-task-reliability
+- elmos-repository-snapshot-workspace
+- elmos-content-addressed-cache
+- elmos-staging-snapshot-promotion
+- elmos-reproducible-toolchain
+- elmos-secure-sandbox-runtime
+- elmos-semantic-ir-compiler-platform
+- elmos-model-gateway-agent-runtime
+- elmos-verification-fabric
+- elmos-policy-supply-chain-signing
+- elmos-evidence-pack-offline-verification
+- elmos-observability-finops
+stages:
+- installation
+- snapshot
+- baseline
+- health-plan
+- approval
+- deterministic-rewrite
+- verification
+- bounded-repair
+- full-verification
+- pr-checks
+- evidence
+pilot_exit:
+  repository_count: 3
+  source_local_default: true
+  offline_evidence: true
+  repeatable: true
+runtime_reporting:
+  system_wall_clock_separate: true
+  human_equivalent_separate: true
+production_claim: Fixture success alone is insufficient; three authorized repeatable
+  pilots plus security/DR gates are required.

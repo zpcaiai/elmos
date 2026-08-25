@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dependency and Library Usage Index"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $dependency-and-library-usage-index for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

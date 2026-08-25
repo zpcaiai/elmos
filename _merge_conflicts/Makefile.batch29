@@ -1,0 +1,43 @@
+include Makefile.external-gates
+
+UV ?= uv
+BATCH29_PYTHON ?= $(UV) run --quiet --with jsonschema==4.25.1 --with pyyaml==6.0.2 --with z3-solver==4.16.0 python
+BATCH29_ROUTE_PYTHON ?= $(UV) --directory engines/polyglot-route-engine run --locked --quiet python
+BATCH29_ROUTE_ENTRY ?= python3
+B29_REPOSITORY_SCHEMA_FILES := schemas/batch29/repository-capability-campaign.schema.json schemas/batch29/repository-gate-result.schema.json
+B29_REPOSITORY_CONTRACT_FILES := $(B29_REPOSITORY_SCHEMA_FILES) scripts/batch29/run_repository_gate.py tests/batch29/test_repository_gate.py docs/batch29/REPOSITORY_QUALITY_GATES.md
+.PHONY: b29-skills-test b29-route-validate b29-route-gate b29-specialized-exact8 b29-nine-language-prepare b29-nine-language-replay b29-nodejs-prepare b29-nodejs-replay b29-ten-language-replay b29-specialized-formal-pack b29-repository-contract-check b29-repository-gate
+b29-repository-contract-check:
+	@for file in $(B29_REPOSITORY_CONTRACT_FILES); do test -f "$$file" || { echo "missing Batch 29 repository contract file: $$file"; exit 1; }; done
+	$(BATCH29_PYTHON) -c 'import json; from pathlib import Path; from jsonschema import Draft202012Validator; files = "$(B29_REPOSITORY_SCHEMA_FILES)".split(); [Draft202012Validator.check_schema(json.loads(Path(path).read_text(encoding="utf-8"))) for path in files]'
+b29-skills-test: b29-repository-contract-check external-gate-intake-test
+	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
+	$(BATCH29_ROUTE_PYTHON) -m unittest discover -s ../../tests/batch29 -p 'test_*.py'
+b29-route-validate:
+	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/validate_route.py routes/$(ROUTE)
+b29-route-gate:
+	@test -n "$(ROUTE)" || (echo "ROUTE=<source>-to-<target> required" && exit 2)
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_route_gate.py routes/$(ROUTE)
+b29-specialized-exact8:
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --route-set cpp-objc-swift-java-exact-8
+b29-nine-language-prepare:
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --prepare-route-set nine-language-completion-34
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --inventory-only
+	python3 scripts/operations/validate_translation_route_matrix.py
+b29-nine-language-replay:
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --route-set nine-language-complete-72
+b29-nodejs-prepare:
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --prepare-route-set javascript-node26-completion-18
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --inventory-only
+	python3 scripts/operations/validate_translation_route_matrix.py
+b29-nodejs-replay:
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --route-set javascript-node26-completion-18
+b29-ten-language-replay:
+	$(BATCH29_ROUTE_ENTRY) scripts/batch29/run_polyglot_routes.py --repo-root . --route-set ten-language-complete-90
+b29-specialized-formal-pack:
+	$(BATCH29_ROUTE_PYTHON) ../../tooling/generate_specialized_polyglot_formal_verification_pack.py --repo-root ../.. --arithmetic-campaign ../../verification-packs/polyglot-30-route-formal-equivalence-v1/solver/arithmetic-campaign.json
+b29-repository-gate:
+	@test -n "$(B29_REPOSITORY_CAMPAIGN)" || (echo "B29_REPOSITORY_CAMPAIGN=<campaign.json> required; repository capability remains NOT_RUN / NOT_CERTIFIED" && exit 2)
+	@test -f "$(B29_REPOSITORY_CAMPAIGN)" || (echo "repository campaign does not exist: $(B29_REPOSITORY_CAMPAIGN); capability remains NOT_RUN / NOT_CERTIFIED" && exit 2)
+	$(BATCH29_PYTHON) scripts/batch29/run_repository_gate.py "$(B29_REPOSITORY_CAMPAIGN)" $(if $(B29_REPOSITORY_EVIDENCE_ROOT),--evidence-root "$(B29_REPOSITORY_EVIDENCE_ROOT)") $(if $(B29_REPOSITORY_GATE_OUTPUT),--output "$(B29_REPOSITORY_GATE_OUTPUT)")

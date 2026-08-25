@@ -1,6 +1,6 @@
 """`else if` chains, and the Go emission bug that lifting them uncovered.
 
-Eight of this engine's ten frontends already lifted `else if` into the nested
+The engine's frontends lift `else if` into the nested
 `else: [if]` shape the IR has always carried -- CPython's ast gives it for free
 because `elif` *is* that shape, SwiftSyntax recurses, and the TypeScript, JDT,
 Roslyn, clang and ext/tokenizer frontends all wrap a non-block else. Go and
@@ -20,20 +20,13 @@ from pathlib import Path
 import pytest
 
 from elmos_polyglot_route.emitter import emit
-from elmos_polyglot_route.models import Language, RouteError
+from elmos_polyglot_route.models import ROUTED_LANGUAGES, Language, RouteError
 from elmos_polyglot_route.native import SemanticIR
 
 ENGINE_ROOT = Path(__file__).resolve().parents[1]
 
-_BRACE_TARGETS: tuple[Language, ...] = (
-    "java",
-    "csharp",
-    "cpp",
-    "php",
-    "typescript",
-    "swift",
-    "rust",
-    "go",
+_BRACE_TARGETS: tuple[Language, ...] = tuple(
+    language for language in ROUTED_LANGUAGES if language != "python"
 )
 
 

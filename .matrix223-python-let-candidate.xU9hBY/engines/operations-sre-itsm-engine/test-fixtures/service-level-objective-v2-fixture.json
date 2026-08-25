@@ -1,0 +1,9 @@
+{
+  "sloId": "sloId-fixture",
+  "serviceId": "serviceId-fixture",
+  "indicatorId": "indicatorId-fixture",
+  "target": 0,
+  "window": {},
+  "owner": "owner-fixture",
+  "errorBudgetPolicyId": "errorBudgetPolicyId-fixture"
+}

@@ -1,0 +1,173 @@
+{
+  "acceptance": [
+    {
+      "criterion": "可识别 monorepo、多模块和多语言仓库",
+      "evidence": [],
+      "id": "S38-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "变更后仅重建受影响节点并保持图一致性",
+      "evidence": [],
+      "id": "S38-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "任务影响范围包含直接修改点、依赖和关键测试",
+      "evidence": [],
+      "id": "S38-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "动态/不可解析关系明确标为不确定而非伪造",
+      "evidence": [],
+      "id": "S38-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "所有地图节点可回到文件路径和代码范围",
+      "evidence": [],
+      "id": "S38-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "超大仓库地图生成和查询满足性能SLO",
+      "evidence": [],
+      "id": "S38-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "可识别 monorepo、多模块和多语言仓库",
+      "变更后仅重建受影响节点并保持图一致性",
+      "任务影响范围包含直接修改点、依赖和关键测试",
+      "动态/不可解析关系明确标为不确定而非伪造",
+      "所有地图节点可回到文件路径和代码范围",
+      "超大仓库地图生成和查询满足性能SLO"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "repository_context_maps",
+      "repository_map_nodes",
+      "repository_map_edges",
+      "repository_impact_queries"
+    ],
+    "deliverables": [
+      "RepositoryContextMap schema 与分层图",
+      "多语言/框架扫描和增量更新器",
+      "任务影响范围查询 API",
+      "仓库地图可视化与准确度评测"
+    ],
+    "dependencies": [
+      "elmos-source-anchor-and-provenance",
+      "elmos-storage-index-and-retrieval"
+    ],
+    "events": [
+      "repository.context_map.created",
+      "repository.context_map.updated",
+      "repository.impact.calculated"
+    ],
+    "failure_modes": [
+      "wrong project root",
+      "generated code dominates",
+      "dynamic dependency missed",
+      "stale graph"
+    ],
+    "inputs": [
+      "项目文件清单",
+      "源代码与构建配置",
+      "版本控制差异",
+      "任务目标"
+    ],
+    "metrics": [
+      "symbol_coverage_ratio",
+      "dependency_edge_precision",
+      "incremental_reindex_ratio",
+      "impact_test_recall"
+    ],
+    "name": "elmos-repository-context-map",
+    "objective": "生成面向上下文规划的分层仓库地图，以低成本概览全局并按影响范围深入到具体符号和证据。",
+    "ordinal": 38,
+    "outputs": [
+      "分层 RepositoryContextMap",
+      "依赖/调用/测试图",
+      "任务影响候选集",
+      "增量更新报告"
+    ],
+    "responsibilities": [
+      "扫描仓库目录、模块、构建系统、语言、框架、入口点、API、数据实体、消息、部署与测试资产。",
+      "建立 L0项目全局、L1领域/模块、L2当前工作流、L3文件、L4符号、L5原始证据的层次。",
+      "解析 import、调用、继承、实现、配置引用、API契约、数据库和消息依赖。",
+      "为每个节点保存摘要、token 成本、版本、哈希、生成/第三方分类和 source anchor。",
+      "根据 git diff、文件哈希和依赖影响增量更新地图。",
+      "为任务生成影响候选集、直接/间接依赖和对应测试集合。",
+      "检测解析不完整、动态语言不确定性和生成代码边界，并标记置信度。",
+      "向长上下文排序器提供结构化候选，不把整个仓库无差别塞入模型。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "仓库上下文地图"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-repository-context-map/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-repository-context-map/SKILL.md": {
+        "bytes": 3562,
+        "mode": "0644",
+        "sha256": "ae2479864dbd96fc93b00c7fd86ad3d5498958d978737eaa722f57c135e7e497"
+      },
+      "skills/elmos-repository-context-map/references/contract.yaml": {
+        "bytes": 2570,
+        "mode": "0644",
+        "sha256": "d0fbe357a7e75d2b4108613a2f84f4ab4c593ec66c67ea3375acfa95104fe0bd"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-repository-context-map/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_repository_context_map",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "indexing",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当 Elmos 需要在大型代码仓库中决定应加载哪些模块、文件、符号、配置和测试到活动上下文时使用。",
+    "name": "elmos-repository-context-map",
+    "ordinal": 38,
+    "title": "仓库上下文地图"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "d0fbe357a7e75d2b4108613a2f84f4ab4c593ec66c67ea3375acfa95104fe0bd",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "ae2479864dbd96fc93b00c7fd86ad3d5498958d978737eaa722f57c135e7e497"
+  }
+}

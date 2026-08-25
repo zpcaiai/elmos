@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.dev/package/P04/config/1.0",
+  "title": "P04 package configuration",
+  "type": "object",
+  "required": [
+    "package_id",
+    "version",
+    "enabled",
+    "components",
+    "policy"
+  ],
+  "properties": {
+    "package_id": {
+      "const": "P04"
+    },
+    "version": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "P04-C01",
+          "P04-C02",
+          "P04-C03",
+          "P04-C04",
+          "P04-C05",
+          "P04-C06",
+          "P04-C07",
+          "P04-C08",
+          "P04-C09",
+          "P04-C10",
+          "P04-C11",
+          "P04-C12"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "policy": {
+      "type": "object"
+    },
+    "limits": {
+      "type": "object"
+    },
+    "feature_flags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    }
+  },
+  "additionalProperties": false
+}

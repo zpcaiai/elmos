@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "recipe-bundle-resolver",
+  "source_contract_sha256": "sha256:cd678a2da9e21ab646dca0b86f90b2a3c14d27976f311e2ae65157b4a31f2cd8",
+  "source_id": "FOUNDATION-03-recipe-bundle-resolver",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

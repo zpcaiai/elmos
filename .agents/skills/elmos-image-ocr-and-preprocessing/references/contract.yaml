@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 6
+name: elmos-image-ocr-and-preprocessing
+title: 图片 OCR 与预处理
+objective: 从图片中提取带坐标、阅读顺序、置信度和版面信息的文本，同时保留原图证据。
+dependencies:
+- elmos-provider-routing-and-fallback
+- elmos-source-anchor-and-provenance
+inputs:
+- 图片资产、OCR 语言、预处理策略
+outputs:
+- OCRDocument、VisualRegion、质量报告
+responsibilities:
+- 自动旋转、倾斜/透视校正、降噪、增强和大图切片
+- 检测文本区域、表格、图注和多栏阅读顺序
+- 输出字符、词、行、块层级坐标与置信度
+- 提供区域重识别和用户修正闭环
+deliverables:
+- ImagePreprocessor/OCRProvider 接口
+- OCRDocument 数据模型和纠错 API
+- 清晰、模糊、旋转、长截图和表格图片评测
+acceptance:
+- OCR 块可精确回到原图 bounding box
+- 大图切片后坐标可还原到全图
+- 低置信度和不可读区域显式呈现
+- 预处理不会覆盖不可变原始资产
+data_entities:
+- ocr_blocks
+- image_preprocess_runs
+events:
+- image.ocr.completed
+- image.region.unreadable
+metrics:
+- ocr_character_accuracy
+- layout_order_accuracy
+failure_modes:
+- 超大图
+- 损坏图像
+- 低分辨率
+- OCR provider 故障
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

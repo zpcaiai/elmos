@@ -1,0 +1,171 @@
+{
+  "acceptance": [
+    {
+      "criterion": "当前 Codex 对齐基线通过注册表配置，升级无需修改业务逻辑",
+      "evidence": [],
+      "id": "S39-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "每个能力值有来源、获取时间、版本和可信状态",
+      "evidence": [],
+      "id": "S39-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "上下文窗口和最大输出分开建模",
+      "evidence": [],
+      "id": "S39-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "未知或过期能力不会被当作无限制",
+      "evidence": [],
+      "id": "S39-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "模型切换会触发预算重算和兼容性检查",
+      "evidence": [],
+      "id": "S39-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "能力快照可回滚并能解释历史任务当时采用的限制",
+      "evidence": [],
+      "id": "S39-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "当前 Codex 对齐基线通过注册表配置，升级无需修改业务逻辑",
+      "每个能力值有来源、获取时间、版本和可信状态",
+      "上下文窗口和最大输出分开建模",
+      "未知或过期能力不会被当作无限制",
+      "模型切换会触发预算重算和兼容性检查",
+      "能力快照可回滚并能解释历史任务当时采用的限制"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "model_capabilities",
+      "model_capability_snapshots",
+      "model_capability_sources",
+      "model_probe_runs"
+    ],
+    "deliverables": [
+      "ModelCapabilitySnapshot schema 与注册表",
+      "供应商适配器、管理员覆写和缓存刷新",
+      "能力查询/兼容判断 API 与事件",
+      "边界探测和配置漂移测试"
+    ],
+    "dependencies": [],
+    "events": [
+      "model.capability.discovered",
+      "model.capability.changed",
+      "model.capability.expired",
+      "model.compatibility.failed"
+    ],
+    "failure_modes": [
+      "stale context window",
+      "alias changed silently",
+      "provider metadata conflict",
+      "unsafe admin override"
+    ],
+    "inputs": [
+      "供应商模型元数据",
+      "管理员策略",
+      "实测探测结果",
+      "租户可用模型范围"
+    ],
+    "metrics": [
+      "capability_freshness_seconds",
+      "unknown_capability_count",
+      "probe_success_rate",
+      "configuration_drift_count"
+    ],
+    "name": "elmos-model-capability-discovery",
+    "objective": "用版本化能力注册表取代散落硬编码，使上下文、路由、费用和兼容判断基于可审计快照。",
+    "ordinal": 39,
+    "outputs": [
+      "ModelCapabilitySnapshot",
+      "模型兼容矩阵",
+      "能力变化事件",
+      "历史能力快照"
+    ],
+    "responsibilities": [
+      "定义 ModelCapabilitySnapshot，包含 provider、model id、版本、context window、max output、输入模态、工具能力、价格与限制。",
+      "从官方/供应商接口、管理员配置或经批准的探测任务同步能力，并记录来源、时间和可信等级。",
+      "区分声明能力、实测能力与租户策略限制，取三者的安全交集。",
+      "在模型别名指向新版本、能力变化或配置过期时触发重新发现和影响分析。",
+      "向 Context Budget Manager、路由器、Token计量和前端提供一致查询接口。",
+      "禁止把 Codex 同级基线值散落在业务代码；基线只作为带日期的配置/测试夹具。",
+      "在能力未知、冲突或过期时采取保守限制并提示管理员。",
+      "建立兼容性矩阵与回归探测，验证上下文和输出边界。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "模型能力发现与注册"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-model-capability-discovery/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-model-capability-discovery/SKILL.md": {
+        "bytes": 3665,
+        "mode": "0644",
+        "sha256": "acb8795b2c2318c5721d4bc8138de4bbdaf3b3e08e16f1a01c8d5e266d2f1467"
+      },
+      "skills/elmos-model-capability-discovery/references/contract.yaml": {
+        "bytes": 2602,
+        "mode": "0644",
+        "sha256": "f7d86fd77b929b3988bbb579a4bb49cc19de8cd25ec34d8d6d6eb57733f0d003"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-model-capability-discovery/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_model_capability_discovery",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当 Elmos 接入、切换或升级模型，需要确定上下文窗口、最大输出、模态、工具、结构化输出、价格和区域能力时使用。",
+    "name": "elmos-model-capability-discovery",
+    "ordinal": 39,
+    "title": "模型能力发现与注册"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "f7d86fd77b929b3988bbb579a4bb49cc19de8cd25ec34d8d6d6eb57733f0d003",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "acb8795b2c2318c5721d4bc8138de4bbdaf3b3e08e16f1a01c8d5e266d2f1467"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "each must-have maps to >=1 acceptance scenario",
+      "unknowns are classified"
+    ],
+    "guardrails": [
+      "Do not invent external requirements.",
+      "Resolve repository-discoverable questions by inspection rather than asking."
+    ],
+    "inputs": [
+      "raw requirement",
+      "repo metadata"
+    ],
+    "outputs": [
+      "normalized requirement spec",
+      "acceptance scenarios",
+      "assumption log"
+    ],
+    "triggers": [
+      "new feature request",
+      "multi-paragraph requirement",
+      "ambiguous repository task"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-repository-orchestrator",
+      "elmos-run-state-journal",
+      "elmos-model-selection-controller"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.requirement-baseline",
+    "handler": "requirement_normalizer",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-requirement-normalizer",
+    "ordinal": 1,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/01-requirement-normalizer/SKILL.md",
+    "sha256": "sha256:69f5f54e8fedf77585ef8d8cb0e584db415be1a23dbc67574dbcf868c85a0305",
+    "version": "1.0.0"
+  }
+}

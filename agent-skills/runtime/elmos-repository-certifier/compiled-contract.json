@@ -1,0 +1,59 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "all final gates pass or explicit blocking findings recorded"
+    ],
+    "guardrails": [
+      "Leaf-task success cannot substitute for end-to-end acceptance."
+    ],
+    "inputs": [
+      "normalized requirement",
+      "integration branch",
+      "all evidence"
+    ],
+    "outputs": [
+      "certification report",
+      "go/no-go"
+    ],
+    "triggers": [
+      "all implementation waves integrated"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-model-registry-guard",
+      "elmos-security-auth-gate",
+      "elmos-data-migration-gate",
+      "elmos-concurrency-idempotency-gate",
+      "elmos-incremental-regression-gate"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.local-verification-gate",
+    "handler": "repository_certifier",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-repository-certifier",
+    "ordinal": 31,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/31-repository-certifier/SKILL.md",
+    "sha256": "sha256:ff49131d3072a17c2e33b0226b7fbf45e8677a8ad4e1c58e3d0981215cde4bcc",
+    "version": "1.0.0"
+  }
+}

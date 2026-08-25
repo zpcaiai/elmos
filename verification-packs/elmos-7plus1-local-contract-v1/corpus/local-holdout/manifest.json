@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "corpus_key": "elmos-7plus1-local-holdout-v1",
+  "campaign_type": "local-holdout",
+  "corpus_role": "IMMUTABLE_LOCAL_INPUT",
+  "input_state": "LOCAL_SELF_AUTHORED_NOT_INDEPENDENT",
+  "campaign_ref": "verification-packs/elmos-7plus1-local-contract-v1/campaigns/local-holdout-v1.json",
+  "scope": {
+    "tenant_id": "elmos-local",
+    "project_id": "elmos-7plus1",
+    "campaign_id": "local-holdout-v1",
+    "policy_revision": "local-evidence-policy-v1",
+    "source_revision": "working-tree-qualification-v2"
+  },
+  "corpus_digest": "sha256:2d62fa6039a1fb12627685785a9a344bd8ecdf6f1c07e0425e9d61c5589ca18e",
+  "case_count": 3,
+  "case_ids": [
+    "holdout-001-local-handler",
+    "holdout-002-invalid-request",
+    "holdout-003-adapter-boundary"
+  ],
+  "separation": "digest-disjoint from declared development cases but self-authored and self-attested",
+  "independent": false,
+  "external_holdout_state": "NOT_RUN",
+  "limitations": [
+    "This input corpus is repository-owned and is not an untouched holdout owned or verified by an independent organization.",
+    "Execution state and receipt identity are recorded outside this immutable input descriptor to avoid a digest cycle."
+  ]
+}

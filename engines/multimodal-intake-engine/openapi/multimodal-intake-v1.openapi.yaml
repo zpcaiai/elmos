@@ -1,0 +1,1775 @@
+openapi: 3.1.0
+info:
+  title: ELMOS Multimodal Intake API
+  version: 1.0.0
+  description: >-
+    Tenant-bound exact Skill execution API. User content is untrusted data and
+    never grants permissions or selects executable commands. Requests are at
+    most 2 MiB and responses are at most 4 MiB of UTF-8 JSON. Handler business
+    outcomes, including BLOCKED and FAILED, use HTTP 200 with a
+    SkillExecutionResult; non-200 responses are transport, boundary,
+    authentication, authorization, or idempotency errors only.
+servers:
+  - url: https://elmos.invalid
+    description: Replace with an approved deployment; this document is not a live endpoint.
+x-elmos-progress-sdk-support:
+  python: { sse: true, websocket: false }
+  typescript: { sse: true, websocket: false }
+  java: { sse: true, websocket: false }
+  note: >-
+    All checked-in SDKs use one-shot authenticated SSE. The runtime also exposes
+    read-only one-shot WebSocket routes, but no checked-in SDK claims WebSocket
+    support; in particular, the browser SDK never puts a bearer token in a URL.
+x-elmos-human-review-current-correction:
+  skill: elmos-human-review-and-correction
+  operation: current_correction
+  authorization: tenant-project-bound REVIEW ACL
+  inputSchema: { $ref: "#/components/schemas/HumanReviewCurrentCorrectionInput" }
+  outputSchema: { $ref: "#/components/schemas/HumanReviewCurrentCorrectionOutput" }
+  successCode: HUMAN_REVIEW_CURRENT_CORRECTION_RETRIEVED
+  absentCode: HUMAN_REVIEW_CURRENT_CORRECTION_NOT_AVAILABLE
+  description: >-
+    Authoritative response-loss recovery for a durably committed edit. The
+    operation returns only the current immutable correction after correction
+    digest, task target, and authoritative source-lineage validation. It never
+    infers a correction from task state and fails closed when the task has no
+    committed correction version.
+x-elmos-human-review-source-list:
+  skill: elmos-human-review-and-correction
+  operation: source_list
+  authorization: tenant-project-bound REVIEW ACL
+  inputSchema: { $ref: "#/components/schemas/HumanReviewSourceListInput" }
+  outputSchema: { $ref: "#/components/schemas/HumanReviewSourceListOutput" }
+  successCode: HUMAN_REVIEW_SOURCES_LISTED
+  description: >-
+    Lists a bounded exact snapshot of authoritative target heads without large
+    original values. The opaque cursor binds tenant, project, content version,
+    filters, and the complete validated summary collection; collection drift
+    fails closed.
+x-elmos-human-review-source-get:
+  skill: elmos-human-review-and-correction
+  operation: source_get
+  authorization: tenant-project-bound REVIEW ACL
+  inputSchema: { $ref: "#/components/schemas/HumanReviewSourceGetInput" }
+  outputSchema: { $ref: "#/components/schemas/HumanReviewSourceGetOutput" }
+  successCode: HUMAN_REVIEW_SOURCE_RETRIEVED
+  description: >-
+    Retrieves one exact authoritative target, value, confidence, and v2 source
+    reference after asset, snapshot, producer, decision, propagation, and head
+    integrity validation.
+x-elmos-human-review-source-bound-enqueue:
+  skill: elmos-human-review-and-correction
+  operation: enqueue
+  authorization: tenant-project-bound REVIEW ACL plus mutation policy
+  inputSchema: { $ref: "#/components/schemas/HumanReviewSourceBoundEnqueueInput" }
+  successCode: HUMAN_REVIEW_TASK_ENQUEUED
+  description: >-
+    Enqueues only by source identity. Clients never echo target JSON,
+    authoritative value, or confidence. Four mandatory snapshot/head CAS fields
+    and the public canonical original-value digest prevent stale and ABA writes.
+x-elmos-human-review-enqueue-prepare:
+  skill: elmos-human-review-and-correction
+  operation: enqueue_prepare
+  authorization: tenant-project-actor-bound REVIEW ACL
+  inputSchema: { $ref: "#/components/schemas/HumanReviewEnqueuePrepareInput" }
+  outputSchema: { $ref: "#/components/schemas/HumanReviewEnqueuePrepareOutput" }
+  successCode: HUMAN_REVIEW_ENQUEUE_PREPARED
+  ttlSeconds: 86400
+  activeQuotaPerActor: 100
+  retainedQuotaPerActor: 10000
+  description: >-
+    Stores only SHA-256 digests of the opaque recovery handle and execute
+    idempotency key. The exact source-bound enqueue input is immutable and
+    tenant/project/actor scoped; the browser persists no content or reason.
+x-elmos-human-review-enqueue-execute:
+  skill: elmos-human-review-and-correction
+  operation: enqueue_execute
+  authorization: tenant-project-actor-bound REVIEW ACL
+  inputSchema: { $ref: "#/components/schemas/HumanReviewEnqueueExecuteInput" }
+  outputSchema: { $ref: "#/components/schemas/HumanReviewEnqueueExecuteOutput" }
+  successCodes:
+    - HUMAN_REVIEW_TASK_ENQUEUED_FROM_PREPARATION
+    - HUMAN_REVIEW_ENQUEUE_PREPARATION_ABSENT
+    - HUMAN_REVIEW_ENQUEUE_PREPARATION_EXPIRED
+  description: >-
+    Receipt-first execution loads the immutable server-side input and enqueues
+    in one transaction. ABSENT and EXPIRED are digest-bound safe-to-clear
+    outcomes; an existing unexpired preparation is never silently cleared.
+x-elmos-human-review-target-head-reservation-status:
+  skill: elmos-human-review-and-correction
+  operation: reservation_status
+  authorization: tenant-project-bound REVIEW ACL
+  inputSchema: { $ref: "#/components/schemas/HumanReviewReservationStatusInput" }
+  outputSchema: { $ref: "#/components/schemas/HumanReviewReservationStatusOutput" }
+  successCode: HUMAN_REVIEW_TARGET_HEAD_RESERVATION_STATUS
+  description: >-
+    Returns the immutable, digest-bound approve/revert reservation history for
+    one task. A reservation fence owns one exact authoritative target-head
+    version; UNKNOWN and FAILED remain non-success and are never released for a
+    competing decision.
+x-elmos-governance-deletion:
+  skill: elmos-data-retention-and-governance
+  operation: delete
+  authorization: tenant-project-bound ADMIN ACL plus trusted retention policy
+  inputSchema: { $ref: "#/components/schemas/GovernanceDeleteInput" }
+  outputSchema: { $ref: "#/components/schemas/GovernanceDeletionJob" }
+  initialCode: DELETION_PROPAGATION_NOT_RUN
+  terminalCode: DELETION_PROPAGATION_VERIFIED
+  description: >-
+    Creates an immutable per-store/object/version deletion command set from the
+    trusted inventory. Inventory deletion flags are never proof. Every command
+    remains non-success until a runtime-owned worker capability records an exact
+    execution receipt and a distinct verifier capability records observed
+    absence; backup lag and legal hold fail closed.
+x-elmos-governance-deletion-status:
+  skill: elmos-data-retention-and-governance
+  operation: delete_status
+  authorization: tenant-project-bound READ ACL
+  inputSchema: { $ref: "#/components/schemas/GovernanceDeletionStatusInput" }
+  outputSchema: { $ref: "#/components/schemas/GovernanceDeletionJob" }
+  description: >-
+    Reads durable status and may deterministically assemble the deletion proof
+    only after all byte/digest-bound command receipts have independent
+    verification and the persisted backup deletion deadline has passed.
+paths:
+  /api/v1/multimodal-intake/capabilities:
+    get:
+      operationId: getMultimodalIntakeCapabilities
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Exact installed Skill catalog and evidence boundary.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CapabilityResponse" }
+        "401": { description: Missing or invalid bearer token, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "404": { description: Unknown route, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "405": { description: HTTP method is not allowed, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "422": { description: Local runtime configuration is invalid, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "500": { description: Internal transport failure, content: { application/json: { schema: { $ref: "#/components/schemas/ServerErrorResponse" } } } }
+  /api/v1/multimodal-intake/execute:
+    post:
+      operationId: executeMultimodalIntakeSkill
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SkillExecutionRequest" }
+      responses:
+        "200":
+          description: >-
+            Local handler business result, including SUCCEEDED, PARTIAL,
+            BLOCKED, FAILED, NOT_APPLICABLE, and NOT_RUN_EXTERNAL. External
+            evidence is independent.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SkillExecutionResult" }
+        "400": { description: Invalid request, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "401": { description: Missing or invalid bearer token, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "403": { description: Authorization denied, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "404": { description: Unknown Skill or resource, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "405": { description: HTTP method is not allowed, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "408": { description: Request body read timed out, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "409": { description: Idempotency or version conflict, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "413": { description: Request exceeds the 2 MiB transport limit, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "415": { description: Content-Type is not application/json or request content encoding is unsupported, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "422": { description: Request-contract or boundary-integrity rejection, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "503": { description: Required capability unavailable, content: { application/json: { schema: { $ref: "#/components/schemas/ServerErrorResponse" } } } }
+        "500": { description: Internal execution failure, content: { application/json: { schema: { $ref: "#/components/schemas/ServerErrorResponse" } } } }
+  /api/v1/multimodal-intake/progress/tasks/{task_id}/events:
+    get:
+      operationId: getMultimodalTaskProgressEvents
+      summary: Read one bounded, resumable task-progress SSE batch.
+      description: >-
+        Loopback-only, read-only and one-shot. The server closes after at most 64
+        canonical events or one heartbeat. Clients resume with the last verified
+        cursor; request bodies and client commands are forbidden.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/TaskId" }
+        - { $ref: "#/components/parameters/ProgressCursor" }
+        - { $ref: "#/components/parameters/BoundTenantId" }
+        - { $ref: "#/components/parameters/BoundProjectId" }
+        - { $ref: "#/components/parameters/BoundActorId" }
+      responses:
+        "200":
+          description: Bounded canonical SSE frames (`progress` or `heartbeat`).
+          headers:
+            Cache-Control: { schema: { type: string, const: "private, no-store, max-age=0" } }
+            X-Accel-Buffering: { schema: { type: string, const: "no" } }
+          content:
+            text/event-stream:
+              schema: { type: string, maxLength: 4194304 }
+              examples:
+                progress:
+                  value: "id: p1-1-<64 lowercase hex>\nevent: progress\ndata: <canonical TaskProgressEvent JSON>\n\n"
+        "400": { description: Invalid resource ID, cursor, request target or body, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "401": { description: Missing or invalid bearer token, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "403": { description: Tenant/project authorization or loopback boundary denied, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "404": { description: Task not found in the bound scope, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "406": { description: Accept must be exactly text/event-stream, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "409": { description: Cursor is ahead of or diverges from durable history, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+  /api/v1/multimodal-intake/progress/jobs/{job_id}/events:
+    get:
+      operationId: getMultimodalJobProgressEvents
+      summary: Read one bounded, resumable job-progress SSE snapshot.
+      description: >-
+        Loopback-only, read-only and one-shot. Returns one canonical job snapshot
+        or one heartbeat, then closes. Request bodies and client commands are forbidden.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/JobId" }
+        - { $ref: "#/components/parameters/ProgressCursor" }
+        - { $ref: "#/components/parameters/BoundTenantId" }
+        - { $ref: "#/components/parameters/BoundProjectId" }
+        - { $ref: "#/components/parameters/BoundActorId" }
+      responses:
+        "200":
+          description: One canonical `progress` or `heartbeat` SSE frame.
+          content:
+            text/event-stream:
+              schema: { type: string, maxLength: 4194304 }
+        "400": { description: Invalid resource ID, cursor, request target or body, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "401": { description: Missing or invalid bearer token, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "403": { description: Tenant/project authorization or loopback boundary denied, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "404": { description: Job not found in the bound scope, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "406": { description: Accept must be exactly text/event-stream, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "409": { description: Cursor is ahead of or diverges from durable state, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+  /api/v1/multimodal-intake/progress/ws/tasks/{task_id}:
+    get:
+      operationId: upgradeMultimodalTaskProgressReadOnlyWebSocket
+      summary: Upgrade to one read-only task-progress WebSocket batch.
+      description: >-
+        Runtime-only loopback transport. Bearer Authorization and RFC 6455 headers
+        are required. The server writes canonical text frames followed by a normal
+        close and never reads a client frame, command, subscription or extension.
+        Checked-in Python, TypeScript and Java SDKs do not implement this transport.
+      security: [{ bearerAuth: [] }]
+      x-elmos-websocket-mode: read-only-one-shot-server-to-client
+      parameters:
+        - { $ref: "#/components/parameters/TaskId" }
+        - { $ref: "#/components/parameters/ProgressCursor" }
+        - { $ref: "#/components/parameters/BoundTenantId" }
+        - { $ref: "#/components/parameters/BoundProjectId" }
+        - { $ref: "#/components/parameters/BoundActorId" }
+      responses:
+        "101":
+          description: WebSocket upgrade; only unfragmented canonical text progress frames are sent.
+          headers:
+            Upgrade: { schema: { type: string, const: websocket } }
+            Connection: { schema: { type: string, const: Upgrade } }
+            Sec-WebSocket-Accept: { schema: { type: string } }
+        "400": { description: Invalid cursor or WebSocket handshake, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "401": { description: Missing or invalid bearer token, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "403": { description: Tenant/project authorization or loopback boundary denied, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "404": { description: Task not found in the bound scope, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "409": { description: Cursor is ahead of or diverges from durable task history, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "426": { description: WebSocket upgrade is required; clients unable to set Bearer Authorization must use the SSE route, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "500": { description: Progress integrity or internal transport failure, content: { application/json: { schema: { $ref: "#/components/schemas/ServerErrorResponse" } } } }
+  /api/v1/multimodal-intake/progress/ws/jobs/{job_id}:
+    get:
+      operationId: upgradeMultimodalJobProgressReadOnlyWebSocket
+      summary: Upgrade to one read-only job-progress WebSocket snapshot.
+      description: >-
+        Runtime-only loopback transport with the same server-to-client-only frame
+        and normal-close contract as the task route. Checked-in SDK support is SSE-only.
+      security: [{ bearerAuth: [] }]
+      x-elmos-websocket-mode: read-only-one-shot-server-to-client
+      parameters:
+        - { $ref: "#/components/parameters/JobId" }
+        - { $ref: "#/components/parameters/ProgressCursor" }
+        - { $ref: "#/components/parameters/BoundTenantId" }
+        - { $ref: "#/components/parameters/BoundProjectId" }
+        - { $ref: "#/components/parameters/BoundActorId" }
+      responses:
+        "101":
+          description: WebSocket upgrade; one canonical text snapshot or heartbeat is sent.
+          headers:
+            Upgrade: { schema: { type: string, const: websocket } }
+            Connection: { schema: { type: string, const: Upgrade } }
+            Sec-WebSocket-Accept: { schema: { type: string } }
+        "400": { description: Invalid cursor or WebSocket handshake, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "401": { description: Missing or invalid bearer token, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "403": { description: Tenant/project authorization or loopback boundary denied, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "404": { description: Job not found in the bound scope, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "409": { description: Cursor is ahead of or diverges from durable job state, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "426": { description: WebSocket upgrade is required; clients unable to set Bearer Authorization must use the SSE route, content: { application/json: { schema: { $ref: "#/components/schemas/ClientErrorResponse" } } } }
+        "500": { description: Progress integrity or internal transport failure, content: { application/json: { schema: { $ref: "#/components/schemas/ServerErrorResponse" } } } }
+components:
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/ProgressResourceId" }
+    JobId:
+      name: job_id
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/ProgressResourceId" }
+    ProgressCursor:
+      name: cursor
+      in: query
+      required: false
+      allowEmptyValue: false
+      schema: { $ref: "#/components/schemas/ProgressCursor" }
+    BoundTenantId:
+      name: X-ELMOS-Bound-Tenant
+      in: header
+      required: true
+      description: Must exactly repeat the tenant identity already bound to the trusted bearer endpoint.
+      schema: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+    BoundProjectId:
+      name: X-ELMOS-Bound-Project
+      in: header
+      required: true
+      description: Must exactly repeat the project identity already bound to the trusted bearer endpoint.
+      schema: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+    BoundActorId:
+      name: X-ELMOS-Bound-Actor
+      in: header
+      required: true
+      description: Must exactly repeat the actor identity already bound to the trusted bearer endpoint.
+      schema: { type: string, minLength: 1, maxLength: 200, pattern: "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$" }
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: short-lived tenant-bound token
+  schemas:
+    ProgressResourceId:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    ProgressCursor:
+      type: string
+      minLength: 69
+      maxLength: 84
+      pattern: "^p1-[1-9][0-9]{0,15}-[0-9a-f]{64}$"
+    ProgressContentDigest:
+      type: string
+      minLength: 71
+      maxLength: 71
+      pattern: "^sha256:[0-9a-f]{64}$"
+    TaskProgressEvent:
+      type: object
+      additionalProperties: false
+      required: [schema_version, kind, resource_id, sequence_number, event_type, state, previous_state, occurred_at, content_digest, cursor]
+      properties:
+        schema_version: { type: string, const: 1.0.0 }
+        kind: { type: string, const: TASK_PROGRESS }
+        resource_id: { $ref: "#/components/schemas/ProgressResourceId" }
+        sequence_number: { type: integer, minimum: 1, maximum: 9007199254740991 }
+        event_type: { type: string, const: durable.task.transitioned }
+        state: { $ref: "#/components/schemas/TaskProgressState" }
+        previous_state: { $ref: "#/components/schemas/TaskProgressState" }
+        occurred_at: { type: string, format: date-time }
+        content_digest: { $ref: "#/components/schemas/ProgressContentDigest" }
+        cursor: { $ref: "#/components/schemas/ProgressCursor" }
+    JobProgressEvent:
+      type: object
+      additionalProperties: false
+      required: [schema_version, kind, resource_id, sequence_number, event_type, state, result_status, attempt, max_attempts, occurred_at, content_digest, cursor]
+      properties:
+        schema_version: { type: string, const: 1.0.0 }
+        kind: { type: string, const: JOB_PROGRESS }
+        resource_id: { $ref: "#/components/schemas/ProgressResourceId" }
+        sequence_number: { type: integer, minimum: 1, maximum: 9007199254740991 }
+        event_type: { type: string, const: processing.job.snapshot }
+        state: { enum: [QUEUED, RUNNING, COMPLETED, PARTIAL, NEEDS_REVIEW, BLOCKED, FAILED, CANCELLED] }
+        result_status: { enum: [PASSED, PARTIAL, NEEDS_REVIEW, NOT_RUN, BLOCKED, FAILED] }
+        attempt: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        max_attempts: { type: integer, minimum: 1, maximum: 9007199254740991 }
+        occurred_at: { type: string, format: date-time }
+        content_digest: { $ref: "#/components/schemas/ProgressContentDigest" }
+        cursor: { $ref: "#/components/schemas/ProgressCursor" }
+      allOf:
+        - oneOf:
+            - { properties: { state: { const: QUEUED }, result_status: { const: NOT_RUN } } }
+            - { properties: { state: { const: RUNNING }, result_status: { const: NOT_RUN } } }
+            - { properties: { state: { const: COMPLETED }, result_status: { const: PASSED } } }
+            - { properties: { state: { const: PARTIAL }, result_status: { const: PARTIAL } } }
+            - { properties: { state: { const: NEEDS_REVIEW }, result_status: { const: NEEDS_REVIEW } } }
+            - { properties: { state: { const: BLOCKED }, result_status: { const: BLOCKED } } }
+            - { properties: { state: { const: FAILED }, result_status: { const: FAILED } } }
+            - { properties: { state: { const: CANCELLED }, result_status: { const: BLOCKED } } }
+    ProgressHeartbeat:
+      type: object
+      additionalProperties: false
+      required: [schema_version, kind, resource_id, sequence_number, status, content_digest, cursor]
+      properties:
+        schema_version: { type: string, const: 1.0.0 }
+        kind: { enum: [TASK_PROGRESS_HEARTBEAT, JOB_PROGRESS_HEARTBEAT] }
+        resource_id: { $ref: "#/components/schemas/ProgressResourceId" }
+        sequence_number: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        status: { type: string, const: NO_CHANGE }
+        content_digest: { $ref: "#/components/schemas/ProgressContentDigest" }
+        cursor:
+          oneOf:
+            - { $ref: "#/components/schemas/ProgressCursor" }
+            - { type: "null" }
+    TaskProgressState:
+      enum: [PENDING, RUNNING, PAUSED, SUCCEEDED, FAILED_RETRYABLE, FAILED_FINAL, CANCELLED]
+    ProgressDocument:
+      oneOf:
+        - { $ref: "#/components/schemas/TaskProgressEvent" }
+        - { $ref: "#/components/schemas/JobProgressEvent" }
+        - { $ref: "#/components/schemas/ProgressHeartbeat" }
+    SkillOperationDiscriminator:
+      oneOf:
+        - { $ref: "#/components/schemas/OrchestratorSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/UploadSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/FileTypeSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/MalwareSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/AudioSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ImageSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/VisualUiSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/DiagramSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/PdfSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/WordSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/TextSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ContentIrSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/SourceAnchorSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/RequirementSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/FusionSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ConflictSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/HumanReviewSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/PromptDefenseSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ProviderRouteSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/StorageSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/DurableSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/CostEtaSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ObservabilitySkillExecutionRequest" }
+        - { $ref: "#/components/schemas/EvaluationSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/WorkbenchSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ApiSdkSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/GovernanceSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/DownstreamSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/CapacitySkillExecutionRequest" }
+        - { $ref: "#/components/schemas/BudgetSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/TokenSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/PackingSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/PressureSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/CompactionSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/CheckpointSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/RehydrationSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/MemorySkillExecutionRequest" }
+        - { $ref: "#/components/schemas/RepositoryMapSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ModelCapabilitySkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ContextIntegritySkillExecutionRequest" }
+        - { $ref: "#/components/schemas/FolderSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/FolderUploadSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/PackageManifestSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ArchiveSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ArchiveDefenseSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/ProjectDetectSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/FileClassifySkillExecutionRequest" }
+        - { $ref: "#/components/schemas/SymbolIndexSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/IncrementalSkillExecutionRequest" }
+        - { $ref: "#/components/schemas/PackagePreviewSkillExecutionRequest" }
+      description: Exactly one of the 50 registered Skill and operation variants.
+    SkillExecutionRequest:
+      allOf:
+        - { $ref: "#/components/schemas/SkillExecutionRequestEnvelope" }
+        - { $ref: "#/components/schemas/SkillOperationDiscriminator" }
+        - { $ref: "#/components/schemas/TypedOperationInputConstraints" }
+      discriminator:
+        propertyName: skill
+    SkillExecutionRequestEnvelope:
+      type: object
+      additionalProperties: false
+      required: [schema_version, skill, operation, tenant_id, project_id, actor_id, idempotency_key, trace_id, input]
+      properties:
+        schema_version: { const: 1.0.0 }
+        skill: { type: string, minLength: 7, maxLength: 96, pattern: "^elmos-[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        operation: { type: string, pattern: "^[a-z][a-z0-9_-]{0,63}$" }
+        tenant_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        project_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        actor_id: { type: string, minLength: 1, maxLength: 200, pattern: "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$" }
+        idempotency_key:
+          type: string
+          minLength: 8
+          maxLength: 200
+          description: Printable value bounded to 200 UTF-8 bytes by the runtime.
+        trace_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Non-control UTF-8 text, bounded to 128 bytes by the runtime.
+        input:
+          type: object
+          description: >-
+            Strict JSON only; duplicate keys, lone Unicode surrogates,
+            non-finite numbers, integers outside +/-9007199254740991, depth
+            above 32, and trees above 200000 nodes are rejected.
+    TypedOperationInputConstraints:
+      description: >-
+        Exact registry-owned top-level fields for all operations, composed with
+        richer nested shapes for durable evaluation, context, and project-package operations.
+      allOf:
+        - { $ref: "./operation-input-contracts.schema.json" }
+        - { if: { properties: { skill: { const: elmos-multimodal-evaluation-framework }, operation: { const: evaluate } } }, then: { properties: { input: { $ref: "#/components/schemas/EvaluationEvaluateInput" } } } }
+        - { if: { properties: { skill: { const: elmos-multimodal-evaluation-framework }, operation: { enum: [verify, get_run] } } }, then: { properties: { input: { $ref: "#/components/schemas/RunIdInput" } } } }
+        - { if: { properties: { skill: { const: elmos-multimodal-evaluation-framework }, operation: { const: catalog } } }, then: { properties: { input: { $ref: "#/components/schemas/EmptyOperationInput" } } } }
+        - { if: { properties: { skill: { const: elmos-multimodal-requirement-extraction }, operation: { const: extract } } }, then: { properties: { input: { $ref: "#/components/schemas/RequirementProjectionInput" } } } }
+        - { if: { properties: { skill: { const: elmos-multi-asset-content-fusion }, operation: { const: fuse } } }, then: { properties: { input: { $ref: "#/components/schemas/FusionProjectionInput" } } } }
+        - { if: { properties: { skill: { const: elmos-document-version-and-conflict-detection }, operation: { const: detect_conflicts } } }, then: { properties: { input: { $ref: "#/components/schemas/ConflictProjectionInput" } } } }
+        - { if: { properties: { skill: { const: elmos-human-review-and-correction }, operation: { const: correct } } }, then: { properties: { input: { $ref: "#/components/schemas/HumanReviewDirectCorrectionInput" } } } }
+        - { if: { properties: { skill: { const: elmos-downstream-agent-integration }, operation: { const: build_context } } }, then: { properties: { input: { $ref: "#/components/schemas/DownstreamBuildContextInput" } } } }
+        - { if: { properties: { skill: { const: elmos-downstream-agent-integration }, operation: { enum: [get_context, list_result_links] } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextIdInput" } } } }
+        - { if: { properties: { skill: { const: elmos-downstream-agent-integration }, operation: { const: get_grant } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextGrantInput" } } } }
+        - { if: { properties: { skill: { const: elmos-downstream-agent-integration }, operation: { const: revoke_grant } } }, then: { properties: { input: { $ref: "#/components/schemas/RevokeGrantInput" } } } }
+        - { if: { properties: { skill: { const: elmos-downstream-agent-integration }, operation: { const: link_result } } }, then: { properties: { input: { $ref: "#/components/schemas/LinkResultInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-checkpoint-and-recovery }, operation: { const: diff } } }, then: { properties: { input: { $ref: "#/components/schemas/CheckpointDiffInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-checkpoint-and-recovery }, operation: { enum: [restore, rollback] } } }, then: { properties: { input: { $ref: "#/components/schemas/CheckpointRestoreInput" } } } }
+        - { if: { properties: { skill: { const: elmos-model-capability-discovery }, operation: { const: history } } }, then: { properties: { input: { $ref: "#/components/schemas/ModelHistoryInput" } } } }
+        - { if: { properties: { skill: { const: elmos-model-capability-discovery }, operation: { const: rollback } } }, then: { properties: { input: { $ref: "#/components/schemas/ModelRollbackInput" } } } }
+        - { if: { properties: { skill: { const: elmos-codex-context-capacity-parity }, operation: { const: check } } }, then: { properties: { input: { $ref: "#/components/schemas/CapacityCheckInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-budget-manager }, operation: { const: calculate } } }, then: { properties: { input: { $ref: "#/components/schemas/BudgetCalculateInput" } } } }
+        - { if: { properties: { skill: { const: elmos-multimodal-token-accounting }, operation: { const: account } } }, then: { properties: { input: { $ref: "#/components/schemas/TokenAccountingInput" } } } }
+        - { if: { properties: { skill: { const: elmos-long-context-packing-and-ranking }, operation: { const: pack } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextPackingInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-pressure-monitor }, operation: { const: monitor } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextPressureInput" } } } }
+        - { if: { properties: { skill: { const: elmos-structured-context-compaction }, operation: { const: compact } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextCompactionInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-checkpoint-and-recovery }, operation: { const: create } } }, then: { properties: { input: { $ref: "#/components/schemas/CheckpointCreateInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-checkpoint-and-recovery }, operation: { const: list } } }, then: { properties: { input: { $ref: "#/components/schemas/OptionalTaskInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-rehydration }, operation: { const: rehydrate } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextRehydrationInput" } } } }
+        - { if: { properties: { skill: { const: elmos-context-integrity-and-loss-detection }, operation: { const: verify } } }, then: { properties: { input: { $ref: "#/components/schemas/ContextIntegrityInput" } } } }
+        - { if: { properties: { skill: { const: elmos-model-capability-discovery }, operation: { const: discover } } }, then: { properties: { input: { $ref: "#/components/schemas/ModelDiscoverInput" } } } }
+        - { if: { properties: { skill: { const: elmos-folder-tree-input }, operation: { const: begin } } }, then: { properties: { input: { $ref: "#/components/schemas/FolderBeginInput" } } } }
+        - { if: { properties: { skill: { const: elmos-folder-tree-input }, operation: { const: append } } }, then: { properties: { input: { $ref: "#/components/schemas/FolderAppendInput" } } } }
+        - { if: { properties: { skill: { enum: [elmos-folder-tree-input, elmos-project-package-manifest] }, operation: { const: finalize } } }, then: { properties: { input: { $ref: "#/components/schemas/SessionIdInput" } } } }
+        - { if: { properties: { skill: { const: elmos-folder-tree-input }, operation: { const: status } } }, then: { properties: { input: { $ref: "#/components/schemas/SessionIdInput" } } } }
+        - { if: { properties: { skill: { enum: [elmos-folder-tree-input, elmos-project-package-manifest, elmos-project-package-preview-and-review-ui] }, operation: { const: page } } }, then: { properties: { input: { $ref: "#/components/schemas/PackagePageInput" } } } }
+        - { if: { properties: { skill: { const: elmos-resumable-multi-file-folder-upload }, operation: { const: negotiate } } }, then: { properties: { input: { $ref: "#/components/schemas/FolderUploadNegotiateInput" } } } }
+        - { if: { properties: { skill: { const: elmos-resumable-multi-file-folder-upload }, operation: { const: confirm_part } } }, then: { properties: { input: { $ref: "#/components/schemas/FolderUploadConfirmPartInput" } } } }
+        - { if: { properties: { skill: { const: elmos-resumable-multi-file-folder-upload }, operation: { const: status } } }, then: { properties: { input: { $ref: "#/components/schemas/FolderUploadStatusInput" } } } }
+        - { if: { properties: { skill: { enum: [elmos-project-package-manifest, elmos-project-package-version-and-incremental-update] }, operation: { const: diff } } }, then: { properties: { input: { $ref: "#/components/schemas/PackageDiffInput" } } } }
+        - { if: { properties: { skill: { enum: [elmos-repository-context-map, elmos-project-root-language-framework-detection, elmos-ignore-generated-vendored-file-classification, elmos-repository-map-and-symbol-indexing] }, operation: { const: status } } }, then: { properties: { input: { $ref: "#/components/schemas/PackageVersionInput" } } } }
+        - { if: { properties: { skill: { const: elmos-repository-context-map }, operation: { const: rebuild } } }, then: { properties: { input: { $ref: "#/components/schemas/RepositoryContextRebuildInput" } } } }
+        - { if: { properties: { skill: { const: elmos-project-root-language-framework-detection }, operation: { const: rebuild } } }, then: { properties: { input: { $ref: "#/components/schemas/ProjectProfileRebuildInput" } } } }
+        - { if: { properties: { skill: { const: elmos-ignore-generated-vendored-file-classification }, operation: { const: rebuild } } }, then: { properties: { input: { $ref: "#/components/schemas/FileClassificationRebuildInput" } } } }
+        - { if: { properties: { skill: { const: elmos-repository-map-and-symbol-indexing }, operation: { const: rebuild } } }, then: { properties: { input: { $ref: "#/components/schemas/SymbolIndexRebuildInput" } } } }
+        - { if: { properties: { skill: { enum: [elmos-repository-context-map, elmos-project-root-language-framework-detection, elmos-ignore-generated-vendored-file-classification, elmos-repository-map-and-symbol-indexing] }, operation: { const: rollback } } }, then: { properties: { input: { $ref: "#/components/schemas/ArtifactRollbackInput" } } } }
+        - { if: { properties: { skill: { const: elmos-project-package-preview-and-review-ui }, operation: { const: override } } }, then: { properties: { input: { $ref: "#/components/schemas/PackageOverrideInput" } } } }
+        - { if: { properties: { skill: { const: elmos-project-package-preview-and-review-ui }, operation: { const: undo } } }, then: { properties: { input: { $ref: "#/components/schemas/PackageUndoInput" } } } }
+    OrchestratorSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multimodal-input-orchestrator }, operation: { enum: [bootstrap_project, cancel_job, create_session, get_session, process_session, resume_job] } } }
+    UploadSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-secure-resumable-upload }, operation: { enum: [abort, commit, start, status, upload_part] } } }
+    FileTypeSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-file-type-detection-and-validation }, operation: { enum: [inspect, process_asset] } } }
+    MalwareSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-malware-quarantine-and-sandbox }, operation: { enum: [inspect, process_asset] } } }
+    AudioSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-audio-asr-and-diarization }, operation: { enum: [parse, process_asset] } } }
+    ImageSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-image-ocr-and-preprocessing }, operation: { enum: [parse, process_asset] } } }
+    VisualUiSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-visual-ui-understanding }, operation: { enum: [parse, process_asset, understand] } } }
+    DiagramSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-diagram-and-architecture-understanding }, operation: { enum: [parse, process_asset, understand] } } }
+    PdfSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-pdf-layout-table-parser }, operation: { enum: [parse, process_asset] } } }
+    WordSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-word-document-parser }, operation: { enum: [parse, process_asset] } } }
+    TextSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-markdown-text-log-parser }, operation: { enum: [parse, process_asset] } } }
+    ContentIrSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-unified-multimodal-content-ir }, operation: { enum: [normalize] } } }
+    SourceAnchorSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-source-anchor-and-provenance }, operation: { enum: [anchor] } } }
+    RequirementSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multimodal-requirement-extraction }, operation: { enum: [extract] } } }
+    FusionSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multi-asset-content-fusion }, operation: { enum: [fuse] } } }
+    ConflictSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-document-version-and-conflict-detection }, operation: { enum: [detect_conflicts] } } }
+    HumanReviewSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-human-review-and-correction }, operation: { enum: [approve, claim, correct, current_correction, edit, enqueue, enqueue_execute, enqueue_prepare, get, list, propagation_claim, propagation_complete, propagation_dispatch, propagation_reconcile, propagation_status, reject, reopen, reservation_status, revert, source_get, source_list, source_register] } } }
+    PromptDefenseSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-prompt-injection-defense }, operation: { enum: [evaluate] } } }
+    ProviderRouteSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-provider-routing-and-fallback }, operation: { enum: [route] } } }
+    StorageSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-storage-index-and-retrieval }, operation: { enum: [delete, query, rebuild_status, repair, upsert] } } }
+    DurableSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-durable-processing-and-recovery }, operation: { enum: [get_task_state, list_outbox, mark_outbox_published, process_durable_transition, transition] } } }
+    CostEtaSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-processing-cost-and-eta-estimation }, operation: { enum: [estimate] } } }
+    ObservabilitySkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multimodal-observability }, operation: { enum: [observe] } } }
+    EvaluationSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multimodal-evaluation-framework }, operation: { enum: [catalog, evaluate, get_run, verify] } } }
+    WorkbenchSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multimodal-input-workbench-ui }, operation: { enum: [build_preview, capabilities, describe, health] } } }
+    ApiSdkSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-ingestion-api-and-sdk }, operation: { enum: [build_contract, capabilities, describe, health] } } }
+    GovernanceSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-data-retention-and-governance }, operation: { enum: [delete, delete_status, evaluate, export, provider_access] } } }
+    DownstreamSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-downstream-agent-integration }, operation: { enum: [build_context, get_context, get_grant, link_result, list_result_links, revoke_grant] } } }
+    CapacitySkillExecutionRequest: { type: object, properties: { skill: { const: elmos-codex-context-capacity-parity }, operation: { enum: [check] } } }
+    BudgetSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-context-budget-manager }, operation: { enum: [calculate] } } }
+    TokenSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-multimodal-token-accounting }, operation: { enum: [account] } } }
+    PackingSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-long-context-packing-and-ranking }, operation: { enum: [pack] } } }
+    PressureSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-context-pressure-monitor }, operation: { enum: [monitor] } } }
+    CompactionSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-structured-context-compaction }, operation: { enum: [compact] } } }
+    CheckpointSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-context-checkpoint-and-recovery }, operation: { enum: [create, diff, list, restore, rollback] } } }
+    RehydrationSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-context-rehydration }, operation: { enum: [rehydrate] } } }
+    MemorySkillExecutionRequest: { type: object, properties: { skill: { const: elmos-project-memory-and-retrieval }, operation: { enum: [delete, query, rebuild_status, repair, write] } } }
+    RepositoryMapSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-repository-context-map }, operation: { enum: [rebuild, rollback, status] } } }
+    ModelCapabilitySkillExecutionRequest: { type: object, properties: { skill: { const: elmos-model-capability-discovery }, operation: { enum: [discover, history, rollback] } } }
+    ContextIntegritySkillExecutionRequest: { type: object, properties: { skill: { const: elmos-context-integrity-and-loss-detection }, operation: { enum: [verify] } } }
+    FolderSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-folder-tree-input }, operation: { enum: [append, begin, finalize, page, status] } } }
+    FolderUploadSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-resumable-multi-file-folder-upload }, operation: { enum: [confirm_part, negotiate, status] } } }
+    PackageManifestSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-project-package-manifest }, operation: { enum: [diff, finalize, page] } } }
+    ArchiveSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-secure-zip-tar-extraction }, operation: { enum: [expand_nested, extract, publish] } } }
+    ArchiveDefenseSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-archive-bomb-and-path-traversal-defense }, operation: { enum: [inspect] } } }
+    ProjectDetectSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-project-root-language-framework-detection }, operation: { enum: [rebuild, rollback, status] } } }
+    FileClassifySkillExecutionRequest: { type: object, properties: { skill: { const: elmos-ignore-generated-vendored-file-classification }, operation: { enum: [rebuild, rollback, status] } } }
+    SymbolIndexSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-repository-map-and-symbol-indexing }, operation: { enum: [rebuild, rollback, status] } } }
+    IncrementalSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-project-package-version-and-incremental-update }, operation: { enum: [diff] } } }
+    PackagePreviewSkillExecutionRequest: { type: object, properties: { skill: { const: elmos-project-package-preview-and-review-ui }, operation: { enum: [override, page, undo] } } }
+    EmptyOperationInput: { type: object, additionalProperties: false, maxProperties: 0 }
+    OperationResourceId: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+    Sha256Digest: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }
+    PositivePackageVersion: { type: integer, minimum: 1, maximum: 9007199254740991 }
+    RunIdInput:
+      type: object
+      additionalProperties: false
+      required: [run_id]
+      properties: { run_id: { $ref: "#/components/schemas/OperationResourceId" } }
+    EvaluationSubject:
+      type: object
+      additionalProperties: false
+      required: [subject_id, subject_kind, artifact_digest, implementation_version, configuration_digest]
+      properties:
+        subject_id: { $ref: "#/components/schemas/OperationResourceId" }
+        subject_kind: { enum: [parser, provider, model, runtime, configuration] }
+        artifact_digest: { $ref: "#/components/schemas/Sha256Digest" }
+        implementation_version: { $ref: "#/components/schemas/OperationResourceId" }
+        configuration_digest: { $ref: "#/components/schemas/Sha256Digest" }
+    EvaluationEvidence:
+      type: object
+      additionalProperties: false
+      required: [case_id, media_type, content_base64]
+      properties:
+        case_id: { $ref: "#/components/schemas/OperationResourceId" }
+        media_type: { type: string, minLength: 1, maxLength: 256 }
+        content_base64: { type: string, minLength: 1, maxLength: 16777216, contentEncoding: base64 }
+    EvaluationEvaluateInput:
+      type: object
+      additionalProperties: false
+      required: [subject, evidence]
+      properties:
+        subject: { $ref: "#/components/schemas/EvaluationSubject" }
+        evidence: { type: array, minItems: 1, maxItems: 240, items: { $ref: "#/components/schemas/EvaluationEvidence" } }
+    RequirementProjectionInput:
+      type: object
+      additionalProperties: false
+      required: [package_version]
+      properties:
+        sources: { type: array, maxItems: 100000, items: {} }
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        projection_key: { $ref: "#/components/schemas/OperationResourceId" }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    FusionProjectionInput:
+      type: object
+      additionalProperties: false
+      required: [package_version]
+      properties:
+        assets: { type: array, maxItems: 100000, items: {} }
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        projection_key: { $ref: "#/components/schemas/OperationResourceId" }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ConflictProjectionInput:
+      type: object
+      additionalProperties: false
+      required: [package_version]
+      properties:
+        claims: { type: array, maxItems: 100000, items: {} }
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        projection_key: { $ref: "#/components/schemas/OperationResourceId" }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    DownstreamBuildContextInput:
+      type: object
+      additionalProperties: false
+      required: [task_id, subject_id, package_version, source_receipt_ids]
+      properties:
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+        subject_id: { $ref: "#/components/schemas/OperationResourceId" }
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        source_receipt_ids: { type: array, minItems: 1, maxItems: 256, uniqueItems: true, items: { $ref: "#/components/schemas/OperationResourceId" } }
+        tool_receipt_ids: { type: array, maxItems: 256, uniqueItems: true, items: { $ref: "#/components/schemas/OperationResourceId" } }
+    ContextIdInput:
+      type: object
+      additionalProperties: false
+      required: [context_id]
+      properties: { context_id: { $ref: "#/components/schemas/OperationResourceId" } }
+    ContextGrantInput:
+      type: object
+      additionalProperties: false
+      required: [context_id, grant_id]
+      properties:
+        context_id: { $ref: "#/components/schemas/OperationResourceId" }
+        grant_id: { $ref: "#/components/schemas/OperationResourceId" }
+    RevokeGrantInput:
+      type: object
+      additionalProperties: false
+      required: [context_id, grant_id, reason]
+      properties:
+        context_id: { $ref: "#/components/schemas/OperationResourceId" }
+        grant_id: { $ref: "#/components/schemas/OperationResourceId" }
+        reason: { type: string, minLength: 1, maxLength: 512 }
+    LinkResultInput:
+      type: object
+      additionalProperties: false
+      required: [context_id, grant_id, result_receipt_id]
+      properties:
+        context_id: { $ref: "#/components/schemas/OperationResourceId" }
+        grant_id: { $ref: "#/components/schemas/OperationResourceId" }
+        result_receipt_id: { $ref: "#/components/schemas/OperationResourceId" }
+    CheckpointDiffInput:
+      type: object
+      additionalProperties: false
+      required: [left_checkpoint_id, right_checkpoint_id]
+      properties:
+        left_checkpoint_id: { $ref: "#/components/schemas/OperationResourceId" }
+        right_checkpoint_id: { $ref: "#/components/schemas/OperationResourceId" }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    CheckpointRestoreInput:
+      type: object
+      additionalProperties: false
+      required: [checkpoint_id]
+      properties:
+        checkpoint_id: { $ref: "#/components/schemas/OperationResourceId" }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ModelHistoryInput:
+      type: object
+      additionalProperties: false
+      required: [provider, model_id]
+      properties:
+        provider: { $ref: "#/components/schemas/OperationResourceId" }
+        model_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ModelRollbackInput:
+      type: object
+      additionalProperties: false
+      required: [snapshot_id]
+      properties: { snapshot_id: { $ref: "#/components/schemas/OperationResourceId" } }
+    OptionalTaskInput:
+      type: object
+      additionalProperties: false
+      properties: { task_id: { $ref: "#/components/schemas/OperationResourceId" } }
+    CapacityCheckInput:
+      type: object
+      additionalProperties: false
+      properties:
+        capability_snapshot: { type: object }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    BudgetCalculateInput:
+      type: object
+      additionalProperties: false
+      properties:
+        capability_snapshot: { type: object }
+        reserved_output_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        safety_headroom_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        usage: { type: object }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    TokenAccountingInput:
+      type: object
+      additionalProperties: false
+      properties:
+        estimator_version: { type: string, minLength: 1, maxLength: 128 }
+        items: { type: array, maxItems: 100000, items: {} }
+        model_id: { type: string, minLength: 1, maxLength: 256 }
+        model_version: { type: string, minLength: 1, maxLength: 256 }
+        tokenizer_id: { type: string, minLength: 1, maxLength: 256 }
+        tokenizer_version: { type: string, minLength: 1, maxLength: 256 }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+        current_window_output_reserved_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        model_snapshot_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ContextPackingInput:
+      type: object
+      additionalProperties: false
+      properties:
+        candidates: { type: array, maxItems: 100000, items: {} }
+        effective_input_budget: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ContextPressureInput:
+      type: object
+      additionalProperties: false
+      properties:
+        effective_input_budget: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        previous_state: { type: object }
+        used_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+        forecast_horizon: { type: integer, minimum: 0, maximum: 100000 }
+        next_turn_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        pending_tool_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        pending_test_log_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+    ContextCompactionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        source_history_digest: { $ref: "#/components/schemas/Sha256Digest" }
+        state: { type: object }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+        raw_history: { type: array, maxItems: 100000, items: {} }
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        model_snapshot_id: { $ref: "#/components/schemas/OperationResourceId" }
+        rollback_checkpoint_id: { $ref: "#/components/schemas/OperationResourceId" }
+        side_effect_cursor: { type: string, minLength: 1, maxLength: 1024 }
+        cost_cursor: { type: string, minLength: 1, maxLength: 1024 }
+        input_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        output_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+    CheckpointCreateInput:
+      type: object
+      additionalProperties: false
+      properties:
+        state: { type: object }
+        payload: { type: object }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+        raw_history: { type: array, maxItems: 100000, items: {} }
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        model_snapshot_id: { $ref: "#/components/schemas/OperationResourceId" }
+        rollback_checkpoint_id: { $ref: "#/components/schemas/OperationResourceId" }
+        side_effect_cursor: { type: string, minLength: 1, maxLength: 1024 }
+        cost_cursor: { type: string, minLength: 1, maxLength: 1024 }
+        input_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        output_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+    ContextRehydrationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        remaining_budget_tokens: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        source_ids: { type: array, maxItems: 100000, uniqueItems: true, items: { $ref: "#/components/schemas/OperationResourceId" } }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ContextIntegrityInput:
+      type: object
+      additionalProperties: false
+      properties:
+        after: { type: object }
+        before: { type: object }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+        checkpoint_id: { $ref: "#/components/schemas/OperationResourceId" }
+    ModelDiscoverInput:
+      type: object
+      additionalProperties: false
+      properties:
+        observation: { type: object }
+        previous_snapshot: { type: object }
+        task_id: { $ref: "#/components/schemas/OperationResourceId" }
+    FolderBeginInput:
+      type: object
+      additionalProperties: false
+      required: [expected_entry_count]
+      properties:
+        session_id: { $ref: "#/components/schemas/OperationResourceId" }
+        expected_entry_count: { type: integer, minimum: 0, maximum: 100000 }
+    ProjectPackageEntry:
+      type: object
+      additionalProperties: false
+      required: [path]
+      properties:
+        path: { type: string, minLength: 1, maxLength: 4096 }
+        kind: { enum: [file, directory, symlink, hardlink, special] }
+        byte_count: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        content_digest: { $ref: "#/components/schemas/Sha256Digest" }
+        role: { enum: [PRIMARY, REFERENCE, IGNORE] }
+        model_read_allowed: { type: boolean }
+        metadata: { type: object }
+    FolderAppendInput:
+      type: object
+      additionalProperties: false
+      required: [session_id, chunk_index, entries]
+      properties:
+        session_id: { $ref: "#/components/schemas/OperationResourceId" }
+        chunk_index: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        entries: { type: array, minItems: 1, maxItems: 1000, items: { $ref: "#/components/schemas/ProjectPackageEntry" } }
+    SessionIdInput:
+      type: object
+      additionalProperties: false
+      required: [session_id]
+      properties: { session_id: { $ref: "#/components/schemas/OperationResourceId" } }
+    PackageVersionInput:
+      type: object
+      additionalProperties: false
+      required: [package_version]
+      properties: { package_version: { $ref: "#/components/schemas/PositivePackageVersion" } }
+    RepositoryContextSource:
+      type: object
+      additionalProperties: false
+      properties:
+        modules: { type: array, maxItems: 100000, items: {} }
+        symbols: { type: array, maxItems: 100000, items: {} }
+        edges: { type: array, maxItems: 100000, items: {} }
+        changed_node_ids: { type: array, maxItems: 100000, uniqueItems: true, items: { type: string } }
+    ProfileSource:
+      type: object
+      additionalProperties: false
+      required: [entries]
+      properties: { entries: { type: array, maxItems: 100000, items: { $ref: "#/components/schemas/ProjectPackageEntry" } } }
+    SymbolIndexSource:
+      type: object
+      additionalProperties: false
+      required: [files]
+      properties:
+        files: { type: array, maxItems: 100000, items: {} }
+        languages: { type: array, maxItems: 256, uniqueItems: true, items: { type: string, minLength: 1, maxLength: 128 } }
+    RepositoryContextRebuildInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, source_input]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        source_input: { $ref: "#/components/schemas/RepositoryContextSource" }
+    ProjectProfileRebuildInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, source_input]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        source_input: { $ref: "#/components/schemas/ProfileSource" }
+    FileClassificationRebuildInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, source_input]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        source_input: { $ref: "#/components/schemas/ProfileSource" }
+    SymbolIndexRebuildInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, source_input]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        source_input: { $ref: "#/components/schemas/SymbolIndexSource" }
+    PackagePageInput:
+      type: object
+      additionalProperties: false
+      required: [package_version]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        limit: { type: integer, minimum: 1, maximum: 1000, default: 100 }
+        cursor: { type: string, minLength: 1, maxLength: 1024 }
+    FolderUploadNegotiateInput:
+      type: object
+      additionalProperties: false
+      required: [session_id, path, byte_count, content_digest]
+      properties:
+        session_id: { $ref: "#/components/schemas/OperationResourceId" }
+        path: { type: string, minLength: 1, maxLength: 4096 }
+        byte_count: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        content_digest: { $ref: "#/components/schemas/Sha256Digest" }
+        part_size: { type: integer, minimum: 1, maximum: 16777216 }
+    FolderUploadConfirmPartInput:
+      type: object
+      additionalProperties: false
+      required: [session_id, path, part_number, byte_count, part_digest, data_base64]
+      properties:
+        session_id: { $ref: "#/components/schemas/OperationResourceId" }
+        path: { type: string, minLength: 1, maxLength: 4096 }
+        part_number: { type: integer, minimum: 1, maximum: 9007199254740991 }
+        byte_count: { type: integer, minimum: 0, maximum: 16777216 }
+        part_digest: { $ref: "#/components/schemas/Sha256Digest" }
+        data_base64: { type: string, minLength: 1, maxLength: 22369624, contentEncoding: base64 }
+      description: Runtime and SDK validators decode data_base64 and require byte_count and part_digest to match the transmitted bytes.
+    FolderUploadStatusInput:
+      type: object
+      additionalProperties: false
+      required: [session_id]
+      properties:
+        session_id: { $ref: "#/components/schemas/OperationResourceId" }
+        path: { type: string, minLength: 1, maxLength: 4096 }
+    PackageDiffInput:
+      type: object
+      additionalProperties: false
+      required: [old_version, new_version]
+      properties:
+        old_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        new_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+    ArtifactRollbackInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, artifact_version]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        artifact_version: { type: integer, minimum: 1, maximum: 9007199254740991 }
+    PackageOverrideInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, path, expected_override_version, reason]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        path: { type: string, minLength: 1, maxLength: 4096 }
+        expected_override_version: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        role: { enum: [PRIMARY, REFERENCE, IGNORE] }
+        model_read_allowed: { type: boolean }
+        reason: { type: string, minLength: 1, maxLength: 512 }
+    PackageUndoInput:
+      type: object
+      additionalProperties: false
+      required: [package_version, path, expected_override_version, audit_id, reason]
+      properties:
+        package_version: { $ref: "#/components/schemas/PositivePackageVersion" }
+        path: { type: string, minLength: 1, maxLength: 4096 }
+        expected_override_version: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        audit_id: { $ref: "#/components/schemas/OperationResourceId" }
+        reason: { type: string, minLength: 1, maxLength: 512 }
+    GovernanceDeleteInput:
+      type: object
+      additionalProperties: false
+      maxProperties: 0
+    GovernanceDeletionStatusInput:
+      type: object
+      additionalProperties: false
+      required: [job_id]
+      properties:
+        job_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+    GovernanceDeletionCommand:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - tenant_id
+        - project_id
+        - job_id
+        - command_id
+        - store_kind
+        - object_id
+        - object_version
+        - object_digest
+        - byte_count
+        - command_digest
+        - state
+        - attempt
+        - execution_receipt_digest
+        - verification_receipt_digest
+        - failure_code
+      properties:
+        schema_version: { const: elmos-governance-deletion-command-v1 }
+        tenant_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        project_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        job_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        command_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        store_kind: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        object_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        object_version: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        object_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        byte_count: { type: integer, minimum: 0, maximum: 9007199254740991 }
+        command_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        state: { enum: [PENDING, CLAIMED, UNKNOWN, VERIFIED, BLOCKED] }
+        attempt: { type: integer, minimum: 0, maximum: 100 }
+        execution_receipt_digest:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewSha256" }
+            - { type: "null" }
+        verification_receipt_digest:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewSha256" }
+            - { type: "null" }
+        failure_code:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+    GovernanceDeletionProofCommand:
+      type: object
+      additionalProperties: false
+      required: [command_id, command_digest, execution_receipt_digest, verification_receipt_digest]
+      properties:
+        command_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        command_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        execution_receipt_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        verification_receipt_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+    GovernanceDeletionProof:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - tenant_id
+        - project_id
+        - job_id
+        - policy_version
+        - inventory_version
+        - inventory_digest
+        - backup_delete_not_before
+        - verified_commands
+        - completed_at
+        - content_in_audit_log
+      properties:
+        schema_version: { const: elmos-governance-deletion-proof-v1 }
+        tenant_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        project_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        job_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        policy_version: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        inventory_version: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        inventory_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        backup_delete_not_before: { type: string, format: date-time }
+        verified_commands:
+          type: array
+          minItems: 1
+          maxItems: 50000
+          items: { $ref: "#/components/schemas/GovernanceDeletionProofCommand" }
+        completed_at: { type: string, format: date-time }
+        content_in_audit_log: { const: false }
+    GovernanceDeletionJob:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - tenant_id
+        - project_id
+        - job_id
+        - actor_id
+        - request_digest
+        - policy_version
+        - inventory_version
+        - inventory_digest
+        - state
+        - backup_delete_not_before
+        - legal_hold_count
+        - command_count
+        - commands
+        - created_at
+        - updated_at
+        - completed_at
+        - proof
+        - proof_digest
+      properties:
+        schema_version: { const: elmos-governance-deletion-job-v1 }
+        tenant_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        project_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        job_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        actor_id: { type: string, minLength: 1, maxLength: 200 }
+        request_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        policy_version: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        inventory_version: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        inventory_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        state: { enum: [PENDING, RUNNING, UNKNOWN, BLOCKED, COMPLETED] }
+        backup_delete_not_before: { type: string, format: date-time }
+        legal_hold_count: { type: integer, minimum: 0, maximum: 50000 }
+        command_count: { type: integer, minimum: 1, maximum: 50000 }
+        commands:
+          type: array
+          minItems: 1
+          maxItems: 50000
+          items: { $ref: "#/components/schemas/GovernanceDeletionCommand" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        completed_at:
+          oneOf:
+            - { type: string, format: date-time }
+            - { type: "null" }
+        proof:
+          oneOf:
+            - { $ref: "#/components/schemas/GovernanceDeletionProof" }
+            - { type: "null" }
+        proof_digest:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewSha256" }
+            - { type: "null" }
+    HumanReviewCurrentCorrectionInput:
+      type: object
+      additionalProperties: false
+      required: [task_id]
+      properties:
+        task_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    HumanReviewDirectCorrectionInput:
+      type: object
+      additionalProperties: false
+      required: [content_id, expected_version, value, reason]
+      properties:
+        content_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        expected_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        value: { description: Exact strict-JSON replacement value; null is forbidden by the runtime. }
+        reason: { type: string, minLength: 1, maxLength: 2000 }
+        expected_digest:
+          type: string
+          pattern: "^sha256:[0-9a-f]{64}$"
+          description: Optional optimistic binding to the current immutable content head.
+    HumanReviewTarget:
+      oneOf:
+        - type: object
+          additionalProperties: false
+          required: [path]
+          properties:
+            path: { type: string, minLength: 1, maxLength: 1024 }
+        - type: object
+          additionalProperties: false
+          required: [segment_id]
+          properties:
+            segment_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        - type: object
+          additionalProperties: false
+          required: [start_ms, end_ms]
+          properties:
+            start_ms: { type: integer, minimum: 0, maximum: 9007199254740990 }
+            end_ms: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        - type: object
+          additionalProperties: false
+          required: [page, x, y, width, height]
+          properties:
+            page: { type: integer, minimum: 1, maximum: 9007199254740990 }
+            x: { type: number, minimum: 0 }
+            y: { type: number, minimum: 0 }
+            width: { type: number, exclusiveMinimum: 0 }
+            height: { type: number, exclusiveMinimum: 0 }
+        - type: object
+          additionalProperties: false
+          required: [table_id, row, column]
+          properties:
+            table_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+            row: { type: integer, minimum: 0, maximum: 9007199254740990 }
+            column: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        - type: object
+          additionalProperties: false
+          required: [requirement_id]
+          properties:
+            requirement_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        - type: object
+          additionalProperties: false
+          required: [conflict_id]
+          properties:
+            conflict_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+    HumanReviewCorrection:
+      type: object
+      additionalProperties: false
+      required:
+        - correction_id
+        - tenant_id
+        - project_id
+        - task_id
+        - correction_version
+        - parent_correction_version
+        - target_kind
+        - target
+        - original_value
+        - corrected_value
+        - source_digest
+        - actor_id
+        - reason
+        - created_at
+        - correction_digest
+      properties:
+        correction_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        tenant_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        project_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        task_id: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" }
+        correction_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        parent_correction_version: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        target_kind: { enum: [TEXT, SPEAKER, TIME_RANGE, BBOX, TABLE, REQUIREMENT, CONFLICT] }
+        target: { $ref: "#/components/schemas/HumanReviewTarget" }
+        original_value: {}
+        corrected_value: {}
+        source_digest: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }
+        actor_id: { type: string, minLength: 1, maxLength: 200, pattern: "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$" }
+        reason: { type: string, minLength: 1, maxLength: 2000 }
+        created_at: { type: string, format: date-time }
+        correction_digest: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }
+    HumanReviewCurrentCorrectionOutput:
+      type: object
+      additionalProperties: false
+      required: [correction]
+      properties:
+        correction: { $ref: "#/components/schemas/HumanReviewCorrection" }
+    HumanReviewReservationStatusInput:
+      type: object
+      additionalProperties: false
+      required: [task_id]
+      properties:
+        task_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+    HumanReviewTargetHeadReservation:
+      type: object
+      additionalProperties: false
+      required: [schema_version, reservation_id, tenant_id, project_id, asset_id, asset_version, asset_content_digest, asset_sha256, target_kind, target_digest, snapshot_id, snapshot_digest, reserved_head_version, reserved_head_value_digest, task_id, decision_id, decision_action, correction_version, correction_digest, source_digest, source_ref_digest, parent_reservation_id, reservation_fence, binding_digest, state, state_version, materialized_head_version, failure_code, created_at, updated_at, completed_at]
+      properties:
+        schema_version: { const: human-review-target-head-reservation-v1 }
+        reservation_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        tenant_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        project_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        asset_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        asset_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        asset_content_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        asset_sha256: { $ref: "#/components/schemas/HumanReviewSha256" }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        snapshot_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        snapshot_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        reserved_head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        reserved_head_value_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        task_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        decision_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        decision_action: { enum: [APPROVE, REVERT] }
+        correction_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        correction_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        source_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        source_ref_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        parent_reservation_id:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewResourceId" }
+            - { type: "null" }
+        reservation_fence: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        binding_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        state: { enum: [PROPAGATING, UNKNOWN, FAILED, APPLIED, REVERTED] }
+        state_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        materialized_head_version:
+          oneOf:
+            - { type: integer, minimum: 2, maximum: 9007199254740990 }
+            - { type: "null" }
+        failure_code:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewResourceId" }
+            - { type: "null" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        completed_at:
+          oneOf:
+            - { type: string, format: date-time }
+            - { type: "null" }
+    HumanReviewReservationStatusOutput:
+      type: object
+      additionalProperties: false
+      required: [schema_version, task_id, reservations]
+      properties:
+        schema_version: { const: human-review-target-head-reservation-status-v1 }
+        task_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        reservations:
+          type: array
+          maxItems: 1000
+          items: { $ref: "#/components/schemas/HumanReviewTargetHeadReservation" }
+    HumanReviewSourceListInput:
+      type: object
+      additionalProperties: false
+      required: [content_id, expected_asset_version, kinds, limit, cursor]
+      properties:
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_asset_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        kinds:
+          type: array
+          minItems: 0
+          maxItems: 7
+          uniqueItems: true
+          description: Unique target kinds in ascending Unicode code-point order.
+          items: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        limit: { type: integer, minimum: 1, maximum: 200 }
+        cursor:
+          oneOf:
+            - { type: string, minLength: 1, maxLength: 4096, pattern: "^[A-Za-z0-9_-]+$" }
+            - { type: "null" }
+    HumanReviewSourceGetInput:
+      type: object
+      additionalProperties: false
+      required: [content_id, expected_asset_version, target_kind, target_digest, expected_head_version]
+      properties:
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_asset_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+    HumanReviewSourceBoundEnqueueInput:
+      type: object
+      additionalProperties: false
+      required:
+        - content_id
+        - expected_asset_version
+        - target_kind
+        - target_digest
+        - expected_head_version
+        - expected_snapshot_id
+        - expected_snapshot_digest
+        - expected_head_value_digest
+        - original_value_digest
+        - reason
+      properties:
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_asset_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        expected_snapshot_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_snapshot_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_value_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_digest:
+          allOf: [{ $ref: "#/components/schemas/HumanReviewSha256" }]
+          description: SHA-256 under sha256:rfc8785-ijson-safeint-v1.
+        reason: { type: string, minLength: 1, maxLength: 2000 }
+    HumanReviewEnqueuePrepareInput:
+      type: object
+      additionalProperties: false
+      required:
+        - recovery_handle
+        - execute_idempotency_key
+        - content_id
+        - expected_asset_version
+        - target_kind
+        - target_digest
+        - expected_head_version
+        - expected_snapshot_id
+        - expected_snapshot_digest
+        - expected_head_value_digest
+        - original_value_digest
+        - reason
+      properties:
+        recovery_handle:
+          type: string
+          minLength: 32
+          maxLength: 200
+          description: Opaque high-entropy value; the service stores only its SHA-256 digest.
+        execute_idempotency_key:
+          type: string
+          minLength: 8
+          maxLength: 200
+          description: Distinct from the prepare request key; only its SHA-256 digest is stored.
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_asset_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        expected_snapshot_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_snapshot_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_value_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_digest:
+          allOf: [{ $ref: "#/components/schemas/HumanReviewSha256" }]
+          description: SHA-256 under sha256:rfc8785-ijson-safeint-v1.
+        reason: { type: string, minLength: 1, maxLength: 2000 }
+    HumanReviewEnqueueExecuteInput:
+      type: object
+      additionalProperties: false
+      required: [recovery_handle]
+      properties:
+        recovery_handle:
+          type: string
+          minLength: 32
+          maxLength: 200
+    HumanReviewEnqueueInput:
+      type: object
+      additionalProperties: false
+      required: [content_id, expected_asset_version, target_kind, target_digest, expected_head_version, expected_snapshot_id, expected_snapshot_digest, expected_head_value_digest, original_value_digest, reason]
+      properties:
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_asset_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        expected_snapshot_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        expected_snapshot_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        expected_head_value_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        reason: { type: string, minLength: 1, maxLength: 2000 }
+    HumanReviewEnqueuePreparation:
+      type: object
+      additionalProperties: false
+      required: [schema_version, recovery_handle, request_digest, state, safe_to_clear, expires_at, prepared_at, executed_at, task_id, enqueue_input]
+      allOf:
+        - if:
+            properties: { state: { const: PREPARED } }
+          then:
+            properties:
+              safe_to_clear: { const: false }
+              executed_at: { type: "null" }
+              task_id: { type: "null" }
+        - if:
+            properties: { state: { const: EXECUTED } }
+          then:
+            properties:
+              safe_to_clear: { const: true }
+              executed_at: { type: string, format: date-time }
+              task_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        - if:
+            properties: { state: { const: EXPIRED } }
+          then:
+            properties:
+              safe_to_clear: { const: true }
+              executed_at: { type: "null" }
+              task_id: { type: "null" }
+      properties:
+        schema_version: { const: human-review-enqueue-preparation-v1 }
+        recovery_handle: { type: string, minLength: 32, maxLength: 200 }
+        request_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        state: { enum: [PREPARED, EXECUTED, EXPIRED] }
+        safe_to_clear: { type: boolean }
+        expires_at: { type: string, format: date-time }
+        prepared_at: { type: string, format: date-time }
+        executed_at:
+          oneOf:
+            - { type: string, format: date-time }
+            - { type: "null" }
+        task_id:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewResourceId" }
+            - { type: "null" }
+        enqueue_input: { $ref: "#/components/schemas/HumanReviewEnqueueInput" }
+    HumanReviewEnqueuePreparationAbsence:
+      type: object
+      additionalProperties: false
+      required: [schema_version, recovery_handle, state, safe_to_clear]
+      properties:
+        schema_version: { const: human-review-enqueue-preparation-absence-v1 }
+        recovery_handle: { type: string, minLength: 32, maxLength: 200 }
+        state: { const: ABSENT }
+        safe_to_clear: { const: true }
+    HumanReviewEnqueuePrepared:
+      allOf:
+        - { $ref: "#/components/schemas/HumanReviewEnqueuePreparation" }
+        - type: object
+          required: [state]
+          properties: { state: { const: PREPARED } }
+    HumanReviewEnqueueExecuted:
+      allOf:
+        - { $ref: "#/components/schemas/HumanReviewEnqueuePreparation" }
+        - type: object
+          required: [state]
+          properties: { state: { const: EXECUTED } }
+    HumanReviewEnqueueExpired:
+      allOf:
+        - { $ref: "#/components/schemas/HumanReviewEnqueuePreparation" }
+        - type: object
+          required: [state]
+          properties: { state: { const: EXPIRED } }
+    HumanReviewEnqueuePrepareOutput:
+      type: object
+      additionalProperties: false
+      required: [preparation]
+      properties:
+        preparation: { $ref: "#/components/schemas/HumanReviewEnqueuePrepared" }
+    HumanReviewTask:
+      type: object
+      additionalProperties: false
+      required: [task_id, tenant_id, project_id, asset_id, target_kind, target, original_value, source_digest, source_ref, confidence, reason, state, current_correction_version, current_correction_digest, effective_version, effective_digest, claim_actor_id, claim_fence, claim_expires_at, version, created_by, created_at, updated_at, closed_at]
+      properties:
+        task_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        tenant_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        project_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        asset_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target: { $ref: "#/components/schemas/HumanReviewTarget" }
+        original_value: {}
+        source_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        source_ref: { $ref: "#/components/schemas/HumanReviewSourceRefV2" }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        reason: { type: string, minLength: 1, maxLength: 2000 }
+        state: { enum: [QUEUED, CLAIMED, EDITED, APPROVED, REJECTED, REOPENED, REVERTING, REVERTED] }
+        current_correction_version: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        current_correction_digest:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewSha256" }
+            - { type: "null" }
+        effective_version: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        effective_digest:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewSha256" }
+            - { type: "null" }
+        claim_actor_id:
+          oneOf:
+            - { type: string, minLength: 1, maxLength: 200, pattern: "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$" }
+            - { type: "null" }
+        claim_fence: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        claim_expires_at:
+          oneOf:
+            - { type: string, format: date-time }
+            - { type: "null" }
+        version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        created_by: { type: string, minLength: 1, maxLength: 200, pattern: "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}$" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        closed_at:
+          oneOf:
+            - { type: string, format: date-time }
+            - { type: "null" }
+    HumanReviewEnqueueExecuteCompletedOutput:
+      type: object
+      additionalProperties: false
+      required: [preparation, task]
+      properties:
+        preparation: { $ref: "#/components/schemas/HumanReviewEnqueueExecuted" }
+        task: { $ref: "#/components/schemas/HumanReviewTask" }
+    HumanReviewEnqueueExecuteTerminalOutput:
+      type: object
+      additionalProperties: false
+      required: [preparation]
+      properties:
+        preparation:
+          oneOf:
+            - { $ref: "#/components/schemas/HumanReviewEnqueueExpired" }
+            - { $ref: "#/components/schemas/HumanReviewEnqueuePreparationAbsence" }
+    HumanReviewEnqueueExecuteOutput:
+      oneOf:
+        - { $ref: "#/components/schemas/HumanReviewEnqueueExecuteCompletedOutput" }
+        - { $ref: "#/components/schemas/HumanReviewEnqueueExecuteTerminalOutput" }
+    HumanReviewResourceId:
+      type: string
+      minLength: 1
+      maxLength: 128
+      pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    HumanReviewSha256:
+      type: string
+      pattern: "^sha256:[0-9a-f]{64}$"
+    HumanReviewTargetKind:
+      enum: [TEXT, SPEAKER, TIME_RANGE, BBOX, TABLE, REQUIREMENT, CONFLICT]
+    HumanReviewSourceRefV2:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - content_id
+        - content_version
+        - content_digest
+        - asset_sha256
+        - target_kind
+        - target_digest
+        - snapshot_id
+        - snapshot_digest
+        - head_version
+        - head_value_digest
+        - source_digest
+        - provenance_digest
+        - original_value_client_digest
+        - original_value_digest_contract
+      properties:
+        schema_version: { const: human-review-source-ref-v2 }
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        content_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        content_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        asset_sha256: { $ref: "#/components/schemas/HumanReviewSha256" }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        snapshot_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        snapshot_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        head_value_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        source_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        provenance_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_client_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_digest_contract: { const: "sha256:rfc8785-ijson-safeint-v1" }
+    HumanReviewSourceSummary:
+      type: object
+      additionalProperties: false
+      required: [schema_version, content_id, content_version, target_kind, target, target_digest, confidence, head_version, head_direction, head_correction_version, original_value_client_digest, original_value_digest_contract, source_ref]
+      properties:
+        schema_version: { const: human-review-source-summary-v1 }
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        content_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target: { $ref: "#/components/schemas/HumanReviewTarget" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        head_direction: { enum: [SNAPSHOT, APPLY, REVERT] }
+        head_correction_version: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        original_value_client_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_digest_contract: { const: "sha256:rfc8785-ijson-safeint-v1" }
+        source_ref: { $ref: "#/components/schemas/HumanReviewSourceRefV2" }
+    HumanReviewSourceDetail:
+      type: object
+      additionalProperties: false
+      required: [schema_version, content_id, content_version, target_kind, target, target_digest, confidence, head_version, head_direction, head_correction_version, original_value_client_digest, original_value_digest_contract, source_ref, original_value]
+      properties:
+        schema_version: { const: human-review-source-detail-v1 }
+        content_id: { $ref: "#/components/schemas/HumanReviewResourceId" }
+        content_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        target_kind: { $ref: "#/components/schemas/HumanReviewTargetKind" }
+        target: { $ref: "#/components/schemas/HumanReviewTarget" }
+        target_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        head_version: { type: integer, minimum: 1, maximum: 9007199254740990 }
+        head_direction: { enum: [SNAPSHOT, APPLY, REVERT] }
+        head_correction_version: { type: integer, minimum: 0, maximum: 9007199254740990 }
+        original_value_client_digest: { $ref: "#/components/schemas/HumanReviewSha256" }
+        original_value_digest_contract: { const: "sha256:rfc8785-ijson-safeint-v1" }
+        source_ref: { $ref: "#/components/schemas/HumanReviewSourceRefV2" }
+        original_value: {}
+    HumanReviewSourceListOutput:
+      type: object
+      additionalProperties: false
+      required: [sources, next_cursor, total]
+      properties:
+        sources:
+          type: array
+          maxItems: 200
+          items: { $ref: "#/components/schemas/HumanReviewSourceSummary" }
+        next_cursor:
+          oneOf:
+            - { type: string, minLength: 1, maxLength: 4096, pattern: "^[A-Za-z0-9_-]+$" }
+            - { type: "null" }
+        total: { type: integer, minimum: 0, maximum: 1000 }
+    HumanReviewSourceGetOutput:
+      type: object
+      additionalProperties: false
+      required: [source]
+      properties:
+        source: { $ref: "#/components/schemas/HumanReviewSourceDetail" }
+    SkillExecutionResult:
+      allOf:
+        - { $ref: "#/components/schemas/SkillExecutionResultEnvelope" }
+        - { $ref: "#/components/schemas/SkillOperationDiscriminator" }
+      discriminator:
+        propertyName: skill
+    SkillExecutionResultEnvelope:
+      type: object
+      additionalProperties: false
+      required: [schema_version, skill, operation, status, retryable, trace_id, request_digest, implementation_state, external_evidence, certification, output, result_digest]
+      allOf:
+        - if:
+            properties:
+              status: { enum: [BLOCKED, FAILED] }
+            required: [status]
+          then:
+            required: [code]
+      properties:
+        schema_version: { const: 1.0.0 }
+        skill: { type: string, minLength: 7, maxLength: 96, pattern: "^elmos-[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        operation: { type: string, pattern: "^[a-z][a-z0-9_-]{0,63}$" }
+        status: { enum: [SUCCEEDED, PARTIAL, BLOCKED, FAILED, NOT_APPLICABLE, NOT_RUN_EXTERNAL] }
+        retryable: { type: boolean }
+        trace_id: { type: string, minLength: 1, maxLength: 128 }
+        request_digest:
+          type: string
+          pattern: "^[0-9a-f]{64}$"
+          description: SHA-256 over the request identity using rfc8785-ijson-safeint-v1 canonical JSON.
+        implementation_state: { enum: [CODE_IMPLEMENTED_LOCAL, BRIDGE_REQUIRED] }
+        external_evidence: { const: NOT_RUN }
+        certification: { const: NOT_CERTIFIED }
+        output: { type: object }
+        code: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Z][A-Z0-9_:-]{0,127}$" }
+        result_digest:
+          type: string
+          pattern: "^[0-9a-f]{64}$"
+          description: SHA-256 over this result without result_digest using rfc8785-ijson-safeint-v1 canonical JSON.
+    CapabilityResponse:
+      type: object
+      additionalProperties: false
+      required: [schema_version, status, skill_count, skills, external_evidence, certification]
+      properties:
+        schema_version: { const: 1.0.0 }
+        status: { const: CODE_IMPLEMENTED_LOCAL }
+        skill_count: { const: 50 }
+        skills:
+          type: array
+          minItems: 50
+          maxItems: 50
+          items: { $ref: "#/components/schemas/SkillCapability" }
+        external_evidence: { const: NOT_RUN }
+        certification: { const: NOT_CERTIFIED }
+    SkillCapability:
+      type: object
+      additionalProperties: false
+      required: [ordinal, skill, handler_id, phase, implementation_state, external_evidence, certification, transport]
+      properties:
+        ordinal: { type: integer, minimum: 1, maximum: 50 }
+        skill: { type: string, minLength: 7, maxLength: 96, pattern: "^elmos-[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        handler_id: { type: string, minLength: 9, maxLength: 128, pattern: "^execute_[a-z0-9_]+$" }
+        phase: { type: string, minLength: 1, maxLength: 64 }
+        implementation_state: { const: CODE_IMPLEMENTED_LOCAL }
+        external_evidence: { const: NOT_RUN }
+        certification: { const: NOT_CERTIFIED }
+        transport:
+          type: object
+          additionalProperties: false
+          required: [maximum_request_bytes, maximum_json_part_bytes, part_number_base]
+          properties:
+            maximum_request_bytes: { type: integer, const: 2097152 }
+            maximum_json_part_bytes: { type: integer, const: 1048576 }
+            part_number_base: { type: integer, const: 0 }
+    ErrorResponse:
+      oneOf:
+        - { $ref: "#/components/schemas/ClientErrorResponse" }
+        - { $ref: "#/components/schemas/ServerErrorResponse" }
+    ClientErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [schema_version, status, code, retryable, trace_id]
+      properties:
+        schema_version: { const: 1.0.0 }
+        status: { const: BLOCKED }
+        code: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Z][A-Z0-9_:-]{0,127}$" }
+        retryable: { type: boolean }
+        trace_id: { type: string, minLength: 1, maxLength: 128 }
+    ServerErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [schema_version, status, code, retryable, trace_id]
+      properties:
+        schema_version: { const: 1.0.0 }
+        status: { const: FAILED }
+        code: { type: string, minLength: 1, maxLength: 128, pattern: "^[A-Z][A-Z0-9_:-]{0,127}$" }
+        retryable: { type: boolean }
+        trace_id: { type: string, minLength: 1, maxLength: 128 }

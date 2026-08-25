@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/context-budget.schema.json",
+  "title": "Elmos ContextBudget",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "budget_id",
+    "task_run_id",
+    "model_capability_snapshot_id",
+    "model",
+    "allocations",
+    "effective_input_budget_tokens",
+    "remaining_tokens",
+    "pressure",
+    "calculated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "budget_id": {
+      "type": "string"
+    },
+    "task_run_id": {
+      "type": "string"
+    },
+    "model_capability_snapshot_id": {
+      "type": "string"
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model_id",
+        "context_window_tokens",
+        "max_output_tokens"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "model_id": {
+          "type": "string"
+        },
+        "model_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "context_window_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "allocations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_tokens",
+        "policy_tokens",
+        "skill_tokens",
+        "conversation_tokens",
+        "document_tokens",
+        "audio_transcript_tokens",
+        "image_equivalent_tokens",
+        "repository_tokens",
+        "tool_definition_tokens",
+        "tool_result_tokens",
+        "memory_tokens",
+        "reserved_output_tokens",
+        "future_tool_result_reserve_tokens",
+        "reasoning_reserve_tokens",
+        "safety_headroom_tokens"
+      ],
+      "properties": {
+        "system_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "policy_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conversation_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "document_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "audio_transcript_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "image_equivalent_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "repository_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tool_definition_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tool_result_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "memory_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reserved_output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "future_tool_result_reserve_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reasoning_reserve_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "safety_headroom_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "effective_input_budget_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "active_input_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "remaining_tokens": {
+      "type": "integer"
+    },
+    "pressure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ratio",
+        "state"
+      ],
+      "properties": {
+        "ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "state": {
+          "enum": [
+            "NORMAL",
+            "ELEVATED",
+            "HIGH",
+            "CRITICAL",
+            "OVERFLOW"
+          ]
+        },
+        "forecast_ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "estimate_status": {
+      "enum": [
+        "MEASURED",
+        "ESTIMATED",
+        "MIXED_MEASURED_AND_ESTIMATED",
+        "UNKNOWN"
+      ]
+    },
+    "policy_version": {
+      "type": "string"
+    },
+    "calculated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -50,7 +50,7 @@
       "optional": []
     },
     "routes-macos": {
-      "description": "Exact ten-language polyglot-route host profile, including independent TypeScript and JavaScript/Node.js identities plus Apple-native C++, Objective-C, and Swift.",
+      "description": "Exact thirteen-identity polyglot-route host profile. React is bound to the locked Node/TypeScript/React package tuple and Flutter to its bundled Dart SDK; deprecated JavaScript evidence is retained outside this active profile.",
       "platforms": [
         "darwin-arm64"
       ],
@@ -64,7 +64,11 @@
         "rust-1.89.0",
         "apple-clang-21",
         "objective-c-apple",
-        "swift-6.3.3"
+        "swift-6.3.3",
+        "php-route-8.5.9",
+        "kotlin-route-2.2.20",
+        "react-19.2.7",
+        "flutter-3.44.1"
       ],
       "optional": []
     },
@@ -72,8 +76,12 @@
       "description": "Governed polyglot capability catalog. Tools are optional until an exact Batch Skill and target profile are selected.",
       "required": [],
       "optional": [
+        "java-21",
+        "python-3.12.12",
+        "dotnet-sdk-10.0.301",
         "node-26.0.0",
         "pnpm-10.12.4",
+        "typescript-5.9.2",
         "go-1.25.0",
         "kotlin-2.2.20",
         "php-8.4.12",
@@ -149,10 +157,13 @@
         "postgresql-17.5",
         "apple-clang-21",
         "objective-c-apple",
-        "swift-6.3.3"
+        "swift-6.3.3",
+        "php-route-8.5.9",
+        "kotlin-route-2.2.20",
+        "react-19.2.7",
+        "flutter-3.44.1"
       ],
       "optional": [
-        "flutter-3.44.1",
         "posix-shells",
         "powershell",
         "cmake-ninja",
@@ -267,6 +278,19 @@
       ]
     },
     {
+      "id": "react-19.2.7",
+      "display_name": "React analyzer package tuple",
+      "languages": ["react"],
+      "version": "React 19.2.7 / React DOM 19.2.7 / @types/react 19.1.10 / @types/react-dom 19.1.7 / TypeScript 5.9.2 / Node 26.0.0",
+      "install_policy": "repository-lock",
+      "platforms": ["darwin-arm64", "linux-x86_64", "linux-arm64", "windows-x86_64"],
+      "required_by": ["polyglot-routes"],
+      "notes": "This probe binds the repository React package version. The route analyzer separately rejects JSX, hooks, effects, and component lifecycle semantics outside its typed-pure-module profile.",
+      "probes": [
+        {"id": "react-package", "expected": "React 19.2.7", "pattern": "^19\\.2\\.7$"}
+      ]
+    },
+    {
       "id": "pnpm-10.12.4",
       "display_name": "pnpm",
       "languages": [],
@@ -317,6 +341,20 @@
       ]
     },
     {
+      "id": "kotlin-route-2.2.20",
+      "display_name": "Kotlin route compiler",
+      "languages": ["kotlin"],
+      "version": "Kotlin 2.2.20 / JDK 21.0.11",
+      "install_policy": "managed-or-host",
+      "platforms": ["darwin-arm64", "linux-x86_64", "linux-arm64"],
+      "required_by": ["polyglot-routes"],
+      "notes": "The route engine additionally binds the complete compiler tree, launcher, compiler JAR, stdlib JAR, build number, and JDK release digest.",
+      "probes": [
+        {"id": "java", "expected": "OpenJDK 21.0.11", "pattern": "version \\\"21\\.0\\.11"},
+        {"id": "kotlinc", "expected": "Kotlin compiler 2.2.20", "pattern": "kotlinc-jvm 2\\.2\\.20\\b"}
+      ]
+    },
+    {
       "id": "php-8.4.12",
       "display_name": "PHP CLI",
       "languages": ["php"],
@@ -330,6 +368,20 @@
         {"id": "php-modules", "expected": "openssl", "pattern": "(?m)^openssl$"},
         {"id": "php-modules", "expected": "hash", "pattern": "(?m)^hash$"},
         {"id": "php-modules", "expected": "json", "pattern": "(?m)^json$"}
+      ]
+    },
+    {
+      "id": "php-route-8.5.9",
+      "display_name": "PHP route analyzer runtime",
+      "languages": ["php"],
+      "version": "8.5.9 NTS / ext-tokenizer",
+      "install_policy": "managed-or-host",
+      "platforms": ["darwin-arm64"],
+      "required_by": ["polyglot-routes"],
+      "notes": "Separate from the PHP 8.4.12 Project Synthesis emitter. The route engine also verifies the full install tree, executable digest, integer/float identity, extension set, and tokenizer binding.",
+      "probes": [
+        {"id": "php-route", "expected": "PHP 8.5.9 NTS", "pattern": "^PHP 8\\.5\\.9 .*\\(NTS\\)"},
+        {"id": "php-route-modules", "expected": "tokenizer", "pattern": "(?m)^tokenizer$"}
       ]
     },
     {
@@ -363,7 +415,7 @@
     {
       "id": "apple-clang-21",
       "display_name": "Apple Clang C/C++ toolchain",
-      "languages": ["cpp"],
+      "languages": ["c", "cpp"],
       "version": "21.0.0",
       "install_policy": "host-apple",
       "platforms": ["darwin-arm64"],
@@ -405,13 +457,14 @@
     {
       "id": "flutter-3.44.1",
       "display_name": "Flutter with bundled Dart",
-      "languages": ["dart"],
+      "languages": ["dart", "flutter"],
       "version": "Flutter 3.44.1 / Dart 3.12.1",
       "install_policy": "managed-or-host",
       "platforms": ["darwin-arm64", "linux-x86_64", "linux-arm64", "windows-x86_64"],
-      "required_by": ["batch-72", "frontend-native"],
+      "required_by": ["batch-72", "frontend-native", "polyglot-routes"],
+      "notes": "The central doctor probes only the bundled Dart executable. The route-engine exact receipt binds the Flutter launcher, flutter.version.json, and the complete bundled Dart SDK tree without invoking Flutter's mutable cache updater. Repository execution is limited to the import-free pure-Dart subset; Flutter framework, plugin, UI, emulator, and device semantics remain unsupported and NOT_RUN.",
       "probes": [
-        {"id": "flutter", "expected": "Flutter 3.44.1 with Dart 3.12.1", "pattern": "(?s)^Flutter 3\\.44\\.1.*Tools .* Dart 3\\.12\\.1"}
+        {"id": "dart-flutter", "expected": "Flutter-bundled Dart 3.12.1", "pattern": "^Dart SDK version: 3\\.12\\.1\\b"}
       ]
     },
     {
@@ -664,7 +717,8 @@
       "observational_probes": [
         {"id": "erl", "expected": "available Erlang/OTP", "pattern": "^\\d+$"},
         {"id": "elixir", "expected": "available Elixir", "pattern": "Elixir "},
-        {"id": "mix", "expected": "available Mix", "pattern": "Mix "}
+        {"id": "mix", "expected": "available Mix", "pattern": "Mix "},
+        {"id": "gleam", "expected": "available Gleam", "pattern": "gleam \\d+\\.\\d+"}
       ]
     },
     {
@@ -683,7 +737,7 @@
   ],
   "batch_bindings": {
     "b66-80": {
-      "66": ["node-26.0.0", "pnpm-10.12.4"],
+      "66": ["node-26.0.0", "pnpm-10.12.4", "typescript-5.9.2"],
       "67": ["go-1.25.0"],
       "68": ["java-21", "kotlin-2.2.20"],
       "69": ["php-8.4.12"],

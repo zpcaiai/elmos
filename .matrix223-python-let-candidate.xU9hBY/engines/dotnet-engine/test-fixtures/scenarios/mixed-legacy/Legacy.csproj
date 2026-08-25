@@ -1,0 +1,7 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup><TargetFrameworkVersion>v4.8</TargetFrameworkVersion></PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'"><PlatformTarget>x64</PlatformTarget></PropertyGroup>
+  <ItemGroup><Compile Include="LegacyService.cs" /><None Include="packages.config" /></ItemGroup>
+  <Target Name="CustomAuditTarget" BeforeTargets="BeforeBuild" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

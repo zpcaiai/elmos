@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "case_key": "build-cache-tenant-isolation-v1.2-assurance-v1",
+  "version": 1,
+  "owner": "ELMOS verification maintainers",
+  "top_claim": "The exact build-cache v1.2 target artifact prevents unauthorized cross-tenant cache access and denied-action side effects for the declared workload and environment.",
+  "claims": [
+    {
+      "claim_id": "claim.trusted-authentication",
+      "statement": "Trusted runtime identity, not caller input, establishes tenant and principal scope.",
+      "status": "unsupported",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "security/principal-resource-action-matrix.json"
+      ],
+      "assumptions": [
+        "The embedding gateway supplies an authenticated context only after successful mutual authentication."
+      ],
+      "limitations": [
+        "Runtime negative tests and gateway deployment evidence are NOT_RUN."
+      ]
+    },
+    {
+      "claim_id": "claim.tenant-noninterference",
+      "statement": "Denied and cross-tenant operations have no observable storage, cache, quarantine, process, or external-call side effect in the protected scope.",
+      "status": "unsupported",
+      "evidence_refs": [
+        "security/principal-resource-action-matrix.json",
+        "corpus/negative/manifest.json",
+        "corpus/holdout/manifest.json"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "Development, negative, holdout, and representative workload executions are NOT_RUN.",
+        "No independent P0 review exists."
+      ]
+    },
+    {
+      "claim_id": "claim.evidence-and-attestation-scope",
+      "statement": "Only exact, owned, unexpired, non-revoked, independently signed evidence can authorize reuse, routing, or checkpoint adoption.",
+      "status": "unsupported",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "corpus/negative/manifest.json"
+      ],
+      "assumptions": [
+        "Operational trust stores and revocation sources are configured correctly."
+      ],
+      "limitations": [
+        "No production trust-store or revocation exercise is attached."
+      ]
+    },
+    {
+      "claim_id": "claim.repository-input-no-execution-authority",
+      "statement": "Repository-controlled input cannot choose an executable parity runner or broaden authorization.",
+      "status": "unsupported",
+      "evidence_refs": [
+        "artifacts/target-artifact.json",
+        "corpus/holdout/manifest.json"
+      ],
+      "assumptions": [],
+      "limitations": [
+        "The parity harness is not connected to a production allowlisted runner service."
+      ]
+    }
+  ],
+  "evidence": [
+    "artifacts/source-artifact.json",
+    "artifacts/target-artifact.json",
+    "environment/local-validation-environment.json",
+    "coverage/skill-wiring-audit.json",
+    "certification/local-test-manifest.json"
+  ],
+  "residual_risks": [
+    {
+      "risk_id": "RISK-P0-001",
+      "severity": "P0",
+      "status": "OPEN",
+      "description": "No independent negative, holdout, representative, mutation, or production-equivalent tenant-isolation execution exists."
+    },
+    {
+      "risk_id": "RISK-P0-002",
+      "severity": "P0",
+      "status": "OPEN",
+      "description": "Provider adapter, context compaction, parity harness, and SLO autotuner remain disconnected from production-shaped runtime composition."
+    },
+    {
+      "risk_id": "RISK-P0-003",
+      "severity": "P0",
+      "status": "OPEN",
+      "description": "PostgreSQL migration and service behavior are NOT_RUN."
+    }
+  ],
+  "monitoring_obligations": [
+    "Monitor cross-tenant denial counts without recording tenant secrets.",
+    "Alert on trust, expiry, revocation, ownership, and evidence-integrity failures.",
+    "Latch rollback on any false hit, cross-tenant hit, corrupt execution, or under-validated publication."
+  ],
+  "approvals": []
+}

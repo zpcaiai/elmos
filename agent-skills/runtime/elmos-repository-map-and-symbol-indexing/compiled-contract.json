@@ -1,0 +1,176 @@
+{
+  "acceptance": [
+    {
+      "criterion": "每个符号可追溯到具体项目版本、文件和源码范围",
+      "evidence": [],
+      "id": "S48-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "增量索引后无陈旧/孤儿边且结果与全量重建一致",
+      "evidence": [],
+      "id": "S48-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "解析失败被显式报告，不伪造完整覆盖",
+      "evidence": [],
+      "id": "S48-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "不在索引阶段执行 install、postinstall、Makefile、Dockerfile 或用户脚本",
+      "evidence": [],
+      "id": "S48-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "目标语言和框架达到定义的符号/关系覆盖门槛",
+      "evidence": [],
+      "id": "S48-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "大型仓库的索引吞吐、存储和查询延迟满足SLO",
+      "evidence": [],
+      "id": "S48-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "每个符号可追溯到具体项目版本、文件和源码范围",
+      "增量索引后无陈旧/孤儿边且结果与全量重建一致",
+      "解析失败被显式报告，不伪造完整覆盖",
+      "不在索引阶段执行 install、postinstall、Makefile、Dockerfile 或用户脚本",
+      "目标语言和框架达到定义的符号/关系覆盖门槛",
+      "大型仓库的索引吞吐、存储和查询延迟满足SLO"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "repository_maps",
+      "repository_modules",
+      "repository_symbols",
+      "repository_dependencies",
+      "repository_index_runs"
+    ],
+    "deliverables": [
+      "RepositoryMap/Symbol/Edge schema 与数据库迁移",
+      "目标语言/框架解析适配器与调度器",
+      "增量索引、影响分析和查询 API",
+      "多语言仓库黄金集、性能和准确率报告"
+    ],
+    "dependencies": [
+      "elmos-project-root-language-framework-detection",
+      "elmos-ignore-generated-vendored-file-classification",
+      "elmos-repository-context-map"
+    ],
+    "events": [
+      "repository.index.started",
+      "repository.symbol.indexed",
+      "repository.index.completed",
+      "repository.index.partial"
+    ],
+    "failure_modes": [
+      "parser crash",
+      "dynamic edge missed",
+      "stale symbol retained",
+      "user code executed during indexing"
+    ],
+    "inputs": [
+      "分析视图 manifest",
+      "ProjectProfile",
+      "源文件",
+      "历史 RepositoryMap"
+    ],
+    "metrics": [
+      "symbol_index_coverage",
+      "edge_precision",
+      "incremental_index_latency_seconds",
+      "stale_symbol_count"
+    ],
+    "name": "elmos-repository-map-and-symbol-indexing",
+    "objective": "从多语言项目生成可增量、可查询、带源码范围的 Repository Map，为代码理解、生成、转换、测试和上下文装载提供结构事实。",
+    "ordinal": 48,
+    "outputs": [
+      "RepositoryMap",
+      "符号与依赖索引",
+      "影响/测试映射",
+      "解析覆盖报告"
+    ],
+    "responsibilities": [
+      "按项目画像选择解析器、LSP、tree-sitter、编译器前端或安全静态分析器，不执行项目安装脚本。",
+      "索引模块、包/命名空间、类型、函数、字段、路由、API、数据实体、消息主题、配置键和测试。",
+      "建立 import、调用、继承、实现、读写、API、数据库、消息、构建和测试覆盖关系。",
+      "为每个符号保留路径、字节/行范围、签名、可见性、语言、版本、哈希和解析置信度。",
+      "识别动态关系、反射、代码生成和框架约定，无法确定时保留候选与置信度。",
+      "根据 manifest diff 只重建变更符号及受影响边，并进行孤儿和一致性检查。",
+      "为下游提供符号搜索、调用链、影响分析、入口点、测试映射和图导出。",
+      "监控索引覆盖、陈旧节点、解析失败和跨语言边准确率。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "仓库地图与符号索引"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-repository-map-and-symbol-indexing/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-repository-map-and-symbol-indexing/SKILL.md": {
+        "bytes": 3862,
+        "mode": "0644",
+        "sha256": "33d1d772cca1d6e7a0a030b687db8f9c507fb45b294b0afc75ac0dbdb199b09e"
+      },
+      "skills/elmos-repository-map-and-symbol-indexing/references/contract.yaml": {
+        "bytes": 2875,
+        "mode": "0644",
+        "sha256": "bab9d413001d9678e8bc4f3b5ee203d6a1b1af7764b9dc54d4e214c11ce4d4fb"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-repository-map-and-symbol-indexing/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_repository_map_and_symbol_indexing",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "indexing",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当安全接入的项目包需要建立模块、包、类、接口、函数、API、数据库、消息、测试、配置和依赖图时使用。",
+    "name": "elmos-repository-map-and-symbol-indexing",
+    "ordinal": 48,
+    "title": "仓库地图与符号索引"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "bab9d413001d9678e8bc4f3b5ee203d6a1b1af7764b9dc54d4e214c11ce4d4fb",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "33d1d772cca1d6e7a0a030b687db8f9c507fb45b294b0afc75ac0dbdb199b09e"
+  }
+}

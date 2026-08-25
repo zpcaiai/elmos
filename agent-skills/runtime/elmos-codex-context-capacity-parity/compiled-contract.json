@@ -1,0 +1,142 @@
+{
+  "acceptance": [
+    {
+      "criterion": "当前基线仅位于版本化能力配置而非业务代码常量",
+      "evidence": [],
+      "id": "S29-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "总上传语料可超过窗口并通过检索使用",
+      "evidence": [],
+      "id": "S29-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "任何模型调用在发送前完成预算校验",
+      "evidence": [],
+      "id": "S29-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "超限不会丢弃用户最新要求或验收标准",
+      "evidence": [],
+      "id": "S29-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "当前基线仅位于版本化能力配置而非业务代码常量",
+      "总上传语料可超过窗口并通过检索使用",
+      "任何模型调用在发送前完成预算校验",
+      "超限不会丢弃用户最新要求或验收标准"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "model_capabilities",
+      "context_parity_policies"
+    ],
+    "deliverables": [
+      "CodexParityPolicy 与配置",
+      "兼容性检查 API、前端状态",
+      "多模型容量切换和超限测试"
+    ],
+    "dependencies": [
+      "elmos-model-capability-discovery",
+      "elmos-context-budget-manager"
+    ],
+    "events": [
+      "context.capacity.changed",
+      "context.model.incompatible"
+    ],
+    "failure_modes": [
+      "模型元数据缺失",
+      "能力过期",
+      "输出预留不足"
+    ],
+    "inputs": [
+      "模型能力、任务预算、语料估算"
+    ],
+    "metrics": [
+      "capacity_violation_count",
+      "model_switch_repack_latency"
+    ],
+    "name": "elmos-codex-context-capacity-parity",
+    "objective": "以模型能力注册表而非散落常量管理上下文；当前基线可配置为 1,050,000 tokens、128,000 最大输出，但必须支持运行时更新。",
+    "ordinal": 29,
+    "outputs": [
+      "ContextCompatibility、解决策略"
+    ],
+    "responsibilities": [
+      "定义 parity target、基线日期和 provider、model capability 来源",
+      "区分总语料容量、活跃上下文容量和项目长期记忆",
+      "在模型选择或切换时重新计算输入、输出、工具和安全余量",
+      "容量不足时选择压缩、分阶段或更大模型，禁止静默截断"
+    ],
+    "schema_version": "1.0.0",
+    "title": "Codex 同级上下文容量"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-codex-context-capacity-parity/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-codex-context-capacity-parity/SKILL.md": {
+        "bytes": 2852,
+        "mode": "0644",
+        "sha256": "e47ce6b554c96c469c7ca25486cc30c6ec70205ae6a14391ad09e6c843e482c0"
+      },
+      "skills/elmos-codex-context-capacity-parity/references/contract.yaml": {
+        "bytes": 1686,
+        "mode": "0644",
+        "sha256": "a92bce277fffc7bfd2d0b416f4ec918defb60828df1cc48275fafd4caf46dbff"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-codex-context-capacity-parity/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_codex_context_capacity_parity",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "让 Elmos 活跃上下文容量与当前 Codex 同级并动态适配；当任务涉及 1.05M 级窗口、模型切换或容量兼容时使用。",
+    "name": "elmos-codex-context-capacity-parity",
+    "ordinal": 29,
+    "title": "Codex 同级上下文容量"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "a92bce277fffc7bfd2d0b416f4ec918defb60828df1cc48275fafd4caf46dbff",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "e47ce6b554c96c469c7ca25486cc30c6ec70205ae6a14391ad09e6c843e482c0"
+  }
+}

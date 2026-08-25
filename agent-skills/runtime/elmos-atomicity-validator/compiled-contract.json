@@ -1,0 +1,54 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "no task violates atomicity thresholds without explicit reason"
+    ],
+    "guardrails": [
+      "Security, transaction, concurrency and schema invariants may force larger atomic units."
+    ],
+    "inputs": [
+      "atomic tasks",
+      "impact map"
+    ],
+    "outputs": [
+      "validated task set",
+      "split/merge recommendations"
+    ],
+    "triggers": [
+      "task candidates created"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-task-decomposer"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.durable-runtime",
+    "handler": "atomicity_validator",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-atomicity-validator",
+    "ordinal": 6,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/06-atomicity-validator/SKILL.md",
+    "sha256": "sha256:f7e495f04d0fe0c0794b774e71319831cc12bd035f4ec2c97a021a5caf2b9e36",
+    "version": "1.0.0"
+  }
+}

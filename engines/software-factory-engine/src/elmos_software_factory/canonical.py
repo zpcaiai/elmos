@@ -6,7 +6,7 @@ import hashlib
 import json
 import math
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, TypeGuard
 
 
 class CanonicalValueError(ValueError):
@@ -82,7 +82,7 @@ def canonical_digest(value: Any) -> str:
     return "sha256:" + hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
 
 
-def is_sha256_digest(value: object) -> bool:
+def is_sha256_digest(value: object) -> TypeGuard[str]:
     if not isinstance(value, str) or not value.startswith("sha256:") or len(value) != 71:
         return False
     return all(character in "0123456789abcdef" for character in value[7:])

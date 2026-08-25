@@ -1,0 +1,57 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "plan fits hard cap or run reports infeasible"
+    ],
+    "guardrails": [
+      "Do not consume certification reserve for noncritical optional work without explicit policy."
+    ],
+    "inputs": [
+      "DAG",
+      "pricing/credits",
+      "budget policy"
+    ],
+    "outputs": [
+      "run budget plan",
+      "per-wave budget",
+      "reserve"
+    ],
+    "triggers": [
+      "DAG + routing priors ready"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-task-dag-builder",
+      "elmos-cost-performance-router"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.budget-ledger",
+    "handler": "budget_planner",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-budget-planner",
+    "ordinal": 15,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/15-budget-planner/SKILL.md",
+    "sha256": "sha256:26e4dc6ef488fc2694859b829a2a4e99c992f57947c72d1f4142bbdf388cee94",
+    "version": "1.0.0"
+  }
+}

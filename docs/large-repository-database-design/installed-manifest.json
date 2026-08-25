@@ -1,0 +1,346 @@
+{
+  "schema_version": "1.0",
+  "namespace": "elmos-large-repository-database-design-v1",
+  "source_package": "elmos-large-repository-database-design",
+  "source_version": "1.0.0",
+  "archive": {
+    "path": "skills/subskills/elmos-large-repository-database-design-v1.0.0.zip",
+    "bytes": 158461,
+    "sha256": "sha256:624de461a0a7a3a295b6c3ebcd1ffd6e3a45f80bdf33aad0d7e3cb0d8c430e88",
+    "entry_count": 59,
+    "file_count": 42,
+    "directory_count": 17,
+    "uncompressed_bytes": 489986,
+    "tree_sha256": "sha256:4bc51218a538c9931e15a6615d9472541236acb4fda5076718a56742e203c7ac",
+    "directory_mode": "2755"
+  },
+  "checksums": {
+    "path": "skills/elmos-large-repository-database-design-v1.0.0/CHECKSUMS.sha256",
+    "sha256": "sha256:6bf7c561ccc3e31ed296717d20bc9f3915d149896a1d2b1dd9a3c7094a9fc07a",
+    "entry_count": 41,
+    "coverage": "EXACT_ALL_FILES_EXCEPT_CHECKSUMS_SELF"
+  },
+  "canonical_source": {
+    "path": "skills/elmos-large-repository-database-design-v1.0.0",
+    "file_count": 42,
+    "directory_count": 17,
+    "bytes": 489986,
+    "tree_sha256": "sha256:d025e1fbda9c63a7edd2cae5764ce74b6cf0e090b47e1fb116e5502d38ca011a",
+    "directory_mode_normalization": "ARCHIVE_2755_TO_CANONICAL_0755",
+    "files": [
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/.github/workflows/database-ci.yml",
+        "bytes": 4806,
+        "mode": "0644",
+        "sha256": "sha256:c7e7f3a942c8b9c793dedf71d0ae0519ed75462a0662431be0f0d0e41237d666"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/CHECKSUMS.sha256",
+        "bytes": 4494,
+        "mode": "0644",
+        "sha256": "sha256:6bf7c561ccc3e31ed296717d20bc9f3915d149896a1d2b1dd9a3c7094a9fc07a"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/DEPLOYMENT-ACCEPTANCE-CHECKLIST.md",
+        "bytes": 7943,
+        "mode": "0644",
+        "sha256": "sha256:33f7266f105a71f4d4665858f7ab539660b8908263d184c1505390286981d38e"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/PACKAGE-MANIFEST.json",
+        "bytes": 503,
+        "mode": "0644",
+        "sha256": "sha256:e4efbbc09f50c6ee7b259ac34a515dab5fa0ea6bef738e10aebf37e7da59c6a3"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/README.md",
+        "bytes": 1941,
+        "mode": "0644",
+        "sha256": "sha256:c5f051e13f8cf090b5d662ef178a9538921792c86a3a41a9268c457e2a4cae66"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/VALIDATION-REPORT.md",
+        "bytes": 2402,
+        "mode": "0644",
+        "sha256": "sha256:ce7ce13a8c20dde93b2bd045cd70e544b15f199cb86b722ed3878d90d7ae13b5"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/DB-1-MINIMUM-TABLE-SET.md",
+        "bytes": 2449,
+        "mode": "0644",
+        "sha256": "sha256:eca0b21505dd8d8deffc52183d805bd66f52339e0c8f9a0349c1a83d08060c93"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/EXECUTIVE-SUMMARY.md",
+        "bytes": 11252,
+        "mode": "0644",
+        "sha256": "sha256:ab2695bdfa8006a1a5e0e24d2370f95ce34e0efb7299db87c5bf1695a6de8d20"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/README.md",
+        "bytes": 5569,
+        "mode": "0644",
+        "sha256": "sha256:0cf286ee4013107a3d9fdfc91df1dc5d9abaa3ee75b11371516f3e4facf65ae0"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/TABLE-CATALOG.md",
+        "bytes": 30850,
+        "mode": "0644",
+        "sha256": "sha256:e9ae0d487f9f7c7cbc57a73f316a2365d1cb09d0a9a9e1dabc3346431a9d3fd8"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/examples/large-run-read-model.example.json",
+        "bytes": 2556,
+        "mode": "0644",
+        "sha256": "sha256:ce56774377c82e2f658d673ce2f8dc71e7babb2400564d7eb7c52dffd3b73728"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/mermaid/large-run-erd.mmd",
+        "bytes": 1706,
+        "mode": "0644",
+        "sha256": "sha256:99227128edf8c64cbb9d5ca5f058a874bb71ed71601560eca58be60ab4785a6b"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V001__extensions_schemas_and_helpers.sql",
+        "bytes": 3510,
+        "mode": "0644",
+        "sha256": "sha256:704b62429ff209af6f55e1acb189907abc7795ffd721bf08994677b8e6b2f022"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V010__tenancy_projects_jobs_and_admission.sql",
+        "bytes": 11964,
+        "mode": "0644",
+        "sha256": "sha256:ca02afa6f4df7881ad85b1139faf137732a0146dbcf247abf4e40205bca53829"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V020__runs_tasks_sessions_and_recovery.sql",
+        "bytes": 30960,
+        "mode": "0644",
+        "sha256": "sha256:1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V030__artifacts_manifests_staging_and_checkpoints.sql",
+        "bytes": 12742,
+        "mode": "0644",
+        "sha256": "sha256:450b86b26ad048fef47a501103869d11f27b60c75964a320bc8651906bde8d59"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V040__repository_intelligence_semantic_ir_and_capabilities.sql",
+        "bytes": 19990,
+        "mode": "0644",
+        "sha256": "sha256:8b5896082213ed96e8668da43eef7d711f57bac3a34789d6598a9dc8c8db7008"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V045__project_generation_and_transformation.sql",
+        "bytes": 24813,
+        "mode": "0644",
+        "sha256": "sha256:2d2afa884e9540e1537ec6313f19125277abd5554de5d2104cac66897333e378"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V050__verification_evidence_gates_and_repair.sql",
+        "bytes": 32283,
+        "mode": "0644",
+        "sha256": "sha256:073dc32447769120cdffcca03918e9839d70e49607ed283a42adc13b913a2420"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V060__model_tool_metering_cost_eta_and_cache.sql",
+        "bytes": 20452,
+        "mode": "0644",
+        "sha256": "sha256:95a988094fb81d6afb6627ac1c537119850fc3e1d307a80b22d28b62b6d95d16"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V070__integration_learning_deployment_and_audit.sql",
+        "bytes": 25035,
+        "mode": "0644",
+        "sha256": "sha256:af348d2e505c6542259ccef6bfac449502aed49434452fa4722acf66bc9638e5"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V080__cross_links_rls_and_read_models.sql",
+        "bytes": 16620,
+        "mode": "0644",
+        "sha256": "sha256:62aa824800de3de9ece79360d377c4db762c6c2b8220c9e307b04a4bf77a1ad4"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V090__transactional_runtime_functions.sql",
+        "bytes": 36691,
+        "mode": "0644",
+        "sha256": "sha256:8eb1646c5c0200a81769edc542b26fd6beb3d515bf122b570b140a6c797a6ddf"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/queries/operator_queries.sql",
+        "bytes": 12356,
+        "mode": "0644",
+        "sha256": "sha256:cc9bd531d209bbf5eda5a0b7599cce974361dc676ec43548aef98242d00c1916"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/queries/role_hardening_check.sql",
+        "bytes": 2168,
+        "mode": "0644",
+        "sha256": "sha256:b27d2fb3608ee89cdb0af81ab1893b7c6cc2a19a108d300f5e7b58c2d74f18e1"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/roles/README.md",
+        "bytes": 2751,
+        "mode": "0644",
+        "sha256": "sha256:db41320b34a327cda6d1b3ddb11b77842c975a20b3521ae2b3967cf5960216ec"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/roles/roles-and-grants.example.sql",
+        "bytes": 6585,
+        "mode": "0644",
+        "sha256": "sha256:2e0c457d819b2695e06a26d4ed76f9c624a47de9a37dcc6d107798a7e6588009"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/schemas/large-run-read-model.schema.json",
+        "bytes": 6166,
+        "mode": "0644",
+        "sha256": "sha256:ab13ee61eb13cce5dd7b8844f44883521c971d05fe67b9b97d868cc436b1a527"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/tests/concurrency-scenarios.md",
+        "bytes": 2573,
+        "mode": "0644",
+        "sha256": "sha256:4479ae1777d55818a8789f3e1803bed53f0624bea41c035f4c3ea0370c2b6032"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/database/tests/invariants.sql",
+        "bytes": 12488,
+        "mode": "0644",
+        "sha256": "sha256:1dafbd3bef72bf1b6032a8c8e8f72337931c3917ebd22cbbd05e086dca962679"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/deploy/migration-image/Dockerfile",
+        "bytes": 429,
+        "mode": "0644",
+        "sha256": "sha256:0267c85d68373cab2934a2bd5406da466f62c290b8dccaf163de705aa95694bd"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/deploy/migration-image/README.md",
+        "bytes": 660,
+        "mode": "0644",
+        "sha256": "sha256:1d2d0553645f68621b59041a894415efe691ea810cf3849ed6be6934a8813726"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/CI-CD-PIPELINE.md",
+        "bytes": 2758,
+        "mode": "0644",
+        "sha256": "sha256:8b57a23c2a9c1b24da745b871a2369f8473b1753401803c3558e48411bb39e58"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/DATABASE-DESIGN-LARGE-REPOSITORY-RUNS.md",
+        "bytes": 26168,
+        "mode": "0644",
+        "sha256": "sha256:827e080a6fa45a2070c6b164787e623f37e09255a946fcfd38c80f31d9af4096"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/DATABASE-MIGRATION-OPERATIONS.md",
+        "bytes": 11947,
+        "mode": "0644",
+        "sha256": "sha256:8db356ef9211aa6f390793665e2a236cd2ff9d1018fd20511c81c652bd6a3795"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/DATABASE-PARTITIONING-RETENTION.md",
+        "bytes": 14072,
+        "mode": "0644",
+        "sha256": "sha256:c4635cf8865ddc1781165320ebf7860db8118159a488b350ff7caa75fb0346b4"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/DATABASE-SECURITY-RLS.md",
+        "bytes": 13151,
+        "mode": "0644",
+        "sha256": "sha256:077166fbd02d5f91b06d553f3211b16c4e1e808a512a41b2dd908ed97c151587"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/DATABASE-TRANSACTION-AND-RECOVERY.md",
+        "bytes": 18890,
+        "mode": "0644",
+        "sha256": "sha256:f963572b2d56e0f51bb6175119bc0ec6df7516461aed93443e0ebfc2bdb7e366"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/MERGE-INTO-ELMOS-MAIN-REPOSITORY.md",
+        "bytes": 4903,
+        "mode": "0644",
+        "sha256": "sha256:ebe99456c22069166b7aa06fd879339b887a8b4f04531222311448d62a8c2f56"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/docs/P05-DEPLOYMENT-COMPLETION-GATE.md",
+        "bytes": 3245,
+        "mode": "0644",
+        "sha256": "sha256:2d52d699865d31b0ec059651bd74384f0ca02715a14ed94eb7c664fd4acdd952"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/scripts/validate_database_design.py",
+        "bytes": 23918,
+        "mode": "0755",
+        "sha256": "sha256:2f8a99b5d5d9eb2e51e46b9fc2b8a7b3fc83fcbf67f2ff9c501fab6cf90dc005"
+      },
+      {
+        "path": "skills/elmos-large-repository-database-design-v1.0.0/skills/large-repository-run-persistence/SKILL.md",
+        "bytes": 13227,
+        "mode": "0644",
+        "sha256": "sha256:48b25f907e414b0818579759d298ced5240abee651ae59692cbcf9c8ecbe4287"
+      }
+    ]
+  },
+  "source_version_drift": {
+    "state": "PRESERVED_SOURCE_DRIFT",
+    "package_manifest_version": "1.0.0",
+    "validation_report_heading_version": "1.1.0",
+    "resolution": "CANONICAL_SOURCE_NOT_REWRITTEN"
+  },
+  "broken_source_workflow_reference": {
+    "state": "PRESENT_BROKEN_REFERENCE",
+    "workflow_path": "skills/elmos-large-repository-database-design-v1.0.0/.github/workflows/database-ci.yml",
+    "referenced_path": "scripts/validate_bundle.py",
+    "referenced_path_present_in_archive": false,
+    "importer_executes_workflow": false
+  },
+  "installation": {
+    "runtime_root": "agent-skills/runtime",
+    "workspace_root": ".agents/skills",
+    "runtime_tree_sha256": "sha256:66899e0b7f7b8803401c53e6697e67ac5445aee89046a013317820963d2c0887",
+    "workspace_tree_sha256": "sha256:66899e0b7f7b8803401c53e6697e67ac5445aee89046a013317820963d2c0887",
+    "dual_root_byte_identical": true,
+    "interface_sha256": "sha256:6bce8c82b1512d0eab9aeeefcc3dbe385deee3105308571ebbce6e245d7d51cf"
+  },
+  "skill_count": 1,
+  "skills": [
+    {
+      "name": "large-repository-run-persistence",
+      "source_path": "skills/elmos-large-repository-database-design-v1.0.0/skills/large-repository-run-persistence/SKILL.md",
+      "source_sha256": "sha256:48b25f907e414b0818579759d298ced5240abee651ae59692cbcf9c8ecbe4287",
+      "source_frontmatter_normalization": {
+        "state": "NORMALIZED_WITHOUT_CANONICAL_SOURCE_MUTATION",
+        "source_compatibility_moved_to_metadata": true,
+        "repository_frontmatter_validated": true
+      },
+      "runtime_skill_path": "agent-skills/runtime/large-repository-run-persistence/SKILL.md",
+      "runtime_skill_sha256": "sha256:e4f2db6c9fe16e4853849880a0d445cedd0d4a091f736c555ecf8b308e0c61ee",
+      "runtime_interface_path": "agent-skills/runtime/large-repository-run-persistence/agents/openai.yaml",
+      "runtime_interface_sha256": "sha256:6bce8c82b1512d0eab9aeeefcc3dbe385deee3105308571ebbce6e245d7d51cf",
+      "workspace_skill_path": ".agents/skills/large-repository-run-persistence/SKILL.md",
+      "workspace_skill_sha256": "sha256:e4f2db6c9fe16e4853849880a0d445cedd0d4a091f736c555ecf8b308e0c61ee",
+      "workspace_interface_path": ".agents/skills/large-repository-run-persistence/agents/openai.yaml",
+      "workspace_interface_sha256": "sha256:6bce8c82b1512d0eab9aeeefcc3dbe385deee3105308571ebbce6e245d7d51cf",
+      "installed_tree_sha256": "sha256:66899e0b7f7b8803401c53e6697e67ac5445aee89046a013317820963d2c0887",
+      "implementation_state": "STATIC_VALIDATED",
+      "postgresql_runtime_evidence": "NOT_RUN",
+      "external_evidence": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    }
+  ],
+  "evidence": {
+    "maximum_local_status": "STATIC_VALIDATED",
+    "source_scripts_executed_by_importer": false,
+    "postgresql_16_runtime_evidence": "NOT_RUN",
+    "postgresql_17_runtime_evidence": "NOT_RUN",
+    "migration_execution_evidence": "NOT_RUN",
+    "concurrency_evidence": "NOT_RUN",
+    "rls_evidence": "NOT_RUN",
+    "failover_evidence": "NOT_RUN",
+    "upgrade_evidence": "NOT_RUN",
+    "restore_evidence": "NOT_RUN",
+    "external_evidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

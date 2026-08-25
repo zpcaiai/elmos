@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gr Audit Retention"
+  short_description: "Run this Spring Golden Route v2 Skill safely"
+  default_prompt: "Use $gr-audit-retention for its exact imported contract; keep runtime evidence NOT_RUN unless independently executed."

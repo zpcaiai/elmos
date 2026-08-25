@@ -119,9 +119,9 @@ def _target_path(root: Path, target: Language, content: str, relative_path: str)
 
 
 # Parametrised over REPOSITORY_SURFACE_LANGUAGES, not ROUTED_LANGUAGES: this
-# test relifts real emitter output, and a pending-analyzer target has no
-# emitter to relift.  Adding kotlin/react/flutter here would assert an emitter
-# that does not exist.
+# test relifts real emitter output for every active identity plus retained
+# deprecated-JavaScript compatibility. A future repository-pending identity
+# must stay outside this tuple until both emitter and relifter exist.
 @pytest.mark.parametrize("target", REPOSITORY_SURFACE_LANGUAGES)
 def test_each_routed_target_relifts_exact_emitter_compensation(tmp_path: Path, target: Language) -> None:
     source = _integer_ir()

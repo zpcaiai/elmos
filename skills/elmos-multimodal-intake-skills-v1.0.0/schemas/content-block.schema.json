@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.local/schemas/content-block.schema.json",
+  "title": "Elmos ContentBlock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "block_id",
+    "asset_id",
+    "package_version_id",
+    "block_type",
+    "content",
+    "source_anchors",
+    "derivation",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "block_id": {
+      "type": "string"
+    },
+    "asset_id": {
+      "type": "string"
+    },
+    "package_version_id": {
+      "type": "string"
+    },
+    "parent_block_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "block_type": {
+      "enum": [
+        "heading",
+        "paragraph",
+        "list",
+        "list_item",
+        "table",
+        "table_row",
+        "table_cell",
+        "image",
+        "figure",
+        "audio_segment",
+        "transcript_turn",
+        "code_block",
+        "log_entry",
+        "formula",
+        "form_field",
+        "comment",
+        "revision",
+        "diagram_node",
+        "diagram_edge",
+        "ui_element",
+        "file",
+        "symbol",
+        "requirement",
+        "decision",
+        "other"
+      ]
+    },
+    "sequence": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "content": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object"
+        },
+        {
+          "type": "array"
+        }
+      ]
+    },
+    "language": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "source_anchors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "structural_relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "relation",
+          "target_block_id"
+        ],
+        "properties": {
+          "relation": {
+            "enum": [
+              "parent",
+              "child",
+              "next",
+              "previous",
+              "references",
+              "caption_of",
+              "cell_of",
+              "edge_from",
+              "edge_to"
+            ]
+          },
+          "target_block_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "security_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sensitivity_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "derivation": {
+      "type": "object",
+      "required": [
+        "producer",
+        "producer_version",
+        "input_hashes"
+      ],
+      "properties": {
+        "producer": {
+          "type": "string"
+        },
+        "producer_version": {
+          "type": "string"
+        },
+        "model_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "input_hashes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "correction_of": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "content_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

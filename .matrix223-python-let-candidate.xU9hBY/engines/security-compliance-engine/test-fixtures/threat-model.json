@@ -1,0 +1,1 @@
+{"threatModelId":"threat-model-1","landscapeRef":"landscape-1","version":1,"methods":["STRIDE","ABUSE_CASE"],"threatRefs":["threat-1"],"assumptionRefs":["assumption-1"],"evidenceRefs":["evidence://landscape/1"]}

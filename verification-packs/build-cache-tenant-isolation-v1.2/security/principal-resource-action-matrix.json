@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "matrix_key": "build-cache-tenant-isolation-v1.2-principal-resource-action-v1",
+  "risk_tier": "P0",
+  "execution_status": "NOT_RUN",
+  "zero_tolerance": true,
+  "side_effect_channels": [
+    "response",
+    "metadata_database",
+    "content_addressable_store",
+    "cache_observation",
+    "audit",
+    "external_call"
+  ],
+  "cases": [
+    {
+      "case_id": "SEC-001",
+      "principal": "anonymous",
+      "resource": "any cache control-plane route",
+      "action": "read-or-mutate",
+      "context": "missing trusted WSGI authenticated context",
+      "expected_decision": "DENY",
+      "expected_response": "AUTHENTICATION_REQUIRED",
+      "expected_side_effects": "NONE"
+    },
+    {
+      "case_id": "SEC-002",
+      "principal": "spoofed-http-header",
+      "resource": "tenant-scoped cache control plane",
+      "action": "read-or-mutate",
+      "context": "identity appears only in HTTP headers",
+      "expected_decision": "DENY",
+      "expected_response": "AUTHENTICATION_REQUIRED",
+      "expected_side_effects": "NONE"
+    },
+    {
+      "case_id": "SEC-003",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "tenant-a/project-a parity metadata",
+      "action": "read-or-mutate",
+      "context": "trusted principal and exact project ownership",
+      "expected_decision": "ALLOW_IF_OPERATION_CONTRACT_PASSES",
+      "expected_response": "OPERATION_SPECIFIC",
+      "expected_side_effects": "TENANT_A_PROJECT_A_ONLY"
+    },
+    {
+      "case_id": "SEC-004",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "tenant-b control plane",
+      "action": "read-or-mutate",
+      "context": "trusted context tenant differs from control-plane tenant",
+      "expected_decision": "DENY",
+      "expected_response": "PERMISSION_DENIED",
+      "expected_side_effects": "NONE"
+    },
+    {
+      "case_id": "SEC-005",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "tenant-a/project-b metadata owned by another tenant binding",
+      "action": "insert-or-query",
+      "context": "project identifier is caller supplied but ownership is not valid",
+      "expected_decision": "DENY",
+      "expected_response": "PERMISSION_DENIED_OR_CONTRACT_VIOLATION",
+      "expected_side_effects": "NONE"
+    },
+    {
+      "case_id": "SEC-006",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "tenant-b CAS evidence reference",
+      "action": "evaluate parity evidence",
+      "context": "digest exists but tenant ownership or authorization is absent",
+      "expected_decision": "DENY",
+      "expected_response": "NOT_RUN_OR_UNAUTHORIZED_EVIDENCE",
+      "expected_side_effects": "NO_QUARANTINE_OR_MUTATION_IN_TENANT_B"
+    },
+    {
+      "case_id": "SEC-007",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "affinity runner candidate",
+      "action": "route request",
+      "context": "attestation is expired, revoked, forged, or scoped to another tenant/project/principal",
+      "expected_decision": "DENY",
+      "expected_response": "PERMISSION_DENIED_OR_NO_COMPATIBLE_TARGET",
+      "expected_side_effects": "NO_AFFINITY_DECISION_PERSISTED"
+    },
+    {
+      "case_id": "SEC-008",
+      "principal": "repository-controlled-input",
+      "resource": "parity scenario runner",
+      "action": "select executable command",
+      "context": "repository data attempts to choose a shell command or executor",
+      "expected_decision": "DENY",
+      "expected_response": "CONTRACT_VIOLATION_OR_BLOCKED",
+      "expected_side_effects": "NO_PROCESS_STARTED"
+    },
+    {
+      "case_id": "SEC-009",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "environment snapshot owned by tenant-b",
+      "action": "inspect-or-restore",
+      "context": "snapshot key is valid but scope differs",
+      "expected_decision": "DENY",
+      "expected_response": "NOT_FOUND_OR_PERMISSION_DENIED",
+      "expected_side_effects": "NO_CAS_QUARANTINE_NO_STATUS_EVENT_NO_RESTORE"
+    },
+    {
+      "case_id": "SEC-010",
+      "principal": "authenticated-tenant-a-principal",
+      "resource": "context compaction warm evidence from tenant-b or untrusted signer",
+      "action": "adopt checkpoint",
+      "context": "evidence digest exists but exact scope, expiry, or trust fails",
+      "expected_decision": "DENY",
+      "expected_response": "PERMISSION_DENIED_OR_CONTRACT_VIOLATION",
+      "expected_side_effects": "ACTIVE_CHECKPOINT_UNCHANGED"
+    },
+    {
+      "case_id": "SEC-011",
+      "principal": "authenticated-tenant-a-principal-one",
+      "resource": "idempotency key previously used by principal two",
+      "action": "replay mutating request",
+      "context": "same tenant and key but different authenticated principal digest",
+      "expected_decision": "DENY",
+      "expected_response": "IDEMPOTENCY_CONFLICT",
+      "expected_side_effects": "NO_SECOND_OPERATION"
+    }
+  ]
+}

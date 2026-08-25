@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "pack_key": "multimodal-intake-authorization-v1",
+  "version": "1.0.0",
+  "status": "experimental",
+  "owner": "elmos-multimodal-intake-security",
+  "maintenance_owner": "elmos-multimodal-intake",
+  "scope": {
+    "migration_route": "multimodal-intake-skill-runtime",
+    "source_artifact_digest": "sha256:23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "target_artifact_digest": "sha256:2ed935793e08ed399f1fc8640c546cb99afa8a529bf39e1f9394dfd0fbf72433",
+    "workload_key": "tenant-scoped-multimodal-intake",
+    "risk_tier": "P0",
+    "environment_digest": "sha256:e7f91fd09ed5470ea35bb13feb134a8d7e323243630932c1ecde3a920225efe7",
+    "target_artifact_manifest": "artifacts/local-target-artifact.json",
+    "environment_manifest": "environment/local-validation-environment.json",
+    "local_binding_evidence": "certification/local-binding-evidence.json",
+    "validation_kind": "local-authorization-and-boundary-rehearsal",
+    "external_provider_evidence": "NOT_RUN",
+    "independent_holdout": "NOT_RUN",
+    "representative_production_workload": "NOT_RUN"
+  },
+  "contracts": {
+    "validation_profile": "validation-profile.json",
+    "oracle_registry": "oracle-registry.json",
+    "assurance_case": "assurance/assurance-case.json"
+  },
+  "corpus": {
+    "development": "corpus/development",
+    "negative": "corpus/negative",
+    "holdout": "corpus/holdout",
+    "representative_workloads": "corpus/representative-workloads"
+  },
+  "certification": {
+    "evidence_path": "certification/evidence.json",
+    "result_path": "certification/gate-result.json"
+  },
+  "tags": [
+    "advanced-verification",
+    "authorization",
+    "tenant-isolation",
+    "untrusted-content",
+    "not-certified"
+  ]
+}

@@ -2,16 +2,40 @@
   "schema_version": 1,
   "pack_key": "elmos-7plus1-local-contract-v1",
   "executed_on": "2026-08-24",
-  "environment_digest": "sha256:a3df7b93b9fa9bb3fcfae683381d40cdcd5b3dbc1a14275716be82ed10ee3582",
+  "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "environment_digest": "sha256:dffa617150c638a62432ac2cac6e32e69a436e5c0b69cf6a90789bbcfae6b468",
   "toolchain": {
-    "python": "CPython 3.12.14 via uv",
+    "python": "CPython 3.12.12 via uv",
     "jsonschema": "4.25.1"
+  },
+  "validated_input_snapshot": {
+    "algorithm": "SHA-256 over UTF-8 lines '<sha256>\\t<size_bytes>\\t<pack_relative_path>\\n' in bytewise path order",
+    "excluded_paths": [
+      "certification/local-pack-validation.json"
+    ],
+    "file_count": 56,
+    "aggregate_sha256": "sha256:590440ddb41c3b6e6bc3ec7c23dafa9deab90dbc3da7234a6a3dae3b08c5909f",
+    "exclusion_reason": "The validation record cannot content-address itself; all other current pack files, including generated gate outputs and raw command evidence, are bound."
   },
   "checks": [
     {
+      "command": "repository-owned read-only SHA-256/size/aggregate verifier over artifacts/target-artifacts.json",
+      "status": "PASSED",
+      "summary": "44 of 44 files matched, total bytes 1385264, aggregate sha256:439bb3bafb5881ae3c73a3b00786e61cf4afd4a7c63128d137bb05e8e1a97cc4",
+      "raw_evidence_ref": "certification/raw/target-artifact-verification.txt",
+      "raw_evidence_digest": "sha256:7dd96b6150702cb391c7acedaf5a4eebfa79d25edec90b8be78c5bb8ba0b3885"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/software-factory-engine/src python3 -m elmos_software_factory.cli archive-inspect --source-root skills/elmos-7plus1-commercial-skills-v1.0.0",
+      "status": "PASSED",
+      "summary": "252 source files inspected; two archive executables neutralized; zero active executables; archive scripts not executed; source blueprint presence score 95 and source layout incompatibility recorded",
+      "evidence_ref": "certification/local-evidence/archive-contract-inspection.json",
+      "inspection_digest": "sha256:261f3ed8262b287427593a41f2c579dfbe6bff85659000529bb3eb9ace995556"
+    },
+    {
       "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_oracle_registry.py verification-packs/elmos-7plus1-local-contract-v1/oracle-registry.json",
       "status": "PASSED",
-      "summary": "5 oracle identities and precedence references validated"
+      "summary": "5 oracle identities, exact claim scopes, and precedence references validated"
     },
     {
       "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_model_spec.py verification-packs/elmos-7plus1-local-contract-v1/models/model.json",
@@ -21,22 +45,38 @@
     {
       "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/elmos-7plus1-local-contract-v1",
       "status": "PASSED",
-      "summary": "Required Batch 35 documents passed JSON Schema and focused validators"
+      "summary": "Required Batch 35 documents passed JSON Schema and focused validators",
+      "raw_evidence_ref": "certification/raw/pack-validation.txt",
+      "raw_evidence_digest": "sha256:a94a7f9952072239c6165932c679209de12ea61462b1ebe9249c67f482521db5"
     },
     {
       "command": "/opt/homebrew/bin/uv run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/elmos-7plus1-local-contract-v1",
       "status": "PASSED",
-      "summary": "Structural gate passed with conservative decision NOT_CERTIFIED"
+      "summary": "Structural gate passed with conservative decision NOT_CERTIFIED",
+      "raw_evidence_ref": "certification/raw/conservative-gate.txt",
+      "raw_evidence_digest": "sha256:f01a51b4e1567c39cf0682d11ee2c3887098761404f6744aa823622d2e0b5ebd"
     }
   ],
-  "scope": "Pack structure and fail-closed decision only",
+  "scope": "Pack structure, local implementation identity, bounded local campaigns, and fail-closed decision only",
+  "local_execution_recorded": [
+    "archive contract safe reimplementation inspection",
+    "76 engine/runtime/evidence tests",
+    "16 importer integration tests",
+    "local self-attested holdout",
+    "offline provider-contract simulation",
+    "zero-side-effect production-like rollback rehearsal",
+    "three deterministic campaign replays",
+    "external receipt quarantine and structural preflight contract tests",
+    "repository install/check and Skill Creator structural validation"
+  ],
   "excluded_execution": [
-    "importer and runtime development tests",
-    "negative controls and counterexample replay",
+    "archive scripts",
     "mutation and fuzz campaigns",
     "symbolic or SMT proof",
-    "holdout and representative workloads",
-    "provider, production, independent review, and external certification"
+    "independent holdout and production-derived representative workloads",
+    "real provider or production runtime",
+    "external trust-root signature verification",
+    "independent review and external certification"
   ],
   "certification_decision": "NOT_CERTIFIED"
 }

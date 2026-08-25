@@ -1,0 +1,1 @@
+{"testCaseId":"tc-orders-1","repositoryId":"repo-1","module":"orders","framework":"JUnit","suite":"OrderSuite","classOrFile":"OrderTest","logicalName":"duplicate payment is idempotent","parameters":["tenant=fixture"],"environmentProfile":"jdk21-postgres17"}

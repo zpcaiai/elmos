@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+ordinal: 7
+name: elmos-visual-ui-understanding
+title: UI 截图理解
+objective: 将 UI 图片转换为可编辑的结构树、设计语义和可验证实现约束，并与后续代码生成及视觉回归连接。
+dependencies:
+- elmos-image-ocr-and-preprocessing
+- elmos-source-anchor-and-provenance
+inputs:
+- UI 截图、目标平台、设计约束
+outputs:
+- UIVisualIR、组件清单、交互假设
+responsibilities:
+- 识别导航、表单、按钮、表格、卡片、模态框、菜单和状态组件
+- 推断层级、布局、对齐、间距、响应式和可访问性线索
+- 区分静态文案、交互控件、空错加载状态
+- 输出 UI IR，并记录推断置信度和截图区域
+deliverables:
+- UIVisualIR schema 与解析服务
+- 截图到组件清单和页面需求的转换器
+- 多分辨率和视觉回归测试
+acceptance:
+- 每个 UI 元素包含截图区域与层级关系
+- 事实识别与推断内容被区分
+- 生成代码由视觉回归验证而非只看编译
+- 不从单张截图臆造关键业务规则
+data_entities:
+- visual_elements
+- ui_screens
+events:
+- ui.analysis.completed
+- ui.assumption.needs_review
+metrics:
+- component_detection_f1
+- layout_similarity
+failure_modes:
+- 遮挡
+- 多页面拼图
+- 低分辨率
+- 平台不明确
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

@@ -1,0 +1,92 @@
+{
+  "package_id": "P01",
+  "name": "elmos-harness-runtime-platform",
+  "version": "1.0.0",
+  "phase": "Phase 1（可信执行底座）",
+  "dependencies": [
+    "P00"
+  ],
+  "capabilities": [
+    {
+      "id": "P01-C01",
+      "name": "Harness SPI & Adapter SDK",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C02",
+      "name": "Reversible Plugin Context",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C03",
+      "name": "Event-Sourced Session Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C04",
+      "name": "Tool Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C05",
+      "name": "Async Task Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C06",
+      "name": "Subagent Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C07",
+      "name": "Permission & Approval Plane",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C08",
+      "name": "Sandbox & Workspace Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C09",
+      "name": "Context & Compaction Runtime",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C10",
+      "name": "LSP Capability Seam",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C11",
+      "name": "Runtime Server & SDK",
+      "maturity": "design"
+    },
+    {
+      "id": "P01-C12",
+      "name": "Readiness & Conformance",
+      "maturity": "design"
+    }
+  ],
+  "source_pins": [
+    "DeepSeek Harness",
+    "HKUDS OpenHarness",
+    "OpenCode",
+    "OpenRouter TypeScript Agent"
+  ],
+  "subskills": [
+    "harness-adapter-sdk",
+    "event-sourced-session-runtime",
+    "context-epoch-manager",
+    "tool-runtime",
+    "async-task-runtime",
+    "continuable-subagent-manager",
+    "permission-policy-engine",
+    "approval-gate",
+    "sandbox-runtime",
+    "lsp-capability-seam",
+    "compaction-and-resume",
+    "headless-runtime-api",
+    "readiness-dry-run"
+  ]
+}

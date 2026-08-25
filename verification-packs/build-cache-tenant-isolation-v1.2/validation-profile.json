@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "profile_key": "build-cache-tenant-isolation-v1.2-profile-v1",
+  "version": 1,
+  "risk_tier": "P0",
+  "claims": [
+    {
+      "claim_id": "claim.trusted-authentication",
+      "description": "Only a trusted authenticated runtime context can establish tenant and principal identity; caller headers and bodies cannot do so.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.security-contract",
+        "oracle.denied-side-effect-sentinel"
+      ],
+      "required_techniques": [
+        "contract",
+        "security",
+        "negative",
+        "holdout"
+      ]
+    },
+    {
+      "claim_id": "claim.tenant-noninterference",
+      "description": "A principal scoped to one tenant cannot read, mutate, quarantine, adopt, route through, or authorize cache state in another tenant.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.security-contract",
+        "oracle.database-project-scope",
+        "oracle.denied-side-effect-sentinel"
+      ],
+      "required_techniques": [
+        "property",
+        "metamorphic",
+        "mutation",
+        "security",
+        "negative",
+        "holdout",
+        "representative-workload"
+      ]
+    },
+    {
+      "claim_id": "claim.evidence-and-attestation-scope",
+      "description": "CAS evidence, warm-context evidence, and affinity runner attestations require exact tenant, project, principal, digest, trust, expiry, and revocation checks.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.security-contract",
+        "oracle.crypto-trust-contract",
+        "oracle.denied-side-effect-sentinel"
+      ],
+      "required_techniques": [
+        "contract",
+        "security",
+        "negative",
+        "mutation",
+        "holdout"
+      ]
+    },
+    {
+      "claim_id": "claim.repository-input-no-execution-authority",
+      "description": "Repository-controlled input cannot select executable parity commands, provider credentials, or authorization state.",
+      "criticality": "P0",
+      "required_oracles": [
+        "oracle.security-contract",
+        "oracle.denied-side-effect-sentinel"
+      ],
+      "required_techniques": [
+        "contract",
+        "security",
+        "negative",
+        "holdout"
+      ]
+    }
+  ],
+  "techniques": [
+    "property",
+    "metamorphic",
+    "mutation",
+    "fuzz",
+    "model",
+    "contract",
+    "security",
+    "negative",
+    "holdout",
+    "representative-workload",
+    "assurance"
+  ],
+  "budgets": {
+    "max_wall_time_minutes": 30,
+    "max_solver_seconds": 0,
+    "max_fuzz_seconds": 120,
+    "max_schedules": 100,
+    "max_mutants": 20,
+    "max_input_bytes": 1048576,
+    "production_network": false,
+    "production_writes": false
+  },
+  "stop_conditions": [
+    "any-cross-tenant-read-or-write",
+    "any-denied-action-side-effect",
+    "unknown-p0-property",
+    "critical-oracle-conflict",
+    "untrusted-or-expired-evidence-authorized",
+    "repository-controlled-process-start",
+    "budget-exhausted"
+  ],
+  "approvals": []
+}

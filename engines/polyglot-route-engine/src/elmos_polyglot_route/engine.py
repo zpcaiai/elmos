@@ -53,6 +53,8 @@ from .identifier_hygiene import (
     validate_identifier_plan,
 )
 from .models import (
+    REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE,
+    REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
     REPOSITORY_SURFACE_LANGUAGES,
     TYPED_PURE_FUNCTION_PROFILE,
     Expression,
@@ -65,6 +67,7 @@ from .models import (
     is_routed_pair,
     is_specialized_pair,
     requires_concrete_source_spans,
+    repository_language_lifecycle as expected_repository_language_lifecycle,
 )
 from .native import (
     _SANDBOX_NETWORK_PROBE_BINARY_BYTES,
@@ -82,16 +85,43 @@ from .native import (
     _canonical_swift_analyzer_receipt,
     _canonical_swift_toolchain_identity,
     _swift_toolchain_receipt,
-    analyze,
-    inventory_module,
 )
 from .repository import javascript_esm_descriptor
+from .source_analyzer import analyze, inventory_module
 from .toolchains import exact_toolchain
 from .validation import safe_output, validate, validate_source
 
 
 def _digest(value: bytes) -> str:
     return "sha256:" + hashlib.sha256(value).hexdigest()
+
+
+def repository_language_lifecycle_for_execution(
+    source_language: Language,
+    target_language: Language,
+    *,
+    repository_execution_mode: bool,
+    supplied: str | None,
+) -> str | None:
+    """Require an explicit deprecated-replay marker at the execution edge."""
+
+    expected = expected_repository_language_lifecycle(
+        source_language,
+        target_language,
+    )
+    if expected is None:
+        raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
+    if not repository_execution_mode:
+        if supplied is not None:
+            raise RouteError("REPOSITORY_LANGUAGE_LIFECYCLE_MODE_INVALID")
+        return None
+    if expected == REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY:
+        if supplied != REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY:
+            raise RouteError("DEPRECATED_REPLAY_LIFECYCLE_REQUIRED")
+        return expected
+    if supplied not in (None, REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE):
+        raise RouteError("REPOSITORY_LANGUAGE_LIFECYCLE_INVALID")
+    return REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE
 
 
 def _identifier_unit_namespace_for_migration(
@@ -661,7 +691,7 @@ def declared_formal_input_domain(
 ) -> str:
     if is_specialized_pair(source_language, target_language):
         return SPECIALIZED_INPUT_DOMAIN
-    if {source_language, target_language} & {"javascript", "typescript"}:
+    if {source_language, target_language} & {"javascript", "typescript", "react"}:
         return NODEJS_INPUT_DOMAIN
     return "profile-total-domain"
 
@@ -671,14 +701,21 @@ def _enforce_nodejs_semantic_domain(
     source_language: Language,
     target_language: Language,
 ) -> None:
-    if not ({source_language, target_language} & {"javascript", "typescript"}):
+    if not ({source_language, target_language} & {"javascript", "typescript", "react"}):
         return
     nodejs_pair = is_nodejs_pair(source_language, target_language)
     nodejs_typescript = is_nodejs_typescript_pair(source_language, target_language)
     for function in ir.functions:
         environment = {parameter.name: parameter.type for parameter in function.parameters}
         if any(_statement_uses_negative_zero_literal(statement) for statement in function.body):
-            runtime = "JAVASCRIPT" if "javascript" in {source_language, target_language} else "TYPESCRIPT"
+            languages = {source_language, target_language}
+            runtime = (
+                "JAVASCRIPT"
+                if "javascript" in languages
+                else "REACT"
+                if "react" in languages
+                else "TYPESCRIPT"
+            )
             raise RouteError(
                 f"{runtime}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED:{source_language}-to-{target_language}:{function.name}"
             )
@@ -714,7 +751,7 @@ def _enforce_nodejs_case_domain(
     source_language: Language,
     target_language: Language,
 ) -> None:
-    if not ({source_language, target_language} & {"javascript", "typescript"}):
+    if not ({source_language, target_language} & {"javascript", "typescript", "react"}):
         return
     safe_integer_max = 2**53 - 1
     for case_index, case in enumerate(cases):
@@ -2164,6 +2201,9 @@ def _verify_helper_visibility(language: Language, subject: dict[str, Any]) -> tu
         "java": {("private", "static")},
         "swift": {("private", "file-scope"), ("fileprivate", "file-scope")},
         "typescript": {("internal", "file-scope")},
+        "react": {("internal", "file-scope")},
+        "kotlin": {("private", "file-scope")},
+        "flutter": {("private", "file-scope")},
         # PHP has no file-private function scope: a `function` at file scope is
         # unconditionally global, and no `static`/`private` spelling changes
         # that. This value describes the *emitted* unit, which is what the
@@ -2208,7 +2248,7 @@ def _verify_helper_visibility(language: Language, subject: dict[str, Any]) -> tu
             or signature != expected_signature
         ):
             raise RouteError("PURE_MODULE_TARGET_HELPER_SIGNATURE_INVALID")
-    if language == "typescript":
+    if language in {"typescript", "react"}:
         expected = {
             "safe_integer": ("_elmosRequireSafeInteger", "integer", "integer"),
             "finite_number": ("_elmosRequireFiniteNumber", "number", "number"),
@@ -2495,7 +2535,8 @@ def _typescript_guard_edges(
     helper_ids: set[str],
     helper_identifiers: set[str],
 ) -> list[dict[str, Any]]:
-    if raw_target_ir.source_language != "typescript":
+    language = raw_target_ir.source_language
+    if language not in {"typescript", "react"}:
         return []
     emitted_rules = set(emitted.normalization_rules)
     expected_rules: set[str] = set()
@@ -2547,7 +2588,7 @@ def _typescript_guard_edges(
                 raw_function=raw_function,
                 canonical_function=canonical_function,
                 domain="integer",
-                rule="typescript.parameter.integer.safe-integer",
+                rule=f"{language}.parameter.integer.safe-integer",
                 scope="signature-parameter",
                 subject=raw_parameter.name,
                 canonical_subject=canonical_parameter.name,
@@ -2563,7 +2604,7 @@ def _typescript_guard_edges(
                 raw_function=raw_function,
                 canonical_function=canonical_function,
                 domain=return_domain,
-                rule=f"typescript.return.{return_domain}."
+                rule=f"{language}.return.{return_domain}."
                 + ("safe-integer" if return_domain == "integer" else "finite"),
                 scope="signature-return",
                 subject="return",
@@ -2581,7 +2622,7 @@ def _typescript_guard_edges(
                     raw_function=raw_function,
                     canonical_function=canonical_function,
                     domain=domain,
-                    rule=f"typescript.integer.{operator}.safe-integer",
+                    rule=f"{language}.integer.{operator}.safe-integer",
                     scope="arithmetic-result",
                     subject=operator,
                     canonical_subject=None,
@@ -2595,9 +2636,9 @@ def _typescript_guard_edges(
                         canonical_function=canonical_function,
                         domain=domain,
                         rule=(
-                            "typescript.integer./.truncating-non-zero"
+                            f"{language}.integer./.truncating-non-zero"
                             if operator == "/"
-                            else "typescript.integer.%.non-zero"
+                            else f"{language}.integer.%.non-zero"
                         ),
                         scope="arithmetic-divisor",
                         subject=operator,
@@ -2611,7 +2652,7 @@ def _typescript_guard_edges(
                     raw_function=raw_function,
                     canonical_function=canonical_function,
                     domain=domain,
-                    rule=f"typescript.number.{operator}.finite-result",
+                    rule=f"{language}.number.{operator}.finite-result",
                     scope="arithmetic-result",
                     subject=operator,
                     canonical_subject=None,
@@ -2624,7 +2665,7 @@ def _typescript_guard_edges(
                         raw_function=raw_function,
                         canonical_function=canonical_function,
                         domain=domain,
-                        rule=f"typescript.number.{operator}.non-zero:_elmosRequireNonZero",
+                        rule=f"{language}.number.{operator}.non-zero:_elmosRequireNonZero",
                         scope="arithmetic-divisor",
                         subject=operator,
                         canonical_subject=None,
@@ -2636,16 +2677,16 @@ def _typescript_guard_edges(
     observed_rules = {
         rule
         for rule in emitted_rules
-        if rule != "typescript.parameter.integer.negative-zero-normalized"
+        if rule != f"{language}.parameter.integer.negative-zero-normalized"
         and (
-            rule.startswith("typescript.parameter.")
-            or rule.startswith("typescript.return.")
-            or rule.startswith("typescript.integer.")
-            or rule.startswith("typescript.number.")
+            rule.startswith(f"{language}.parameter.")
+            or rule.startswith(f"{language}.return.")
+            or rule.startswith(f"{language}.integer.")
+            or rule.startswith(f"{language}.number.")
         )
     }
     if observed_rules != expected_rules:
-        raise RouteError("PURE_MODULE_TARGET_TYPESCRIPT_GUARD_NORMALIZATION_INVALID")
+        raise RouteError(f"PURE_MODULE_TARGET_{language.upper()}_GUARD_NORMALIZATION_INVALID")
     return edges
 
 
@@ -2667,7 +2708,7 @@ def _target_call_graph(
         rule = f"{raw_target_ir.source_language}.integer.{operator}.call:{callee}"
         registered_rules[rule] = ("integer", operator, callee, required_helpers)
     float_guard = _FLOAT_NON_ZERO_GUARD.get(raw_target_ir.source_language)
-    if raw_target_ir.source_language == "typescript":
+    if raw_target_ir.source_language in {"typescript", "react"}:
         float_guard = None
     if float_guard is not None:
         callee, helper_id = float_guard
@@ -2678,7 +2719,8 @@ def _target_call_graph(
     call_rules = {
         rule
         for rule in emitted.normalization_rules
-        if raw_target_ir.source_language != "typescript" and (".call:" in rule or ".non-zero:" in rule)
+        if raw_target_ir.source_language not in {"typescript", "react"}
+        and (".call:" in rule or ".non-zero:" in rule)
     }
     if not call_rules <= set(registered_rules):
         raise RouteError("PURE_MODULE_TARGET_CALL_NORMALIZATION_INVALID")
@@ -3105,7 +3147,11 @@ def _migrate_module_snapshot(
     with tempfile.TemporaryDirectory(prefix="elmos-module-closure-") as temporary:
         target_path = Path(temporary) / emitted.relative_path
         target_path.write_text(emitted.content, encoding="utf-8")
-        target_inventory = inventory_module(target_path, target_language)
+        target_inventory = inventory_module(
+            target_path,
+            target_language,
+            emitted_target=True,
+        )
         target_analyses = [
             analyze(target_path, target_language, symbol, emitted_target=True) for symbol in target_symbols
         ]
@@ -3241,6 +3287,7 @@ def migrate(
     output: Path,
     *,
     repository_execution_mode: bool = False,
+    repository_language_lifecycle: str | None = None,
     identifier_unit_namespace: IdentifierUnitNamespace | None = None,
 ) -> dict[str, Any]:
     """Snapshot immutable single-function inputs before any compiler phase."""
@@ -3252,6 +3299,12 @@ def migrate(
     routed_pair = is_routed_pair(source_language, target_language)
     if not routed_pair and not repository_execution_mode:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    expected_lifecycle = repository_language_lifecycle_for_execution(
+        source_language,
+        target_language,
+        repository_execution_mode=repository_execution_mode,
+        supplied=repository_language_lifecycle,
+    )
     resolved_source = source.resolve()
     resolved_cases = cases_path.resolve()
     source_bytes = resolved_source.read_bytes()
@@ -3286,6 +3339,7 @@ def migrate(
                 cases_snapshot,
                 output,
                 repository_execution_mode=repository_execution_mode,
+                repository_language_lifecycle=expected_lifecycle,
                 identifier_unit_namespace=unit_namespace,
                 javascript_descriptor=descriptor_binding,
                 javascript_descriptor_bytes=descriptor_bytes,
@@ -3311,6 +3365,7 @@ def _migrate_from_snapshot(
     output: Path,
     *,
     repository_execution_mode: bool = False,
+    repository_language_lifecycle: str | None = None,
     identifier_unit_namespace: IdentifierUnitNamespace,
     javascript_descriptor: dict[str, Any] | None = None,
     javascript_descriptor_bytes: bytes | None = None,
@@ -3340,6 +3395,12 @@ def _migrate_from_snapshot(
     routed_pair = is_routed_pair(source_language, target_language)
     if not routed_pair and not repository_execution_mode:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    expected_lifecycle = repository_language_lifecycle_for_execution(
+        source_language,
+        target_language,
+        repository_execution_mode=repository_execution_mode,
+        supplied=repository_language_lifecycle,
+    )
     output = safe_output(output)
     ir = analyze(source, source_language, function_name)
     if len(ir.functions) != 1:
@@ -3647,6 +3708,7 @@ def _migrate_from_snapshot(
         "route": f"{source_language}-to-{target_language}",
         "route_pack_status": "DECLARED" if routed_pair else "NOT_AVAILABLE",
         "repository_execution_mode": repository_execution_mode,
+        "repository_language_lifecycle": expected_lifecycle,
         "scope": "typed-pure-function-v1",
         "source": {
             "path": source.name,

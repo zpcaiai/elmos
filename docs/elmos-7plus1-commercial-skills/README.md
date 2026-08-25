@@ -3,11 +3,14 @@
 This integration treats the eight archives in
 `skills/subskills/archives/` as immutable, untrusted source data. The importer
 validates and merges them without importing or executing archive code.
-Archive Skill descriptions and bodies remain inert canonical data; installed
-`SKILL.md` files contain repository-authored instructions only. All 101 source
-`SKILL.md` files and the shared archive `AGENTS.md` are materialized under
-neutralized data filenames with an explicit digest-bound
-logical-to-materialized mapping.
+Archive Skill descriptions, bodies, and scripts remain inert canonical data;
+installed `SKILL.md` files contain repository-authored instructions only. All
+101 source `SKILL.md` files, the shared archive `AGENTS.md`, and both archive
+Python scripts are materialized under neutralized data filenames with an
+explicit digest-bound logical-to-materialized mapping. The two scripts lose
+their executable bits and are not imported, compiled, or run by the repository
+importer or recorded qualification path; no historical or manual-execution
+claim is made.
 
 ## Implemented scope
 
@@ -33,6 +36,9 @@ logical-to-materialized mapping.
   registries and exact 50-method public API registry, then binds all three plus
   required runtime modules by byte digest without importing or executing
   runtime Python.
+- Repository-owned archive inspection and evidence campaigns bind exact source,
+  target, environment, corpus, loaded-runtime, case-result, and replay digests.
+  The neutralized archive scripts remain data and are never execution authority.
 
 ## Evidence boundary
 

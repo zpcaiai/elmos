@@ -1,0 +1,120 @@
+schema_version: '1.0'
+package: elmos-multitenant-task-finops-skills
+version: 1.0.0
+generated_at: '2026-08-19T00:00:00+08:00'
+language: zh-CN
+hard_requirements:
+  account_active_root_task_limit: 3
+  limit_scope: authenticated account across all tenant memberships
+  excess_submission_behavior: WAITING_FOR_SLOT
+  authoritative_task_store: PostgreSQL
+  workflow_engine: Temporal
+skills:
+  - id: ELMOS-MTF-001
+    name: elmos-multitenant-task-finops-orchestrator
+    layer: orchestration
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-multitenant-task-finops-orchestrator/SKILL.md
+    depends_on:
+      - elmos-architecture-contract-governance
+      - elmos-identity-tenant-security
+      - elmos-temporal-task-reliability
+      - elmos-observability-finops
+  - id: ELMOS-MTF-002
+    name: elmos-tenant-identity-rls
+    layer: security
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-tenant-identity-rls/SKILL.md
+    depends_on:
+      - elmos-multitenant-task-finops-orchestrator
+  - id: ELMOS-MTF-003
+    name: elmos-account-concurrency-admission
+    layer: runtime-control
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-account-concurrency-admission/SKILL.md
+    depends_on:
+      - elmos-tenant-identity-rls
+  - id: ELMOS-MTF-004
+    name: elmos-workload-aware-scheduler
+    layer: scheduling
+    risk: high
+    task_count: 12
+    path: .agents/skills/elmos-workload-aware-scheduler/SKILL.md
+    depends_on:
+      - elmos-account-concurrency-admission
+  - id: ELMOS-MTF-005
+    name: elmos-task-lifecycle-temporal
+    layer: workflow
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-task-lifecycle-temporal/SKILL.md
+    depends_on:
+      - elmos-workload-aware-scheduler
+  - id: ELMOS-MTF-006
+    name: elmos-task-progress-journal
+    layer: observability
+    risk: high
+    task_count: 12
+    path: .agents/skills/elmos-task-progress-journal/SKILL.md
+    depends_on:
+      - elmos-task-lifecycle-temporal
+  - id: ELMOS-MTF-007
+    name: elmos-checkpoint-recovery
+    layer: reliability
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-checkpoint-recovery/SKILL.md
+    depends_on:
+      - elmos-task-lifecycle-temporal
+      - elmos-task-progress-journal
+  - id: ELMOS-MTF-008
+    name: elmos-task-io-artifact-archive
+    layer: storage
+    risk: high
+    task_count: 12
+    path: .agents/skills/elmos-task-io-artifact-archive/SKILL.md
+    depends_on:
+      - elmos-task-progress-journal
+      - elmos-checkpoint-recovery
+  - id: ELMOS-MTF-009
+    name: elmos-usage-metering-cost-ledger
+    layer: finops
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-usage-metering-cost-ledger/SKILL.md
+    depends_on:
+      - elmos-task-io-artifact-archive
+  - id: ELMOS-MTF-010
+    name: elmos-revenue-margin-ledger
+    layer: billing
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-revenue-margin-ledger/SKILL.md
+    depends_on:
+      - elmos-usage-metering-cost-ledger
+  - id: ELMOS-MTF-011
+    name: elmos-task-financial-analytics
+    layer: analytics
+    risk: high
+    task_count: 12
+    path: .agents/skills/elmos-task-financial-analytics/SKILL.md
+    depends_on:
+      - elmos-usage-metering-cost-ledger
+      - elmos-revenue-margin-ledger
+  - id: ELMOS-MTF-012
+    name: elmos-concurrency-recovery-finops-certification
+    layer: quality
+    risk: critical
+    task_count: 12
+    path: .agents/skills/elmos-concurrency-recovery-finops-certification/SKILL.md
+    depends_on:
+      - elmos-account-concurrency-admission
+      - elmos-workload-aware-scheduler
+      - elmos-task-lifecycle-temporal
+      - elmos-task-progress-journal
+      - elmos-checkpoint-recovery
+      - elmos-task-io-artifact-archive
+      - elmos-task-financial-analytics

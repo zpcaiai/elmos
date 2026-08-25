@@ -1,0 +1,20 @@
+{
+  "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
+  "certification": "NOT_CERTIFIED",
+  "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "customer_evidence_status": "NOT_RUN",
+  "dispatcher": "dispatch_skill",
+  "domain_runtime_evidence_status": "NOT_RUN",
+  "engine_path": "engines/spring-golden-route-engine",
+  "external_evidence_status": "NOT_RUN",
+  "module_path": "elmos_spring_golden_route.runtime",
+  "schema_version": "elmos.spring-golden-route.runtime-binding.v1",
+  "side_effects_authorized": false,
+  "skill_name": "parser-roundtrip-fidelity",
+  "source_contract_sha256": "sha256:b2cc0b585729547db4a8bab3b1542e5c59840d6fa0dc4f31119769688862ad3a",
+  "source_id": "FOUNDATION-01-parser-roundtrip-fidelity",
+  "supported_operations": [
+    "describe",
+    "plan"
+  ]
+}

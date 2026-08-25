@@ -397,6 +397,31 @@ def assess_commercial(
             ),
             source_parse="FAILED",
         )
+    except Exception as error:  # noqa: BLE001 - deliberate fail-closed backstop
+        # Same discipline as transpiler.transpile: anything the pinned parser
+        # raises that is not a declared parse rejection is a DEFECT, and it gets
+        # its own code so it can never be counted as a source-side boundary.
+        # Only the exception type is recorded -- a message could carry fragments
+        # of the customer's SQL.
+        return _result(
+            request,
+            target,
+            route_id=route_id,
+            statements=(),
+            blockers=(
+                CommercialBlocker(
+                    code="SOURCE_PARSE_FAULTED",
+                    severity="ERROR",
+                    statement_index=None,
+                    message=(
+                        f"The exact source profile parser raised an unexpected "
+                        f"{type(error).__name__} and was failed closed. This is a defect, "
+                        "not a declared boundary; please report it."
+                    ),
+                ),
+            ),
+            source_parse="FAILED",
+        )
 
     source_statements = [statement for statement in parsed if isinstance(statement, exp.Expression)]
     if not source_statements or len(source_statements) != len(parsed):

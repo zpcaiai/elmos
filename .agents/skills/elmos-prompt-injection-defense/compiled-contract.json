@@ -1,0 +1,144 @@
+{
+  "acceptance": [
+    {
+      "criterion": "文档内容不能修改系统策略或租户权限",
+      "evidence": [],
+      "id": "S18-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "高风险动作必须经过独立授权或审批",
+      "evidence": [],
+      "id": "S18-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "检测器失效时默认保持最小权限",
+      "evidence": [],
+      "id": "S18-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "安全拦截有可审计原因且不泄露内部策略细节",
+      "evidence": [],
+      "id": "S18-04",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "文档内容不能修改系统策略或租户权限",
+      "高风险动作必须经过独立授权或审批",
+      "检测器失效时默认保持最小权限",
+      "安全拦截有可审计原因且不泄露内部策略细节"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "prompt_injection_findings",
+      "tool_policy_decisions"
+    ],
+    "deliverables": [
+      "InjectionClassifier 与 trust metadata",
+      "工具调用策略执行点",
+      "跨模态红队样本与防绕过测试"
+    ],
+    "dependencies": [
+      "elmos-source-anchor-and-provenance",
+      "elmos-downstream-agent-integration"
+    ],
+    "events": [
+      "injection.detected",
+      "tool.call.blocked",
+      "tool.call.approval_required"
+    ],
+    "failure_modes": [
+      "隐写指令",
+      "多步诱导",
+      "检测器不可用",
+      "参数绕过"
+    ],
+    "inputs": [
+      "Content IR、工具请求、权限策略"
+    ],
+    "metrics": [
+      "attack_block_rate",
+      "false_positive_rate"
+    ],
+    "name": "elmos-prompt-injection-defense",
+    "objective": "把所有资产内容视为不可信数据，分离系统策略、用户授权和文档内指令，并在工具调用前实施能力与参数级控制。",
+    "ordinal": 18,
+    "outputs": [
+      "TrustLabel、SecurityFinding、PolicyDecision"
+    ],
+    "responsibilities": [
+      "检测文档内越权、忽略指令、泄密、外传和工具诱导模式",
+      "为上下文块附加 trust label 与来源边界",
+      "在 Tool Gateway 实施白名单、参数策略、租户权限和审批",
+      "对发现采取标记、隔离、降权或阻断，而非盲目删除业务文本"
+    ],
+    "schema_version": "1.0.0",
+    "title": "多模态提示注入防护"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-prompt-injection-defense/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-prompt-injection-defense/SKILL.md": {
+        "bytes": 2878,
+        "mode": "0644",
+        "sha256": "3a2f8ba8d08d084085c424270f3ffc3ff9cb3b1942dc1ef444ed5ddb6ca28e8a"
+      },
+      "skills/elmos-prompt-injection-defense/references/contract.yaml": {
+        "bytes": 1677,
+        "mode": "0644",
+        "sha256": "47bfe1ceaf0fdab8087dea542c795cd12313010f7d6189f2770187c331e10574"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-prompt-injection-defense/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_prompt_injection_defense",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "governance",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "防止 PDF、Word、图片、音频、代码和网页内容中的指令控制 Agent 或扩大权限；当用户输入会进入 LLM 上下文或触发工具时使用。",
+    "name": "elmos-prompt-injection-defense",
+    "ordinal": 18,
+    "title": "多模态提示注入防护"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "47bfe1ceaf0fdab8087dea542c795cd12313010f7d6189f2770187c331e10574",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "3a2f8ba8d08d084085c424270f3ffc3ff9cb3b1942dc1ef444ed5ddb6ca28e8a"
+  }
+}

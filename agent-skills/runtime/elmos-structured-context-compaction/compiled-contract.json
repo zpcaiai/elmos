@@ -1,0 +1,174 @@
+{
+  "acceptance": [
+    {
+      "criterion": "压缩后目标、最新要求、约束、验收标准和待办完整率为100%",
+      "evidence": [],
+      "id": "S34-01",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "所有关键事实至少有一个有效来源锚点",
+      "evidence": [],
+      "id": "S34-02",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "原始内容仍可按哈希和定位符恢复",
+      "evidence": [],
+      "id": "S34-03",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "压缩失败不改变有效活动上下文",
+      "evidence": [],
+      "id": "S34-04",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "多轮压缩的事实漂移低于定义门槛且被自动检测",
+      "evidence": [],
+      "id": "S34-05",
+      "status": "NOT_RUN"
+    },
+    {
+      "criterion": "不得使用单段自由文本摘要替代结构化契约",
+      "evidence": [],
+      "id": "S34-06",
+      "status": "NOT_RUN"
+    }
+  ],
+  "acceptance_criteria_executed": false,
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "压缩后目标、最新要求、约束、验收标准和待办完整率为100%",
+      "所有关键事实至少有一个有效来源锚点",
+      "原始内容仍可按哈希和定位符恢复",
+      "压缩失败不改变有效活动上下文",
+      "多轮压缩的事实漂移低于定义门槛且被自动检测",
+      "不得使用单段自由文本摘要替代结构化契约"
+    ],
+    "cross_cutting_invariants": [
+      "immutable_original_assets",
+      "tenant_isolation",
+      "source_provenance",
+      "idempotent_durable_execution",
+      "no_silent_truncation",
+      "untrusted_content_not_instructions",
+      "machine_wall_clock_eta_not_human_effort",
+      "tests_and_evidence_required_before_completion"
+    ],
+    "data_entities": [
+      "context_compaction_runs",
+      "compaction_checkpoints",
+      "compacted_fact_items"
+    ],
+    "deliverables": [
+      "CompactionCheckpoint schema 与持久化",
+      "分区、压缩、事实对齐和完整性校验实现",
+      "原始历史外置与可追溯检索",
+      "压缩回滚和多轮漂移评测"
+    ],
+    "dependencies": [
+      "elmos-context-pressure-monitor",
+      "elmos-source-anchor-and-provenance",
+      "elmos-context-integrity-and-loss-detection"
+    ],
+    "events": [
+      "context.compaction.started",
+      "context.compaction.completed",
+      "context.compaction.failed",
+      "context.compaction.rolled_back"
+    ],
+    "failure_modes": [
+      "latest instruction lost",
+      "acceptance criteria omitted",
+      "summary drift",
+      "raw history unavailable"
+    ],
+    "inputs": [
+      "活动上下文快照",
+      "关键事实集合",
+      "压力状态",
+      "pin/eviction 策略"
+    ],
+    "metrics": [
+      "compaction_ratio",
+      "critical_fact_retention",
+      "source_anchor_retention",
+      "semantic_drift_score"
+    ],
+    "name": "elmos-structured-context-compaction",
+    "objective": "把冗长历史转换为可验证、可恢复、带来源的任务状态，而不是不可追溯的普通摘要。",
+    "ordinal": 34,
+    "outputs": [
+      "结构化压缩检查点",
+      "压缩后的装载计划",
+      "完整性报告",
+      "回滚引用"
+    ],
+    "responsibilities": [
+      "定义 CompactionCheckpoint，强制包含目标、最新要求、约束、验收标准、决策、已完成/未完成工作、修改文件、测试、安全发现和来源。",
+      "将原始消息、工具结果和内容块外置到不可变存储，压缩对象只保存结构化事实、哈希和检索键。",
+      "对候选历史分区，禁止压缩系统安全规则、当前用户指令和被 pin 的 P0/P1 内容。",
+      "对每个压缩事实保留一到多个 source anchor，并标记事实状态、可信度、版本和冲突。",
+      "在替换活动上下文前执行完整性检查，比较关键事实集合与验收标准。",
+      "保留压缩算法、模型、提示模板、输入清单、输出和 token 节省量，以便复现。",
+      "支持分层压缩与多次压缩，避免摘要的摘要造成语义漂移。",
+      "失败时回滚到压缩前 ContextLoadPlan 和检查点。"
+    ],
+    "schema_version": "1.0.0",
+    "title": "结构化上下文压缩"
+  },
+  "external_evidence_status": "NOT_RUN",
+  "kind": "elmos.multimodal-intake.compiled-skill-contract",
+  "package": {
+    "name": "elmos-multimodal-intake-skills",
+    "version": "1.0.0"
+  },
+  "provenance": {
+    "archive_scripts_executed": false,
+    "canonical_contract_member": "skills/elmos-structured-context-compaction/references/contract.yaml",
+    "canonical_members": {
+      "skills/elmos-structured-context-compaction/SKILL.md": {
+        "bytes": 3642,
+        "mode": "0644",
+        "sha256": "05399235e11a2bd56a7975f456f94944ea8a07fb08a91eebdc145e8103ac66ce"
+      },
+      "skills/elmos-structured-context-compaction/references/contract.yaml": {
+        "bytes": 2707,
+        "mode": "0644",
+        "sha256": "86edb88206fa6b431626560f8833c766473b4c79a660177efdd3ec36047fcb55"
+      }
+    },
+    "canonical_skill_member": "skills/elmos-structured-context-compaction/SKILL.md",
+    "compiler_path": "tooling/integrate_multimodal_intake_skills.py",
+    "compiler_sha256": "dcfba253f1f6acf3b3b4390f8a1d11c5650265fc0d417bf97a39f346ee8de5b1",
+    "mirrors_verified_byte_identical": [
+      "skills",
+      ".agents/skills",
+      ".claude/skills"
+    ]
+  },
+  "runtime": {
+    "engine_path": "engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py",
+    "handler_id": "execute_structured_context_compaction",
+    "implementation_sha256": "edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93",
+    "phase": "context",
+    "tests_sha256": "7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a"
+  },
+  "schema_version": "1.0.0",
+  "skill": {
+    "description": "当 Elmos 长任务上下文接近容量、需要移出旧历史但必须继续可靠执行时使用。",
+    "name": "elmos-structured-context-compaction",
+    "ordinal": 34,
+    "title": "结构化上下文压缩"
+  },
+  "source": {
+    "archive_path": "skills/subskills/elmos-multimodal-intake-skills-v1.0.0.zip",
+    "archive_sha256": "23f9f2cee63e2fb1a43f85df539942e92077db2c58ddd75a8a0854773eb1c90b",
+    "contract_sha256": "86edb88206fa6b431626560f8833c766473b4c79a660177efdd3ec36047fcb55",
+    "package_manifest_sha256": "dda0758517f985dc93672ca4db712ad45864581b92ca94d51644994d23aec0ba",
+    "skill_md_sha256": "05399235e11a2bd56a7975f456f94944ea8a07fb08a91eebdc145e8103ac66ce"
+  }
+}

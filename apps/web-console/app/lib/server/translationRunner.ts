@@ -81,6 +81,10 @@ const languages = new Set<TranslationLanguageId>([
   "swift",
   "python",
   "typescript",
+  "php",
+  "kotlin",
+  "react",
+  "flutter",
 ]);
 const sensitivePattern = /(authorization|token|secret|password|cookie|api[-_]?key)\s*[:=]\s*\S+/gi;
 
@@ -651,7 +655,11 @@ function validateConversionCoverage(
   graph: Record<string, unknown>,
   includedUnitCount: number,
 ): TranslationSemanticCoverage {
-  if (!isRecord(value) || value.source_language !== sourceLanguage) {
+  if (
+    !isRecord(value)
+    || value.profile !== "compiler-semantic-symbol-coverage-v1"
+    || value.source_language !== sourceLanguage
+  ) {
     fail(409, "TRANSLATION_PIPELINE_CONVERSION_COVERAGE_INVALID");
   }
   if (
@@ -671,19 +679,39 @@ function validateConversionCoverage(
   }
 
   const graphSubjects = new Map<string, Record<string, unknown>>();
+  const moduleInventoryStatuses: string[] = [];
   if (!Array.isArray(graph.nodes)) fail(409, "TRANSLATION_PIPELINE_PROJECT_GRAPH_NODES_INVALID");
   for (const node of graph.nodes) {
     if (!isRecord(node) || !isRecord(node.attributes)) continue;
+    if (node.language !== sourceLanguage) continue;
+    if (node.kind === "module") {
+      if (typeof node.attributes.semantic_index_status !== "string") {
+        fail(409, "TRANSLATION_PIPELINE_CONVERSION_MODULE_INVENTORY_INVALID");
+      }
+      moduleInventoryStatuses.push(node.attributes.semantic_index_status);
+      continue;
+    }
     if (node.attributes.conversion_coverage_requirement !== "REQUIRED") continue;
     const coverageKey = node.attributes.coverage_key;
-    if (typeof coverageKey !== "string" || graphSubjects.has(coverageKey)) {
+    if (
+      !["symbol", "effect"].includes(String(node.kind))
+      || typeof coverageKey !== "string"
+      || !coverageKey.startsWith(`${sourceLanguage}:sha256:`)
+      || graphSubjects.has(coverageKey)
+    ) {
       fail(409, "TRANSLATION_PIPELINE_PROJECT_GRAPH_COVERAGE_SUBJECT_INVALID");
     }
     graphSubjects.set(coverageKey, node);
   }
-  if (sourceLanguage === "python" && graphSubjects.size !== value.subject_count) {
+  if (graphSubjects.size !== value.subject_count) {
     fail(409, "TRANSLATION_PIPELINE_CONVERSION_GRAPH_COVERAGE_MISMATCH");
   }
+  const expectedInventoryStatus = moduleInventoryStatuses.length > 0
+    && moduleInventoryStatuses.every((status) => status === "PASSED")
+    ? "PASSED"
+    : moduleInventoryStatuses.some((status) => status === "FAILED")
+      ? "FAILED"
+      : "NOT_RUN";
   const observedCounts = Object.fromEntries(COVERAGE_STATUSES.map((status) => [status, 0])) as Record<string, number>;
   const seenCoverageKeys = new Set<string>();
   const seenReadyUnits = new Set<string>();
@@ -699,8 +727,11 @@ function validateConversionCoverage(
     ) fail(409, "TRANSLATION_PIPELINE_CONVERSION_SUBJECT_INVALID");
     const graphSubject = graphSubjects.get(subject.coverage_key);
     if (
-      sourceLanguage === "python"
-      && (!graphSubject || graphSubject.id !== subject.node_id)
+      !graphSubject
+      || graphSubject.id !== subject.node_id
+      || graphSubject.path !== subject.path
+      || graphSubject.source_location === undefined
+      || !canonicalEqual(graphSubject.source_location, subject.source_location)
     ) fail(409, "TRANSLATION_PIPELINE_CONVERSION_SUBJECT_GRAPH_MISMATCH");
     seenCoverageKeys.add(subject.coverage_key);
     observedCounts[subject.status] += 1;
@@ -718,11 +749,13 @@ function validateConversionCoverage(
   if (!canonicalEqual(observedCounts, counts)) {
     fail(409, "TRANSLATION_PIPELINE_CONVERSION_SUBJECT_COUNTS_NOT_CLOSED");
   }
-  const complete = value.subject_count > 0 && counts.PASSED === value.subject_count;
+  const complete = expectedInventoryStatus === "PASSED"
+    && value.subject_count > 0
+    && counts.PASSED === value.subject_count;
   if (
     value.complete !== complete
-    || value.status !== (complete ? "PASSED" : sourceLanguage === "python" ? "LIMITED" : "NOT_RUN")
-    || value.inventory_status !== (sourceLanguage === "python" ? "PASSED" : "NOT_RUN")
+    || value.status !== (complete ? "PASSED" : "LIMITED")
+    || value.inventory_status !== expectedInventoryStatus
     || (complete && seenReadyUnits.size !== includedUnitCount)
     || (reportStatus === "COMPLETE" && !complete)
   ) fail(409, "TRANSLATION_PIPELINE_CONVERSION_COVERAGE_CONTRADICTORY");

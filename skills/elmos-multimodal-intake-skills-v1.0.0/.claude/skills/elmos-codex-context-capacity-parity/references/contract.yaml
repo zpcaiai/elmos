@@ -1,0 +1,48 @@
+schema_version: 1.0.0
+ordinal: 29
+name: elmos-codex-context-capacity-parity
+title: Codex 同级上下文容量
+objective: 以模型能力注册表而非散落常量管理上下文；当前基线可配置为 1,050,000 tokens、128,000 最大输出，但必须支持运行时更新。
+dependencies:
+- elmos-model-capability-discovery
+- elmos-context-budget-manager
+inputs:
+- 模型能力、任务预算、语料估算
+outputs:
+- ContextCompatibility、解决策略
+responsibilities:
+- 定义 parity target、基线日期和 provider、model capability 来源
+- 区分总语料容量、活跃上下文容量和项目长期记忆
+- 在模型选择或切换时重新计算输入、输出、工具和安全余量
+- 容量不足时选择压缩、分阶段或更大模型，禁止静默截断
+deliverables:
+- CodexParityPolicy 与配置
+- 兼容性检查 API、前端状态
+- 多模型容量切换和超限测试
+acceptance:
+- 当前基线仅位于版本化能力配置而非业务代码常量
+- 总上传语料可超过窗口并通过检索使用
+- 任何模型调用在发送前完成预算校验
+- 超限不会丢弃用户最新要求或验收标准
+data_entities:
+- model_capabilities
+- context_parity_policies
+events:
+- context.capacity.changed
+- context.model.incompatible
+metrics:
+- capacity_violation_count
+- model_switch_repack_latency
+failure_modes:
+- 模型元数据缺失
+- 能力过期
+- 输出预留不足
+cross_cutting_invariants:
+- immutable_original_assets
+- tenant_isolation
+- source_provenance
+- idempotent_durable_execution
+- no_silent_truncation
+- untrusted_content_not_instructions
+- machine_wall_clock_eta_not_human_effort
+- tests_and_evidence_required_before_completion

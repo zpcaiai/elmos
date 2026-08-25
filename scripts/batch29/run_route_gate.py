@@ -22,6 +22,7 @@ from route_sets import (
     MODULE_EQUIVALENCE_ROUTE_KEYS,
     NODEJS_EXACT_ROUTE_KEYS,
     SPECIALIZED_ROUTE_KEYS,
+    V3_EXACT_ROUTE_KEYS,
     split_route_key,
 )
 from validate_route import (
@@ -32,6 +33,7 @@ from validate_route import (
     validate_module_equivalence,
     validate_nodejs_negative_evidence,
     validate_specialized_negative_evidence,
+    validate_v3_research_route_contract,
 )
 from validate_route import (
     main as validate_route_main,
@@ -186,6 +188,7 @@ def main() -> int:
     source, target = split_route_key(str(route_key))
     specialized = route_key in SPECIALIZED_ROUTE_KEYS
     nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
+    v3 = route_key in V3_EXACT_ROUTE_KEYS
     module_route = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
     if (
         manifest.get("source", {}).get("language") != source
@@ -210,6 +213,15 @@ def main() -> int:
     status = str(manifest.get("status", "")).lower()
     certification_status = str(certification.get("status", "")).lower()
     failures: list[str] = []
+
+    if v3:
+        validate_v3_research_route_contract(
+            manifest,
+            support,
+            evidence,
+            certification,
+            failures,
+        )
 
     if specialized:
         profiles = manifest.get("profiles", {})

@@ -1,0 +1,487 @@
+{
+  "candidate_obligation_count": 5,
+  "certification_status": "NOT_CERTIFIED",
+  "coverage_blocker_count": 5,
+  "coverage_subject_count": 5,
+  "discovered_count": 5,
+  "discovered_file_count": 5,
+  "execution_status": "NOT_RUN",
+  "external_verification_status": "NOT_RUN",
+  "kind": "elmos.repository-discovery-report",
+  "limitations": [
+    "Discovery classifies eligibility only; no translation is executed.",
+    "A READY verdict still requires an independent behavior-case corpus per unit.",
+    "Every compiler-indexed declaration or module effect requires a READY/PASSED unit or an explicit blocker.",
+    "Repository-wide success cannot be inferred from per-unit eligibility."
+  ],
+  "module_inventories": [
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "add.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "6eae129200b6afc6ede1faa17a903c6f881b3771243af5fa88133c35b82862a9",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:8624f9b05978b2526dc7cf79fe3d6467bd4936a92e566cf13ecac33a9b93b04c",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "add.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "add.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    },
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "maximum.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "4acff433b5c531cd10c067fe30a6fce604040b74ada40b483d4cc5c866b2c70a",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:cb35493199174ea967f091349c8a2a854183e9f411310407e843aeab97511dea",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "maximum.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "maximum.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    },
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "minimum.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "1c28c36491e204b21baef3c88d1a917b1d21b9b94d0269e7f537fceba6dee532",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:632797919d4c673f83b72331f5e301ff8c3220c7041af5faa4dcfa215cd03c3f",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "minimum.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "minimum.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    },
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "multiply.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "12d20cc7f73c8dc9a2ae1c99a3782a9058ba54ae533d7d5b29d50bff8c98f7b7",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:aa5a663295d7d30c2465640a581ff703d70408cb492ab1c8d482ff6941e4748a",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "multiply.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "multiply.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    },
+    {
+      "analyzer": null,
+      "analyzer_version": null,
+      "diagnostics": [
+        "NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance"
+      ],
+      "enumeration_status": "NOT_RUN",
+      "language": "swift",
+      "path": "subtract.swift",
+      "profile": "typed-pure-module-v1",
+      "source_sha256": "56d70d273298261e5b60adf2b8cc6ee0ce55d008e86035f59be184925af26260",
+      "subjects": [
+        {
+          "blocking_reasons": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "candidate": false,
+          "coverage_key": "swift:sha256:6c4d2af418dc2a57169e8950b0f384e0530eb8451ac5cc41774a4eb08ef37ac2",
+          "declaration_kind": "compiler-module-inventory",
+          "diagnostics": [
+            "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+          ],
+          "language": "swift",
+          "name": "<module-inventory>",
+          "occurrence": 1,
+          "parent_coverage_key": null,
+          "path": "subtract.swift",
+          "qualified_name": "<module-inventory>",
+          "scope_depth": 0,
+          "semantic_status": "NOT_RUN",
+          "source_location": {
+            "end_column": null,
+            "end_line": null,
+            "path": "subtract.swift",
+            "start_column": null,
+            "start_line": null
+          },
+          "source_signature": {},
+          "source_span": null,
+          "subject_kind": "module-inventory"
+        }
+      ]
+    }
+  ],
+  "module_inventory_count": 5,
+  "module_inventory_status_counts": {
+    "FAILED": 0,
+    "NOT_RUN": 5,
+    "PASSED": 0
+  },
+  "planned_file_count": 5,
+  "profile": "typed-pure-function-v1",
+  "ready_count": 0,
+  "repository_limits": {
+    "maximum_bytes_per_file": 2097152,
+    "maximum_source_bytes": 67108864,
+    "maximum_source_files": 5000
+  },
+  "repository_ref": "local:medium-functional-matrix/swift-to-java",
+  "repository_scale": "medium",
+  "results": [
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:8624f9b05978b2526dc7cf79fe3d6467bd4936a92e566cf13ecac33a9b93b04c",
+      "declared_sha256": "6eae129200b6afc6ede1faa17a903c6f881b3771243af5fa88133c35b82862a9",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00001-F001",
+      "observed_sha256": "6eae129200b6afc6ede1faa17a903c6f881b3771243af5fa88133c35b82862a9",
+      "parent_work_unit_id": "WU-00001",
+      "profile": "typed-pure-function-v1",
+      "reason": "add.swift compiler-backed module enumeration did not run: NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "add.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:8624f9b05978b2526dc7cf79fe3d6467bd4936a92e566cf13ecac33a9b93b04c",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "add.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "add.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    },
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:cb35493199174ea967f091349c8a2a854183e9f411310407e843aeab97511dea",
+      "declared_sha256": "4acff433b5c531cd10c067fe30a6fce604040b74ada40b483d4cc5c866b2c70a",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00002-F001",
+      "observed_sha256": "4acff433b5c531cd10c067fe30a6fce604040b74ada40b483d4cc5c866b2c70a",
+      "parent_work_unit_id": "WU-00002",
+      "profile": "typed-pure-function-v1",
+      "reason": "maximum.swift compiler-backed module enumeration did not run: NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "maximum.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:cb35493199174ea967f091349c8a2a854183e9f411310407e843aeab97511dea",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "maximum.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "maximum.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    },
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:632797919d4c673f83b72331f5e301ff8c3220c7041af5faa4dcfa215cd03c3f",
+      "declared_sha256": "1c28c36491e204b21baef3c88d1a917b1d21b9b94d0269e7f537fceba6dee532",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00003-F001",
+      "observed_sha256": "1c28c36491e204b21baef3c88d1a917b1d21b9b94d0269e7f537fceba6dee532",
+      "parent_work_unit_id": "WU-00003",
+      "profile": "typed-pure-function-v1",
+      "reason": "minimum.swift compiler-backed module enumeration did not run: NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "minimum.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:632797919d4c673f83b72331f5e301ff8c3220c7041af5faa4dcfa215cd03c3f",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "minimum.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "minimum.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    },
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:aa5a663295d7d30c2465640a581ff703d70408cb492ab1c8d482ff6941e4748a",
+      "declared_sha256": "12d20cc7f73c8dc9a2ae1c99a3782a9058ba54ae533d7d5b29d50bff8c98f7b7",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00004-F001",
+      "observed_sha256": "12d20cc7f73c8dc9a2ae1c99a3782a9058ba54ae533d7d5b29d50bff8c98f7b7",
+      "parent_work_unit_id": "WU-00004",
+      "profile": "typed-pure-function-v1",
+      "reason": "multiply.swift compiler-backed module enumeration did not run: NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "multiply.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:aa5a663295d7d30c2465640a581ff703d70408cb492ab1c8d482ff6941e4748a",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "multiply.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "multiply.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    },
+    {
+      "blocker_code": "COMPILER_MODULE_ENUMERATION_NOT_PASSED",
+      "coverage_key": "swift:sha256:6c4d2af418dc2a57169e8950b0f384e0530eb8451ac5cc41774a4eb08ef37ac2",
+      "declared_sha256": "56d70d273298261e5b60adf2b8cc6ee0ce55d008e86035f59be184925af26260",
+      "execution_status": "NOT_RUN",
+      "id": "WU-00005-F001",
+      "observed_sha256": "56d70d273298261e5b60adf2b8cc6ee0ce55d008e86035f59be184925af26260",
+      "parent_work_unit_id": "WU-00005",
+      "profile": "typed-pure-function-v1",
+      "reason": "subtract.swift compiler-backed module enumeration did not run: NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
+      "required_inputs": [
+        "restore_analyzer_execution_and_replay"
+      ],
+      "source_path": "subtract.swift",
+      "source_symbol": {
+        "blocking_reasons": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "candidate": false,
+        "coverage_key": "swift:sha256:6c4d2af418dc2a57169e8950b0f384e0530eb8451ac5cc41774a4eb08ef37ac2",
+        "declaration_kind": "compiler-module-inventory",
+        "diagnostics": [
+          "COMPILER_MODULE_ENUMERATION_NOT_PASSED"
+        ],
+        "language": "swift",
+        "name": "<module-inventory>",
+        "occurrence": 1,
+        "parent_coverage_key": null,
+        "path": "subtract.swift",
+        "qualified_name": "<module-inventory>",
+        "scope_depth": 0,
+        "semantic_status": "NOT_RUN",
+        "source_location": {
+          "end_column": null,
+          "end_line": null,
+          "path": "subtract.swift",
+          "start_column": null,
+          "start_line": null
+        },
+        "source_signature": {},
+        "source_span": null,
+        "subject_kind": "module-inventory"
+      },
+      "verdict": "NOT_RUN"
+    }
+  ],
+  "route_id": "swift-to-java",
+  "schema_version": "1.0.0",
+  "snapshot_sha256": "580907755f0f3e7138742f6919c230a904ef596d94e8549ea564f701d9557c6b",
+  "source_language": "swift",
+  "status": "DISCOVERED",
+  "target_language": "java",
+  "verdict_counts": {
+    "NOT_RUN": 5
+  },
+  "work_unit_count": 5
+}

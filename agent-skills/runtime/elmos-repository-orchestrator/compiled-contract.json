@@ -1,0 +1,67 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "all required tasks terminal",
+      "repository final gates pass",
+      "traceability matrix complete",
+      "cost/runtime/model usage reported"
+    ],
+    "guardrails": [
+      "Never bypass the 10-model allowlist.",
+      "Never override a manual strict selection with a silent fallback.",
+      "Never mark complete from worker self-report alone.",
+      "Never allow parallel write overlap.",
+      "Hard budget/security gates override throughput."
+    ],
+    "inputs": [
+      "requirement",
+      "repository root",
+      "budget policy",
+      "model registry",
+      "model_selection` (Smart or manual, validated by `elmos-model-selection-controller`)"
+    ],
+    "outputs": [
+      "run manifest",
+      "task DAG",
+      "integrated patch",
+      "certification report"
+    ],
+    "triggers": [
+      "medium/large repository feature",
+      "multi-module change",
+      "migration/refactor",
+      "request explicitly asks for complete repository-level implementation"
+    ]
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": []
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.durable-runtime",
+    "handler": "repository_orchestrator",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-repository-orchestrator",
+    "ordinal": 0,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/00-repository-orchestrator/SKILL.md",
+    "sha256": "sha256:6d5d84c5ef465914224d7b0010c8e6df6b5d60cea541364e7f2129054bc08010",
+    "version": "1.1.0"
+  }
+}

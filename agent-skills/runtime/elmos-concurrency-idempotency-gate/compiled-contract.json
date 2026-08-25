@@ -1,0 +1,55 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "no known duplicate side effect or race under tested scenarios"
+    ],
+    "guardrails": [
+      "Promote to L3 when semantics are uncertain."
+    ],
+    "inputs": [
+      "implementation",
+      "tests",
+      "state model"
+    ],
+    "outputs": [
+      "stress/race/idempotency evidence"
+    ],
+    "triggers": [
+      "concurrency/queue/job/payment-like side effects"
+    ]
+  },
+  "dag": {
+    "activation": "conditional",
+    "dependencies": [
+      "elmos-risk-classifier",
+      "elmos-deterministic-validator"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "external",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.verification-fabric",
+    "handler": "concurrency_idempotency_gate",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-concurrency-idempotency-gate",
+    "ordinal": 27,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/27-concurrency-idempotency-gate/SKILL.md",
+    "sha256": "sha256:5d6d2267040a8f1a46f710dd68388f830c082ce5434d44fcb70719ea3fd03346",
+    "version": "1.0.0"
+  }
+}

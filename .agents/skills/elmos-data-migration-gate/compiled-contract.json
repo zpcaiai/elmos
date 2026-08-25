@@ -1,0 +1,56 @@
+{
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "forward + integrity + rollback/irreversibility evidence complete"
+    ],
+    "guardrails": [
+      "Never treat successful DDL parse as sufficient."
+    ],
+    "inputs": [
+      "migration files",
+      "schema",
+      "fixtures"
+    ],
+    "outputs": [
+      "migration evidence",
+      "rollback evidence"
+    ],
+    "triggers": [
+      "database/schema migration task"
+    ]
+  },
+  "dag": {
+    "activation": "conditional",
+    "dependencies": [
+      "elmos-risk-classifier",
+      "elmos-deterministic-validator"
+    ]
+  },
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v1",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "1.1.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": "external",
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.verification-fabric",
+    "handler": "data_migration_gate",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:b234d3332ec4efc5e6f69a0a18e81e518ec68706d427f86e502535aed46f6709"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
+  "source": {
+    "name": "elmos-data-migration-gate",
+    "ordinal": 26,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v1.1.0/skills/26-data-migration-gate/SKILL.md",
+    "sha256": "sha256:020b22e8c36f741a26ab12920e9edbfff2d5ce10580940ecd162df11bf1c7ff1",
+    "version": "1.0.0"
+  }
+}
