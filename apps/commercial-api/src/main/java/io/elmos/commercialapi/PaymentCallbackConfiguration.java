@@ -135,6 +135,18 @@ public class PaymentCallbackConfiguration {
                 commercialBillingDataSource, Clock.systemUTC(), planTerms, CALLBACK_SYSTEM_ACTOR);
     }
 
+    /**
+     * 第 5 步（充值）：入账端口。
+     *
+     * <p>与订阅激活并列注册。同一条回调管线按订单类型分派，所以两个端口都必须
+     * 在装配时就位——缺一个不是"少一种能力"，而是那一类回调会在第 5 步炸掉。
+     */
+    @Bean
+    PaymentCallbackPipeline.WalletCreditor paymentWalletCreditor(
+            DataSource commercialBillingDataSource) {
+        return JdbcOrderPorts.walletCreditor(commercialBillingDataSource, CALLBACK_SYSTEM_ACTOR);
+    }
+
     // -----------------------------------------------------------------------
     // 路由器与回调适配器
     // -----------------------------------------------------------------------
@@ -200,6 +212,7 @@ public class PaymentCallbackConfiguration {
             PaymentCallbackPipeline.OrderLookup paymentOrderLookup,
             PaymentCallbackPipeline.ProviderEventStore paymentProviderEventStore,
             PaymentCallbackPipeline.SubscriptionActivator paymentSubscriptionActivator,
+            PaymentCallbackPipeline.WalletCreditor paymentWalletCreditor,
             PaymentCallbackPipeline.ReconciliationCases paymentReconciliationCases) {
         return new PaymentCallbackPorts(
                 paymentProviderRouter,
@@ -207,6 +220,7 @@ public class PaymentCallbackConfiguration {
                 paymentOrderLookup,
                 paymentProviderEventStore,
                 paymentSubscriptionActivator,
+                paymentWalletCreditor,
                 paymentReconciliationCases);
     }
 

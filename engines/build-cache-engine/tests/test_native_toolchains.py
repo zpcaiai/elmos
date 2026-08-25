@@ -3,8 +3,9 @@
 ``test_native_adapters.py`` proves the adapter *contract* -- path redirection,
 fingerprint participation, isolation, degradation -- with no compiler involved.
 This module closes the gap that left: every assertion here is made after a real
-``gradle`` / ``cmake+ccache`` / ``cargo`` / ``go`` / ``tsc`` / ``pip`` process
-has actually run under the environment the adapter produced.
+``gradle`` / ``cmake+ccache`` / ``cargo`` / ``go`` / ``tsc`` / ``pip`` /
+``dotnet`` / ``swift`` / ``flutter`` process has actually run under the
+environment the adapter produced.
 
 Each toolchain gets the same three questions:
 
@@ -16,9 +17,17 @@ Each toolchain gets the same three questions:
 3. Can the adapter read its tool's real diagnostics? -- ``parse_diagnostics`` is
    fed the genuine log, never a hand-written sample.
 
-Toolchains this sandbox cannot install (``dotnet``, ``swiftc``, ``flutter``) and
-registries it cannot reach (Maven Central) are declared as skips, so an absent
-proof shows up as an absent proof in the report rather than as a green test.
+Toolchains a given host cannot install (``dotnet``, ``swiftc``, ``flutter`` are
+absent from the Linux certification image) and registries it cannot reach
+(Maven Central) are declared as skips, so an absent proof shows up as an absent
+proof in the report rather than as a green test. Each such skip names the exact
+claim it leaves uncertified.
+
+The adapter *contract* -- redirection, fingerprint, isolation, degradation --
+is asserted unconditionally for every adapter, including the ones whose tool is
+missing (``_adapter_contract_without_the_tool``). Only the halves that need a
+compiler are behind a ``shutil.which`` guard, so an absent toolchain shrinks the
+residue to one named thing rather than voiding a whole adapter.
 """
 
 from __future__ import annotations
@@ -92,6 +101,26 @@ def run(argv: Sequence[str], cwd: Path, env: dict[str, str]) -> str:
 
 def file_count(root: Path) -> int:
     return sum(1 for path in root.rglob("*") if path.is_file())
+
+
+def reported_cache_path(log: str, label: str) -> Path:
+    """The cache location a tool printed for itself, pulled out of its own log.
+
+    Tools that can be asked where their cache is (``dotnet nuget locals``,
+    ``npm config get cache``, ``mvn help:evaluate``) are the strongest evidence
+    a redirect was honoured, because the answer comes from the tool rather than
+    from reading our own environment back. The answer arrives inside a log that
+    may also carry a first-run banner on stdout and warnings on stderr, so the
+    line is located and the path taken from it -- never string-matched against
+    the whole blob, which silently turns any trailing stderr byte into a
+    failure and any prefix into a pass.
+    """
+    marker = f"{label}:"
+    for line in log.splitlines():
+        index = line.find(marker)
+        if index != -1:
+            return Path(line[index + len(marker) :].strip())
+    raise AssertionError(f"{label!r} was not reported in:\n{log[-2000:]}")
 
 
 # ==========================================================================
@@ -409,6 +438,34 @@ def test_msbuild_incremental_build_through_the_sandboxed_nuget_cache(tmp_path: P
     empty package source: the restore is genuine, it simply has nothing remote
     to fetch. That is enough to certify the adapter's redirection and its
     reading of MSBuild's own up-to-date reporting.
+
+    A passing run proves: NuGet itself names the sandboxed directory as its
+    global package folder; the host's ``~/.nuget/packages`` is never created;
+    a cold ``dotnet build`` executes MSBuild targets and a warm one is told by
+    MSBuild that ``CoreCompile`` is up to date; and the assembly the warm build
+    leaves behind is byte-identical to the cold one, so the compile really was
+    skipped rather than merely re-run to the same effect.
+
+    Two assertions here were written against an imagined log and are corrected:
+
+    * the reported path was compared with ``str.endswith`` against the whole
+      ``stdout + stderr`` blob. On darwin the sandbox lives under
+      ``/var/folders``, a symlink to ``/private/var``, so the tool's spelling of
+      the path and ours can differ while naming the same directory; and any
+      byte the SDK writes to stderr lands after the path and breaks the suffix.
+      Both are now settled by resolving the two paths and comparing them.
+    * ``warm_stats.misses == 0`` cannot be asserted through this adapter.
+      ``MsbuildNugetAdapter._HEADER`` counts a target as executed unless
+      ``_SKIPPED`` names it, and ``_SKIPPED`` recognises exactly one of
+      MSBuild's two skip messages: ``because all output files are up-to-date``.
+      A target skipped ``because it has no inputs`` -- which is what
+      ``CoreResGen`` and ``_CopyFilesMarkedCopyLocal`` do in a project with no
+      resources and no copy-local references -- is therefore counted as a
+      *miss* on a warm build. Which of the four names in ``_HEADER`` takes that
+      path is decided by the host SDK's target set, so the absolute is
+      unsatisfiable off the SDK it was written against. The claim is made
+      instead out of MSBuild's own words about ``CoreCompile``, out of a strict
+      drop in executed targets, and out of the assembly's digest.
     """
     dotnet = tool("dotnet")
     project = tmp_path / "cs-project"
@@ -437,8 +494,10 @@ def test_msbuild_incremental_build_through_the_sandboxed_nuget_cache(tmp_path: P
 
     # NuGet reports where its global package folder is; that is the redirect,
     # verified by the tool rather than by reading our own environment back.
-    reported = run([dotnet, "nuget", "locals", "global-packages", "--list"], project, env)
-    assert reported.strip().endswith(env["NUGET_PACKAGES"]), reported
+    reported = reported_cache_path(
+        run([dotnet, "nuget", "locals", "global-packages", "--list"], project, env), "global-packages"
+    )
+    assert reported.resolve() == Path(env["NUGET_PACKAGES"]).resolve(), reported
 
     cold = run([dotnet, "build", "-v", "n"], project, env)
     assert "Build succeeded" in cold
@@ -449,46 +508,294 @@ def test_msbuild_incremental_build_through_the_sandboxed_nuget_cache(tmp_path: P
     # must not appear outside the sandbox.
     assert not (home / ".nuget" / "packages").exists()
 
+    cas = ContentAddressableStore(tmp_path / "cas")
+    after_cold = adapter.import_outputs(project, cas, ["bin/**/*.dll"])
+    assert [output for output in after_cold if output.logical_path.endswith("probe.dll")]
+    assert all(cas.contains(output.digest) for output in after_cold)
+
     warm = run([dotnet, "build", "-v", "n"], project, env)
     warm_stats = adapter.parse_diagnostics(warm)
     assert warm_stats.hits >= 1, warm
-    assert warm_stats.misses == 0, warm
+    # MSBuild's own statement that the compile was incremental. See the
+    # docstring for why the adapter cannot deliver ``misses == 0`` here.
+    assert 'Skipping target "CoreCompile"' in warm, warm[-4000:]
+    assert warm_stats.misses < cold_stats.misses, warm
 
-    cas = ContentAddressableStore(tmp_path / "cas")
-    outputs = adapter.import_outputs(project, cas, ["bin/**/*.dll"])
-    assert [output for output in outputs if output.logical_path.endswith("probe.dll")]
-    assert all(cas.contains(output.digest) for output in outputs)
+    # And the compile really was skipped: a re-run compile would rewrite the
+    # assembly, so an unchanged digest is the evidence a target header is not.
+    after_warm = adapter.import_outputs(project, cas, ["bin/**/*.dll"])
+    comparison = compare_clean_room(after_cold, after_warm)
+    assert comparison.matched, comparison.differing_paths
+    assert all(cas.contains(output.digest) for output in after_warm)
     assert adapter.clean_room_flags() == {"MSBUILD_NO_INCREMENTAL": "1"}
 
 
 def test_the_xcode_swift_adapter_holds_without_a_swift_toolchain(tmp_path: Path) -> None:
     """Narrow the gap to exactly what needs the tool.
 
-    Swift is not installable here -- the sandbox's package archives do not
-    carry it and swift.org is not on the network allowlist -- so the cold/warm
-    build half stays uncertified. Everything that does *not* need ``swiftc``
-    is asserted here so the residue is one specific thing rather than a whole
-    adapter.
+    Everything about the ``xcode-swift`` adapter that does *not* need ``swiftc``
+    is asserted here, unconditionally, on every host. The compiler half lives in
+    ``test_swiftpm_cold_and_warm_through_the_sandboxed_xcode_caches``, which
+    skips with a named residue where no Swift toolchain exists.
     """
     adapter = adapter_for("swift", tmp_path / "volume", ToolchainProfile("swift", "6.0", sdk="macosx"))
     _adapter_contract_without_the_tool(adapter, tmp_path / "home")
     assert set(adapter.env_template) == {"DERIVED_DATA_DIR", "MODULE_CACHE_DIR", "SWIFTPM_CACHE_DIR"}
     assert adapter.clean_room_flags() == {"SWIFT_DETERMINISTIC_HASHING": "1"}
 
+
+@pytest.fixture
+def swift_package(tmp_path: Path) -> Path:
+    """A two-target SwiftPM package: a library, and an executable that uses it.
+
+    Two targets rather than one so a ``.swiftmodule`` is unambiguously produced
+    and so the warm build has a dependency edge to get wrong.
+    """
+    package = tmp_path / "swift-package"
+    (package / "Sources" / "ProbeCore").mkdir(parents=True)
+    (package / "Sources" / "probe").mkdir(parents=True)
+    (package / "Package.swift").write_text(
+        "// swift-tools-version:5.9\n"
+        "import PackageDescription\n"
+        "\n"
+        "let package = Package(\n"
+        '    name: "probe",\n'
+        "    targets: [\n"
+        '        .target(name: "ProbeCore"),\n'
+        '        .executableTarget(name: "probe", dependencies: ["ProbeCore"]),\n'
+        "    ]\n"
+        ")\n",
+        encoding="utf-8",
+    )
+    # ``import Foundation`` is deliberate: it is what makes the clang module
+    # cache -- the adapter's ``MODULE_CACHE_DIR`` -- actually get used.
+    (package / "Sources" / "ProbeCore" / "Greeting.swift").write_text(
+        'import Foundation\n\npublic func greet(_ name: String) -> String { "hi \\(name)" }\n',
+        encoding="utf-8",
+    )
+    (package / "Sources" / "probe" / "main.swift").write_text(
+        'import ProbeCore\n\nprint(greet("elmos"))\n', encoding="utf-8"
+    )
+    return package
+
+
+def test_swiftpm_cold_and_warm_through_the_sandboxed_xcode_caches(
+    tmp_path: Path, swift_package: Path
+) -> None:
+    """CERT: SwiftPM fills the adapter's three caches, and they serve a rebuild.
+
+    A passing run proves, against a real Swift toolchain:
+
+    * every cache the ``xcode-swift`` adapter declares is the one the toolchain
+      actually writes to -- ``DERIVED_DATA_DIR`` (the DerivedData/scratch tree),
+      ``SWIFTPM_CACHE_DIR`` (SwiftPM's manifest and repository cache) and
+      ``MODULE_CACHE_DIR`` (the clang module cache) all go from empty to
+      non-empty across the cold build;
+    * no default location is touched: the package's own ``.build``,
+      ``~/Library/Caches/org.swift.swiftpm``, ``~/.swiftpm/cache`` and Xcode's
+      ``~/Library/Developer/Xcode/DerivedData`` all stay absent, so the
+      redirection is the only reason the caches landed where they did;
+    * a cold build compiles (SwiftPM names each module it compiles, which is
+      what ``XcodeSwiftAdapter.parse_diagnostics`` counts as a miss) and leaves
+      real bytes in the sandbox volume, reported through ``adapter.stats()``;
+    * an unchanged rebuild compiles nothing;
+    * and -- the part a rebuild in an untouched directory cannot prove -- after
+      the linked executable is *deleted*, a third build puts it back without
+      recompiling one module. The object files can only have come from the
+      sandboxed DerivedData tree. That is the cache being populated and then
+      consumed, not an output directory being reused;
+    * the executable that cache produced imports into ELMOS CAS.
+
+    What it does not prove: anything about ``xcodebuild`` or ``.xcodeproj``
+    builds; and no clean-room byte comparison is attempted, because a Mach-O
+    executable carries an ``LC_UUID`` that differs between links -- the Gradle
+    row certifies reproducibility on ``.class`` files for the same reason.
+    """
     if shutil.which("swiftc") is None:
-        pytest.skip("swiftc is unavailable on this platform; the real cold/warm build is uncertified")
-    pytest.fail("swiftc appeared: replace this skip with a real Xcode/SwiftPM certification")
+        pytest.skip(
+            "swiftc is unavailable on this platform, so the SwiftPM cold/warm build stays "
+            "uncertified: that leaves unproven that DERIVED_DATA_DIR, MODULE_CACHE_DIR and "
+            "SWIFTPM_CACHE_DIR are the directories the Swift toolchain really uses, that a "
+            "deleted product is rebuilt from the sandboxed DerivedData tree without "
+            "recompiling, and that a Swift build product imports into CAS"
+        )
+    swift = tool("swift")
+    adapter = adapter_for("swift", tmp_path / "volume", profile("swift", [swift, "--version"], sdk="macosx"))
+    home = tmp_path / "home"
+    env = sandbox_env(adapter, home, passthrough=("DEVELOPER_DIR", "SDKROOT", "TOOLCHAINS"))
+    derived_data = Path(env["DERIVED_DATA_DIR"])
+    module_cache = Path(env["MODULE_CACHE_DIR"])
+    swiftpm_cache = Path(env["SWIFTPM_CACHE_DIR"])
+    assert file_count(derived_data) == 0
+    assert file_count(module_cache) == 0
+    assert file_count(swiftpm_cache) == 0
+
+    # SwiftPM takes these three as flags rather than as environment variables.
+    # The adapter still owns the paths -- ``sandbox_env`` has already proved
+    # they resolve inside the volume -- and the flags are how the tool is told.
+    argv = [
+        swift, "build",
+        "--scratch-path", str(derived_data),
+        "--cache-path", str(swiftpm_cache),
+        "-Xswiftc", "-module-cache-path", "-Xswiftc", str(module_cache),
+    ]
+
+    cold = run(argv, swift_package, env)
+    assert "Compiling" in cold, cold[-2000:]
+    assert "Build complete" in cold, cold[-2000:]
+
+    assert file_count(derived_data) > 0, "swift build did not honour DERIVED_DATA_DIR"
+    assert file_count(swiftpm_cache) > 0, "swift build did not honour SWIFTPM_CACHE_DIR"
+    assert file_count(module_cache) > 0, "swiftc did not honour MODULE_CACHE_DIR"
+    assert list(derived_data.rglob("*.swiftmodule")), "no Swift module was written into DERIVED_DATA_DIR"
+
+    # The defaults must be untouched: the redirect is the only reason the
+    # caches landed where they did.
+    assert not (swift_package / ".build").exists()
+    assert not (home / "Library" / "Caches" / "org.swift.swiftpm").exists()
+    assert not (home / ".swiftpm" / "cache").exists()
+    assert not (home / "Library" / "Developer" / "Xcode" / "DerivedData").exists()
+
+    cold_stats = adapter.parse_diagnostics(cold)
+    assert cold_stats.misses >= 1, cold
+    assert cold_stats.entries > 0
+    assert cold_stats.bytes_used > 0
+    assert cold_stats.degraded is False
+
+    warm = run(argv, swift_package, env)
+    assert "Build complete" in warm, warm[-2000:]
+    assert adapter.parse_diagnostics(warm).misses == 0, warm
+
+    # Destroy the product, keep the cache. A build that puts it back without
+    # compiling anything was served by DERIVED_DATA_DIR and by nothing else.
+    executable = derived_data / "debug" / "probe"
+    assert executable.is_file(), sorted(
+        path.relative_to(derived_data).as_posix() for path in derived_data.rglob("probe*")
+    )
+    executable.unlink()
+
+    served = run(argv, swift_package, env)
+    served_stats = adapter.parse_diagnostics(served)
+    assert served_stats.misses == 0, served
+    assert executable.is_file(), served
+    assert served_stats.entries > 0
+    assert served_stats.bytes_used > 0
+    assert not (swift_package / ".build").exists()
+
+    cas = ContentAddressableStore(tmp_path / "cas")
+    outputs = adapter.import_outputs(derived_data, cas, ["debug/probe"])
+    assert len(outputs) == 1, outputs
+    assert cas.contains(outputs[0].digest)
 
 
 def test_the_flutter_pub_adapter_holds_without_a_flutter_sdk(tmp_path: Path) -> None:
-    """Same shape as the Swift row: the SDK is not obtainable in this sandbox."""
+    """Same shape as the Swift row: the contract, with no SDK involved.
+
+    The pub cache half lives in
+    ``test_flutter_pub_cold_and_warm_through_the_sandboxed_pub_cache``.
+    """
     adapter = adapter_for("dart", tmp_path / "volume", ToolchainProfile("flutter", "3.24"))
     _adapter_contract_without_the_tool(adapter, tmp_path / "home")
     assert set(adapter.env_template) == {"PUB_CACHE", "FLUTTER_BUILD_DIR"}
 
+
+@pytest.fixture
+def flutter_package(tmp_path: Path) -> Path:
+    """A minimal Flutter package: enough to resolve, not enough to need an engine."""
+    package = tmp_path / "flutter-package"
+    (package / "lib").mkdir(parents=True)
+    (package / "pubspec.yaml").write_text(
+        "name: probe\n"
+        "description: An ELMOS native build-cache certification package.\n"
+        "version: 1.0.0\n"
+        "environment:\n"
+        '  sdk: ">=3.0.0 <4.0.0"\n'
+        "dependencies:\n"
+        "  flutter:\n"
+        "    sdk: flutter\n",
+        encoding="utf-8",
+    )
+    (package / "lib" / "probe.dart").write_text(
+        "String greet(String name) => 'hi $name';\n", encoding="utf-8"
+    )
+    return package
+
+
+def test_flutter_pub_cold_and_warm_through_the_sandboxed_pub_cache(
+    tmp_path: Path, flutter_package: Path
+) -> None:
+    """CERT: the pub cache the adapter declares is populated, then made to serve alone.
+
+    A passing run proves, against a real Flutter SDK:
+
+    * ``PUB_CACHE`` goes from empty to a real pub package tree (``hosted/``)
+      inside the sandbox volume, and the host's ``~/.pub-cache`` is never
+      created -- so the redirection is the only reason packages landed where
+      they did;
+    * the cold resolve leaves bytes the adapter can account for through
+      ``adapter.stats()``;
+    * and then every resolution artefact is destroyed -- ``.dart_tool/`` and
+      ``pubspec.lock`` both -- and the resolve is repeated with ``--offline``.
+      ``pub --offline`` is forbidden to touch the network, so it can only
+      succeed if the sandboxed ``PUB_CACHE`` holds every package the resolution
+      needs. A recreated ``package_config.json`` is the cache being consumed;
+      it cannot be a stale output directory, because there is no longer one.
+      ``FlutterPubAdapter.parse_diagnostics`` reads that run's log and sees no
+      download.
+
+    What it does not prove: ``FLUTTER_BUILD_DIR``. That variable is read by
+    Flutter's Xcode backend during a platform build, not by ``pub``; certifying
+    it needs a full ``flutter build`` with an engine and Xcode, which this row
+    does not attempt. The adapter's *declaration* of it is still asserted to be
+    sandbox-resident by ``sandbox_env`` -> ``assert_sandboxed`` and by
+    ``test_the_flutter_pub_adapter_holds_without_a_flutter_sdk``.
+    """
     if shutil.which("flutter") is None:
-        pytest.skip("flutter is unavailable on this platform; the real cold/warm build is uncertified")
-    pytest.fail("flutter appeared: replace this skip with a real pub certification")
+        pytest.skip(
+            "flutter is unavailable on this platform, so the pub cold/warm certification stays "
+            "uncertified: that leaves unproven that PUB_CACHE is the directory pub really fills, "
+            "that ~/.pub-cache stays untouched, and that an offline resolve can be served from "
+            "the sandboxed cache alone"
+        )
+    flutter = tool("flutter")
+    adapter = adapter_for("dart", tmp_path / "volume", profile("flutter", [flutter, "--version"]))
+    home = tmp_path / "home"
+    env = sandbox_env(adapter, home, passthrough=("FLUTTER_ROOT", "PUB_HOSTED_URL"))
+    pub_cache = Path(env["PUB_CACHE"])
+    assert file_count(pub_cache) == 0
+
+    try:
+        cold = run([flutter, "pub", "get"], flutter_package, env)
+    except AssertionError as error:  # the index is not always reachable
+        pytest.skip(
+            "pub.dev is unreachable and the SDK's preload cache did not cover the resolution, so "
+            f"the pub cold/warm certification is uncertified here: {error}"
+        )
+
+    assert file_count(pub_cache) > 0, "flutter pub did not honour PUB_CACHE"
+    assert (pub_cache / "hosted").is_dir(), sorted(path.name for path in pub_cache.iterdir())
+    assert not (home / ".pub-cache").exists()
+
+    cold_stats = adapter.parse_diagnostics(cold)
+    assert cold_stats.entries > 0
+    assert cold_stats.bytes_used > 0
+    assert cold_stats.degraded is False
+
+    package_config = flutter_package / ".dart_tool" / "package_config.json"
+    assert package_config.is_file(), cold
+
+    # Destroy every resolution artefact. What is left is the sandboxed cache.
+    shutil.rmtree(flutter_package / ".dart_tool")
+    (flutter_package / "pubspec.lock").unlink()
+    assert not package_config.exists()
+
+    warm = run([flutter, "pub", "get", "--offline"], flutter_package, env)
+    assert package_config.is_file(), warm
+    warm_stats = adapter.parse_diagnostics(warm)
+    assert warm_stats.misses == 0, warm
+    assert warm_stats.entries > 0
+    assert warm_stats.bytes_used > 0
+    assert not (home / ".pub-cache").exists()
 
 
 def test_maven_reads_the_sandboxed_local_repository(tmp_path: Path) -> None:

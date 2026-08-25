@@ -122,6 +122,63 @@ This baseline is cloud-container engineering evidence only. It is not Mac, provi
 production, independent-verifier or certification evidence, and it does not change
 BC-18 (`NOT_RUN`) or BC-19 (`NOT_CERTIFIED`).
 
+## 2026-08-25 second pass — the 11 Mac failures and two pre-existing security defects
+
+The Mac run after the first pass showed **11 failed / 1626 passed / 26 skipped**
+(1663 collected, live PostgreSQL 17.5). **None belonged to this session's change
+set** — the six affected test files import zero of the modules changed here, and
+all 11 pass in the cloud container *with* those changes. They were
+darwin-as-user vs linux-as-root deltas. All eleven are now closed, along with the
+two security defects that had been deliberately escalated rather than fixed.
+
+Closing measurement, cloud container: **1652 passed, 52 skipped, 0 failed**.
+`ruff check src tests` is now **completely clean** — the long-standing
+`tests/test_e2e.py` `I001` was fixed too. `mypy --strict` reports only the
+`psycopg` import-not-found, which disappears once the dev group is installed.
+
+Change set: **27 files, 5 new and 22 modified**, verified against the pristine
+baseline with `diff -rq`.
+
+| Group | Count | Resolution |
+| --- | ---: | --- |
+| root bypasses `BLOB_MODE = 0o444` | 4 | Tamper now unlocks explicitly and restores the mode. **And the hardening got its first real test**: `test_every_store_path_leaves_the_blob_read_only` covers every store path via `stat()`, which is meaningful under uid 0 where a write-probe never fires |
+| deliberate toolchain tripwires | 2 | Honoured. Real SwiftPM and Flutter/pub cold-warm certifications written; the no-tool contract assertions moved out from behind the skip and now run everywhere |
+| msbuild | 1 | Two defects: a `endswith` path assertion that a `/var`→`/private` symlink or one stderr byte breaks (now `Path.resolve()` equality), and a real product gap — `_SKIPPED` recognised only one of MSBuild's two skip messages, so a no-op target counted as a warm-build miss. Both fixed |
+| Linux-only overlay | 2 | One skipped by platform with a reason naming what is lost. The other **deliberately not skipped** — `/home/someone` is just as dangerous on darwin — and `/Users/someone` was added to the parametrisation |
+| timing-sensitive | 2 | Both were measuring the host rather than the product. Rewritten to assert the intent (a marker file that only appears if a probe ran to completion; a real 5 ms breach against a 1 ms budget), not a wall-clock margin |
+| `compile_prompt_prefix` oracle + global name squatting | — | `_ensure_scope` no longer creates on miss; absent and foreign answer identically. Claiming a project name is now a deliberate act reached only through `POST /runs` |
+| idempotency-key oracle on four BC-10 routes | — | All six mutating routes now preflight project ownership before the durable claim |
+
+Every fix is proven to bite by reverting it. Notable: moving the preflight back
+after the claim fails **25** tests; restoring create-on-miss fails 2; narrowing
+`_SKIPPED` back to one message fails 1; `BLOB_MODE = 0o644` fails 1.
+
+**A methodological hole in the first pass's baseline, recorded so it is not
+repeated.** The cloud container runs as uid 0, so any assertion depending on file
+permissions being *enforced* is vacuous there. The first pass's 1600-passed
+figure carries no weight for that class. This is the `#1 PHP inventory` lesson in
+a new shape — not "the cloud cannot run this segment" but "the cloud runs it
+without meaning", which is more dangerous because it presents as green.
+`capsh --drop=cap_dac_override` reproduces macOS mode enforcement inside the
+container and was used to verify the four fixes here; worth reusing.
+
+**Still open and needing your decision:** `projects.project_id` is a **global**
+`PRIMARY KEY` (`0001_init.sql:12`; `0006` adds the composite unique index as an
+FK target without dropping it). The API layer now stops an *unauthorized* caller
+from squatting, but a legitimately authorized tenant can still take a name
+another tenant wants. Whether that is a defect depends on whether `project_id` is
+meant to be a global namespace. Changing it touches every FK across nine
+migrations, needs live-PostgreSQL validation, and is a breaking change for any
+caller addressing a project by bare id. Sketch in
+`.ai/FINDINGS-2026-08-25-build-cache-bc13-bc16.md` §9.3.
+
+**One item the container could not close**, to watch on the Mac:
+`test_host_system_paths_cannot_be_mounted[/home/someone]`. If it still fails, the
+failure message names the path `SandboxPolicy.check` actually resolved to, and
+that is a product gap in `DENIED_MOUNT_PREFIXES` (`src/elmos_build_cache/overlay.py`)
+— the fix is one more prefix, exactly as `/private/etc` and `/Users` were added.
+No speculative prefix was added from here.
+
 ## Synchronization rule
 
 After any task changes state, update in the same atomic documentation write:

@@ -74,9 +74,9 @@ _BUILD_COMMANDS: dict[Language, list[str]] = {
     "php": ["composer install --no-dev --optimize-autoloader",
             "find src -name '*.php' -type f -exec php -l {} \\;"],
     "flutter": [
-        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics analyze --format=json --fatal-infos --fatal-warnings --packages=.dart_tool/package_config.json --sdk-path=$FLUTTER_ROOT/bin/cache/dart-sdk lib",
-        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics compile kernel --packages=.dart_tool/package_config.json --verbosity=error --link-platform --no-embed-sources --output=build/elmos_repository.dill lib/main.dart",
-        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --packages=.dart_tool/package_config.json build/elmos_repository.dill",
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics analyze --format=json --fatal-infos --fatal-warnings --packages=.dart_tool/package_config.json --sdk-path=$FLUTTER_ROOT/bin/cache/dart-sdk lib",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics compile kernel --packages=.dart_tool/package_config.json --verbosity=error --link-platform --no-embed-sources --output=build/elmos_repository.dill lib/main.dart",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --packages=.dart_tool/package_config.json build/elmos_repository.dill",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
     ],
 }
 

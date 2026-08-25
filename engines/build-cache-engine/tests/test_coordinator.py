@@ -4,6 +4,7 @@ import multiprocessing
 import threading
 import time
 from collections.abc import Callable
+from pathlib import Path
 
 import pytest
 
@@ -404,34 +405,71 @@ def test_lookup_and_reuse_resource_budgets_fail_to_full_recompute(
     assert reason in plan.budget_usage.breaches
 
 
-def test_probe_timeout_and_expired_decision_deadline_degrade_safely() -> None:
+#: A probe slow enough that "the timeout fired" and "we waited it out" cannot be
+#: confused: three orders of magnitude past the 5 ms per-probe budget below.
+SLOW_PROBE_SECONDS = 5.0
+
+#: Any constant will do; the point is that it does not move while ``plan`` runs.
+FROZEN_MONOTONIC = 1_000.0
+
+
+def test_probe_timeout_and_expired_decision_deadline_degrade_safely(tmp_path: Path) -> None:
+    """The per-probe timeout fires *and* the planner returns without the probe.
+
+    This used to be ``elapsed < 0.04`` against a probe that slept 0.05 -- a
+    40 ms wall-clock budget that a loaded machine misses, and that did not
+    actually test the intent either way: ``_poll_probe_worker`` also reports
+    ``LOOKUP_TIMEOUT`` from ``envelope.completed_monotonic`` when it *did* wait
+    for a late probe, so the reason code alone cannot tell "gave up at 5 ms"
+    from "waited 5 s and then complained".
+
+    Two changes make the intent testable without a wall-clock margin:
+
+    * the probe leaves a marker only if it runs to completion, so the marker's
+      absence is direct proof the planner returned while it was still sleeping
+      and reclaimed the worker rather than waiting;
+    * the coordinator gets a frozen ``monotonic``, which pins the *budget
+      arithmetic* (the 20 ms decision deadline can no longer expire under load
+      and rewrite the reason code) while the deadline the worker is actually
+      held to stays real wall clock -- ``_start_probe_worker`` computes
+      ``deadline_wall`` from ``time.monotonic()``, so the 5 ms per-probe
+      timeout is still genuinely enforced by the code under test.
+    """
+    finished = tmp_path / "probe-ran-to-completion"
+
     def slow() -> LayerProbeResult:
-        time.sleep(0.05)
+        time.sleep(SLOW_PROBE_SECONDS)
+        finished.write_bytes(b"the probe was waited for")
         return hit(CacheLayer.CAS)
 
     budgets = ReuseBudgets(decision_timeout_ms=20.0, per_probe_timeout_ms=5.0)
     req = ReuseRequest("request-timeout", identity(), ValidationLevel.TEST_VERIFIED, budgets=budgets)
-    started = time.monotonic()
-    timed_out = MultiLayerCacheCoordinator().plan(req, {CacheLayer.CAS: slow})
-    elapsed = time.monotonic() - started
-    assert elapsed < 0.04
+    timed_out = MultiLayerCacheCoordinator(monotonic=lambda: FROZEN_MONOTONIC).plan(
+        req, {CacheLayer.CAS: slow}
+    )
+
+    assert not finished.exists(), "the planner waited for the slow probe instead of timing it out"
     assert timed_out.layers[0].outcome is ProbeOutcome.ERROR
     assert timed_out.layers[0].reason_code == "LOOKUP_TIMEOUT"
+    assert timed_out.layers[0].accepted is False
     assert timed_out.decisions == (ReuseDecision.FULL_RECOMPUTE,)
 
+    # An already-expired decision deadline is refused before any probe starts:
+    # frozen clock, deadline in its past, so this is exact rather than raced.
     already_expired = ReuseRequest(
         "request-deadline",
         identity(),
         ValidationLevel.TEST_VERIFIED,
         budgets=budgets,
-        decision_deadline_monotonic=time.monotonic() - 0.001,
+        decision_deadline_monotonic=FROZEN_MONOTONIC - 0.001,
     )
-    expired = MultiLayerCacheCoordinator().plan(
+    expired = MultiLayerCacheCoordinator(monotonic=lambda: FROZEN_MONOTONIC).plan(
         already_expired,
         {CacheLayer.CAS: slow},
     )
     assert expired.layers[0].reason_code == "DECISION_DEADLINE_EXCEEDED"
     assert "DECISION_DEADLINE_EXCEEDED" in expired.budget_usage.breaches
+    assert not finished.exists(), "an expired decision deadline must not start a probe at all"
 
 
 def test_never_returning_probe_is_hard_reclaimed_without_worker_or_thread_leak() -> None:

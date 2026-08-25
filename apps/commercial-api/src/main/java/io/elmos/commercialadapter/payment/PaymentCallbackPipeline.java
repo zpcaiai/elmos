@@ -71,9 +71,30 @@ public final class PaymentCallbackPipeline {
                                      String outTradeNo, long amountFen, String tradeStatus) {
     }
 
-    /** 本地订单。 */
+    /**
+     * 订单类型。决定第 5 步动的是订阅还是钱包。
+     *
+     * <p>写成枚举而不是 {@code planId == null} 的隐含约定：后者能工作，
+     * 但"套餐为空所以是充值"是一条只存在于某个人脑子里的规则，
+     * 下一个加订单类型的人不会知道它，而编译器也不会提醒他。
+     */
+    public enum OrderKind { SUBSCRIPTION, TOPUP }
+
+    /** 本地订单。充值订单没有套餐，{@code planId} 为 {@code null}。 */
     public record LocalOrder(String orderId, String organizationId, String planId,
-                             long expectedAmountFen) {
+                             long expectedAmountFen, OrderKind kind) {
+        public LocalOrder {
+            requireNonNull(kind, "kind");
+            if (kind == OrderKind.SUBSCRIPTION && (planId == null || planId.isEmpty())) {
+                throw new IllegalArgumentException("订阅订单必须带套餐");
+            }
+        }
+
+        /** 既有订阅路径的构造形态，逐字保持不变。 */
+        public LocalOrder(String orderId, String organizationId, String planId,
+                          long expectedAmountFen) {
+            this(orderId, organizationId, planId, expectedAmountFen, OrderKind.SUBSCRIPTION);
+        }
     }
 
     /** 提供方相关的验签与归一化。实现见各自的 Verifier / Cipher。 */
@@ -145,9 +166,20 @@ public final class PaymentCallbackPipeline {
         void record(LocalOrder order, NormalizedCallback callback, String rawBody);
     }
 
-    /** 第 5 步：更新订阅。唯一改变客户可见状态的动作。 */
+    /** 第 5 步（订阅）：更新订阅。 */
     public interface SubscriptionActivator {
         void activate(LocalOrder order, NormalizedCallback callback);
+    }
+
+    /**
+     * 第 5 步（充值）：把已确认收款的充值单入账。
+     *
+     * <p>与 {@link SubscriptionActivator} 并列而不是复用它：两者唯一的共同点是
+     * "都在第 5 步"，而实现完全不同——一个开订阅期发额度，一个走钱包记账函数。
+     * 合成一个接口会逼实现方在内部按类型 if-else，那就把这里的分派又下沉了一层。
+     */
+    public interface WalletCreditor {
+        void credit(LocalOrder order, NormalizedCallback callback);
     }
 
     /**
@@ -167,6 +199,7 @@ public final class PaymentCallbackPipeline {
     private final OrderLookup orders;
     private final ProviderEventStore events;
     private final SubscriptionActivator subscriptions;
+    private final WalletCreditor wallet;
     private final ReconciliationCases reconciliation;
 
     public PaymentCallbackPipeline(ProviderAdapter adapter,
@@ -174,13 +207,34 @@ public final class PaymentCallbackPipeline {
                                    OrderLookup orders,
                                    ProviderEventStore events,
                                    SubscriptionActivator subscriptions,
+                                   WalletCreditor wallet,
                                    ReconciliationCases reconciliation) {
         this.adapter = requireNonNull(adapter, "adapter");
         this.processedEvents = requireNonNull(processedEvents, "processedEvents");
         this.orders = requireNonNull(orders, "orders");
         this.events = requireNonNull(events, "events");
         this.subscriptions = requireNonNull(subscriptions, "subscriptions");
+        this.wallet = requireNonNull(wallet, "wallet");
         this.reconciliation = requireNonNull(reconciliation, "reconciliation");
+    }
+
+    /**
+     * 只装配订阅路径的构造形态。
+     *
+     * <p>钱包端口缺席时不是"跳过充值"，而是让充值回调直接失败：提供方会重发，
+     * 运维会看到错误。静默跳过的后果是我们收了钱、用户没到账、而日志一片正常。
+     */
+    public PaymentCallbackPipeline(ProviderAdapter adapter,
+                                   ProcessedEventLog processedEvents,
+                                   OrderLookup orders,
+                                   ProviderEventStore events,
+                                   SubscriptionActivator subscriptions,
+                                   ReconciliationCases reconciliation) {
+        this(adapter, processedEvents, orders, events, subscriptions,
+                (order, callback) -> {
+                    throw new IllegalStateException("WALLET_CREDITOR_NOT_CONFIGURED");
+                },
+                reconciliation);
     }
 
     /**
@@ -231,8 +285,12 @@ public final class PaymentCallbackPipeline {
             return Outcome.NOT_A_PAYMENT_SUCCESS;
         }
 
-        // 第 5 步 · 最后才动订阅
-        subscriptions.activate(order, callback);
+        // 第 5 步 · 最后才动客户可见状态，按订单类型分派
+        if (order.kind() == OrderKind.TOPUP) {
+            wallet.credit(order, callback);
+        } else {
+            subscriptions.activate(order, callback);
+        }
         return Outcome.ACCEPTED;
     }
 

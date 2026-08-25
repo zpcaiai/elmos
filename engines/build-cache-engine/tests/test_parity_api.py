@@ -60,6 +60,8 @@ from elmos_build_cache.security import (
     SignedStatement,
 )
 
+SECOND_PROJECT = "project-second"
+
 
 class ServingControl:
     def __init__(self) -> None:
@@ -1231,12 +1233,21 @@ def test_scoped_evidence_cannot_replay_into_another_project(
         report_id="parity-project-replay",
     )
     install_evidence_trust(parity_plane, store, cas, clock, signer)
+    # The replay target is a *second project this same tenant owns*. It used
+    # to be an identifier nobody owned, which no longer reaches the scope
+    # check: project ownership is now decided in the preflight, so an unowned
+    # target answers NOT_FOUND before any evidence is examined. Owning the
+    # target is what makes this test still prove the thing it is named for --
+    # that owning a project does not let you replay another project's signed
+    # evidence into it.
+    with store.transaction():
+        store.ensure_project(TENANT, SECOND_PROJECT)
     response = parity_plane.handle(
         Request(
             "POST",
             "/cache/parity/runs",
             {
-                "project_id": "project-other",
+                "project_id": SECOND_PROJECT,
                 "report_id": "parity-project-replay",
                 "metrics": metrics,
                 "cohorts": cohorts,
@@ -1281,6 +1292,13 @@ def test_same_global_cas_evidence_cannot_replay_into_another_tenant(
         parity_repository=parity_repository,
         parity_evidence_trust_verifier=trust,
     )
+    # ``tenant-other`` owns its own project, so the ownership preflight passes
+    # and the request reaches the scope-binding check this test is about. The
+    # project used to be an unclaimed name, which the preflight now refuses
+    # first -- and which the parity repository would previously have *created*
+    # on this tenant's behalf as a side effect of the refused report.
+    with store.transaction():
+        store.ensure_project("tenant-other", "other-tenant-project")
     response = other_plane.handle(
         Request(
             "POST",

@@ -51,7 +51,7 @@ addopts = "-q --strict-markers"
 testpaths = ["tests"]
 tmp_path_retention_policy = "failed"
 markers = [
-  "toolchain: drives a real external build tool (gradle, cmake+ccache, cargo, go, tsc, pip)",
+  "toolchain: drives a real external build tool (gradle, cmake+ccache, cargo, go, tsc, pip, dotnet, swift, flutter)",
 ]
 
 [tool.ruff]

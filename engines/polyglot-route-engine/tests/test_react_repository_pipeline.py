@@ -240,7 +240,7 @@ def test_react_project_graph_rejects_self_consistent_verification_tamper(
     if tamper == "profile":
         receipt["toolchain"]["profile"].append("fabricated=true")
     elif tamper == "executable":
-        receipt["toolchain"]["executable"] = "/tmp/fabricated-node"
+        receipt["toolchain"]["executable"] = "/tmp/fabricated-node"  # noqa: S108 - 伪造路径正是本用例要篡改的东西
     elif tamper == "digest":
         receipt["toolchain"]["executable_sha256"] = "0" * 64
     elif tamper == "command":

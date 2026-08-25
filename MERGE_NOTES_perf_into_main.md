@@ -787,3 +787,65 @@ ruff 和 pytest 都只能在云端跑。
   与本次合并无关，别顺手修。
 - `.ai-tmp/` 下留了三个中转 tgz（`polyglot-state-0825b`、`repo-contracts-0825b`、`head-engine-0825b`），
   设备桥删不掉，已 gitignore，可自行 `rm`。
+
+### 第八轮补记：18 条 ruff 已按用户决定一次修掉（引擎 ruff 现在是零）
+
+范围是「A+B」：`.gitignore` 加 `/gate-triage.sh`，加上 18 条 main 既有 ruff。
+上面「不属于本次合并、建议单独 style 提交」的建议**被推翻**，改为现在一次修掉；
+但仍是**独立的一批改动**，碰的 6 个文件合并本身一个都没动过。
+
+- 自动：`ruff check --select I,UP035,B009 --fix src tests` 共 14 处。
+- 手工 4 处：`repository.py:414` 与 `test_emitted_names_are_reserved.py:47` 的 121 字符行
+  拆成相邻字面量 / 加括号；`assembly_deployment_guidance.py` 三条钉死的 Flutter 命令行
+  与 `test_react_repository_pipeline.py` 里伪造的 `/tmp/fabricated-node`，按仓库既有的
+  `# noqa: CODE - 理由` 写法豁免（前者拆行会改掉要比对的字符串，后者伪造路径正是被测对象）。
+- **手工那 4 处的 AST 与改前逐字节一致**（相邻字符串字面量在解析期折叠，注释不进 AST）——
+  这是比「看着没问题」强的证据，值得复用。
+- **零回归**：改前 1175 failed / 874 passed / 80 skipped / 25 errors，
+  改后**完全相同**，FAILED∪ERROR 集合两个方向的差集都为空。`ruff check src tests` = All checks passed。
+- I001 的自动修复会把带 `as` 别名的导入拆成第二条 `from X import (...)`。这是 isort 默认
+  `combine-as-imports = false` 的行为，不是错误：`pipeline.py`(x3)、`source_analyzer.py`(x3)、
+  `test_swift_analyzer_cache.py`(x5) 本来就是这个形状。**没有改 pyproject 的 lint 配置。**
+- 合并伤那条（`test_repository_pipeline.py` 的 I001）一并修掉。该文件用 mtime 守卫提交，
+  没有覆盖另一会话 08:57 写的那 15 行。
+- 因此 `gate-triage.sh` 里「ruff ≤18 条判 PRE-EXIST」的判据已同步作废：现在出现任何一条都判 UNKNOWN。
+
+### 第八轮补记之二：那批 ruff 修复引入了 7 个 mypy 错误（已修）
+
+用户在 Mac 上跑了完整门禁，暴露两件事。
+
+**1. `mypy src` 我压根没跑 —— 而门禁表里就有这一条。**
+
+上一轮把 `react_repository.py` 的 7 处 `getattr(toolchain, "language")` 按 B009 改成
+`toolchain.language`，但那个函数的参数注解是 `toolchain: object`：
+`getattr` 在 mypy strict 下是放行的，属性访问不是。于是引擎 mypy 从 **5 条变成 12 条**。
+
+- 修法不是回退，是**把注解改对**：`_toolchain_receipt(toolchain: ExactToolchain)`。
+  两个调用点传的都是 `exact_toolchain("react")`，而 `native.py` 里的同型函数
+  `_swift_toolchain_receipt(toolchain: ExactToolchain)` **本来就是这么写的** —— 照既有形状抄即可。
+- 改完实测：`mypy src` = **5 条**，与 `git archive HEAD` 基线**逐条相同**
+  （assembly×3 / project_graph / discovery），也与用户 Mac 上的 5 条一致 → 这 5 条是 main 既有欠账。
+  `ruff` 仍为 0，全套 pytest 与改前**逐条相同**（1175/874/80/25）。
+
+**教训**：「零回归」的范围应当是**整张门禁表**，不是我顺手跑的那两条。
+`ruff` 与 `mypy` 会互相拆台 —— 一个要求删掉 `getattr`，另一个靠 `getattr` 才放行，
+中间那个 `object` 注解才是真问题。以后动 lint，`ruff + mypy + pytest` 一起跑。
+
+**2. 那次门禁跑动横跨了我的写入，结果是混合树的。**
+
+用户的 run 在 09:45 前后启动（ruff 那一步还是 19 条），而我 09:52–09:55 才把修复提交进去；
+`pytest-engine` 那条跑了 1:58:07，**跑到一半树被换了**。所以那次的
+`374 failed / 1758 passed` 不能作为基线，要重跑。
+
+`gate-triage.sh` 已经加了这个检查：收尾时列出「本次跑动期间被改过的文件」并要求重跑。
+同时修掉四处定性错误：
+
+| 门禁 | 之前 | 现在 |
+|---|---|---|
+| `mvn-worker` / `mvn-arch` | UNKNOWN | **ENV**：enforcer 的 JDK 闸（当前 25.0.4，要 [21,22)，`sdk use java 21`） |
+| `mature-series` | 命令本身缺 jsonschema | 改用 `uv run --with jsonschema==4.25.1`；另外 `ModuleNotFoundError` 一律判 ENV |
+| `route-matrix` | 一律 MERGE | 输出是 `V3_REPOSITORY_STATUS_DRIFT` 时判 **PRE-EXIST**（卡在算路线条数之前） |
+| `production-readiness` | 无 | Skill 目录数与 UI 写死的数字对不上（1847 != 1267）→ UNKNOWN，要 `--baseline` 才能定 |
+
+`--baseline` 的比对集合也从 ruff/pytest 扩到 **mypy 与 production-readiness**
+（mypy 两侧行号必然错位，只比「文件 + 错误码 + 文本」）。

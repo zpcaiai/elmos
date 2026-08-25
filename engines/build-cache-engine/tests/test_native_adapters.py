@@ -163,3 +163,50 @@ def test_adapter_failure_degrades_to_a_clean_build(tmp_path: Path) -> None:
     assert stats.degraded is True
     assert adapter.stats().degraded is True
     assert "sccache" in adapter.stats().detail
+
+
+def test_msbuild_counts_both_of_msbuilds_skip_messages_as_not_a_miss(tmp_path: Path) -> None:
+    """A target that did nothing did not miss the cache.
+
+    MSBuild emits two different skip lines and only one of them is incremental
+    reuse. ``because all output files are up-to-date`` is a genuine cache hit;
+    ``because it has no inputs`` means the target had nothing to do at all --
+    which is what ``CoreResGen`` does in a project with no resources, and what
+    ``_CopyFilesMarkedCopyLocal`` does with no copy-local references.
+
+    Counting only the first as a skip made those no-op targets register as
+    *misses on a warm build*. Worse, which of the four headers takes that path
+    is decided by the host SDK's target set, so an ``assert misses == 0`` was
+    satisfiable on the SDK the adapter was written against and unsatisfiable on
+    another -- a platform-dependent failure with no product cause.
+
+    ``hits`` deliberately still counts only the up-to-date message: a no-op
+    target is not evidence the cache served anything.
+    """
+
+    # Reached through the registry rather than ``adapter_for``, which takes a
+    # *language* and would silently hand back the generic adapter for an
+    # adapter id -- and a generic adapter parses nothing, so the assertions
+    # below would pass vacuously.
+    adapter = ADAPTERS["msbuild-nuget"](tmp_path / "volume", TOOLCHAIN, "default")
+    assert adapter.adapter_id == "msbuild-nuget"
+    warm_log = (
+        "  CoreCompile:\n"
+        '    Skipping target "CoreCompile" because all output files are up-to-date.\n'
+        "  CoreResGen:\n"
+        '    Skipping target "CoreResGen" because it has no inputs.\n'
+        "  _CopyFilesMarkedCopyLocal:\n"
+        '    Skipping target "_CopyFilesMarkedCopyLocal" because it has no inputs.\n'
+    )
+
+    warm = adapter.parse_diagnostics(warm_log)
+
+    assert warm.misses == 0
+    assert warm.hits == 1
+
+    # And the inverse still reads as work: a header with no skip line under it
+    # is an executed target, so the parser has not been blunted into always
+    # answering zero.
+    cold = adapter.parse_diagnostics("  CoreCompile:\n  CoreResGen:\n")
+    assert cold.misses == 2
+    assert cold.hits == 0

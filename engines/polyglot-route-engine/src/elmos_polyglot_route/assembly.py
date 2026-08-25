@@ -37,8 +37,8 @@ import json
 import math
 import os
 import re
-import signal
 import shutil
+import signal
 import stat
 import struct
 import subprocess

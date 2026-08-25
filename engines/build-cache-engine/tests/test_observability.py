@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 import pytest
 
 from elmos_build_cache.clock import ManualClock
@@ -126,13 +128,54 @@ def test_perf_002_a_reuse_regression_fails_the_gate(clock: ManualClock) -> None:
     assert outcome["passed"] is False
 
 
+#: Long enough that the gate's verdict cannot turn on measurement noise.
+SLOW_SPAN_SECONDS = 0.005
+
+
 def test_latency_slo_breach_is_reported(clock: ManualClock) -> None:
+    """A span over its budget fails the gate; the same span inside one passes.
+
+    This used to assert a breach from an *empty* span against ``budget_ms=0.0``,
+    which only ever worked by accident. ``Tracer.span`` times with
+    ``time.perf_counter`` -- the injected ``ManualClock`` only stamps
+    ``started_at`` -- and ``Histogram.summary`` rounds p95 to three decimals,
+    i.e. to the microsecond. An empty span on a fast host measures a few
+    hundred nanoseconds, rounds to exactly ``0.0`` ms, and ``0.0 <= 0.0``
+    correctly reports no breach; this container's slower interpreter happened
+    to round to ``0.001`` and hid it. That test measured the host, not the gate.
+
+    ``time.sleep`` can only overshoot, so a 5 ms span against a 1 ms budget is
+    a breach on any machine at any load, and the same span against a 10 s
+    budget is a pass -- which also proves the gate discriminates rather than
+    failing everything. The ``<=`` boundary itself is pinned separately, in
+    ``test_a_measurement_exactly_at_budget_is_not_a_breach``.
+    """
     tracer = Tracer(clock=clock)
-    slow = Slo("lookup-p95", SPAN_LOOKUP, 0.95, budget_ms=0.0)
     with tracer.span(SPAN_LOOKUP, stage_id="compile"):
-        pass
-    outcome = PerformanceGate([slow]).evaluate(tracer, {})
-    assert outcome["passed"] is False
+        time.sleep(SLOW_SPAN_SECONDS)
+
+    breached = PerformanceGate([Slo("lookup-p95", SPAN_LOOKUP, 0.95, budget_ms=1.0)]).evaluate(tracer, {})
+    assert breached["passed"] is False
+    assert breached["results"][0]["budget_ms"] == 1.0
+    assert breached["results"][0]["observed"] > 1.0
+
+    within_budget = PerformanceGate(
+        [Slo("lookup-p95", SPAN_LOOKUP, 0.95, budget_ms=10_000.0)]
+    ).evaluate(tracer, {})
+    assert within_budget["passed"] is True
+
+
+def test_a_measurement_exactly_at_budget_is_not_a_breach() -> None:
+    """A latency budget is "at most", so landing exactly on it passes.
+
+    Pinned deliberately: the tempting "fix" for a flaky zero-budget test is to
+    turn ``Slo.evaluate``'s ``observed <= budget_ms`` into ``<``, which would
+    make every SLO in ``DEFAULT_SLOS`` reject its own stated budget.
+    """
+    at_budget = Slo("lookup-p95", SPAN_LOOKUP, 0.95, budget_ms=50.0)
+    assert at_budget.evaluate(50.0)["passed"] is True
+    assert at_budget.evaluate(50.001)["passed"] is False
+    assert at_budget.evaluate(49.999)["passed"] is True
 
 
 def test_all_ten_benchmark_scenarios_are_declared() -> None:

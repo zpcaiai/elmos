@@ -780,7 +780,28 @@ def test_status_endpoint_reports_health(plane: CacheControlPlane) -> None:
 
 def test_default_control_plane_denies_unwired_serving_routes(
     plane: CacheControlPlane,
+    store: SqliteMetadataStore,
 ) -> None:
+    """NOT_WIRED is a diagnostic for callers who are allowed to ask.
+
+    This test used to assert ``403 NOT_WIRED`` for ``project-a`` -- a project
+    no tenant owns -- because ``decide_cache_affinity`` reached its serving
+    check before anyone had established that the caller may speak about that
+    project at all. That precedence is now inverted, deliberately:
+
+    * project ownership is decided first, so a caller who is not authorized
+      for the project learns exactly one thing, ``NOT_FOUND``, and cannot use
+      the answer to distinguish a foreign project from an absent one, nor to
+      read the deployment's serving-wiring state off an unrelated refusal;
+    * ``NOT_WIRED`` still reaches the caller who *is* authorized for the
+      project, which is the only caller for whom "this feature is not wired
+      here" is actionable information rather than disclosure.
+
+    The environment lookup keeps the old shape because it carries no
+    body-scoped project claim and takes no idempotency claim: it is a GET
+    whose refusal writes nothing.
+    """
+
     environment = plane.handle(
         Request(
             "GET",
@@ -788,7 +809,7 @@ def test_default_control_plane_denies_unwired_serving_routes(
             query={"projectId": "project-a"},
         )
     )
-    affinity = plane.handle(
+    unowned = plane.handle(
         Request(
             "POST",
             "/cache/affinity/decide",
@@ -796,11 +817,43 @@ def test_default_control_plane_denies_unwired_serving_routes(
             {"Idempotency-Key": "unwired-affinity"},
         )
     )
+    owned = plane.handle(
+        Request(
+            "POST",
+            "/cache/affinity/decide",
+            {"project_id": PROJECT},
+            {"Idempotency-Key": "unwired-affinity-owned"},
+        )
+    )
 
     assert environment.status == 403
-    assert affinity.status == 403
     assert environment.json()["details"]["state"] == "NOT_WIRED"
-    assert affinity.json()["details"]["state"] == "NOT_WIRED"
+
+    assert unowned.status == 404
+    assert unowned.json() == {
+        "code": "NOT_FOUND",
+        "message": "project does not exist",
+        "details": {"project_id": "project-a"},
+    }
+    # The refusal preceded the durable claim, so the key was not burned and
+    # the unowned name was not brought into existence.
+    assert (
+        store.query_one(
+            "SELECT COUNT(*) FROM idempotency_records"
+            " WHERE tenant_id=? AND idempotency_key=?",
+            (TENANT, "unwired-affinity"),
+        )[0]
+        == 0
+    )
+    assert (
+        store.query_one(
+            "SELECT COUNT(*) FROM projects WHERE project_id=?", ("project-a",)
+        )[0]
+        == 0
+    )
+
+    assert owned.status == 403
+    assert owned.json()["details"]["state"] == "NOT_WIRED"
 
 
 def test_default_control_plane_fails_closed_on_unwired_provider_prompt_routes(

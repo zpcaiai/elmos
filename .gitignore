@@ -86,3 +86,4 @@ erl_crash.dump
 # --- 调试快照与临时探针 ---
 **/_snapshot-*/
 **/probe.tmp.*
+/gate-triage.sh
