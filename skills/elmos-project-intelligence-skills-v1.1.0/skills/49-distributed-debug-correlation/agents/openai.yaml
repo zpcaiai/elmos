@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 分布式调试、异步因果与源目标对照
+  short_description: 把浏览器、API、微服务、数据库、缓存、消息和后台任务的 Trace 与调试会话关联。用于前后端链路、异步因果、受控协同断点、故障定位以及 Elmos Source/Target 对照调试。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-distributed-debug-correlation 按模块规格实施、测试并提供可复现证据。
+policy:
+  allow_implicit_invocation: true

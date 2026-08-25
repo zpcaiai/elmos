@@ -1,0 +1,7330 @@
+version: 1.1.0
+task_count: 500
+tasks:
+- id: ELMOS-PI-00-T01
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 读取 AGENTS.md、CLAUDE.md、skillpack.yaml 和当前仓库状态
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - 执行计划与依赖图
+  - 按批次拆分的任务
+  - 实现变更
+  acceptance: 子技能选择与依赖正确且可解释。
+  status: todo
+- id: ELMOS-PI-00-T02
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 识别请求涉及的能力域，选择最少且足够的子技能
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - 执行计划与依赖图
+  - 按批次拆分的任务
+  - 实现变更
+  acceptance: 每个批次均有可运行测试和验收证据。
+  status: todo
+- id: ELMOS-PI-00-T03
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 建立可执行计划、依赖、风险、回滚点和完成定义
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - 执行计划与依赖图
+  - 按批次拆分的任务
+  - 实现变更
+  acceptance: 任务中断后可从最近检查点恢复且不重复副作用。
+  status: todo
+- id: ELMOS-PI-00-T04
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 按检查点实施；每个阶段产出代码、测试、文档和证据
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - 执行计划与依赖图
+  - 按批次拆分的任务
+  - 实现变更
+  acceptance: 最终报告可追踪到 Commit、分析版本和 artifact 版本。
+  status: todo
+- id: ELMOS-PI-00-T05
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 运行包级验证与目标仓库测试，修复失败
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - 执行计划与依赖图
+  - 按批次拆分的任务
+  - 实现变更
+  acceptance: 全包验证脚本返回成功。
+  status: todo
+- id: ELMOS-PI-00-T06
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 生成完成报告，列出已完成、未完成、已知限制和下一批入口
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - 执行计划与依赖图
+  - 按批次拆分的任务
+  - 实现变更
+  acceptance: 全包验证脚本返回成功。
+  status: todo
+- id: ELMOS-PI-00-T07
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-00-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不静默覆盖用户代码、人工文档或已锁定图表节点。
+  status: todo
+- id: ELMOS-PI-00-T08
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-00-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 批次完成率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-00-T09
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-00-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 子技能选择与依赖正确且可解释。
+  status: todo
+- id: ELMOS-PI-00-T10
+  skill: elmos-insight-orchestrator
+  batch: BATCH-00-product-and-reference-architecture
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-00-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 全包验证脚本返回成功。
+  status: todo
+- id: ELMOS-PI-01-T01
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 识别用户角色、核心任务和痛点
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - PRD
+  - 角色与旅程
+  - Epic/Story
+  acceptance: 每个 Epic 至少关联一个用户角色、一个 API/界面和一个验收场景。
+  status: todo
+- id: ELMOS-PI-01-T02
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 将能力拆为 Read、Explain、Explore、Flow、Diagram、Document、Present、Impact
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - PRD
+  - 角色与旅程
+  - Epic/Story
+  acceptance: P0 能独立形成从导入仓库到可证据化输出的闭环。
+  status: todo
+- id: ELMOS-PI-01-T03
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 定义每项能力的输入、输出、异常、权限和数据保留
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - PRD
+  - 角色与旅程
+  - Epic/Story
+  acceptance: 范围外清单明确，能防止在线 IDE 范围失控。
+  status: todo
+- id: ELMOS-PI-01-T04
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 按 P0-P3 排序并标注依赖
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - PRD
+  - 角色与旅程
+  - Epic/Story
+  acceptance: 需求编号可在 backlog、测试和文档中追踪。
+  status: todo
+- id: ELMOS-PI-01-T05
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 为每个 Story 编写可自动验证的完成条件
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - PRD
+  - 角色与旅程
+  - Epic/Story
+  acceptance: 需求编号可在 backlog、测试和文档中追踪。
+  status: todo
+- id: ELMOS-PI-01-T06
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 建立需求到技能、API、数据表和测试的追踪关系
+  type: implementation
+  priority: P0
+  depends_on: []
+  deliverables:
+  - PRD
+  - 角色与旅程
+  - Epic/Story
+  acceptance: 需求编号可在 backlog、测试和文档中追踪。
+  status: todo
+- id: ELMOS-PI-01-T07
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-01-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 拒绝没有完成定义的“支持某功能”。
+  status: todo
+- id: ELMOS-PI-01-T08
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-01-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 需求追踪覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-01-T09
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-01-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 每个 Epic 至少关联一个用户角色、一个 API/界面和一个验收场景。
+  status: todo
+- id: ELMOS-PI-01-T10
+  skill: elmos-product-scope
+  batch: BATCH-00-product-and-reference-architecture
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-01-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 需求编号可在 backlog、测试和文档中追踪。
+  status: todo
+- id: ELMOS-PI-02-T01
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 定义 Browser、Control Plane、Analysis Plane、Artifact Plane 和 Storage Plane
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  deliverables:
+  - C4 架构
+  - 服务目录
+  - 数据存储分工
+  acceptance: 服务边界无循环部署依赖。
+  status: todo
+- id: ELMOS-PI-02-T02
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 划分前端、项目 API、解析索引、图谱、AI 编排、渲染、导出和工作流服务
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  deliverables:
+  - C4 架构
+  - 服务目录
+  - 数据存储分工
+  acceptance: 每个持久化数据类型有唯一主责存储。
+  status: todo
+- id: ELMOS-PI-02-T03
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 定义 PostgreSQL、图数据库、对象存储、搜索、缓存的职责和替换接口
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  deliverables:
+  - C4 架构
+  - 服务目录
+  - 数据存储分工
+  acceptance: 任何 worker 重启后工作流可恢复。
+  status: todo
+- id: ELMOS-PI-02-T04
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 定义 Temporal 工作流、事件总线和幂等键
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  deliverables:
+  - C4 架构
+  - 服务目录
+  - 数据存储分工
+  acceptance: 架构支持 SaaS、单租户私有化和离线受限部署。
+  status: todo
+- id: ELMOS-PI-02-T05
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 定义多租户、网络边界、Secrets Broker 和审计
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  deliverables:
+  - C4 架构
+  - 服务目录
+  - 数据存储分工
+  acceptance: ADR 记录关键替代方案及弃用原因。
+  status: todo
+- id: ELMOS-PI-02-T06
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 生成当前/目标架构图和 ADR
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-product-scope
+  deliverables:
+  - C4 架构
+  - 服务目录
+  - 数据存储分工
+  acceptance: ADR 记录关键替代方案及弃用原因。
+  status: todo
+- id: ELMOS-PI-02-T07
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-02-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得让浏览器直接访问仓库密钥或对象存储主凭证。
+  status: todo
+- id: ELMOS-PI-02-T08
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-02-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 需求追踪覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-02-T09
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-02-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 服务边界无循环部署依赖。
+  status: todo
+- id: ELMOS-PI-02-T10
+  skill: elmos-reference-architecture
+  batch: BATCH-00-product-and-reference-architecture
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-02-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: ADR 记录关键替代方案及弃用原因。
+  status: todo
+- id: ELMOS-PI-03-T01
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 校验来源、租户、权限和内容大小
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - Repository 记录
+  - 冻结 revision
+  - 内容 manifest
+  acceptance: 相同 revision 重复导入得到相同 manifest hash。
+  status: todo
+- id: ELMOS-PI-03-T02
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 解析 Git、子模块、LFS、Monorepo 和多仓库组合
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - Repository 记录
+  - 冻结 revision
+  - 内容 manifest
+  acceptance: 断点续传不会产生重复对象。
+  status: todo
+- id: ELMOS-PI-03-T03
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 冻结 commit SHA；上传包计算内容哈希
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - Repository 记录
+  - 冻结 revision
+  - 内容 manifest
+  acceptance: 子模块 revision 被明确记录。
+  status: todo
+- id: ELMOS-PI-03-T04
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 扫描文件类型、二进制、生成代码、Vendor 与敏感文件
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - Repository 记录
+  - 冻结 revision
+  - 内容 manifest
+  acceptance: 私有凭据不出现在日志、事件或 artifact。
+  status: todo
+- id: ELMOS-PI-03-T05
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 写入对象存储并生成不可变 manifest
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - Repository 记录
+  - 冻结 revision
+  - 内容 manifest
+  acceptance: 删除项目后按保留策略可验证清除。
+  status: todo
+- id: ELMOS-PI-03-T06
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 发布 project.revision.ingested 事件
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - Repository 记录
+  - 冻结 revision
+  - 内容 manifest
+  acceptance: 删除项目后按保留策略可验证清除。
+  status: todo
+- id: ELMOS-PI-03-T07
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-03-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 禁止执行仓库代码。
+  status: todo
+- id: ELMOS-PI-03-T08
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-03-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 导入成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-03-T09
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-03-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 相同 revision 重复导入得到相同 manifest hash。
+  status: todo
+- id: ELMOS-PI-03-T10
+  skill: elmos-repository-ingestion
+  batch: BATCH-01-ingestion-and-parsing
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-03-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 删除项目后按保留策略可验证清除。
+  status: todo
+- id: ELMOS-PI-04-T01
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 统计语言、文件、LOC、生成代码和测试占比
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  deliverables:
+  - technology-fingerprint.json
+  - 语言/框架置信度
+  - 分析计划候选
+  acceptance: 主语言与构建系统在基准仓库识别准确率达到目标阈值。
+  status: todo
+- id: ELMOS-PI-04-T02
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 识别构建系统、包管理器、框架和版本
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  deliverables:
+  - technology-fingerprint.json
+  - 语言/框架置信度
+  - 分析计划候选
+  acceptance: 所有技术栈结论可跳转到证据文件。
+  status: todo
+- id: ELMOS-PI-04-T03
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 识别服务入口、UI 入口、CLI、Cron、Consumer 和 Webhook
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  deliverables:
+  - technology-fingerprint.json
+  - 语言/框架置信度
+  - 分析计划候选
+  acceptance: 错误识别可人工覆盖且被版本化。
+  status: todo
+- id: ELMOS-PI-04-T04
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 识别数据库、缓存、消息、云资源和部署描述
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  deliverables:
+  - technology-fingerprint.json
+  - 语言/框架置信度
+  - 分析计划候选
+  acceptance: 分析计划明确列出不支持或低置信度区域。
+  status: todo
+- id: ELMOS-PI-04-T05
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 识别反射、动态加载、宏、代码生成和 FFI 风险
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  deliverables:
+  - technology-fingerprint.json
+  - 语言/框架置信度
+  - 分析计划候选
+  acceptance: 分析计划明确列出不支持或低置信度区域。
+  status: todo
+- id: ELMOS-PI-04-T06
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 输出解析器与运行时证据采集建议
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  deliverables:
+  - technology-fingerprint.json
+  - 语言/框架置信度
+  - 分析计划候选
+  acceptance: 分析计划明确列出不支持或低置信度区域。
+  status: todo
+- id: ELMOS-PI-04-T07
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-04-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 文件扩展名不能作为唯一框架证据。
+  status: todo
+- id: ELMOS-PI-04-T08
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-04-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 导入成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-04-T09
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-04-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 主语言与构建系统在基准仓库识别准确率达到目标阈值。
+  status: todo
+- id: ELMOS-PI-04-T10
+  skill: elmos-project-fingerprinting
+  batch: BATCH-01-ingestion-and-parsing
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-04-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 分析计划明确列出不支持或低置信度区域。
+  status: todo
+- id: ELMOS-PI-05-T01
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 为每种语言选择 Tree-sitter、编译器前端或 LSP 适配器
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  deliverables:
+  - AST shards
+  - Code IR
+  - parse diagnostics
+  acceptance: 受支持基准仓库文件解析成功率达到设定阈值。
+  status: todo
+- id: ELMOS-PI-05-T02
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 解析文件并保留位置、注释、语法节点和错误节点
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  deliverables:
+  - AST shards
+  - Code IR
+  - parse diagnostics
+  acceptance: 增量修改单文件只重建受影响 shard。
+  status: todo
+- id: ELMOS-PI-05-T03
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 解析包、模块、类型、函数、变量、注解、路由和配置绑定
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  deliverables:
+  - AST shards
+  - Code IR
+  - parse diagnostics
+  acceptance: Symbol 位置与在线代码阅读器行号一致。
+  status: todo
+- id: ELMOS-PI-05-T04
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 标准化跨语言 Symbol ID 和 Type ID
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  deliverables:
+  - AST shards
+  - Code IR
+  - parse diagnostics
+  acceptance: 不支持语法有明确诊断和降级输出。
+  status: todo
+- id: ELMOS-PI-05-T05
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 关联生成代码、源映射、宏展开与 partial class
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  deliverables:
+  - AST shards
+  - Code IR
+  - parse diagnostics
+  acceptance: Code IR 通过 Schema 验证。
+  status: todo
+- id: ELMOS-PI-05-T06
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 按文件内容哈希增量更新 IR
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-project-fingerprinting
+  deliverables:
+  - AST shards
+  - Code IR
+  - parse diagnostics
+  acceptance: Code IR 通过 Schema 验证。
+  status: todo
+- id: ELMOS-PI-05-T07
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-05-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把解析错误节点当作已确认语义。
+  status: todo
+- id: ELMOS-PI-05-T08
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-05-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 解析成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-05-T09
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-05-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 受支持基准仓库文件解析成功率达到设定阈值。
+  status: todo
+- id: ELMOS-PI-05-T10
+  skill: elmos-multilanguage-parsing
+  batch: BATCH-01-ingestion-and-parsing
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-05-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Code IR 通过 Schema 验证。
+  status: todo
+- id: ELMOS-PI-06-T01
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 创建文件、模块、包、类型、函数和字段节点
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - symbol graph
+  - call graph
+  - type hierarchy
+  acceptance: Go to definition、find references 和 call hierarchy 在基准项目通过。
+  status: todo
+- id: ELMOS-PI-06-T02
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 解析定义/引用、继承/实现、调用者/被调用者
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - symbol graph
+  - call graph
+  - type hierarchy
+  acceptance: 循环依赖检测与人工基线一致。
+  status: todo
+- id: ELMOS-PI-06-T03
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 识别依赖注入、反射注册、路由绑定和 ORM 映射
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - symbol graph
+  - call graph
+  - type hierarchy
+  acceptance: 每条边可返回 evidence 与解析方法。
+  status: todo
+- id: ELMOS-PI-06-T04
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 构建前端页面到 API、API 到服务、服务到数据库的跨层边
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - symbol graph
+  - call graph
+  - type hierarchy
+  acceptance: 增量更新后无幽灵边。
+  status: todo
+- id: ELMOS-PI-06-T05
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 为边保存解析策略、证据和置信度
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - symbol graph
+  - call graph
+  - type hierarchy
+  acceptance: 图查询 p95 达到 SLO。
+  status: todo
+- id: ELMOS-PI-06-T06
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 计算 SCC、中心性、扇入扇出和循环依赖
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - symbol graph
+  - call graph
+  - type hierarchy
+  acceptance: 图查询 p95 达到 SLO。
+  status: todo
+- id: ELMOS-PI-06-T07
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-06-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把字符串相似性匹配标记为 Confirmed。
+  status: todo
+- id: ELMOS-PI-06-T08
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-06-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 解析成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-06-T09
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-06-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Go to definition、find references 和 call hierarchy 在基准项目通过。
+  status: todo
+- id: ELMOS-PI-06-T10
+  skill: elmos-symbol-code-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-06-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 图查询 p95 达到 SLO。
+  status: todo
+- id: ELMOS-PI-07-T01
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 定义统一节点和关系 taxonomy
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - Project Intelligence Graph
+  - Graph schema
+  - view projections
+  acceptance: 同一事实在不同 artifact 中保持一致。
+  status: todo
+- id: ELMOS-PI-07-T02
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 将代码节点聚合为模块、组件、服务、业务能力和部署单元
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - Project Intelligence Graph
+  - Graph schema
+  - view projections
+  acceptance: 任意图节点可回到代码或运行证据。
+  status: todo
+- id: ELMOS-PI-07-T03
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 连接 API、事件、数据资产、测试、配置和安全边界
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - Project Intelligence Graph
+  - Graph schema
+  - view projections
+  acceptance: revision diff 能解释节点和边变化。
+  status: todo
+- id: ELMOS-PI-07-T04
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 保存每个聚合结论的证据集合与置信度
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - Project Intelligence Graph
+  - Graph schema
+  - view projections
+  acceptance: 人工 override 有审计和回滚。
+  status: todo
+- id: ELMOS-PI-07-T05
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 提供 C4、流程、数据、功能、部署等投影视图
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - Project Intelligence Graph
+  - Graph schema
+  - view projections
+  acceptance: 图质量指标可观测。
+  status: todo
+- id: ELMOS-PI-07-T06
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 版本化图谱并支持 revision diff
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - Project Intelligence Graph
+  - Graph schema
+  - view projections
+  acceptance: 图质量指标可观测。
+  status: todo
+- id: ELMOS-PI-07-T07
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-07-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得让 LLM 直接写入 Confirmed 节点；必须经证据验证器。
+  status: todo
+- id: ELMOS-PI-07-T08
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-07-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 解析成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-07-T09
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-07-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 同一事实在不同 artifact 中保持一致。
+  status: todo
+- id: ELMOS-PI-07-T10
+  skill: elmos-project-intelligence-graph
+  batch: BATCH-02-graphs-and-evidence
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-07-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 图质量指标可观测。
+  status: todo
+- id: ELMOS-PI-08-T01
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 定义 Evidence、Claim、Inference、Recommendation 数据模型
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - Evidence Graph
+  - Claim records
+  - confidence score
+  acceptance: 随机抽取 claim 能定位到有效证据。
+  status: todo
+- id: ELMOS-PI-08-T02
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 为文件行、AST、配置键、Trace span、测试结果生成稳定引用
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - Evidence Graph
+  - Claim records
+  - confidence score
+  acceptance: 代码移动后可通过 symbol/revision 重定位或明确失效。
+  status: todo
+- id: ELMOS-PI-08-T03
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 按规则计算证据强度、冲突和新鲜度
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - Evidence Graph
+  - Claim records
+  - confidence score
+  acceptance: 冲突证据不被静默选择。
+  status: todo
+- id: ELMOS-PI-08-T04
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 将 claim 绑定到 artifact block、diagram node 和 slide element
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - Evidence Graph
+  - Claim records
+  - confidence score
+  acceptance: 导出的证据包可离线验证哈希。
+  status: todo
+- id: ELMOS-PI-08-T05
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 发现冲突时降级置信度并生成待确认任务
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - Evidence Graph
+  - Claim records
+  - confidence score
+  acceptance: 所有生成器强制写 claim/evidence 关系。
+  status: todo
+- id: ELMOS-PI-08-T06
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 提供点击回源和批量证据导出
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-multilanguage-parsing
+  deliverables:
+  - Evidence Graph
+  - Claim records
+  - confidence score
+  acceptance: 所有生成器强制写 claim/evidence 关系。
+  status: todo
+- id: ELMOS-PI-08-T07
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-08-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得将模型自述作为事实证据。
+  status: todo
+- id: ELMOS-PI-08-T08
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-08-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 解析成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-08-T09
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-08-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 随机抽取 claim 能定位到有效证据。
+  status: todo
+- id: ELMOS-PI-08-T10
+  skill: elmos-evidence-provenance
+  batch: BATCH-02-graphs-and-evidence
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-08-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 所有生成器强制写 claim/evidence 关系。
+  status: todo
+- id: ELMOS-PI-09-T01
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 建立项目/仓库/分支/Commit 选择器和虚拟化文件树
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  deliverables:
+  - Vue/Monaco 阅读器
+  - 文件树与标签页
+  - Diff 视图
+  acceptance: 100k 文件项目文件树可交互且不冻结。
+  status: todo
+- id: ELMOS-PI-09-T02
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 接入 Monaco，支持高亮、折叠、大纲、面包屑、多标签和分屏
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  deliverables:
+  - Vue/Monaco 阅读器
+  - 文件树与标签页
+  - Diff 视图
+  acceptance: 代码打开、标签切换和定位达到体验 SLO。
+  status: todo
+- id: ELMOS-PI-09-T03
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现原始/目标、Commit/Commit、自动/人工修改 Diff
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  deliverables:
+  - Vue/Monaco 阅读器
+  - 文件树与标签页
+  - Diff 视图
+  acceptance: 复制的深链在同权限用户下可复现。
+  status: todo
+- id: ELMOS-PI-09-T04
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现深链：文件、行、Symbol、Claim、Diagram Node
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  deliverables:
+  - Vue/Monaco 阅读器
+  - 文件树与标签页
+  - Diff 视图
+  acceptance: Diff 能区分自动生成、人工编辑和转换来源。
+  status: todo
+- id: ELMOS-PI-09-T05
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 加入书签、私人笔记、团队评论、最近阅读和收藏
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  deliverables:
+  - Vue/Monaco 阅读器
+  - 文件树与标签页
+  - Diff 视图
+  acceptance: 权限撤销后缓存内容不可继续访问。
+  status: todo
+- id: ELMOS-PI-09-T06
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 接入权限、脱敏、审计和大文件降级
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-symbol-code-graph
+  deliverables:
+  - Vue/Monaco 阅读器
+  - 文件树与标签页
+  - Diff 视图
+  acceptance: 权限撤销后缓存内容不可继续访问。
+  status: todo
+- id: ELMOS-PI-09-T07
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-09-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 禁止浏览器获得仓库主凭据。
+  status: todo
+- id: ELMOS-PI-09-T08
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-09-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 代码打开 p95 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-09-T09
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-09-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 100k 文件项目文件树可交互且不冻结。
+  status: todo
+- id: ELMOS-PI-09-T10
+  skill: elmos-online-code-reader
+  batch: BATCH-03-code-reader-and-explanation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-09-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 权限撤销后缓存内容不可继续访问。
+  status: todo
+- id: ELMOS-PI-10-T01
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现 Definition、References、Implementations、Type Hierarchy、Call Hierarchy 查询
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  deliverables:
+  - definition/reference/call APIs
+  - 跨层导航 UI
+  - 导航路径
+  acceptance: 基准项目主要语言导航准确率达到目标。
+  status: todo
+- id: ELMOS-PI-10-T02
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现页面→API→Service→Repository→Table 与反向路径
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  deliverables:
+  - definition/reference/call APIs
+  - 跨层导航 UI
+  - 导航路径
+  acceptance: 跨层路径可从页面追到数据表并返回证据。
+  status: todo
+- id: ELMOS-PI-10-T03
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现 Topic→Producer/Consumer、Config→Reader、Test→Target 的导航
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  deliverables:
+  - definition/reference/call APIs
+  - 跨层导航 UI
+  - 导航路径
+  acceptance: 大扇出查询有摘要和继续加载。
+  status: todo
+- id: ELMOS-PI-10-T04
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 为动态候选显示置信度和多个可能目标
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  deliverables:
+  - definition/reference/call APIs
+  - 跨层导航 UI
+  - 导航路径
+  acceptance: 失效 symbol 链接有重定位或明确错误。
+  status: todo
+- id: ELMOS-PI-10-T05
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 支持路径限制、深度、边类型和 revision 过滤
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  deliverables:
+  - definition/reference/call APIs
+  - 跨层导航 UI
+  - 导航路径
+  acceptance: 导航权限测试全部通过。
+  status: todo
+- id: ELMOS-PI-10-T06
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 记录导航性能与失败原因
+  type: implementation
+  priority: P0
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-project-intelligence-graph
+  deliverables:
+  - definition/reference/call APIs
+  - 跨层导航 UI
+  - 导航路径
+  acceptance: 导航权限测试全部通过。
+  status: todo
+- id: ELMOS-PI-10-T07
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P0
+  depends_on:
+  - ELMOS-PI-10-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得隐藏解析歧义。
+  status: todo
+- id: ELMOS-PI-10-T08
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P0
+  depends_on:
+  - ELMOS-PI-10-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 代码打开 p95 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-10-T09
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P0
+  depends_on:
+  - ELMOS-PI-10-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 基准项目主要语言导航准确率达到目标。
+  status: todo
+- id: ELMOS-PI-10-T10
+  skill: elmos-semantic-navigation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P0
+  depends_on:
+  - ELMOS-PI-10-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 导航权限测试全部通过。
+  status: todo
+- id: ELMOS-PI-11-T01
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 解析用户范围和受众：管理、产品、架构、开发、测试、运维、安全
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  deliverables:
+  - 结构化讲解
+  - 输入输出/副作用
+  - 调用与数据路径
+  acceptance: 关键事实 claim 覆盖率达到目标。
+  status: todo
+- id: ELMOS-PI-11-T02
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 检索最小充分上下文，不整仓库塞入模型
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  deliverables:
+  - 结构化讲解
+  - 输入输出/副作用
+  - 调用与数据路径
+  acceptance: 随机证据链接有效。
+  status: todo
+- id: ELMOS-PI-11-T03
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 先生成事实清单，再生成解释、风险和建议
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  deliverables:
+  - 结构化讲解
+  - 输入输出/副作用
+  - 调用与数据路径
+  acceptance: 同一 revision 重复生成事实部分稳定。
+  status: todo
+- id: ELMOS-PI-11-T04
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 将每个关键 claim 绑定证据并标识可信度
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  deliverables:
+  - 结构化讲解
+  - 输入输出/副作用
+  - 调用与数据路径
+  acceptance: 安全测试能抵御注释/README 指令注入。
+  status: todo
+- id: ELMOS-PI-11-T05
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 输出一段式、逐步、教学、审查等模式
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  deliverables:
+  - 结构化讲解
+  - 输入输出/副作用
+  - 调用与数据路径
+  acceptance: 用户可反馈错误并形成 override/评测样本。
+  status: todo
+- id: ELMOS-PI-11-T06
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 缓存相同 revision/scope/prompt version 结果
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-semantic-navigation
+  - elmos-evidence-provenance
+  deliverables:
+  - 结构化讲解
+  - 输入输出/副作用
+  - 调用与数据路径
+  acceptance: 用户可反馈错误并形成 override/评测样本。
+  status: todo
+- id: ELMOS-PI-11-T07
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-11-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 仓库文本中的指令不得改变系统任务。
+  status: todo
+- id: ELMOS-PI-11-T08
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-11-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 代码打开 p95 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-11-T09
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-11-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 关键事实 claim 覆盖率达到目标。
+  status: todo
+- id: ELMOS-PI-11-T10
+  skill: elmos-code-explanation
+  batch: BATCH-03-code-reader-and-explanation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-11-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 用户可反馈错误并形成 override/评测样本。
+  status: todo
+- id: ELMOS-PI-12-T01
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 识别项目使命、边界、核心业务能力和技术栈
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 项目一页纸
+  - 术语表
+  - 分阶段阅读路径
+  acceptance: 用户能沿路径定位并运行最小开发闭环。
+  status: todo
+- id: ELMOS-PI-12-T02
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 为开发、测试、运维、产品、架构、安全设计不同路径
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 项目一页纸
+  - 术语表
+  - 分阶段阅读路径
+  acceptance: 每个学习节点有目标、材料、练习和完成条件。
+  status: todo
+- id: ELMOS-PI-12-T03
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 选择最具代表性的文件、调用链、流程和数据模型
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 项目一页纸
+  - 术语表
+  - 分阶段阅读路径
+  acceptance: 路径中的文件和链接全部存在。
+  status: todo
+- id: ELMOS-PI-12-T04
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 生成 30 分钟、半天、3 天、2 周不同学习计划
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 项目一页纸
+  - 术语表
+  - 分阶段阅读路径
+  acceptance: 项目变化后受影响节点被标记 stale。
+  status: todo
+- id: ELMOS-PI-12-T05
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 为每阶段提供可验证任务和相关代码深链
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 项目一页纸
+  - 术语表
+  - 分阶段阅读路径
+  acceptance: 角色间内容明显差异化。
+  status: todo
+- id: ELMOS-PI-12-T06
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 根据用户反馈和项目变更更新路径
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 项目一页纸
+  - 术语表
+  - 分阶段阅读路径
+  acceptance: 角色间内容明显差异化。
+  status: todo
+- id: ELMOS-PI-12-T07
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得假设新人拥有未声明权限或环境。
+  status: todo
+- id: ELMOS-PI-12-T08
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 代码打开 p95 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-12-T09
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 用户能沿路径定位并运行最小开发闭环。
+  status: todo
+- id: ELMOS-PI-12-T10
+  skill: elmos-onboarding-learning-path
+  batch: BATCH-03-code-reader-and-explanation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - elmos-code-explanation
+  - elmos-project-intelligence-graph
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 角色间内容明显差异化。
+  status: todo
+- id: ELMOS-PI-13-T01
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 识别系统边界、外部 Actor 和外部系统
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - C4 L1-L4 模型
+  - 多视角架构
+  - 架构讲解
+  acceptance: 系统上下文和容器图覆盖所有确认入口与外部依赖。
+  status: todo
+- id: ELMOS-PI-13-T02
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 聚合服务、容器、组件、模块和层
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - C4 L1-L4 模型
+  - 多视角架构
+  - 架构讲解
+  acceptance: 节点可下钻到代码成员。
+  status: todo
+- id: ELMOS-PI-13-T03
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 识别同步调用、异步事件、共享数据和部署关系
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - C4 L1-L4 模型
+  - 多视角架构
+  - 架构讲解
+  acceptance: 人工 override 在重新分析后保持。
+  status: todo
+- id: ELMOS-PI-13-T04
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 生成业务、应用、技术、数据、部署、安全视图
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - C4 L1-L4 模型
+  - 多视角架构
+  - 架构讲解
+  acceptance: 架构讲解关键结论有证据。
+  status: todo
+- id: ELMOS-PI-13-T05
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 对照人工设计和运行证据，记录冲突
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - C4 L1-L4 模型
+  - 多视角架构
+  - 架构讲解
+  acceptance: 当前/目标模型不会混写。
+  status: todo
+- id: ELMOS-PI-13-T06
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 按受众生成 L0-L5 架构讲解
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - C4 L1-L4 模型
+  - 多视角架构
+  - 架构讲解
+  acceptance: 当前/目标模型不会混写。
+  status: todo
+- id: ELMOS-PI-13-T07
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-13-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得仅按目录名宣称服务边界。
+  status: todo
+- id: ELMOS-PI-13-T08
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-13-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-13-T09
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-13-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 系统上下文和容器图覆盖所有确认入口与外部依赖。
+  status: todo
+- id: ELMOS-PI-13-T10
+  skill: elmos-architecture-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-13-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 当前/目标模型不会混写。
+  status: todo
+- id: ELMOS-PI-14-T01
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 识别 Actor、业务域、业务能力、功能模块和子功能
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  deliverables:
+  - capability map
+  - 功能思维导图
+  - 功能目录
+  acceptance: 主要用户流程功能均可映射到 API/代码/数据。
+  status: todo
+- id: ELMOS-PI-14-T02
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 将页面、API、事件、代码、数据表、权限和测试挂接到功能节点
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  deliverables:
+  - capability map
+  - 功能思维导图
+  - 功能目录
+  acceptance: 功能图节点可双向导航。
+  status: todo
+- id: ELMOS-PI-14-T03
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 使用命名、调用链和文档证据生成候选功能
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  deliverables:
+  - capability map
+  - 功能思维导图
+  - 功能目录
+  acceptance: 重复功能候选可识别。
+  status: todo
+- id: ELMOS-PI-14-T04
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 让用户确认、合并、拆分、重命名和排序
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  deliverables:
+  - capability map
+  - 功能思维导图
+  - 功能目录
+  acceptance: 未映射比例可量化。
+  status: todo
+- id: ELMOS-PI-14-T05
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 计算实现覆盖、测试覆盖、风险和转换状态
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  deliverables:
+  - capability map
+  - 功能思维导图
+  - 功能目录
+  acceptance: 导出后可重新导入且不丢稳定 ID。
+  status: todo
+- id: ELMOS-PI-14-T06
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 生成 Markmap、树形图、矩阵和可编辑 JSON
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-evidence-provenance
+  deliverables:
+  - capability map
+  - 功能思维导图
+  - 功能目录
+  acceptance: 导出后可重新导入且不丢稳定 ID。
+  status: todo
+- id: ELMOS-PI-14-T07
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-14-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得用 Controller 名直接替代业务能力名而不标记推断。
+  status: todo
+- id: ELMOS-PI-14-T08
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-14-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-14-T09
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-14-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 主要用户流程功能均可映射到 API/代码/数据。
+  status: todo
+- id: ELMOS-PI-14-T10
+  skill: elmos-business-capability-map
+  batch: BATCH-04-architecture-flow-data
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-14-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 导出后可重新导入且不丢稳定 ID。
+  status: todo
+- id: ELMOS-PI-15-T01
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 枚举 HTTP、GraphQL、gRPC、UI、Consumer、Cron、CLI、Webhook、Agent Task 等入口
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - Flow IR
+  - 业务流程
+  - 技术调用链
+  acceptance: 基准流程的主要步骤、状态和副作用完整。
+  status: todo
+- id: ELMOS-PI-15-T02
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 按控制流和调用图扩展步骤，识别条件、循环、并行和异步边
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - Flow IR
+  - 业务流程
+  - 技术调用链
+  acceptance: 异常、重试和补偿可独立查看。
+  status: todo
+- id: ELMOS-PI-15-T03
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 关联状态变化、数据库写入、事件、外部调用和权限检查
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - Flow IR
+  - 业务流程
+  - 技术调用链
+  acceptance: Trace 能覆盖并确认已执行路径。
+  status: todo
+- id: ELMOS-PI-15-T04
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 发现超时、重试、幂等、死信和补偿
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - Flow IR
+  - 业务流程
+  - 技术调用链
+  acceptance: 流程图与 Flow IR 往返不丢语义。
+  status: todo
+- id: ELMOS-PI-15-T05
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 用 Trace/测试确认高价值路径
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - Flow IR
+  - 业务流程
+  - 技术调用链
+  acceptance: 入口清单覆盖率可量化。
+  status: todo
+- id: ELMOS-PI-15-T06
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 生成 BPMN、泳道、时序、状态机和普通流程视图
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-symbol-code-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - Flow IR
+  - 业务流程
+  - 技术调用链
+  acceptance: 入口清单覆盖率可量化。
+  status: todo
+- id: ELMOS-PI-15-T07
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-15-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 静态不可达不等于运行时不可达。
+  status: todo
+- id: ELMOS-PI-15-T08
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-15-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-15-T09
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-15-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 基准流程的主要步骤、状态和副作用完整。
+  status: todo
+- id: ELMOS-PI-15-T10
+  skill: elmos-flow-discovery
+  batch: BATCH-04-architecture-flow-data
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-15-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口清单覆盖率可量化。
+  status: todo
+- id: ELMOS-PI-16-T01
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 抽取数据库、Schema、表、字段、索引、约束和实体
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - Data IR
+  - ERD
+  - DFD
+  acceptance: ER 图与迁移/ORM 核心关系一致。
+  status: todo
+- id: ELMOS-PI-16-T02
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 解析 ORM、手写 SQL、Repository 和迁移历史
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - Data IR
+  - ERD
+  - DFD
+  acceptance: 主要写路径能追到数据资产。
+  status: todo
+- id: ELMOS-PI-16-T03
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 识别 API/事件字段到内部模型和持久化字段映射
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - Data IR
+  - ERD
+  - DFD
+  acceptance: CRUD 矩阵无跨 revision 混合。
+  status: todo
+- id: ELMOS-PI-16-T04
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 识别缓存、搜索索引、对象存储和 ETL 流
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - Data IR
+  - ERD
+  - DFD
+  acceptance: 敏感字段分类有证据和人工复核入口。
+  status: todo
+- id: ELMOS-PI-16-T05
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 标注敏感等级、保留期限、加密和跨境边界
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - Data IR
+  - ERD
+  - DFD
+  acceptance: 血缘边可回溯转换表达式或代码位置。
+  status: todo
+- id: ELMOS-PI-16-T06
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 生成 ER、DFD、血缘、生命周期、CRUD 与数据质量视图
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - Data IR
+  - ERD
+  - DFD
+  acceptance: 血缘边可回溯转换表达式或代码位置。
+  status: todo
+- id: ELMOS-PI-16-T07
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-16-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得读取真实生产数据内容来推断 Schema，除非明确授权并脱敏。
+  status: todo
+- id: ELMOS-PI-16-T08
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-16-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-16-T09
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-16-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: ER 图与迁移/ORM 核心关系一致。
+  status: todo
+- id: ELMOS-PI-16-T10
+  skill: elmos-data-architecture-lineage
+  batch: BATCH-04-architecture-flow-data
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-16-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 血缘边可回溯转换表达式或代码位置。
+  status: todo
+- id: ELMOS-PI-17-T01
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 抽取端点、方法、请求响应、认证、错误和版本
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - API catalog
+  - event catalog
+  - integration topology
+  acceptance: 已声明接口与实现映射覆盖率可量化。
+  status: todo
+- id: ELMOS-PI-17-T02
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 抽取 Topic/Queue、事件 Schema、生产者、消费者、重试和死信
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - API catalog
+  - event catalog
+  - integration topology
+  acceptance: Breaking change 检测有正反例测试。
+  status: todo
+- id: ELMOS-PI-17-T03
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 识别 HTTP/RPC 客户端、SDK、Webhook 和第三方服务
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - API catalog
+  - event catalog
+  - integration topology
+  acceptance: Topic 生产者/消费者链可追踪。
+  status: todo
+- id: ELMOS-PI-17-T04
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 关联接口到功能、服务、数据和测试
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - API catalog
+  - event catalog
+  - integration topology
+  acceptance: 未鉴权和未测试接口可筛选。
+  status: todo
+- id: ELMOS-PI-17-T05
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 检测未文档接口、Schema 漂移、废弃版本和消费者风险
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - API catalog
+  - event catalog
+  - integration topology
+  acceptance: 拓扑节点可回到契约与代码。
+  status: todo
+- id: ELMOS-PI-17-T06
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 生成 API 拓扑、事件拓扑、时序和版本兼容图
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - API catalog
+  - event catalog
+  - integration topology
+  acceptance: 拓扑节点可回到契约与代码。
+  status: todo
+- id: ELMOS-PI-17-T07
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-17-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把内部方法误标为公网 API。
+  status: todo
+- id: ELMOS-PI-17-T08
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-17-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-17-T09
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-17-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 已声明接口与实现映射覆盖率可量化。
+  status: todo
+- id: ELMOS-PI-17-T10
+  skill: elmos-api-event-topology
+  batch: BATCH-04-architecture-flow-data
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-17-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 拓扑节点可回到契约与代码。
+  status: todo
+- id: ELMOS-PI-18-T01
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 接收或导入 OTLP Trace/Span 与环境标签
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - runtime graph
+  - static-runtime diff
+  - trace links
+  acceptance: 已知 Trace 可正确映射到服务/接口/数据库。
+  status: todo
+- id: ELMOS-PI-18-T02
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 规范化 service/resource/code attributes
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - runtime graph
+  - static-runtime diff
+  - trace links
+  acceptance: 静态与运行差异有明确原因分类。
+  status: todo
+- id: ELMOS-PI-18-T03
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 将 span 关联到 API、symbol、database、message 和 external system
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - runtime graph
+  - static-runtime diff
+  - trace links
+  acceptance: 采样限制显示在每个运行结论旁。
+  status: todo
+- id: ELMOS-PI-18-T04
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 聚合调用频率、延迟、错误和关键路径
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - runtime graph
+  - static-runtime diff
+  - trace links
+  acceptance: 跨环境查询不会混淆。
+  status: todo
+- id: ELMOS-PI-18-T05
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 比较静态候选边与运行观测边
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - runtime graph
+  - static-runtime diff
+  - trace links
+  acceptance: 高容量导入有背压与保留策略。
+  status: todo
+- id: ELMOS-PI-18-T06
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 发布 runtime evidence 并触发受影响 artifact 更新
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - runtime graph
+  - static-runtime diff
+  - trace links
+  acceptance: 高容量导入有背压与保留策略。
+  status: todo
+- id: ELMOS-PI-18-T07
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-18-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 未观测到的边不得判定不存在。
+  status: todo
+- id: ELMOS-PI-18-T08
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-18-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 入口覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-18-T09
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-18-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 已知 Trace 可正确映射到服务/接口/数据库。
+  status: todo
+- id: ELMOS-PI-18-T10
+  skill: elmos-runtime-trace-fusion
+  batch: BATCH-04-architecture-flow-data
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-18-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 高容量导入有背压与保留策略。
+  status: todo
+- id: ELMOS-PI-19-T01
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 定义 diagram metadata、nodes、edges、groups、ports、views 和 evidence refs
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - diagram-spec.json/yaml
+  - Schema
+  - validation diagnostics
+  acceptance: 所有目录中的核心图表类型通过 Schema。
+  status: todo
+- id: ELMOS-PI-19-T02
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 为 C4、BPMN、Sequence、State、ER、DFD、Mindmap、Deployment 等定义 profile
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - diagram-spec.json/yaml
+  - Schema
+  - validation diagnostics
+  acceptance: 相同图谱与参数生成稳定 element ID。
+  status: todo
+- id: ELMOS-PI-19-T03
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 定义折叠、聚合、分页、布局 hint 和视觉语义
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - diagram-spec.json/yaml
+  - Schema
+  - validation diagnostics
+  acceptance: 无效边和孤立证据引用被拒绝。
+  status: todo
+- id: ELMOS-PI-19-T04
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 定义人工锁定、注释和版本 diff
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - diagram-spec.json/yaml
+  - Schema
+  - validation diagnostics
+  acceptance: Spec 可由至少两个渲染器消费。
+  status: todo
+- id: ELMOS-PI-19-T05
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 实现 JSON Schema 和语义校验器
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - diagram-spec.json/yaml
+  - Schema
+  - validation diagnostics
+  acceptance: 版本迁移保持语义等价。
+  status: todo
+- id: ELMOS-PI-19-T06
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 提供从 Intelligence Graph 到 Diagram Spec 的投影器
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - diagram-spec.json/yaml
+  - Schema
+  - validation diagnostics
+  acceptance: 版本迁移保持语义等价。
+  status: todo
+- id: ELMOS-PI-19-T07
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-19-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得将渲染器私有字段泄露为核心语义。
+  status: todo
+- id: ELMOS-PI-19-T08
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-19-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 生成成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-19-T09
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-19-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 所有目录中的核心图表类型通过 Schema。
+  status: todo
+- id: ELMOS-PI-19-T10
+  skill: elmos-diagram-spec-engine
+  batch: BATCH-05-diagram-platform
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-19-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 版本迁移保持语义等价。
+  status: todo
+- id: ELMOS-PI-20-T01
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 选择适合图类型的渲染器并生成中间 DSL
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  deliverables:
+  - renderer source
+  - SVG/PNG/PDF
+  - thumbnail
+  acceptance: 核心图表快照测试通过。
+  status: todo
+- id: ELMOS-PI-20-T02
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 使用 ELK/Dagre/Graphviz 等执行自动布局
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  deliverables:
+  - renderer source
+  - SVG/PNG/PDF
+  - thumbnail
+  acceptance: 1000 节点压力图有受控降级且不 OOM。
+  status: todo
+- id: ELMOS-PI-20-T03
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 对大图进行聚合、分层、分页和 overview+detail
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  deliverables:
+  - renderer source
+  - SVG/PNG/PDF
+  - thumbnail
+  acceptance: SVG 中 element ID 与 Spec 一致。
+  status: todo
+- id: ELMOS-PI-20-T04
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 嵌入 element ID、evidence link 和 accessibility metadata
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  deliverables:
+  - renderer source
+  - SVG/PNG/PDF
+  - thumbnail
+  acceptance: 同版本确定性渲染达到目标。
+  status: todo
+- id: ELMOS-PI-20-T05
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 沙箱化渲染进程并限制 CPU/内存/时间
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  deliverables:
+  - renderer source
+  - SVG/PNG/PDF
+  - thumbnail
+  acceptance: 恶意 DSL 安全测试通过。
+  status: todo
+- id: ELMOS-PI-20-T06
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 缓存 spec hash + renderer version + theme 的结果
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-spec-engine
+  deliverables:
+  - renderer source
+  - SVG/PNG/PDF
+  - thumbnail
+  acceptance: 恶意 DSL 安全测试通过。
+  status: todo
+- id: ELMOS-PI-20-T07
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-20-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得执行 PlantUML/Mermaid 输入中的危险 include。
+  status: todo
+- id: ELMOS-PI-20-T08
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-20-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 生成成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-20-T09
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-20-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 核心图表快照测试通过。
+  status: todo
+- id: ELMOS-PI-20-T10
+  skill: elmos-diagram-rendering
+  batch: BATCH-05-diagram-platform
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-20-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 恶意 DSL 安全测试通过。
+  status: todo
+- id: ELMOS-PI-21-T01
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 实现缩放、平移、搜索、折叠、下钻和 mini-map
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  deliverables:
+  - edited spec
+  - manual overrides
+  - merge result
+  acceptance: 自动再生成后布局和锁定内容正确保留。
+  status: todo
+- id: ELMOS-PI-21-T02
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 支持节点重命名、说明、分组、移动、隐藏和手工连线
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  deliverables:
+  - edited spec
+  - manual overrides
+  - merge result
+  acceptance: 冲突可逐项解决并审计。
+  status: todo
+- id: ELMOS-PI-21-T03
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 区分事实字段、展示字段和建议字段的编辑权限
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  deliverables:
+  - edited spec
+  - manual overrides
+  - merge result
+  acceptance: 撤销/重做覆盖核心操作。
+  status: todo
+- id: ELMOS-PI-21-T04
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 保存人工 override 和锁定范围
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  deliverables:
+  - edited spec
+  - manual overrides
+  - merge result
+  acceptance: 图节点点击可回代码和证据。
+  status: todo
+- id: ELMOS-PI-21-T05
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 对新自动 Spec 进行三方合并并显示冲突
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  deliverables:
+  - edited spec
+  - manual overrides
+  - merge result
+  acceptance: 导出再导入不丢人工 override。
+  status: todo
+- id: ELMOS-PI-21-T06
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 支持评论、审批、撤销/重做和版本回退
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-diagram-rendering
+  - elmos-artifact-versioning-human-lock
+  deliverables:
+  - edited spec
+  - manual overrides
+  - merge result
+  acceptance: 导出再导入不丢人工 override。
+  status: todo
+- id: ELMOS-PI-21-T07
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-21-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得静默覆盖人工锁定。
+  status: todo
+- id: ELMOS-PI-21-T08
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-21-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 生成成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-21-T09
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-21-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 自动再生成后布局和锁定内容正确保留。
+  status: todo
+- id: ELMOS-PI-21-T10
+  skill: elmos-diagram-editor
+  batch: BATCH-05-diagram-platform
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-21-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 导出再导入不丢人工 override。
+  status: todo
+- id: ELMOS-PI-22-T01
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 选择文档类型、受众、深度和模板
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  deliverables:
+  - Markdown/DOCX/PDF/HTML 文档集
+  - 文档索引
+  - claim/evidence map
+  acceptance: 文档关键 claim 证据覆盖率达到阈值。
+  status: todo
+- id: ELMOS-PI-22-T02
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 生成事实大纲并验证覆盖与证据
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  deliverables:
+  - Markdown/DOCX/PDF/HTML 文档集
+  - 文档索引
+  - claim/evidence map
+  acceptance: 内部链接和代码深链有效。
+  status: todo
+- id: ELMOS-PI-22-T03
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 生成正文、图表引用、表格、风险和未知项
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  deliverables:
+  - Markdown/DOCX/PDF/HTML 文档集
+  - 文档索引
+  - claim/evidence map
+  acceptance: 代码变更只更新受影响章节。
+  status: todo
+- id: ELMOS-PI-22-T04
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 为关键 claim 建立证据链接
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  deliverables:
+  - Markdown/DOCX/PDF/HTML 文档集
+  - 文档索引
+  - claim/evidence map
+  acceptance: 人工内容在再生成后保留。
+  status: todo
+- id: ELMOS-PI-22-T05
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 与已有文档执行段落级三方合并
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  deliverables:
+  - Markdown/DOCX/PDF/HTML 文档集
+  - 文档索引
+  - claim/evidence map
+  acceptance: 导出 Markdown/DOCX/PDF 的结构一致。
+  status: todo
+- id: ELMOS-PI-22-T06
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 导出格式并生成可访问性、链接和一致性检查
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  - elmos-diagram-rendering
+  deliverables:
+  - Markdown/DOCX/PDF/HTML 文档集
+  - 文档索引
+  - claim/evidence map
+  acceptance: 导出 Markdown/DOCX/PDF 的结构一致。
+  status: todo
+- id: ELMOS-PI-22-T07
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-22-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把建议描述成当前实现。
+  status: todo
+- id: ELMOS-PI-22-T08
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-22-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 生成成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-22-T09
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-22-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 文档关键 claim 证据覆盖率达到阈值。
+  status: todo
+- id: ELMOS-PI-22-T10
+  skill: elmos-architecture-documentation
+  batch: BATCH-06-documents-presentations-reports
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-22-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 导出 Markdown/DOCX/PDF 的结构一致。
+  status: todo
+- id: ELMOS-PI-23-T01
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 选择演示类型并建立答案优先的故事线
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  deliverables:
+  - PPTX
+  - PDF preview
+  - slide manifest
+  acceptance: 所有文本无溢出且核心页面可编辑。
+  status: todo
+- id: ELMOS-PI-23-T02
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 为每页定义目的、主结论、证据、图表和备注
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  deliverables:
+  - PPTX
+  - PDF preview
+  - slide manifest
+  acceptance: 关键结论有 evidence map。
+  status: todo
+- id: ELMOS-PI-23-T03
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 生成或复用架构图、流程图和指标图
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  deliverables:
+  - PPTX
+  - PDF preview
+  - slide manifest
+  acceptance: 相同模板重生成能保留锁定页。
+  status: todo
+- id: ELMOS-PI-23-T04
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 使用模板引擎创建可编辑文本、形状、表格和图表
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  deliverables:
+  - PPTX
+  - PDF preview
+  - slide manifest
+  acceptance: 不同受众故事线显著不同。
+  status: todo
+- id: ELMOS-PI-23-T05
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 检查溢出、可读性、引用、品牌和敏感信息
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  deliverables:
+  - PPTX
+  - PDF preview
+  - slide manifest
+  acceptance: PPTX 可被主流 Office 软件正常打开。
+  status: todo
+- id: ELMOS-PI-23-T06
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 按 slide stable ID 支持增量更新和人工锁定
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-diagram-rendering
+  deliverables:
+  - PPTX
+  - PDF preview
+  - slide manifest
+  acceptance: PPTX 可被主流 Office 软件正常打开。
+  status: todo
+- id: ELMOS-PI-23-T07
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-23-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得用无法核验的市场或项目数字填充。
+  status: todo
+- id: ELMOS-PI-23-T08
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-23-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 生成成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-23-T09
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-23-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 所有文本无溢出且核心页面可编辑。
+  status: todo
+- id: ELMOS-PI-23-T10
+  skill: elmos-presentation-generation
+  batch: BATCH-06-documents-presentations-reports
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-23-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: PPTX 可被主流 Office 软件正常打开。
+  status: todo
+- id: ELMOS-PI-24-T01
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 冻结项目 revision 和所有引用 artifact version
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 报告目录
+  - HTML/PDF
+  - 附件清单
+  acceptance: 离线包完整可导航。
+  status: todo
+- id: ELMOS-PI-24-T02
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 根据报告类型选取章节、图表、PPT 和原始证明
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 报告目录
+  - HTML/PDF
+  - 附件清单
+  acceptance: manifest 哈希验证成功。
+  status: todo
+- id: ELMOS-PI-24-T03
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 检查 claim/evidence 完整性和 stale 状态
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 报告目录
+  - HTML/PDF
+  - 附件清单
+  acceptance: 所有关键引用可解析。
+  status: todo
+- id: ELMOS-PI-24-T04
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 应用脱敏、水印、受众权限和保留策略
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 报告目录
+  - HTML/PDF
+  - 附件清单
+  acceptance: 脱敏规则测试通过。
+  status: todo
+- id: ELMOS-PI-24-T05
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 生成目录、交叉链接、manifest、哈希和可选签名
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 报告目录
+  - HTML/PDF
+  - 附件清单
+  acceptance: 报告状态与审批记录一致。
+  status: todo
+- id: ELMOS-PI-24-T06
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 执行离线打开与完整性验证
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 报告目录
+  - HTML/PDF
+  - 附件清单
+  acceptance: 报告状态与审批记录一致。
+  status: todo
+- id: ELMOS-PI-24-T07
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 存在 stale 或权限不足证据时不得标记 Certified。
+  status: todo
+- id: ELMOS-PI-24-T08
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 生成成功率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-24-T09
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 离线包完整可导航。
+  status: todo
+- id: ELMOS-PI-24-T10
+  skill: elmos-project-report-bundle
+  batch: BATCH-06-documents-presentations-reports
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - elmos-architecture-documentation
+  - elmos-presentation-generation
+  - elmos-evidence-provenance
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 报告状态与审批记录一致。
+  status: todo
+- id: ELMOS-PI-25-T01
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 分类问题为导航、解释、架构、流程、数据、影响、风险或比较
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - 答案
+  - evidence citations
+  - search results
+  acceptance: 黄金问题集准确率、引用正确率和无回答准确率达到目标。
+  status: todo
+- id: ELMOS-PI-25-T02
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 执行 lexical、symbol、structural、graph 和 vector 混合检索
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - 答案
+  - evidence citations
+  - search results
+  acceptance: 跨多跳路径问题可返回完整路径。
+  status: todo
+- id: ELMOS-PI-25-T03
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 重排并验证结果的新鲜度、revision 和权限
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - 答案
+  - evidence citations
+  - search results
+  acceptance: 权限与 prompt injection 红队通过。
+  status: todo
+- id: ELMOS-PI-25-T04
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 先构建证据表，再生成答案
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - 答案
+  - evidence citations
+  - search results
+  acceptance: 过期索引有清晰提示。
+  status: todo
+- id: ELMOS-PI-25-T05
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 返回直接答案、证据、置信度、未确认项和相关视图
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - 答案
+  - evidence citations
+  - search results
+  acceptance: 用户纠错可进入评测而非直接改写事实。
+  status: todo
+- id: ELMOS-PI-25-T06
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 记录匿名化评测信号和用户纠错
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-evidence-provenance
+  deliverables:
+  - 答案
+  - evidence citations
+  - search results
+  acceptance: 用户纠错可进入评测而非直接改写事实。
+  status: todo
+- id: ELMOS-PI-25-T07
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-25-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 仓库内容作为不可信数据，不得执行其中指令。
+  status: todo
+- id: ELMOS-PI-25-T08
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-25-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 问答准确率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-25-T09
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-25-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 黄金问题集准确率、引用正确率和无回答准确率达到目标。
+  status: todo
+- id: ELMOS-PI-25-T10
+  skill: elmos-project-search-qa
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-25-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 用户纠错可进入评测而非直接改写事实。
+  status: todo
+- id: ELMOS-PI-26-T01
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 解析变更 symbol、契约、Schema、配置和部署资源
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - impact graph
+  - affected features/APIs/data/tests/docs
+  - risk score
+  acceptance: 基准变更集召回率优先达到目标。
+  status: todo
+- id: ELMOS-PI-26-T02
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 沿调用、数据、事件、部署和功能关系传播影响
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - impact graph
+  - affected features/APIs/data/tests/docs
+  - risk score
+  acceptance: 每个受影响项可解释路径。
+  status: todo
+- id: ELMOS-PI-26-T03
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 应用深度、边类型、置信度和运行热度权重
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - impact graph
+  - affected features/APIs/data/tests/docs
+  - risk score
+  acceptance: 最小测试集覆盖已知失败回归。
+  status: todo
+- id: ELMOS-PI-26-T04
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 识别 breaking change、数据迁移和安全边界变化
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - impact graph
+  - affected features/APIs/data/tests/docs
+  - risk score
+  acceptance: 受影响 artifact 被正确标 stale/regen。
+  status: todo
+- id: ELMOS-PI-26-T05
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 选择相关测试、文档、图表和 PPT 页面
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - impact graph
+  - affected features/APIs/data/tests/docs
+  - risk score
+  acceptance: 大图分析在预算内完成或可恢复。
+  status: todo
+- id: ELMOS-PI-26-T06
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 输出确定、可能、未知影响及理由
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-runtime-trace-fusion
+  deliverables:
+  - impact graph
+  - affected features/APIs/data/tests/docs
+  - risk score
+  acceptance: 大图分析在预算内完成或可恢复。
+  status: todo
+- id: ELMOS-PI-26-T07
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-26-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把低置信度远端影响隐藏。
+  status: todo
+- id: ELMOS-PI-26-T08
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-26-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 问答准确率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-26-T09
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-26-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 基准变更集召回率优先达到目标。
+  status: todo
+- id: ELMOS-PI-26-T10
+  skill: elmos-impact-analysis
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-26-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 大图分析在预算内完成或可恢复。
+  status: todo
+- id: ELMOS-PI-27-T01
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 定义 Rule DSL：scope、selector、condition、severity、evidence、exceptions
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - violations
+  - rule coverage
+  - CI status
+  acceptance: 规则 DSL 有 Schema 和单元测试。
+  status: todo
+- id: ELMOS-PI-27-T02
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现内建规则与项目自定义规则
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - violations
+  - rule coverage
+  - CI status
+  acceptance: 已知违规被稳定检测。
+  status: todo
+- id: ELMOS-PI-27-T03
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 在全量和增量图谱上执行规则
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - violations
+  - rule coverage
+  - CI status
+  acceptance: 例外到期后恢复失败。
+  status: todo
+- id: ELMOS-PI-27-T04
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 为 violation 生成最短证据路径和修复建议
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - violations
+  - rule coverage
+  - CI status
+  acceptance: CI 输出可定位到代码和路径。
+  status: todo
+- id: ELMOS-PI-27-T05
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 支持 waiver、到期时间、owner 和审批
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - violations
+  - rule coverage
+  - CI status
+  acceptance: 增量结果与全量结果一致。
+  status: todo
+- id: ELMOS-PI-27-T06
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 集成 PR check、dashboard 和架构文档
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  deliverables:
+  - violations
+  - rule coverage
+  - CI status
+  acceptance: 增量结果与全量结果一致。
+  status: todo
+- id: ELMOS-PI-27-T07
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-27-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得因 waiver 隐藏原始 violation。
+  status: todo
+- id: ELMOS-PI-27-T08
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-27-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 问答准确率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-27-T09
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-27-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 规则 DSL 有 Schema 和单元测试。
+  status: todo
+- id: ELMOS-PI-27-T10
+  skill: elmos-architecture-rules
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-27-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 增量结果与全量结果一致。
+  status: todo
+- id: ELMOS-PI-28-T01
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 规范化设计、静态和运行模型到统一语义
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  deliverables:
+  - drift events
+  - before/after diagrams
+  - severity
+  acceptance: 基准漂移场景全部正确分类。
+  status: todo
+- id: ELMOS-PI-28-T02
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 比较节点、关系、属性、所有权和安全边界
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  deliverables:
+  - drift events
+  - before/after diagrams
+  - severity
+  acceptance: 误报可通过规则/override 解释性降低。
+  status: todo
+- id: ELMOS-PI-28-T03
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 分类 expected change、undocumented change、violation、observation gap
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  deliverables:
+  - drift events
+  - before/after diagrams
+  - severity
+  acceptance: 接受变更生成可审计基线版本。
+  status: todo
+- id: ELMOS-PI-28-T04
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 计算影响和严重度
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  deliverables:
+  - drift events
+  - before/after diagrams
+  - severity
+  acceptance: 文档和图表 stale 状态联动。
+  status: todo
+- id: ELMOS-PI-28-T05
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 生成图表 diff、证据和建议动作
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  deliverables:
+  - drift events
+  - before/after diagrams
+  - severity
+  acceptance: PR 中新增违规边能阻断。
+  status: todo
+- id: ELMOS-PI-28-T06
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 支持确认、接受为新设计、拒绝或创建修复任务
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-architecture-discovery
+  - elmos-runtime-trace-fusion
+  - elmos-architecture-rules
+  deliverables:
+  - drift events
+  - before/after diagrams
+  - severity
+  acceptance: PR 中新增违规边能阻断。
+  status: todo
+- id: ELMOS-PI-28-T07
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-28-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把未观测调用视为删除。
+  status: todo
+- id: ELMOS-PI-28-T08
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-28-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 问答准确率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-28-T09
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-28-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 基准漂移场景全部正确分类。
+  status: todo
+- id: ELMOS-PI-28-T10
+  skill: elmos-architecture-drift
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-28-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: PR 中新增违规边能阻断。
+  status: todo
+- id: ELMOS-PI-29-T01
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 计算复杂度、重复、循环、扇入扇出、变更频率和 ownership
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  deliverables:
+  - risk register
+  - heatmaps
+  - debt backlog
+  acceptance: 风险排序在历史缺陷回放中有可测预测力。
+  status: todo
+- id: ELMOS-PI-29-T02
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 融合测试覆盖、故障、延迟、漏洞、过期依赖和业务关键度
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  deliverables:
+  - risk register
+  - heatmaps
+  - debt backlog
+  acceptance: 每项技术债有证据、owner、影响和完成条件。
+  status: todo
+- id: ELMOS-PI-29-T03
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 生成文件/模块/服务级风险评分并解释因子
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  deliverables:
+  - risk register
+  - heatmaps
+  - debt backlog
+  acceptance: 热力图可下钻。
+  status: todo
+- id: ELMOS-PI-29-T04
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 识别 God module、shotgun surgery、orphan code、unstable dependency
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  deliverables:
+  - risk register
+  - heatmaps
+  - debt backlog
+  acceptance: 数据缺失明确展示。
+  status: todo
+- id: ELMOS-PI-29-T05
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 形成修复候选、成本区间和依赖顺序
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  deliverables:
+  - risk register
+  - heatmaps
+  - debt backlog
+  acceptance: 优先级变化可解释。
+  status: todo
+- id: ELMOS-PI-29-T06
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 生成热力图和趋势
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  deliverables:
+  - risk register
+  - heatmaps
+  - debt backlog
+  acceptance: 优先级变化可解释。
+  status: todo
+- id: ELMOS-PI-29-T07
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-29-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把 LOC 大自动等同高风险。
+  status: todo
+- id: ELMOS-PI-29-T08
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-29-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 问答准确率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-29-T09
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-29-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 风险排序在历史缺陷回放中有可测预测力。
+  status: todo
+- id: ELMOS-PI-29-T10
+  skill: elmos-risk-technical-debt
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-29-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 优先级变化可解释。
+  status: todo
+- id: ELMOS-PI-30-T01
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 识别资产、Actor、入口、信任边界和数据分类
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  deliverables:
+  - threat model
+  - security findings
+  - attack paths
+  acceptance: 关键入口有认证/授权检查覆盖。
+  status: todo
+- id: ELMOS-PI-30-T02
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 执行 SAST/SCA/secret/IaC/API auth 检查
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  deliverables:
+  - threat model
+  - security findings
+  - attack paths
+  acceptance: 已知测试漏洞可检测。
+  status: todo
+- id: ELMOS-PI-30-T03
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 基于 STRIDE/项目规则生成威胁候选
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  deliverables:
+  - threat model
+  - security findings
+  - attack paths
+  acceptance: 威胁模型包含资产、边界、威胁、控制和残余风险。
+  status: todo
+- id: ELMOS-PI-30-T04
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 构建攻击路径并结合可达性和运行证据排序
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  deliverables:
+  - threat model
+  - security findings
+  - attack paths
+  acceptance: 修复后可重跑并闭环证据。
+  status: todo
+- id: ELMOS-PI-30-T05
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 关联漏洞到功能、代码、数据、部署和测试
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  deliverables:
+  - threat model
+  - security findings
+  - attack paths
+  acceptance: 高危未处置时不能通过生产认证。
+  status: todo
+- id: ELMOS-PI-30-T06
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 生成修复、验证和残余风险记录
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-data-architecture-lineage
+  - elmos-api-event-topology
+  - elmos-architecture-rules
+  deliverables:
+  - threat model
+  - security findings
+  - attack paths
+  acceptance: 高危未处置时不能通过生产认证。
+  status: todo
+- id: ELMOS-PI-30-T07
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-30-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得输出可直接利用客户系统的秘密或敏感 payload。
+  status: todo
+- id: ELMOS-PI-30-T08
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-30-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 问答准确率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-30-T09
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-30-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 关键入口有认证/授权检查覆盖。
+  status: todo
+- id: ELMOS-PI-30-T10
+  skill: elmos-security-threat-model
+  batch: BATCH-07-search-impact-governance-analysis
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-30-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 高危未处置时不能通过生产认证。
+  status: todo
+- id: ELMOS-PI-31-T01
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 为 ingest、parse、graph、flow、artifact、model call 定义确定性 cache key
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  deliverables:
+  - cache keys
+  - invalidation plan
+  - checkpoints
+  acceptance: 相同输入重跑命中且输出哈希一致。
+  status: todo
+- id: ELMOS-PI-31-T02
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 建立文件→symbol→graph view→claim→artifact block 的依赖索引
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  deliverables:
+  - cache keys
+  - invalidation plan
+  - checkpoints
+  acceptance: 修改单文件只失效预期下游。
+  status: todo
+- id: ELMOS-PI-31-T03
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 根据 Git diff、配置、规则、模型和模板变化计算失效范围
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  deliverables:
+  - cache keys
+  - invalidation plan
+  - checkpoints
+  acceptance: worker 强制终止后可恢复。
+  status: todo
+- id: ELMOS-PI-31-T04
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 每个长阶段写原子检查点和已完成副作用
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  deliverables:
+  - cache keys
+  - invalidation plan
+  - checkpoints
+  acceptance: 重复恢复不重复外部副作用。
+  status: todo
+- id: ELMOS-PI-31-T05
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 实现暂停、恢复、重试、取消和租约接管
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  deliverables:
+  - cache keys
+  - invalidation plan
+  - checkpoints
+  acceptance: 缓存指标可按项目/阶段查看。
+  status: todo
+- id: ELMOS-PI-31-T06
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 记录命中率、节省 wall-clock、Token 和存储成本
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-evidence-provenance
+  deliverables:
+  - cache keys
+  - invalidation plan
+  - checkpoints
+  acceptance: 缓存指标可按项目/阶段查看。
+  status: todo
+- id: ELMOS-PI-31-T07
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-31-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得跨租户共享含代码或解释内容的缓存。
+  status: todo
+- id: ELMOS-PI-31-T08
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-31-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 缓存命中率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-31-T09
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-31-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 相同输入重跑命中且输出哈希一致。
+  status: todo
+- id: ELMOS-PI-31-T10
+  skill: elmos-incremental-analysis-cache
+  batch: BATCH-08-cache-versioning-git
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-31-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 缓存指标可按项目/阶段查看。
+  status: todo
+- id: ELMOS-PI-32-T01
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 定义 Artifact、Block、Element、Version、Lock、Override 和 Review 模型
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  deliverables:
+  - artifact versions
+  - locks/overrides
+  - merge conflicts
+  acceptance: 三方合并核心场景通过。
+  status: todo
+- id: ELMOS-PI-32-T02
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 为段落、图节点、PPT 页面和表格分配稳定 ID
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  deliverables:
+  - artifact versions
+  - locks/overrides
+  - merge conflicts
+  acceptance: 锁定内容跨再生成保持。
+  status: todo
+- id: ELMOS-PI-32-T03
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 保存 base-generated、human-patch 和 next-generated 三方数据
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  deliverables:
+  - artifact versions
+  - locks/overrides
+  - merge conflicts
+  acceptance: 每个版本可完整重建或验证。
+  status: todo
+- id: ELMOS-PI-32-T04
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 执行语义合并并分类自动可合并/冲突/失效
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  deliverables:
+  - artifact versions
+  - locks/overrides
+  - merge conflicts
+  acceptance: 审批和状态转换权限正确。
+  status: todo
+- id: ELMOS-PI-32-T05
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 支持 Draft、Reviewed、Approved、Certified 生命周期
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  deliverables:
+  - artifact versions
+  - locks/overrides
+  - merge conflicts
+  acceptance: stale artifact 不可误标 Certified。
+  status: todo
+- id: ELMOS-PI-32-T06
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 提供回滚、比较、审计和保留策略
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-evidence-provenance
+  deliverables:
+  - artifact versions
+  - locks/overrides
+  - merge conflicts
+  acceptance: stale artifact 不可误标 Certified。
+  status: todo
+- id: ELMOS-PI-32-T07
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-32-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得自动解决影响事实正确性的冲突。
+  status: todo
+- id: ELMOS-PI-32-T08
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-32-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 缓存命中率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-32-T09
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-32-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 三方合并核心场景通过。
+  status: todo
+- id: ELMOS-PI-32-T10
+  skill: elmos-artifact-versioning-human-lock
+  batch: BATCH-05-diagram-platform
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-32-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: stale artifact 不可误标 Certified。
+  status: todo
+- id: ELMOS-PI-33-T01
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 确认目标仓库、base revision、写权限和分支策略
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  deliverables:
+  - branch/commit
+  - PR
+  - checks
+  acceptance: 重复请求只产生一个有效 PR。
+  status: todo
+- id: ELMOS-PI-33-T02
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 创建唯一工作树/分支并应用最小变更
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  deliverables:
+  - branch/commit
+  - PR
+  - checks
+  acceptance: base 变化能重新基线或明确冲突。
+  status: todo
+- id: ELMOS-PI-33-T03
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 运行格式、链接、Schema、测试和敏感信息检查
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  deliverables:
+  - branch/commit
+  - PR
+  - checks
+  acceptance: PR 检查失败会阻止完成状态。
+  status: todo
+- id: ELMOS-PI-33-T04
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 生成结构化 commit 与 PR 描述，附影响和证据
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  deliverables:
+  - branch/commit
+  - PR
+  - checks
+  acceptance: 审计可追踪到发起用户和生成版本。
+  status: todo
+- id: ELMOS-PI-33-T05
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 设置 reviewer、labels 和 required checks
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  deliverables:
+  - branch/commit
+  - PR
+  - checks
+  acceptance: 关闭/取消后资源被正确清理。
+  status: todo
+- id: ELMOS-PI-33-T06
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 处理重复调用、base 更新、冲突和关闭回滚
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-artifact-versioning-human-lock
+  - elmos-impact-analysis
+  deliverables:
+  - branch/commit
+  - PR
+  - checks
+  acceptance: 关闭/取消后资源被正确清理。
+  status: todo
+- id: ELMOS-PI-33-T07
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-33-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得 force push 用户分支。
+  status: todo
+- id: ELMOS-PI-33-T08
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-33-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 缓存命中率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-33-T09
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-33-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 重复请求只产生一个有效 PR。
+  status: todo
+- id: ELMOS-PI-33-T10
+  skill: elmos-git-pr-automation
+  batch: BATCH-08-cache-versioning-git
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-33-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 关闭/取消后资源被正确清理。
+  status: todo
+- id: ELMOS-PI-34-T01
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 定义管理员、架构师、开发、测试、运维、安全、产品、访客、客户、审计等角色
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  deliverables:
+  - RBAC/ABAC policies
+  - comments/reviews
+  - share links
+  acceptance: 权限矩阵自动测试覆盖允许与拒绝。
+  status: todo
+- id: ELMOS-PI-34-T02
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 细化 project/repo/revision/file/artifact/claim/export/model 权限
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  deliverables:
+  - RBAC/ABAC policies
+  - comments/reviews
+  - share links
+  acceptance: 撤销后分享和缓存访问失效。
+  status: todo
+- id: ELMOS-PI-34-T03
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 实现评论、@、任务、订阅、审批和通知
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  deliverables:
+  - RBAC/ABAC policies
+  - comments/reviews
+  - share links
+  acceptance: 跨租户查询红队无泄漏。
+  status: todo
+- id: ELMOS-PI-34-T04
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 实现带有效期、水印、范围和撤销的分享
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  deliverables:
+  - RBAC/ABAC policies
+  - comments/reviews
+  - share links
+  acceptance: 审批职责分离生效。
+  status: todo
+- id: ELMOS-PI-34-T05
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 为读取、搜索、生成、导出、修改和认证记录审计
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  deliverables:
+  - RBAC/ABAC policies
+  - comments/reviews
+  - share links
+  acceptance: 审计事件包含 who/what/when/where/result。
+  status: todo
+- id: ELMOS-PI-34-T06
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 接入 SSO、SCIM、MFA 与组织策略
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  deliverables:
+  - RBAC/ABAC policies
+  - comments/reviews
+  - share links
+  acceptance: 审计事件包含 who/what/when/where/result。
+  status: todo
+- id: ELMOS-PI-34-T07
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-34-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得允许 Artifact 链接绕过源文件权限。
+  status: todo
+- id: ELMOS-PI-34-T08
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-34-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 越权事件数 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-34-T09
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-34-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 权限矩阵自动测试覆盖允许与拒绝。
+  status: todo
+- id: ELMOS-PI-34-T10
+  skill: elmos-collaboration-governance
+  batch: BATCH-09-collaboration-and-connectors
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-34-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 审计事件包含 who/what/when/where/result。
+  status: todo
+- id: ELMOS-PI-35-T01
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 定义 Repository、Issue、Docs、CI、Trace、Artifact Registry 等 Port
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  deliverables:
+  - connector contract
+  - MCP tools/resources
+  - sync jobs
+  acceptance: 至少一个 Git 和一个 Trace 连接器端到端通过。
+  status: todo
+- id: ELMOS-PI-35-T02
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 为供应商实现 Adapter 和能力发现
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  deliverables:
+  - connector contract
+  - MCP tools/resources
+  - sync jobs
+  acceptance: 限流/过期 token/部分失败可恢复。
+  status: todo
+- id: ELMOS-PI-35-T03
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 使用 OAuth/OIDC/service account/short-lived token
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  deliverables:
+  - connector contract
+  - MCP tools/resources
+  - sync jobs
+  acceptance: 工具 Schema 通过契约测试。
+  status: todo
+- id: ELMOS-PI-35-T04
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 为读取、搜索、写入、回调定义精确工具 Schema
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  deliverables:
+  - connector contract
+  - MCP tools/resources
+  - sync jobs
+  acceptance: 写操作幂等。
+  status: todo
+- id: ELMOS-PI-35-T05
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 实现限流、重试、幂等、游标同步和健康检查
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  deliverables:
+  - connector contract
+  - MCP tools/resources
+  - sync jobs
+  acceptance: 连接器可替换而不改分析核心。
+  status: todo
+- id: ELMOS-PI-35-T06
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 为连接器建立权限、审计、数据驻留和故障降级
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-repository-ingestion
+  - elmos-collaboration-governance
+  deliverables:
+  - connector contract
+  - MCP tools/resources
+  - sync jobs
+  acceptance: 连接器可替换而不改分析核心。
+  status: todo
+- id: ELMOS-PI-35-T07
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-35-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得将长期 token 传给模型。
+  status: todo
+- id: ELMOS-PI-35-T08
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-35-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 越权事件数 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-35-T09
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-35-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 至少一个 Git 和一个 Trace 连接器端到端通过。
+  status: todo
+- id: ELMOS-PI-35-T10
+  skill: elmos-integrations-mcp
+  batch: BATCH-09-collaboration-and-connectors
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-35-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 连接器可替换而不改分析核心。
+  status: todo
+- id: ELMOS-PI-36-T01
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 按仓库、模块、语言、构建单元和内容哈希分片
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  deliverables:
+  - partition plan
+  - scheduler policy
+  - capacity model
+  acceptance: 目标规模压测达到吞吐和内存预算。
+  status: todo
+- id: ELMOS-PI-36-T02
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 定义优先索引：manifest→入口→高价值模块→全量
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  deliverables:
+  - partition plan
+  - scheduler policy
+  - capacity model
+  acceptance: 部分失败可重试单 shard。
+  status: todo
+- id: ELMOS-PI-36-T03
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 并行解析但串行提交一致图谱版本
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  deliverables:
+  - partition plan
+  - scheduler policy
+  - capacity model
+  acceptance: 增量 1% 变更成本显著低于全量。
+  status: todo
+- id: ELMOS-PI-36-T04
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 对图查询实施分页、限制、近似和预计算
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  deliverables:
+  - partition plan
+  - scheduler policy
+  - capacity model
+  acceptance: 公平调度避免大项目饿死小项目。
+  status: todo
+- id: ELMOS-PI-36-T05
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 控制模型上下文、批处理、缓存和并发配额
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  deliverables:
+  - partition plan
+  - scheduler policy
+  - capacity model
+  acceptance: ETA 校准误差有持续监控。
+  status: todo
+- id: ELMOS-PI-36-T06
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 执行 S/M/L/XL 仓库压测和故障注入
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-incremental-analysis-cache
+  - elmos-project-fingerprinting
+  deliverables:
+  - partition plan
+  - scheduler policy
+  - capacity model
+  acceptance: ETA 校准误差有持续监控。
+  status: todo
+- id: ELMOS-PI-36-T07
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-36-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得为追求速度跳过证据和租户隔离。
+  status: todo
+- id: ELMOS-PI-36-T08
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-36-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 缓存命中率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-36-T09
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-36-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 目标规模压测达到吞吐和内存预算。
+  status: todo
+- id: ELMOS-PI-36-T10
+  skill: elmos-large-repository-scaling
+  batch: BATCH-10-scale-and-observability
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-36-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: ETA 校准误差有持续监控。
+  status: todo
+- id: ELMOS-PI-37-T01
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 定义服务和用户旅程级 SLI
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - SLIs/SLOs
+  - telemetry schema
+  - dashboards
+  acceptance: 关键请求可端到端 Trace。
+  status: todo
+- id: ELMOS-PI-37-T02
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 统一 trace_id、job_id、project_id、analysis_run_id、artifact_id
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - SLIs/SLOs
+  - telemetry schema
+  - dashboards
+  acceptance: 告警通过演练。
+  status: todo
+- id: ELMOS-PI-37-T03
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 记录队列、阶段时长、重试、缓存、Token、模型、渲染和图查询指标
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - SLIs/SLOs
+  - telemetry schema
+  - dashboards
+  acceptance: 仪表盘能定位慢阶段和成本来源。
+  status: todo
+- id: ELMOS-PI-37-T04
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 记录质量指标：解析率、图完整度、引用正确率、stale 率
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - SLIs/SLOs
+  - telemetry schema
+  - dashboards
+  acceptance: 日志脱敏测试通过。
+  status: todo
+- id: ELMOS-PI-37-T05
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 建立 SLO、错误预算、告警和 Runbook
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - SLIs/SLOs
+  - telemetry schema
+  - dashboards
+  acceptance: SLO 报告可按租户和版本比较。
+  status: todo
+- id: ELMOS-PI-37-T06
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 实现敏感字段过滤与日志采样
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-reference-architecture
+  deliverables:
+  - SLIs/SLOs
+  - telemetry schema
+  - dashboards
+  acceptance: SLO 报告可按租户和版本比较。
+  status: todo
+- id: ELMOS-PI-37-T07
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-37-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得记录源代码全文、密钥或用户问题中的敏感内容。
+  status: todo
+- id: ELMOS-PI-37-T08
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-37-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: SLO 达成率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-37-T09
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-37-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 关键请求可端到端 Trace。
+  status: todo
+- id: ELMOS-PI-37-T10
+  skill: elmos-observability-slo
+  batch: BATCH-10-scale-and-observability
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-37-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: SLO 报告可按租户和版本比较。
+  status: todo
+- id: ELMOS-PI-38-T01
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 建立小型合成仓库和真实许可基准仓库
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  deliverables:
+  - test strategy
+  - fixtures
+  - eval datasets
+  acceptance: 所有 P0 Story 有自动化验收。
+  status: todo
+- id: ELMOS-PI-38-T02
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 为 parser、graph、evidence、rule、merge、renderer 写单元/属性测试
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  deliverables:
+  - test strategy
+  - fixtures
+  - eval datasets
+  acceptance: 黄金集版本化。
+  status: todo
+- id: ELMOS-PI-38-T03
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 为 API/Event/DB/connector 写契约测试
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  deliverables:
+  - test strategy
+  - fixtures
+  - eval datasets
+  acceptance: 权限、注入、恢复和幂等场景通过。
+  status: todo
+- id: ELMOS-PI-38-T04
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 为核心用户旅程写浏览器 E2E
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  deliverables:
+  - test strategy
+  - fixtures
+  - eval datasets
+  acceptance: 质量回退能阻止发布。
+  status: todo
+- id: ELMOS-PI-38-T05
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 建立问答、讲解、流程发现、图表和文档的黄金评测
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  deliverables:
+  - test strategy
+  - fixtures
+  - eval datasets
+  acceptance: 测试失败可定位到需求和技能。
+  status: todo
+- id: ELMOS-PI-38-T06
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 运行性能、安全、恢复、权限和数据质量门禁
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-product-scope
+  - elmos-evidence-provenance
+  deliverables:
+  - test strategy
+  - fixtures
+  - eval datasets
+  acceptance: 测试失败可定位到需求和技能。
+  status: todo
+- id: ELMOS-PI-38-T07
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-38-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得使用含私密客户代码的公开评测集。
+  status: todo
+- id: ELMOS-PI-38-T08
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-38-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 自动化验收覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-38-T09
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-38-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 所有 P0 Story 有自动化验收。
+  status: todo
+- id: ELMOS-PI-38-T10
+  skill: elmos-testing-evaluation
+  batch: BATCH-11-testing-conversion-estimation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-38-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 测试失败可定位到需求和技能。
+  status: todo
+- id: ELMOS-PI-39-T01
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 让 Elmos 生成/转换中的中间 revision 直接进入阅读器
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - source-target mapping
+  - conversion dashboards
+  - comparison artifacts
+  acceptance: 源目标主要 symbol 映射可导航。
+  status: todo
+- id: ELMOS-PI-39-T02
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 连接 Source Symbol、Semantic IR、Target Symbol 和 Rule 命中
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - source-target mapping
+  - conversion dashboards
+  - comparison artifacts
+  acceptance: 转换前后图表与文档一致。
+  status: todo
+- id: ELMOS-PI-39-T03
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 生成模块、API、数据、流程和架构前后映射
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - source-target mapping
+  - conversion dashboards
+  - comparison artifacts
+  acceptance: 失败定位能跳到规则、代码和测试。
+  status: todo
+- id: ELMOS-PI-39-T04
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 显示未支持、低置信度、编译/测试失败和自动修复历史
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - source-target mapping
+  - conversion dashboards
+  - comparison artifacts
+  acceptance: 中断恢复不丢中间状态。
+  status: todo
+- id: ELMOS-PI-39-T05
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 将人工修改提炼为候选规则但不自动发布
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - source-target mapping
+  - conversion dashboards
+  - comparison artifacts
+  acceptance: E1-E5 认证状态由证据驱动。
+  status: todo
+- id: ELMOS-PI-39-T06
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 完成后生成迁移文档、图表、PPT 和证据包
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-intelligence-graph
+  - elmos-impact-analysis
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - source-target mapping
+  - conversion dashboards
+  - comparison artifacts
+  acceptance: E1-E5 认证状态由证据驱动。
+  status: todo
+- id: ELMOS-PI-39-T07
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P3
+  depends_on:
+  - ELMOS-PI-39-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把编译通过当作行为等价。
+  status: todo
+- id: ELMOS-PI-39-T08
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P3
+  depends_on:
+  - ELMOS-PI-39-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 映射覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-39-T09
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P3
+  depends_on:
+  - ELMOS-PI-39-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 源目标主要 symbol 映射可导航。
+  status: todo
+- id: ELMOS-PI-39-T10
+  skill: elmos-conversion-integration
+  batch: BATCH-11-testing-conversion-estimation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P3
+  depends_on:
+  - ELMOS-PI-39-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: E1-E5 认证状态由证据驱动。
+  status: todo
+- id: ELMOS-PI-40-T01
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 抽取 LOC、文件、语言、构建单元、动态特性、图规模和 artifact 数量
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - machine ETA P50/P90
+  - stage ETA
+  - token/compute/storage estimate
+  acceptance: 历史回放 P50/P90 覆盖率达到校准目标。
+  status: todo
+- id: ELMOS-PI-40-T02
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 匹配相似历史任务并按阶段建立基线
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - machine ETA P50/P90
+  - stage ETA
+  - token/compute/storage estimate
+  acceptance: UI 同时展示机器 ETA 和人工审核。
+  status: todo
+- id: ELMOS-PI-40-T03
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 估算排队、解析、图谱、模型、渲染、测试和导出时间
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - machine ETA P50/P90
+  - stage ETA
+  - token/compute/storage estimate
+  acceptance: 任务进度更新后 ETA 收敛。
+  status: todo
+- id: ELMOS-PI-40-T04
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 估算输入/输出 Token、缓存命中、模型价格和基础设施成本
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - machine ETA P50/P90
+  - stage ETA
+  - token/compute/storage estimate
+  acceptance: 费率变化可版本化重算。
+  status: todo
+- id: ELMOS-PI-40-T05
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 任务运行中使用实际进度和重试动态校准
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - machine ETA P50/P90
+  - stage ETA
+  - token/compute/storage estimate
+  acceptance: 估算明细能解释主要成本驱动。
+  status: todo
+- id: ELMOS-PI-40-T06
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 显示假设、置信区间和偏差回溯
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-project-fingerprinting
+  - elmos-observability-slo
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - machine ETA P50/P90
+  - stage ETA
+  - token/compute/storage estimate
+  acceptance: 估算明细能解释主要成本驱动。
+  status: todo
+- id: ELMOS-PI-40-T07
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P3
+  depends_on:
+  - ELMOS-PI-40-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得把人工开发人日冒充系统执行时间。
+  status: todo
+- id: ELMOS-PI-40-T08
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P3
+  depends_on:
+  - ELMOS-PI-40-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: SLO 达成率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-40-T09
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P3
+  depends_on:
+  - ELMOS-PI-40-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 历史回放 P50/P90 覆盖率达到校准目标。
+  status: todo
+- id: ELMOS-PI-40-T10
+  skill: elmos-runtime-cost-estimator
+  batch: BATCH-11-testing-conversion-estimation
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P3
+  depends_on:
+  - ELMOS-PI-40-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 估算明细能解释主要成本驱动。
+  status: todo
+- id: ELMOS-PI-41-T01
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 定义服务镜像、依赖、资源和安全上下文
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  deliverables:
+  - containers/Helm/Terraform
+  - environment config
+  - backup/DR
+  acceptance: 从空环境可按文档部署。
+  status: todo
+- id: ELMOS-PI-41-T02
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 提供本地 Compose 与生产 Kubernetes/Helm
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  deliverables:
+  - containers/Helm/Terraform
+  - environment config
+  - backup/DR
+  acceptance: 备份恢复演练通过。
+  status: todo
+- id: ELMOS-PI-41-T03
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 配置数据库、图存储、对象存储、Temporal、缓存和可观测性
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  deliverables:
+  - containers/Helm/Terraform
+  - environment config
+  - backup/DR
+  acceptance: 滚动升级和回滚无数据破坏。
+  status: todo
+- id: ELMOS-PI-41-T04
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 实现 egress allowlist、Secrets、TLS、SSO 和数据驻留
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  deliverables:
+  - containers/Helm/Terraform
+  - environment config
+  - backup/DR
+  acceptance: 安全扫描达到门禁。
+  status: todo
+- id: ELMOS-PI-41-T05
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 制定备份、恢复、升级、Schema migration 和回滚
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  deliverables:
+  - containers/Helm/Terraform
+  - environment config
+  - backup/DR
+  acceptance: 私有化环境可在无公网模式运行核心能力。
+  status: todo
+- id: ELMOS-PI-41-T06
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 执行灾难恢复、节点故障和版本升级演练
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-observability-slo
+  deliverables:
+  - containers/Helm/Terraform
+  - environment config
+  - backup/DR
+  acceptance: 私有化环境可在无公网模式运行核心能力。
+  status: todo
+- id: ELMOS-PI-41-T07
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P3
+  depends_on:
+  - ELMOS-PI-41-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得挂载 Docker socket 给不可信 worker。
+  status: todo
+- id: ELMOS-PI-41-T08
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P3
+  depends_on:
+  - ELMOS-PI-41-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: SLO 达成率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-41-T09
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P3
+  depends_on:
+  - ELMOS-PI-41-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 从空环境可按文档部署。
+  status: todo
+- id: ELMOS-PI-41-T10
+  skill: elmos-deployment-private-cloud
+  batch: BATCH-12-deployment-and-certification
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P3
+  depends_on:
+  - ELMOS-PI-41-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 私有化环境可在无公网模式运行核心能力。
+  status: todo
+- id: ELMOS-PI-42-T01
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 定义 E1 原型、E2 可验证、E3 团队级、E4 生产级、E5 关键业务级标准
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  deliverables:
+  - certification matrix
+  - pass/fail
+  - residual risks
+  acceptance: 所有门禁有明确证据。
+  status: todo
+- id: ELMOS-PI-42-T02
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 收集构建、测试、评测、性能、安全、权限、恢复和文档证据
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  deliverables:
+  - certification matrix
+  - pass/fail
+  - residual risks
+  acceptance: 失败可生成可执行修复 backlog。
+  status: todo
+- id: ELMOS-PI-42-T03
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 验证证据新鲜度、revision、环境和完整性
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  deliverables:
+  - certification matrix
+  - pass/fail
+  - residual risks
+  acceptance: 签名包可离线验证。
+  status: todo
+- id: ELMOS-PI-42-T04
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 执行硬门禁与可审批 waiver
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  deliverables:
+  - certification matrix
+  - pass/fail
+  - residual risks
+  acceptance: 认证状态变更有职责分离与审计。
+  status: todo
+- id: ELMOS-PI-42-T05
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 生成失败项、修复任务、残余风险和重新认证范围
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  deliverables:
+  - certification matrix
+  - pass/fail
+  - residual risks
+  acceptance: E4/E5 通过灾备和安全红队。
+  status: todo
+- id: ELMOS-PI-42-T06
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 冻结并签名认证报告
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-testing-evaluation
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  deliverables:
+  - certification matrix
+  - pass/fail
+  - residual risks
+  acceptance: E4/E5 通过灾备和安全红队。
+  status: todo
+- id: ELMOS-PI-42-T07
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P3
+  depends_on:
+  - ELMOS-PI-42-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得由生成该结果的同一主体单独认证 E4/E5。
+  status: todo
+- id: ELMOS-PI-42-T08
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P3
+  depends_on:
+  - ELMOS-PI-42-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 自动化验收覆盖率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-42-T09
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P3
+  depends_on:
+  - ELMOS-PI-42-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 所有门禁有明确证据。
+  status: todo
+- id: ELMOS-PI-42-T10
+  skill: elmos-release-certification
+  batch: BATCH-12-deployment-and-certification
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P3
+  depends_on:
+  - ELMOS-PI-42-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: E4/E5 通过灾备和安全红队。
+  status: todo
+- id: ELMOS-PI-43-T01
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 定义个人开发者、团队、软件现代化服务商和大型企业场景
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  deliverables:
+  - edition matrix
+  - metering events
+  - quota policy
+  acceptance: Edition matrix 无矛盾。
+  status: todo
+- id: ELMOS-PI-43-T02
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 按代码规模、分析 run、模型 Token、artifact、并发和保留期设计计量
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  deliverables:
+  - edition matrix
+  - metering events
+  - quota policy
+  acceptance: 计量与账单样例可对账。
+  status: todo
+- id: ELMOS-PI-43-T03
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 设计 Reader、Architecture、Documentation、Modernization 等套餐
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  deliverables:
+  - edition matrix
+  - metering events
+  - quota policy
+  acceptance: 预算告警和硬限额测试通过。
+  status: todo
+- id: ELMOS-PI-43-T04
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 区分 SaaS、专属租户、私有化和离线授权
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  deliverables:
+  - edition matrix
+  - metering events
+  - quota policy
+  acceptance: 销售材料与真实实现/认证一致。
+  status: todo
+- id: ELMOS-PI-43-T05
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 定义试用、超额、预算告警、用量可视化和成本归因
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  deliverables:
+  - edition matrix
+  - metering events
+  - quota policy
+  acceptance: 单位经济模型能解释毛利主要驱动。
+  status: todo
+- id: ELMOS-PI-43-T06
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 生成售前材料、实施清单和 SLA 边界
+  type: implementation
+  priority: P3
+  depends_on:
+  - elmos-runtime-cost-estimator
+  - elmos-release-certification
+  deliverables:
+  - edition matrix
+  - metering events
+  - quota policy
+  acceptance: 单位经济模型能解释毛利主要驱动。
+  status: todo
+- id: ELMOS-PI-43-T07
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 实现权限、安全和不可信输入防护
+  type: security
+  priority: P3
+  depends_on:
+  - ELMOS-PI-43-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不得暗示无法达到的分析准确率或转换成功率。
+  status: todo
+- id: ELMOS-PI-43-T08
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 接入日志、指标、Trace、错误分类和审计
+  type: observability
+  priority: P3
+  depends_on:
+  - ELMOS-PI-43-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 试用转化率 可测量且有告警/报告
+  status: todo
+- id: ELMOS-PI-43-T09
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 建立单元、契约、集成、E2E 与回归测试
+  type: testing
+  priority: P3
+  depends_on:
+  - ELMOS-PI-43-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Edition matrix 无矛盾。
+  status: todo
+- id: ELMOS-PI-43-T10
+  skill: elmos-commercial-packaging
+  batch: BATCH-13-commercialization
+  title: 更新 API、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P3
+  depends_on:
+  - ELMOS-PI-43-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 单位经济模型能解释毛利主要驱动。
+  status: todo
+- id: ELMOS-PI-44-T01
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立 JVM、Python、.NET、Node/TypeScript、Go、Rust/C++、PHP、Dart/Flutter、Swift/Objective-C
+    与 Browser 的适配器注册表和版本矩阵
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-gateway
+  - debug-adapters/registry.yaml
+  - debug-adapter-conformance-report.md
+  acceptance: Java/Kotlin、Python、Node/TypeScript 和 .NET 四类 P0 适配器通过统一合规套件。
+  status: todo
+- id: ELMOS-PI-44-T02
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 DAP Session Broker、请求/响应序列关联和 WebSocket 双向传输
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-gateway
+  - debug-adapters/registry.yaml
+  - debug-adapter-conformance-report.md
+  acceptance: 不受支持的断点、反向执行或内存能力会被明确禁用并显示原因。
+  status: todo
+- id: ELMOS-PI-44-T03
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Browser/CDP Bridge、Source Map 解析与前端源文件 revision 绑定
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-gateway
+  - debug-adapters/registry.yaml
+  - debug-adapter-conformance-report.md
+  acceptance: 网络短暂中断后会话能恢复，且不会重复执行调试命令。
+  status: todo
+- id: ELMOS-PI-44-T04
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现适配器进程生命周期、健康检查、版本钉住、能力协商和优雅关闭
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-gateway
+  - debug-adapters/registry.yaml
+  - debug-adapter-conformance-report.md
+  acceptance: Source Map 能将前端暂停位置准确定位到固定 revision 的源代码。
+  status: todo
+- id: ELMOS-PI-44-T05
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 统一 Breakpoint、Thread、Stack、Scope、Variable、Evaluate、Output、Module 和 Termination
+    模型
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-gateway
+  - debug-adapters/registry.yaml
+  - debug-adapter-conformance-report.md
+  acceptance: 畸形、超大或恶意适配器消息被隔离，其他会话不受影响。
+  status: todo
+- id: ELMOS-PI-44-T06
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现背压、事件去重、断线重连、懒加载变量分页、超大对象截断和协议错误隔离
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-multilanguage-parsing
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-gateway
+  - debug-adapters/registry.yaml
+  - debug-adapter-conformance-report.md
+  acceptance: Java/Kotlin、Python、Node/TypeScript 和 .NET 四类 P0 适配器通过统一合规套件。
+  status: todo
+- id: ELMOS-PI-44-T07
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现权限、安全、沙箱和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-44-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Java/Kotlin、Python、Node/TypeScript 和 .NET 四类 P0 适配器通过统一合规套件。
+  status: todo
+- id: ELMOS-PI-44-T08
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入日志、指标、Trace、错误分类、资源计量和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-44-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Source Map 能将前端暂停位置准确定位到固定 revision 的源代码。
+  status: todo
+- id: ELMOS-PI-44-T09
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立单元、协议合规、集成、E2E、恢复、安全与性能测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-44-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不受支持的断点、反向执行或内存能力会被明确禁用并显示原因。
+  status: todo
+- id: ELMOS-PI-44-T10
+  skill: elmos-debug-adapter-gateway
+  batch: BATCH-14-online-debug-and-learning
+  title: 更新 API、事件、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-44-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 畸形、超大或恶意适配器消息被隔离，其他会话不受影响。
+  status: todo
+- id: ELMOS-PI-45-T01
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 定义语言/框架 Runtime Profile，并绑定构建命令、启动目标、端口、环境、adapter 和镜像摘要
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-session-orchestrator
+  - workers/debug-sandbox-runner
+  - debug-sandbox-security-report.md
+  acceptance: 跨租户、宿主文件、Docker Socket、特权系统调用和未授权网络访问测试全部 fail closed。
+  status: todo
+- id: ELMOS-PI-45-T02
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 创建非 Root、只读根文件系统、临时可写层、资源配额、进程限制和系统调用隔离的容器或微型虚拟机
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-session-orchestrator
+  - workers/debug-sandbox-runner
+  - debug-sandbox-security-report.md
+  acceptance: 会话结束后不存在残留进程、端口、凭据或可写工作区。
+  status: todo
+- id: ELMOS-PI-45-T03
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 launch/attach 环境资格策略；生产进程默认不可暂停或附加
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-session-orchestrator
+  - workers/debug-sandbox-runner
+  - debug-sandbox-security-report.md
+  acceptance: 未获得 break-glass 授权时生产 attach 请求被拒绝并生成审计事件。
+  status: todo
+- id: ELMOS-PI-45-T04
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入 Secrets Broker、短期凭证、合成/脱敏数据集和默认拒绝的出站网络策略
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-session-orchestrator
+  - workers/debug-sandbox-runner
+  - debug-sandbox-security-report.md
+  acceptance: Fork bomb、内存/磁盘耗尽、无限输出和网络滥用被配额与 kill switch 控制。
+  status: todo
+- id: ELMOS-PI-45-T05
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 provision→build→launch→heartbeat→terminate→cleanup→attest 全生命周期和超时回收
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-session-orchestrator
+  - workers/debug-sandbox-runner
+  - debug-sandbox-security-report.md
+  acceptance: 固定 manifest 的重复启动得到相同工具链、依赖和入口配置。
+  status: todo
+- id: ELMOS-PI-45-T06
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现表达式/调试控制台策略：默认只读，副作用表达式仅在一次性环境经显式审批后执行
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-reference-architecture
+  - elmos-security-threat-model
+  - elmos-deployment-private-cloud
+  - elmos-observability-slo
+  deliverables:
+  - services/debug-session-orchestrator
+  - workers/debug-sandbox-runner
+  - debug-sandbox-security-report.md
+  acceptance: 跨租户、宿主文件、Docker Socket、特权系统调用和未授权网络访问测试全部 fail closed。
+  status: todo
+- id: ELMOS-PI-45-T07
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现权限、安全、沙箱和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-45-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 跨租户、宿主文件、Docker Socket、特权系统调用和未授权网络访问测试全部 fail closed。
+  status: todo
+- id: ELMOS-PI-45-T08
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入日志、指标、Trace、错误分类、资源计量和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-45-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Fork bomb、内存/磁盘耗尽、无限输出和网络滥用被配额与 kill switch 控制。
+  status: todo
+- id: ELMOS-PI-45-T09
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立单元、协议合规、集成、E2E、恢复、安全与性能测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-45-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 会话结束后不存在残留进程、端口、凭据或可写工作区。
+  status: todo
+- id: ELMOS-PI-45-T10
+  skill: elmos-debug-sandbox-orchestration
+  batch: BATCH-14-online-debug-and-learning
+  title: 更新 API、事件、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-45-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 固定 manifest 的重复启动得到相同工具链、依赖和入口配置。
+  status: todo
+- id: ELMOS-PI-46-T01
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现创建会话向导：revision、runtime profile、入口/测试/场景、数据集、学习模式和资源预算
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  deliverables:
+  - apps/insight-web/src/modules/debugger
+  - services/debug-session-api
+  - online-debug-e2e-report.md
+  acceptance: 用户可从测试、方法或流程入口启动会话并完成断点、单步、变量查看和终止闭环。
+  status: todo
+- id: ELMOS-PI-46-T02
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 在 Monaco 中实现行断点、条件断点、Logpoint、异常/函数/数据断点的能力感知 UI
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  deliverables:
+  - apps/insight-web/src/modules/debugger
+  - services/debug-session-api
+  - online-debug-e2e-report.md
+  acceptance: 当前 Frame 可准确跳转代码，并同步高亮所属模块、流程步骤和数据副作用。
+  status: todo
+- id: ELMOS-PI-46-T03
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Continue、Pause、Step Over/Into/Out、Run to Cursor、Restart 和 Terminate 控制栏
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  deliverables:
+  - apps/insight-web/src/modules/debugger
+  - services/debug-session-api
+  - online-debug-e2e-report.md
+  acceptance: 网络、SQL、缓存、消息和文件副作用按时间排序且标注证据来源。
+  status: todo
+- id: ELMOS-PI-46-T04
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Thread、Call Stack、Scope、Variable、Watch、Evaluate、Module 和 Breakpoint 面板及懒加载
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  deliverables:
+  - apps/insight-web/src/modules/debugger
+  - services/debug-session-api
+  - online-debug-e2e-report.md
+  acceptance: 浏览器重连可恢复只读状态和面板，不重复执行上一条控制命令。
+  status: todo
+- id: ELMOS-PI-46-T05
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Output、Log、HTTP/RPC、SQL、Cache、MQ、File I/O、Lock/Coroutine 与状态差异时间线
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  deliverables:
+  - apps/insight-web/src/modules/debugger
+  - services/debug-session-api
+  - online-debug-e2e-report.md
+  acceptance: 权限撤销后会话访问立即失效，敏感变量和本地缓存不可继续查看。
+  status: todo
+- id: ELMOS-PI-46-T06
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 把当前 Frame、调用栈和副作用映射到 Code Graph、架构图、流程图、数据资产、测试和证据
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-code-reader
+  - elmos-semantic-navigation
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  deliverables:
+  - apps/insight-web/src/modules/debugger
+  - services/debug-session-api
+  - online-debug-e2e-report.md
+  acceptance: 用户可从测试、方法或流程入口启动会话并完成断点、单步、变量查看和终止闭环。
+  status: todo
+- id: ELMOS-PI-46-T07
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现权限、安全、沙箱和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-46-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 用户可从测试、方法或流程入口启动会话并完成断点、单步、变量查看和终止闭环。
+  status: todo
+- id: ELMOS-PI-46-T08
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入日志、指标、Trace、错误分类、资源计量和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-46-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 浏览器重连可恢复只读状态和面板，不重复执行上一条控制命令。
+  status: todo
+- id: ELMOS-PI-46-T09
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立单元、协议合规、集成、E2E、恢复、安全与性能测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-46-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 当前 Frame 可准确跳转代码，并同步高亮所属模块、流程步骤和数据副作用。
+  status: todo
+- id: ELMOS-PI-46-T10
+  skill: elmos-online-debug-workbench
+  batch: BATCH-14-online-debug-and-learning
+  title: 更新 API、事件、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-46-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 权限撤销后会话访问立即失效，敏感变量和本地缓存不可继续查看。
+  status: todo
+- id: ELMOS-PI-47-T01
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Observe、Guided、Challenge、Free 和 Compare 五种学习模式及难度分级
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  deliverables:
+  - services/debug-learning
+  - apps/insight-web/src/modules/debug-learning
+  - debug-learning-evaluation-report.md
+  acceptance: 当前 Frame 讲解能引用实际变量、调用栈和代码证据，并正确标记推断。
+  status: todo
+- id: ELMOS-PI-47-T02
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 从模块、功能、流程、测试或缺陷生成有前置条件、断点、目标和完成条件的 Learning Mission
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  deliverables:
+  - services/debug-learning
+  - apps/insight-web/src/modules/debug-learning
+  - debug-learning-evaluation-report.md
+  acceptance: Challenge 模式在 Reveal 前不会泄漏预期分支、变量答案或修复方案。
+  status: todo
+- id: ELMOS-PI-47-T03
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 解释当前暂停原因、Frame 职责、变量来源、分支条件、下一步候选和可能副作用，并附证据
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  deliverables:
+  - services/debug-learning
+  - apps/insight-web/src/modules/debug-learning
+  - debug-learning-evaluation-report.md
+  acceptance: 代码变更后受影响 Mission/Lab 自动标记 stale，旧结果仍可审计。
+  status: todo
+- id: ELMOS-PI-47-T04
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现苏格拉底式提问、执行前预测、分层 Hint 和显式 Reveal，避免直接泄露挑战答案
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  deliverables:
+  - services/debug-learning
+  - apps/insight-web/src/modules/debug-learning
+  - debug-learning-evaluation-report.md
+  acceptance: 同一 Lab 可用合成数据重复执行，并获得稳定的学习目标和验收结果。
+  status: todo
+- id: ELMOS-PI-47-T05
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Checkpoint、Quiz、Score、Notes、Knowledge Card、进度和角色化学习路径联动
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  deliverables:
+  - services/debug-learning
+  - apps/insight-web/src/modules/debug-learning
+  - debug-learning-evaluation-report.md
+  acceptance: 学习进度、笔记和评估遵守用户隐私、可访问性和团队权限规则。
+  status: todo
+- id: ELMOS-PI-47-T06
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 把已脱敏调试会话发布为可复用 Lab，支持版本绑定、团队分配、评审和 stale 提醒
+  type: implementation
+  priority: P1
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-code-explanation
+  - elmos-onboarding-learning-path
+  - elmos-project-intelligence-graph
+  deliverables:
+  - services/debug-learning
+  - apps/insight-web/src/modules/debug-learning
+  - debug-learning-evaluation-report.md
+  acceptance: 当前 Frame 讲解能引用实际变量、调用栈和代码证据，并正确标记推断。
+  status: todo
+- id: ELMOS-PI-47-T07
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现权限、安全、沙箱和不可信输入防护
+  type: security
+  priority: P1
+  depends_on:
+  - ELMOS-PI-47-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 当前 Frame 讲解能引用实际变量、调用栈和代码证据，并正确标记推断。
+  status: todo
+- id: ELMOS-PI-47-T08
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入日志、指标、Trace、错误分类、资源计量和审计
+  type: observability
+  priority: P1
+  depends_on:
+  - ELMOS-PI-47-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 同一 Lab 可用合成数据重复执行，并获得稳定的学习目标和验收结果。
+  status: todo
+- id: ELMOS-PI-47-T09
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立单元、协议合规、集成、E2E、恢复、安全与性能测试
+  type: testing
+  priority: P1
+  depends_on:
+  - ELMOS-PI-47-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: Challenge 模式在 Reveal 前不会泄漏预期分支、变量答案或修复方案。
+  status: todo
+- id: ELMOS-PI-47-T10
+  skill: elmos-debug-learning-copilot
+  batch: BATCH-14-online-debug-and-learning
+  title: 更新 API、事件、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P1
+  depends_on:
+  - ELMOS-PI-47-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 学习进度、笔记和评估遵守用户隐私、可访问性和团队权限规则。
+  status: todo
+- id: ELMOS-PI-48-T01
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 定义 R0 事件时间线、R1 输入/测试重放、R2 检查点恢复、R3 原生反向调试四级能力矩阵
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - services/debug-replay
+  - debug-replay-bundle.schema.json
+  - debug-replay-determinism-report.md
+  acceptance: 不支持原生反向执行的运行时明确降级，UI 和报告不产生误导。
+  status: todo
+- id: ELMOS-PI-48-T02
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 记录调试命令、事件、Frame、变量差异、输出、副作用、Trace 关联和采样/截断元数据
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - services/debug-replay
+  - debug-replay-bundle.schema.json
+  - debug-replay-determinism-report.md
+  acceptance: 固定测试、输入和环境的 R1/R2 重放在定义容差内复现关键状态与输出。
+  status: todo
+- id: ELMOS-PI-48-T03
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 生成带 manifest、内容哈希、签名、加密、脱敏和保留策略的 Replay Bundle
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - services/debug-replay
+  - debug-replay-bundle.schema.json
+  - debug-replay-determinism-report.md
+  acceptance: Replay Bundle 的 Secret/PII 扫描无高危泄漏，字段省略有明确标记。
+  status: todo
+- id: ELMOS-PI-48-T04
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现测试输入重放、环境快照恢复和可验证的 checkpoint 创建/恢复流程
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - services/debug-replay
+  - debug-replay-bundle.schema.json
+  - debug-replay-determinism-report.md
+  acceptance: 损坏、篡改、过期或版本不兼容的 Bundle 在运行前被拒绝。
+  status: todo
+- id: ELMOS-PI-48-T05
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 运行时支持时提供 Reverse Continue/Step；不支持时自动降级到 checkpoint/input replay
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - services/debug-replay
+  - debug-replay-bundle.schema.json
+  - debug-replay-determinism-report.md
+  acceptance: 超大调试会话按策略分块与截断，仍可浏览摘要和关键检查点。
+  status: todo
+- id: ELMOS-PI-48-T06
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 passing/failing、before/after、source/target 两次运行的状态与副作用时间线比较
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-debug-adapter-gateway
+  - elmos-debug-sandbox-orchestration
+  - elmos-runtime-trace-fusion
+  - elmos-incremental-analysis-cache
+  deliverables:
+  - services/debug-replay
+  - debug-replay-bundle.schema.json
+  - debug-replay-determinism-report.md
+  acceptance: 不支持原生反向执行的运行时明确降级，UI 和报告不产生误导。
+  status: todo
+- id: ELMOS-PI-48-T07
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现权限、安全、沙箱和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-48-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 不支持原生反向执行的运行时明确降级，UI 和报告不产生误导。
+  status: todo
+- id: ELMOS-PI-48-T08
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入日志、指标、Trace、错误分类、资源计量和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-48-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 损坏、篡改、过期或版本不兼容的 Bundle 在运行前被拒绝。
+  status: todo
+- id: ELMOS-PI-48-T09
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立单元、协议合规、集成、E2E、恢复、安全与性能测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-48-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 固定测试、输入和环境的 R1/R2 重放在定义容差内复现关键状态与输出。
+  status: todo
+- id: ELMOS-PI-48-T10
+  skill: elmos-debug-record-replay
+  batch: BATCH-14-online-debug-and-learning
+  title: 更新 API、事件、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-48-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 超大调试会话按策略分块与截断，仍可浏览摘要和关键检查点。
+  status: todo
+- id: ELMOS-PI-49-T01
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 贯通 browser interaction、traceparent、request_id、message_id、workflow/task_id
+    和 debug_session_id
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  deliverables:
+  - services/distributed-debug-correlation
+  - distributed-debug-session-graph.json
+  - source-target-debug-diff.md
+  acceptance: 一次前端操作能关联到正确的后端请求、服务、数据库和消息链路。
+  status: todo
+- id: ELMOS-PI-49-T02
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 构建跨服务、线程、协程、消息、定时任务和数据库事务的因果 Session Graph
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  deliverables:
+  - services/distributed-debug-correlation
+  - distributed-debug-session-graph.json
+  - source-target-debug-diff.md
+  acceptance: 异步链路缺少 propagation 时会显示断点和不确定性，而不是伪造因果边。
+  status: todo
+- id: ELMOS-PI-49-T03
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 在非生产测试环境实现受控协同断点、超时预算、服务虚拟化和死锁/级联超时保护
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  deliverables:
+  - services/distributed-debug-correlation
+  - distributed-debug-session-graph.json
+  - source-target-debug-diff.md
+  acceptance: 固定 fixture 的 Source/Target 状态或副作用分歧能被定位到对应 Frame 和映射。
+  status: todo
+- id: ELMOS-PI-49-T04
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 在暂停点周围联动 Span、Log、Metric、SQL、Cache、MQ 和外部调用状态
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  deliverables:
+  - services/distributed-debug-correlation
+  - distributed-debug-session-graph.json
+  - source-target-debug-diff.md
+  acceptance: 暂停单个服务不会造成无限死锁、消息租约泄漏或无界资源占用。
+  status: todo
+- id: ELMOS-PI-49-T05
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现 Source/IR/Target 同场景双运行、关键变量/状态/副作用对齐和语义分歧检测
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  deliverables:
+  - services/distributed-debug-correlation
+  - distributed-debug-session-graph.json
+  - source-target-debug-diff.md
+  acceptance: 权限过滤后用户看不到未授权服务名称、日志摘要、变量或拓扑边。
+  status: todo
+- id: ELMOS-PI-49-T06
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现测试失败→Trace→服务→Frame→变量/数据→代码→修复/学习任务的深链
+  type: implementation
+  priority: P2
+  depends_on:
+  - elmos-online-debug-workbench
+  - elmos-debug-record-replay
+  - elmos-runtime-trace-fusion
+  - elmos-api-event-topology
+  - elmos-conversion-integration
+  deliverables:
+  - services/distributed-debug-correlation
+  - distributed-debug-session-graph.json
+  - source-target-debug-diff.md
+  acceptance: 一次前端操作能关联到正确的后端请求、服务、数据库和消息链路。
+  status: todo
+- id: ELMOS-PI-49-T07
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 实现权限、安全、沙箱和不可信输入防护
+  type: security
+  priority: P2
+  depends_on:
+  - ELMOS-PI-49-T06
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 一次前端操作能关联到正确的后端请求、服务、数据库和消息链路。
+  status: todo
+- id: ELMOS-PI-49-T08
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 接入日志、指标、Trace、错误分类、资源计量和审计
+  type: observability
+  priority: P2
+  depends_on:
+  - ELMOS-PI-49-T07
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 暂停单个服务不会造成无限死锁、消息租约泄漏或无界资源占用。
+  status: todo
+- id: ELMOS-PI-49-T09
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 建立单元、协议合规、集成、E2E、恢复、安全与性能测试
+  type: testing
+  priority: P2
+  depends_on:
+  - ELMOS-PI-49-T08
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 异步链路缺少 propagation 时会显示断点和不确定性，而不是伪造因果边。
+  status: todo
+- id: ELMOS-PI-49-T10
+  skill: elmos-distributed-debug-correlation
+  batch: BATCH-14-online-debug-and-learning
+  title: 更新 API、事件、Schema、文档、追踪矩阵并完成验收
+  type: documentation
+  priority: P2
+  depends_on:
+  - ELMOS-PI-49-T09
+  deliverables:
+  - 实现代码
+  - 自动化测试
+  - 证据/报告
+  acceptance: 权限过滤后用户看不到未授权服务名称、日志摘要、变量或拓扑边。
+  status: todo

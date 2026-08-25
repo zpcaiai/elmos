@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/analysis-job.schema.json",
+  "title": "Elmos Durable Analysis Job",
+  "type": "object",
+  "required": [
+    "job_id",
+    "tenant_id",
+    "project_id",
+    "revision_id",
+    "job_type",
+    "state",
+    "stages"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision_id": {
+      "type": "string"
+    },
+    "job_type": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "queued",
+        "running",
+        "pausing",
+        "paused",
+        "resuming",
+        "retrying",
+        "succeeded",
+        "failed_retryable",
+        "failed_final",
+        "cancelling",
+        "cancelled"
+      ]
+    },
+    "idempotency_key": {
+      "type": "string"
+    },
+    "workflow_version": {
+      "type": "string"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "state"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "attempt": {
+            "type": "integer"
+          },
+          "checkpoint_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "completed_units": {
+            "type": "integer"
+          },
+          "total_units": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "estimate_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 调试沙箱、运行环境与会话编排"
+  short_description: "Guide 调试沙箱、运行环境与会话编排 with evidence controls"
+  default_prompt: "Use $elmos-debug-sandbox-orchestration as guidance for 调试沙箱、运行环境与会话编排 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

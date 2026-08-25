@@ -1,0 +1,45 @@
+asyncapi: 3.0.0
+info:
+  title: Elmos Online Debug Events
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  debugSessionLifecycle:
+    address: elmos.project-intelligence.debug.session.lifecycle.v1
+    messages:
+      debugSessionEvent: {$ref: '#/components/messages/DebugEvent'}
+  debugSessionState:
+    address: elmos.project-intelligence.debug.session.state.v1
+    messages:
+      debugStateEvent: {$ref: '#/components/messages/DebugEvent'}
+  debugRuntimeOutput:
+    address: elmos.project-intelligence.debug.runtime.output.v1
+    messages:
+      debugOutputEvent: {$ref: '#/components/messages/DebugEvent'}
+  debugLearning:
+    address: elmos.project-intelligence.debug.learning.event.v1
+    messages:
+      debugLearningEvent: {$ref: '#/components/messages/DebugEvent'}
+operations: {}
+components:
+  messages:
+    DebugEvent:
+      payload: {$ref: '#/components/schemas/DebugEventEnvelope'}
+  schemas:
+    DebugEventEnvelope:
+      type: object
+      required: [event_id, event_type, occurred_at, tenant_id, project_id, revision_id, debug_session_id, sequence, payload]
+      properties:
+        event_id: {type: string}
+        event_type:
+          type: string
+          enum: [session.requested, session.provisioning, session.ready, session.paused, session.running, session.terminating, session.terminated, session.failed, breakpoint.validated, breakpoint.hit, frame.changed, variables.changed, output.emitted, side_effect.observed, checkpoint.created, replay.started, replay.completed, learning.prompted, learning.answered]
+        occurred_at: {type: string, format: date-time}
+        tenant_id: {type: string}
+        project_id: {type: string}
+        revision_id: {type: string}
+        debug_session_id: {type: string}
+        sequence: {type: integer, minimum: 1}
+        traceparent: {type: [string, 'null']}
+        redaction_profile: {type: string}
+        payload: {type: object}

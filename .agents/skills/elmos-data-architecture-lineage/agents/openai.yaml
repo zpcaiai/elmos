@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 数据架构、ER、DFD 与血缘"
+  short_description: "Guide 数据架构、ER、DFD 与血缘 with evidence controls"
+  default_prompt: "Use $elmos-data-architecture-lineage as guidance for 数据架构、ER、DFD 与血缘 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

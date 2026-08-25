@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/artifact.schema.json",
+  "title": "Elmos Artifact Version",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "artifact_type",
+    "version",
+    "project_id",
+    "revision_id",
+    "status",
+    "blocks"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "artifact_id": {
+      "type": "string"
+    },
+    "artifact_type": {
+      "enum": [
+        "diagram",
+        "document",
+        "presentation",
+        "report",
+        "explanation",
+        "learning-path"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision_id": {
+      "type": "string"
+    },
+    "analysis_run_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "reviewed",
+        "approved",
+        "certified",
+        "stale",
+        "superseded"
+      ]
+    },
+    "generator": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "template": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "block_id",
+          "kind",
+          "content_hash",
+          "claim_ids",
+          "lock"
+        ],
+        "properties": {
+          "block_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": "string"
+          },
+          "claim_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lock": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "boolean"
+              },
+              "semantic": {
+                "type": "boolean"
+              },
+              "layout": {
+                "type": "boolean"
+              }
+            }
+          },
+          "human_override_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 测试、评测与数据质量"
+  short_description: "Guide 测试、评测与数据质量 with evidence controls"
+  default_prompt: "Use $elmos-testing-evaluation as guidance for 测试、评测与数据质量 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

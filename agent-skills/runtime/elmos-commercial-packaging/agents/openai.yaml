@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 商业版本、计量与交付套餐"
+  short_description: "Guide 商业版本、计量与交付套餐 with evidence controls"
+  default_prompt: "Use $elmos-commercial-packaging as guidance for 商业版本、计量与交付套餐 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

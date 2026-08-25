@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 增量分析、缓存与检查点
+  short_description: 实现内容寻址缓存、依赖失效、分阶段检查点和任务恢复。用于大型仓库、重复生成、转换中间状态和降低 Token/计算成本。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-incremental-analysis-cache 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

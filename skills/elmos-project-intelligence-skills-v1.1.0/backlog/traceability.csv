@@ -1,0 +1,249 @@
+epic_id,skill,requirement_id,task_id,acceptance_id,artifact
+EPIC-00,elmos-insight-orchestrator,REQ-00-01,ELMOS-PI-00-T01,AC-00-01,IMPLEMENTATION_PLAN.md; EXECUTION_REPORT.md; evidence-bundle.json
+EPIC-00,elmos-insight-orchestrator,REQ-00-02,ELMOS-PI-00-T02,AC-00-02,IMPLEMENTATION_PLAN.md; EXECUTION_REPORT.md; evidence-bundle.json
+EPIC-00,elmos-insight-orchestrator,REQ-00-03,ELMOS-PI-00-T03,AC-00-03,IMPLEMENTATION_PLAN.md; EXECUTION_REPORT.md; evidence-bundle.json
+EPIC-00,elmos-insight-orchestrator,REQ-00-04,ELMOS-PI-00-T04,AC-00-04,IMPLEMENTATION_PLAN.md; EXECUTION_REPORT.md; evidence-bundle.json
+EPIC-00,elmos-insight-orchestrator,REQ-00-05,ELMOS-PI-00-T05,AC-00-05,IMPLEMENTATION_PLAN.md; EXECUTION_REPORT.md; evidence-bundle.json
+EPIC-01,elmos-product-scope,REQ-01-01,ELMOS-PI-01-T01,AC-01-01,docs/01-product-requirements.md; backlog/epics.yaml; backlog/traceability.csv
+EPIC-01,elmos-product-scope,REQ-01-02,ELMOS-PI-01-T02,AC-01-02,docs/01-product-requirements.md; backlog/epics.yaml; backlog/traceability.csv
+EPIC-01,elmos-product-scope,REQ-01-03,ELMOS-PI-01-T03,AC-01-03,docs/01-product-requirements.md; backlog/epics.yaml; backlog/traceability.csv
+EPIC-01,elmos-product-scope,REQ-01-04,ELMOS-PI-01-T04,AC-01-04,docs/01-product-requirements.md; backlog/epics.yaml; backlog/traceability.csv
+EPIC-02,elmos-reference-architecture,REQ-02-01,ELMOS-PI-02-T01,AC-02-01,docs/02-reference-architecture.md; docs/adr/; diagrams/reference-architecture.yaml
+EPIC-02,elmos-reference-architecture,REQ-02-02,ELMOS-PI-02-T02,AC-02-02,docs/02-reference-architecture.md; docs/adr/; diagrams/reference-architecture.yaml
+EPIC-02,elmos-reference-architecture,REQ-02-03,ELMOS-PI-02-T03,AC-02-03,docs/02-reference-architecture.md; docs/adr/; diagrams/reference-architecture.yaml
+EPIC-02,elmos-reference-architecture,REQ-02-04,ELMOS-PI-02-T04,AC-02-04,docs/02-reference-architecture.md; docs/adr/; diagrams/reference-architecture.yaml
+EPIC-02,elmos-reference-architecture,REQ-02-05,ELMOS-PI-02-T05,AC-02-05,docs/02-reference-architecture.md; docs/adr/; diagrams/reference-architecture.yaml
+EPIC-03,elmos-repository-ingestion,REQ-03-01,ELMOS-PI-03-T01,AC-03-01,project-manifest.json; ingestion-report.json
+EPIC-03,elmos-repository-ingestion,REQ-03-02,ELMOS-PI-03-T02,AC-03-02,project-manifest.json; ingestion-report.json
+EPIC-03,elmos-repository-ingestion,REQ-03-03,ELMOS-PI-03-T03,AC-03-03,project-manifest.json; ingestion-report.json
+EPIC-03,elmos-repository-ingestion,REQ-03-04,ELMOS-PI-03-T04,AC-03-04,project-manifest.json; ingestion-report.json
+EPIC-03,elmos-repository-ingestion,REQ-03-05,ELMOS-PI-03-T05,AC-03-05,project-manifest.json; ingestion-report.json
+EPIC-04,elmos-project-fingerprinting,REQ-04-01,ELMOS-PI-04-T01,AC-04-01,technology-fingerprint.json; analysis-plan.json
+EPIC-04,elmos-project-fingerprinting,REQ-04-02,ELMOS-PI-04-T02,AC-04-02,technology-fingerprint.json; analysis-plan.json
+EPIC-04,elmos-project-fingerprinting,REQ-04-03,ELMOS-PI-04-T03,AC-04-03,technology-fingerprint.json; analysis-plan.json
+EPIC-04,elmos-project-fingerprinting,REQ-04-04,ELMOS-PI-04-T04,AC-04-04,technology-fingerprint.json; analysis-plan.json
+EPIC-05,elmos-multilanguage-parsing,REQ-05-01,ELMOS-PI-05-T01,AC-05-01,code-ir.jsonl; parse-diagnostics.json
+EPIC-05,elmos-multilanguage-parsing,REQ-05-02,ELMOS-PI-05-T02,AC-05-02,code-ir.jsonl; parse-diagnostics.json
+EPIC-05,elmos-multilanguage-parsing,REQ-05-03,ELMOS-PI-05-T03,AC-05-03,code-ir.jsonl; parse-diagnostics.json
+EPIC-05,elmos-multilanguage-parsing,REQ-05-04,ELMOS-PI-05-T04,AC-05-04,code-ir.jsonl; parse-diagnostics.json
+EPIC-05,elmos-multilanguage-parsing,REQ-05-05,ELMOS-PI-05-T05,AC-05-05,code-ir.jsonl; parse-diagnostics.json
+EPIC-06,elmos-symbol-code-graph,REQ-06-01,ELMOS-PI-06-T01,AC-06-01,code-graph-snapshot.json; unresolved-edges.json
+EPIC-06,elmos-symbol-code-graph,REQ-06-02,ELMOS-PI-06-T02,AC-06-02,code-graph-snapshot.json; unresolved-edges.json
+EPIC-06,elmos-symbol-code-graph,REQ-06-03,ELMOS-PI-06-T03,AC-06-03,code-graph-snapshot.json; unresolved-edges.json
+EPIC-06,elmos-symbol-code-graph,REQ-06-04,ELMOS-PI-06-T04,AC-06-04,code-graph-snapshot.json; unresolved-edges.json
+EPIC-06,elmos-symbol-code-graph,REQ-06-05,ELMOS-PI-06-T05,AC-06-05,code-graph-snapshot.json; unresolved-edges.json
+EPIC-07,elmos-project-intelligence-graph,REQ-07-01,ELMOS-PI-07-T01,AC-07-01,project-intelligence-graph.json; graph-quality-report.json
+EPIC-07,elmos-project-intelligence-graph,REQ-07-02,ELMOS-PI-07-T02,AC-07-02,project-intelligence-graph.json; graph-quality-report.json
+EPIC-07,elmos-project-intelligence-graph,REQ-07-03,ELMOS-PI-07-T03,AC-07-03,project-intelligence-graph.json; graph-quality-report.json
+EPIC-07,elmos-project-intelligence-graph,REQ-07-04,ELMOS-PI-07-T04,AC-07-04,project-intelligence-graph.json; graph-quality-report.json
+EPIC-07,elmos-project-intelligence-graph,REQ-07-05,ELMOS-PI-07-T05,AC-07-05,project-intelligence-graph.json; graph-quality-report.json
+EPIC-08,elmos-evidence-provenance,REQ-08-01,ELMOS-PI-08-T01,AC-08-01,evidence-bundle.json; claim-register.json
+EPIC-08,elmos-evidence-provenance,REQ-08-02,ELMOS-PI-08-T02,AC-08-02,evidence-bundle.json; claim-register.json
+EPIC-08,elmos-evidence-provenance,REQ-08-03,ELMOS-PI-08-T03,AC-08-03,evidence-bundle.json; claim-register.json
+EPIC-08,elmos-evidence-provenance,REQ-08-04,ELMOS-PI-08-T04,AC-08-04,evidence-bundle.json; claim-register.json
+EPIC-08,elmos-evidence-provenance,REQ-08-05,ELMOS-PI-08-T05,AC-08-05,evidence-bundle.json; claim-register.json
+EPIC-09,elmos-online-code-reader,REQ-09-01,ELMOS-PI-09-T01,AC-09-01,apps/insight-web/src/modules/code-reader; code-reader-e2e-report.md
+EPIC-09,elmos-online-code-reader,REQ-09-02,ELMOS-PI-09-T02,AC-09-02,apps/insight-web/src/modules/code-reader; code-reader-e2e-report.md
+EPIC-09,elmos-online-code-reader,REQ-09-03,ELMOS-PI-09-T03,AC-09-03,apps/insight-web/src/modules/code-reader; code-reader-e2e-report.md
+EPIC-09,elmos-online-code-reader,REQ-09-04,ELMOS-PI-09-T04,AC-09-04,apps/insight-web/src/modules/code-reader; code-reader-e2e-report.md
+EPIC-09,elmos-online-code-reader,REQ-09-05,ELMOS-PI-09-T05,AC-09-05,apps/insight-web/src/modules/code-reader; code-reader-e2e-report.md
+EPIC-10,elmos-semantic-navigation,REQ-10-01,ELMOS-PI-10-T01,AC-10-01,semantic-navigation-api.yaml; navigation-accuracy-report.md
+EPIC-10,elmos-semantic-navigation,REQ-10-02,ELMOS-PI-10-T02,AC-10-02,semantic-navigation-api.yaml; navigation-accuracy-report.md
+EPIC-10,elmos-semantic-navigation,REQ-10-03,ELMOS-PI-10-T03,AC-10-03,semantic-navigation-api.yaml; navigation-accuracy-report.md
+EPIC-10,elmos-semantic-navigation,REQ-10-04,ELMOS-PI-10-T04,AC-10-04,semantic-navigation-api.yaml; navigation-accuracy-report.md
+EPIC-10,elmos-semantic-navigation,REQ-10-05,ELMOS-PI-10-T05,AC-10-05,semantic-navigation-api.yaml; navigation-accuracy-report.md
+EPIC-11,elmos-code-explanation,REQ-11-01,ELMOS-PI-11-T01,AC-11-01,explanation.schema.json; explanation-eval-report.md
+EPIC-11,elmos-code-explanation,REQ-11-02,ELMOS-PI-11-T02,AC-11-02,explanation.schema.json; explanation-eval-report.md
+EPIC-11,elmos-code-explanation,REQ-11-03,ELMOS-PI-11-T03,AC-11-03,explanation.schema.json; explanation-eval-report.md
+EPIC-11,elmos-code-explanation,REQ-11-04,ELMOS-PI-11-T04,AC-11-04,explanation.schema.json; explanation-eval-report.md
+EPIC-11,elmos-code-explanation,REQ-11-05,ELMOS-PI-11-T05,AC-11-05,explanation.schema.json; explanation-eval-report.md
+EPIC-12,elmos-onboarding-learning-path,REQ-12-01,ELMOS-PI-12-T01,AC-12-01,onboarding-guide.md; learning-path.json
+EPIC-12,elmos-onboarding-learning-path,REQ-12-02,ELMOS-PI-12-T02,AC-12-02,onboarding-guide.md; learning-path.json
+EPIC-12,elmos-onboarding-learning-path,REQ-12-03,ELMOS-PI-12-T03,AC-12-03,onboarding-guide.md; learning-path.json
+EPIC-12,elmos-onboarding-learning-path,REQ-12-04,ELMOS-PI-12-T04,AC-12-04,onboarding-guide.md; learning-path.json
+EPIC-12,elmos-onboarding-learning-path,REQ-12-05,ELMOS-PI-12-T05,AC-12-05,onboarding-guide.md; learning-path.json
+EPIC-13,elmos-architecture-discovery,REQ-13-01,ELMOS-PI-13-T01,AC-13-01,architecture-model.dsl; architecture-explanation.md; unknowns.json
+EPIC-13,elmos-architecture-discovery,REQ-13-02,ELMOS-PI-13-T02,AC-13-02,architecture-model.dsl; architecture-explanation.md; unknowns.json
+EPIC-13,elmos-architecture-discovery,REQ-13-03,ELMOS-PI-13-T03,AC-13-03,architecture-model.dsl; architecture-explanation.md; unknowns.json
+EPIC-13,elmos-architecture-discovery,REQ-13-04,ELMOS-PI-13-T04,AC-13-04,architecture-model.dsl; architecture-explanation.md; unknowns.json
+EPIC-13,elmos-architecture-discovery,REQ-13-05,ELMOS-PI-13-T05,AC-13-05,architecture-model.dsl; architecture-explanation.md; unknowns.json
+EPIC-14,elmos-business-capability-map,REQ-14-01,ELMOS-PI-14-T01,AC-14-01,capability-map.json; functional-mindmap.mm.json; feature-traceability.csv
+EPIC-14,elmos-business-capability-map,REQ-14-02,ELMOS-PI-14-T02,AC-14-02,capability-map.json; functional-mindmap.mm.json; feature-traceability.csv
+EPIC-14,elmos-business-capability-map,REQ-14-03,ELMOS-PI-14-T03,AC-14-03,capability-map.json; functional-mindmap.mm.json; feature-traceability.csv
+EPIC-14,elmos-business-capability-map,REQ-14-04,ELMOS-PI-14-T04,AC-14-04,capability-map.json; functional-mindmap.mm.json; feature-traceability.csv
+EPIC-14,elmos-business-capability-map,REQ-14-05,ELMOS-PI-14-T05,AC-14-05,capability-map.json; functional-mindmap.mm.json; feature-traceability.csv
+EPIC-15,elmos-flow-discovery,REQ-15-01,ELMOS-PI-15-T01,AC-15-01,flow-ir.json; flow-catalog.md; flow-quality-report.json
+EPIC-15,elmos-flow-discovery,REQ-15-02,ELMOS-PI-15-T02,AC-15-02,flow-ir.json; flow-catalog.md; flow-quality-report.json
+EPIC-15,elmos-flow-discovery,REQ-15-03,ELMOS-PI-15-T03,AC-15-03,flow-ir.json; flow-catalog.md; flow-quality-report.json
+EPIC-15,elmos-flow-discovery,REQ-15-04,ELMOS-PI-15-T04,AC-15-04,flow-ir.json; flow-catalog.md; flow-quality-report.json
+EPIC-15,elmos-flow-discovery,REQ-15-05,ELMOS-PI-15-T05,AC-15-05,flow-ir.json; flow-catalog.md; flow-quality-report.json
+EPIC-16,elmos-data-architecture-lineage,REQ-16-01,ELMOS-PI-16-T01,AC-16-01,data-ir.json; erd.json; data-lineage.json; crud-matrix.csv
+EPIC-16,elmos-data-architecture-lineage,REQ-16-02,ELMOS-PI-16-T02,AC-16-02,data-ir.json; erd.json; data-lineage.json; crud-matrix.csv
+EPIC-16,elmos-data-architecture-lineage,REQ-16-03,ELMOS-PI-16-T03,AC-16-03,data-ir.json; erd.json; data-lineage.json; crud-matrix.csv
+EPIC-16,elmos-data-architecture-lineage,REQ-16-04,ELMOS-PI-16-T04,AC-16-04,data-ir.json; erd.json; data-lineage.json; crud-matrix.csv
+EPIC-16,elmos-data-architecture-lineage,REQ-16-05,ELMOS-PI-16-T05,AC-16-05,data-ir.json; erd.json; data-lineage.json; crud-matrix.csv
+EPIC-17,elmos-api-event-topology,REQ-17-01,ELMOS-PI-17-T01,AC-17-01,api-catalog.json; event-catalog.json; integration-topology.json
+EPIC-17,elmos-api-event-topology,REQ-17-02,ELMOS-PI-17-T02,AC-17-02,api-catalog.json; event-catalog.json; integration-topology.json
+EPIC-17,elmos-api-event-topology,REQ-17-03,ELMOS-PI-17-T03,AC-17-03,api-catalog.json; event-catalog.json; integration-topology.json
+EPIC-17,elmos-api-event-topology,REQ-17-04,ELMOS-PI-17-T04,AC-17-04,api-catalog.json; event-catalog.json; integration-topology.json
+EPIC-17,elmos-api-event-topology,REQ-17-05,ELMOS-PI-17-T05,AC-17-05,api-catalog.json; event-catalog.json; integration-topology.json
+EPIC-18,elmos-runtime-trace-fusion,REQ-18-01,ELMOS-PI-18-T01,AC-18-01,runtime-graph.json; static-runtime-diff.md; trace-link-report.json
+EPIC-18,elmos-runtime-trace-fusion,REQ-18-02,ELMOS-PI-18-T02,AC-18-02,runtime-graph.json; static-runtime-diff.md; trace-link-report.json
+EPIC-18,elmos-runtime-trace-fusion,REQ-18-03,ELMOS-PI-18-T03,AC-18-03,runtime-graph.json; static-runtime-diff.md; trace-link-report.json
+EPIC-18,elmos-runtime-trace-fusion,REQ-18-04,ELMOS-PI-18-T04,AC-18-04,runtime-graph.json; static-runtime-diff.md; trace-link-report.json
+EPIC-18,elmos-runtime-trace-fusion,REQ-18-05,ELMOS-PI-18-T05,AC-18-05,runtime-graph.json; static-runtime-diff.md; trace-link-report.json
+EPIC-19,elmos-diagram-spec-engine,REQ-19-01,ELMOS-PI-19-T01,AC-19-01,schemas/diagram-spec.schema.json; diagram-profiles/
+EPIC-19,elmos-diagram-spec-engine,REQ-19-02,ELMOS-PI-19-T02,AC-19-02,schemas/diagram-spec.schema.json; diagram-profiles/
+EPIC-19,elmos-diagram-spec-engine,REQ-19-03,ELMOS-PI-19-T03,AC-19-03,schemas/diagram-spec.schema.json; diagram-profiles/
+EPIC-19,elmos-diagram-spec-engine,REQ-19-04,ELMOS-PI-19-T04,AC-19-04,schemas/diagram-spec.schema.json; diagram-profiles/
+EPIC-19,elmos-diagram-spec-engine,REQ-19-05,ELMOS-PI-19-T05,AC-19-05,schemas/diagram-spec.schema.json; diagram-profiles/
+EPIC-20,elmos-diagram-rendering,REQ-20-01,ELMOS-PI-20-T01,AC-20-01,services/diagram-renderer; render-compatibility-matrix.md
+EPIC-20,elmos-diagram-rendering,REQ-20-02,ELMOS-PI-20-T02,AC-20-02,services/diagram-renderer; render-compatibility-matrix.md
+EPIC-20,elmos-diagram-rendering,REQ-20-03,ELMOS-PI-20-T03,AC-20-03,services/diagram-renderer; render-compatibility-matrix.md
+EPIC-20,elmos-diagram-rendering,REQ-20-04,ELMOS-PI-20-T04,AC-20-04,services/diagram-renderer; render-compatibility-matrix.md
+EPIC-20,elmos-diagram-rendering,REQ-20-05,ELMOS-PI-20-T05,AC-20-05,services/diagram-renderer; render-compatibility-matrix.md
+EPIC-21,elmos-diagram-editor,REQ-21-01,ELMOS-PI-21-T01,AC-21-01,apps/insight-web/src/modules/diagram-editor; diagram-merge-tests.md
+EPIC-21,elmos-diagram-editor,REQ-21-02,ELMOS-PI-21-T02,AC-21-02,apps/insight-web/src/modules/diagram-editor; diagram-merge-tests.md
+EPIC-21,elmos-diagram-editor,REQ-21-03,ELMOS-PI-21-T03,AC-21-03,apps/insight-web/src/modules/diagram-editor; diagram-merge-tests.md
+EPIC-21,elmos-diagram-editor,REQ-21-04,ELMOS-PI-21-T04,AC-21-04,apps/insight-web/src/modules/diagram-editor; diagram-merge-tests.md
+EPIC-21,elmos-diagram-editor,REQ-21-05,ELMOS-PI-21-T05,AC-21-05,apps/insight-web/src/modules/diagram-editor; diagram-merge-tests.md
+EPIC-22,elmos-architecture-documentation,REQ-22-01,ELMOS-PI-22-T01,AC-22-01,docs/generated/; document-manifest.json
+EPIC-22,elmos-architecture-documentation,REQ-22-02,ELMOS-PI-22-T02,AC-22-02,docs/generated/; document-manifest.json
+EPIC-22,elmos-architecture-documentation,REQ-22-03,ELMOS-PI-22-T03,AC-22-03,docs/generated/; document-manifest.json
+EPIC-22,elmos-architecture-documentation,REQ-22-04,ELMOS-PI-22-T04,AC-22-04,docs/generated/; document-manifest.json
+EPIC-22,elmos-architecture-documentation,REQ-22-05,ELMOS-PI-22-T05,AC-22-05,docs/generated/; document-manifest.json
+EPIC-23,elmos-presentation-generation,REQ-23-01,ELMOS-PI-23-T01,AC-23-01,presentations/; slide-manifest.json; pptx-validation-report.md
+EPIC-23,elmos-presentation-generation,REQ-23-02,ELMOS-PI-23-T02,AC-23-02,presentations/; slide-manifest.json; pptx-validation-report.md
+EPIC-23,elmos-presentation-generation,REQ-23-03,ELMOS-PI-23-T03,AC-23-03,presentations/; slide-manifest.json; pptx-validation-report.md
+EPIC-23,elmos-presentation-generation,REQ-23-04,ELMOS-PI-23-T04,AC-23-04,presentations/; slide-manifest.json; pptx-validation-report.md
+EPIC-23,elmos-presentation-generation,REQ-23-05,ELMOS-PI-23-T05,AC-23-05,presentations/; slide-manifest.json; pptx-validation-report.md
+EPIC-24,elmos-project-report-bundle,REQ-24-01,ELMOS-PI-24-T01,AC-24-01,delivery-bundle.zip; bundle-manifest.json
+EPIC-24,elmos-project-report-bundle,REQ-24-02,ELMOS-PI-24-T02,AC-24-02,delivery-bundle.zip; bundle-manifest.json
+EPIC-24,elmos-project-report-bundle,REQ-24-03,ELMOS-PI-24-T03,AC-24-03,delivery-bundle.zip; bundle-manifest.json
+EPIC-24,elmos-project-report-bundle,REQ-24-04,ELMOS-PI-24-T04,AC-24-04,delivery-bundle.zip; bundle-manifest.json
+EPIC-24,elmos-project-report-bundle,REQ-24-05,ELMOS-PI-24-T05,AC-24-05,delivery-bundle.zip; bundle-manifest.json
+EPIC-25,elmos-project-search-qa,REQ-25-01,ELMOS-PI-25-T01,AC-25-01,qa-api.yaml; qa-evaluation-dataset.jsonl; qa-eval-report.md
+EPIC-25,elmos-project-search-qa,REQ-25-02,ELMOS-PI-25-T02,AC-25-02,qa-api.yaml; qa-evaluation-dataset.jsonl; qa-eval-report.md
+EPIC-25,elmos-project-search-qa,REQ-25-03,ELMOS-PI-25-T03,AC-25-03,qa-api.yaml; qa-evaluation-dataset.jsonl; qa-eval-report.md
+EPIC-25,elmos-project-search-qa,REQ-25-04,ELMOS-PI-25-T04,AC-25-04,qa-api.yaml; qa-evaluation-dataset.jsonl; qa-eval-report.md
+EPIC-25,elmos-project-search-qa,REQ-25-05,ELMOS-PI-25-T05,AC-25-05,qa-api.yaml; qa-evaluation-dataset.jsonl; qa-eval-report.md
+EPIC-26,elmos-impact-analysis,REQ-26-01,ELMOS-PI-26-T01,AC-26-01,impact-report.json; regression-plan.yaml
+EPIC-26,elmos-impact-analysis,REQ-26-02,ELMOS-PI-26-T02,AC-26-02,impact-report.json; regression-plan.yaml
+EPIC-26,elmos-impact-analysis,REQ-26-03,ELMOS-PI-26-T03,AC-26-03,impact-report.json; regression-plan.yaml
+EPIC-26,elmos-impact-analysis,REQ-26-04,ELMOS-PI-26-T04,AC-26-04,impact-report.json; regression-plan.yaml
+EPIC-26,elmos-impact-analysis,REQ-26-05,ELMOS-PI-26-T05,AC-26-05,impact-report.json; regression-plan.yaml
+EPIC-27,elmos-architecture-rules,REQ-27-01,ELMOS-PI-27-T01,AC-27-01,architecture-rules.yaml; rule-engine-report.json
+EPIC-27,elmos-architecture-rules,REQ-27-02,ELMOS-PI-27-T02,AC-27-02,architecture-rules.yaml; rule-engine-report.json
+EPIC-27,elmos-architecture-rules,REQ-27-03,ELMOS-PI-27-T03,AC-27-03,architecture-rules.yaml; rule-engine-report.json
+EPIC-27,elmos-architecture-rules,REQ-27-04,ELMOS-PI-27-T04,AC-27-04,architecture-rules.yaml; rule-engine-report.json
+EPIC-27,elmos-architecture-rules,REQ-27-05,ELMOS-PI-27-T05,AC-27-05,architecture-rules.yaml; rule-engine-report.json
+EPIC-28,elmos-architecture-drift,REQ-28-01,ELMOS-PI-28-T01,AC-28-01,drift-report.json; architecture-diff.svg
+EPIC-28,elmos-architecture-drift,REQ-28-02,ELMOS-PI-28-T02,AC-28-02,drift-report.json; architecture-diff.svg
+EPIC-28,elmos-architecture-drift,REQ-28-03,ELMOS-PI-28-T03,AC-28-03,drift-report.json; architecture-diff.svg
+EPIC-28,elmos-architecture-drift,REQ-28-04,ELMOS-PI-28-T04,AC-28-04,drift-report.json; architecture-diff.svg
+EPIC-28,elmos-architecture-drift,REQ-28-05,ELMOS-PI-28-T05,AC-28-05,drift-report.json; architecture-diff.svg
+EPIC-29,elmos-risk-technical-debt,REQ-29-01,ELMOS-PI-29-T01,AC-29-01,risk-register.yaml; technical-debt-backlog.yaml; risk-heatmap.json
+EPIC-29,elmos-risk-technical-debt,REQ-29-02,ELMOS-PI-29-T02,AC-29-02,risk-register.yaml; technical-debt-backlog.yaml; risk-heatmap.json
+EPIC-29,elmos-risk-technical-debt,REQ-29-03,ELMOS-PI-29-T03,AC-29-03,risk-register.yaml; technical-debt-backlog.yaml; risk-heatmap.json
+EPIC-29,elmos-risk-technical-debt,REQ-29-04,ELMOS-PI-29-T04,AC-29-04,risk-register.yaml; technical-debt-backlog.yaml; risk-heatmap.json
+EPIC-29,elmos-risk-technical-debt,REQ-29-05,ELMOS-PI-29-T05,AC-29-05,risk-register.yaml; technical-debt-backlog.yaml; risk-heatmap.json
+EPIC-30,elmos-security-threat-model,REQ-30-01,ELMOS-PI-30-T01,AC-30-01,threat-model.md; security-findings.sarif; attack-paths.json
+EPIC-30,elmos-security-threat-model,REQ-30-02,ELMOS-PI-30-T02,AC-30-02,threat-model.md; security-findings.sarif; attack-paths.json
+EPIC-30,elmos-security-threat-model,REQ-30-03,ELMOS-PI-30-T03,AC-30-03,threat-model.md; security-findings.sarif; attack-paths.json
+EPIC-30,elmos-security-threat-model,REQ-30-04,ELMOS-PI-30-T04,AC-30-04,threat-model.md; security-findings.sarif; attack-paths.json
+EPIC-30,elmos-security-threat-model,REQ-30-05,ELMOS-PI-30-T05,AC-30-05,threat-model.md; security-findings.sarif; attack-paths.json
+EPIC-31,elmos-incremental-analysis-cache,REQ-31-01,ELMOS-PI-31-T01,AC-31-01,cache-key-spec.md; checkpoint-schema.json; cache-benchmark.md
+EPIC-31,elmos-incremental-analysis-cache,REQ-31-02,ELMOS-PI-31-T02,AC-31-02,cache-key-spec.md; checkpoint-schema.json; cache-benchmark.md
+EPIC-31,elmos-incremental-analysis-cache,REQ-31-03,ELMOS-PI-31-T03,AC-31-03,cache-key-spec.md; checkpoint-schema.json; cache-benchmark.md
+EPIC-31,elmos-incremental-analysis-cache,REQ-31-04,ELMOS-PI-31-T04,AC-31-04,cache-key-spec.md; checkpoint-schema.json; cache-benchmark.md
+EPIC-31,elmos-incremental-analysis-cache,REQ-31-05,ELMOS-PI-31-T05,AC-31-05,cache-key-spec.md; checkpoint-schema.json; cache-benchmark.md
+EPIC-32,elmos-artifact-versioning-human-lock,REQ-32-01,ELMOS-PI-32-T01,AC-32-01,artifact-schema.json; merge-policy.md; artifact-lifecycle-tests.md
+EPIC-32,elmos-artifact-versioning-human-lock,REQ-32-02,ELMOS-PI-32-T02,AC-32-02,artifact-schema.json; merge-policy.md; artifact-lifecycle-tests.md
+EPIC-32,elmos-artifact-versioning-human-lock,REQ-32-03,ELMOS-PI-32-T03,AC-32-03,artifact-schema.json; merge-policy.md; artifact-lifecycle-tests.md
+EPIC-32,elmos-artifact-versioning-human-lock,REQ-32-04,ELMOS-PI-32-T04,AC-32-04,artifact-schema.json; merge-policy.md; artifact-lifecycle-tests.md
+EPIC-32,elmos-artifact-versioning-human-lock,REQ-32-05,ELMOS-PI-32-T05,AC-32-05,artifact-schema.json; merge-policy.md; artifact-lifecycle-tests.md
+EPIC-33,elmos-git-pr-automation,REQ-33-01,ELMOS-PI-33-T01,AC-33-01,git-delivery-policy.md; pr-template.md; git-integration-tests.md
+EPIC-33,elmos-git-pr-automation,REQ-33-02,ELMOS-PI-33-T02,AC-33-02,git-delivery-policy.md; pr-template.md; git-integration-tests.md
+EPIC-33,elmos-git-pr-automation,REQ-33-03,ELMOS-PI-33-T03,AC-33-03,git-delivery-policy.md; pr-template.md; git-integration-tests.md
+EPIC-33,elmos-git-pr-automation,REQ-33-04,ELMOS-PI-33-T04,AC-33-04,git-delivery-policy.md; pr-template.md; git-integration-tests.md
+EPIC-33,elmos-git-pr-automation,REQ-33-05,ELMOS-PI-33-T05,AC-33-05,git-delivery-policy.md; pr-template.md; git-integration-tests.md
+EPIC-34,elmos-collaboration-governance,REQ-34-01,ELMOS-PI-34-T01,AC-34-01,rbac-matrix.csv; audit-event-schema.json; governance-tests.md
+EPIC-34,elmos-collaboration-governance,REQ-34-02,ELMOS-PI-34-T02,AC-34-02,rbac-matrix.csv; audit-event-schema.json; governance-tests.md
+EPIC-34,elmos-collaboration-governance,REQ-34-03,ELMOS-PI-34-T03,AC-34-03,rbac-matrix.csv; audit-event-schema.json; governance-tests.md
+EPIC-34,elmos-collaboration-governance,REQ-34-04,ELMOS-PI-34-T04,AC-34-04,rbac-matrix.csv; audit-event-schema.json; governance-tests.md
+EPIC-34,elmos-collaboration-governance,REQ-34-05,ELMOS-PI-34-T05,AC-34-05,rbac-matrix.csv; audit-event-schema.json; governance-tests.md
+EPIC-35,elmos-integrations-mcp,REQ-35-01,ELMOS-PI-35-T01,AC-35-01,connector-sdk.md; mcp-tool-catalog.yaml; connector-contract-tests.md
+EPIC-35,elmos-integrations-mcp,REQ-35-02,ELMOS-PI-35-T02,AC-35-02,connector-sdk.md; mcp-tool-catalog.yaml; connector-contract-tests.md
+EPIC-35,elmos-integrations-mcp,REQ-35-03,ELMOS-PI-35-T03,AC-35-03,connector-sdk.md; mcp-tool-catalog.yaml; connector-contract-tests.md
+EPIC-35,elmos-integrations-mcp,REQ-35-04,ELMOS-PI-35-T04,AC-35-04,connector-sdk.md; mcp-tool-catalog.yaml; connector-contract-tests.md
+EPIC-35,elmos-integrations-mcp,REQ-35-05,ELMOS-PI-35-T05,AC-35-05,connector-sdk.md; mcp-tool-catalog.yaml; connector-contract-tests.md
+EPIC-36,elmos-large-repository-scaling,REQ-36-01,ELMOS-PI-36-T01,AC-36-01,capacity-model.md; load-test-scenarios.yaml; scaling-report.md
+EPIC-36,elmos-large-repository-scaling,REQ-36-02,ELMOS-PI-36-T02,AC-36-02,capacity-model.md; load-test-scenarios.yaml; scaling-report.md
+EPIC-36,elmos-large-repository-scaling,REQ-36-03,ELMOS-PI-36-T03,AC-36-03,capacity-model.md; load-test-scenarios.yaml; scaling-report.md
+EPIC-36,elmos-large-repository-scaling,REQ-36-04,ELMOS-PI-36-T04,AC-36-04,capacity-model.md; load-test-scenarios.yaml; scaling-report.md
+EPIC-36,elmos-large-repository-scaling,REQ-36-05,ELMOS-PI-36-T05,AC-36-05,capacity-model.md; load-test-scenarios.yaml; scaling-report.md
+EPIC-37,elmos-observability-slo,REQ-37-01,ELMOS-PI-37-T01,AC-37-01,observability-spec.md; slo-catalog.yaml; runbooks/
+EPIC-37,elmos-observability-slo,REQ-37-02,ELMOS-PI-37-T02,AC-37-02,observability-spec.md; slo-catalog.yaml; runbooks/
+EPIC-37,elmos-observability-slo,REQ-37-03,ELMOS-PI-37-T03,AC-37-03,observability-spec.md; slo-catalog.yaml; runbooks/
+EPIC-37,elmos-observability-slo,REQ-37-04,ELMOS-PI-37-T04,AC-37-04,observability-spec.md; slo-catalog.yaml; runbooks/
+EPIC-37,elmos-observability-slo,REQ-37-05,ELMOS-PI-37-T05,AC-37-05,observability-spec.md; slo-catalog.yaml; runbooks/
+EPIC-38,elmos-testing-evaluation,REQ-38-01,ELMOS-PI-38-T01,AC-38-01,test-strategy.md; evals/; quality-gates.yaml
+EPIC-38,elmos-testing-evaluation,REQ-38-02,ELMOS-PI-38-T02,AC-38-02,test-strategy.md; evals/; quality-gates.yaml
+EPIC-38,elmos-testing-evaluation,REQ-38-03,ELMOS-PI-38-T03,AC-38-03,test-strategy.md; evals/; quality-gates.yaml
+EPIC-38,elmos-testing-evaluation,REQ-38-04,ELMOS-PI-38-T04,AC-38-04,test-strategy.md; evals/; quality-gates.yaml
+EPIC-38,elmos-testing-evaluation,REQ-38-05,ELMOS-PI-38-T05,AC-38-05,test-strategy.md; evals/; quality-gates.yaml
+EPIC-39,elmos-conversion-integration,REQ-39-01,ELMOS-PI-39-T01,AC-39-01,conversion-mapping.json; modernization-report.md; migration-presentation.pptx
+EPIC-39,elmos-conversion-integration,REQ-39-02,ELMOS-PI-39-T02,AC-39-02,conversion-mapping.json; modernization-report.md; migration-presentation.pptx
+EPIC-39,elmos-conversion-integration,REQ-39-03,ELMOS-PI-39-T03,AC-39-03,conversion-mapping.json; modernization-report.md; migration-presentation.pptx
+EPIC-39,elmos-conversion-integration,REQ-39-04,ELMOS-PI-39-T04,AC-39-04,conversion-mapping.json; modernization-report.md; migration-presentation.pptx
+EPIC-39,elmos-conversion-integration,REQ-39-05,ELMOS-PI-39-T05,AC-39-05,conversion-mapping.json; modernization-report.md; migration-presentation.pptx
+EPIC-40,elmos-runtime-cost-estimator,REQ-40-01,ELMOS-PI-40-T01,AC-40-01,estimation-model.md; provider-rate-schema.json; eta-calibration-report.md
+EPIC-40,elmos-runtime-cost-estimator,REQ-40-02,ELMOS-PI-40-T02,AC-40-02,estimation-model.md; provider-rate-schema.json; eta-calibration-report.md
+EPIC-40,elmos-runtime-cost-estimator,REQ-40-03,ELMOS-PI-40-T03,AC-40-03,estimation-model.md; provider-rate-schema.json; eta-calibration-report.md
+EPIC-40,elmos-runtime-cost-estimator,REQ-40-04,ELMOS-PI-40-T04,AC-40-04,estimation-model.md; provider-rate-schema.json; eta-calibration-report.md
+EPIC-40,elmos-runtime-cost-estimator,REQ-40-05,ELMOS-PI-40-T05,AC-40-05,estimation-model.md; provider-rate-schema.json; eta-calibration-report.md
+EPIC-41,elmos-deployment-private-cloud,REQ-41-01,ELMOS-PI-41-T01,AC-41-01,deploy/; private-deployment-guide.md; dr-test-report.md
+EPIC-41,elmos-deployment-private-cloud,REQ-41-02,ELMOS-PI-41-T02,AC-41-02,deploy/; private-deployment-guide.md; dr-test-report.md
+EPIC-41,elmos-deployment-private-cloud,REQ-41-03,ELMOS-PI-41-T03,AC-41-03,deploy/; private-deployment-guide.md; dr-test-report.md
+EPIC-41,elmos-deployment-private-cloud,REQ-41-04,ELMOS-PI-41-T04,AC-41-04,deploy/; private-deployment-guide.md; dr-test-report.md
+EPIC-41,elmos-deployment-private-cloud,REQ-41-05,ELMOS-PI-41-T05,AC-41-05,deploy/; private-deployment-guide.md; dr-test-report.md
+EPIC-42,elmos-release-certification,REQ-42-01,ELMOS-PI-42-T01,AC-42-01,certification-matrix.yaml; certification-report.md; signed-evidence-bundle.zip
+EPIC-42,elmos-release-certification,REQ-42-02,ELMOS-PI-42-T02,AC-42-02,certification-matrix.yaml; certification-report.md; signed-evidence-bundle.zip
+EPIC-42,elmos-release-certification,REQ-42-03,ELMOS-PI-42-T03,AC-42-03,certification-matrix.yaml; certification-report.md; signed-evidence-bundle.zip
+EPIC-42,elmos-release-certification,REQ-42-04,ELMOS-PI-42-T04,AC-42-04,certification-matrix.yaml; certification-report.md; signed-evidence-bundle.zip
+EPIC-42,elmos-release-certification,REQ-42-05,ELMOS-PI-42-T05,AC-42-05,certification-matrix.yaml; certification-report.md; signed-evidence-bundle.zip
+EPIC-43,elmos-commercial-packaging,REQ-43-01,ELMOS-PI-43-T01,AC-43-01,edition-matrix.md; metering-event-schema.json; commercial-model.md
+EPIC-43,elmos-commercial-packaging,REQ-43-02,ELMOS-PI-43-T02,AC-43-02,edition-matrix.md; metering-event-schema.json; commercial-model.md
+EPIC-43,elmos-commercial-packaging,REQ-43-03,ELMOS-PI-43-T03,AC-43-03,edition-matrix.md; metering-event-schema.json; commercial-model.md
+EPIC-43,elmos-commercial-packaging,REQ-43-04,ELMOS-PI-43-T04,AC-43-04,edition-matrix.md; metering-event-schema.json; commercial-model.md
+EPIC-43,elmos-commercial-packaging,REQ-43-05,ELMOS-PI-43-T05,AC-43-05,edition-matrix.md; metering-event-schema.json; commercial-model.md
+EPIC-44,elmos-debug-adapter-gateway,REQ-44-01,ELMOS-PI-44-T01,AC-44-01,services/debug-gateway; debug-adapters/registry.yaml; debug-adapter-conformance-report.md
+EPIC-44,elmos-debug-adapter-gateway,REQ-44-02,ELMOS-PI-44-T02,AC-44-02,services/debug-gateway; debug-adapters/registry.yaml; debug-adapter-conformance-report.md
+EPIC-44,elmos-debug-adapter-gateway,REQ-44-03,ELMOS-PI-44-T03,AC-44-03,services/debug-gateway; debug-adapters/registry.yaml; debug-adapter-conformance-report.md
+EPIC-44,elmos-debug-adapter-gateway,REQ-44-04,ELMOS-PI-44-T04,AC-44-04,services/debug-gateway; debug-adapters/registry.yaml; debug-adapter-conformance-report.md
+EPIC-44,elmos-debug-adapter-gateway,REQ-44-05,ELMOS-PI-44-T05,AC-44-05,services/debug-gateway; debug-adapters/registry.yaml; debug-adapter-conformance-report.md
+EPIC-45,elmos-debug-sandbox-orchestration,REQ-45-01,ELMOS-PI-45-T01,AC-45-01,services/debug-session-orchestrator; workers/debug-sandbox-runner; debug-sandbox-security-report.md
+EPIC-45,elmos-debug-sandbox-orchestration,REQ-45-02,ELMOS-PI-45-T02,AC-45-02,services/debug-session-orchestrator; workers/debug-sandbox-runner; debug-sandbox-security-report.md
+EPIC-45,elmos-debug-sandbox-orchestration,REQ-45-03,ELMOS-PI-45-T03,AC-45-03,services/debug-session-orchestrator; workers/debug-sandbox-runner; debug-sandbox-security-report.md
+EPIC-45,elmos-debug-sandbox-orchestration,REQ-45-04,ELMOS-PI-45-T04,AC-45-04,services/debug-session-orchestrator; workers/debug-sandbox-runner; debug-sandbox-security-report.md
+EPIC-45,elmos-debug-sandbox-orchestration,REQ-45-05,ELMOS-PI-45-T05,AC-45-05,services/debug-session-orchestrator; workers/debug-sandbox-runner; debug-sandbox-security-report.md
+EPIC-46,elmos-online-debug-workbench,REQ-46-01,ELMOS-PI-46-T01,AC-46-01,apps/insight-web/src/modules/debugger; services/debug-session-api; online-debug-e2e-report.md
+EPIC-46,elmos-online-debug-workbench,REQ-46-02,ELMOS-PI-46-T02,AC-46-02,apps/insight-web/src/modules/debugger; services/debug-session-api; online-debug-e2e-report.md
+EPIC-46,elmos-online-debug-workbench,REQ-46-03,ELMOS-PI-46-T03,AC-46-03,apps/insight-web/src/modules/debugger; services/debug-session-api; online-debug-e2e-report.md
+EPIC-46,elmos-online-debug-workbench,REQ-46-04,ELMOS-PI-46-T04,AC-46-04,apps/insight-web/src/modules/debugger; services/debug-session-api; online-debug-e2e-report.md
+EPIC-46,elmos-online-debug-workbench,REQ-46-05,ELMOS-PI-46-T05,AC-46-05,apps/insight-web/src/modules/debugger; services/debug-session-api; online-debug-e2e-report.md
+EPIC-47,elmos-debug-learning-copilot,REQ-47-01,ELMOS-PI-47-T01,AC-47-01,services/debug-learning; apps/insight-web/src/modules/debug-learning; debug-learning-evaluation-report.md
+EPIC-47,elmos-debug-learning-copilot,REQ-47-02,ELMOS-PI-47-T02,AC-47-02,services/debug-learning; apps/insight-web/src/modules/debug-learning; debug-learning-evaluation-report.md
+EPIC-47,elmos-debug-learning-copilot,REQ-47-03,ELMOS-PI-47-T03,AC-47-03,services/debug-learning; apps/insight-web/src/modules/debug-learning; debug-learning-evaluation-report.md
+EPIC-47,elmos-debug-learning-copilot,REQ-47-04,ELMOS-PI-47-T04,AC-47-04,services/debug-learning; apps/insight-web/src/modules/debug-learning; debug-learning-evaluation-report.md
+EPIC-47,elmos-debug-learning-copilot,REQ-47-05,ELMOS-PI-47-T05,AC-47-05,services/debug-learning; apps/insight-web/src/modules/debug-learning; debug-learning-evaluation-report.md
+EPIC-48,elmos-debug-record-replay,REQ-48-01,ELMOS-PI-48-T01,AC-48-01,services/debug-replay; debug-replay-bundle.schema.json; debug-replay-determinism-report.md
+EPIC-48,elmos-debug-record-replay,REQ-48-02,ELMOS-PI-48-T02,AC-48-02,services/debug-replay; debug-replay-bundle.schema.json; debug-replay-determinism-report.md
+EPIC-48,elmos-debug-record-replay,REQ-48-03,ELMOS-PI-48-T03,AC-48-03,services/debug-replay; debug-replay-bundle.schema.json; debug-replay-determinism-report.md
+EPIC-48,elmos-debug-record-replay,REQ-48-04,ELMOS-PI-48-T04,AC-48-04,services/debug-replay; debug-replay-bundle.schema.json; debug-replay-determinism-report.md
+EPIC-48,elmos-debug-record-replay,REQ-48-05,ELMOS-PI-48-T05,AC-48-05,services/debug-replay; debug-replay-bundle.schema.json; debug-replay-determinism-report.md
+EPIC-49,elmos-distributed-debug-correlation,REQ-49-01,ELMOS-PI-49-T01,AC-49-01,services/distributed-debug-correlation; distributed-debug-session-graph.json; source-target-debug-diff.md
+EPIC-49,elmos-distributed-debug-correlation,REQ-49-02,ELMOS-PI-49-T02,AC-49-02,services/distributed-debug-correlation; distributed-debug-session-graph.json; source-target-debug-diff.md
+EPIC-49,elmos-distributed-debug-correlation,REQ-49-03,ELMOS-PI-49-T03,AC-49-03,services/distributed-debug-correlation; distributed-debug-session-graph.json; source-target-debug-diff.md
+EPIC-49,elmos-distributed-debug-correlation,REQ-49-04,ELMOS-PI-49-T04,AC-49-04,services/distributed-debug-correlation; distributed-debug-session-graph.json; source-target-debug-diff.md
+EPIC-49,elmos-distributed-debug-correlation,REQ-49-05,ELMOS-PI-49-T05,AC-49-05,services/distributed-debug-correlation; distributed-debug-session-graph.json; source-target-debug-diff.md

@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 风险、热点与技术债分析
+  short_description: 结合复杂度、变更历史、耦合、覆盖率、漏洞、运行错误和业务关键度识别技术债与高风险区域。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-risk-technical-debt 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

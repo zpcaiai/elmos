@@ -1,0 +1,1527 @@
+{
+  "namespace": "elmos-project-intelligence-v1",
+  "schema_version": "1.0",
+  "skills": [
+    {
+      "batch": "BATCH-00-product-and-reference-architecture",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ANALYSIS_PLAN_COMPILED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "orchestrate_analysis",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-insight-orchestrator",
+      "ordinal": 0,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:8e99e83c0006ae5f7a866295c91478a6180598ce9052b7849f76def3bf2a282e",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-00-product-and-reference-architecture",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "PRODUCT_SCOPE_BASELINED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "baseline_product_scope",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-product-scope",
+      "ordinal": 1,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:b67ae8fc89b1c411a3e7274ceec109d480bb6e8967446981277b061dbc917ee1",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-00-product-and-reference-architecture",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "REFERENCE_ARCHITECTURE_COMPILED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "compile_reference_architecture",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-reference-architecture",
+      "ordinal": 2,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-01-ingestion-and-parsing",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "LOCAL_REVISION_FROZEN",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "freeze_revision",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-repository-ingestion",
+      "ordinal": 3,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:90e9fc20d4fed085b77b62941f6b26600d343ed549c0675977faea3043c36976",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-01-ingestion-and-parsing",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "REVISION_FINGERPRINTED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "fingerprint_revision",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-project-fingerprinting",
+      "ordinal": 4,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:63d4f7dc1539c1ea81fba12b895c5dfa41ae1ea54b1f7f4196032678c6a6a5ae",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-01-ingestion-and-parsing",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "BOUNDED_CODE_IR_PARSED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "parse_revision",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-multilanguage-parsing",
+      "ordinal": 5,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-02-graphs-and-evidence",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "SYMBOL_GRAPH_BUILT",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "build_symbol_graph",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-symbol-code-graph",
+      "ordinal": 6,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-02-graphs-and-evidence",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "INTELLIGENCE_GRAPH_SNAPSHOT_BUILT",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "build_intelligence_graph",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-project-intelligence-graph",
+      "ordinal": 7,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:ef2e480bfb0c9450e552ec035395c2fb45e2766806a4a5f5c0c7267a5d34b02a",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-02-graphs-and-evidence",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "CLAIMS_BOUND_TO_EVIDENCE",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "bind_claim_evidence",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-evidence-provenance",
+      "ordinal": 8,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-03-code-reader-and-explanation",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "CODE_READER_SLICE_READY",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "read_revision_slice",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-online-code-reader",
+      "ordinal": 9,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:a3c8348140c9153a650ed6064ce885e703795d858c3b0ad8e41fbcb538cdd910",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-03-code-reader-and-explanation",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "SEMANTIC_NAVIGATION_RESOLVED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "navigate_graph",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-semantic-navigation",
+      "ordinal": 10,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-03-code-reader-and-explanation",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "EVIDENCE_FACT_SHEET_GENERATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "explain_from_evidence",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-code-explanation",
+      "ordinal": 11,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-03-code-reader-and-explanation",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ONBOARDING_PATH_COMPILED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "compile_onboarding_path",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-onboarding-learning-path",
+      "ordinal": 12,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:a8b046de6e7a3cc744ed6897fd67bdc122d11026c3deb00d0a4206b46438731d",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-04-architecture-flow-data",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "STATIC_ARCHITECTURE_DISCOVERED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "discover_architecture",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-architecture-discovery",
+      "ordinal": 13,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:bc6f6210aa78c5c9f3b80855ca79aaabf6f55eb22659f1d06e6b1a76ffb5fac3",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-04-architecture-flow-data",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "CAPABILITY_CANDIDATES_MAPPED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "map_capabilities",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-business-capability-map",
+      "ordinal": 14,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:bef23968caaaaa8a17bb910722fa87f3fd963903b6b3dc83b371bf401b686cd8",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-04-architecture-flow-data",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "STATIC_FLOW_CANDIDATES_DISCOVERED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "discover_flows",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-flow-discovery",
+      "ordinal": 15,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-04-architecture-flow-data",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "STATIC_DATA_LINEAGE_DERIVED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "derive_data_lineage",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-data-architecture-lineage",
+      "ordinal": 16,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:45533a4773176c06ab760a06768e89dded562006324d368824a8300063452530",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-04-architecture-flow-data",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DECLARED_API_EVENT_TOPOLOGY_RECONCILED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "reconcile_api_event_topology",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-api-event-topology",
+      "ordinal": 17,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:008d440d5c584b08ea7578689e223397521bd7231a51445015b2d27b2a7cc0a6",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-04-architecture-flow-data",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "SUPPLIED_RUNTIME_OBSERVATIONS_FUSED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "fuse_runtime_observations",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-runtime-trace-fusion",
+      "ordinal": 18,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:9891a8105b129e9fc43bcec11f1a650488cf5ac74606ba9956d45da1224d4dbb",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-05-diagram-platform",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DIAGRAM_SPEC_COMPILED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "compile_diagram_spec",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-diagram-spec-engine",
+      "ordinal": 19,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-05-diagram-platform",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "SAFE_MERMAID_RENDERED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "render_diagram",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-diagram-rendering",
+      "ordinal": 20,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:0ff83337d2b2e39156c79cc42fd8f348b72a5e37e2634ab4c9dbad5b7755221a",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-05-diagram-platform",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DIAGRAM_PATCH_APPLIED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "apply_diagram_patch",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-diagram-editor",
+      "ordinal": 21,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-06-documents-presentations-reports",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ARCHITECTURE_DOCUMENT_GENERATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "generate_document",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-architecture-documentation",
+      "ordinal": 22,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-06-documents-presentations-reports",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "PRESENTATION_MANIFEST_GENERATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "generate_presentation",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-presentation-generation",
+      "ordinal": 23,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:d00045d0f20513378a042a9743ff072baa3ad266d24b48b74923434fa48aabdb",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-06-documents-presentations-reports",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "REPORT_BUNDLE_INDEXED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "bundle_report",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-project-report-bundle",
+      "ordinal": 24,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-07-search-impact-governance-analysis",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "PROJECT_QUERY_ANSWERED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "answer_project_query",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-project-search-qa",
+      "ordinal": 25,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-07-search-impact-governance-analysis",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "CHANGE_IMPACT_ANALYZED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "analyze_impact",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-impact-analysis",
+      "ordinal": 26,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:e5a4909997ebbdce84854da43d94ee82b25758ca53562361bc0c8a67dc1cb85b",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-07-search-impact-governance-analysis",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ARCHITECTURE_RULES_EVALUATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "evaluate_architecture_rules",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-architecture-rules",
+      "ordinal": 27,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:aaa198d9a2272b8ab3b21692f17d9c7e7c28326287f652a1d59e35c98e8bbe1e",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-07-search-impact-governance-analysis",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ARCHITECTURE_DRIFT_DETECTED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "detect_architecture_drift",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-architecture-drift",
+      "ordinal": 28,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:a99d629fbda64dcd9743325a9877e758a76d2262f1e0d251326138bd8aa010d7",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-07-search-impact-governance-analysis",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "RISK_AND_TECHNICAL_DEBT_SCORED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "score_risk_and_debt",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-risk-technical-debt",
+      "ordinal": 29,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:24e2d71f581b8dd4cf8b014d3e25f119cfe0ae23c4826b3af0458337a5a6734d",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-07-search-impact-governance-analysis",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "BOUNDED_THREAT_MODEL_BUILT",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "build_threat_model",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-security-threat-model",
+      "ordinal": 30,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:d6d31e4c55387f37a99c185322119bd33b1323a45cddb9850facf1911e872435",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-08-cache-versioning-git",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ANALYSIS_CACHE_KEY_RESOLVED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "cache_analysis_stage",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-incremental-analysis-cache",
+      "ordinal": 31,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-05-diagram-platform",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "ARTIFACT_VERSION_CREATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "version_artifact",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-artifact-versioning-human-lock",
+      "ordinal": 32,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-08-cache-versioning-git",
+      "capability_state": "PLAN",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DRAFT_PR_PLAN_VALIDATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "plan_draft_pr",
+      "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PLANNING_ONLY",
+      "name": "elmos-git-pr-automation",
+      "ordinal": 33,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:f82358d923ff2f719db245678f9294119f6578e782e094297eac56be2f38ccc8",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-09-collaboration-and-connectors",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "LOCAL_POLICY_ALLOWED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "authorize_and_audit",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-collaboration-governance",
+      "ordinal": 34,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-09-collaboration-and-connectors",
+      "capability_state": "PLAN",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "CONNECTOR_CONTRACT_VALIDATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "validate_connector_contract",
+      "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PLANNING_ONLY",
+      "name": "elmos-integrations-mcp",
+      "ordinal": 35,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-10-scale-and-observability",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "REPOSITORY_SHARDS_PLANNED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "plan_repository_shards",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-large-repository-scaling",
+      "ordinal": 36,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-10-scale-and-observability",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "SLO_EVALUATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "evaluate_slo",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-observability-slo",
+      "ordinal": 37,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:70fb0d5fd9591de4dadbab99d4860ca296b8aa208fe3aaa620dc69899ade1801",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-11-testing-conversion-estimation",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "LOCAL_QUALITY_EVALUATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "evaluate_quality",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-testing-evaluation",
+      "ordinal": 38,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:bee47fe3fdbdee76a1f47f7e69c86a2026e7f0576db83361f2fb1cf7d22bdeb2",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-11-testing-conversion-estimation",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "CONVERSION_MAPPING_VALIDATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "validate_conversion_mapping",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-conversion-integration",
+      "ordinal": 39,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:6c18918a23633e16aa2d68bc830b289372136ca32c804d7d122d0d1d78f3a388",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-11-testing-conversion-estimation",
+      "capability_state": "LOCAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "RUNTIME_COST_ESTIMATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "estimate_runtime_cost",
+      "implementation_state": "BOUNDED_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "LOCAL_EXECUTED",
+      "name": "elmos-runtime-cost-estimator",
+      "ordinal": 40,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-12-deployment-and-certification",
+      "capability_state": "PLAN",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DEPLOYMENT_READINESS_PLANNED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "plan_deployment",
+      "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PLANNING_ONLY",
+      "name": "elmos-deployment-private-cloud",
+      "ordinal": 41,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:a42116881c4661dbad4dd0ee32ee5c0cc9a07734528b2ffa2f1a615b34573ea8",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-12-deployment-and-certification",
+      "capability_state": "PLAN",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "RELEASE_READINESS_EVALUATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "evaluate_release_readiness",
+      "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PLANNING_ONLY",
+      "name": "elmos-release-certification",
+      "ordinal": 42,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-13-commercialization",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "LOCAL_ENTITLEMENT_EVALUATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "evaluate_entitlement_usage",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-commercial-packaging",
+      "ordinal": 43,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-14-online-debug-and-learning",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DEBUG_CAPABILITIES_NEGOTIATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "negotiate_debug_adapter",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-debug-adapter-gateway",
+      "ordinal": 44,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-14-online-debug-and-learning",
+      "capability_state": "PLAN",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DEBUG_SANDBOX_SESSION_PLANNED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "plan_debug_session",
+      "implementation_state": "PLANNING_ONLY_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PLANNING_ONLY",
+      "name": "elmos-debug-sandbox-orchestration",
+      "ordinal": 45,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-14-online-debug-and-learning",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DEBUG_VIEW_STATE_REDUCED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "reduce_debug_view",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-online-debug-workbench",
+      "ordinal": 46,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-14-online-debug-and-learning",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DEBUG_LEARNING_MISSION_BUILT",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "build_debug_mission",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-debug-learning-copilot",
+      "ordinal": 47,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-14-online-debug-and-learning",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "R0_REPLAY_BUNDLE_BUILT",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "build_replay_bundle",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-debug-record-replay",
+      "ordinal": 48,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    },
+    {
+      "batch": "BATCH-14-online-debug-and-learning",
+      "capability_state": "PARTIAL",
+      "certification_status": "NOT_CERTIFIED",
+      "code_paths": [
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/domain.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/runtime.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/service.py",
+        "engines/project-intelligence-engine/src/elmos_project_intelligence/qualification_contract.py"
+      ],
+      "component_reuse_state": "BOUND_REPOSITORY_OWNED_RUNTIME",
+      "exact_runtime_binding_status": "BOUND_LOCAL_EXACT",
+      "expected_success_code": "DEBUG_EVENTS_CORRELATED",
+      "external_evidence_status": "NOT_RUN",
+      "handler_id": "correlate_debug_events",
+      "implementation_state": "PARTIAL_LOCAL_IMPLEMENTED",
+      "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+      "local_execution_state": "PARTIAL_LOCAL_EXECUTED",
+      "name": "elmos-distributed-debug-correlation",
+      "ordinal": 49,
+      "package_identity_status": "PINNED_VALIDATED",
+      "qualification_result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+      "skill_interface_status": "INSTALLED",
+      "test_paths": [
+        "engines/project-intelligence-engine/tests/test_runtime.py",
+        "engines/project-intelligence-engine/tests/test_service.py",
+        "engines/project-intelligence-engine/tests/test_cli.py",
+        "engines/project-intelligence-engine/tests/test_qualification_contract.py"
+      ]
+    }
+  ],
+  "source_package": "elmos-project-intelligence-skills",
+  "source_version": "1.1.0",
+  "summary": {
+    "capability_state_counts": {
+      "LOCAL": 21,
+      "PARTIAL": 24,
+      "PLAN": 5
+    },
+    "certification_status": "NOT_CERTIFIED",
+    "exact_runtime_bindings": 50,
+    "external_evidence_status": "NOT_RUN",
+    "implemented_local_handlers": 50,
+    "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "package_identity_status": "PINNED_VALIDATED",
+    "skill_interface_status": "INSTALLED",
+    "skills": 50,
+    "source_acceptance_execution_status": "NOT_RUN",
+    "source_acceptance_scenarios": 248,
+    "source_task_status": "todo",
+    "source_tasks": 500
+  }
+}

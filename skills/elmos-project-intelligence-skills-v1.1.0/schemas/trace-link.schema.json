@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/trace-link.schema.json",
+  "title": "Runtime Trace to Static Graph Link",
+  "type": "object",
+  "required": [
+    "link_id",
+    "project_id",
+    "environment",
+    "time_window",
+    "span_ref",
+    "target_refs",
+    "confidence"
+  ],
+  "properties": {
+    "link_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "environment": {
+      "type": "string"
+    },
+    "time_window": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "sampling": {
+      "type": "object"
+    },
+    "span_ref": {
+      "type": "string"
+    },
+    "target_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "method": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

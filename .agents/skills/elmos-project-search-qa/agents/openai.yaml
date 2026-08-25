@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 项目全局搜索与证据化问答"
+  short_description: "Guide 项目全局搜索与证据化问答 with evidence controls"
+  default_prompt: "Use $elmos-project-search-qa as guidance for 项目全局搜索与证据化问答 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

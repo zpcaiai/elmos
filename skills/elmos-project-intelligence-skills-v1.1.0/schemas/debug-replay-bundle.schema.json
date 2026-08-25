@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/debug-replay-bundle.schema.json",
+  "title": "Elmos Debug Replay Bundle Manifest",
+  "type": "object",
+  "required": [
+    "replay_bundle_id",
+    "tenant_id",
+    "project_id",
+    "revision_id",
+    "source_debug_session_id",
+    "replay_level",
+    "runtime_profile",
+    "chunks",
+    "integrity",
+    "redaction"
+  ],
+  "properties": {
+    "replay_bundle_id": {
+      "type": "string"
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "revision_id": {
+      "type": "string"
+    },
+    "source_debug_session_id": {
+      "type": "string"
+    },
+    "replay_level": {
+      "enum": [
+        "R0",
+        "R1",
+        "R2",
+        "R3"
+      ]
+    },
+    "runtime_profile": {
+      "type": "object"
+    },
+    "reproducibility": {
+      "type": "object"
+    },
+    "chunks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "chunk_id",
+          "kind",
+          "sha256",
+          "size_bytes"
+        ],
+        "properties": {
+          "chunk_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "manifest_sha256",
+        "signature_ref"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "signature_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "required": [
+        "profile",
+        "scan_status"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string"
+        },
+        "scan_status": {
+          "enum": [
+            "passed",
+            "failed",
+            "review_required"
+          ]
+        },
+        "omitted_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

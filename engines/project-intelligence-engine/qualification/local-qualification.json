@@ -1,0 +1,2866 @@
+{
+  "certification": "NOT_CERTIFIED",
+  "counts": {
+    "local": 21,
+    "partial": 24,
+    "plan": 5,
+    "skills": 50
+  },
+  "effect_guard": "PYTHON_AUDIT_DENY_FILESYSTEM_PROCESS_NETWORK_DURING_DISPATCH",
+  "engine_files": [
+    {
+      "bytes": 2101,
+      "mode": "0644",
+      "path": "README.md",
+      "sha256": "sha256:a007cf5bd54a66a8d399e5c825c44bb8dea565fd769bae22df69714a6bb931ea"
+    },
+    {
+      "bytes": 544,
+      "mode": "0644",
+      "path": "pyproject.toml",
+      "sha256": "sha256:ed1fc69ba162dc7ce890e589d3c1fc92cd60d9fd09a4c0a2017dd3b551c6f025"
+    },
+    {
+      "bytes": 616,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/__init__.py",
+      "sha256": "sha256:b62634f90fe636f4067eae6cbd0f66ceac58ca7826132cea7f13a2750d9e77ab"
+    },
+    {
+      "bytes": 4748,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/artifacts.py",
+      "sha256": "sha256:e0f6d06501dcb083d86afad5908f7b828eb4408246eedf3ac48543c5129ce125"
+    },
+    {
+      "bytes": 6625,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/canonical.py",
+      "sha256": "sha256:9d1403bbe34d88ffb1faff98e24a11c74085b634edd5a1a37d406a34b7afe57e"
+    },
+    {
+      "bytes": 3064,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/cli.py",
+      "sha256": "sha256:a0a28f5894e84cfdb120d3c509e37328fe087e307f1ec529cac01651962da02c"
+    },
+    {
+      "bytes": 18629,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/contracts.py",
+      "sha256": "sha256:10807430511facc0f17ea4b32be89857bb08aa04b199e0b747a7ead5c5024986"
+    },
+    {
+      "bytes": 53469,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/domain.py",
+      "sha256": "sha256:9cd864ce26665158750eded8c8925b8d4347420dcb1b4af87dac6174d4a747e4"
+    },
+    {
+      "bytes": 18277,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/qualification_contract.py",
+      "sha256": "sha256:4d329b5d283c8c11df20fdcad6009b83b9815e4dec25b4d5b6f90adbf53a7e4f"
+    },
+    {
+      "bytes": 16830,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/runtime.py",
+      "sha256": "sha256:5119b650b748ba377169a7c930dc43c61279fa5b2203773b6dc98aba5ff8ac81"
+    },
+    {
+      "bytes": 5470,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/service.py",
+      "sha256": "sha256:0d970b07e1b85df190b7fb6793f2cd2c67616923fb0c3ecf43efe178385f4bb4"
+    },
+    {
+      "bytes": 19754,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/snapshot.py",
+      "sha256": "sha256:256d522b9a76407dd2a3591e5ffe147c976c88d75f520ea5da09d10d362fe405"
+    },
+    {
+      "bytes": 40979,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/store.py",
+      "sha256": "sha256:3614f9cde1aa713d41a4b32441db37797146e9fe30a36128f61a8a2cb5d162d0"
+    },
+    {
+      "bytes": 8509,
+      "mode": "0644",
+      "path": "tests/test_cli.py",
+      "sha256": "sha256:155fa100e15beb7d78a953c0ff7014e3845b38e727a4406e2ce160492ceecd5b"
+    },
+    {
+      "bytes": 14568,
+      "mode": "0644",
+      "path": "tests/test_core.py",
+      "sha256": "sha256:df0ffb83a6b0365f2ff7cc39d970dbb5ba643b8675ea7a16ff06986d37adcd37"
+    },
+    {
+      "bytes": 3897,
+      "mode": "0644",
+      "path": "tests/test_qualification_contract.py",
+      "sha256": "sha256:54e9ad2b260e39f02b4bcf4e734ef744b002b2d5af1161af398b51dfd6246fc4"
+    },
+    {
+      "bytes": 11034,
+      "mode": "0644",
+      "path": "tests/test_runtime.py",
+      "sha256": "sha256:fce709e2aefc4f82ae95c5ec6bc49c39c39d60f8de0f313b74802ea790132ea1"
+    },
+    {
+      "bytes": 4297,
+      "mode": "0644",
+      "path": "tests/test_service.py",
+      "sha256": "sha256:7805b1b1dac9c960114d2275b4c2ffc83c8d9d2500141786150229a7d15fd18b"
+    }
+  ],
+  "engine_tree_sha256": "sha256:44628cf03300c1ae2e831c237f5e14fe5daa2e38e1e57a058b6d1c9fda3abaee",
+  "executor": "repository-local-self-attested",
+  "external_evidence": "NOT_RUN",
+  "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
+  "fixture_sha256": "sha256:fce709e2aefc4f82ae95c5ec6bc49c39c39d60f8de0f313b74802ea790132ea1",
+  "independent_verifier": null,
+  "local_execution_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "qualification_scope": "bounded-local-fixture-handlers",
+  "qualification_status": "PASSED",
+  "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
+  "qualifier_sha256": "sha256:ad9691c34d77d4c065105b82396f06fb933097e5766788e0a7a0837e0ac09b61",
+  "receipt_digest": "sha256:8896378afd7f04895d6525a58b2349dbf2341bccf56d88beadffaebb19427991",
+  "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
+  "results": [
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ANALYSIS_PLAN_COMPILED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "orchestrate_analysis",
+      "observed_code": "ANALYSIS_PLAN_COMPILED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 0,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ANALYSIS_PLAN_COMPILED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "orchestrate_analysis",
+        "outputs": {
+          "automatic_effects": false,
+          "execution_order": [
+            "elmos-reference-architecture",
+            "elmos-repository-ingestion",
+            "elmos-project-fingerprinting"
+          ],
+          "requested_skills": [
+            "elmos-repository-ingestion",
+            "elmos-project-fingerprinting"
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:8e99e83c0006ae5f7a866295c91478a6180598ce9052b7849f76def3bf2a282e",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-insight-orchestrator",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:8e99e83c0006ae5f7a866295c91478a6180598ce9052b7849f76def3bf2a282e",
+      "skill": "elmos-insight-orchestrator",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "PRODUCT_SCOPE_BASELINED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "baseline_product_scope",
+      "observed_code": "PRODUCT_SCOPE_BASELINED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 1,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "PRODUCT_SCOPE_BASELINED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "baseline_product_scope",
+        "outputs": {
+          "candidate_capabilities": [
+            "app",
+            "assert",
+            "create_refund",
+            "created",
+            "def",
+            "evidence",
+            "handles",
+            "name",
+            "order_id",
+            "post",
+            "project",
+            "publish",
+            "refund",
+            "refund-service",
+            "refunds",
+            "refundstore",
+            "requests",
+            "save",
+            "self",
+            "service",
+            "src",
+            "store",
+            "table",
+            "test_refund"
+          ],
+          "requirement_count": 1,
+          "scope_digest": "sha256:025a636269f9a42fc3b836a03bfa6d287880631ac496101dec02e8b7e3d0f39b",
+          "unconfirmed_requirement_ids": []
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:b67ae8fc89b1c411a3e7274ceec109d480bb6e8967446981277b061dbc917ee1",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-product-scope",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:b67ae8fc89b1c411a3e7274ceec109d480bb6e8967446981277b061dbc917ee1",
+      "skill": "elmos-product-scope",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "REFERENCE_ARCHITECTURE_COMPILED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "compile_reference_architecture",
+      "observed_code": "REFERENCE_ARCHITECTURE_COMPILED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 2,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "REFERENCE_ARCHITECTURE_COMPILED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "compile_reference_architecture",
+        "outputs": {
+          "boundaries": [
+            {
+              "from": "src/app.py",
+              "kind": "imports",
+              "line": 1,
+              "to": "src.store"
+            }
+          ],
+          "components": [
+            {
+              "confidence": "INFERRED",
+              "file_count": 1,
+              "name": "README.md"
+            },
+            {
+              "confidence": "INFERRED",
+              "file_count": 1,
+              "name": "pyproject.toml"
+            },
+            {
+              "confidence": "INFERRED",
+              "file_count": 3,
+              "name": "src"
+            },
+            {
+              "confidence": "INFERRED",
+              "file_count": 1,
+              "name": "tests"
+            }
+          ],
+          "deployment_verified": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-reference-architecture",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:0ae44641d557ff6a9ed8838f650e0e7c22354544ae5fca592c0f0749255f6356",
+      "skill": "elmos-reference-architecture",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "LOCAL_REVISION_FROZEN",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "freeze_revision",
+      "observed_code": "LOCAL_REVISION_FROZEN",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 3,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "LOCAL_REVISION_FROZEN",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "freeze_revision",
+        "outputs": {
+          "code_executed": false,
+          "manifest": [
+            {
+              "bytes": 56,
+              "path": "README.md",
+              "sha256": "sha256:0cc99554a1a65dce432feca462af08169f9cdb34f6d9ef24d713a234547017a6"
+            },
+            {
+              "bytes": 32,
+              "path": "pyproject.toml",
+              "sha256": "sha256:790d8b242267ce5e48dcbbe7b2151856496ed9f6a11fcb12551977f465e72923"
+            },
+            {
+              "bytes": 69,
+              "path": "src/api.py",
+              "sha256": "sha256:e5e4a65b9d2781f04f91fd1ce01f0b0d9612a8119576e8aae14a411a5cb82439"
+            },
+            {
+              "bytes": 121,
+              "path": "src/app.py",
+              "sha256": "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c"
+            },
+            {
+              "bytes": 95,
+              "path": "src/store.py",
+              "sha256": "sha256:c1b664a69bf7d00c9e9c32b055c5703b7744bb221986eaf1d96e2e5a58557c9f"
+            },
+            {
+              "bytes": 57,
+              "path": "tests/test_app.py",
+              "sha256": "sha256:5f983009ffb4b9450a6dce3762c535ceaac5562cdf158fb02070361d16903a24"
+            }
+          ],
+          "manifest_digest": "sha256:e479022050fe0ecdb65b4a207fb57322c240424dcf3745234847453c4ea57163",
+          "revision": "abc123"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:90e9fc20d4fed085b77b62941f6b26600d343ed549c0675977faea3043c36976",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-repository-ingestion",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "remote-git-provider",
+          "git-lfs-hydration",
+          "submodule-authorization"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:90e9fc20d4fed085b77b62941f6b26600d343ed549c0675977faea3043c36976",
+      "skill": "elmos-repository-ingestion",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "REVISION_FINGERPRINTED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "fingerprint_revision",
+      "observed_code": "REVISION_FINGERPRINTED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 4,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "REVISION_FINGERPRINTED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "fingerprint_revision",
+        "outputs": {
+          "build_markers": [
+            "pyproject.toml"
+          ],
+          "fingerprint_digest": "sha256:c2612be2f9f50b5b2b360ad7dad50815a4521ae475aa2a70db9541a451c85bde",
+          "languages": {
+            "Markdown": 1,
+            "Python": 4,
+            "TOML": 1
+          }
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:63d4f7dc1539c1ea81fba12b895c5dfa41ae1ea54b1f7f4196032678c6a6a5ae",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-project-fingerprinting",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:63d4f7dc1539c1ea81fba12b895c5dfa41ae1ea54b1f7f4196032678c6a6a5ae",
+      "skill": "elmos-project-fingerprinting",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "BOUNDED_CODE_IR_PARSED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "parse_revision",
+      "observed_code": "BOUNDED_CODE_IR_PARSED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 5,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "BOUNDED_CODE_IR_PARSED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "parse_revision",
+        "outputs": {
+          "imports": [
+            {
+              "from": "src/app.py",
+              "kind": "imports",
+              "line": 1,
+              "to": "src.store"
+            }
+          ],
+          "parsed_file_count": 6,
+          "symbols": [
+            {
+              "id": "sha256:70e5ea5e3be7842bdb11ea72660e6fa40b24453463a5d06ba8923e1af5bd53fb",
+              "kind": "function",
+              "language": "Python",
+              "line": 2,
+              "name": "create_refund",
+              "path": "src/api.py"
+            },
+            {
+              "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
+              "kind": "class",
+              "language": "Python",
+              "line": 2,
+              "name": "App",
+              "path": "src/app.py"
+            },
+            {
+              "id": "sha256:086b96ef864c230890965bad7e45b8dee1927841b81dff45752264d77e85a4b0",
+              "kind": "function",
+              "language": "Python",
+              "line": 3,
+              "name": "refund",
+              "path": "src/app.py"
+            },
+            {
+              "id": "sha256:622d3b420dae4da6308a8e5cc7d3b470dcaec7cedb7ba7a130e2a8d8e41b241a",
+              "kind": "class",
+              "language": "Python",
+              "line": 1,
+              "name": "RefundStore",
+              "path": "src/store.py"
+            },
+            {
+              "id": "sha256:153c579dd514ad90a0edccd30abc7d258d9c47a1a977ba2e17e60e95df249353",
+              "kind": "function",
+              "language": "Python",
+              "line": 3,
+              "name": "save",
+              "path": "src/store.py"
+            },
+            {
+              "id": "sha256:8ea1fe677b992ae92149c5988f5d4591c1590c0cadd7c56ed71badd908589b24",
+              "kind": "function",
+              "language": "Python",
+              "line": 1,
+              "name": "test_refund",
+              "path": "tests/test_app.py"
+            }
+          ],
+          "unsupported_paths": []
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-multilanguage-parsing",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "native-language-parser-adapters"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:2a47364def6171dd6f7e00823df00f98a6d826479345838e3df7e8e4fae8f105",
+      "skill": "elmos-multilanguage-parsing",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "SYMBOL_GRAPH_BUILT",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "build_symbol_graph",
+      "observed_code": "SYMBOL_GRAPH_BUILT",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 6,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "SYMBOL_GRAPH_BUILT",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "build_symbol_graph",
+        "outputs": {
+          "edges": [
+            {
+              "from": "src/app.py",
+              "kind": "imports",
+              "line": 1,
+              "to": "src.store"
+            }
+          ],
+          "graph_digest": "sha256:0813af0053075a5334607eb934518f38f3a92db460969ee48b9473f24603eb8e",
+          "nodes": [
+            {
+              "evidence": "sha256:0cc99554a1a65dce432feca462af08169f9cdb34f6d9ef24d713a234547017a6",
+              "id": "sha256:0d48925fb68e147d8e770c385e6a7c3c34bbcf6893c1e551c254931a5a6e994d",
+              "kind": "file",
+              "language": "Markdown",
+              "name": "README.md",
+              "path": "README.md"
+            },
+            {
+              "evidence": "sha256:790d8b242267ce5e48dcbbe7b2151856496ed9f6a11fcb12551977f465e72923",
+              "id": "sha256:bfb9a191478763f2b6edee1b2ea0277586a1a08df472328689f5f7967e6047c1",
+              "kind": "file",
+              "language": "TOML",
+              "name": "pyproject.toml",
+              "path": "pyproject.toml"
+            },
+            {
+              "evidence": "sha256:e5e4a65b9d2781f04f91fd1ce01f0b0d9612a8119576e8aae14a411a5cb82439",
+              "id": "sha256:389d6d2780577742e8538b5f5566df49b34b250e7615b4c7f46563802e04b3fb",
+              "kind": "file",
+              "language": "Python",
+              "name": "src/api.py",
+              "path": "src/api.py"
+            },
+            {
+              "evidence": "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c",
+              "id": "sha256:227c221cf046f1cfaa1bacf6c0acd4fc909e905cf05b47f8d6fb8ca0c5e90325",
+              "kind": "file",
+              "language": "Python",
+              "name": "src/app.py",
+              "path": "src/app.py"
+            },
+            {
+              "evidence": "sha256:c1b664a69bf7d00c9e9c32b055c5703b7744bb221986eaf1d96e2e5a58557c9f",
+              "id": "sha256:0e31272b31cf828b8ed9077770fc27b912291a2f07c32410c214606bde1fb891",
+              "kind": "file",
+              "language": "Python",
+              "name": "src/store.py",
+              "path": "src/store.py"
+            },
+            {
+              "evidence": "sha256:5f983009ffb4b9450a6dce3762c535ceaac5562cdf158fb02070361d16903a24",
+              "id": "sha256:99aa4cc02d76f72725d0b62631a947c39b342509ab9a72a3d0f8099fc10cc332",
+              "kind": "file",
+              "language": "Python",
+              "name": "tests/test_app.py",
+              "path": "tests/test_app.py"
+            },
+            {
+              "id": "sha256:70e5ea5e3be7842bdb11ea72660e6fa40b24453463a5d06ba8923e1af5bd53fb",
+              "kind": "function",
+              "language": "Python",
+              "line": 2,
+              "name": "create_refund",
+              "path": "src/api.py"
+            },
+            {
+              "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
+              "kind": "class",
+              "language": "Python",
+              "line": 2,
+              "name": "App",
+              "path": "src/app.py"
+            },
+            {
+              "id": "sha256:086b96ef864c230890965bad7e45b8dee1927841b81dff45752264d77e85a4b0",
+              "kind": "function",
+              "language": "Python",
+              "line": 3,
+              "name": "refund",
+              "path": "src/app.py"
+            },
+            {
+              "id": "sha256:622d3b420dae4da6308a8e5cc7d3b470dcaec7cedb7ba7a130e2a8d8e41b241a",
+              "kind": "class",
+              "language": "Python",
+              "line": 1,
+              "name": "RefundStore",
+              "path": "src/store.py"
+            },
+            {
+              "id": "sha256:153c579dd514ad90a0edccd30abc7d258d9c47a1a977ba2e17e60e95df249353",
+              "kind": "function",
+              "language": "Python",
+              "line": 3,
+              "name": "save",
+              "path": "src/store.py"
+            },
+            {
+              "id": "sha256:8ea1fe677b992ae92149c5988f5d4591c1590c0cadd7c56ed71badd908589b24",
+              "kind": "function",
+              "language": "Python",
+              "line": 1,
+              "name": "test_refund",
+              "path": "tests/test_app.py"
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-symbol-code-graph",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "compiler-semantic-models",
+          "cross-language-resolution"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:bc8b3ba1189f13ae9ccd57d9aeb3dc4909f5692a223517b0e0d48f02237d4878",
+      "skill": "elmos-symbol-code-graph",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "INTELLIGENCE_GRAPH_SNAPSHOT_BUILT",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "build_intelligence_graph",
+      "observed_code": "INTELLIGENCE_GRAPH_SNAPSHOT_BUILT",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 7,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "INTELLIGENCE_GRAPH_SNAPSHOT_BUILT",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "build_intelligence_graph",
+        "outputs": {
+          "claims": [
+            {
+              "evidence_refs": [
+                "ev-1"
+              ],
+              "id": "claim-1",
+              "statement": "Refund endpoint exists"
+            }
+          ],
+          "edges": [
+            {
+              "from": "api",
+              "kind": "writes",
+              "to": "store"
+            }
+          ],
+          "graph_digest": "sha256:812308995873ec5720f4870e8940d102017a7501189a18c8c8191fd93fd5d97d",
+          "nodes": [
+            {
+              "id": "api",
+              "kind": "service",
+              "name": "refund-api"
+            },
+            {
+              "id": "store",
+              "kind": "database",
+              "name": "refund-store"
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:ef2e480bfb0c9450e552ec035395c2fb45e2766806a4a5f5c0c7267a5d34b02a",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-project-intelligence-graph",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:ef2e480bfb0c9450e552ec035395c2fb45e2766806a4a5f5c0c7267a5d34b02a",
+      "skill": "elmos-project-intelligence-graph",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "CLAIMS_BOUND_TO_EVIDENCE",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "bind_claim_evidence",
+      "observed_code": "CLAIMS_BOUND_TO_EVIDENCE",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 8,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "CLAIMS_BOUND_TO_EVIDENCE",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "bind_claim_evidence",
+        "outputs": {
+          "bindings": [
+            {
+              "claim_id": "claim-1",
+              "confidence": "CONFIRMED",
+              "evidence_refs": [
+                "ev-1"
+              ]
+            }
+          ],
+          "unbound_claim_count": 0
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-evidence-provenance",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:d652181dc923b5595e58f2625398eb1d587475cb133f8ef4b4a19020f0be876d",
+      "skill": "elmos-evidence-provenance",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "CODE_READER_SLICE_READY",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "read_revision_slice",
+      "observed_code": "CODE_READER_SLICE_READY",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 9,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "CODE_READER_SLICE_READY",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "read_revision_slice",
+        "outputs": {
+          "files": [
+            {
+              "lines": [
+                "from src.store import RefundStore",
+                "class App:",
+                "    def refund(self, order_id):",
+                "        return RefundStore().save(order_id)"
+              ],
+              "path": "src/app.py",
+              "sha256": "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c"
+            }
+          ],
+          "truncated": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:a3c8348140c9153a650ed6064ce885e703795d858c3b0ad8e41fbcb538cdd910",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-online-code-reader",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "browser-workbench"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:a3c8348140c9153a650ed6064ce885e703795d858c3b0ad8e41fbcb538cdd910",
+      "skill": "elmos-online-code-reader",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "SEMANTIC_NAVIGATION_RESOLVED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "navigate_graph",
+      "observed_code": "SEMANTIC_NAVIGATION_RESOLVED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 10,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "SEMANTIC_NAVIGATION_RESOLVED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "navigate_graph",
+        "outputs": {
+          "confidence": "CONFIRMED",
+          "definitions": [
+            {
+              "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
+              "kind": "class",
+              "language": "Python",
+              "line": 2,
+              "name": "App",
+              "path": "src/app.py"
+            }
+          ],
+          "references": [
+            {
+              "line": 2,
+              "path": "src/app.py"
+            },
+            {
+              "line": 2,
+              "path": "tests/test_app.py"
+            }
+          ],
+          "symbol": "App"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-semantic-navigation",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:8a92504d395c48aee5e2e1ee489ed29faa505e311acff88fa0c2ede2d9c64c84",
+      "skill": "elmos-semantic-navigation",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "EVIDENCE_FACT_SHEET_GENERATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "explain_from_evidence",
+      "observed_code": "EVIDENCE_FACT_SHEET_GENERATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 11,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "EVIDENCE_FACT_SHEET_GENERATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "explain_from_evidence",
+        "outputs": {
+          "evidence_refs": [
+            "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c"
+          ],
+          "facts": {
+            "bytes": 121,
+            "imports": [
+              {
+                "from": "src/app.py",
+                "kind": "imports",
+                "line": 1,
+                "to": "src.store"
+              }
+            ],
+            "keywords": [
+              "refundstore",
+              "order_id",
+              "src",
+              "store",
+              "app",
+              "def",
+              "refund",
+              "self",
+              "save"
+            ],
+            "language": "Python",
+            "path": "src/app.py",
+            "symbols": [
+              {
+                "id": "sha256:aee8e87241a8bb515c8b81a9f868b3e5bc4330c8372e54d41729111003dadd27",
+                "kind": "class",
+                "language": "Python",
+                "line": 2,
+                "name": "App",
+                "path": "src/app.py"
+              },
+              {
+                "id": "sha256:086b96ef864c230890965bad7e45b8dee1927841b81dff45752264d77e85a4b0",
+                "kind": "function",
+                "language": "Python",
+                "line": 3,
+                "name": "refund",
+                "path": "src/app.py"
+              }
+            ]
+          },
+          "narrative_model_used": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-code-explanation",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "model-narrative-adapter"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:77f1ccfb82d57da53c2dc4fa6fe81bb8b62cba8dc47ab924372ba4387dcfef54",
+      "skill": "elmos-code-explanation",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ONBOARDING_PATH_COMPILED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "compile_onboarding_path",
+      "observed_code": "ONBOARDING_PATH_COMPILED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 12,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ONBOARDING_PATH_COMPILED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "compile_onboarding_path",
+        "outputs": {
+          "steps": [
+            {
+              "order": 1,
+              "path": "README.md",
+              "reason": "evidence-backed repository entry"
+            },
+            {
+              "order": 2,
+              "path": "src/app.py",
+              "reason": "evidence-backed repository entry"
+            },
+            {
+              "order": 3,
+              "path": "tests/test_app.py",
+              "reason": "evidence-backed repository entry"
+            },
+            {
+              "order": 4,
+              "path": "pyproject.toml",
+              "reason": "evidence-backed repository entry"
+            },
+            {
+              "order": 5,
+              "path": "src/api.py",
+              "reason": "evidence-backed repository entry"
+            },
+            {
+              "order": 6,
+              "path": "src/store.py",
+              "reason": "evidence-backed repository entry"
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:a8b046de6e7a3cc744ed6897fd67bdc122d11026c3deb00d0a4206b46438731d",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-onboarding-learning-path",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:a8b046de6e7a3cc744ed6897fd67bdc122d11026c3deb00d0a4206b46438731d",
+      "skill": "elmos-onboarding-learning-path",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "STATIC_ARCHITECTURE_DISCOVERED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "discover_architecture",
+      "observed_code": "STATIC_ARCHITECTURE_DISCOVERED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 13,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "STATIC_ARCHITECTURE_DISCOVERED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "discover_architecture",
+        "outputs": {
+          "components": [
+            {
+              "component": "README.md",
+              "confidence": "INFERRED",
+              "paths": [
+                "README.md"
+              ]
+            },
+            {
+              "component": "pyproject.toml",
+              "confidence": "INFERRED",
+              "paths": [
+                "pyproject.toml"
+              ]
+            },
+            {
+              "component": "src",
+              "confidence": "INFERRED",
+              "paths": [
+                "src/api.py",
+                "src/app.py",
+                "src/store.py"
+              ]
+            },
+            {
+              "component": "tests",
+              "confidence": "INFERRED",
+              "paths": [
+                "tests/test_app.py"
+              ]
+            }
+          ],
+          "runtime_verified": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:bc6f6210aa78c5c9f3b80855ca79aaabf6f55eb22659f1d06e6b1a76ffb5fac3",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-architecture-discovery",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:bc6f6210aa78c5c9f3b80855ca79aaabf6f55eb22659f1d06e6b1a76ffb5fac3",
+      "skill": "elmos-architecture-discovery",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "CAPABILITY_CANDIDATES_MAPPED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "map_capabilities",
+      "observed_code": "CAPABILITY_CANDIDATES_MAPPED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 14,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "CAPABILITY_CANDIDATES_MAPPED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "map_capabilities",
+        "outputs": {
+          "capabilities": [
+            {
+              "confidence": "INFERRED",
+              "name": "refund",
+              "source_path": "README.md"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "service",
+              "source_path": "README.md"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "handles",
+              "source_path": "README.md"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "requests",
+              "source_path": "README.md"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "evidence",
+              "source_path": "README.md"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "project",
+              "source_path": "pyproject.toml"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "name",
+              "source_path": "pyproject.toml"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "refund-service",
+              "source_path": "pyproject.toml"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "post",
+              "source_path": "src/api.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "refunds",
+              "source_path": "src/api.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "def",
+              "source_path": "src/api.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "create_refund",
+              "source_path": "src/api.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "publish",
+              "source_path": "src/api.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "refundstore",
+              "source_path": "src/app.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "order_id",
+              "source_path": "src/app.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "src",
+              "source_path": "src/app.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "store",
+              "source_path": "src/app.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "app",
+              "source_path": "src/app.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "table",
+              "source_path": "src/store.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "test_refund",
+              "source_path": "tests/test_app.py"
+            },
+            {
+              "confidence": "INFERRED",
+              "name": "assert",
+              "source_path": "tests/test_app.py"
+            }
+          ],
+          "human_confirmation_required": true
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:bef23968caaaaa8a17bb910722fa87f3fd963903b6b3dc83b371bf401b686cd8",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-business-capability-map",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "domain-owner-confirmation"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:bef23968caaaaa8a17bb910722fa87f3fd963903b6b3dc83b371bf401b686cd8",
+      "skill": "elmos-business-capability-map",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "STATIC_FLOW_CANDIDATES_DISCOVERED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "discover_flows",
+      "observed_code": "STATIC_FLOW_CANDIDATES_DISCOVERED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 15,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "STATIC_FLOW_CANDIDATES_DISCOVERED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "discover_flows",
+        "outputs": {
+          "flows": [
+            {
+              "confidence": "INFERRED",
+              "from": "src/app.py",
+              "step": 1,
+              "to": "src.store"
+            }
+          ],
+          "unknown_runtime_branches": true
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-flow-discovery",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "runtime-path-observations"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:29eca6c01ab618eda7d29b8afc71142bfc0e0200784dbf04ece98f8ecd9a06cc",
+      "skill": "elmos-flow-discovery",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "STATIC_DATA_LINEAGE_DERIVED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "derive_data_lineage",
+      "observed_code": "STATIC_DATA_LINEAGE_DERIVED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 16,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "STATIC_DATA_LINEAGE_DERIVED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "derive_data_lineage",
+        "outputs": {
+          "assets": [
+            {
+              "asset": "src.store",
+              "confidence": "INFERRED",
+              "line": 1,
+              "path": "src/app.py"
+            },
+            {
+              "asset": "refunds",
+              "confidence": "INFERRED",
+              "line": 2,
+              "path": "src/store.py"
+            }
+          ],
+          "runtime_lineage_verified": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:45533a4773176c06ab760a06768e89dded562006324d368824a8300063452530",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-data-architecture-lineage",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "database-catalog-adapter",
+          "runtime-lineage-collector"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:45533a4773176c06ab760a06768e89dded562006324d368824a8300063452530",
+      "skill": "elmos-data-architecture-lineage",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "DECLARED_API_EVENT_TOPOLOGY_RECONCILED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "reconcile_api_event_topology",
+      "observed_code": "DECLARED_API_EVENT_TOPOLOGY_RECONCILED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 17,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DECLARED_API_EVENT_TOPOLOGY_RECONCILED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "reconcile_api_event_topology",
+        "outputs": {
+          "endpoints": [
+            {
+              "line": 1,
+              "path": "/refunds",
+              "source": "src/api.py"
+            }
+          ],
+          "events": [
+            {
+              "channel": "refund.created",
+              "line": 3,
+              "source": "src/api.py"
+            }
+          ],
+          "runtime_activity": "NOT_RUN"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:008d440d5c584b08ea7578689e223397521bd7231a51445015b2d27b2a7cc0a6",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-api-event-topology",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "runtime-traffic-observer"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:008d440d5c584b08ea7578689e223397521bd7231a51445015b2d27b2a7cc0a6",
+      "skill": "elmos-api-event-topology",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "SUPPLIED_RUNTIME_OBSERVATIONS_FUSED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "fuse_runtime_observations",
+      "observed_code": "SUPPLIED_RUNTIME_OBSERVATIONS_FUSED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 18,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "SUPPLIED_RUNTIME_OBSERVATIONS_FUSED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "fuse_runtime_observations",
+        "outputs": {
+          "collector_executed": false,
+          "observations": [
+            {
+              "component": "src/app.py",
+              "duration_ms": 5,
+              "graph_match": false,
+              "source": "SUPPLIED_OBSERVATION",
+              "trace_id": "trace-1"
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:9891a8105b129e9fc43bcec11f1a650488cf5ac74606ba9956d45da1224d4dbb",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-runtime-trace-fusion",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "trace-collector",
+          "log-provider"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:9891a8105b129e9fc43bcec11f1a650488cf5ac74606ba9956d45da1224d4dbb",
+      "skill": "elmos-runtime-trace-fusion",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "DIAGRAM_SPEC_COMPILED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "compile_diagram_spec",
+      "observed_code": "DIAGRAM_SPEC_COMPILED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 19,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DIAGRAM_SPEC_COMPILED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "compile_diagram_spec",
+        "outputs": {
+          "diagram_spec": {
+            "diagram_type": "component",
+            "edges": [
+              {
+                "from": "api",
+                "kind": "writes",
+                "to": "store"
+              }
+            ],
+            "nodes": [
+              {
+                "id": "api",
+                "kind": "service",
+                "label": "refund-api"
+              },
+              {
+                "id": "store",
+                "kind": "database",
+                "label": "refund-store"
+              }
+            ],
+            "schema_version": "elmos.diagram.v1"
+          },
+          "digest": "sha256:0bc90bd3184bcd4df137d210320ae949bdd4ea96a6af5ea6687db8422478a09c"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-diagram-spec-engine",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:f85f2b3348d8545debdac15f82f81002f124626b9dc55e6426cb1341b6100830",
+      "skill": "elmos-diagram-spec-engine",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "SAFE_MERMAID_RENDERED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "render_diagram",
+      "observed_code": "SAFE_MERMAID_RENDERED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 20,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "SAFE_MERMAID_RENDERED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "render_diagram",
+        "outputs": {
+          "content": "flowchart TD\n  n0[\"Refund API\"]\n  n1[\"Refund Store\"]\n  n0 --> n1\n",
+          "digest": "sha256:9379814a9dfea8283f167c7d4cde6f4d2f6cb1a6bf8e08e06968aeae84e3ca9b",
+          "media_type": "text/vnd.mermaid"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:0ff83337d2b2e39156c79cc42fd8f348b72a5e37e2634ab4c9dbad5b7755221a",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-diagram-rendering",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "svg-renderer",
+          "png-renderer"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:0ff83337d2b2e39156c79cc42fd8f348b72a5e37e2634ab4c9dbad5b7755221a",
+      "skill": "elmos-diagram-rendering",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "DIAGRAM_PATCH_APPLIED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "apply_diagram_patch",
+      "observed_code": "DIAGRAM_PATCH_APPLIED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 21,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DIAGRAM_PATCH_APPLIED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "apply_diagram_patch",
+        "outputs": {
+          "diagram_spec": {
+            "edges": [
+              {
+                "from": "api",
+                "kind": "writes",
+                "to": "store"
+              }
+            ],
+            "nodes": [
+              {
+                "id": "api",
+                "kind": "service",
+                "label": "Refund HTTP API"
+              },
+              {
+                "id": "store",
+                "kind": "database",
+                "label": "Refund Store"
+              }
+            ]
+          },
+          "locked_node_ids": [],
+          "rejected_operations": []
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-diagram-editor",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "browser-diagram-editor"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:43bfc7eac732d7779d11320280ed51c64f600398d1d5c479feb69326c230900d",
+      "skill": "elmos-diagram-editor",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ARCHITECTURE_DOCUMENT_GENERATED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "generate_document",
+      "observed_code": "ARCHITECTURE_DOCUMENT_GENERATED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 22,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ARCHITECTURE_DOCUMENT_GENERATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "generate_document",
+        "outputs": {
+          "content": "# Architecture Evidence Report\n\n## Components\n\n- `refund-api` (service)\n- `refund-store` (database)\n\n## Relationships\n\n- `api` -> `store` (writes)\n\n## Evidence Boundary\n\nRuntime and external evidence: NOT_RUN. Certification: NOT_CERTIFIED.\n",
+          "digest": "sha256:d75543a839541c63306888055efb369f4d562a78a97648d42a361fd498aa87fa",
+          "media_type": "text/markdown"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-architecture-documentation",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:5bbca557b856ed43d7c5a0cc6acb546dad36c9b514c439ccbfb421c7f9c3d0c9",
+      "skill": "elmos-architecture-documentation",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "PRESENTATION_MANIFEST_GENERATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "generate_presentation",
+      "observed_code": "PRESENTATION_MANIFEST_GENERATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 23,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "PRESENTATION_MANIFEST_GENERATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "generate_presentation",
+        "outputs": {
+          "digest": "sha256:0a50db8e7091296de9b13184d39e08a492bb782e764d0737379d0e2d76da8a7c",
+          "pptx_generated": false,
+          "slides": [
+            {
+              "bullets": [
+                "Static/local observations only",
+                "External evidence NOT_RUN",
+                "NOT_CERTIFIED"
+              ],
+              "title": "Project evidence boundary"
+            },
+            {
+              "bullets": [
+                "refund-api",
+                "refund-store"
+              ],
+              "title": "Components"
+            },
+            {
+              "bullets": [
+                "api -> store"
+              ],
+              "title": "Relationships"
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:d00045d0f20513378a042a9743ff072baa3ad266d24b48b74923434fa48aabdb",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-presentation-generation",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "pptx-renderer",
+          "pdf-renderer"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:d00045d0f20513378a042a9743ff072baa3ad266d24b48b74923434fa48aabdb",
+      "skill": "elmos-presentation-generation",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "REPORT_BUNDLE_INDEXED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "bundle_report",
+      "observed_code": "REPORT_BUNDLE_INDEXED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 24,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "REPORT_BUNDLE_INDEXED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "bundle_report",
+        "outputs": {
+          "artifacts": [
+            {
+              "artifact_id": "architecture",
+              "digest": "sha256:4ca303a3bf7ddf7be8652031ff027f351973a205cddafbffa580750f61bc93ce",
+              "media_type": "text/markdown"
+            }
+          ],
+          "bundle_digest": "sha256:4ef53a93a6d68d3fad4d16be5aa158cf5a065099eefd99bc4effa1cd451a5247",
+          "content_addressed": true
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-project-report-bundle",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:e1753061fa618d7d5b12c210bfab8aeee82f756d6a19a46189bf74f41bf7fd49",
+      "skill": "elmos-project-report-bundle",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "PROJECT_QUERY_ANSWERED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "answer_project_query",
+      "observed_code": "PROJECT_QUERY_ANSWERED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 25,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "PROJECT_QUERY_ANSWERED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "answer_project_query",
+        "outputs": {
+          "answer": "# Refund Service",
+          "confidence": "CONFIRMED",
+          "matches": [
+            {
+              "evidence": "sha256:0cc99554a1a65dce432feca462af08169f9cdb34f6d9ef24d713a234547017a6",
+              "excerpt": "# Refund Service",
+              "line": 1,
+              "path": "README.md",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:0cc99554a1a65dce432feca462af08169f9cdb34f6d9ef24d713a234547017a6",
+              "excerpt": "Handles refund requests with evidence.",
+              "line": 2,
+              "path": "README.md",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:790d8b242267ce5e48dcbbe7b2151856496ed9f6a11fcb12551977f465e72923",
+              "excerpt": "name='refund-service'",
+              "line": 2,
+              "path": "pyproject.toml",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:e5e4a65b9d2781f04f91fd1ce01f0b0d9612a8119576e8aae14a411a5cb82439",
+              "excerpt": "@post('/refunds')",
+              "line": 1,
+              "path": "src/api.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:e5e4a65b9d2781f04f91fd1ce01f0b0d9612a8119576e8aae14a411a5cb82439",
+              "excerpt": "def create_refund():",
+              "line": 2,
+              "path": "src/api.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:e5e4a65b9d2781f04f91fd1ce01f0b0d9612a8119576e8aae14a411a5cb82439",
+              "excerpt": "    publish('refund.created')",
+              "line": 3,
+              "path": "src/api.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c",
+              "excerpt": "from src.store import RefundStore",
+              "line": 1,
+              "path": "src/app.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c",
+              "excerpt": "    def refund(self, order_id):",
+              "line": 3,
+              "path": "src/app.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:6b2288f93f1d0ab2b15d63dd019bcdca101109d9558a8d7bda4af3ff8211345c",
+              "excerpt": "        return RefundStore().save(order_id)",
+              "line": 4,
+              "path": "src/app.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:c1b664a69bf7d00c9e9c32b055c5703b7744bb221986eaf1d96e2e5a58557c9f",
+              "excerpt": "class RefundStore:",
+              "line": 1,
+              "path": "src/store.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:c1b664a69bf7d00c9e9c32b055c5703b7744bb221986eaf1d96e2e5a58557c9f",
+              "excerpt": "    table = 'refunds'",
+              "line": 2,
+              "path": "src/store.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:5f983009ffb4b9450a6dce3762c535ceaac5562cdf158fb02070361d16903a24",
+              "excerpt": "def test_refund():",
+              "line": 1,
+              "path": "tests/test_app.py",
+              "score": 1
+            },
+            {
+              "evidence": "sha256:5f983009ffb4b9450a6dce3762c535ceaac5562cdf158fb02070361d16903a24",
+              "excerpt": "    assert App().refund('o1') == 'o1'",
+              "line": 2,
+              "path": "tests/test_app.py",
+              "score": 1
+            }
+          ],
+          "query": "refund endpoint"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-project-search-qa",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "semantic-vector-provider",
+          "model-answer-adapter"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:6eb17fe732b30d7fd4910245e46e4677594d06e470d04f323699d75235cfbc96",
+      "skill": "elmos-project-search-qa",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "CHANGE_IMPACT_ANALYZED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "analyze_impact",
+      "observed_code": "CHANGE_IMPACT_ANALYZED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 26,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "CHANGE_IMPACT_ANALYZED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "analyze_impact",
+        "outputs": {
+          "bounded": true,
+          "changed": [
+            "src/store.py"
+          ],
+          "impacted": [
+            "src/store.py"
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:e5a4909997ebbdce84854da43d94ee82b25758ca53562361bc0c8a67dc1cb85b",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-impact-analysis",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:e5a4909997ebbdce84854da43d94ee82b25758ca53562361bc0c8a67dc1cb85b",
+      "skill": "elmos-impact-analysis",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ARCHITECTURE_RULES_EVALUATED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "evaluate_architecture_rules",
+      "observed_code": "ARCHITECTURE_RULES_EVALUATED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 27,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ARCHITECTURE_RULES_EVALUATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "evaluate_architecture_rules",
+        "outputs": {
+          "findings": [],
+          "rule_count": 1
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:aaa198d9a2272b8ab3b21692f17d9c7e7c28326287f652a1d59e35c98e8bbe1e",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-architecture-rules",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:aaa198d9a2272b8ab3b21692f17d9c7e7c28326287f652a1d59e35c98e8bbe1e",
+      "skill": "elmos-architecture-rules",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ARCHITECTURE_DRIFT_DETECTED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "detect_architecture_drift",
+      "observed_code": "ARCHITECTURE_DRIFT_DETECTED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 28,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ARCHITECTURE_DRIFT_DETECTED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "detect_architecture_drift",
+        "outputs": {
+          "coverage": "STATIC_ONLY",
+          "missing_declared": [],
+          "undeclared_discovered": [
+            "README.md",
+            "pyproject.toml"
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:a99d629fbda64dcd9743325a9877e758a76d2262f1e0d251326138bd8aa010d7",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-architecture-drift",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:a99d629fbda64dcd9743325a9877e758a76d2262f1e0d251326138bd8aa010d7",
+      "skill": "elmos-architecture-drift",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "RISK_AND_TECHNICAL_DEBT_SCORED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "score_risk_and_debt",
+      "observed_code": "RISK_AND_TECHNICAL_DEBT_SCORED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 29,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "RISK_AND_TECHNICAL_DEBT_SCORED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "score_risk_and_debt",
+        "outputs": {
+          "hotspots": [
+            {
+              "branch_tokens": 0,
+              "confidence": "INFERRED",
+              "path": "src/app.py",
+              "score": 16,
+              "todo_markers": 0
+            },
+            {
+              "branch_tokens": 0,
+              "confidence": "INFERRED",
+              "path": "src/store.py",
+              "score": 16,
+              "todo_markers": 0
+            },
+            {
+              "branch_tokens": 0,
+              "confidence": "INFERRED",
+              "path": "src/api.py",
+              "score": 12,
+              "todo_markers": 0
+            },
+            {
+              "branch_tokens": 0,
+              "confidence": "INFERRED",
+              "path": "README.md",
+              "score": 8,
+              "todo_markers": 0
+            },
+            {
+              "branch_tokens": 0,
+              "confidence": "INFERRED",
+              "path": "pyproject.toml",
+              "score": 8,
+              "todo_markers": 0
+            },
+            {
+              "branch_tokens": 0,
+              "confidence": "INFERRED",
+              "path": "tests/test_app.py",
+              "score": 8,
+              "todo_markers": 0
+            }
+          ],
+          "model_version": "bounded-static-v1"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:24e2d71f581b8dd4cf8b014d3e25f119cfe0ae23c4826b3af0458337a5a6734d",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-risk-technical-debt",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:24e2d71f581b8dd4cf8b014d3e25f119cfe0ae23c4826b3af0458337a5a6734d",
+      "skill": "elmos-risk-technical-debt",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "BOUNDED_THREAT_MODEL_BUILT",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "build_threat_model",
+      "observed_code": "BOUNDED_THREAT_MODEL_BUILT",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 30,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "BOUNDED_THREAT_MODEL_BUILT",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "build_threat_model",
+        "outputs": {
+          "graph_edge_count": 1,
+          "secrets_disclosed": false,
+          "threats": [
+            {
+              "asset": "api",
+              "category": "authorization-review",
+              "confidence": "INFERRED",
+              "id": "api-auth-boundary"
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:d6d31e4c55387f37a99c185322119bd33b1323a45cddb9850facf1911e872435",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-security-threat-model",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "sast-scanner",
+          "dependency-scanner",
+          "human-threat-review"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:d6d31e4c55387f37a99c185322119bd33b1323a45cddb9850facf1911e872435",
+      "skill": "elmos-security-threat-model",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ANALYSIS_CACHE_KEY_RESOLVED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "cache_analysis_stage",
+      "observed_code": "ANALYSIS_CACHE_KEY_RESOLVED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 31,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ANALYSIS_CACHE_KEY_RESOLVED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "cache_analysis_stage",
+        "outputs": {
+          "cache_key": "sha256:1c2ec55a4eb3943d3019a85dca403285dc887721df8b3fd8cc8910869f1b0556",
+          "hit": false,
+          "input_digest": "sha256:2a55e3c07660886834b043483337c2143e50ea57313aa7e16b746cca55422ade",
+          "stage": "fingerprint"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-incremental-analysis-cache",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:302df367b6075fef0b0b7b317f7d81671aec307989f3a5e484450efb94127acd",
+      "skill": "elmos-incremental-analysis-cache",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "ARTIFACT_VERSION_CREATED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "version_artifact",
+      "observed_code": "ARTIFACT_VERSION_CREATED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 32,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "ARTIFACT_VERSION_CREATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "version_artifact",
+        "outputs": {
+          "artifact_id": "architecture",
+          "content_digest": "sha256:161078e42e8fef3ba4b9c984035baa2e431a50b31a18ac95614cc6820394af13",
+          "human_locked": false,
+          "version": 2
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-artifact-versioning-human-lock",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:644e0be0bf478e23dc22bac287bb18a7259b06b49e2a7b54bec22253376d9ea6",
+      "skill": "elmos-artifact-versioning-human-lock",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PLAN",
+      "expected_code": "DRAFT_PR_PLAN_VALIDATED",
+      "expected_state": "PLANNING_ONLY",
+      "handler_id": "plan_draft_pr",
+      "observed_code": "DRAFT_PR_PLAN_VALIDATED",
+      "observed_state": "PLANNING_ONLY",
+      "ordinal": 33,
+      "result": {
+        "capability_state": "PLAN",
+        "certification": "NOT_CERTIFIED",
+        "code": "DRAFT_PR_PLAN_VALIDATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "plan_draft_pr",
+        "outputs": {
+          "changed_paths": [
+            "src/store.py"
+          ],
+          "draft": true,
+          "git_mutated": false,
+          "push_performed": false,
+          "title": "Project Intelligence artifacts"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:f82358d923ff2f719db245678f9294119f6578e782e094297eac56be2f38ccc8",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-git-pr-automation",
+        "state": "PLANNING_ONLY",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "scm-credential-adapter",
+          "remote-pr-provider"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:f82358d923ff2f719db245678f9294119f6578e782e094297eac56be2f38ccc8",
+      "skill": "elmos-git-pr-automation",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "LOCAL_POLICY_ALLOWED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "authorize_and_audit",
+      "observed_code": "LOCAL_POLICY_ALLOWED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 34,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "LOCAL_POLICY_ALLOWED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "authorize_and_audit",
+        "outputs": {
+          "allowed": true,
+          "audit_digest": "sha256:b48627309f893d8c031eeb1b41efded88c0314088df0f652c962d936160e048c",
+          "missing_roles": [],
+          "tenant_match": true
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-collaboration-governance",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "enterprise-identity-provider",
+          "scim-adapter"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:ebb796b6d20dc79b7e23faabc8f1cd1ee80d5f9ff3be43d4c6dc64a628ab4d2f",
+      "skill": "elmos-collaboration-governance",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PLAN",
+      "expected_code": "CONNECTOR_CONTRACT_VALIDATED",
+      "expected_state": "PLANNING_ONLY",
+      "handler_id": "validate_connector_contract",
+      "observed_code": "CONNECTOR_CONTRACT_VALIDATED",
+      "observed_state": "PLANNING_ONLY",
+      "ordinal": 35,
+      "result": {
+        "capability_state": "PLAN",
+        "certification": "NOT_CERTIFIED",
+        "code": "CONNECTOR_CONTRACT_VALIDATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "validate_connector_contract",
+        "outputs": {
+          "connector_called": false,
+          "connector_id": "local-mcp",
+          "forbidden_scopes": [],
+          "scopes": [
+            "read:project"
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-integrations-mcp",
+        "state": "PLANNING_ONLY",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "mcp-connector-runtime",
+          "oauth-broker"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:8175ae8876515fc3ca8816150cf0ee2bc086197452a3b1cb454151c9222337a5",
+      "skill": "elmos-integrations-mcp",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "REPOSITORY_SHARDS_PLANNED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "plan_repository_shards",
+      "observed_code": "REPOSITORY_SHARDS_PLANNED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 36,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "REPOSITORY_SHARDS_PLANNED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "plan_repository_shards",
+        "outputs": {
+          "distributed_execution": false,
+          "shards": [
+            {
+              "bytes": 157,
+              "paths": [
+                "README.md",
+                "pyproject.toml",
+                "src/api.py"
+              ]
+            },
+            {
+              "bytes": 216,
+              "paths": [
+                "src/app.py",
+                "src/store.py"
+              ]
+            },
+            {
+              "bytes": 57,
+              "paths": [
+                "tests/test_app.py"
+              ]
+            }
+          ],
+          "total_files": 6
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-large-repository-scaling",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "distributed-runner-fleet"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:731e6ff82a959ba8c31589c01d314d28a3b9d3e46c3592200283bb957a0dd266",
+      "skill": "elmos-large-repository-scaling",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "SLO_EVALUATED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "evaluate_slo",
+      "observed_code": "SLO_EVALUATED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 37,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "SLO_EVALUATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "evaluate_slo",
+        "outputs": {
+          "met": true,
+          "production_slo_claimed": false,
+          "sample_count": 2,
+          "success_rate": "1",
+          "target": "0.99"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:70fb0d5fd9591de4dadbab99d4860ca296b8aa208fe3aaa620dc69899ade1801",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-observability-slo",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:70fb0d5fd9591de4dadbab99d4860ca296b8aa208fe3aaa620dc69899ade1801",
+      "skill": "elmos-observability-slo",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "LOCAL_QUALITY_EVALUATED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "evaluate_quality",
+      "observed_code": "LOCAL_QUALITY_EVALUATED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 38,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "LOCAL_QUALITY_EVALUATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "evaluate_quality",
+        "outputs": {
+          "external_evidence": "NOT_RUN",
+          "failed": [],
+          "local_pass": true,
+          "required_count": 1
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:bee47fe3fdbdee76a1f47f7e69c86a2026e7f0576db83361f2fb1cf7d22bdeb2",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-testing-evaluation",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:bee47fe3fdbdee76a1f47f7e69c86a2026e7f0576db83361f2fb1cf7d22bdeb2",
+      "skill": "elmos-testing-evaluation",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "CONVERSION_MAPPING_VALIDATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "validate_conversion_mapping",
+      "observed_code": "CONVERSION_MAPPING_VALIDATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 39,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "CONVERSION_MAPPING_VALIDATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "validate_conversion_mapping",
+        "outputs": {
+          "conversion_executed": false,
+          "invalid_mappings": [],
+          "mapping_count": 1
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:6c18918a23633e16aa2d68bc830b289372136ca32c804d7d122d0d1d78f3a388",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-conversion-integration",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "conversion-route-runtime"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:6c18918a23633e16aa2d68bc830b289372136ca32c804d7d122d0d1d78f3a388",
+      "skill": "elmos-conversion-integration",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "LOCAL",
+      "expected_code": "RUNTIME_COST_ESTIMATED",
+      "expected_state": "LOCAL_EXECUTED",
+      "handler_id": "estimate_runtime_cost",
+      "observed_code": "RUNTIME_COST_ESTIMATED",
+      "observed_state": "LOCAL_EXECUTED",
+      "ordinal": 40,
+      "result": {
+        "capability_state": "LOCAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "RUNTIME_COST_ESTIMATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "estimate_runtime_cost",
+        "outputs": {
+          "currency_cost": null,
+          "human_review_effort_seconds": 300,
+          "model_version": "local-linear-v1",
+          "system_wall_clock_eta_p50_seconds": "0.007",
+          "system_wall_clock_eta_p90_seconds": "0.013"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-runtime-cost-estimator",
+        "state": "LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [],
+        "warnings": []
+      },
+      "result_digest": "sha256:fcaa5bdd6c7d0196867567eb8567a5f8882749e9790d7c0468da3059b287080b",
+      "skill": "elmos-runtime-cost-estimator",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PLAN",
+      "expected_code": "DEPLOYMENT_READINESS_PLANNED",
+      "expected_state": "PLANNING_ONLY",
+      "handler_id": "plan_deployment",
+      "observed_code": "DEPLOYMENT_READINESS_PLANNED",
+      "observed_state": "PLANNING_ONLY",
+      "ordinal": 41,
+      "result": {
+        "capability_state": "PLAN",
+        "certification": "NOT_CERTIFIED",
+        "code": "DEPLOYMENT_READINESS_PLANNED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "plan_deployment",
+        "outputs": {
+          "deployment_performed": false,
+          "missing_controls": [],
+          "topology": "self-hosted"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:a42116881c4661dbad4dd0ee32ee5c0cc9a07734528b2ffa2f1a615b34573ea8",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-deployment-private-cloud",
+        "state": "PLANNING_ONLY",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "container-build",
+          "signer",
+          "cluster-provider",
+          "deployment-authority"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:a42116881c4661dbad4dd0ee32ee5c0cc9a07734528b2ffa2f1a615b34573ea8",
+      "skill": "elmos-deployment-private-cloud",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PLAN",
+      "expected_code": "RELEASE_READINESS_EVALUATED",
+      "expected_state": "PLANNING_ONLY",
+      "handler_id": "evaluate_release_readiness",
+      "observed_code": "RELEASE_READINESS_EVALUATED",
+      "observed_state": "PLANNING_ONLY",
+      "ordinal": 42,
+      "result": {
+        "capability_state": "PLAN",
+        "certification": "NOT_CERTIFIED",
+        "code": "RELEASE_READINESS_EVALUATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "evaluate_release_readiness",
+        "outputs": {
+          "certified": false,
+          "decision": "READY_FOR_EXTERNAL_GATE",
+          "failing_gates": [],
+          "release_authorized": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-release-certification",
+        "state": "PLANNING_ONLY",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "independent-certification-authority",
+          "production-evidence"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:7e8f91464d37476816c3ad17c661f43d563fc444c90f559b9b1f6ca7dd6609c9",
+      "skill": "elmos-release-certification",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "LOCAL_ENTITLEMENT_EVALUATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "evaluate_entitlement_usage",
+      "observed_code": "LOCAL_ENTITLEMENT_EVALUATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 43,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "LOCAL_ENTITLEMENT_EVALUATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "evaluate_entitlement_usage",
+        "outputs": {
+          "allowed_features": [
+            "reader"
+          ],
+          "billing_performed": false,
+          "denied_features": [],
+          "edition": "enterprise",
+          "usage_record_digest": "sha256:b48627309f893d8c031eeb1b41efded88c0314088df0f652c962d936160e048c"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-commercial-packaging",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "billing-provider",
+          "license-authority"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:f6c54e638a6cd28fdd6106dbe2b60944029ce468c4ad69c44ff31ce418d34378",
+      "skill": "elmos-commercial-packaging",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "DEBUG_CAPABILITIES_NEGOTIATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "negotiate_debug_adapter",
+      "observed_code": "DEBUG_CAPABILITIES_NEGOTIATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 44,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DEBUG_CAPABILITIES_NEGOTIATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "negotiate_debug_adapter",
+        "outputs": {
+          "adapter_started": false,
+          "forbidden": [],
+          "negotiated": [
+            "breakpoints",
+            "stack"
+          ],
+          "unsupported": []
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-debug-adapter-gateway",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "dap-process-adapter"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:cd8a144930fbd64103b15db693b60729ca304c4231006493f35fbaeb04c472b6",
+      "skill": "elmos-debug-adapter-gateway",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PLAN",
+      "expected_code": "DEBUG_SANDBOX_SESSION_PLANNED",
+      "expected_state": "PLANNING_ONLY",
+      "handler_id": "plan_debug_session",
+      "observed_code": "DEBUG_SANDBOX_SESSION_PLANNED",
+      "observed_state": "PLANNING_ONLY",
+      "ordinal": 45,
+      "result": {
+        "capability_state": "PLAN",
+        "certification": "NOT_CERTIFIED",
+        "code": "DEBUG_SANDBOX_SESSION_PLANNED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "plan_debug_session",
+        "outputs": {
+          "policy": {
+            "evaluate": "side-effect-free-only",
+            "network": "deny",
+            "read_only_source": true,
+            "revision": "abc123",
+            "ttl_seconds": 600
+          },
+          "sandbox_started": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-debug-sandbox-orchestration",
+        "state": "PLANNING_ONLY",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "container-or-microvm-runner",
+          "debug-adapter-process"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:91a8175a8c99266df787061b8dc5b641d0a9d8c12a4f72a750b721fd7d717094",
+      "skill": "elmos-debug-sandbox-orchestration",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "DEBUG_VIEW_STATE_REDUCED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "reduce_debug_view",
+      "observed_code": "DEBUG_VIEW_STATE_REDUCED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 46,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DEBUG_VIEW_STATE_REDUCED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "reduce_debug_view",
+        "outputs": {
+          "event_count": 2,
+          "threads": {
+            "main": {
+              "frame": null,
+              "last_event": "continued",
+              "sequence": 2
+            }
+          },
+          "ui_rendered": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-online-debug-workbench",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "browser-debug-workbench"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:576777f0c22e086c17c9373c822a38504ca0f93f30205ec09496ca3ebe1539c0",
+      "skill": "elmos-online-debug-workbench",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "DEBUG_LEARNING_MISSION_BUILT",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "build_debug_mission",
+      "observed_code": "DEBUG_LEARNING_MISSION_BUILT",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 47,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DEBUG_LEARNING_MISSION_BUILT",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "build_debug_mission",
+        "outputs": {
+          "mission": [
+            {
+              "evidence_ref": "src/app.py:3",
+              "frame_id": "frame-1",
+              "prompt": "Inspect refund and cite its evidence.",
+              "step": 1
+            }
+          ],
+          "model_used": false,
+          "side_effects": false
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-debug-learning-copilot",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "learning-model-adapter",
+          "interactive-debug-ui"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:3d1efd91f85da426d5e7e6f3cc62ef1f05845c7f14dff51d7e64a1fd6d8c6d10",
+      "skill": "elmos-debug-learning-copilot",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "R0_REPLAY_BUNDLE_BUILT",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "build_replay_bundle",
+      "observed_code": "R0_REPLAY_BUNDLE_BUILT",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 48,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "R0_REPLAY_BUNDLE_BUILT",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "build_replay_bundle",
+        "outputs": {
+          "bundle": {
+            "events": [
+              {
+                "event_digest": "sha256:58747f373cbcd13f0fef2ace84bf7580fcce9a59761ea59844e03296fb7f1ec7",
+                "event_id": "event-1",
+                "frame": "refund",
+                "kind": "stopped",
+                "previous_event_digest": null,
+                "sequence": 1,
+                "thread_id": "main",
+                "timestamp": "2026-08-24T00:00:00Z",
+                "trace_id": "trace-1"
+              },
+              {
+                "event_digest": "sha256:e04b27e07b18081dc204a865113673c2de8951a01b9bd829153436c2b8cc5e56",
+                "event_id": "event-2",
+                "kind": "continued",
+                "previous_event_digest": "sha256:58747f373cbcd13f0fef2ace84bf7580fcce9a59761ea59844e03296fb7f1ec7",
+                "sequence": 2,
+                "thread_id": "main",
+                "timestamp": "2026-08-24T00:00:01Z",
+                "trace_id": "trace-1"
+              }
+            ],
+            "native_reverse_debug": false,
+            "replay_level": "R0",
+            "terminal_digest": "sha256:e04b27e07b18081dc204a865113673c2de8951a01b9bd829153436c2b8cc5e56"
+          },
+          "digest": "sha256:182cadedb7ce6635ae3279ce304be73a236138dcac95eb9fe2b1699dc4c6c6fb"
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-debug-record-replay",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "r1-input-replay",
+          "r2-checkpoint-replay",
+          "r3-native-reverse-debug"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:5e70544104652c0cc8ff11b646c229b92cfb9d4e376a322604cfd43fd231632e",
+      "skill": "elmos-debug-record-replay",
+      "status": "PASSED"
+    },
+    {
+      "capability_state": "PARTIAL",
+      "expected_code": "DEBUG_EVENTS_CORRELATED",
+      "expected_state": "PARTIAL_LOCAL_EXECUTED",
+      "handler_id": "correlate_debug_events",
+      "observed_code": "DEBUG_EVENTS_CORRELATED",
+      "observed_state": "PARTIAL_LOCAL_EXECUTED",
+      "ordinal": 49,
+      "result": {
+        "capability_state": "PARTIAL",
+        "certification": "NOT_CERTIFIED",
+        "code": "DEBUG_EVENTS_CORRELATED",
+        "external_effects_performed": false,
+        "external_evidence": "NOT_RUN",
+        "handler_id": "correlate_debug_events",
+        "outputs": {
+          "causal_gaps": [],
+          "distributed_pause_performed": false,
+          "timelines": [
+            {
+              "correlation_id": "trace-1",
+              "events": [
+                {
+                  "event_id": "event-1",
+                  "frame": "refund",
+                  "kind": "stopped",
+                  "secret": "must-not-leak",
+                  "sequence": 1,
+                  "thread_id": "main",
+                  "timestamp": "2026-08-24T00:00:00Z",
+                  "trace_id": "trace-1"
+                },
+                {
+                  "event_id": "event-2",
+                  "kind": "continued",
+                  "sequence": 2,
+                  "thread_id": "main",
+                  "timestamp": "2026-08-24T00:00:01Z",
+                  "trace_id": "trace-1"
+                }
+              ]
+            }
+          ]
+        },
+        "project_id": "project-a",
+        "request_id": "request-1",
+        "result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+        "revision": "abc123",
+        "schema_version": "elmos.project-intelligence.result.v1",
+        "skill": "elmos-distributed-debug-correlation",
+        "state": "PARTIAL_LOCAL_EXECUTED",
+        "tenant_id": "tenant-a",
+        "unavailable": [
+          "distributed-debug-controller",
+          "dual-run-runtime"
+        ],
+        "warnings": []
+      },
+      "result_digest": "sha256:a08981a0656b0abbb87ec2febadcd64e03be4751123485b34a7c39d72c045cc1",
+      "skill": "elmos-distributed-debug-correlation",
+      "status": "PASSED"
+    }
+  ],
+  "schema_version": "elmos.project-intelligence.local-qualification.v1",
+  "source_package": "elmos-project-intelligence-skills",
+  "source_version": "1.1.0"
+}

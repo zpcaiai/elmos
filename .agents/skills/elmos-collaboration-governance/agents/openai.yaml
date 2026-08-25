@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 协作、RBAC、审批与审计"
+  short_description: "Guide 协作、RBAC、审批与审计 with evidence controls"
+  default_prompt: "Use $elmos-collaboration-governance as guidance for 协作、RBAC、审批与审计 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

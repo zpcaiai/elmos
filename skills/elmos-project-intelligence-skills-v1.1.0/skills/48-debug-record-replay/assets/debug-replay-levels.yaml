@@ -1,0 +1,14 @@
+schema_version: 1
+levels:
+  R0:
+    name: event-timeline
+    guarantee: Browse recorded commands, pauses, outputs and side-effect summaries; no execution reversal.
+  R1:
+    name: input-test-replay
+    guarantee: Re-run a controlled test/input in a rebuilt environment; determinism is measured, not assumed.
+  R2:
+    name: checkpoint-restore
+    guarantee: Restore an Elmos-managed workspace/runtime checkpoint when supported by the runtime profile.
+  R3:
+    name: native-reverse-debug
+    guarantee: Reverse continue/step only for adapters/runtimes that explicitly support and pass conformance tests.

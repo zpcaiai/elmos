@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 风险、热点与技术债分析"
+  short_description: "Guide 风险、热点与技术债分析 with evidence controls"
+  default_prompt: "Use $elmos-risk-technical-debt as guidance for 风险、热点与技术债分析 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

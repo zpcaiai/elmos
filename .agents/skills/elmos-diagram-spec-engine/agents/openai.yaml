@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 统一图表语义规范"
+  short_description: "Guide 统一图表语义规范 with evidence controls"
+  default_prompt: "Use $elmos-diagram-spec-engine as guidance for 统一图表语义规范 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."

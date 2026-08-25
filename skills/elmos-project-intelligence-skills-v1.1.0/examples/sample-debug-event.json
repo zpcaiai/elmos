@@ -1,0 +1,19 @@
+{
+  "event_id": "evt-debug-001",
+  "event_type": "session.paused",
+  "occurred_at": "2026-08-20T07:10:00Z",
+  "tenant_id": "tenant-demo",
+  "project_id": "project-orders",
+  "revision_id": "rev-abc123",
+  "debug_session_id": "dbg-session-001",
+  "sequence": 42,
+  "traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
+  "redaction_profile": "debug-default",
+  "payload": {
+    "reason": "breakpoint",
+    "thread_id": "thread-1",
+    "frame_id": "frame-18",
+    "source_ref": "src/OrderService.java",
+    "line": 128
+  }
+}

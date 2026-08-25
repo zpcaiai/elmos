@@ -1,0 +1,47 @@
+{
+  "mission_id": "mission-order-creation",
+  "tenant_id": "tenant-demo",
+  "project_id": "project-orders",
+  "revision_id": "rev-abc123",
+  "title": "理解订单创建事务与事件发布",
+  "mode": "guided",
+  "difficulty": "beginner",
+  "roles": [
+    "backend-developer"
+  ],
+  "entry": {
+    "kind": "test",
+    "ref": "OrderServiceTest#createOrder"
+  },
+  "learning_objectives": [
+    "识别 Controller 到领域服务的调用链",
+    "解释事务提交后事件发布时机"
+  ],
+  "steps": [
+    {
+      "step_id": "step-1",
+      "breakpoint_ref": "symbol:OrderController.create",
+      "prompt": "预测下一层会调用哪个组件，并说明依据。",
+      "hints": [
+        "查看调用栈",
+        "打开架构上下文"
+      ],
+      "completion": "prediction_and_step_completed"
+    },
+    {
+      "step_id": "step-2",
+      "breakpoint_ref": "symbol:OrderEventPublisher.publish",
+      "prompt": "指出此时事务状态和将产生的外部副作用。",
+      "hints": [
+        "查看事务与消息时间线"
+      ],
+      "completion": "side_effect_explained"
+    }
+  ],
+  "assessment": {
+    "type": "rubric",
+    "pass_score": 0.8
+  },
+  "stale": false,
+  "redaction_profile": "training-default"
+}

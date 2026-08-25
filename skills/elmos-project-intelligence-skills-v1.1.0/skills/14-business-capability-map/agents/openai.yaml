@@ -1,0 +1,7 @@
+interface:
+  display_name: Elmos · 功能思维导图与业务能力地图
+  short_description: 从页面、API、服务、数据和已有需求发现业务域、能力、功能模块和子功能，并生成双向可追踪思维导图。
+  brand_color: '#0F766E'
+  default_prompt: 使用 elmos-business-capability-map 按模块规格实施、测试并提供证据。
+policy:
+  allow_implicit_invocation: true

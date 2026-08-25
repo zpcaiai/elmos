@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/skill-output.schema.json",
+  "title": "Elmos Skill Execution Output",
+  "type": "object",
+  "required": [
+    "skill",
+    "status",
+    "revision",
+    "completed_tasks",
+    "tests",
+    "evidence",
+    "known_limitations"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string",
+      "pattern": "^elmos-"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "partial",
+        "failed",
+        "blocked"
+      ]
+    },
+    "revision": {
+      "type": "string"
+    },
+    "completed_tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "command",
+          "result"
+        ],
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "result": {
+            "enum": [
+              "passed",
+              "failed",
+              "not_run"
+            ]
+          },
+          "output_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "resume_checkpoint": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "system_wall_clock_eta": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "human_review_effort": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS 调试适配器网关与能力协商"
+  short_description: "Guide 调试适配器网关与能力协商 with evidence controls"
+  default_prompt: "Use $elmos-debug-adapter-gateway as guidance for 调试适配器网关与能力协商 with the pinned Project Intelligence contracts. Treat dependencies as implementation prerequisites, not permission or automatic execution; keep declared, executed, external, and certified states separate."
