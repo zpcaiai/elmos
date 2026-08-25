@@ -13,6 +13,8 @@ import pytest
 from elmos_polyglot_route import assembly as assembly_module
 from elmos_polyglot_route.assembly import (
     assemble_project as _assemble_project,
+)
+from elmos_polyglot_route.assembly import (
     verify_archived_assembly_closure,
 )
 from elmos_polyglot_route.equivalence import behavior_equivalence

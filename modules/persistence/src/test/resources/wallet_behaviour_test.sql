@@ -16,13 +16,12 @@ SELECT organization_id, balance_minor, reserved_minor, status FROM wallet_accoun
 -- ---------------------------------------------------------------------------
 -- T02 top-up credits once, replay is a no-op
 -- ---------------------------------------------------------------------------
-INSERT INTO wallet_topup_orders (topup_order_id, organization_id, actor_id, amount_minor,
-    provider, out_trade_no, idempotency_key, expires_at)
-VALUES ('tu-1', 'org-w1', 'actor-1', 100000, 'WECHAT_PAY', 'WX-0001', 'idem-tu-1', now() + interval '1 hour');
+SELECT elmos_wallet_create_topup_order(
+    'tu-1', 'org-w1', 'actor-1', 100000, 'WECHAT_PAY', 'WX-0001', 'idem-tu-1', 3600);
 
-SELECT elmos_wallet_credit_topup('tu-1', 'wxtxn-1', 'actor-1') AS first_credit;
-SELECT elmos_wallet_credit_topup('tu-1', 'wxtxn-1', 'actor-1') AS replayed_credit;
-SELECT elmos_wallet_credit_topup('tu-1', 'wxtxn-1', 'actor-1') AS replayed_again;
+SELECT elmos_wallet_credit_topup('org-w1', 'tu-1', 'wxtxn-1', 'actor-1') AS first_credit;
+SELECT elmos_wallet_credit_topup('org-w1', 'tu-1', 'wxtxn-1', 'actor-1') AS replayed_credit;
+SELECT elmos_wallet_credit_topup('org-w1', 'tu-1', 'wxtxn-1', 'actor-1') AS replayed_again;
 
 \echo '--- T02 expect balance 100000 and exactly ONE ledger entry'
 SELECT balance_minor FROM wallet_accounts WHERE organization_id='org-w1';
@@ -98,7 +97,7 @@ SELECT elmos_wallet_reserve('res-5','org-w1','job-5', 9000, 'q','actor-1', 60);
 -- before the hold, which is the constraint doing its job on a lazy test.
 UPDATE wallet_reservations SET held_at = now() - interval '2 hours',
        expires_at = now() - interval '1 hour' WHERE reservation_id='res-5';
-SELECT elmos_wallet_expire_reservations(100) AS expired_count;
+SELECT elmos_wallet_expire_reservations('org-w1', 100) AS expired_count;
 \echo '--- T09 expect 1 expired, reserved back to 0'
 SELECT status, resolution_code FROM wallet_reservations WHERE reservation_id='res-5';
 SELECT reserved_minor FROM wallet_accounts WHERE organization_id='org-w1';
@@ -223,7 +222,7 @@ SELECT organization_id,
        projected_balance_minor - ledger_balance_minor AS balance_drift,
        projected_reserved_minor, held_reserved_minor,
        projected_reserved_minor - held_reserved_minor AS reserved_drift
-  FROM elmos_wallet_reconcile();
+  FROM elmos_wallet_reconcile('org-w1');
 
 \echo '--- T12b balance_after chain must be self-consistent by replay'
 SELECT bool_and(replayed = balance_after_minor) AS chain_intact

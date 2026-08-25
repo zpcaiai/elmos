@@ -3,7 +3,9 @@ package io.elmos.commercialadapter;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.elmos.commercial.SelfServiceBillingPort;
+import io.elmos.commercial.WalletPort;
 import io.elmos.persistence.JdbcSelfServiceBillingStore;
+import io.elmos.persistence.JdbcWalletStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,6 +56,25 @@ public class BillingDatabaseConfiguration {
             TransactionTemplate commercialBillingTransactions
     ) {
         return new JdbcSelfServiceBillingStore(
+                commercialBillingJdbcClient,
+                commercialBillingTransactions
+        );
+    }
+
+    /**
+     * 预付费钱包。与订阅计费共用同一个 DataSource 和事务管理器。
+     *
+     * <p>共用的是连接，不是权限：commercial-api 在库里的身份是最小权限角色
+     * {@code elmos_billing_runtime}，它对钱包<b>一张表都没有</b>，能做的只是
+     * V73 授予的两个函数——开充值单、给一张指定的充值单入账。
+     * 越权面积因此是两个函数签名，而不是一组表权限。
+     */
+    @Bean
+    WalletPort walletPort(
+            JdbcClient commercialBillingJdbcClient,
+            TransactionTemplate commercialBillingTransactions
+    ) {
+        return new JdbcWalletStore(
                 commercialBillingJdbcClient,
                 commercialBillingTransactions
         );

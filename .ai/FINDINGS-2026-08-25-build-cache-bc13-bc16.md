@@ -299,3 +299,180 @@ uv run --locked mypy --strict             # 装上 psycopg 后应当零错误
 装上 `psycopg` 后，26 个 postgres 参数化会从 skip 转为真跑——那一段正是本轮
 最可能藏矛盾的地方（参照 #1 PHP 枚举的教训：云端只验了一层，Mac 上的完整管线
 才暴露出上下游口径不一致）。
+
+---
+
+# 九、第二轮：Mac 暴露的 11 条 + 两条既有安全缺陷，全部处置完毕
+
+> 2026-08-25 下午。第一轮（上面一到八节）之后，用户在 Mac 上跑了全量，
+> 得到 **11 failed / 1626 passed / 26 skipped**（1663 collected，含 live PostgreSQL 17.5）。
+> 这 11 条**没有一条属于本轮改动集**——6 个相关测试文件对本轮改过的模块 import 数全为 0，
+> 且同样这 11 条在云端（带着改动）全绿。它们是 darwin-普通用户 与 linux-root 之间的差。
+>
+> 本节把这 11 条连同两条既有安全缺陷一并处置完。
+
+## 9.1 云端基线的方法论漏洞：以 root 跑，权限断言全是空转
+
+容器 `id -u` = **0**。root 绕过文件权限检查，所以**任何依赖「权限被真正强制」的断言在云端都没有效力**。
+第一轮报的 1600 passed 在这一类上不构成证据。
+
+这跟 `#1 PHP 枚举` 是同一个教训的**新形状**：不是「云端跑不了这一段」，是
+**「云端跑了，但跑得没有意义」**。后者更危险，因为它以绿色的形式出现。
+
+处置时用 `capsh --drop=cap_dac_override` 在容器内复现了 macOS 的权限语义
+（仍是 uid 0，但内核按普通用户强制文件模式）：改动前四条失败**逐字复现**，改动后
+五个文件 `118 passed, 2 skipped`。这个手法值得复用——它让「只有 Mac 能验」的一类问题
+在云端可验。
+
+## 9.2 十一条的归类与处置
+
+| # | 测试 | 归类 | 处置 |
+|---|---|---|---|
+| 4 | `test_cas` ×3、`test_checkpoint` ×1 | root 绕过 `BLOB_MODE = 0o444` | 篡改前显式解锁再复原；**并补上真正测这条加固的测试** |
+| 2 | `test_the_xcode_swift_adapter_holds_without_a_swift_toolchain`、`test_the_flutter_pub_adapter_holds_without_a_flutter_sdk` | **有意的绊线，正确触发** | 写了真认证替换 skip |
+| 1 | `test_msbuild_incremental_build_through_the_sandboxed_nuget_cache` | **两个真缺陷** | 测试侧路径断言 + 产品侧解析器缺口 |
+| 2 | `test_overlay` ×2 | Linux-only / 平台拼写 | 一条按平台 skip，一条**不 skip**并加了 macOS 拼写 |
+| 2 | `test_coordinator`、`test_observability` | 测量的是宿主机不是产品 | 重写为测真正的语义 |
+
+### 4 条权限：加固此前**没有有效测试**
+
+`cas.py:45` 的 `BLOB_MODE = 0o444` 由 `_link_commit`（**不是** `put_bytes`，交接说明这里说错了）
+在 `os.link`/`os.replace` 前 chmod 暂存文件——所以它是**所有入库路径的唯一咽喉**。
+既有的 `test_blobs_are_stored_read_only` 只断言 `& 0o222 == 0`，
+`0o400`、`0o000` 或**别的入库路径**回归都看不见。
+
+已替换为 `test_every_store_path_leaves_the_blob_read_only`：对 `put_bytes` / `put_document` /
+`put_stream`（压缩与非压缩两条分支，用 `info().compression` 钉住走的是哪条）/ `put_file` /
+`repair_from` 全部断言 `stat().st_mode & 0o777 == BLOB_MODE == 0o444`，
+并断言镜像不变式——`materialize` 默认给 `0o644`、按需 `0o755`，物化副本是调用者的，
+**永远不继承规范模式**。
+
+用 `stat` 而不是「尝试写入应当抛 PermissionError」是刻意的：后者在 uid 0 下永远不会触发，
+又会变成一条空转的测试。
+
+**变异证明**：`BLOB_MODE = 0o644` → 1 failed；`0o400`（仍只读但契约不同）→ 1 failed；
+删掉 `_link_commit` 里的 chmod → 2 failed。
+
+### 2 条绊线：这不是失败，是仓库在通知你可以关掉两个 NOT_RUN
+
+`test_native_toolchains.py:478-480` 与 `:489-491` 的形状是
+「工具缺席则 skip，**工具出现则 `pytest.fail`**」，fail 信息直说
+`replace this skip with a real Xcode/SwiftPM certification`。
+写测试的人知道 CI 装不上，于是留了绊线。用户 Mac 上 Swift 6.3.3 与 Flutter 3.44.1 都在，
+绊线正确触发。
+
+已写真认证（参照物是 `test_gradle_build_cache_is_redirected_and_actually_hits` 的
+冷→毁→热三段，以及 `test_go_build_cache_...` 的「无事发生即命中信号」）：
+
+- **Swift**：三个声明的缓存目录 empty→non-empty；`.build`、`~/Library/Caches/org.swift.swiftpm`、
+  `~/.swiftpm/cache`、Xcode DerivedData **全部不被创建**；然后**删掉链接产物**再构建，
+  `misses == 0` 把它放回来——产物只可能来自沙箱 DerivedData。这一步是承重的，
+  「在没动过的目录里再构建一次」什么都证明不了。
+- **Flutter**：`PUB_CACHE` 填充且 `~/.pub-cache` 不被创建；然后**销毁全部解析产物**
+  （`.dart_tool/` 与 `pubspec.lock`）用 `--offline` 重解析——`--offline` 禁网，
+  能重建 `package_config.json` 就只可能是沙箱缓存供的。
+- 两者的无工具契约断言**一条不减**，而且从 skip 后面挪了出来，现在**每台机器都跑**。
+
+### 1 条 msbuild：一个测试缺陷 + 一个产品缺陷
+
+- 测试侧：`endswith` 拿整个 stdout+stderr 去后缀匹配路径。darwin 上 `tmp_path` 在
+  `/var/folders`（`/private/var` 的符号链接），工具与我们可以用不同字符串指同一目录；
+  且 SDK 往 stderr 写一个字节就破坏后缀。已改为 `Path(...).resolve()` 相等——**更强，不是更弱**。
+- **产品侧**（`native_adapters.py:296`）：MSBuild 有**两种** skip 消息，解析器只认一种。
+  `because all output files are up-to-date` 是增量复用；
+  `because it has no inputs` 是这个目标本来就没事干——后者在无资源项目的 `CoreResGen`、
+  无 copy-local 引用的 `_CopyFilesMarkedCopyLocal` 上必然出现，却被计成**热构建的 miss**。
+  四个 header 里哪个走这条路由宿主 SDK 的目标集决定，所以 `misses == 0`
+  在写它的那个 SDK 上可满足、换一个就不可满足——**一个没有产品成因的平台相关失败**。
+  已把 `_SKIPPED` 扩到匹配两种消息（没干活不等于没命中缓存），`_HIT` 仍只数真正的增量复用。
+  新增 `test_msbuild_counts_both_of_msbuilds_skip_messages_as_not_a_miss` 钉住，
+  并反向断言「有 header 无 skip 行 = 执行了」，防止解析器被钝化成恒返回 0。
+  **变异证明**：把 `_SKIPPED` 改回单消息 → 1 failed。
+
+### 2 条 overlay：一条 skip，一条**拒绝** skip
+
+- `test_the_workspace_works_on_top_of_a_kernel_overlayfs` → `skipif(sys.platform != "linux")`。
+  不加的话 macOS 在 `ctypes.CDLL("libc.so.6")` 就死了，连体内既有的 skip 都到不了。
+- `test_host_system_paths_cannot_be_mounted[/home/someone]` → **没有 skip**。
+  `/home/someone` 在 darwin 上同样是「别人的家目录」，一样危险，skip 掉会藏起一个真实缺口。
+  改为：把 macOS 的拼写 **`/Users/someone` 加进参数表**（`/Users` 本就在
+  `DENIED_MOUNT_PREFIXES` 里却从没被测过——两个平台都是净增覆盖），并把 `pytest.raises`
+  换成显式 `try/except → pytest.fail`，**失败时打印 `SandboxPolicy.check` 自己解析出的路径**
+  与 `platform.system()`。
+  **这一条是唯一没有在云端关闭的**：若 macOS 把 `/home/someone` 解析成自身（autofs 挂载点是目录
+  不是符号链接，`realpath` 不动它），`/home` 前缀就命中、测试通过；若仍失败，失败信息会指名
+  解析后的路径，那就是 `overlay.py` 的 `DENIED_MOUNT_PREFIXES` **产品缺口**，
+  修法是补一条前缀，跟当初补 `/private/etc`、`/Users` 一样。没有瞎猜着加一条。
+
+### 2 条时序：它们测的是宿主机，不是产品
+
+- `test_coordinator`：睡 0.05s 却断言 `elapsed < 0.04`。而且
+  `reason_code == "LOOKUP_TIMEOUT"` **根本没测到意图**——`_poll_probe_worker` 在「等到了迟到的探针」
+  时报同一个码。已改为：探针睡 5s 且**只在跑完时**写标记文件，
+  `assert not finished.exists()` 是无时钟的直接证据；同时注入 `monotonic` 钉住预算算术，
+  让 20ms 决策截止不会在负载下过期改写原因码。
+  **实测旧写法确实会飘**：2 核机器 4× 超订下测到 38.5ms / 39.5ms，紧贴 40ms 上限。
+  新写法 11/11 通过，其中 5 次在同样负载下。
+- `test_observability`：`Tracer.span` 用 `perf_counter` 计时（注入的 `ManualClock` 只盖
+  `started_at`），`Histogram.summary` 把 p95 **四舍五入到微秒**。空 span 在快机器上是几百纳秒，
+  舍入成 `0.0`，而 `0.0 <= 0.0` 正确地报告「没有超标」。**测的是宿主机速度。**
+  `Slo.evaluate` 的 `observed <= budget_ms` 是**对的**——预算是「至多」，正好落在上面不算超标，
+  改成 `<` 会让 `DEFAULT_SLOS` 每一条都拒绝自己声明的预算。所以**没动 `src/`**。
+  已改为真超标（5ms span vs 1ms 预算，`sleep` 只会超不会欠），并补一条
+  `test_a_measurement_exactly_at_budget_is_not_a_breach` 钉住 `50.0→pass / 50.001→fail /
+  49.999→pass`，让「把 `<=` 改成 `<`」这个诱人的错误变成一次可见的、故意的改动。
+
+## 9.3 两条既有安全缺陷：已修，且两个方向都用变异验过
+
+### 缺陷 1：`compile_prompt_prefix` 的存在性预言机与全局名抢注
+
+根因是 `_ensure_scope` **未命中即创建**。已改为：没有显式的
+`project_scope_claim` 就**不创建**，且**absent 与 foreign 返回同一个拒绝**。
+认领项目名是一个**刻意的动作**，归 `MetadataStore.ensure_project`（经 `POST /runs`），
+它对自己无权的名字答 `CONFLICT`。
+
+代码里留了理由（`parity_store.py:738-753`）：在这里创建会让**每一次 cache-parity 写入
+都兼任一次对全局唯一名字的认领**，于是「编译一个 prompt prefix」就能把另一个租户
+尚未创建的项目变出来，并因为 `ensure_project` 随后 fail closed 而**永久堵死它**。
+
+**变异证明**：把创建行为改回去 → `test_the_control_planes_parity_repository_cannot_claim_a_project`
+与 `test_a_request_serving_repository_answers_absent_and_foreign_alike` 双双失败。
+
+### 缺陷 2：四条路由的幂等 key 预言机
+
+六条路由现在都在 preflight 名单里：`append_context_ledger_event`、`compile_prompt_prefix`、
+`decide_cache_affinity`、`prepare_provider_prompt`、`record_provider_usage`、
+`start_cache_parity_run`。新增 `tests/test_route_project_authorization.py`（11 条）。
+
+**变异证明**：把 preflight 移到幂等 claim 之后 → **25 条失败**，覆盖
+「被拒请求必须零 `idempotency_records` 行」「已用 key 与未用 key 对未授权者不可区分」
+「跨 principal」以及 BC-10 既有的三条 tenant-scope 断言。
+
+### 仍然可利用的部分：`projects.project_id` 是**全局** PRIMARY KEY
+
+`0001_init.sql:12` 声明它为全局主键，`0006` 在其上加复合唯一索引作 FK 目标却**没有撤掉它**。
+API 层已经堵死「未授权即可抢注」，但**一个合法授权的租户仍然可以占掉另一个租户想要的名字**。
+
+这是产品/schema 决定，不是缺陷判定：`project_id` 到底是不是全局命名空间？
+**本轮刻意没改**——改主键会牵动九个迁移里的每一个 FK，且必须在 live PostgreSQL 上验证。
+若判定它应当是租户内唯一，迁移大致要做：把 `projects` 主键改为 `(tenant_id, project_id)`；
+把每个引用 `projects(project_id)` 的 FK 改为复合；对既有跨租户重名先 fail closed 再建约束
+（照 `V70` 的做法）；并且这是**破坏性变更**，任何按裸 `project_id` 寻址的调用方都要同步改。
+
+## 9.4 本轮之后的口径
+
+云端（linux/aarch64，CPython 3.11.15，uid 0）：
+**1652 passed, 52 skipped, 0 failed**；`ruff check src tests` **全绿**
+（顺手修掉了 `test_e2e.py` 那条既有的 `I001` 导入排序，那是全仓最后一条 lint 失败）；
+`mypy --strict` 仅剩 `psycopg` import-not-found，装上 dev group 即消失。
+
+改动集 **27 个文件：5 新 22 改**，对 pristine 基线 `diff -rq` 核过，没有第 28 个。
+
+**这些仍然只是本地工程证据。** 不是 provider、生产、多主机、独立验证者或认证证据。
+BC-18 仍 `NOT_RUN`，BC-19 仍 `NOT_CERTIFIED`。
+
+Mac 上仍需你跑一遍，重点看三处：
+1. `test_host_system_paths_cannot_be_mounted[/home/someone]` —— 见 9.2，失败即为产品缺口，
+   失败信息会指名解析后的路径。
+2. 两条新的工具链认证（Swift / Flutter）—— 只有你的机器能执行。
+3. `mypy --strict` 应当零错误。

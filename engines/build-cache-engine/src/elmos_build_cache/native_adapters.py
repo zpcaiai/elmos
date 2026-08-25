@@ -291,9 +291,23 @@ class MsbuildNugetAdapter(NativeBuildCacheAdapter):
     # target it *considers*, then -- if it was up to date -- a "Skipping target"
     # line underneath. So the header alone is not a miss: a target counts as
     # executed only when no skip line names it.
+    # MSBuild has TWO skip messages, and only one of them means "cache hit":
+    # "because all output files are up-to-date" is incremental reuse, while
+    # "because it has no inputs" means the target had nothing to do in the
+    # first place. Counting only the first as a skip made a no-op target
+    # (``CoreResGen`` in a project with no resources, ``_CopyFilesMarkedCopy\
+    # Local`` with no copy-local references) register as a *miss on a warm
+    # build* -- and which of the four headers takes that path is decided by the
+    # host SDK's target set, so ``misses == 0`` was satisfiable on the SDK this
+    # was written against and unsatisfiable on another. ``_SKIPPED`` therefore
+    # matches both messages (a target that did nothing did not miss the cache),
+    # while ``_HIT`` still counts only genuine incremental reuse.
     _HIT = re.compile(r"skipping target .* because all output files are up-to-date", re.IGNORECASE)
     _HEADER = re.compile(r"^\s*(CoreCompile|CoreResGen|_CreateAppHost|_CopyFilesMarkedCopyLocal):\s*$", re.MULTILINE)
-    _SKIPPED = re.compile(r'Skipping target "(\w+)" because all output files are up-to-date', re.IGNORECASE)
+    _SKIPPED = re.compile(
+        r'Skipping target "(\w+)" because (?:all output files are up-to-date|it has no inputs)',
+        re.IGNORECASE,
+    )
 
     def parse_diagnostics(self, build_log: str) -> NativeCacheStats:
         skipped = set(self._SKIPPED.findall(build_log))

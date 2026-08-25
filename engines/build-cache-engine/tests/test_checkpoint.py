@@ -7,7 +7,7 @@ import dataclasses
 import pytest
 
 from conftest import claim_node, digest
-from elmos_build_cache.cas import ContentAddressableStore
+from elmos_build_cache.cas import BLOB_MODE, ContentAddressableStore
 from elmos_build_cache.checkpoint import (
     CheckpointPolicy,
     CheckpointService,
@@ -31,6 +31,20 @@ PROFILE = CompatibilityProfile(
     action_key=digest("7"),
     pipeline_version="1.0.0",
 )
+
+
+def corrupt_stored_artifact(cas: ContentAddressableStore, digest: str) -> None:
+    """Rot one committed artifact on disk, the way a failing disk would.
+
+    CAS blobs are stored ``BLOB_MODE`` (``0o444``), so overwriting one is a
+    ``PermissionError`` for any non-root user; corruption comes from outside
+    the process, so unlock the blob, rewrite it and restore the mode. The
+    checkpoint then has to reject a genuinely read-only corrupt artifact.
+    """
+    blob = cas.path_for(digest)
+    blob.chmod(0o600)
+    blob.write_bytes(b"corrupt")
+    blob.chmod(BLOB_MODE)
 
 
 def run_first_half(
@@ -192,7 +206,7 @@ def test_corrupt_artifact_invalidates_the_checkpoint(
     run: str,
 ) -> None:
     _, record, manifest = run_first_half(workspace, store, coordinator, checkpoints, run)
-    cas.path_for(manifest.artifacts[0]).write_bytes(b"corrupt")
+    corrupt_stored_artifact(cas, manifest.artifacts[0])
 
     decision = checkpoints.evaluate(run, "gen", PROFILE)
     assert not decision.resumable

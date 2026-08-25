@@ -44,7 +44,9 @@ def _languages() -> list[Language]:
 @pytest.mark.parametrize("language", _languages())
 def test_checked_integer_call_names_are_reserved(language: Language) -> None:
     for operator, (call, _helper_keys) in _CHECKED_INTEGER_CALL.get(language, {}).items():
-        assert _reserved(language, call), f"{language} {operator} emits {call}, which the policy allows as a source name"
+        assert _reserved(language, call), (
+            f"{language} {operator} emits {call}, which the policy allows as a source name"
+        )
 
 
 @pytest.mark.parametrize("language", _languages())

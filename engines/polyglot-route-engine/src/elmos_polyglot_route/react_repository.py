@@ -15,11 +15,12 @@ import json
 import stat
 import subprocess
 import tempfile
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
-from typing import Any, Sequence
+from typing import Any
 
 from .models import RouteError
-from .toolchains import exact_toolchain, sanitized_subprocess_env
+from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 
 MAX_DESCRIPTOR_BYTES = 256 * 1024
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
@@ -136,15 +137,15 @@ def _canonical_sha256(value: object) -> str:
     ).hexdigest()
 
 
-def _toolchain_receipt(toolchain: object) -> dict[str, Any]:
+def _toolchain_receipt(toolchain: ExactToolchain) -> dict[str, Any]:
     return {
-        "language": getattr(toolchain, "language"),
-        "version": getattr(toolchain, "version"),
-        "executable": getattr(toolchain, "executable"),
-        "executable_sha256": getattr(toolchain, "executable_sha256"),
-        "auxiliary": getattr(toolchain, "auxiliary"),
-        "auxiliary_sha256": getattr(toolchain, "auxiliary_sha256"),
-        "profile": list(getattr(toolchain, "profile")),
+        "language": toolchain.language,
+        "version": toolchain.version,
+        "executable": toolchain.executable,
+        "executable_sha256": toolchain.executable_sha256,
+        "auxiliary": toolchain.auxiliary,
+        "auxiliary_sha256": toolchain.auxiliary_sha256,
+        "profile": list(toolchain.profile),
     }
 
 

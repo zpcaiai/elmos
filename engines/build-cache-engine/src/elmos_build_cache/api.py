@@ -151,6 +151,30 @@ IDEMPOTENCY_SEMANTIC_HEADERS = (
     "if-none-match",
     "prefer",
 )
+# Mutating routes whose tenancy lives in the request body rather than in the
+# path. ``_authorize_resource_preflight`` resolves project ownership for each
+# of them *before* ``handle`` takes the durable idempotency claim, so that:
+#
+# * a refusal writes no ``idempotency_records`` row and therefore cannot burn
+#   the caller's key -- or anyone else's, since keys are tenant-scoped;
+# * a foreign project and an absent project produce one identical refusal, so
+#   the response code cannot be used to enumerate the global project namespace;
+# * an already-used key and a fresh key answer identically to a caller who is
+#   not authorized for the project, so the refusal cannot be used to enumerate
+#   which idempotency keys exist in the tenant;
+# * no route in this set can bring a ``projects`` row into existence as a side
+#   effect. Project creation is a deliberate claim, made only by ``create_run``
+#   (``POST /runs``), which answers ``CONFLICT`` on a name it cannot have.
+BODY_PROJECT_SCOPED_HANDLERS = frozenset(
+    {
+        "append_context_ledger_event",
+        "compile_prompt_prefix",
+        "decide_cache_affinity",
+        "prepare_provider_prompt",
+        "record_provider_usage",
+        "start_cache_parity_run",
+    }
+)
 
 
 class CacheControlPlane:
@@ -199,15 +223,25 @@ class CacheControlPlane:
         # the outcome repository are all present.
         self.serving_composition = serving_composition
         resolved_parity_repository = parity_repository
-        if resolved_parity_repository is None:
-            try:
-                from .parity_store import ParityMetadataRepository
-            except ImportError:
-                # A source-only partial install must fail closed at the parity
-                # endpoints instead of falling back to process memory.
-                resolved_parity_repository = None
-            else:
-                resolved_parity_repository = ParityMetadataRepository(store)
+        try:
+            from .parity_store import ParityMetadataRepository
+        except ImportError:
+            # A source-only partial install must fail closed at the parity
+            # endpoints instead of falling back to process memory.
+            pass
+        else:
+            if resolved_parity_repository is None:
+                resolved_parity_repository = ParityMetadataRepository(
+                    store, project_scope_claim=False
+                )
+            elif isinstance(resolved_parity_repository, ParityMetadataRepository):
+                # Serving a request must never claim a globally unique project
+                # name. Ownership is already decided in the preflight, but the
+                # plane refuses the capability outright rather than depending
+                # on how it happened to be composed.
+                resolved_parity_repository = (
+                    resolved_parity_repository.without_project_claim()
+                )
         self.parity_repository = resolved_parity_repository
         resolved_environment_service = environment_service or EnvironmentSnapshotService(
             store,
@@ -456,11 +490,13 @@ class CacheControlPlane:
                 )
                 if owner is not None and str(owner[0]) != self.tenant_id:
                     raise ConflictError("project identifier is unavailable")
-        if handler.__name__ in ("prepare_provider_prompt", "record_provider_usage"):
+        if handler.__name__ in BODY_PROJECT_SCOPED_HANDLERS:
             payload = request.body if isinstance(request.body, dict) else {}
             project_id = payload.get("project_id")
             if not isinstance(project_id, str) or not project_id:
-                raise ContractViolation("provider prompt operations require project_id")
+                raise ContractViolation(
+                    "project-scoped cache operations require project_id"
+                )
             self._owned_project(project_id)
         if handler.__name__ == "seal_staged_file":
             payload = request.body if isinstance(request.body, dict) else {}

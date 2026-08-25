@@ -25,6 +25,8 @@ from elmos_build_cache.config import (
 )
 from elmos_build_cache.coordinator import (
     CacheLayer as CoordinatorCacheLayer,
+)
+from elmos_build_cache.coordinator import (
     LayerProbeResult,
     MultiLayerCacheCoordinator,
     ReuseIdentity,
@@ -37,6 +39,7 @@ from elmos_build_cache.errors import ContractViolation
 from elmos_build_cache.fingerprint import FingerprintInputs
 from elmos_build_cache.interface_hash import InterfaceIndex
 from elmos_build_cache.manifests import ExecutionMetrics
+from elmos_build_cache.parity_runtime import SERVING_GATE_KIND, serving_gate_statement
 from elmos_build_cache.pipeline import (
     ConversionPipeline,
     RolloutController,
@@ -44,7 +47,6 @@ from elmos_build_cache.pipeline import (
     StageResult,
     build_run,
 )
-from elmos_build_cache.parity_runtime import SERVING_GATE_KIND, serving_gate_statement
 from elmos_build_cache.security import Ed25519ProvenanceSigner, ProvenanceSigner, SignedStatement
 from elmos_build_cache.snapshot import Snapshot, diff_snapshots, take_snapshot
 

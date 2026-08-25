@@ -55,6 +55,7 @@ done
 command -v uv >/dev/null || { echo "找不到 uv" >&2; exit 2; }
 
 rm -rf "$OUT"; mkdir -p "$OUT"
+touch "$OUT/.start"   # 用来在收尾时查出「跑动期间被改过的文件」
 
 g() { GIT_OPTIONAL_LOCKS=0 git "$@"; }   # 只读 git 一律走这里
 
@@ -85,7 +86,7 @@ add operations-scripts-test make operations-scripts-test
 add business-line-contracts make business-line-contracts
 add production-readiness uv run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
 add route-matrix   python3 scripts/operations/validate_translation_route_matrix.py
-add mature-series  python3 scripts/validate_mature_product_series.py
+add mature-series  uv run --quiet --with jsonschema==4.25.1 python scripts/validate_mature_product_series.py
 
 if [ "$PW_INSTALL" = 1 ]; then
     echo "==> playwright install chromium（要联网）"
@@ -127,6 +128,10 @@ if [ "$DO_BASELINE" = 1 ]; then
             ruff check src tests ) > "$OUT/base-ruff-engine.log" 2>&1
         ( cd "$BASE" && uv --directory $ENGINE run --locked --group dev \
             pytest -o 'addopts=--strict-markers' -rf ) > "$OUT/base-pytest-engine.log" 2>&1
+        ( cd "$BASE" && uv --directory $ENGINE run --locked --group dev \
+            mypy src ) > "$OUT/base-mypy-engine.log" 2>&1
+        ( cd "$BASE" && uv run --quiet --with pyyaml python -m unittest discover \
+            -s tests/production-readiness -p 'test_*.py' ) > "$OUT/base-production-readiness.log" 2>&1
         BASELINE_OK=1
         echo "    基线 ruff / pytest 跑完"
     else
@@ -136,11 +141,14 @@ fi
 
 fails_of() { grep '^FAILED ' "$1" 2>/dev/null | awk '{print $2}' | sort -u; }
 ruff_of()  { grep -E '^[^ ]+:[0-9]+:[0-9]+: ' "$1" 2>/dev/null | sed 's/:[0-9]*:[0-9]*:/ /' | sort -u; }
+# mypy 的行号两侧必然错位，只比 (文件, 错误码, 文本)
+mypy_of()  { grep -E '^[^ ]+:[0-9]+: error: ' "$1" 2>/dev/null | sed 's/:[0-9]*: error: / /' | sort -u; }
+unit_of()  { grep -E '^(FAIL|ERROR): ' "$1" 2>/dev/null | sort -u; }
 
 if [ "$BASELINE_OK" = 1 ]; then
     echo
     printf '\033[1m===== 与 main 独跑做差 =====\033[0m\n'
-    for pair in "pytest-engine:fails_of" "ruff-engine:ruff_of"; do
+    for pair in "pytest-engine:fails_of" "ruff-engine:ruff_of" "mypy-engine:mypy_of" "production-readiness:unit_of"; do
         gate="${pair%%:*}"; fn="${pair##*:}"
         [ -f "$OUT/$gate.log" ] || continue
         "$fn" "$OUT/base-$gate.log" > "$OUT/$gate.base.set"
@@ -176,6 +184,14 @@ classify() {
     if grep -qE 'MULTIMODAL_ENGINE_UNAVAILABLE|ECONNREFUSED|getaddrinfo|network|ETIMEDOUT' "$log"; then
         VERDICT=ENV; WHY="需要联网或需要一个跑着的服务"; return
     fi
+    if grep -qE 'RequireJavaVersion|is not in the allowed range' "$log"; then
+        jdk=$(grep -oE 'is version [0-9.]+' "$log" | head -1)
+        VERDICT=ENV; WHY="JDK 版本闸：当前 $jdk，enforcer 要 [21,22)。在仓库根跑 sdk env（.sdkmanrc 钉的是 java=21.0.6-amzn / maven=3.9.10），没装就 sdk env install"; return
+    fi
+    if grep -q "ModuleNotFoundError: No module named" "$log"; then
+        missing=$(grep -o "No module named .*" "$log" | head -1)
+        VERDICT=ENV; WHY="缺 Python 依赖（$missing）——这条门禁要用 uv run --with 跑"; return
+    fi
 
     case "$name" in
     ruff-engine)
@@ -183,10 +199,10 @@ classify() {
         n=$(grep -cE '^[^ ]+:[0-9]+:[0-9]+: ' "$log")
         if grep -qE ': (F8[0-9]{2}|F401|F601|F811) ' "$log"; then
             VERDICT=MERGE; WHY="出现 F 类（未定义名/重复定义/未用导入）—— 这类正是嫁接接缝的信号，不是风格问题"
-        elif [ "${n:-0}" -le 18 ]; then
-            VERDICT=PRE-EXIST; WHY="$n 条，全是 main 既有的 I001/E501/B009/UP035/S108（G）"
         else
-            VERDICT=UNKNOWN; WHY="$n 条，比实测的 18 条多，逐条对一下"
+            # 2026-08-25：main 既有的那 18 条已全部修掉，引擎 ruff 基线现在是 0。
+            # 所以这里不再有「既有欠账」这一档 —— 出现任何一条都得看。
+            VERDICT=UNKNOWN; WHY="$n 条。基线已归零（第八轮补记），任何一条都不是既有欠账"
         fi ;;
     pytest-engine)
         if [ "$BASELINE_OK" = 1 ]; then
@@ -194,6 +210,13 @@ classify() {
             else VERDICT=PRE-EXIST; WHY="相对 main 独跑没有新增失败（见上面的差集）"; fi
         elif grep -q 'PIPELINE_NO_VERIFIED_UNITS' "$log" && ! grep -q 'native' "$log"; then
             VERDICT=ENV; WHY="没有 passed unit ⇒ 守卫先抛，被测的错误码走不到（G）。装齐 analyzer 再看"
+        else
+            VERDICT=UNKNOWN; WHY="没跑基线就判不了。加 --baseline 重跑"
+        fi ;;
+    mypy-engine)
+        if [ "$BASELINE_OK" = 1 ]; then
+            if [ -s "$OUT/mypy-engine.new" ]; then VERDICT=MERGE; WHY="见上面的差集（新增类型错误）"
+            else VERDICT=PRE-EXIST; WHY="相对 main 独跑没有新增类型错误"; fi
         else
             VERDICT=UNKNOWN; WHY="没跑基线就判不了。加 --baseline 重跑"
         fi ;;
@@ -205,8 +228,20 @@ classify() {
         if grep -q 'V3_REPOSITORY_STATUS_DRIFT' "$log"; then
             VERDICT=PRE-EXIST; WHY="V3_REPOSITORY_STATUS_DRIFT，是另一笔未完成的编辑（M）"
         else VERDICT=UNKNOWN; WHY="换了失败点，看日志"; fi ;;
-    route-matrix|mature-series|makefile-portability)
-        VERDICT=MERGE; WHY="自计数校验器：它的输出直接给出该写进 README / BUSINESS_LINE_CLOSURE_MATRIX 的数字（规则 8）" ;;
+    route-matrix)
+        if grep -q 'V3_REPOSITORY_STATUS_DRIFT' "$log"; then
+            VERDICT=PRE-EXIST; WHY="V3_REPOSITORY_STATUS_DRIFT —— 另一笔未完成的编辑，卡在算路线条数之前（M）"
+        else
+            VERDICT=MERGE; WHY="自计数校验器：输出直接给出该写进 README / BUSINESS_LINE_CLOSURE_MATRIX 的数字（规则 8）"
+        fi ;;
+    mature-series|makefile-portability)
+        VERDICT=MERGE; WHY="自计数校验器：输出直接给出该写回文档的数字（规则 8）" ;;
+    production-readiness)
+        if grep -q 'skill_inventory_ui_matches_callable_repository_directories' "$log"; then
+            VERDICT=UNKNOWN; WHY="Skill 目录数与 UI 里写死的数字对不上（如 1847 != 1267）。加 --baseline 才能判是不是既有漂移"
+        else
+            VERDICT=UNKNOWN; WHY="看日志"
+        fi ;;
     web-console-e2e)
         VERDICT=UNKNOWN; WHY="playwright.config.ts 的就绪 URL 只能靠这条验；指错会挂起而不是报错，先看是超时还是断言" ;;
     *)  VERDICT=UNKNOWN; WHY="没有已知模式" ;;
@@ -232,6 +267,12 @@ while [ "$idx" -lt "${#NAMES[@]}" ]; do
 done
 
 echo
+touched=$(find "$ENGINE/src" "$ENGINE/tests" -type f -newer "$OUT/.start" 2>/dev/null | grep -v __pycache__ | head -20)
+if [ -n "$touched" ]; then
+    printf '\033[33m⚠ 这次跑动期间有文件被改过（并发会话或你自己）——上面的结果是混合树的，请重跑：\033[0m\n'
+    echo "$touched" | sed 's/^/    /'
+    echo
+fi
 printf '需要处理的（MERGE + UNKNOWN）：%d 条；跳过 %d 条。全部日志在 %s/\n' "$bad" "$skipped" "$OUT"
 if [ "$BASELINE_OK" != 1 ]; then
     echo "提示：没跑 --baseline，pytest 的定性只能靠模式猜。要下结论请加 --baseline 重跑一次。"

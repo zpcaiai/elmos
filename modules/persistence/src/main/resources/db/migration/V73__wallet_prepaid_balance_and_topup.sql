@@ -325,6 +325,68 @@ COMMENT ON TABLE wallet_topup_policies IS
     'Optional per-tenant override of the platform default top-up bounds. Absent means the defaults in elmos_wallet_topup_bounds apply. The upper bound protects the user from a mistyped amount; the daily bound is an anti-abuse control. They are different jobs and are therefore separate numbers.';
 
 -- ---------------------------------------------------------------------------
+-- 6b. Callback resolution directory (no RLS, by design)
+-- ---------------------------------------------------------------------------
+-- A payment callback arrives with an out_trade_no and nothing else. The
+-- organization is unknown at that moment, so app.organization_id cannot be set,
+-- so a FORCE-RLS table evaluates its policy as organization_id = NULL and
+-- returns no rows. V62 hit exactly this on payment_checkout_sessions, where the
+-- symptom was silent: every callback became ORDER_UNKNOWN, every top-up landed
+-- in the unmatched table, and the provider just kept retrying.
+--
+-- wallet_topup_orders is FORCE RLS for good reason -- it holds who paid how much
+-- -- so it needs the same escape hatch V62 built: a minimal projection carrying
+-- only what resolution needs, deliberately not tenant isolated, maintained by a
+-- trigger rather than by application double-writes.
+
+CREATE TABLE wallet_topup_order_directory (
+    out_trade_no varchar(255) PRIMARY KEY,
+    topup_order_id varchar(96) NOT NULL,
+    organization_id varchar(96) NOT NULL,
+    amount_minor numeric(19,0) NOT NULL CHECK (amount_minor >= 0),
+    status varchar(16) NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX wallet_topup_order_directory_organization_idx
+    ON wallet_topup_order_directory (organization_id);
+
+COMMENT ON TABLE wallet_topup_order_directory IS
+    'Minimal out_trade_no -> organization projection so a payment callback can resolve its tenant before any tenant context exists. Deliberately NOT row level security isolated: it carries the resolution mapping and nothing else. Same rationale and shape as payment_order_directory (V62).';
+
+-- SECURITY DEFINER with a pinned search_path and schema-qualified targets, for
+-- the reason V64 had to retrofit onto the V62 trigger: the runtime role holds no
+-- write permission on the directory, and granting it one would defeat the point.
+CREATE OR REPLACE FUNCTION elmos_sync_wallet_topup_directory()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+BEGIN
+    INSERT INTO public.wallet_topup_order_directory (
+        out_trade_no, topup_order_id, organization_id, amount_minor, status)
+    VALUES (
+        NEW.out_trade_no, NEW.topup_order_id, NEW.organization_id,
+        NEW.amount_minor, NEW.status)
+    ON CONFLICT (out_trade_no) DO UPDATE
+        SET status = EXCLUDED.status,
+            updated_at = pg_catalog.now();
+    -- Organization and amount stay first-write facts. If the source ever
+    -- disagrees, the mismatch must stay visible to reconciliation instead of
+    -- being quietly rewritten in the cross-tenant lookup projection.
+    RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION elmos_sync_wallet_topup_directory() FROM PUBLIC;
+
+CREATE TRIGGER wallet_topup_orders_directory_sync
+AFTER INSERT OR UPDATE OF status ON wallet_topup_orders
+FOR EACH ROW EXECUTE FUNCTION elmos_sync_wallet_topup_directory();
+
+-- ---------------------------------------------------------------------------
 -- 7. Price book (global catalog, append-only, versioned like V49)
 -- ---------------------------------------------------------------------------
 
@@ -447,7 +509,48 @@ BEFORE DELETE ON wallet_accounts
 FOR EACH ROW EXECUTE FUNCTION elmos_forbid_wallet_account_delete();
 
 -- ---------------------------------------------------------------------------
--- 10. Accounting functions
+-- 10. Tenant binding
+-- ---------------------------------------------------------------------------
+-- Every wallet table is FORCE ROW LEVEL SECURITY, and FORCE means the table
+-- OWNER is subject to the policy too. A SECURITY DEFINER function therefore only
+-- sees rows if app.organization_id is set -- unless the owner happens to be a
+-- superuser or hold BYPASSRLS, in which case it works by accident of deployment.
+--
+-- Verified rather than assumed: with the wallet objects reassigned to a
+-- NOSUPERUSER owner, elmos_wallet_open('org-x') fails with "new row violates
+-- row-level security policy" when no context is set, and succeeds when it is.
+--
+-- Rather than depend on a database-role property that this migration cannot see,
+-- each accounting function binds the tenant it was explicitly given, and puts
+-- back whatever was there before. Callers that already hold a tenant context
+-- (the control plane) are unaffected; callers that cannot have one (a payment
+-- callback, the settlement sweeper) now work without any privilege escalation.
+
+CREATE OR REPLACE FUNCTION elmos_wallet_bind_tenant(p_organization_id varchar)
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_previous text;
+BEGIN
+    IF p_organization_id IS NULL OR length(btrim(p_organization_id)) = 0 THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_TENANT_REQUIRED';
+    END IF;
+    v_previous := coalesce(current_setting('app.organization_id', true), '');
+    -- Transaction-local: it can never outlive the statement's transaction, so a
+    -- bound tenant cannot leak into a later query on a pooled connection.
+    PERFORM set_config('app.organization_id', p_organization_id, true);
+    RETURN v_previous;
+END;
+$$;
+
+COMMENT ON FUNCTION elmos_wallet_bind_tenant(varchar) IS
+    'Binds the tenant context for the remainder of the current transaction and returns the previous value so the caller can restore it. Exists so the accounting functions do not depend on their owner bypassing row level security.';
+
+-- ---------------------------------------------------------------------------
+-- 11. Accounting functions
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION elmos_wallet_open(p_organization_id varchar)
@@ -456,9 +559,13 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+    v_previous text;
 BEGIN
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
     INSERT INTO wallet_accounts (organization_id) VALUES (p_organization_id)
     ON CONFLICT (organization_id) DO NOTHING;
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN p_organization_id;
 END;
 $$;
@@ -484,6 +591,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
+    v_previous text;
     v_wallet wallet_accounts%ROWTYPE;
     v_existing varchar;
     v_seq bigint;
@@ -494,16 +602,20 @@ BEGIN
         RAISE EXCEPTION 'ELMOS_WALLET_AMOUNT_INVALID';
     END IF;
 
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+
     -- Idempotent replay returns the original entry rather than raising, because
     -- the caller that replays is usually a payment provider retry, and the honest
     -- answer to "credit this again" is "it is already credited, here it is".
     SELECT entry_id INTO v_existing FROM wallet_ledger_entries
      WHERE organization_id = p_organization_id AND idempotency_key = p_idempotency_key;
     IF FOUND THEN
+        PERFORM set_config('app.organization_id', v_previous, true);
         RETURN v_existing;
     END IF;
 
-    PERFORM elmos_wallet_open(p_organization_id);
+    INSERT INTO wallet_accounts (organization_id) VALUES (p_organization_id)
+    ON CONFLICT (organization_id) DO NOTHING;
     SELECT * INTO v_wallet FROM wallet_accounts
      WHERE organization_id = p_organization_id FOR UPDATE;
 
@@ -542,6 +654,7 @@ BEGIN
      WHERE organization_id = p_organization_id;
     PERFORM set_config('app.wallet_posting', 'off', true);
 
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN v_entry_id;
 END;
 $$;
@@ -563,7 +676,88 @@ AS $$
       LEFT JOIN wallet_topup_policies p ON p.organization_id = p_organization_id;
 $$;
 
+-- Order creation is a function rather than an INSERT for two reasons. The
+-- tenant-context one is mechanical: wallet_topup_orders is FORCE RLS. The other
+-- one matters more -- the amount bounds and the daily cap are the difference
+-- between a mistyped 500,000 and a laundering channel, and a limit that lives in
+-- application code is a limit that the next caller forgets.
+CREATE OR REPLACE FUNCTION elmos_wallet_create_topup_order(
+    p_topup_order_id varchar,
+    p_organization_id varchar,
+    p_actor_id varchar,
+    p_amount_minor numeric,
+    p_provider varchar,
+    p_out_trade_no varchar,
+    p_idempotency_key varchar,
+    p_ttl_seconds integer DEFAULT 3600
+) RETURNS varchar
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_previous text;
+    v_existing varchar(96);
+    v_bounds record;
+    v_today numeric(19,0);
+BEGIN
+    IF p_ttl_seconds IS NULL OR p_ttl_seconds < 60 OR p_ttl_seconds > 86400 THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_TTL_INVALID';
+    END IF;
+
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+
+    SELECT topup_order_id INTO v_existing FROM wallet_topup_orders
+     WHERE organization_id = p_organization_id AND idempotency_key = p_idempotency_key;
+    IF FOUND THEN
+        PERFORM set_config('app.organization_id', v_previous, true);
+        RETURN v_existing;
+    END IF;
+
+    SELECT * INTO v_bounds FROM elmos_wallet_topup_bounds(p_organization_id);
+    IF p_amount_minor IS NULL OR p_amount_minor < v_bounds.min_amount_minor THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_BELOW_MINIMUM';
+    END IF;
+    IF p_amount_minor > v_bounds.max_amount_minor THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_ABOVE_MAXIMUM';
+    END IF;
+
+    -- Everything not yet known to have failed counts against the daily cap.
+    -- Counting only credited orders would let a caller open unlimited pending
+    -- orders and settle them all at once.
+    SELECT coalesce(sum(amount_minor), 0) INTO v_today
+      FROM wallet_topup_orders
+     WHERE organization_id = p_organization_id
+       AND created_at >= date_trunc('day', now())
+       AND status NOT IN ('FAILED', 'EXPIRED');
+    IF v_today + p_amount_minor > v_bounds.daily_amount_limit_minor THEN
+        RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_DAILY_LIMIT_EXCEEDED';
+    END IF;
+
+    PERFORM elmos_wallet_open(p_organization_id);
+
+    INSERT INTO wallet_topup_orders (
+        topup_order_id, organization_id, actor_id, amount_minor, provider,
+        out_trade_no, idempotency_key, expires_at
+    ) VALUES (
+        p_topup_order_id, p_organization_id, p_actor_id, p_amount_minor, p_provider,
+        p_out_trade_no, p_idempotency_key, now() + make_interval(secs => p_ttl_seconds)
+    );
+
+    PERFORM set_config('app.organization_id', v_previous, true);
+    RETURN p_topup_order_id;
+END;
+$$;
+
+COMMENT ON FUNCTION elmos_wallet_create_topup_order(varchar, varchar, varchar, numeric, varchar, varchar, varchar, integer) IS
+    'Opens a top-up order after enforcing the per-tenant amount bounds and daily cap at the storage layer, where no caller can skip them.';
+
+-- Takes the organization explicitly because its caller is a payment callback,
+-- which resolved it from wallet_topup_order_directory and has no tenant context
+-- of its own. Passing the wrong one resolves to no order rather than to someone
+-- else's: the row is only visible once the context is bound to it.
 CREATE OR REPLACE FUNCTION elmos_wallet_credit_topup(
+    p_organization_id varchar,
     p_topup_order_id varchar,
     p_provider_txn_ref varchar,
     p_actor_id varchar
@@ -573,16 +767,22 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
+    v_previous text;
     v_order wallet_topup_orders%ROWTYPE;
     v_entry_id varchar(96);
 BEGIN
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+
     SELECT * INTO v_order FROM wallet_topup_orders
-     WHERE topup_order_id = p_topup_order_id FOR UPDATE;
+     WHERE topup_order_id = p_topup_order_id
+       AND organization_id = p_organization_id
+     FOR UPDATE;
     IF NOT FOUND THEN
         RAISE EXCEPTION 'ELMOS_WALLET_TOPUP_UNKNOWN';
     END IF;
 
     IF v_order.status = 'CREDITED' THEN
+        PERFORM set_config('app.organization_id', v_previous, true);
         RETURN v_order.credited_entry_ref;
     END IF;
     IF v_order.status NOT IN ('PAID', 'PENDING_PAYMENT', 'CREATED') THEN
@@ -604,11 +804,12 @@ BEGIN
            credited_entry_ref = v_entry_id
      WHERE topup_order_id = p_topup_order_id;
 
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN v_entry_id;
 END;
 $$;
 
-COMMENT ON FUNCTION elmos_wallet_credit_topup(varchar, varchar, varchar) IS
+COMMENT ON FUNCTION elmos_wallet_credit_topup(varchar, varchar, varchar, varchar) IS
     'Credits a confirmed top-up exactly once. This is the ONLY wallet function granted to elmos_billing_runtime: the payment service can settle a specific order and can do nothing else to a balance.';
 
 CREATE OR REPLACE FUNCTION elmos_wallet_reserve(
@@ -625,6 +826,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
+    v_previous text;
     v_wallet wallet_accounts%ROWTYPE;
     v_existing wallet_reservations%ROWTYPE;
     v_available numeric(19,0);
@@ -636,16 +838,20 @@ BEGIN
         RAISE EXCEPTION 'ELMOS_WALLET_RESERVATION_TTL_INVALID';
     END IF;
 
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+
     SELECT * INTO v_existing FROM wallet_reservations
      WHERE organization_id = p_organization_id AND job_id = p_job_id;
     IF FOUND THEN
         IF v_existing.status = 'HELD' THEN
+            PERFORM set_config('app.organization_id', v_previous, true);
             RETURN v_existing.reservation_id;
         END IF;
         RAISE EXCEPTION 'ELMOS_WALLET_RESERVATION_ALREADY_RESOLVED';
     END IF;
 
-    PERFORM elmos_wallet_open(p_organization_id);
+    INSERT INTO wallet_accounts (organization_id) VALUES (p_organization_id)
+    ON CONFLICT (organization_id) DO NOTHING;
     SELECT * INTO v_wallet FROM wallet_accounts
      WHERE organization_id = p_organization_id FOR UPDATE;
 
@@ -672,6 +878,7 @@ BEGIN
      WHERE organization_id = p_organization_id;
     PERFORM set_config('app.wallet_posting', 'off', true);
 
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN p_reservation_id;
 END;
 $$;
@@ -691,10 +898,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
+    v_previous text;
     v_reservation wallet_reservations%ROWTYPE;
     v_charge numeric(19,0);
     v_entry_id varchar(96);
 BEGIN
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+
     SELECT * INTO v_reservation FROM wallet_reservations
      WHERE organization_id = p_organization_id AND job_id = p_job_id FOR UPDATE;
     IF NOT FOUND THEN
@@ -702,6 +912,7 @@ BEGIN
     END IF;
     IF v_reservation.status <> 'HELD' THEN
         -- Already resolved. A settler retry must be a no-op, not a second charge.
+        PERFORM set_config('app.organization_id', v_previous, true);
         RETURN v_reservation.reservation_id;
     END IF;
 
@@ -726,6 +937,7 @@ BEGIN
            resolution_code = p_resolution_code
      WHERE reservation_id = v_reservation.reservation_id;
 
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN v_reservation.reservation_id;
 END;
 $$;
@@ -743,14 +955,18 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
+    v_previous text;
     v_reservation wallet_reservations%ROWTYPE;
 BEGIN
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+
     SELECT * INTO v_reservation FROM wallet_reservations
      WHERE organization_id = p_organization_id AND job_id = p_job_id FOR UPDATE;
     IF NOT FOUND THEN
         RAISE EXCEPTION 'ELMOS_WALLET_RESERVATION_UNKNOWN';
     END IF;
     IF v_reservation.status <> 'HELD' THEN
+        PERFORM set_config('app.organization_id', v_previous, true);
         RETURN v_reservation.reservation_id;
     END IF;
 
@@ -764,24 +980,40 @@ BEGIN
        SET status = 'RELEASED', resolved_at = now(), resolution_code = p_resolution_code
      WHERE reservation_id = v_reservation.reservation_id;
 
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN v_reservation.reservation_id;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION elmos_wallet_expire_reservations(p_limit integer DEFAULT 500)
-RETURNS integer
+-- Deliberately per tenant, not a cross-tenant scan.
+--
+-- The obvious version scans wallet_reservations for everything expired and
+-- sweeps it. That version cannot work: wallet_reservations is FORCE RLS, so a
+-- scan with no tenant bound returns nothing, and it would fail by finding zero
+-- rows -- a sweeper that silently sweeps nothing, which is the worst available
+-- failure mode because the symptom is money staying frozen with no error
+-- anywhere. The caller iterates organizations (that table is not tenant
+-- isolated) and calls this once per tenant.
+CREATE OR REPLACE FUNCTION elmos_wallet_expire_reservations(
+    p_organization_id varchar,
+    p_limit integer DEFAULT 500
+) RETURNS integer
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
+    v_previous text;
     v_row record;
     v_count integer := 0;
 BEGIN
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
     FOR v_row IN
-        SELECT reservation_id, organization_id, amount_minor
+        SELECT reservation_id, amount_minor
           FROM wallet_reservations
-         WHERE status = 'HELD' AND expires_at <= now()
+         WHERE organization_id = p_organization_id
+           AND status = 'HELD'
+           AND expires_at <= now()
          ORDER BY expires_at
          LIMIT greatest(coalesce(p_limit, 500), 1)
          FOR UPDATE SKIP LOCKED
@@ -789,7 +1021,7 @@ BEGIN
         PERFORM set_config('app.wallet_posting', 'on', true);
         UPDATE wallet_accounts
            SET reserved_minor = reserved_minor - v_row.amount_minor
-         WHERE organization_id = v_row.organization_id;
+         WHERE organization_id = p_organization_id;
         PERFORM set_config('app.wallet_posting', 'off', true);
 
         UPDATE wallet_reservations
@@ -798,12 +1030,13 @@ BEGIN
 
         v_count := v_count + 1;
     END LOOP;
+    PERFORM set_config('app.organization_id', v_previous, true);
     RETURN v_count;
 END;
 $$;
 
-COMMENT ON FUNCTION elmos_wallet_expire_reservations(integer) IS
-    'Sweeps holds whose job never resolved. Under-charges by design: a stuck settler must not be able to lock a tenant out of money they still own.';
+COMMENT ON FUNCTION elmos_wallet_expire_reservations(varchar, integer) IS
+    'Sweeps holds whose job never resolved, for one tenant. Under-charges by design: a stuck settler must not be able to lock a tenant out of money they still own.';
 
 CREATE OR REPLACE FUNCTION elmos_wallet_adjust(
     p_organization_id varchar,
@@ -828,14 +1061,14 @@ END;
 $$;
 
 -- ---------------------------------------------------------------------------
--- 11. Reconciliation
+-- 12. Reconciliation
 -- ---------------------------------------------------------------------------
 -- The projection is only trustworthy if something keeps checking it against the
 -- authority. This returns the drift rather than fixing it: a wallet that does
 -- not match its own ledger is an incident, and silently repairing it would erase
 -- the evidence needed to find out why.
 
-CREATE OR REPLACE FUNCTION elmos_wallet_reconcile(p_organization_id varchar DEFAULT NULL)
+CREATE OR REPLACE FUNCTION elmos_wallet_reconcile(p_organization_id varchar)
 RETURNS TABLE (
     organization_id varchar,
     projected_balance_minor numeric,
@@ -843,11 +1076,15 @@ RETURNS TABLE (
     projected_reserved_minor numeric,
     held_reserved_minor numeric
 )
-LANGUAGE sql
-STABLE
+LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+    v_previous text;
+BEGIN
+    v_previous := elmos_wallet_bind_tenant(p_organization_id);
+    RETURN QUERY
     SELECT w.organization_id,
            w.balance_minor,
            coalesce((SELECT sum(CASE WHEN l.direction = 'CREDIT' THEN l.amount_minor
@@ -859,11 +1096,13 @@ AS $$
                        FROM wallet_reservations r
                       WHERE r.organization_id = w.organization_id AND r.status = 'HELD'), 0)
       FROM wallet_accounts w
-     WHERE p_organization_id IS NULL OR w.organization_id = p_organization_id;
+     WHERE w.organization_id = p_organization_id;
+    PERFORM set_config('app.organization_id', v_previous, true);
+END;
 $$;
 
 -- ---------------------------------------------------------------------------
--- 12. Row level security
+-- 13. Row level security
 -- ---------------------------------------------------------------------------
 
 DO $$
@@ -888,7 +1127,7 @@ END;
 $$;
 
 -- ---------------------------------------------------------------------------
--- 13. Grants
+-- 14. Grants
 -- ---------------------------------------------------------------------------
 
 DO $$
@@ -899,10 +1138,12 @@ BEGIN
           FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
          WHERE n.nspname = 'public'
            AND p.proname IN (
+               'elmos_wallet_bind_tenant',
                'elmos_wallet_open',
                'elmos_wallet_post_entry',
                'elmos_wallet_topup_bounds',
                'elmos_wallet_credit_topup',
+               'elmos_wallet_create_topup_order',
                'elmos_wallet_reserve',
                'elmos_wallet_settle',
                'elmos_wallet_release',
@@ -912,7 +1153,8 @@ BEGIN
                'elmos_guard_wallet_account_mutation',
                'elmos_guard_wallet_reservation_transition',
                'elmos_guard_wallet_topup_transition',
-               'elmos_forbid_wallet_account_delete'
+               'elmos_forbid_wallet_account_delete',
+               'elmos_sync_wallet_topup_directory'
            )
     LOOP
         EXECUTE format('REVOKE EXECUTE ON FUNCTION %s FROM PUBLIC', v_function.signature);
@@ -921,13 +1163,15 @@ END;
 $$;
 
 -- The payment service reaches the wallet through exactly one door, and that door
--- settles one named order. It is never granted a table.
+-- settles one named order. It is never granted a wallet table.
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_billing_runtime') THEN
-        EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_wallet_credit_topup(varchar, varchar, varchar) TO elmos_billing_runtime';
-        EXECUTE 'GRANT SELECT, INSERT, UPDATE ON wallet_topup_orders TO elmos_billing_runtime';
+        EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_wallet_credit_topup(varchar, varchar, varchar, varchar) TO elmos_billing_runtime';
         EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_wallet_topup_bounds(varchar) TO elmos_billing_runtime';
+        EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_wallet_create_topup_order(varchar, varchar, varchar, numeric, varchar, varchar, varchar, integer) TO elmos_billing_runtime';
+        -- Read-only. The directory is written by the trigger, as its owner.
+        EXECUTE 'GRANT SELECT ON wallet_topup_order_directory TO elmos_billing_runtime';
     END IF;
 END;
 $$;

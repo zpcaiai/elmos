@@ -16,6 +16,7 @@ public record PaymentCallbackPorts(
         PaymentCallbackPipeline.OrderLookup orders,
         PaymentCallbackPipeline.ProviderEventStore events,
         PaymentCallbackPipeline.SubscriptionActivator subscriptions,
+        PaymentCallbackPipeline.WalletCreditor wallet,
         PaymentCallbackPipeline.ReconciliationCases reconciliation) {
 
     public PaymentCallbackPorts {
@@ -24,14 +25,36 @@ public record PaymentCallbackPorts(
         require(orders, "orders");
         require(events, "events");
         require(subscriptions, "subscriptions");
+        require(wallet, "wallet");
         require(reconciliation, "reconciliation");
+    }
+
+    /**
+     * 只有订阅路径的装配形态。
+     *
+     * <p>保留它是为了让既有调用点与测试逐字不变。钱包端口在这里不是"可选依赖"
+     * 而是"未配置"：装出来的管线遇到充值回调会抛，而不是当作成功忽略——
+     * 后者意味着钱收了、账没入、日志干净。
+     */
+    public PaymentCallbackPorts(
+            PaymentProviderRouter router,
+            PaymentCallbackPipeline.ProcessedEventLog processedEvents,
+            PaymentCallbackPipeline.OrderLookup orders,
+            PaymentCallbackPipeline.ProviderEventStore events,
+            PaymentCallbackPipeline.SubscriptionActivator subscriptions,
+            PaymentCallbackPipeline.ReconciliationCases reconciliation) {
+        this(router, processedEvents, orders, events, subscriptions,
+                (order, callback) -> {
+                    throw new IllegalStateException("WALLET_CREDITOR_NOT_CONFIGURED");
+                },
+                reconciliation);
     }
 
     /** 按回调所属通道装配一条管线。 */
     public PaymentCallbackPipeline pipelineFor(PaymentProvider provider) {
         return new PaymentCallbackPipeline(
                 router.callbackAdapter(provider),
-                processedEvents, orders, events, subscriptions, reconciliation);
+                processedEvents, orders, events, subscriptions, wallet, reconciliation);
     }
 
     private static void require(Object value, String name) {

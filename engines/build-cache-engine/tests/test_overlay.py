@@ -24,8 +24,10 @@ from __future__ import annotations
 
 import ctypes
 import os
+import platform
 import shutil
 import stat
+import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -217,11 +219,39 @@ def test_materialisation_verifies_digests_on_the_way_in(
 # ==========================================================================
 @pytest.mark.parametrize(
     "denied",
-    ["/etc", "/etc/passwd", "/root", "/proc/self", "/sys/kernel", "/dev/null", "/home/someone"],
+    [
+        "/etc",
+        "/etc/passwd",
+        "/root",
+        "/proc/self",
+        "/sys/kernel",
+        "/dev/null",
+        "/home/someone",
+        "/Users/someone",
+    ],
 )
-def test_host_system_paths_cannot_be_mounted(tmp_path: Path, denied: str) -> None:
-    with pytest.raises(PermissionDenied):
-        SandboxPolicy().check(Path(denied))
+def test_host_system_paths_cannot_be_mounted(denied: str) -> None:
+    """A host system path is refused however *this* platform spells it.
+
+    ``SandboxPolicy.check`` matches ``DENIED_MOUNT_PREFIXES`` against the
+    *resolved* path, so the deny list has to carry every platform's spelling of
+    the same location. It already does: ``/private/etc`` is there because macOS
+    resolves ``/etc`` through a symlink, and ``/Users`` because that is where
+    macOS keeps the home directories ``/home`` holds on linux -- so both
+    spellings of "another user's home directory" are asserted on both
+    platforms rather than one of them being skipped away. Mounting a stranger's
+    home into a build stage is exactly as dangerous on darwin as on linux, so a
+    failure here is a hole in the deny list, not a platform quirk; the message
+    names the resolved path that got through so the missing prefix is obvious.
+    """
+    try:
+        accepted = SandboxPolicy().check(Path(denied))
+    except PermissionDenied:
+        return
+    pytest.fail(
+        f"{denied} resolved to {accepted} on {platform.system()} and SandboxPolicy accepted it: "
+        f"DENIED_MOUNT_PREFIXES (overlay.py) does not cover this platform's spelling of that path"
+    )
 
 
 @pytest.mark.parametrize("secret", sorted(DENIED_BASENAMES))
@@ -364,6 +394,17 @@ def kernel_overlay(root: Path) -> Iterator[Path]:
         libc.umount(str(merged).encode())
 
 
+@pytest.mark.skipif(
+    sys.platform != "linux",
+    reason=(
+        "overlayfs is a Linux VFS driver and has no darwin equivalent, so this platform cannot "
+        "host the layout under test. NOT COVERED off linux: the workspace's copy-on-write break "
+        "when its base directory itself sits in the merged view of a kernel overlay -- that writes "
+        "land in the overlay's upper layer, the lower layer stays byte-identical, and "
+        "detect_strategy still picks a working strategy there. The pure-userspace CoW, read-only "
+        "source and mount-policy properties are covered on every platform by the tests above."
+    ),
+)
 def test_the_workspace_works_on_top_of_a_kernel_overlayfs(tmp_path: Path) -> None:
     """The layout every containerised CI runner actually has.
 

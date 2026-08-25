@@ -53,14 +53,18 @@ class WalletLedgerLiveTest {
 
         // ---- a confirmed top-up credits exactly once, however often it replays
         String tradeNo = "WX-" + UUID.randomUUID();
-        jdbc.sql("INSERT INTO wallet_topup_orders (topup_order_id, organization_id, actor_id, "
-                        + "amount_minor, provider, out_trade_no, idempotency_key, expires_at) "
-                        + "VALUES (?, ?, 'actor-1', ?, 'WECHAT_PAY', ?, ?, now() + interval '1 hour')")
-                .params("tu-" + tradeNo, organizationId, TOPUP, tradeNo, "idem-" + tradeNo)
-                .update();
-        String firstEntry = creditTopup(jdbc, "tu-" + tradeNo);
-        assertEquals(firstEntry, creditTopup(jdbc, "tu-" + tradeNo));
-        assertEquals(firstEntry, creditTopup(jdbc, "tu-" + tradeNo));
+        createTopupOrder(jdbc, organizationId, "tu-" + tradeNo, "WECHAT_PAY", tradeNo, TOPUP);
+
+        // The callback resolves its tenant from the directory projection before it
+        // has any tenant context. Without that row the order is invisible under
+        // FORCE row level security and the top-up silently goes unmatched.
+        assertEquals(organizationId, jdbc
+                .sql("SELECT organization_id FROM wallet_topup_order_directory WHERE out_trade_no = ?")
+                .param(tradeNo).query(String.class).single());
+
+        String firstEntry = creditTopup(jdbc, organizationId, "tu-" + tradeNo);
+        assertEquals(firstEntry, creditTopup(jdbc, organizationId, "tu-" + tradeNo));
+        assertEquals(firstEntry, creditTopup(jdbc, organizationId, "tu-" + tradeNo));
         assertEquals(TOPUP, balance(jdbc, organizationId));
         assertEquals(1, count(jdbc,
                 "SELECT count(*) FROM wallet_ledger_entries WHERE organization_id = ? "
@@ -105,7 +109,8 @@ class WalletLedgerLiveTest {
                         + "expires_at = now() - interval '1 hour' "
                         + "WHERE organization_id = ? AND job_id = 'job-d'")
                 .param(organizationId).update();
-        jdbc.sql("SELECT elmos_wallet_expire_reservations(100)").query(Integer.class).single();
+        assertEquals(1, jdbc.sql("SELECT elmos_wallet_expire_reservations(?, 100)")
+                .param(organizationId).query(Integer.class).single());
         assertEquals("EXPIRED", jdbc
                 .sql("SELECT status FROM wallet_reservations WHERE organization_id = ? AND job_id = 'job-d'")
                 .param(organizationId).query(String.class).single());
@@ -179,11 +184,8 @@ class WalletLedgerLiveTest {
         String tradeNo = "ALI-" + UUID.randomUUID();
         jdbc.sql("INSERT INTO organizations (organization_id, display_name, data_region) "
                         + "VALUES (?, 'wallet race test', 'cn-north')").param(organizationId).update();
-        jdbc.sql("INSERT INTO wallet_topup_orders (topup_order_id, organization_id, actor_id, "
-                        + "amount_minor, provider, out_trade_no, idempotency_key, expires_at) "
-                        + "VALUES (?, ?, 'actor-1', ?, 'ALIPAY', ?, ?, now() + interval '1 hour')")
-                .params("tu-" + tradeNo, organizationId, TOPUP, tradeNo, "idem-" + tradeNo).update();
-        creditTopup(jdbc, "tu-" + tradeNo);
+        createTopupOrder(jdbc, organizationId, "tu-" + tradeNo, "ALIPAY", tradeNo, TOPUP);
+        creditTopup(jdbc, organizationId, "tu-" + tradeNo);
 
         var pool = Executors.newFixedThreadPool(8);
         try {
@@ -231,9 +233,21 @@ class WalletLedgerLiveTest {
         assertNotEquals("", message);
     }
 
-    private static String creditTopup(JdbcClient jdbc, String topupOrderId) {
-        return jdbc.sql("SELECT elmos_wallet_credit_topup(?, 'txn', 'actor-1')")
-                .param(topupOrderId).query(String.class).single();
+    private static String creditTopup(JdbcClient jdbc, String organizationId, String topupOrderId) {
+        // The organization is passed explicitly because the real caller is a
+        // payment callback that resolved it from wallet_topup_order_directory and
+        // holds no tenant context of its own.
+        return jdbc.sql("SELECT elmos_wallet_credit_topup(?, ?, 'txn', 'actor-1')")
+                .params(organizationId, topupOrderId).query(String.class).single();
+    }
+
+    private static void createTopupOrder(JdbcClient jdbc, String organizationId,
+                                         String topupOrderId, String provider,
+                                         String outTradeNo, BigDecimal amount) {
+        jdbc.sql("SELECT elmos_wallet_create_topup_order(?, ?, 'actor-1', ?, ?, ?, ?, 3600)")
+                .params(topupOrderId, organizationId, amount, provider, outTradeNo,
+                        "idem-" + outTradeNo)
+                .query(String.class).single();
     }
 
     private static void reserve(JdbcClient jdbc, String organizationId, String jobId,

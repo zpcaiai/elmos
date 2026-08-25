@@ -411,6 +411,7 @@ def plan_repository(
             "Inventory and work-unit decomposition do not execute source code.",
             "Every discovered function requires an independent behavior-case corpus.",
             "Repository-wide success cannot be inferred from typed-pure-function-v1 evidence.",
-            "Deprecated-language files are inventoried and content-addressed but excluded from active-route work units.",
+            "Deprecated-language files are inventoried and content-addressed"
+            " but excluded from active-route work units.",
         ],
     }

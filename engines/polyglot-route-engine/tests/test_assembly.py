@@ -26,9 +26,11 @@ import pytest
 from elmos_polyglot_route import assembly
 from elmos_polyglot_route.assembly import (
     MANIFEST_NAME,
-    assemble_project as _assemble_project,
     verify_assembled_project,
     write_assembly_deployment_guidance,
+)
+from elmos_polyglot_route.assembly import (
+    assemble_project as _assemble_project,
 )
 from elmos_polyglot_route.batch import run_batch
 from elmos_polyglot_route.discovery import Verdict, discover_repository

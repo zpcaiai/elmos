@@ -67,6 +67,8 @@ from .models import (
     is_routed_pair,
     is_specialized_pair,
     requires_concrete_source_spans,
+)
+from .models import (
     repository_language_lifecycle as expected_repository_language_lifecycle,
 )
 from .native import (

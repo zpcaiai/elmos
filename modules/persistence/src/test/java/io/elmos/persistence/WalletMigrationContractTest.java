@@ -126,15 +126,95 @@ class WalletMigrationContractTest {
         assertTrue(sql.contains("REVOKE EXECUTE ON FUNCTION %s FROM PUBLIC"));
     }
 
-    @Test void thePaymentServiceGetsOneDoorAndNoTableIntoTheBalance() throws Exception {
+    @Test void thePaymentServiceGetsFunctionsAndNoWalletTableAtAll() throws Exception {
         String sql = Files.readString(MIGRATION);
 
-        assertTrue(sql.contains(
-                "GRANT EXECUTE ON FUNCTION elmos_wallet_credit_topup(varchar, varchar, varchar) TO elmos_billing_runtime"));
-        // The billing role may drive top-up orders, but it must never be handed
-        // wallet_accounts or wallet_ledger_entries.
+        assertTrue(sql.contains("GRANT EXECUTE ON FUNCTION elmos_wallet_credit_topup("
+                + "varchar, varchar, varchar, varchar) TO elmos_billing_runtime"));
+        assertTrue(sql.contains("GRANT EXECUTE ON FUNCTION elmos_wallet_create_topup_order("));
+        // Not one writable wallet table. Everything the payment service can do to
+        // a balance is the surface of two function signatures, and both of them
+        // name the single order they act on.
         assertFalse(sql.contains("ON wallet_accounts TO elmos_billing_runtime"));
         assertFalse(sql.contains("ON wallet_ledger_entries TO elmos_billing_runtime"));
+        assertFalse(sql.contains("ON wallet_topup_orders TO elmos_billing_runtime"));
+        assertFalse(sql.contains("ON wallet_reservations TO elmos_billing_runtime"));
+        // The directory is the one table it reads, and only reads.
+        assertTrue(sql.contains("GRANT SELECT ON wallet_topup_order_directory TO elmos_billing_runtime"));
+    }
+
+    @Test void aCallbackCanResolveItsTenantBeforeItHasOne() throws Exception {
+        String sql = Files.readString(MIGRATION);
+
+        // wallet_topup_orders is FORCE RLS, and a callback arrives carrying an
+        // out_trade_no and no organization. Without this projection the policy
+        // evaluates against a NULL context, the order is invisible, and every
+        // top-up silently becomes an unmatched callback -- the exact failure V62
+        // had to retrofit a fix for on payment_checkout_sessions.
+        assertTrue(sql.contains("CREATE TABLE wallet_topup_order_directory"));
+        assertTrue(sql.contains("CREATE TRIGGER wallet_topup_orders_directory_sync"));
+        assertFalse(sql.contains("'wallet_topup_order_directory'"),
+                "the directory must stay out of the row level security loop");
+        // V64's lesson: the sync trigger runs while the caller holds no write
+        // permission on the directory, so it must be SECURITY DEFINER with a
+        // pinned path and schema-qualified targets.
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_sync_wallet_topup_directory()"));
+        assertTrue(sql.contains("SET search_path = pg_catalog, public, pg_temp"));
+        assertTrue(sql.contains("INSERT INTO public.wallet_topup_order_directory"));
+        assertTrue(sql.contains("REVOKE ALL ON FUNCTION elmos_sync_wallet_topup_directory() FROM PUBLIC"));
+    }
+
+    @Test void accountingFunctionsBindTheirOwnTenantInsteadOfAssumingOwnerBypass() throws Exception {
+        String sql = Files.readString(MIGRATION);
+
+        // FORCE ROW LEVEL SECURITY binds the table owner too, so a SECURITY
+        // DEFINER function only sees rows if a tenant is bound -- unless the
+        // owner happens to be a superuser, which is a deployment property this
+        // migration cannot see and must not depend on.
+        assertTrue(sql.contains("CREATE OR REPLACE FUNCTION elmos_wallet_bind_tenant("));
+        assertTrue(sql.contains("ELMOS_WALLET_TENANT_REQUIRED"));
+        assertTrue(sql.contains("PERFORM set_config('app.organization_id', v_previous, true)"),
+                "the previous tenant context must be restored, not left bound");
+        for (String function : new String[]{
+                "elmos_wallet_open", "elmos_wallet_post_entry", "elmos_wallet_reserve",
+                "elmos_wallet_settle", "elmos_wallet_release", "elmos_wallet_credit_topup",
+                "elmos_wallet_create_topup_order", "elmos_wallet_reconcile",
+                "elmos_wallet_expire_reservations"}) {
+            String body = bodyOf(sql, function);
+            assertTrue(body.contains("elmos_wallet_bind_tenant("),
+                    () -> function + " touches tenant tables without binding a tenant");
+        }
+    }
+
+    @Test void theExpirySweeperIsPerTenantRatherThanACrossTenantScan() throws Exception {
+        String sql = Files.readString(MIGRATION);
+
+        // A cross-tenant scan of wallet_reservations returns nothing under FORCE
+        // RLS, so the sweeper would "succeed" having swept zero rows and money
+        // would stay frozen with no error anywhere.
+        assertTrue(bodyOf(sql, "elmos_wallet_expire_reservations")
+                        .contains("p_organization_id varchar"),
+                "the sweeper must take an organization");
+    }
+
+    @Test void topUpLimitsAreEnforcedWhereNoCallerCanSkipThem() throws Exception {
+        String sql = Files.readString(MIGRATION);
+
+        assertTrue(sql.contains("ELMOS_WALLET_TOPUP_BELOW_MINIMUM"));
+        assertTrue(sql.contains("ELMOS_WALLET_TOPUP_ABOVE_MAXIMUM"));
+        assertTrue(sql.contains("ELMOS_WALLET_TOPUP_DAILY_LIMIT_EXCEEDED"));
+        // Pending orders count against the day. Counting only credited ones lets
+        // a caller open unlimited orders and settle them together.
+        assertTrue(sql.contains("AND status NOT IN ('FAILED', 'EXPIRED')"));
+    }
+
+    private static String bodyOf(String sql, String function) {
+        int start = sql.indexOf("CREATE OR REPLACE FUNCTION " + function + "(");
+        if (start < 0) {
+            return "";
+        }
+        int end = sql.indexOf("\n$$;", start);
+        return end < 0 ? sql.substring(start) : sql.substring(start, end);
     }
 
     @Test void everySecurityDefinerFunctionPinsItsSearchPath() throws Exception {

@@ -86,28 +86,109 @@ public final class JdbcOrderPorts {
      */
     public static PaymentCallbackPipeline.OrderLookup orderLookup(DataSource source) {
         return outTradeNo -> {
-            String sql = """
-                    SELECT checkout_session_id, organization_id, plan_id, amount_minor
-                      FROM payment_order_directory
-                     WHERE checkout_session_id = ?
-                       AND status IN ('CREATING', 'OPEN', 'COMPLETED')
-                    """;
-            try (Connection connection = source.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, outTradeNo);
-                try (ResultSet rows = statement.executeQuery()) {
-                    if (!rows.next()) {
-                        return Optional.empty();
-                    }
-                    return Optional.of(new PaymentCallbackPipeline.LocalOrder(
-                            rows.getString("checkout_session_id"),
-                            rows.getString("organization_id"),
-                            rows.getString("plan_id"),
-                            rows.getLong("amount_minor")));
+            try (Connection connection = source.getConnection()) {
+                Optional<PaymentCallbackPipeline.LocalOrder> subscription =
+                        lookupSubscriptionOrder(connection, outTradeNo);
+                if (subscription.isPresent()) {
+                    return subscription;
                 }
+                // 同一个订单号空间里还有充值单。查两张目录而不是一张联合视图，
+                // 是因为两者的"可接受状态"不同：订阅目录接受 CREATING/OPEN/COMPLETED，
+                // 充值目录接受 CREATED/PENDING_PAYMENT/PAID/CREDITED。
+                // 揉进一个 UNION 会逼出一个能同时表达两套状态机的 WHERE，
+                // 而那个 WHERE 下次改任一侧时都会被改错。
+                return lookupTopupOrder(connection, outTradeNo);
             } catch (SQLException failure) {
                 // 查不到订单与"查询本身失败"必须区分：前者进对账，后者应让提供方重发。
                 throw new IllegalStateException("订单查询失败", failure);
+            }
+        };
+    }
+
+    private static Optional<PaymentCallbackPipeline.LocalOrder> lookupSubscriptionOrder(
+            Connection connection, String outTradeNo) throws SQLException {
+        String sql = """
+                SELECT checkout_session_id, organization_id, plan_id, amount_minor
+                  FROM payment_order_directory
+                 WHERE checkout_session_id = ?
+                   AND status IN ('CREATING', 'OPEN', 'COMPLETED')
+                """;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, outTradeNo);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(new PaymentCallbackPipeline.LocalOrder(
+                        rows.getString("checkout_session_id"),
+                        rows.getString("organization_id"),
+                        rows.getString("plan_id"),
+                        rows.getLong("amount_minor"),
+                        PaymentCallbackPipeline.OrderKind.SUBSCRIPTION));
+            }
+        }
+    }
+
+    /**
+     * 充值单的解析。
+     *
+     * <p>读 {@code wallet_topup_order_directory} 而不是 {@code wallet_topup_orders}，
+     * 理由与订阅侧逐字相同：后者是 FORCE RLS，回调到达时组织未知、设不了
+     * {@code app.organization_id}，策略求值成 {@code organization_id = NULL}，
+     * 一行都不返回。那条路径在真库上的表现是每笔充值都判成无主回调，
+     * 而且静默——回调返 4xx，提供方持续重发，直到有人去翻滞留表。
+     */
+    private static Optional<PaymentCallbackPipeline.LocalOrder> lookupTopupOrder(
+            Connection connection, String outTradeNo) throws SQLException {
+        String sql = """
+                SELECT topup_order_id, organization_id, amount_minor
+                  FROM wallet_topup_order_directory
+                 WHERE out_trade_no = ?
+                   AND status IN ('CREATED', 'PENDING_PAYMENT', 'PAID', 'CREDITED')
+                """;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, outTradeNo);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(new PaymentCallbackPipeline.LocalOrder(
+                        rows.getString("topup_order_id"),
+                        rows.getString("organization_id"),
+                        null,
+                        rows.getLong("amount_minor"),
+                        PaymentCallbackPipeline.OrderKind.TOPUP));
+            }
+        }
+    }
+
+    /**
+     * 第 5 步（充值）：入账。
+     *
+     * <p>整个动作就是调一次 {@code elmos_wallet_credit_topup}。这里刻意不写任何
+     * 更新 {@code wallet_topup_orders} 的 SQL——状态迁移、幂等、余额变动、流水
+     * 全在那个函数里一次做完，且以 {@code out_trade_no} 为幂等键。
+     * 在外面补一句 UPDATE 就是第二处改订单状态的地方，两处迟早不一致。
+     *
+     * <p>也不需要先 {@code SET app.organization_id}：函数自己绑定传入的组织，
+     * 用完把原值放回去（V73 §10）。这正是它接受组织参数的原因——
+     * 回调这条路径上没有任何租户上下文可继承。
+     *
+     * @param actorId 记入流水的操作者。回调没有交互式用户，传专用系统 Actor。
+     */
+    public static PaymentCallbackPipeline.WalletCreditor walletCreditor(
+            DataSource source, String actorId) {
+        return (order, callback) -> {
+            try (Connection connection = source.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(
+                         "SELECT elmos_wallet_credit_topup(?, ?, ?, ?)")) {
+                statement.setString(1, order.organizationId());
+                statement.setString(2, order.orderId());
+                statement.setString(3, callback.providerEventId());
+                statement.setString(4, actorId);
+                statement.execute();
+            } catch (SQLException failure) {
+                throw new IllegalStateException("充值入账失败: " + order.orderId(), failure);
             }
         };
     }

@@ -715,20 +715,53 @@ def _validated_environment_status_event(
 class ParityMetadataRepository:
     """Immutable persistence boundary shared by API, pipeline, and workers."""
 
-    def __init__(self, store: MetadataStore) -> None:
+    def __init__(self, store: MetadataStore, *, project_scope_claim: bool = True) -> None:
         self.store = store
+        # ``projects.project_id`` is a *global* primary key, so writing a parity
+        # record for a project nobody owns yet also claims that name forever.
+        # That is a legitimate act for trusted in-process composition holding
+        # the store directly -- the CLI, the pipeline bootstrap, the snapshot
+        # sealer -- and never a legitimate side effect of serving a request.
+        # Request-serving callers must therefore build this repository with
+        # ``project_scope_claim=False``; :class:`~elmos_build_cache.api.
+        # CacheControlPlane` enforces that for every repository it is given.
+        self.project_scope_claim = project_scope_claim
+
+    def without_project_claim(self) -> ParityMetadataRepository:
+        """Return a view of this repository that can never claim a project."""
+
+        if not self.project_scope_claim:
+            return self
+        return ParityMetadataRepository(self.store, project_scope_claim=False)
 
     def _ensure_scope(self, tenant_id: str, project_id: str) -> None:
+        """Bind a parity write to a project scope this tenant may use.
+
+        Without ``project_scope_claim`` this deliberately does *not* create the
+        project: creating one here would make every cache-parity write double
+        as a claim on a globally unique name, so a caller could bring another
+        tenant's not-yet-created project into existence -- and permanently
+        block it, because the rightful tenant's own ``ensure_project`` then
+        fails closed -- merely by compiling a prompt prefix against it.
+        Claiming scope is a deliberate act and belongs to
+        ``MetadataStore.ensure_project``, reached from ``POST /runs``, which
+        answers ``CONFLICT`` for a name it may not have.
+
+        Absent and foreign are answered with the same refusal on purpose.  A
+        distinguishable "does not exist" would let an unrelated tenant
+        enumerate the global project namespace one probe at a time.
+        """
+
         _identifier(tenant_id, "tenant_id")
         _identifier(project_id, "project_id")
         row = self.store.query_one(
             "SELECT tenant_id FROM projects WHERE project_id=?",
             (project_id,),
         )
-        if row is None:
+        if row is None and self.project_scope_claim:
             self.store.ensure_project(tenant_id, project_id)
             return
-        if str(row[0]) != tenant_id:
+        if row is None or str(row[0]) != tenant_id:
             raise TenantMismatch(
                 "project does not exist in the requested tenant scope",
                 tenant_id=tenant_id,
