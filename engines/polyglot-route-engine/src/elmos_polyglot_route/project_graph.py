@@ -1658,7 +1658,9 @@ def _react_project_evidence(
         if not isinstance(binding, Mapping):
             raise ProjectGraphError("REACT_PROJECT_GRAPH_DESCRIPTOR_INVALID")
         path = binding.get("path")
-        scanned = scanned_by_path.get(path) if isinstance(path, str) else None
+        if not isinstance(path, str):
+            raise ProjectGraphError("REACT_PROJECT_GRAPH_DESCRIPTOR_BINDING_INVALID")
+        scanned = scanned_by_path.get(path)
         if (
             scanned is None
             or scanned.role != FileRole.BUILD_DESCRIPTOR

@@ -1,44 +1,45 @@
 {
-  "schema_version": 1,
+  "framework_profiles": [],
+  "gates": {
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "semantic_profile": "",
+    "target_profile": ""
+  },
+  "review_date": "2026-11-24",
   "route_key": "python-to-flutter",
-  "version": "0.1.0",
-  "status": "research",
-  "owner": "UNASSIGNED",
-  "review_date": "",
+  "schema_version": 1,
   "source": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py",
     "language": "python",
     "versions": [
       "Python 3.12.12",
       "CPython AST"
-    ],
-    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py"
+    ]
   },
+  "status": "research",
   "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "flutter",
     "versions": [
       "Flutter 3.44.1 revision 924134a44c189315be2148659913dda1671cbe99",
       "Dart 3.12.1",
       "analyzer 10.1.0",
       "_fe_analyzer_shared 95.0.0"
-    ],
-    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+    ]
   },
-  "profiles": {
-    "semantic_profile": "",
-    "target_profile": ""
-  },
-  "framework_profiles": [],
-  "paths": {
-    "support_matrix": "support-matrix.json",
-    "corpus": "corpus",
-    "certification": "certification"
-  },
-  "gates": {
-    "real_target_compiler": true,
-    "source_map_required": true,
-    "holdout_required": true,
-    "representative_repository_required": true,
-    "critical_unknowns_allowed": 0,
-    "critical_behavior_regressions_allowed": 0
-  }
+  "version": "0.1.0"
 }

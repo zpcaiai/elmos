@@ -1,44 +1,45 @@
 {
-  "schema_version": 1,
+  "framework_profiles": [],
+  "gates": {
+    "critical_behavior_regressions_allowed": 0,
+    "critical_unknowns_allowed": 0,
+    "holdout_required": true,
+    "real_target_compiler": true,
+    "representative_repository_required": true,
+    "source_map_required": true
+  },
+  "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+  "owner": "ELMOS Migration Platform",
+  "paths": {
+    "certification": "certification",
+    "corpus": "corpus",
+    "support_matrix": "support-matrix.json"
+  },
+  "profiles": {
+    "semantic_profile": "",
+    "target_profile": ""
+  },
+  "review_date": "2026-11-24",
   "route_key": "java-to-react",
-  "version": "0.1.0",
-  "status": "research",
-  "owner": "UNASSIGNED",
-  "review_date": "",
+  "schema_version": 1,
   "source": {
+    "engine_path": "engines/polyglot-route-engine/native/java/Analyzer.java",
     "language": "java",
     "versions": [
       "Java 21.0.11",
       "JDK Compiler Tree API"
-    ],
-    "engine_path": "engines/polyglot-route-engine/native/java/Analyzer.java"
+    ]
   },
+  "status": "research",
   "target": {
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py",
     "language": "react",
     "versions": [
       "React 19.2.7",
       "React DOM 19.2.7",
       "TypeScript 5.9.2 Compiler API",
       "Node.js 26.0.0"
-    ],
-    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+    ]
   },
-  "profiles": {
-    "semantic_profile": "",
-    "target_profile": ""
-  },
-  "framework_profiles": [],
-  "paths": {
-    "support_matrix": "support-matrix.json",
-    "corpus": "corpus",
-    "certification": "certification"
-  },
-  "gates": {
-    "real_target_compiler": true,
-    "source_map_required": true,
-    "holdout_required": true,
-    "representative_repository_required": true,
-    "critical_unknowns_allowed": 0,
-    "critical_behavior_regressions_allowed": 0
-  }
+  "version": "0.1.0"
 }

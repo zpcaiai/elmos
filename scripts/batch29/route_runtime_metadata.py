@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 from typing import Any
 
@@ -24,6 +25,342 @@ V3_RESEARCH_METRIC_KEYS = (
     "manual_hours",
     "cost_per_verified_workload",
 )
+SUPPORT_CAPABILITY_STATUSES = frozenset(
+    {
+        "certified",
+        "supported",
+        "conditional",
+        "experimental",
+        "detected-only",
+        "blocked",
+    }
+)
+_MARKDOWN_TEXT_META = frozenset("\\`*_{}[]()#!|~^$")
+V3_RESEARCH_SUPPORT_CAPABILITIES = (
+    (
+        "type-system",
+        "experimental",
+        "deterministic-lowering",
+        "Analyzer and emitter components are locally available, but no route "
+        "semantic or target profile is admitted; route execution remains NOT_RUN.",
+    ),
+    (
+        "generics",
+        "detected-only",
+        "obligation",
+        "Generic syntax may be detected, but direction-specific lowering and "
+        "route execution evidence remain NOT_RUN.",
+    ),
+    (
+        "nullability",
+        "detected-only",
+        "obligation",
+        "Nullability may be detected, but no direction-specific nullability "
+        "contract or route execution evidence has been admitted.",
+    ),
+    (
+        "numeric",
+        "detected-only",
+        "obligation",
+        "Numeric syntax may be detected, but no direction-specific numeric "
+        "semantics or route execution evidence has been admitted.",
+    ),
+    (
+        "time",
+        "detected-only",
+        "obligation",
+        "Time-related syntax may be detected, but no direction-specific time "
+        "contract or route execution evidence has been admitted.",
+    ),
+    (
+        "exceptions",
+        "detected-only",
+        "obligation",
+        "Exception syntax may be detected, but no direction-specific exception "
+        "contract or route execution evidence has been admitted.",
+    ),
+    (
+        "async",
+        "detected-only",
+        "obligation",
+        "Async syntax may be detected, but async behavior has no admitted route "
+        "profile and route execution remains NOT_RUN.",
+    ),
+    (
+        "concurrency",
+        "blocked",
+        "human-review",
+        "Concurrency requires a direction-specific semantic contract, runtime "
+        "campaign, and independent evidence; none has run.",
+    ),
+    (
+        "reflection",
+        "blocked",
+        "human-review",
+        "Reflection requires a direction-specific semantic contract, runtime "
+        "campaign, and independent evidence; none has run.",
+    ),
+    (
+        "serialization",
+        "detected-only",
+        "contract-mapping",
+        "Serialization boundaries may be detected, but no exact wire contract "
+        "or route execution evidence has been admitted.",
+    ),
+    (
+        "interop",
+        "blocked",
+        "retain-runtime-or-sidecar",
+        "Interop requires an explicit boundary plan and independently verified "
+        "runtime evidence; neither has been admitted.",
+    ),
+)
+
+LEGACY_PACK_KEY = "polyglot-30-route-formal-equivalence-v1"
+LEGACY_CAMPAIGN_RELATIVE = (
+    f"verification-packs/{LEGACY_PACK_KEY}/formal-route-campaign.json"
+)
+LEGACY_CAMPAIGN_SHA256 = (
+    "sha256:4a31a2c67e0f2aaa03ba24b343abb4f60dd8b600121fb9cf7cd77aa1cba95c9c"
+)
+LEGACY_CAMPAIGN_BYTES = 578_643
+LEGACY_REPLAY_METHOD_SHA256 = (
+    "sha256:52a1e58a6c044eb5744bd70e1de43d6880bb7bd2e34838ae237503ec87a78ec"
+)
+LEGACY_REPLAY_ASSET_IDENTITIES = {
+    "certification/replay/validate_packed_route.py": {
+        "role": "launcher",
+        "sha256": "sha256:d7cf4017a6d0296c01f880e568950ef6b1dd341b61b48a09b90d61e0cff686da",
+        "bytes": 6_753,
+    },
+    "certification/replay/scripts/batch29/validate_route.py": {
+        "role": "validator",
+        "sha256": "sha256:650470cc8078fe8158eea881885ccd5390ea68d2eb81b4809ed6b672c553c6f9",
+        "bytes": 95_431,
+    },
+    "certification/replay/schemas/batch29/formal-equivalence-evidence.schema.json": {
+        "role": "schema",
+        "sha256": "sha256:c4821219c01e037ca86bb749f7790a892b612e2c6d0cfd382eb40c503a0280c7",
+        "bytes": 11_670,
+    },
+}
+
+
+def _markdown_field(value: str, invalid_code: str) -> str:
+    """Normalize one bounded Markdown field and escape embedded HTML."""
+
+    if not value.strip() or any(
+        (ord(character) < 32 and character not in "\r\n\t")
+        or 127 <= ord(character) <= 159
+        for character in value
+    ):
+        raise ValueError(invalid_code)
+    normalized = value.replace("\r", " ").replace("\n", " ").replace("\t", " ")
+    return html.escape(normalized, quote=False)
+
+
+def _markdown_text(value: str, invalid_code: str) -> str:
+    """Escape Markdown metacharacters in a normal inline-text context."""
+
+    normalized = _markdown_field(value, invalid_code)
+    return "".join(
+        f"\\{character}" if character in _MARKDOWN_TEXT_META else character
+        for character in normalized
+    )
+
+
+def _markdown_code(value: str, invalid_code: str) -> str:
+    """Return a code span whose fence cannot be closed by document content."""
+
+    normalized = _markdown_field(value, invalid_code)
+    longest_run = 0
+    current_run = 0
+    for character in normalized:
+        if character == "`":
+            current_run += 1
+            longest_run = max(longest_run, current_run)
+        else:
+            current_run = 0
+    fence = "`" * (longest_run + 1)
+    padding = " " if normalized.startswith("`") or normalized.endswith("`") else ""
+    return f"{fence}{padding}{normalized}{padding}{fence}"
+
+
+def v3_research_support_document(route_key: str) -> dict[str, Any]:
+    """Build the exact non-promoted support contract for one V3 route."""
+
+    from route_sets import V3_EXACT_ROUTE_KEYS
+
+    if route_key not in V3_EXACT_ROUTE_KEYS:
+        raise ValueError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
+    return {
+        "schema_version": 1,
+        "route_key": route_key,
+        "capabilities": [
+            {
+                "id": capability_id,
+                "status": status,
+                "strategy": strategy,
+                "reason": reason,
+                "evidence_refs": [],
+            }
+            for capability_id, status, strategy, reason in (
+                V3_RESEARCH_SUPPORT_CAPABILITIES
+            )
+        ],
+    }
+
+
+def support_matrix_markdown_bytes(
+    route_key: str,
+    source_bytes: bytes,
+    document: dict[str, Any],
+) -> bytes:
+    """Render the human view from the exact machine-readable JSON bytes."""
+
+    try:
+        decoded = json.loads(source_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}") from exc
+    capabilities = document.get("capabilities")
+    if (
+        not isinstance(route_key, str)
+        or not route_key.strip()
+        or decoded != document
+        or set(document) != {"schema_version", "route_key", "capabilities"}
+        or document.get("schema_version") != 1
+        or document.get("route_key") != route_key
+        or not isinstance(capabilities, list)
+        or not capabilities
+    ):
+        raise ValueError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}")
+
+    document_invalid = f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}"
+    capability_invalid = f"SUPPORT_MATRIX_CAPABILITY_INVALID:{route_key}"
+    rendered_route_key = _markdown_text(route_key, document_invalid)
+    sections: list[str] = []
+    for raw in capabilities:
+        if not isinstance(raw, dict) or set(raw) != {
+            "id",
+            "status",
+            "strategy",
+            "reason",
+            "evidence_refs",
+        }:
+            raise ValueError(f"SUPPORT_MATRIX_CAPABILITY_INVALID:{route_key}")
+        capability_id = raw.get("id")
+        status = raw.get("status")
+        strategy = raw.get("strategy")
+        reason = raw.get("reason")
+        evidence_refs = raw.get("evidence_refs")
+        if (
+            not all(
+                isinstance(value, str) and value
+                for value in (capability_id, status, strategy, reason)
+            )
+            or not isinstance(evidence_refs, list)
+            or any(not isinstance(value, str) or not value for value in evidence_refs)
+        ):
+            raise ValueError(capability_invalid)
+        if status not in SUPPORT_CAPABILITY_STATUSES or (
+            status == "certified" and not evidence_refs
+        ):
+            raise ValueError(capability_invalid)
+        evidence = (
+            ", ".join(
+                _markdown_code(value, capability_invalid) for value in evidence_refs
+            )
+            or "None"
+        )
+        sections.append(
+            "\n".join(
+                (
+                    f"## {_markdown_text(capability_id, capability_invalid)}",
+                    "",
+                    f"- Status: {_markdown_code(status, capability_invalid)}",
+                    f"- Strategy: {_markdown_code(strategy, capability_invalid)}",
+                    f"- Evidence: {evidence}",
+                    f"- Reason: {_markdown_text(reason, capability_invalid)}",
+                )
+            )
+        )
+    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    content = (
+        f"# Support matrix: {rendered_route_key}\n\n"
+        "Generated from the route's authoritative `../support-matrix.json`; "
+        "this view does not create execution or certification evidence.\n\n"
+        f"- Source SHA-256: `sha256:{source_sha256}`\n"
+        f"- Source bytes: `{len(source_bytes)}`\n\n"
+        + "\n\n".join(sections)
+        + "\n"
+    )
+    return content.encode("utf-8")
+
+
+def legacy_route_execution_authority_document() -> dict[str, Any]:
+    """Return the exact immutable legacy campaign authority."""
+
+    replay_assets = {
+        str(identity["role"]): {
+            "path": relative,
+            "sha256": str(identity["sha256"]),
+            "bytes": int(identity["bytes"]),
+        }
+        for relative, identity in LEGACY_REPLAY_ASSET_IDENTITIES.items()
+    }
+    authority: dict[str, Any] = {
+        "policy": "immutable-pack-captured-v1",
+        "pack_key": LEGACY_PACK_KEY,
+        "route_set": "legacy-complete-30",
+        "route_count": 30,
+        "campaign": {
+            "path": LEGACY_CAMPAIGN_RELATIVE,
+            "sha256": LEGACY_CAMPAIGN_SHA256,
+            "bytes": LEGACY_CAMPAIGN_BYTES,
+        },
+        "replay_assets": replay_assets,
+        "method_sha256": LEGACY_REPLAY_METHOD_SHA256,
+        "native_reexecution_status": "NOT_RUN",
+    }
+    authority_payload = json.dumps(
+        authority,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    authority["authority_sha256"] = (
+        "sha256:" + hashlib.sha256(authority_payload).hexdigest()
+    )
+    return authority
+
+
+def route_execution_authorities_document() -> dict[str, Any]:
+    """Return every exact route-set execution authority as a fresh document."""
+
+    return {
+        "legacy-complete-30": legacy_route_execution_authority_document(),
+        "cpp-objc-swift-java-exact-8": {
+            "policy": "current-versioned-campaign",
+            "native_reexecution_status": "NOT_RUN",
+        },
+        "nine-language-completion-34": {
+            "policy": "current-versioned-route-evidence",
+            "native_reexecution_status": "NOT_RUN",
+        },
+        "javascript-node26-completion-18": {
+            "policy": "historical-read-only-route-evidence",
+            "native_reexecution_status": "NOT_RUN",
+        },
+        "php-php85-completion-20": {
+            "policy": "mixed-provenance-read-only-route-evidence",
+            "active_execution_selection": "php-php85-active-completion-18",
+            "native_reexecution_status": "NOT_RUN",
+        },
+        "kotlin-react-flutter-completion-66": {
+            "policy": "local-analyzers-and-repository-surfaces-ready",
+            "native_reexecution_status": "NOT_RUN",
+        },
+    }
 
 
 def v3_research_gate_results() -> dict[str, str]:

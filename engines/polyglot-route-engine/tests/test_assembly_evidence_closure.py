@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+from functools import cache
 from pathlib import Path
 from typing import Any, cast
 
@@ -31,6 +32,7 @@ from elmos_polyglot_route.models import (
     SemanticIR,
     repository_language_lifecycle,
 )
+from elmos_polyglot_route.toolchains import exact_toolchain
 
 
 def assemble_project(
@@ -54,6 +56,11 @@ def _digest(content: bytes) -> str:
 
 def _canonical(value: object) -> bytes:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
+
+
+@cache
+def _current_toolchain_version(language: Language) -> str:
+    return exact_toolchain(language).version
 
 
 def _fixture(
@@ -333,7 +340,9 @@ def _archive_view(
     archived_manifest["build_verification_status"] = "PASSED"
     archived_manifest["build_verification"] = {
         "toolchain_language": manifest["target_language"],
-        "toolchain_version": "focused-fixture-toolchain",
+        "toolchain_version": _current_toolchain_version(
+            cast(Language, manifest["target_language"])
+        ),
         "commands": [{"command": ["fixture-build"], "stdout": "", "stderr": ""}],
     }
     manifest_bytes = json.dumps(archived_manifest, indent=2, sort_keys=True).encode() + b"\n"

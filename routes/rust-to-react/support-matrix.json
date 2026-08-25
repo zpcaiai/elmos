@@ -1,83 +1,83 @@
 {
-  "schema_version": 1,
-  "route_key": "rust-to-react",
   "capabilities": [
     {
+      "evidence_refs": [],
       "id": "type-system",
+      "reason": "Analyzer and emitter components are locally available, but no route semantic or target profile is admitted; route execution remains NOT_RUN.",
       "status": "experimental",
-      "strategy": "deterministic-lowering",
-      "reason": "Initial scaffold; evidence required",
-      "evidence_refs": []
+      "strategy": "deterministic-lowering"
     },
     {
+      "evidence_refs": [],
       "id": "generics",
+      "reason": "Generic syntax may be detected, but direction-specific lowering and route execution evidence remain NOT_RUN.",
       "status": "detected-only",
-      "strategy": "obligation",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "obligation"
     },
     {
+      "evidence_refs": [],
       "id": "nullability",
+      "reason": "Nullability may be detected, but no direction-specific nullability contract or route execution evidence has been admitted.",
       "status": "detected-only",
-      "strategy": "obligation",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "obligation"
     },
     {
+      "evidence_refs": [],
       "id": "numeric",
+      "reason": "Numeric syntax may be detected, but no direction-specific numeric semantics or route execution evidence has been admitted.",
       "status": "detected-only",
-      "strategy": "obligation",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "obligation"
     },
     {
+      "evidence_refs": [],
       "id": "time",
+      "reason": "Time-related syntax may be detected, but no direction-specific time contract or route execution evidence has been admitted.",
       "status": "detected-only",
-      "strategy": "obligation",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "obligation"
     },
     {
+      "evidence_refs": [],
       "id": "exceptions",
+      "reason": "Exception syntax may be detected, but no direction-specific exception contract or route execution evidence has been admitted.",
       "status": "detected-only",
-      "strategy": "obligation",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "obligation"
     },
     {
+      "evidence_refs": [],
       "id": "async",
+      "reason": "Async syntax may be detected, but async behavior has no admitted route profile and route execution remains NOT_RUN.",
       "status": "detected-only",
-      "strategy": "obligation",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "obligation"
     },
     {
+      "evidence_refs": [],
       "id": "concurrency",
+      "reason": "Concurrency requires a direction-specific semantic contract, runtime campaign, and independent evidence; none has run.",
       "status": "blocked",
-      "strategy": "human-review",
-      "reason": "Requires route-specific certification",
-      "evidence_refs": []
+      "strategy": "human-review"
     },
     {
+      "evidence_refs": [],
       "id": "reflection",
+      "reason": "Reflection requires a direction-specific semantic contract, runtime campaign, and independent evidence; none has run.",
       "status": "blocked",
-      "strategy": "human-review",
-      "reason": "Requires route-specific certification",
-      "evidence_refs": []
+      "strategy": "human-review"
     },
     {
+      "evidence_refs": [],
       "id": "serialization",
+      "reason": "Serialization boundaries may be detected, but no exact wire contract or route execution evidence has been admitted.",
       "status": "detected-only",
-      "strategy": "contract-mapping",
-      "reason": "Not yet implemented",
-      "evidence_refs": []
+      "strategy": "contract-mapping"
     },
     {
+      "evidence_refs": [],
       "id": "interop",
+      "reason": "Interop requires an explicit boundary plan and independently verified runtime evidence; neither has been admitted.",
       "status": "blocked",
-      "strategy": "retain-runtime-or-sidecar",
-      "reason": "Requires explicit boundary plan",
-      "evidence_refs": []
+      "strategy": "retain-runtime-or-sidecar"
     }
-  ]
+  ],
+  "route_key": "rust-to-react",
+  "schema_version": 1
 }

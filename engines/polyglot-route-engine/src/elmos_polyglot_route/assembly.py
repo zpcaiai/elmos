@@ -2296,7 +2296,7 @@ def _write_build_files(
         standard = (
             "set(CMAKE_CXX_STANDARD 17)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\n" if target_language == "cpp" else ""
         )
-        sources = "\n    ".join(str(unit["assembled_path"]) for unit in included_units)
+        cmake_sources = "\n    ".join(str(unit["assembled_path"]) for unit in included_units)
         platform_linkage = (
             "find_library(FOUNDATION_FRAMEWORK Foundation REQUIRED)\n"
             "target_link_libraries(elmos_migrated PRIVATE ${FOUNDATION_FRAMEWORK})\n"
@@ -2306,7 +2306,7 @@ def _write_build_files(
         (destination / "CMakeLists.txt").write_text(
             "cmake_minimum_required(VERSION 3.20)\n"
             f"project(elmos_polyglot_migrated_library LANGUAGES {cmake_language})\n"
-            f"{standard}add_library(elmos_migrated SHARED\n    {sources}\n)\n"
+            f"{standard}add_library(elmos_migrated SHARED\n    {cmake_sources}\n)\n"
             f"{platform_linkage}",
             encoding="utf-8",
         )
@@ -2364,11 +2364,11 @@ def _write_build_files(
         # this dependency-free generated project.  It stays replayable with the
         # exact Kotlin route compiler and does not introduce a Gradle plugin or
         # network-resolved dependency into a route that does not need either.
-        sources = sorted(str(unit["assembled_path"]) for unit in included_units)
-        if not sources or any(
+        kotlin_source_paths = sorted(str(unit["assembled_path"]) for unit in included_units)
+        if not kotlin_source_paths or any(
             re.fullmatch(r"src/main/kotlin/elmos/generated/wu[0-9a-z]+/migrated\.kt", source)
             is None
-            for source in sources
+            for source in kotlin_source_paths
         ):
             raise RouteError("ASSEMBLY_KOTLIN_SOURCE_SET_INVALID")
         arguments = [
@@ -2381,7 +2381,7 @@ def _write_build_files(
             "21",
             "-d",
             "build/classes",
-            *sources,
+            *kotlin_source_paths,
         ]
         (destination / "kotlinc.args").write_text(
             "\n".join(arguments) + "\n",
@@ -3336,18 +3336,18 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
         )
 
     if target_language == "java":
-        sources = sorted(str(path) for path in destination.glob("src/main/java/**/*.java"))
-        if not sources:
+        java_source_paths = sorted(str(path) for path in destination.glob("src/main/java/**/*.java"))
+        if not java_source_paths:
             raise RouteError("ASSEMBLY_NO_JAVA_SOURCES_FOUND")
         build_directory = destination / "build" / "classes"
         build_directory.mkdir(parents=True, exist_ok=True)
         assert toolchain.auxiliary is not None
-        command = [toolchain.auxiliary, "-d", str(build_directory), *sources]
+        command = [toolchain.auxiliary, "-d", str(build_directory), *java_source_paths]
         completed = _run(command, destination, executable_dirs=toolchain_dirs)
         commands.append({"command": command, "stdout": completed.stdout[-2_000:], "stderr": completed.stderr[-2_000:]})
     elif target_language == "kotlin":
-        sources = sorted(destination.glob("src/main/kotlin/**/*.kt"))
-        if not sources:
+        kotlin_source_paths = sorted(destination.glob("src/main/kotlin/**/*.kt"))
+        if not kotlin_source_paths:
             raise RouteError("ASSEMBLY_NO_KOTLIN_SOURCES_FOUND")
         build_directory = destination / "build" / "classes"
         build_directory.mkdir(parents=True, exist_ok=True)
@@ -3371,8 +3371,8 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
             }
         )
     elif target_language == "flutter":
-        sources = sorted(destination.glob("lib/generated/**/*.dart"))
-        if not sources or not (destination / "lib" / "main.dart").is_file():
+        flutter_source_paths = sorted(destination.glob("lib/generated/**/*.dart"))
+        if not flutter_source_paths or not (destination / "lib" / "main.dart").is_file():
             raise RouteError("ASSEMBLY_NO_FLUTTER_SOURCES_FOUND")
         (destination / "build").mkdir(parents=True, exist_ok=True)
         flutter_build_receipt = verify_flutter_build_toolchain(toolchain)
@@ -3434,7 +3434,7 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
                 ):
                     raise RouteError("ASSEMBLY_FLUTTER_ANALYZER_DIAGNOSTICS")
             if index == 2 and completed.stdout.strip() != (
-                f"ELMOS_FLUTTER_DART_REPOSITORY_OK:{len(sources)}"
+                f"ELMOS_FLUTTER_DART_REPOSITORY_OK:{len(flutter_source_paths)}"
             ):
                 raise RouteError("ASSEMBLY_FLUTTER_RUNTIME_SENTINEL_INVALID")
         kernel = _confined_regular_file(
@@ -3593,10 +3593,12 @@ def verify_assembled_project(target_language: Language, destination: Path) -> di
         # offers to "this compilation unit is well formed", and it is run over
         # every assembled unit rather than once over the descriptor, because a
         # composer autoload entry never parses the file it names.
-        sources = sorted(str(path.relative_to(destination)) for path in destination.glob("src/**/*.php"))
-        if not sources:
+        php_source_paths = sorted(
+            str(path.relative_to(destination)) for path in destination.glob("src/**/*.php")
+        )
+        if not php_source_paths:
             raise RouteError("ASSEMBLY_NO_PHP_SOURCES_FOUND")
-        for relative in sources:
+        for relative in php_source_paths:
             command = [
                 toolchain.executable,
                 "-n",

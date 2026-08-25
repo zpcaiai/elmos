@@ -238,6 +238,10 @@ def test_thirteen_non_python_languages_are_classified_but_semantics_stay_not_run
     }
     for filename, content in sources.items():
         (repository / filename).write_text(content, encoding="utf-8")
+    (repository / "package.json").write_text(
+        json.dumps({"type": "module"}),
+        encoding="utf-8",
+    )
 
     graph = build_project_graph(repository, "local:fourteen-language-boundary")
 

@@ -48,8 +48,9 @@ The generated registry retains these exact set identities:
 
 Inventory summary: 90 `limited`, 66 `research`, 0 `certified`; current
 execution contains 0 `PASSED_LOCAL` routes.
-A fresh route replay may record `PASSED_LOCAL` only while its captured engine
-source bundle still matches the live bytes; it never raises certification.
+A fresh replay of an execution-admitted mutable route may record `PASSED_LOCAL`
+only while its captured engine source bundle still matches the live bytes; it
+never raises certification.
 
 - Independent verification: `NOT_RUN`.
 - External certification: `NOT_RUN`.
@@ -165,8 +166,9 @@ execution; the central synthesis profile separately retains PHP 8.4.12.
 `kotlin-react-flutter-completion-66` is the exact set of active directions with
 Kotlin, React, or Flutter on at least one side. Its local compiler/parser and
 repository surfaces are engineering readiness only. Every one of the 66 route
-records remains `research / NOT_RUN / NOT_CERTIFIED` until its own route replay
-and independent evidence exist. Flutter readiness is deliberately the
+records remains `research / NOT_RUN / NOT_CERTIFIED` until an approved,
+route-specific campaign exists, that campaign is replayed, and independent
+evidence exists. Flutter readiness is deliberately the
 dependency-free, import-free pure-Dart subset: the exact Flutter-bundled Dart
 SDK analyzes, compiles and executes a linked kernel. Widget/UI, engine bundle,
 plugin, asset, platform, emulator and device behavior remains `NOT_RUN`.
@@ -186,9 +188,10 @@ obligation must close before a repository can report `COMPLETE`; otherwise it
 remains `PARTIAL / LIMITED`. No checked-in SMALL/MEDIUM repository campaign has
 raised any route's repository execution status above `NOT_RUN`.
 
-## Exact replay
+## Exact admitted replay and fail-closed boundaries
 
-Replay one active declared route without touching the other 155:
+Replay one of the 60 execution-admitted mutable routes without touching the
+other active routes:
 
 ```bash
 python3 scripts/batch29/run_polyglot_routes.py --repo-root . \
@@ -208,7 +211,15 @@ gate invocation; the mutable project `.venv` is never the proof-runtime trust
 root. Both commands run the route validator and conservative gate. A passing
 local replay still reports `limited / NOT_CERTIFIED`.
 
-Prepare or replay only the 34 completion routes:
+The other 96 active routes are not direct replay selections. The immutable
+legacy 30 fail closed with
+`LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION`; the 66 V3
+research routes fail at direct CLI selection with
+`V3_ROUTE_RESEARCH_NOT_EXECUTABLE`. The deeper mutation boundary independently
+fails with `V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN` until an exact
+route-specific campaign is approved.
+
+Prepare only the 34 completion routes:
 
 ```bash
 python3 scripts/batch29/run_polyglot_routes.py --repo-root . \
@@ -217,8 +228,9 @@ python3 scripts/batch29/run_polyglot_routes.py --repo-root . \
 
 The repository wrapper `make -f Makefile.batch29 b29-nine-language-prepare`
 creates deterministic NOT_RUN scaffolds and validates the matrix. Target
-`b29-nine-language-replay` performs an explicit replay of the preserved
-nine-language complete 72. Neither
+`b29-nine-language-replay` verifies the immutable legacy 30 through their
+read-only authority, then replays only the 42 mutable members of the preserved
+nine-language complete 72. It is not a direct replay of all 72 routes. Neither
 target changes independent or certification evidence.
 
 The following historical targets retain deprecated JavaScript scaffolds for

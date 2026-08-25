@@ -927,6 +927,14 @@ def discover_unit(
                     wrapper["semantic_status"] = "PASSED"
                     wrapper["diagnostics"] = []
                     wrapper["structural_wrapper_verification"] = wrapper_verification
+            raw_diagnostics = raw_inventory.get("diagnostics")
+            if not isinstance(raw_diagnostics, list):
+                raise RouteError(f"MODULE_INVENTORY_DIAGNOSTICS_INVALID:{relative}")
+            diagnostic_strings: list[str] = []
+            for diagnostic_item in raw_diagnostics:
+                if not isinstance(diagnostic_item, str):
+                    raise RouteError(f"MODULE_INVENTORY_DIAGNOSTICS_INVALID:{relative}")
+                diagnostic_strings.append(diagnostic_item)
             result["module_inventory"] = {
                 "path": relative,
                 "language": source_language,
@@ -936,7 +944,7 @@ def discover_unit(
                 "analyzer": raw_inventory.get("analyzer"),
                 "analyzer_version": raw_inventory.get("analyzer_version"),
                 "subjects": coverage_subjects,
-                "diagnostics": raw_inventory.get("diagnostics", []),
+                "diagnostics": diagnostic_strings,
                 **(
                     {"javascript_esm_descriptor": result["javascript_esm_descriptor"]}
                     if "javascript_esm_descriptor" in result
@@ -944,8 +952,6 @@ def discover_unit(
                 ),
             }
             if raw_inventory.get("enumeration_status") != "PASSED":
-                raw_diagnostics = raw_inventory.get("diagnostics", [])
-                diagnostic_strings = [str(item) for item in raw_diagnostics]
                 inventory_blocker = _module_inventory_blocker_subject(
                     source_language,
                     relative,

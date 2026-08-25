@@ -346,7 +346,7 @@
       "languages": ["kotlin"],
       "version": "Kotlin 2.2.20 / JDK 21.0.11",
       "install_policy": "managed-or-host",
-      "platforms": ["darwin-arm64", "linux-x86_64", "linux-arm64"],
+      "platforms": ["darwin-arm64"],
       "required_by": ["polyglot-routes"],
       "notes": "The route engine additionally binds the complete compiler tree, launcher, compiler JAR, stdlib JAR, build number, and JDK release digest.",
       "probes": [
@@ -378,7 +378,7 @@
       "install_policy": "managed-or-host",
       "platforms": ["darwin-arm64"],
       "required_by": ["polyglot-routes"],
-      "notes": "Separate from the PHP 8.4.12 Project Synthesis emitter. The route engine also verifies the full install tree, executable digest, integer/float identity, extension set, and tokenizer binding.",
+      "notes": "Separate from the PHP 8.4.12 Project Synthesis emitter. The route engine accepts only /opt/homebrew/Cellar/php/8.5.9 and also verifies the full install tree, executable digest, integer/float identity, extension set, and tokenizer binding.",
       "probes": [
         {"id": "php-route", "expected": "PHP 8.5.9 NTS", "pattern": "^PHP 8\\.5\\.9 .*\\(NTS\\)"},
         {"id": "php-route-modules", "expected": "tokenizer", "pattern": "(?m)^tokenizer$"}
@@ -460,9 +460,9 @@
       "languages": ["dart", "flutter"],
       "version": "Flutter 3.44.1 / Dart 3.12.1",
       "install_policy": "managed-or-host",
-      "platforms": ["darwin-arm64", "linux-x86_64", "linux-arm64", "windows-x86_64"],
+      "platforms": ["darwin-arm64"],
       "required_by": ["batch-72", "frontend-native", "polyglot-routes"],
-      "notes": "The central doctor probes only the bundled Dart executable. The route-engine exact receipt binds the Flutter launcher, flutter.version.json, and the complete bundled Dart SDK tree without invoking Flutter's mutable cache updater. Repository execution is limited to the import-free pure-Dart subset; Flutter framework, plugin, UI, emulator, and device semantics remain unsupported and NOT_RUN.",
+      "notes": "The current exact tuple is Darwin arm64 only at /opt/homebrew/share/flutter. The central doctor probes only its bundled Dart executable. The route-engine exact receipt binds the Flutter launcher, flutter.version.json, and the complete bundled Dart SDK tree without invoking Flutter's mutable cache updater. Repository execution is limited to the import-free pure-Dart subset; Flutter framework, plugin, UI, emulator, and device semantics remain unsupported and NOT_RUN.",
       "probes": [
         {"id": "dart-flutter", "expected": "Flutter-bundled Dart 3.12.1", "pattern": "^Dart SDK version: 3\\.12\\.1\\b"}
       ]

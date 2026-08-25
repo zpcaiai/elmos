@@ -881,6 +881,65 @@ def test_completed_but_failed_module_enumeration_remains_an_explicit_blocker(
     assert blocked["source_symbol"]["semantic_status"] == "BLOCKED"
     assert blocked["required_inputs"] == ["explicit_symbol_conversion_support"]
 
+
+@pytest.mark.parametrize(
+    ("enumeration_status", "diagnostics", "include_diagnostics"),
+    [
+        ("FAILED", None, True),
+        ("FAILED", {}, True),
+        ("FAILED", ["valid-diagnostic", 7], True),
+        ("FAILED", [], False),
+        ("PASSED", None, True),
+    ],
+    ids=[
+        "failed-not-a-list",
+        "failed-mapping",
+        "failed-non-string-item",
+        "failed-missing-key",
+        "passed-not-a-list",
+    ],
+)
+def test_discovery_rejects_invalid_module_inventory_diagnostics(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    enumeration_status: str,
+    diagnostics: object,
+    include_diagnostics: bool,
+) -> None:
+    repository = tmp_path / "invalid-module-inventory-diagnostics"
+    repository.mkdir()
+    (repository / "sample.cpp").write_text(
+        "long long total(long long value) { return value; }\n",
+        encoding="utf-8",
+    )
+
+    def invalid_inventory(_source: Path, _language: Language) -> dict[str, Any]:
+        inventory: dict[str, Any] = {
+            "enumeration_status": enumeration_status,
+            "analyzer": "test-analyzer",
+            "analyzer_version": "1",
+            "subjects": [],
+        }
+        if include_diagnostics:
+            inventory["diagnostics"] = diagnostics
+        return inventory
+
+    monkeypatch.setattr(discovery_module, "inventory_module", invalid_inventory)
+    with pytest.raises(
+        RouteError,
+        match=r"^MODULE_INVENTORY_DIAGNOSTICS_INVALID:sample\.cpp$",
+    ):
+        discover_repository(
+            plan_repository(
+                repository,
+                "local:invalid-module-inventory-diagnostics",
+                "cpp",
+                "python",
+            ),
+            repository,
+        )
+
+
 def test_discovery_blocks_duplicate_python_names_instead_of_reusing_the_first_ast_node(
     tmp_path: Path,
 ) -> None:

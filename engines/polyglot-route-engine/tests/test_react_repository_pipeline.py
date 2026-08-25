@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from elmos_polyglot_route import pipeline as pipeline_module
+from elmos_polyglot_route import project_graph as project_graph_module
 from elmos_polyglot_route.batch import run_batch
 from elmos_polyglot_route.discovery import Verdict, discover_repository
 from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, RouteError
@@ -258,6 +259,38 @@ def test_react_project_graph_rejects_self_consistent_verification_tamper(
     with pytest.raises(RouteError, match=r"^REACT_"):
         run_batch(changed, repository, cases, batch_output)
     assert not batch_output.exists()
+
+
+def test_react_project_graph_rejects_non_string_live_descriptor_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    _write_react_project(repository)
+    (repository / "pure.tsx").write_text(
+        "export function pure(value: number): number { return value; }\n",
+        encoding="utf-8",
+    )
+    reference = "local:react-invalid-descriptor-path"
+    discovery = discover_repository(
+        plan_repository(repository, reference, "react", "typescript"),
+        repository,
+    )
+    invalid_descriptor = copy.deepcopy(discovery["react_project_descriptor"])
+    invalid_descriptor["package"]["path"] = 7
+    changed = copy.deepcopy(discovery)
+    changed["react_project_descriptor"] = invalid_descriptor
+    monkeypatch.setattr(
+        project_graph_module,
+        "react_project_descriptor",
+        lambda _root: invalid_descriptor,
+    )
+
+    with pytest.raises(
+        ProjectGraphError,
+        match=r"^REACT_PROJECT_GRAPH_DESCRIPTOR_BINDING_INVALID$",
+    ):
+        build_project_graph(repository, reference, changed)
 
 
 def test_react_pipeline_detects_repository_drift_during_discovery(

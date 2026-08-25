@@ -97,6 +97,21 @@ def test_route_installer_is_selected_only_for_route_profiles(tmp_path: Path) -> 
         assert code == 0
         assert report["status"] == "DRY_RUN"
         assert route_step in report["steps"]
+        assert report["managed_route_components"] == [
+            "kotlin-route-2.2.20",
+            "react-19.2.7-locked-packages",
+        ]
+        assert set(report["host_prerequisite_runtime_ids"]) == {
+            "apple-clang-21",
+            "objective-c-apple",
+            "swift-6.3.3",
+            "php-route-8.5.9",
+            "flutter-3.44.1",
+        }
+        assert (
+            "kotlin-route-2.2.20"
+            not in report["host_prerequisite_runtime_ids"]
+        )
 
 
 def test_route_installer_is_executable_digest_pinned_and_tree_verifying() -> None:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import importlib.util
 import json
@@ -13,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import types
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
@@ -266,6 +268,7 @@ from route_sets import (  # noqa: E402
     ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS,
     ELEVEN_LANGUAGE_MATRIX_LANGUAGES,
     EVIDENCED_ROUTE_KEYS,
+    EXECUTABLE_DIRECT_ROUTE_KEYS,
     EXECUTABLE_ROUTE_SETS,
     MODULE_EQUIVALENCE_ROUTE_KEYS,
     NINE_LANGUAGE_COMPLETE_ROUTE_KEYS,
@@ -283,15 +286,26 @@ from route_sets import (  # noqa: E402
     V3_LANGUAGES,
     nodejs_negative_case_ids,
     provenance_route_set,
+    split_executable_route_key,
     split_route_key,
 )
 from route_runtime_metadata import (  # noqa: E402
     ENGINE_PATHS,
+    LEGACY_CAMPAIGN_BYTES,
+    LEGACY_CAMPAIGN_RELATIVE,
+    LEGACY_CAMPAIGN_SHA256,
+    LEGACY_PACK_KEY,
+    LEGACY_REPLAY_ASSET_IDENTITIES,
+    LEGACY_REPLAY_METHOD_SHA256,
     SHORT_VERSIONS,
     V3_RESEARCH_ROUTE_VERSION,
     VERSIONS,
+    legacy_route_execution_authority_document,
+    route_execution_authorities_document,
+    support_matrix_markdown_bytes,
     v3_research_certification_document,
     v3_research_evidence_document,
+    v3_research_support_document,
 )
 
 B16_LANGUAGES: tuple[Language, ...] = CORE_LANGUAGES  # type: ignore[assignment]
@@ -301,39 +315,7 @@ NODEJS_INPUT_DOMAIN = "nodejs-es2022-esm-safe-integer-finite-v1"
 NODEJS_OUT_OF_DOMAIN_BEHAVIOR = (
     "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1"
 )
-LEGACY_PACK_KEY = "polyglot-30-route-formal-equivalence-v1"
-LEGACY_CAMPAIGN_RELATIVE = (
-    f"verification-packs/{LEGACY_PACK_KEY}/formal-route-campaign.json"
-)
-LEGACY_CAMPAIGN_SHA256 = (
-    "sha256:4a31a2c67e0f2aaa03ba24b343abb4f60dd8b600121fb9cf7cd77aa1cba95c9c"
-)
-LEGACY_CAMPAIGN_BYTES = 578_643
-LEGACY_REPLAY_METHOD_SHA256 = (
-    "sha256:52a1e58a6c044eb5744bd70e1de43d6880bb7bd2e34838ae237503ec87a78ec"
-)
-LEGACY_REPLAY_ASSET_IDENTITIES = {
-    "certification/replay/validate_packed_route.py": {
-        "role": "launcher",
-        "sha256": "sha256:d7cf4017a6d0296c01f880e568950ef6b1dd341b61b48a09b90d61e0cff686da",
-        "bytes": 6_753,
-    },
-    "certification/replay/scripts/batch29/validate_route.py": {
-        "role": "validator",
-        "sha256": "sha256:650470cc8078fe8158eea881885ccd5390ea68d2eb81b4809ed6b672c553c6f9",
-        "bytes": 95_431,
-    },
-    ("certification/replay/schemas/batch29/formal-equivalence-evidence.schema.json"): {
-        "role": "schema",
-        "sha256": "sha256:c4821219c01e037ca86bb749f7790a892b612e2c6d0cfd382eb40c503a0280c7",
-        "bytes": 11_670,
-    },
-}
-EXECUTABLE_MUTABLE_ROUTE_KEYS = tuple(
-    route_key
-    for route_key in COMPLETE_ROUTE_KEYS
-    if route_key not in CORE_ROUTE_KEYS and route_key not in V3_EXACT_ROUTE_KEYS
-)
+EXECUTABLE_MUTABLE_ROUTE_KEYS = EXECUTABLE_DIRECT_ROUTE_KEYS
 NOT_RUN_PREPARED_AT = "2026-08-09T00:00:00+00:00"
 MODULE_SINGLE_ARTIFACT_ROLES = frozenset(
     {
@@ -815,82 +797,6 @@ def _json_bytes(value: dict[str, Any]) -> bytes:
     ).encode("utf-8")
 
 
-def _support_matrix_markdown(
-    route_key: str,
-    source_bytes: bytes,
-    document: dict[str, Any],
-) -> bytes:
-    """Render the human-readable matrix from the exact JSON authority."""
-
-    capabilities = document.get("capabilities")
-    if (
-        set(document) != {"schema_version", "route_key", "capabilities"}
-        or document.get("schema_version") != 1
-        or document.get("route_key") != route_key
-        or not isinstance(capabilities, list)
-        or not capabilities
-    ):
-        raise RuntimeError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}")
-
-    def prose(value: str) -> str:
-        return (
-            value.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("\r", " ")
-            .replace("\n", " ")
-        )
-
-    sections: list[str] = []
-    for raw in capabilities:
-        if not isinstance(raw, dict) or set(raw) != {
-            "id",
-            "status",
-            "strategy",
-            "reason",
-            "evidence_refs",
-        }:
-            raise RuntimeError(f"SUPPORT_MATRIX_CAPABILITY_INVALID:{route_key}")
-        capability_id = raw.get("id")
-        status = raw.get("status")
-        strategy = raw.get("strategy")
-        reason = raw.get("reason")
-        evidence_refs = raw.get("evidence_refs")
-        if (
-            not all(
-                isinstance(value, str) and value
-                for value in (capability_id, status, strategy, reason)
-            )
-            or not isinstance(evidence_refs, list)
-            or any(not isinstance(value, str) or not value for value in evidence_refs)
-        ):
-            raise RuntimeError(f"SUPPORT_MATRIX_CAPABILITY_INVALID:{route_key}")
-        evidence = ", ".join(f"`{value}`" for value in evidence_refs) or "None"
-        sections.append(
-            "\n".join(
-                (
-                    f"## {prose(capability_id)}",
-                    "",
-                    f"- Status: `{prose(status)}`",
-                    f"- Strategy: `{prose(strategy)}`",
-                    f"- Evidence: {evidence}",
-                    f"- Reason: {prose(reason)}",
-                )
-            )
-        )
-    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
-    content = (
-        f"# Support matrix: {route_key}\n\n"
-        "Generated from the route's authoritative `../support-matrix.json`; "
-        "this view does not create execution or certification evidence.\n\n"
-        f"- Source SHA-256: `sha256:{source_sha256}`\n"
-        f"- Source bytes: `{len(source_bytes)}`\n\n"
-        + "\n\n".join(sections)
-        + "\n"
-    )
-    return content.encode("utf-8")
-
-
 def _stable_regular_file_bytes(
     root: Path,
     path: Path,
@@ -971,11 +877,30 @@ def _stable_regular_file_bytes(
     return content
 
 
+_DirectoryIdentity = tuple[int, int, int, int, int]
+_TRANSACTION_CREATED_DIRECTORIES: ContextVar[
+    dict[Path, _DirectoryIdentity] | None
+] = ContextVar("batch29_transaction_created_directories", default=None)
+
+
+def _directory_identity(metadata: os.stat_result) -> _DirectoryIdentity:
+    """Return fields that identify one owned directory across child changes."""
+
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_uid,
+        metadata.st_gid,
+    )
+
+
 def _safe_atomic_write_parent(path: Path) -> tuple[Path, os.stat_result]:
     """Return a stable direct parent, creating only missing plain directories."""
 
     parent = path.parent
     missing: list[Path] = []
+    created_directories = _TRANSACTION_CREATED_DIRECTORIES.get()
     current = parent
     while True:
         try:
@@ -997,6 +922,8 @@ def _safe_atomic_write_parent(path: Path) -> tuple[Path, os.stat_result]:
             raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}") from exc
         if directory.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
             raise RuntimeError(f"ATOMIC_WRITE_PARENT_UNSAFE:{parent}")
+        if created_directories is not None:
+            created_directories[directory] = _directory_identity(metadata)
     for ancestor in (parent, *parent.parents):
         try:
             ancestor_metadata = ancestor.lstat()
@@ -1194,6 +1121,90 @@ def _remove_transaction_created_file(
     raise RuntimeError(f"DOCUMENT_TRANSACTION_ROLLBACK_REMOVE_FAILED:{path}")
 
 
+def _remove_transaction_created_directories(
+    root: Path,
+    created_directories: dict[Path, _DirectoryIdentity],
+) -> list[str]:
+    """Remove only still-owned empty directories created by this transaction."""
+
+    failures: list[str] = []
+    try:
+        resolved_root = root.resolve(strict=True)
+        root_metadata = root.lstat()
+    except OSError as exc:
+        return [f"{root}:DOCUMENT_TRANSACTION_DIRECTORY_ROOT_UNSAFE:{exc}"]
+    if root.is_symlink() or not stat.S_ISDIR(root_metadata.st_mode):
+        return [f"{root}:DOCUMENT_TRANSACTION_DIRECTORY_ROOT_UNSAFE"]
+
+    ordered = sorted(
+        created_directories.items(),
+        key=lambda item: (len(item[0].parts), str(item[0])),
+        reverse=True,
+    )
+    for directory, expected_identity in ordered:
+        try:
+            relative = directory.relative_to(root)
+        except ValueError:
+            failures.append(
+                f"{directory}:DOCUMENT_TRANSACTION_DIRECTORY_PATH_ESCAPE"
+            )
+            continue
+        if not relative.parts:
+            failures.append(
+                f"{directory}:DOCUMENT_TRANSACTION_DIRECTORY_ROOT_SELECTED"
+            )
+            continue
+
+        current = root
+        try:
+            metadata: os.stat_result | None = None
+            for part in relative.parts:
+                current = current / part
+                metadata = current.lstat()
+                if current.is_symlink() or not stat.S_ISDIR(metadata.st_mode):
+                    raise RuntimeError
+            assert metadata is not None
+            directory.resolve(strict=True).relative_to(resolved_root)
+        except FileNotFoundError:
+            continue
+        except (OSError, RuntimeError, ValueError):
+            failures.append(
+                f"{directory}:DOCUMENT_TRANSACTION_DIRECTORY_CHANGED"
+            )
+            continue
+        if _directory_identity(metadata) != expected_identity:
+            failures.append(
+                f"{directory}:DOCUMENT_TRANSACTION_DIRECTORY_CHANGED"
+            )
+            continue
+
+        try:
+            directory.rmdir()
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            reason = (
+                "DOCUMENT_TRANSACTION_DIRECTORY_NOT_EMPTY"
+                if exc.errno in {errno.EEXIST, errno.ENOTEMPTY}
+                else f"DOCUMENT_TRANSACTION_DIRECTORY_REMOVE_FAILED:{exc}"
+            )
+            failures.append(f"{directory}:{reason}")
+            continue
+        try:
+            directory.lstat()
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            failures.append(
+                f"{directory}:DOCUMENT_TRANSACTION_DIRECTORY_REMOVE_FAILED:{exc}"
+            )
+            continue
+        failures.append(
+            f"{directory}:DOCUMENT_TRANSACTION_DIRECTORY_REAPPEARED"
+        )
+    return failures
+
+
 def _transactional_write_bytes(
     root: Path, documents: tuple[tuple[Path, bytes], ...]
 ) -> None:
@@ -1204,26 +1215,38 @@ def _transactional_write_bytes(
         raise RuntimeError("DOCUMENT_TRANSACTION_SELECTION_INVALID")
     originals = {path: _transaction_target_original(root, path) for path in paths}
     attempted: list[tuple[Path, bytes]] = []
+    created_directories: dict[Path, _DirectoryIdentity] = {}
+    tracker_token = _TRANSACTION_CREATED_DIRECTORIES.set(created_directories)
     try:
-        for path, content in documents:
-            attempted.append((path, content))
-            _atomic_write_bytes(path, content)
-    except BaseException as error:
-        rollback_failures: list[str] = []
-        for path, content in reversed(attempted):
-            try:
-                original = originals[path]
-                if original is None:
-                    _remove_transaction_created_file(root, path, content)
-                else:
-                    _atomic_write_bytes_impl(path, original)
-            except BaseException as rollback_error:  # pragma: no cover - host I/O loss
-                rollback_failures.append(f"{path}:{rollback_error}")
-        if rollback_failures:
-            raise RuntimeError(
-                "DOCUMENT_TRANSACTION_ROLLBACK_FAILED:" + " | ".join(rollback_failures)
-            ) from error
-        raise
+        try:
+            for path, content in documents:
+                attempted.append((path, content))
+                _atomic_write_bytes(path, content)
+        except BaseException as error:
+            rollback_failures: list[str] = []
+            for path, content in reversed(attempted):
+                try:
+                    original = originals[path]
+                    if original is None:
+                        _remove_transaction_created_file(root, path, content)
+                    else:
+                        _atomic_write_bytes_impl(path, original)
+                except BaseException as rollback_error:  # pragma: no cover - host I/O loss
+                    rollback_failures.append(f"{path}:{rollback_error}")
+            rollback_failures.extend(
+                _remove_transaction_created_directories(
+                    root,
+                    created_directories,
+                )
+            )
+            if rollback_failures:
+                raise RuntimeError(
+                    "DOCUMENT_TRANSACTION_ROLLBACK_FAILED:"
+                    + " | ".join(rollback_failures)
+                ) from error
+            raise
+    finally:
+        _TRANSACTION_CREATED_DIRECTORIES.reset(tracker_token)
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
@@ -1312,21 +1335,6 @@ def _assert_sealed_source_identity(
             raise RuntimeError(f"FORMAL_ENGINE_SOURCE_SEAL_DRIFT:{label}:{field}")
 
 
-def _legacy_regular_file(root: Path, relative: str, *, label: str) -> Path:
-    """Resolve one frozen legacy asset without symlinks or path escape."""
-
-    candidate = root / relative
-    try:
-        resolved_root = root.resolve(strict=True)
-        resolved = candidate.resolve(strict=True)
-        resolved.relative_to(resolved_root)
-    except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
-        raise RuntimeError(f"LEGACY_{label}_MISSING_OR_PATH_ESCAPE:{relative}") from exc
-    if candidate.is_symlink() or not resolved.is_file():
-        raise RuntimeError(f"LEGACY_{label}_NOT_REGULAR_FILE:{relative}")
-    return resolved
-
-
 def legacy_campaign_authority(repo: Path) -> dict[str, Any]:
     """Recompute the immutable v1 campaign and exact-three replay authority.
 
@@ -1335,15 +1343,16 @@ def legacy_campaign_authority(repo: Path) -> dict[str, Any]:
     must retain the same pack-captured launcher, validator, and Schema bytes.
     """
 
-    campaign_path = _legacy_regular_file(
+    campaign_path = repo / LEGACY_CAMPAIGN_RELATIVE
+    campaign_payload = _stable_regular_file_bytes(
         repo,
-        LEGACY_CAMPAIGN_RELATIVE,
-        label="CAMPAIGN",
+        campaign_path,
+        label="LEGACY_CAMPAIGN",
     )
-    campaign_payload = campaign_path.read_bytes()
     if (
         len(campaign_payload) != LEGACY_CAMPAIGN_BYTES
-        or sha256_file(campaign_path) != LEGACY_CAMPAIGN_SHA256
+        or "sha256:" + hashlib.sha256(campaign_payload).hexdigest()
+        != LEGACY_CAMPAIGN_SHA256
     ):
         raise RuntimeError("LEGACY_CAMPAIGN_IDENTITY_DRIFT")
     try:
@@ -1388,15 +1397,16 @@ def legacy_campaign_authority(repo: Path) -> dict[str, Any]:
     asset_authority: dict[str, dict[str, str | int]] = {}
     for relative, identity in LEGACY_REPLAY_ASSET_IDENTITIES.items():
         for route_key in CORE_ROUTE_KEYS:
-            route_root = routes_root / route_key
-            asset = _legacy_regular_file(
-                route_root,
-                relative,
-                label=f"REPLAY_{str(identity['role']).upper()}",
+            asset_path = routes_root / route_key / relative
+            asset_payload = _stable_regular_file_bytes(
+                repo,
+                asset_path,
+                label=f"LEGACY_REPLAY_{str(identity['role']).upper()}",
             )
             if (
-                asset.stat().st_size != identity["bytes"]
-                or sha256_file(asset) != identity["sha256"]
+                len(asset_payload) != identity["bytes"]
+                or "sha256:" + hashlib.sha256(asset_payload).hexdigest()
+                != identity["sha256"]
             ):
                 raise RuntimeError(
                     f"LEGACY_REPLAY_ASSET_IDENTITY_DRIFT:{route_key}:{relative}"
@@ -1430,6 +1440,8 @@ def legacy_campaign_authority(repo: Path) -> dict[str, Any]:
     authority["authority_sha256"] = (
         "sha256:" + hashlib.sha256(authority_payload).hexdigest()
     )
+    if authority != legacy_route_execution_authority_document():
+        raise RuntimeError("LEGACY_EXECUTION_AUTHORITY_CONTRACT_DRIFT")
     return authority
 
 
@@ -3171,11 +3183,18 @@ def write_not_run_route_scaffold(
 
 def parse_route_key(value: str) -> tuple[Language, Language]:
     try:
-        source, target = split_route_key(value)
-    except ValueError:
-        choices = ", ".join(EVIDENCED_ROUTE_KEYS)
+        source, target = split_executable_route_key(value)
+    except ValueError as error:
+        reason = str(error)
+        if reason.startswith("V3_ROUTE_RESEARCH_NOT_EXECUTABLE:"):
+            raise argparse.ArgumentTypeError(reason) from None
+        if reason.startswith(
+            "LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:"
+        ):
+            raise argparse.ArgumentTypeError(reason) from None
+        choices = ", ".join(EXECUTABLE_DIRECT_ROUTE_KEYS)
         raise argparse.ArgumentTypeError(
-            f"route must be one exact declared directed key: {choices}"
+            f"route must be one exact executable mutable directed key: {choices}"
         ) from None
     return source, target  # type: ignore[return-value]
 
@@ -3871,7 +3890,7 @@ def verify_route_set_read_only(
             or documents["certification"].get("route_version") != route_version
         ):
             raise RuntimeError(f"ROUTE_SET_READ_ONLY_VERSION_DRIFT:{route_key}")
-        expected_markdown = _support_matrix_markdown(
+        expected_markdown = support_matrix_markdown_bytes(
             route_key,
             raw_support,
             documents["support"],
@@ -3886,6 +3905,7 @@ def verify_route_set_read_only(
         if route_key in V3_EXACT_ROUTE_KEYS and (
             documents["route"]
             != _v3_research_route_manifest(repo, route_key)[2]
+            or documents["support"] != v3_research_support_document(route_key)
             or documents["evidence"]
             != v3_research_evidence_document(route_key)
             or documents["certification"]
@@ -3981,12 +4001,13 @@ def _v3_research_route_manifest(
 def _v3_research_route_documents(
     repo: Path, route_key: str
 ) -> tuple[Path, tuple[tuple[Path, dict[str, Any]], ...]]:
-    """Build the manifest, raw evidence, and decision before any V3 write."""
+    """Build every machine-readable V3 document before any write."""
 
     route, manifest_path, manifest = _v3_research_route_manifest(repo, route_key)
     certification_root = route / "certification"
     return route, (
         (manifest_path, manifest),
+        (route / "support-matrix.json", v3_research_support_document(route_key)),
         (
             certification_root / "evidence.json",
             v3_research_evidence_document(route_key),
@@ -3998,13 +4019,41 @@ def _v3_research_route_documents(
     )
 
 
+def _v3_research_route_transaction_documents(
+    route: Path,
+    documents: tuple[tuple[Path, dict[str, Any]], ...],
+) -> tuple[tuple[Path, bytes], ...]:
+    """Serialize one V3 contract and derive its support view from those bytes."""
+
+    serialized = tuple((path, _json_bytes(document)) for path, document in documents)
+    support_path = route / "support-matrix.json"
+    support_matches = tuple(
+        (content, document)
+        for (path, document), (_, content) in zip(documents, serialized, strict=True)
+        if path == support_path
+    )
+    if len(support_matches) != 1:
+        raise RuntimeError(f"V3_SUPPORT_DOCUMENT_SELECTION_INVALID:{route.name}")
+    support_bytes, support_document = support_matches[0]
+    return serialized + (
+        (
+            route / "certification" / "support-matrix.md",
+            support_matrix_markdown_bytes(
+                route.name,
+                support_bytes,
+                support_document,
+            ),
+        ),
+    )
+
+
 def synchronize_v3_research_route_manifest(repo: Path, route_key: str) -> Path:
     """Bind one V3 route to the conservative metadata/evidence authority."""
 
     route, documents = _v3_research_route_documents(repo, route_key)
     _transactional_write_bytes(
         repo / "routes",
-        tuple((path, _json_bytes(document)) for path, document in documents),
+        _v3_research_route_transaction_documents(route, documents),
     )
     return route
 
@@ -4029,9 +4078,11 @@ def synchronize_v3_research_route_manifests(
         _v3_research_route_documents(repo, route_key) for route_key in route_keys
     )
     documents = tuple(
-        (path, _json_bytes(document))
-        for _, route_documents in prepared
-        for path, document in route_documents
+        document
+        for route, route_documents in prepared
+        for document in _v3_research_route_transaction_documents(
+            route, route_documents
+        )
     )
     _transactional_write_bytes(repo / "routes", documents)
     return tuple(route for route, _ in prepared)
@@ -5660,27 +5711,34 @@ def write_inventory(repo: Path) -> None:
     routes_root = repo / "routes"
     support_matrix_documents: list[tuple[Path, bytes]] = []
     for route_key in ALL_DECLARED_ROUTE_KEYS:
-        support_path = routes_root / route_key / "support-matrix.json"
-        support_bytes = _stable_regular_file_bytes(
-            routes_root,
-            support_path,
-            label=f"ROUTE_SUPPORT_MATRIX:{route_key}",
-        )
-        try:
-            raw_support = json.loads(support_bytes.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise RuntimeError(
-                f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}"
-            ) from exc
-        if not isinstance(raw_support, dict):
-            raise RuntimeError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}")
+        v3_route_documents = v3_documents.get(route_key)
+        if v3_route_documents is not None:
+            raw_support = v3_route_documents["support-matrix.json"]
+            support_bytes = _json_bytes(raw_support)
+        else:
+            support_path = routes_root / route_key / "support-matrix.json"
+            support_bytes = _stable_regular_file_bytes(
+                routes_root,
+                support_path,
+                label=f"ROUTE_SUPPORT_MATRIX:{route_key}",
+            )
+            try:
+                raw_support = json.loads(support_bytes.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise RuntimeError(
+                    f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}"
+                ) from exc
+            if not isinstance(raw_support, dict):
+                raise RuntimeError(f"SUPPORT_MATRIX_DOCUMENT_INVALID:{route_key}")
+        if v3_route_documents is not None:
+            continue
         support_matrix_documents.append(
             (
                 routes_root
                 / route_key
                 / "certification"
                 / "support-matrix.md",
-                _support_matrix_markdown(route_key, support_bytes, raw_support),
+                support_matrix_markdown_bytes(route_key, support_bytes, raw_support),
             )
         )
     routes: list[dict[str, Any]] = []
@@ -5820,10 +5878,10 @@ def write_inventory(repo: Path) -> None:
         status: sum(1 for entry in routes if entry["status"] == status)
         for status in ("research", "experimental", "limited", "blocked", "certified")
     }
-    # Prebuild the inventory, all 198 V3 documents and all human-readable
-    # support-matrix views before the first write. They form one process-level
-    # transaction: any injected or ordinary write failure restores every
-    # target's exact original bytes.
+    # Prebuild the inventory, all 330 V3 contract/view documents, and the
+    # remaining 110 support-matrix views before the first write. They form one
+    # process-level transaction: any injected or ordinary write failure
+    # restores every target's exact original bytes.
     inventory_document = {
             "schema_version": "1.4.0",
             "route_policy": {
@@ -5853,30 +5911,7 @@ def write_inventory(repo: Path) -> None:
                     for name, route_keys in ROUTE_PROVENANCE_PARTITIONS.items()
                 },
             },
-            "route_execution_authorities": {
-                "legacy-complete-30": legacy_authority,
-                "cpp-objc-swift-java-exact-8": {
-                    "policy": "current-versioned-campaign",
-                    "native_reexecution_status": "NOT_RUN",
-                },
-                "nine-language-completion-34": {
-                    "policy": "current-versioned-route-evidence",
-                    "native_reexecution_status": "NOT_RUN",
-                },
-                "javascript-node26-completion-18": {
-                    "policy": "historical-read-only-route-evidence",
-                    "native_reexecution_status": "NOT_RUN",
-                },
-                "php-php85-completion-20": {
-                    "policy": "mixed-provenance-read-only-route-evidence",
-                    "active_execution_selection": "php-php85-active-completion-18",
-                    "native_reexecution_status": "NOT_RUN",
-                },
-                "kotlin-react-flutter-completion-66": {
-                    "policy": "local-analyzers-and-repository-surfaces-ready",
-                    "native_reexecution_status": "NOT_RUN",
-                },
-            },
+            "route_execution_authorities": route_execution_authorities_document(),
             "route_sets": {
                 "legacy-complete-30": {
                     "policy": "complete-directed-permutation",
@@ -6001,9 +6036,9 @@ def write_inventory(repo: Path) -> None:
         "routes": routes,
     }
     transaction_documents = tuple(
-        (path, _json_bytes(document))
-        for _, documents in prepared_v3_routes
-        for path, document in documents
+        document
+        for route, documents in prepared_v3_routes
+        for document in _v3_research_route_transaction_documents(route, documents)
     ) + tuple(support_matrix_documents) + (
         (repo / "routes" / "inventory.json", _json_bytes(inventory_document)),
     )
@@ -6060,7 +6095,10 @@ def main() -> int:
     mode.add_argument(
         "--route-set",
         choices=sorted(EXECUTABLE_ROUTE_SETS),
-        help="execute one active campaign selection without inferring other pairs",
+        help=(
+            "run only the admitted mutable members of one exact route set; "
+            "immutable legacy members are verified read-only"
+        ),
     )
     mode.add_argument(
         "--prepare-route-set",
@@ -6076,13 +6114,19 @@ def main() -> int:
         "--route",
         type=parse_route_key,
         metavar="SOURCE-TO-TARGET",
-        help="replay exactly one declared directed route, then run its validator and gate",
+        help=(
+            "replay exactly one executable non-V3 mutable route, then run its "
+            "validator and gate"
+        ),
     )
     args = parser.parse_args()
     repo = Path(args.repo_root).resolve()
     if args.inventory_only:
         write_inventory(repo)
-        print("PASS: exact limited route inventory updated")
+        print(
+            "PASS: exact route inventory and support views synchronized; "
+            "unexecuted routes remain NOT_RUN"
+        )
         return 0
     if args.verify_route_set is not None:
         verify_route_set_read_only(
@@ -6193,7 +6237,9 @@ def main() -> int:
     write_inventory(repo)
     selected_name = args.route_set or "legacy-complete-30"
     print(
-        f"PASS: exact route set {selected_name} completed with conservative local evidence"
+        f"PASS: exact route set {selected_name} ran {len(selected)} admitted mutable "
+        "route(s); any immutable legacy members were verified read-only; "
+        "decision remains NOT_CERTIFIED"
     )
     return 0
 

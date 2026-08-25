@@ -1,29 +1,29 @@
 {
-  "schema_version": 1,
-  "route_key": "kotlin-to-go",
-  "route_version": "0.1.0",
-  "route_maturity": "RESEARCH",
+  "critical_behavior_regressions": null,
+  "critical_unknown_semantics": null,
   "execution_status": "NOT_RUN",
-  "module_execution_status": "NOT_RUN",
-  "repository_execution_status": "NOT_RUN",
-  "independent_verification_status": "NOT_RUN",
   "external_certification_status": "NOT_RUN",
-  "runs": [],
-  "negative_runs": [],
+  "independent_verification_status": "NOT_RUN",
   "metrics": {
     "build_green_rate": null,
+    "cost_per_verified_workload": null,
     "first_build_pass_rate": null,
-    "p0_behavior_pass_rate": null,
-    "source_map_coverage": null,
     "manual_hours": null,
-    "cost_per_verified_workload": null
+    "p0_behavior_pass_rate": null,
+    "source_map_coverage": null
   },
-  "critical_unknown_semantics": null,
-  "critical_behavior_regressions": null,
-  "test_integrity_violations": null,
+  "module_execution_status": "NOT_RUN",
+  "negative_runs": [],
   "notes": [
     "No V3 route-level semantic profile or target profile has been admitted.",
     "Analyzer and emitter bindings are metadata, not route execution evidence.",
     "Local, repository, independent, external, customer, and production evidence remain NOT_RUN."
-  ]
+  ],
+  "repository_execution_status": "NOT_RUN",
+  "route_key": "kotlin-to-go",
+  "route_maturity": "RESEARCH",
+  "route_version": "0.1.0",
+  "runs": [],
+  "schema_version": 1,
+  "test_integrity_violations": null
 }

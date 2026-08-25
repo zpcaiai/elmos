@@ -1,24 +1,24 @@
 {
-  "schema_version": 1,
-  "route_key": "cpp-to-react",
-  "route_version": "0.1.0",
-  "status": "research",
   "certification_decision": "NOT_CERTIFIED",
   "declared_scope": "NO_ROUTE_PROFILE_ADMITTED",
+  "evidence_refs": [],
   "gate_results": {
-    "local_execution": "NOT_RUN",
     "external_execution": "NOT_RUN",
-    "independent_verification": "NOT_RUN"
+    "independent_verification": "NOT_RUN",
+    "local_execution": "NOT_RUN"
   },
+  "issued_at": "2026-08-09T00:00:00+00:00",
   "metrics": {
     "build_green_rate": null,
+    "cost_per_verified_workload": null,
     "first_build_pass_rate": null,
-    "p0_behavior_pass_rate": null,
-    "source_map_coverage": null,
     "manual_hours": null,
-    "cost_per_verified_workload": null
+    "p0_behavior_pass_rate": null,
+    "source_map_coverage": null
   },
-  "evidence_refs": [],
-  "issued_at": "2026-08-09T00:00:00+00:00",
-  "next_review_at": "2026-11-24T00:00:00+00:00"
+  "next_review_at": "2026-11-24T00:00:00+00:00",
+  "route_key": "cpp-to-react",
+  "route_version": "0.1.0",
+  "schema_version": 1,
+  "status": "research"
 }

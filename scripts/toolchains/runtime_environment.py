@@ -110,6 +110,13 @@ ROUTE_REQUIRED_RUNTIME_IDS = frozenset(
         "flutter-3.44.1",
     }
 )
+DARWIN_ARM64_EXACT_RUNTIME_IDS = frozenset(
+    {
+        "kotlin-route-2.2.20",
+        "php-route-8.5.9",
+        "flutter-3.44.1",
+    }
+)
 CLAIM_BOUNDARY_STATES = {
     "maximum_local_state": "TOOLCHAIN_READY",
     "external_evidence_status": "NOT_RUN",
@@ -166,6 +173,7 @@ class ProbeCommand:
     executable_env: str | None = None
     home_env: str | None = None
     allow_repository_executable: bool = False
+    search_path: bool = True
 
 
 PROBE_COMMANDS: dict[str, ProbeCommand] = {
@@ -306,21 +314,15 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         "php",
         ("--version",),
         (),
-        (
-            "{toolchain_root}/php/8.5.9/bin/php",
-            "/opt/homebrew/Cellar/php/8.5.9/bin/php",
-        ),
-        executable_env="ELMOS_ROUTE_PHP",
+        ("/opt/homebrew/Cellar/php/8.5.9/bin/php",),
+        search_path=False,
     ),
     "php-route-modules": ProbeCommand(
         "php",
         ("-n", "-m"),
         (),
-        (
-            "{toolchain_root}/php/8.5.9/bin/php",
-            "/opt/homebrew/Cellar/php/8.5.9/bin/php",
-        ),
-        executable_env="ELMOS_ROUTE_PHP",
+        ("/opt/homebrew/Cellar/php/8.5.9/bin/php",),
+        search_path=False,
     ),
     "react-package": ProbeCommand(
         "node",
@@ -384,7 +386,7 @@ PROBE_COMMANDS: dict[str, ProbeCommand] = {
         ("--version",),
         (),
         ("/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart",),
-        executable_env="ELMOS_FLUTTER_DART",
+        search_path=False,
     ),
     "bash": ProbeCommand("bash", ("--version",), ("bash",), ("/opt/homebrew/bin/bash", "/bin/bash")),
     "zsh": ProbeCommand("zsh", ("--version",), ("zsh",), ("/bin/zsh",)),
@@ -595,6 +597,10 @@ def validate_manifest(manifest: Mapping[str, Any]) -> list[str]:
             errors.append(f"runtime {identifier} must declare platforms")
         elif len(platforms) != len(set(platforms)):
             errors.append(f"runtime {identifier} platforms must be unique")
+        if identifier in DARWIN_ARM64_EXACT_RUNTIME_IDS and platforms != ["darwin-arm64"]:
+            errors.append(
+                f"runtime {identifier} platforms must be exactly darwin-arm64"
+            )
         languages = runtime.get("languages")
         if not isinstance(languages, list) or not all(isinstance(item, str) and item for item in languages):
             errors.append(f"runtime {identifier} languages must be strings")
@@ -844,11 +850,12 @@ def _candidate_executables(
         _format_template(template, toolchain_root=toolchain_root)
         for template in spec.candidate_templates
     )
-    search_path = environ.get("PATH", os.defpath)
-    for name in spec.path_names or (spec.executable,):
-        found = shutil.which(name, path=search_path)
-        if found:
-            candidates.append(Path(found))
+    if spec.search_path:
+        search_path = environ.get("PATH", os.defpath)
+        for name in spec.path_names or (spec.executable,):
+            found = shutil.which(name, path=search_path)
+            if found:
+                candidates.append(Path(found))
     unique: list[Path] = []
     seen: set[str] = set()
     for candidate in candidates:
@@ -971,6 +978,10 @@ def _run_probe(
 
 def _platform_applies(platforms: Sequence[str], platform_key: str) -> bool:
     return "any" in platforms or platform_key in platforms
+
+
+def _profile_platforms(manifest: Mapping[str, Any], profile: str) -> list[str]:
+    return [str(item) for item in manifest["profiles"][profile].get("platforms", ["any"])]
 
 
 def _runtime_result(
@@ -1431,7 +1442,7 @@ def doctor(
         raise ValueError(f"RUNTIME_PROFILE_UNKNOWN:{profile}")
     effective_platform = platform_key or _platform_key()
     profile_definition = profiles[profile]
-    allowed_platforms = [str(item) for item in profile_definition.get("platforms", ["any"])]
+    allowed_platforms = _profile_platforms(manifest, profile)
     observed_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     if not _platform_applies(allowed_platforms, effective_platform):
         return {
@@ -1579,6 +1590,12 @@ def render_env(
         raise ValueError(f"RUNTIME_PROFILE_UNKNOWN:{profile}")
     if shell != "posix":
         raise ValueError(f"RUNTIME_SHELL_UNSUPPORTED:{shell}")
+    effective_platform = _platform_key()
+    allowed_platforms = _profile_platforms(manifest, profile)
+    if not _platform_applies(allowed_platforms, effective_platform):
+        raise ValueError(
+            f"RUNTIME_PROFILE_PLATFORM_NOT_APPLICABLE:{profile}:{effective_platform}"
+        )
     effective_environ = dict(os.environ if environ is None else environ)
     root = _toolchain_root(manifest, effective_environ)
     selected_ids = set(manifest["profiles"][profile]["required"])
@@ -1591,8 +1608,6 @@ def render_env(
         candidates.append(root / "kotlin" / "2.2.20" / "bin")
     if "php-8.4.12" in selected_ids:
         candidates.append(root / "php" / "8.4.12" / "bin")
-    if "php-route-8.5.9" in selected_ids:
-        candidates.append(root / "php" / "8.5.9" / "bin")
     if "rust-1.89.0" in selected_ids:
         candidates.append(root / "rust" / "1.89.0" / "bin")
     if "maven-3.9.10" in selected_ids:
@@ -1720,6 +1735,19 @@ def _run_install(
             "message": (
                 "Select an exact language, platform, version, license, and authorized target "
                 "before provisioning this profile."
+            ),
+        }
+    effective_platform = _platform_key()
+    allowed_platforms = _profile_platforms(manifest, profile)
+    if not _platform_applies(allowed_platforms, effective_platform):
+        return 2, {
+            "status": "NOT_APPLICABLE",
+            "claim_ceiling": "NOT_RUN",
+            "profile": profile,
+            "platform": effective_platform,
+            "allowed_platforms": allowed_platforms,
+            "blocking_reason": (
+                f"RUNTIME_PROFILE_PLATFORM_NOT_APPLICABLE:{profile}:{effective_platform}"
             ),
         }
     root = _toolchain_root(manifest, environ)
@@ -1941,7 +1969,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         if errors:
             raise ValueError("RUNTIME_MANIFEST_INVALID:" + "|".join(errors))
         if args.command == "doctor":
-            report = doctor(manifest, args.profile, args.platform)
+            effective_platform = _platform_key()
+            if args.platform is not None and args.platform != effective_platform:
+                raise ValueError(
+                    "RUNTIME_PLATFORM_OVERRIDE_MISMATCH:"
+                    f"requested={args.platform}:actual={effective_platform}"
+                )
+            report = doctor(manifest, args.profile, effective_platform)
             if args.output:
                 _write_json_atomic(args.output, report)
             if args.json:

@@ -72,8 +72,11 @@ from route_runtime_metadata import (  # noqa: E402
     SHORT_VERSIONS,
     V3_RESEARCH_ROUTE_VERSION,
     VERSIONS,
+    route_execution_authorities_document,
+    support_matrix_markdown_bytes,
     v3_research_certification_document,
     v3_research_evidence_document,
+    v3_research_support_document,
 )
 
 LOCAL_STATUSES = {"PASSED_LOCAL", "NOT_RUN", "FAILED"}
@@ -199,6 +202,7 @@ def require_safe_directory(root: Path, directory: Path, reason: str) -> None:
 def check_v3_research_route_documents(
     route_key: str,
     manifest: dict[str, object],
+    support: dict[str, object],
     certification: dict[str, object],
     evidence: dict[str, object],
 ) -> None:
@@ -207,6 +211,10 @@ def check_v3_research_route_documents(
     require(
         manifest.get("version") == V3_RESEARCH_ROUTE_VERSION,
         f"V3_ROUTE_VERSION_DRIFT:{route_key}",
+    )
+    require(
+        support == v3_research_support_document(route_key),
+        f"V3_ROUTE_SUPPORT_DRIFT:{route_key}",
     )
     require(
         certification == v3_research_certification_document(route_key),
@@ -494,6 +502,16 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
         "ROUTE_POLICY_DRIFT",
     )
 
+    execution_authorities = inventory.get("route_execution_authorities")
+    require(
+        isinstance(execution_authorities, dict),
+        "ROUTE_EXECUTION_AUTHORITIES_INVALID",
+    )
+    require(
+        execution_authorities == route_execution_authorities_document(),
+        "ROUTE_EXECUTION_AUTHORITIES_DRIFT",
+    )
+
     provenance = inventory.get("route_provenance_partition")
     require(isinstance(provenance, dict), "ROUTE_PROVENANCE_PARTITION_INVALID")
     assert isinstance(provenance, dict)
@@ -584,6 +602,16 @@ def check_inventory_shape(inventory: dict[str, object]) -> list[dict[str, str]]:
     require(core_set.get("route_count") == 30, "CORE_ROUTE_COUNT_DRIFT")
     require(
         core_set.get("route_keys") == list(CORE_ROUTE_KEYS), "CORE_ROUTE_KEYS_DRIFT"
+    )
+    legacy_authority = execution_authorities.get("legacy-complete-30")
+    require(
+        isinstance(legacy_authority, dict),
+        "CORE_ROUTE_EXECUTION_AUTHORITY_INVALID",
+    )
+    require(
+        core_set.get("execution_authority_sha256")
+        == legacy_authority.get("authority_sha256"),
+        "CORE_ROUTE_EXECUTION_AUTHORITY_DIGEST_DRIFT",
     )
     require(
         specialized_set.get("policy") == "exact-explicit-set",
@@ -941,6 +969,7 @@ def check_route_packs(
         route_json = pack_dir / "route.json"
         support_json = pack_dir / "support-matrix.json"
         certification_root = pack_dir / "certification"
+        support_view_path = certification_root / "support-matrix.md"
         certification_path = certification_root / "certification.json"
         evidence_path = certification_root / "evidence.json"
         require_safe_directory(
@@ -954,8 +983,19 @@ def check_route_packs(
         pack = load_stable_json(
             routes_root, route_json, f"ROUTE_PACK_FILE_UNSAFE:{key}"
         )
-        support = load_stable_json(
-            routes_root, support_json, f"ROUTE_SUPPORT_MATRIX_UNSAFE:{key}"
+        support_bytes = read_stable_regular_file(
+            routes_root,
+            support_json,
+            f"ROUTE_SUPPORT_MATRIX_UNSAFE:{key}",
+        )
+        try:
+            support = json.loads(support_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise MatrixError(f"ROUTE_SUPPORT_MATRIX_UNSAFE:{key}") from error
+        support_view = read_stable_regular_file(
+            routes_root,
+            support_view_path,
+            f"ROUTE_SUPPORT_VIEW_UNSAFE:{key}",
         )
         certification_document = load_stable_json(
             routes_root,
@@ -977,6 +1017,18 @@ def check_route_packs(
         assert isinstance(pack, dict) and isinstance(support, dict)
         assert isinstance(certification_document, dict)
         assert isinstance(evidence_document, dict)
+        try:
+            expected_support_view = support_matrix_markdown_bytes(
+                key,
+                support_bytes,
+                support,
+            )
+        except ValueError as error:
+            raise MatrixError(f"ROUTE_SUPPORT_DOCUMENT_INVALID:{key}") from error
+        require(
+            support_view == expected_support_view,
+            f"ROUTE_SUPPORT_VIEW_DRIFT:{key}",
+        )
         require(pack.get("route_key") == key, f"ROUTE_PACK_KEY_DRIFT:{key}")
         require(
             pack.get("status") == entry.get("status"), f"ROUTE_PACK_STATUS_DRIFT:{key}"
@@ -1083,7 +1135,7 @@ def check_route_packs(
                 f"V3_ROUTE_CAPABILITY_OVERCLAIM:{key}",
             )
             check_v3_research_route_documents(
-                key, pack, certification_document, evidence_document
+                key, pack, support, certification_document, evidence_document
             )
             continue
 

@@ -8,6 +8,11 @@ from pathlib import Path
 import pytest
 
 from elmos_polyglot_route import react_analyzer
+from elmos_polyglot_route.emitter import emit
+from elmos_polyglot_route.identifier_hygiene import (
+    plan_identifiers,
+    target_function_view,
+)
 from elmos_polyglot_route.models import RouteError
 from elmos_polyglot_route.source_analyzer import analyze, inventory_module
 
@@ -142,21 +147,33 @@ def test_ts_and_tsx_module_inventory_is_compiler_backed(tmp_path: Path) -> None:
 def test_generated_pure_tsx_target_is_reanalyzed_by_the_same_exact_frontend(
     tmp_path: Path,
 ) -> None:
+    source = tmp_path / "source.tsx"
+    source.write_text(
+        "export function migrated(value: number): number { return value + 1; }\n",
+        encoding="utf-8",
+    )
+    source_ir = analyze(source, "react", "migrated")
+    identifier_plan = plan_identifiers(source_ir, "react")
+    target_function_name = target_function_view(
+        source_ir,
+        source_ir.functions[0],
+        identifier_plan,
+    ).name
     target = tmp_path / "migrated.tsx"
     target.write_text(
-        "export function migrated(value: number): number { return value + 1; }\n",
+        emit(source_ir, "react", identifier_plan=identifier_plan).content,
         encoding="utf-8",
     )
 
     semantic = analyze(
         target,
         "react",
-        "migrated",
+        target_function_name,
         emitted_target=True,
     )
     inventory = inventory_module(target, "react", emitted_target=True)
 
     assert semantic.source_language == "react"
-    assert semantic.functions[0].name == "migrated"
+    assert semantic.functions[0].name == target_function_name
     assert inventory["source_language"] == "react"
     assert inventory["enumeration_status"] == "PASSED"

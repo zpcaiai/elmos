@@ -167,6 +167,36 @@ V3_EXACT_ROUTE_KEYS = tuple(
     if route_key not in set(ELEVEN_LANGUAGE_COMPLETE_ROUTE_KEYS)
 )
 
+# Direct CLI replay is narrower than declaration or route-set verification.
+# The immutable core 30 remains read-only and the V3 66 remains research-only,
+# leaving exactly 60 active mutable directions with admitted local campaigns.
+EXECUTABLE_DIRECT_ROUTE_KEYS = tuple(
+    route_key
+    for route_key in COMPLETE_ROUTE_KEYS
+    if route_key not in set(CORE_ROUTE_KEYS)
+    and route_key not in set(V3_EXACT_ROUTE_KEYS)
+)
+
+if len(CORE_ROUTE_KEYS) != 30:
+    raise RuntimeError("LEGACY_ROUTE_COUNT_DRIFT")
+if len(EXECUTABLE_DIRECT_ROUTE_KEYS) != 60:
+    raise RuntimeError("EXECUTABLE_DIRECT_ROUTE_COUNT_DRIFT")
+if len(V3_EXACT_ROUTE_KEYS) != 66:
+    raise RuntimeError("V3_ROUTE_COUNT_DRIFT")
+_legacy_route_keys = set(CORE_ROUTE_KEYS)
+_direct_route_keys = set(EXECUTABLE_DIRECT_ROUTE_KEYS)
+_v3_route_keys = set(V3_EXACT_ROUTE_KEYS)
+if (
+    _legacy_route_keys & _direct_route_keys
+    or _legacy_route_keys & _v3_route_keys
+    or _direct_route_keys & _v3_route_keys
+):
+    raise RuntimeError("ACTIVE_ROUTE_EXECUTION_PARTITIONS_OVERLAP")
+if (
+    _legacy_route_keys | _direct_route_keys | _v3_route_keys
+) != set(COMPLETE_ROUTE_KEYS):
+    raise RuntimeError("ACTIVE_ROUTE_EXECUTION_PARTITIONS_INCOMPLETE")
+
 # These six provenance sets are the only authority partition for every declared
 # direction, active or deprecated.  The 72-, 90- and 110-route sets below are
 # convenient unions, not additional owners.  Keeping the partition explicit
@@ -305,6 +335,27 @@ def split_route_key(route_key: str) -> tuple[str, str]:
     if route_key not in EVIDENCED_ROUTE_KEYS:
         raise ValueError(f"UNDECLARED_DIRECTED_ROUTE:{route_key}")
     source, target = route_key.split("-to-", 1)
+    return source, target
+
+
+def split_executable_route_key(route_key: str) -> tuple[str, str]:
+    """Return one directly replayable mutable direction.
+
+    A V3 route is a valid declaration and may be synchronized or verified, but
+    it has no admitted route campaign.  Reject it at the CLI parsing boundary
+    before any execution or mutation helper can run.
+    """
+
+    if route_key in V3_EXACT_ROUTE_KEYS:
+        raise ValueError(f"V3_ROUTE_RESEARCH_NOT_EXECUTABLE:{route_key}")
+    source, target = split_route_key(route_key)
+    if route_key in CORE_ROUTE_KEYS:
+        raise ValueError(
+            "LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:"
+            f"{route_key}"
+        )
+    if route_key not in EXECUTABLE_DIRECT_ROUTE_KEYS:
+        raise ValueError(f"ROUTE_NOT_DIRECTLY_EXECUTABLE:{route_key}")
     return source, target
 
 

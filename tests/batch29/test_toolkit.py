@@ -2,6 +2,7 @@ import argparse
 import copy
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import shutil
@@ -3234,6 +3235,10 @@ print('\\n'.join(failures))
         self.assertEqual(inventory["pending_repository_languages"], [])
         self.assertNotIn("javascript", inventory["languages"])
         self.assertEqual(inventory["deprecated_languages"], ["javascript"])
+        self.assertEqual(
+            inventory["route_execution_authorities"],
+            matrix.route_execution_authorities_document(),
+        )
         matrix.check_route_packs(
             routes,
             str(inventory["semantic_profile"]),
@@ -3288,6 +3293,73 @@ print('\\n'.join(failures))
         with self.assertRaisesRegex(matrix.MatrixError, "ROUTE_PROVENANCE_SETS_DRIFT"):
             matrix.check_inventory_shape(dropped_deprecated_partition)
 
+        authority_tampers = (
+            (
+                "javascript-node26-completion-18",
+                "policy",
+                "current-versioned-route-evidence",
+            ),
+            (
+                "php-php85-completion-20",
+                "policy",
+                "current-versioned-route-evidence",
+            ),
+            (
+                "php-php85-completion-20",
+                "active_execution_selection",
+                "php-all-20",
+            ),
+            (
+                "kotlin-react-flutter-completion-66",
+                "policy",
+                "declared-ahead-of-analyzer",
+            ),
+            (
+                "kotlin-react-flutter-completion-66",
+                "native_reexecution_status",
+                "PASSED_LOCAL",
+            ),
+            ("legacy-complete-30", "authority_sha256", "sha256:tampered"),
+        )
+        for authority, field, value in authority_tampers:
+            tampered = copy.deepcopy(inventory)
+            tampered["route_execution_authorities"][authority][field] = value
+            with (
+                self.subTest(authority=authority, field=field),
+                self.assertRaisesRegex(
+                    matrix.MatrixError, "ROUTE_EXECUTION_AUTHORITIES_DRIFT"
+                ),
+            ):
+                matrix.check_inventory_shape(tampered)
+
+        missing_authority = copy.deepcopy(inventory)
+        del missing_authority["route_execution_authorities"][
+            "kotlin-react-flutter-completion-66"
+        ]
+        with self.assertRaisesRegex(
+            matrix.MatrixError, "ROUTE_EXECUTION_AUTHORITIES_DRIFT"
+        ):
+            matrix.check_inventory_shape(missing_authority)
+
+        extra_authority = copy.deepcopy(inventory)
+        extra_authority["route_execution_authorities"]["unowned-route-set"] = {
+            "policy": "NOT_RUN"
+        }
+        with self.assertRaisesRegex(
+            matrix.MatrixError, "ROUTE_EXECUTION_AUTHORITIES_DRIFT"
+        ):
+            matrix.check_inventory_shape(extra_authority)
+
+        duplicated_digest_tamper = copy.deepcopy(inventory)
+        duplicated_digest_tamper["route_sets"]["legacy-complete-30"][
+            "execution_authority_sha256"
+        ] = "sha256:tampered-duplicate"
+        with self.assertRaisesRegex(
+            matrix.MatrixError,
+            "CORE_ROUTE_EXECUTION_AUTHORITY_DIGEST_DRIFT",
+        ):
+            matrix.check_inventory_shape(duplicated_digest_tamper)
+
     def test_route_matrix_document_covers_inventory_without_certification_overclaim(
         self,
     ):
@@ -3316,20 +3388,9 @@ print('\\n'.join(failures))
 
     def test_polyglot_runner_accepts_only_an_exact_directed_route(self):
         runner = load_polyglot_runner()
-        self.assertEqual(
-            runner.parse_route_key("python-to-typescript"), ("python", "typescript")
-        )
         self.assertEqual(runner.parse_route_key("cpp-to-java"), ("cpp", "java"))
         self.assertEqual(runner.parse_route_key("objc-to-go"), ("objc", "go"))
-        self.assertEqual(
-            runner.parse_route_key("kotlin-to-react"), ("kotlin", "react")
-        )
-        self.assertEqual(
-            runner.parse_route_key("react-to-flutter"), ("react", "flutter")
-        )
-        self.assertEqual(
-            runner.parse_route_key("flutter-to-kotlin"), ("flutter", "kotlin")
-        )
+        self.assertEqual(runner.parse_route_key("java-to-php"), ("java", "php"))
         for invalid in (
             "python",
             "python-to-python",
@@ -3341,6 +3402,28 @@ print('\\n'.join(failures))
                 self.assertRaises(argparse.ArgumentTypeError),
             ):
                 runner.parse_route_key(invalid)
+
+        for research_route in (
+            "java-to-kotlin",
+            "kotlin-to-react",
+            "react-to-flutter",
+            "flutter-to-kotlin",
+        ):
+            with (
+                self.subTest(research_route=research_route),
+                self.assertRaisesRegex(
+                    argparse.ArgumentTypeError,
+                    f"V3_ROUTE_RESEARCH_NOT_EXECUTABLE:{research_route}",
+                ),
+            ):
+                runner.parse_route_key(research_route)
+
+        with self.assertRaisesRegex(
+            argparse.ArgumentTypeError,
+            "LEGACY_ROUTE_IMMUTABLE_REEXECUTION_REQUIRES_NEW_PACK_VERSION:"
+            "python-to-typescript",
+        ):
+            runner.parse_route_key("python-to-typescript")
 
         with (
             tempfile.TemporaryDirectory() as td,
@@ -3361,7 +3444,7 @@ print('\\n'.join(failures))
             "V3_ROUTE_RESEARCH_PACK_REQUIRES_CAMPAIGN:java-to-kotlin",
         ):
             runner.preflight_route_set_execution(
-                runner.EXACT_ROUTE_SETS["thirteen-language-complete-156"]
+                runner.PREPARABLE_ROUTE_SETS["thirteen-language-complete-156"]
             )
 
         with tempfile.TemporaryDirectory() as td:
@@ -3384,6 +3467,44 @@ print('\\n'.join(failures))
             ):
                 runner.write_route_gate_documents(route, "java", "kotlin")
             self.assertEqual(list(route.iterdir()), [])
+
+    def test_v3_direct_cli_rejects_before_any_side_effect(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            sentinel = repo / "sentinel.bin"
+            sentinel.write_bytes(b"unchanged\x00bytes")
+            stderr = io.StringIO()
+            with (
+                mock.patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "run_polyglot_routes.py",
+                        "--repo-root",
+                        str(repo),
+                        "--route",
+                        "java-to-kotlin",
+                    ],
+                ),
+                mock.patch.object(sys, "stderr", stderr),
+                mock.patch.object(runner, "execute_route") as execute_route,
+                mock.patch.object(runner, "configure_route") as configure_route,
+                mock.patch.object(
+                    runner, "_transactional_write_bytes"
+                ) as transactional_write,
+                self.assertRaises(SystemExit) as raised,
+            ):
+                runner.main()
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn(
+                "V3_ROUTE_RESEARCH_NOT_EXECUTABLE:java-to-kotlin",
+                stderr.getvalue(),
+            )
+            execute_route.assert_not_called()
+            configure_route.assert_not_called()
+            transactional_write.assert_not_called()
+            self.assertEqual(sentinel.read_bytes(), b"unchanged\x00bytes")
 
     def test_v3_route_sync_rejects_route_directory_symlink(self):
         runner = load_polyglot_runner()
@@ -3434,6 +3555,33 @@ print('\\n'.join(failures))
                     unsafe_parent / "certification.json", b"blocked\n"
                 )
             self.assertEqual(list(external.iterdir()), [])
+
+    def test_stable_reader_rejects_intermediate_symlink_and_final_hardlink(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            real = root / "real"
+            real.mkdir()
+            payload = real / "payload.bin"
+            payload.write_bytes(b"immutable bytes\n")
+            alias = root / "alias"
+            alias.symlink_to(real, target_is_directory=True)
+
+            with self.assertRaisesRegex(RuntimeError, "LEGACY_TEST_UNSAFE"):
+                runner._stable_regular_file_bytes(
+                    root,
+                    alias / "payload.bin",
+                    label="LEGACY_TEST",
+                )
+
+            hardlink = real / "payload-hardlink.bin"
+            os.link(payload, hardlink)
+            with self.assertRaisesRegex(RuntimeError, "LEGACY_TEST_UNSAFE"):
+                runner._stable_regular_file_bytes(
+                    root,
+                    payload,
+                    label="LEGACY_TEST",
+                )
 
     def test_matrix_validator_rejects_linked_inventory_and_certification_dir(self):
         matrix = load_matrix_validator()
@@ -3605,86 +3753,171 @@ print('\\n'.join(failures))
     def test_write_inventory_failure_restores_v3_and_inventory_exact_bytes(self):
         runner = load_polyglot_runner()
         route_keys = ("java-to-kotlin", "kotlin-to-java")
-        with tempfile.TemporaryDirectory() as td:
-            repo = Path(td).resolve()
-            routes_root = repo / "routes"
-            routes_root.mkdir(parents=True)
-            existing_paths: list[Path] = []
-            initially_missing_paths: list[Path] = []
-            for index, route_key in enumerate(route_keys):
-                route = routes_root / route_key
-                certification = route / "certification"
-                route.mkdir(parents=True)
-                write_json(
-                    route / "route.json",
-                    {
-                        "schema_version": 1,
-                        "route_key": route_key,
-                        "version": "0.1.0",
-                        "original": index,
-                    },
-                )
-                existing_paths.append(route / "route.json")
-                if index == 0:
-                    certification.mkdir()
-                    (certification / "evidence.json").write_bytes(
-                        b"original evidence exact bytes\x00\n"
-                    )
-                    (certification / "certification.json").write_bytes(
-                        b"original certification exact bytes\x00\n"
-                    )
-                    existing_paths.extend(
-                        (
-                            certification / "evidence.json",
-                            certification / "certification.json",
-                        )
-                    )
-                else:
-                    initially_missing_paths.extend(
-                        (
-                            certification / "evidence.json",
-                            certification / "certification.json",
-                        )
-                    )
-            inventory_path = routes_root / "inventory.json"
-            inventory_path.write_bytes(b"original inventory exact bytes\x00\n")
-            existing_paths.append(inventory_path)
-            originals = {path: path.read_bytes() for path in existing_paths}
-            real_atomic_write = runner._atomic_write_bytes
-            calls = 0
-
-            def fail_sixth_write(path: Path, content: bytes) -> None:
-                nonlocal calls
-                calls += 1
-                if calls == 6:
-                    raise OSError("injected transaction failure")
-                real_atomic_write(path, content)
-
+        for failure_target in ("support-view", "inventory"):
             with (
-                mock.patch.object(runner, "V3_EXACT_ROUTE_KEYS", route_keys),
-                mock.patch.object(runner, "EVIDENCED_ROUTE_KEYS", route_keys),
-                mock.patch.object(
-                    runner,
-                    "legacy_campaign_authority",
-                    return_value={"authority_sha256": "sha256:test"},
-                ),
-                mock.patch.object(
-                    runner,
-                    "provenance_route_set",
-                    return_value="kotlin-react-flutter-completion-66",
-                ),
-                mock.patch.object(
-                    runner, "_atomic_write_bytes", side_effect=fail_sixth_write
-                ),
-                self.assertRaisesRegex(OSError, "injected transaction failure"),
+                self.subTest(failure_target=failure_target),
+                tempfile.TemporaryDirectory() as td,
             ):
-                runner.write_inventory(repo)
-            self.assertEqual(calls, 6)
-            self.assertEqual(
-                {path: path.read_bytes() for path in existing_paths}, originals
+                repo = Path(td).resolve()
+                routes_root = repo / "routes"
+                routes_root.mkdir(parents=True)
+                existing_paths: list[Path] = []
+                initially_missing_paths: list[Path] = []
+                for index, route_key in enumerate(route_keys):
+                    route = routes_root / route_key
+                    certification = route / "certification"
+                    route.mkdir(parents=True)
+                    write_json(
+                        route / "route.json",
+                        {
+                            "schema_version": 1,
+                            "route_key": route_key,
+                            "version": "0.1.0",
+                            "original": index,
+                        },
+                    )
+                    existing_paths.append(route / "route.json")
+                    support_path = route / "support-matrix.json"
+                    if index == 0:
+                        support_path.write_bytes(b"original support exact bytes\x00\n")
+                        certification.mkdir()
+                        (certification / "evidence.json").write_bytes(
+                            b"original evidence exact bytes\x00\n"
+                        )
+                        (certification / "certification.json").write_bytes(
+                            b"original certification exact bytes\x00\n"
+                        )
+                        (certification / "support-matrix.md").write_bytes(
+                            b"original support view exact bytes\x00\n"
+                        )
+                        existing_paths.extend(
+                            (
+                                support_path,
+                                certification / "evidence.json",
+                                certification / "certification.json",
+                                certification / "support-matrix.md",
+                            )
+                        )
+                    else:
+                        initially_missing_paths.extend(
+                            (
+                                support_path,
+                                certification / "evidence.json",
+                                certification / "certification.json",
+                                certification / "support-matrix.md",
+                            )
+                        )
+                inventory_path = routes_root / "inventory.json"
+                inventory_path.write_bytes(b"original inventory exact bytes\x00\n")
+                existing_paths.append(inventory_path)
+                originals = {path: path.read_bytes() for path in existing_paths}
+                real_atomic_write = runner._atomic_write_bytes
+                failed = False
+                failing_path = (
+                    routes_root
+                    / route_keys[-1]
+                    / "certification"
+                    / "support-matrix.md"
+                    if failure_target == "support-view"
+                    else inventory_path
+                )
+
+                def fail_selected_write(path: Path, content: bytes) -> None:
+                    nonlocal failed
+                    if path == failing_path:
+                        failed = True
+                        raise OSError("injected transaction failure")
+                    real_atomic_write(path, content)
+
+                with (
+                    mock.patch.object(runner, "V3_EXACT_ROUTE_KEYS", route_keys),
+                    mock.patch.object(runner, "EVIDENCED_ROUTE_KEYS", route_keys),
+                    mock.patch.object(
+                        runner, "ALL_DECLARED_ROUTE_KEYS", route_keys
+                    ),
+                    mock.patch.object(
+                        runner,
+                        "legacy_campaign_authority",
+                        return_value={"authority_sha256": "sha256:test"},
+                    ),
+                    mock.patch.object(
+                        runner,
+                        "provenance_route_set",
+                        return_value="kotlin-react-flutter-completion-66",
+                    ),
+                    mock.patch.object(
+                        runner,
+                        "_atomic_write_bytes",
+                        side_effect=fail_selected_write,
+                    ),
+                    self.assertRaisesRegex(
+                        OSError, "injected transaction failure"
+                    ),
+                ):
+                    runner.write_inventory(repo)
+                self.assertTrue(failed)
+                self.assertEqual(
+                    {path: path.read_bytes() for path in existing_paths},
+                    originals,
+                )
+                self.assertTrue(
+                    all(not path.exists() for path in initially_missing_paths)
+                )
+                self.assertFalse(
+                    (routes_root / route_keys[-1] / "certification").exists()
+                )
+                self.assertEqual(list(routes_root.rglob("*.tmp")), [])
+
+    def test_support_matrix_markdown_escapes_content_and_rejects_invalid_status(self):
+        runner = load_polyglot_runner()
+        document = {
+            "schema_version": 1,
+            "route_key": "java-to-kotlin",
+            "capabilities": [
+                {
+                    "id": "unsafe](https://example.invalid)",
+                    "status": "experimental",
+                    "strategy": "literal `code` fence",
+                    "reason": "**not emphasis** | not a table",
+                    "evidence_refs": ["artifact`close"],
+                }
+            ],
+        }
+        source_bytes = runner._json_bytes(document)
+        rendered = runner.support_matrix_markdown_bytes(
+            "java-to-kotlin",
+            source_bytes,
+            document,
+        ).decode("utf-8")
+
+        self.assertIn(r"unsafe\]\(https://example.invalid\)", rendered)
+        self.assertIn(r"\*\*not emphasis\*\* \| not a table", rendered)
+        self.assertIn("``literal `code` fence``", rendered)
+        self.assertIn("``artifact`close``", rendered)
+
+        invalid_status = copy.deepcopy(document)
+        invalid_status["capabilities"][0]["status"] = "invented"
+        with self.assertRaisesRegex(
+            ValueError,
+            "SUPPORT_MATRIX_CAPABILITY_INVALID:java-to-kotlin",
+        ):
+            runner.support_matrix_markdown_bytes(
+                "java-to-kotlin",
+                runner._json_bytes(invalid_status),
+                invalid_status,
             )
-            self.assertTrue(
-                all(not path.exists() for path in initially_missing_paths)
+
+        unevidenced_certified = copy.deepcopy(document)
+        unevidenced_certified["capabilities"][0]["status"] = "certified"
+        unevidenced_certified["capabilities"][0]["evidence_refs"] = []
+        with self.assertRaisesRegex(
+            ValueError,
+            "SUPPORT_MATRIX_CAPABILITY_INVALID:java-to-kotlin",
+        ):
+            runner.support_matrix_markdown_bytes(
+                "java-to-kotlin",
+                runner._json_bytes(unevidenced_certified),
+                unevidenced_certified,
             )
 
     def test_v3_first_materialization_creates_exact_non_vacuous_not_run_contract(
@@ -3711,6 +3944,11 @@ print('\\n'.join(failures))
 
             runner.synchronize_v3_research_route_manifest(repo, "java-to-kotlin")
             manifest = json.loads((route / "route.json").read_text())
+            support_path = route / "support-matrix.json"
+            support_bytes = support_path.read_bytes()
+            support = json.loads(support_bytes)
+            support_view_path = certification_root / "support-matrix.md"
+            support_view = support_view_path.read_bytes()
             evidence = json.loads(
                 (certification_root / "evidence.json").read_text()
             )
@@ -3727,6 +3965,18 @@ print('\\n'.join(failures))
                 runner.v3_research_certification_document("java-to-kotlin"),
             )
             self.assertEqual(
+                support,
+                runner.v3_research_support_document("java-to-kotlin"),
+            )
+            self.assertEqual(
+                support_view,
+                runner.support_matrix_markdown_bytes(
+                    "java-to-kotlin",
+                    support_bytes,
+                    support,
+                ),
+            )
+            self.assertEqual(
                 certification["gate_results"],
                 {
                     "local_execution": "NOT_RUN",
@@ -3739,8 +3989,24 @@ print('\\n'.join(failures))
                 all(value is None for value in evidence["metrics"].values())
             )
             matrix.check_v3_research_route_documents(
-                "java-to-kotlin", manifest, certification, evidence
+                "java-to-kotlin", manifest, support, certification, evidence
             )
+            runner.verify_route_set_read_only(
+                repo,
+                "single-v3-research-route",
+                ("java-to-kotlin",),
+            )
+            support_view_path.write_bytes(support_view + b"tampered\n")
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "ROUTE_SUPPORT_MATRIX_VIEW_DRIFT:java-to-kotlin",
+            ):
+                runner.verify_route_set_read_only(
+                    repo,
+                    "single-v3-research-route",
+                    ("java-to-kotlin",),
+                )
+            support_view_path.write_bytes(support_view)
 
             manifest_schema = json.loads(
                 (
@@ -3758,14 +4024,61 @@ print('\\n'.join(failures))
                     / "route-certification.schema.json"
                 ).read_text()
             )
+            support_schema = json.loads(
+                (
+                    ROOT
+                    / "schemas"
+                    / "batch29"
+                    / "support-matrix.schema.json"
+                ).read_text()
+            )
             Draft202012Validator.check_schema(manifest_schema)
             Draft202012Validator.check_schema(certification_schema)
+            Draft202012Validator.check_schema(support_schema)
             manifest_validator = Draft202012Validator(manifest_schema)
             certification_validator = Draft202012Validator(certification_schema)
+            support_validator = Draft202012Validator(support_schema)
             self.assertEqual(list(manifest_validator.iter_errors(manifest)), [])
             self.assertEqual(
                 list(certification_validator.iter_errors(certification)), []
             )
+            self.assertEqual(list(support_validator.iter_errors(support)), [])
+
+            support_tampers = []
+            empty_support = copy.deepcopy(support)
+            empty_support["capabilities"] = []
+            support_tampers.append(("empty", empty_support))
+            promoted_support = copy.deepcopy(support)
+            promoted_support["capabilities"][0]["status"] = "supported"
+            support_tampers.append(("promoted", promoted_support))
+            unexplained_support = copy.deepcopy(support)
+            unexplained_support["capabilities"][0]["reason"] = ""
+            support_tampers.append(("empty-reason", unexplained_support))
+            evidenced_support = copy.deepcopy(support)
+            evidenced_support["capabilities"][0]["evidence_refs"] = [
+                "certification/forged.json"
+            ]
+            support_tampers.append(("forged-evidence", evidenced_support))
+            reordered_support = copy.deepcopy(support)
+            reordered_support["capabilities"] = list(
+                reversed(reordered_support["capabilities"])
+            )
+            support_tampers.append(("reordered", reordered_support))
+            for label, tampered_support in support_tampers:
+                with (
+                    self.subTest(support_tamper=label),
+                    self.assertRaisesRegex(
+                        matrix.MatrixError,
+                        "V3_ROUTE_SUPPORT_DRIFT:java-to-kotlin",
+                    ),
+                ):
+                    matrix.check_v3_research_route_documents(
+                        "java-to-kotlin",
+                        manifest,
+                        tampered_support,
+                        certification,
+                        evidence,
+                    )
 
             empty_versions = copy.deepcopy(manifest)
             empty_versions["source"]["versions"] = []
@@ -3794,7 +4107,11 @@ print('\\n'.join(failures))
                 "V3_ROUTE_CERTIFICATION_OVERCLAIM:java-to-kotlin",
             ):
                 matrix.check_v3_research_route_documents(
-                    "java-to-kotlin", manifest, vacuous_gate, evidence
+                    "java-to-kotlin",
+                    manifest,
+                    support,
+                    vacuous_gate,
+                    evidence,
                 )
 
             missing_execution = copy.deepcopy(evidence)
@@ -3804,7 +4121,11 @@ print('\\n'.join(failures))
                 "V3_ROUTE_RAW_EVIDENCE_OVERCLAIM:java-to-kotlin",
             ):
                 matrix.check_v3_research_route_documents(
-                    "java-to-kotlin", manifest, certification, missing_execution
+                    "java-to-kotlin",
+                    manifest,
+                    support,
+                    certification,
+                    missing_execution,
                 )
 
     def test_local_route_status_requires_current_engine_source_bytes(self):

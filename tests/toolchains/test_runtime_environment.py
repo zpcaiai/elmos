@@ -399,6 +399,90 @@ def test_language_profiles_have_exact_emitter_and_route_coverage(
         assert "javascript" not in runtime_environment.ROUTE_LANGUAGES
 
 
+def test_exact_route_host_runtimes_are_darwin_arm64_only() -> None:
+    manifest = runtime_environment.load_manifest()
+    runtimes = _runtime_index(manifest)
+    exact_runtime_ids = {
+        "kotlin-route-2.2.20",
+        "php-route-8.5.9",
+        "flutter-3.44.1",
+    }
+
+    assert runtime_environment.DARWIN_ARM64_EXACT_RUNTIME_IDS == exact_runtime_ids
+    for runtime_id in exact_runtime_ids:
+        assert runtimes[runtime_id]["platforms"] == ["darwin-arm64"]
+
+        broken = copy.deepcopy(manifest)
+        _runtime_index(broken)[runtime_id]["platforms"].append("linux-arm64")
+        errors = runtime_environment.validate_manifest(broken)
+
+        assert any(
+            error
+            == f"runtime {runtime_id} platforms must be exactly darwin-arm64"
+            for error in errors
+        )
+
+
+def test_route_profile_wrong_platform_runs_no_probes_or_receipt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = runtime_environment.load_manifest()
+
+    def unexpected(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("wrong-platform route profile must not inspect the host")
+
+    monkeypatch.setattr(runtime_environment, "_toolchain_root", unexpected)
+    monkeypatch.setattr(runtime_environment, "_runtime_result", unexpected)
+    monkeypatch.setattr(runtime_environment, "_run_route_exact_receipt", unexpected)
+
+    report = runtime_environment.doctor(
+        manifest,
+        "routes-macos",
+        platform_key="linux-arm64",
+        environ={"PATH": "/ambient/path"},
+    )
+
+    assert report["status"] == "NOT_APPLICABLE"
+    assert report["claim_ceiling"] == "NOT_RUN"
+    assert report["platform"] == "linux-arm64"
+    assert report["runtimes"] == []
+    assert report["profile_checks"] == []
+
+
+def test_host_bound_route_probes_use_engine_absolute_paths(tmp_path: Path) -> None:
+    php_path = "/opt/homebrew/Cellar/php/8.5.9/bin/php"
+    flutter_dart_path = "/opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart"
+    ambient_bin = tmp_path / "ambient-bin"
+    ambient_bin.mkdir()
+    for executable in ("php", "dart"):
+        candidate = ambient_bin / executable
+        candidate.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        candidate.chmod(0o755)
+
+    for probe_id in ("php-route", "php-route-modules"):
+        probe = runtime_environment.PROBE_COMMANDS[probe_id]
+        assert probe.path_names == ()
+        assert probe.candidate_templates == (php_path,)
+        assert probe.executable_env is None
+        assert probe.search_path is False
+        assert ambient_bin / "php" not in runtime_environment._candidate_executables(
+            probe,
+            toolchain_root=tmp_path / "toolchains",
+            environ={"PATH": str(ambient_bin)},
+        )
+
+    flutter_probe = runtime_environment.PROBE_COMMANDS["dart-flutter"]
+    assert flutter_probe.path_names == ()
+    assert flutter_probe.candidate_templates == (flutter_dart_path,)
+    assert flutter_probe.executable_env is None
+    assert flutter_probe.search_path is False
+    assert ambient_bin / "dart" not in runtime_environment._candidate_executables(
+        flutter_probe,
+        toolchain_root=tmp_path / "toolchains",
+        environ={"PATH": str(ambient_bin)},
+    )
+
+
 def test_batch_bindings_cover_every_batch_exactly_and_reference_known_runtimes() -> None:
     manifest = runtime_environment.load_manifest()
     runtime_ids = set(_runtime_index(manifest))
@@ -512,9 +596,15 @@ def test_doctor_accepts_an_exact_managed_probe_and_rejects_version_drift(
     manifest = runtime_environment.load_manifest()
     manifest["profiles"]["fixture"] = {
         "description": "single deterministic test runtime",
+        "platforms": ["darwin-arm64"],
         "required": ["node-26.0.0"],
         "optional": [],
     }
+    monkeypatch.setattr(
+        runtime_environment,
+        "REQUIRED_PROFILES",
+        runtime_environment.REQUIRED_PROFILES | {"fixture"},
+    )
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     node = _write_executable(bin_dir, "node", "v26.0.0")
@@ -802,6 +892,110 @@ def test_render_env_is_deterministic_and_preserves_the_callers_path(tmp_path: Pa
     assert environ["PATH"] not in first
     assert "curl " not in first
     assert "brew " not in first
+
+
+def test_route_env_does_not_shadow_absolute_php_route_runtime(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = runtime_environment.load_manifest()
+    toolchain_root = tmp_path / "isolated-toolchains"
+    kotlin_bin = toolchain_root / "kotlin" / "2.2.20" / "bin"
+    route_php_bin = toolchain_root / "php" / "8.5.9" / "bin"
+    kotlin_bin.mkdir(parents=True)
+    route_php_bin.mkdir(parents=True)
+    monkeypatch.setattr(runtime_environment, "_platform_key", lambda: "darwin-arm64")
+    monkeypatch.setattr(runtime_environment, "_java_home", lambda *_: None)
+    monkeypatch.setattr(runtime_environment, "_selected_python", lambda *_: None)
+
+    rendered = runtime_environment.render_env(
+        manifest,
+        "routes-macos",
+        environ={
+            "PATH": "",
+            "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT": str(toolchain_root),
+        },
+    )
+
+    assert str(kotlin_bin) in rendered
+    assert str(route_php_bin) not in rendered
+    assert "/opt/homebrew/Cellar/php/8.5.9/bin" not in rendered
+
+
+def test_route_env_rejects_the_wrong_host_platform_before_host_inspection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest = runtime_environment.load_manifest()
+    monkeypatch.setattr(runtime_environment, "_platform_key", lambda: "linux-arm64")
+
+    def unexpected(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("wrong-platform env rendering must not inspect the host")
+
+    monkeypatch.setattr(runtime_environment, "_toolchain_root", unexpected)
+
+    with pytest.raises(
+        ValueError,
+        match="RUNTIME_PROFILE_PLATFORM_NOT_APPLICABLE:routes-macos:linux-arm64",
+    ):
+        runtime_environment.render_env(manifest, "routes-macos", environ={"PATH": ""})
+
+
+@pytest.mark.parametrize("dry_run", [True, False])
+def test_route_install_rejects_the_wrong_host_platform_before_any_action(
+    monkeypatch: pytest.MonkeyPatch,
+    dry_run: bool,
+) -> None:
+    manifest = runtime_environment.load_manifest()
+    monkeypatch.setattr(runtime_environment, "_platform_key", lambda: "linux-arm64")
+
+    def unexpected(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("wrong-platform install must not inspect or mutate the host")
+
+    monkeypatch.setattr(runtime_environment, "_toolchain_root", unexpected)
+    monkeypatch.setattr(runtime_environment, "_install_steps", unexpected)
+
+    code, report = runtime_environment._run_install(
+        manifest,
+        "routes-macos",
+        dry_run=dry_run,
+        environ={"PATH": "/ambient/path"},
+    )
+
+    assert code == 2
+    assert report == {
+        "status": "NOT_APPLICABLE",
+        "claim_ceiling": "NOT_RUN",
+        "profile": "routes-macos",
+        "platform": "linux-arm64",
+        "allowed_platforms": ["darwin-arm64"],
+        "blocking_reason": (
+            "RUNTIME_PROFILE_PLATFORM_NOT_APPLICABLE:routes-macos:linux-arm64"
+        ),
+    }
+
+
+def test_cli_doctor_rejects_a_platform_override_that_mismatches_the_host(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(runtime_environment, "_platform_key", lambda: "linux-arm64")
+
+    def unexpected(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("mismatched CLI platform must not run doctor")
+
+    monkeypatch.setattr(runtime_environment, "doctor", unexpected)
+
+    code = runtime_environment.main(
+        ["doctor", "--profile", "routes-macos", "--platform", "darwin-arm64", "--json"]
+    )
+    output = capsys.readouterr()
+
+    assert code == 2
+    assert output.out == ""
+    assert (
+        "RUNTIME_PLATFORM_OVERRIDE_MISMATCH:"
+        "requested=darwin-arm64:actual=linux-arm64"
+    ) in output.err
 
 
 def test_main_validates_the_default_manifest(capsys: pytest.CaptureFixture[str]) -> None:
