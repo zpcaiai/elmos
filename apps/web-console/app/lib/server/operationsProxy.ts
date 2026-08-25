@@ -850,3 +850,186 @@ export function proxyErrorResponse(error: unknown): Response {
     },
   );
 }
+
+// ---------------------------------------------------------------------------
+// 平台管理端（跨组织）
+// ---------------------------------------------------------------------------
+//
+// 与上面那些函数的关键差别：`administrator.organizationId` 在这里**不是**被操作
+// 的租户，而只是用来在控制面反查「调用者是哪个账号」。被读的租户是路径参数或
+// 过滤条件，可能是任意一个。
+//
+// 这也是为什么这些请求照常带 X-ELMOS-Organization-ID：控制面拿它 + Actor-ID 去
+// identity_membership_directory 反查 account_id，再拿 account_id 去查平台管理员
+// 名单。会话里没有 account_id（actorId 是 sha256(orgId:accountId) 的单向派生），
+// 而给会话加字段会作废所有在线会话。
+
+function platformAdminUrl(path: string, search?: URLSearchParams): string {
+  const query = search && search.toString() ? `?${search.toString()}` : "";
+  return `${controlPlaneBaseUrl()}/api/v1/platform-admin${path}${query}`;
+}
+
+async function platformAdminGet(
+  path: string,
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  return fetch(platformAdminUrl(path, search), {
+    headers: internalHeaders(randomUUID(), administrator),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+async function platformAdminPost(
+  path: string,
+  body: unknown,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  return fetch(platformAdminUrl(path), {
+    method: "POST",
+    headers: internalHeaders(randomUUID(), administrator),
+    body: JSON.stringify(body),
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+}
+
+// 刻意不复用 TOKEN_PATTERN：那个是 /^[A-Z0-9][A-Z0-9._:-]*$/，只收大写。
+// 它服务的是业务线、状态这类枚举式取值（GENERATION、SUCCEEDED），而真实的
+// 组织与账号标识是 org-xxxx / acct-xxxx，全小写——用它会把每一个真实标识都拒掉，
+// 而且症状是整个面板恒空，不是报错。
+// 形状对齐 CommercialPrincipal.ID。
+const PLATFORM_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+
+function platformIdentifier(value: unknown, field: string): string {
+  if (typeof value !== "string" || !PLATFORM_ID_PATTERN.test(value)) {
+    throw new OperationsProxyError(
+      400, "PLATFORM_IDENTIFIER_INVALID", `${field} 不符合标识契约。`);
+  }
+  return value;
+}
+
+/** 组织标识用于路径与过滤，必须先校形，避免把任意串拼进 URL。 */
+function platformOrganizationId(value: string): string {
+  return platformIdentifier(value, "organizationId");
+}
+
+export async function fetchPlatformWallets(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const query = new URLSearchParams();
+  const after = search.get("after");
+  if (after) {
+    query.set("after", platformOrganizationId(after));
+  }
+  query.set("limit", String(boundedInteger(search.get("limit"), 50, 1, 200)));
+  return platformAdminGet("/wallets", query, administrator);
+}
+
+export async function fetchPlatformLedger(
+  organizationId: string,
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const query = new URLSearchParams();
+  query.set("limit", String(boundedInteger(search.get("limit"), 50, 1, 200)));
+  query.set("offset", String(boundedInteger(search.get("offset"), 0, 0, 100_000)));
+  return platformAdminGet(
+    `/wallets/${encodeURIComponent(platformOrganizationId(organizationId))}/ledger`,
+    query, administrator);
+}
+
+export async function fetchPlatformTopups(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const query = new URLSearchParams();
+  const status = search.get("status");
+  // 白名单而不是透传：状态是拼进下游查询的，且取值域是封闭的。
+  if (status) {
+    if (!["CREATED", "PENDING_PAYMENT", "PAID", "CREDITED", "FAILED", "EXPIRED", "REFUNDED"]
+        .includes(status)) {
+      throw new OperationsProxyError(
+        400, "PLATFORM_TOPUP_STATUS_INVALID", "充值状态不在取值域内。");
+    }
+    query.set("status", status);
+  }
+  query.set("limit", String(boundedInteger(search.get("limit"), 50, 1, 200)));
+  return platformAdminGet("/topups", query, administrator);
+}
+
+export async function fetchPlatformJobs(
+  search: URLSearchParams,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const query = new URLSearchParams();
+  const status = search.get("status");
+  if (status) {
+    if (!["QUEUED", "CLAIMED", "RUNNING", "SUCCEEDED", "PARTIAL", "FAILED", "CANCELLED", "LOST"]
+        .includes(status)) {
+      throw new OperationsProxyError(
+        400, "PLATFORM_JOB_STATUS_INVALID", "任务状态不在取值域内。");
+    }
+    query.set("status", status);
+  }
+  const organizationId = search.get("organizationId");
+  if (organizationId) {
+    query.set("organizationId", platformOrganizationId(organizationId));
+  }
+  query.set(
+    "limitPerOrganization",
+    String(boundedInteger(search.get("limitPerOrganization"), 25, 1, 200)));
+  return platformAdminGet("/execution-jobs", query, administrator);
+}
+
+export async function adjustPlatformWallet(
+  body: Record<string, unknown>,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  return platformAdminPost("/wallets/adjust", {
+    organizationId: platformOrganizationId(String(body.organizationId ?? "")),
+    direction: body.direction === "DEBIT" ? "DEBIT" : "CREDIT",
+    // 不用 boundedInteger：它在空值时返回 fallback，而这里任何 fallback 都是错的
+    // ——传 0 会让一笔空金额变成一笔零元调账并被放行。金额必须显式给。
+    amountMinor: platformAmountMinor(body.amountMinor),
+    reason: safeString(body.reason, "reason", 255),
+    idempotencyKey: platformIdentifier(body.idempotencyKey, "idempotencyKey"),
+  }, administrator);
+}
+
+function platformAmountMinor(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 100_000_000) {
+    throw new OperationsProxyError(
+      400, "PLATFORM_ADJUSTMENT_AMOUNT_INVALID", "调整金额必须是 1..100000000 的整数分。");
+  }
+  return parsed;
+}
+
+export async function grantPlatformAdmin(
+  body: Record<string, unknown>,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  const role = String(body.platformRole ?? "");
+  if (!["PLATFORM_VIEWER", "PLATFORM_OPERATOR", "PLATFORM_APPROVER"].includes(role)) {
+    throw new OperationsProxyError(
+      400, "PLATFORM_ROLE_INVALID", "平台角色不在取值域内。");
+  }
+  return platformAdminPost("/administrators/grant", {
+    accountId: platformIdentifier(body.accountId, "accountId"),
+    platformRole: role,
+    reason: safeString(body.reason, "reason", 255),
+  }, administrator);
+}
+
+export async function revokePlatformAdmin(
+  body: Record<string, unknown>,
+  administrator: AdminPrincipal,
+): Promise<Response> {
+  return platformAdminPost("/administrators/revoke", {
+    accountId: platformIdentifier(body.accountId, "accountId"),
+    reason: safeString(body.reason, "reason", 255),
+  }, administrator);
+}

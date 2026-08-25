@@ -165,6 +165,44 @@ COMMENT ON FUNCTION elmos_platform_authorize(varchar, varchar, varchar, varchar,
     'Decides and records in one step. Returns ALLOWED or a DENIED_* code; never raises, so that the audit row for a refusal survives rather than being rolled back with the refusal.';
 
 -- ---------------------------------------------------------------------------
+-- 4b. Resolving the caller
+-- ---------------------------------------------------------------------------
+-- The console session carries an actor id, not an account id -- and actor id is
+-- sha256(organizationId + ':' + accountId) truncated, so it cannot be reversed.
+-- It is also per (organization, account), while a platform administrator is
+-- deliberately not scoped to an organization; the same person authenticating
+-- through two of their tenants presents two different actor ids for one
+-- administrator entry.
+--
+-- identity_membership_directory (V59) already holds both identifiers side by
+-- side and is not tenant isolated, which is exactly the lookup this needs. The
+-- alternative -- adding accountId to the sealed session payload -- would touch
+-- the session format and invalidate every live session for a read-only feature.
+
+CREATE INDEX IF NOT EXISTS identity_membership_directory_org_actor_idx
+    ON identity_membership_directory (organization_id, actor_id)
+    WHERE actor_id IS NOT NULL;
+
+CREATE OR REPLACE FUNCTION elmos_platform_resolve_admin_account(
+    p_organization_id varchar,
+    p_actor_id varchar
+) RETURNS varchar
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT d.account_id FROM identity_membership_directory d
+     WHERE d.organization_id = p_organization_id
+       AND d.actor_id = p_actor_id
+       AND d.member_state <> 'REMOVED'
+     LIMIT 1;
+$$;
+
+COMMENT ON FUNCTION elmos_platform_resolve_admin_account(varchar, varchar) IS
+    'Maps a console session (organization + actor) back to the account it belongs to. Returns NULL when there is no live membership, which the caller must treat as "not an administrator" -- the platform administrator check that follows would refuse a NULL anyway, but failing here keeps a bad actor id out of the audit log as a named account.';
+
+-- ---------------------------------------------------------------------------
 -- 5. Cross-tenant reads
 -- ---------------------------------------------------------------------------
 -- Each iterates organizations (that table is not tenant isolated) and binds each
@@ -598,6 +636,7 @@ REVOKE ALL ON platform_admin_access_log FROM PUBLIC;
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_platform_admin_runtime') THEN
+        EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_platform_resolve_admin_account(varchar, varchar) TO elmos_platform_admin_runtime';
         EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_platform_wallet_overview(varchar, varchar, integer) TO elmos_platform_admin_runtime';
         EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_platform_wallet_ledger(varchar, varchar, integer, integer) TO elmos_platform_admin_runtime';
         EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_platform_topup_orders(varchar, varchar, integer) TO elmos_platform_admin_runtime';

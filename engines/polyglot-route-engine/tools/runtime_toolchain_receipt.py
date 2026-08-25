@@ -62,7 +62,7 @@ def _canonical_sha256(value: object) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-_TOOLCHAIN_ROOT_TOKEN = "<polyglot-toolchain-root>"
+_PORTABLE_ROOT_MARKER = "<polyglot-toolchain-root>"
 
 
 def _portable_kotlin_value(value: str, root: Path) -> str:
@@ -70,9 +70,9 @@ def _portable_kotlin_value(value: str, root: Path) -> str:
 
     root_text = os.fspath(root)
     if value == root_text:
-        return _TOOLCHAIN_ROOT_TOKEN
+        return _PORTABLE_ROOT_MARKER
     prefix = root_text + os.sep
-    return value.replace(prefix, _TOOLCHAIN_ROOT_TOKEN + "/")
+    return value.replace(prefix, _PORTABLE_ROOT_MARKER + "/")
 
 
 def _portable_toolchain_record(language: str) -> dict[str, Any]:
