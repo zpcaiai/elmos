@@ -221,3 +221,64 @@ trust/revocation authority、生产 snapshot holder/scheduler/archive-GC 协调�
 但 `hdc list targets -v` 返回 `[Empty]`，设备证据为 `NOT_RUN`。因此 CAS 仍严格是
 `SINGLE_HOST / NOT_CERTIFIED`，EI 仍是
 `BLOCK / NOT_CERTIFIED`。
+
+---
+
+## 七、全量归因（进行中）—— 到目前为止一条都不是 `let` 造成的
+
+### 已归因
+
+**A. 3 个 ERROR + 1 个 FAILED（test_assembly）= 我的 shell 没有 TMPDIR**
+
+不是仓库的问题。macOS 走 BSD 语义：新建目录继承**父目录的组**，不是进程的 egid。
+TMPDIR 未设置时 `tempfile` 落在 `/private/tmp`（组 `wheel`，gid 0），实测：
+
+```
+新建目录 gid = 0    进程 getgid() = 20
+```
+
+于是 `fake_cmake_source` 夹具把 `_EXPECTED_CMAKE_SOURCE_GID` 钉成 `os.getgid()`，
+而它自己建出来的目录是 gid 0 → `EXACT_TOOLCHAIN_CMAKE_SOURCE_PATH_UNSAFE`。
+设上 TMPDIR（`/var/folders/...`，组 `staff`）后这 3 个 ERROR 全部消失。
+
+**B. 由 A 顺出来的一个真缺陷（已修，`5543624b4`）**
+
+`_verify_cmake_bundle` 的 `st_gid == os.getgid()` 同理永远不成立，于是它会
+**拒绝自己刚刚创建的 bundle**。它之所以一直没暴露，是因为交互式登录 shell 会导出
+`/var/folders` 下的 TMPDIR；cron、launchd、CI、任何非登录 shell 都会中招。
+
+去掉它不损失任何安全性：上一行已经要求 mode 恰为 `0700`，组没有任何权限，
+一个「对组不授予任何权限」的目录归哪个组，改变不了谁能篡改它。属主仍由 uid 钉住。
+
+同时把 `EXACT_TOOLCHAIN_CMAKE_BUNDLE_ROOT_UNSAFE` 从「一个码盖 8 个条件」改成
+在码后附上是哪一条失败——查这一次，我是靠在草稿脚本里把这个闸门重写一遍才知道
+是 gid。**下一个人不该再付这个成本。**
+
+**C. 16 × `test_assembly_evidence_closure` = 工具链版本 pin 漂移**
+
+单独跑同样红，与我的改动无关。16 条全部同一个根因：
+
+```
+RouteError: ASSEMBLY_BUILD_TOOLCHAIN_VERSION_DRIFT
+```
+
+测试想断言的是证据篡改检测（`ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_DRIFTED` 等 8 条、
+`ASSEMBLY_UNIT_IDENTIFIER` 4 条、`..._MISSING` 2 条），但**装配阶段的工具链版本
+校验先炸了**，把被测行为整个挡在后面。又是同一个形状：环境/pin 的问题抢在被测对象之前发生。
+
+**D. 3 × test_assembly（与 TMPDIR 无关的真红）**
+
+`..._uses_a_private_environment_without_ambient_hooks`（`assert {}`，fake_run
+一次都没被调到）、`..._failure_preserves_bounded_sanitized_dual_streams`、
+`..._manifest_rejects_a_forged_cmake_runtime_binding`。设了 TMPDIR 仍红，
+且在我打补丁**之前**就是这三个名字。属并行线程的 cmake 加固地界，未深查。
+
+### 未归因
+
+全量仍在跑（`~/suite4.log`，日志不再放 `/tmp`——上一份就是被 `/tmp` 清理弄丢的）。
+`test_assembly_evidence_closure` 之后的部分尚未看到。
+
+### 一句话结论
+
+到目前为止，**没有一条红指向 `let` 或 Python 前端**。红的构成是：环境（TMPDIR）、
+工具链 pin 漂移、以及并行线程 cmake 加固里的 3 条真红。

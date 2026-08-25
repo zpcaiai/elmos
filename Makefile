@@ -76,6 +76,12 @@ migration-pack-admission:
 .PHONY: repository-migration-platform-skills
 repository-migration-platform-skills:
 	cd skills/repository-migration-platform-skills-batch1-38 && ./validate.sh
+.PHONY: large-repository-database-design-skills
+large-repository-database-design-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 python tooling/integrate_large_repository_database_design.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 python -m unittest discover -s tests/large-repository-database-design -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 python3 skills/elmos-large-repository-database-design-v1.0.0/scripts/validate_database_design.py
+	bash -n scripts/large_repository_database_design/run_postgres_validation.sh
 precision-migration-b01-44-skills:
 	python3 tooling/generate_precision_migration_handlers.py --check
 	python3 tooling/generate_precision_migration_external_profiles.py --check
@@ -136,6 +142,31 @@ frontend-to-miniapp-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --check; \
 	node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check; \
 	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1
+
+.PHONY: multimodal-intake-skills
+multimodal-intake-skills:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multimodal_intake_skills.py --write
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multimodal_intake_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src python3 engines/multimodal-intake-engine/tools/render_operation_input_schema.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider tests/multimodal-intake/test_integration.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/multimodal-intake-engine/src $(UV) run --quiet --with pytest==8.4.1 python -m pytest -q -p no:cacheprovider engines/multimodal-intake-engine/tests
+	PYTHONDONTWRITEBYTECODE=1 python3 engines/multimodal-intake-engine/tools/verify_sdks.py --check
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" node apps/web-console/app/lib/server/multimodalIntakeRunner.verify.mjs
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec tsc --noEmit
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/multimodal-intake-authorization-v1
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/multimodal-intake-authorization-v1
+.PHONY: build-cache-staging-parity-skills
+build-cache-staging-parity-skills:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/import_build_cache_parity_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/build-cache-staging-parity -p 'test_*.py'
+.PHONY: repository-task-router-skills
+repository-task-router-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_repository_task_router_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src python3 -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
+	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/repair-orchestration,apps/agent-gateway -am test
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec tsc --noEmit
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec playwright test e2e/repository-orchestrator.spec.ts --project=chromium
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:
@@ -216,6 +247,11 @@ batch97-104-skills:
 		cd .. && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_batch97_104_skills.py')
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_batch97_104_installed.py
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_batch97_104_installed
+.PHONY: spring-golden-route-commercial-skills
+spring-golden-route-commercial-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_spring_golden_route_commercial_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/spring-golden-route-commercial -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/spring-golden-route-engine/src python3 -m unittest discover -s engines/spring-golden-route-engine/tests -p 'test_*.py'
 product-batch56-skills:
 	$(call guarded,elmos-codex-skills-batch56-product-closure,manifest.json,\
 		cd elmos-codex-skills-batch56-product-closure && ./validate.sh; \
@@ -378,12 +414,20 @@ sql-dialect:
 # Rows reading NOT_PROBED mean this machine lacks that language's pinned
 # toolchain. That is an instruction to re-run somewhere that has it, never a
 # capability claim -- which is why this is a report, not a gate.
-.PHONY: capability-probe capability-probe-json
+.PHONY: capability-probe capability-probe-json capability-probe-tests
 capability-probe:
 	$(UV) --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py
 
 capability-probe-json:
 	$(UV) --directory engines/polyglot-route-engine run --locked python tools/capability_probe.py --json
+
+# The assertions over a real probe run. Kept off the default suite on purpose:
+# they drive every language's real toolchain, take minutes, depend on what this
+# machine has installed, and once wedged a full pytest run at 0% CPU for over
+# ten minutes. A suite that can hang forever cannot gate anything.
+capability-probe-tests:
+	ELMOS_CAPABILITY_PROBE_TESTS=1 $(UV) --directory engines/polyglot-route-engine run --locked \
+		python -m pytest -q tests/test_capability_probe.py
 # The component engine drives real framework toolchains (TypeScript,
 # @vue/compiler-sfc, vue-template-compiler, @angular/compiler,
 # svelte/compiler, @wxml/parser) plus real SSR renderers, so its tests are
@@ -465,3 +509,8 @@ uir-j2p-evidence:
 uir-j2p-gate: uir-j2p-test uir-j2p-mutation
 
 .PHONY: uir-j2p-deps uir-j2p-test uir-j2p-mutation uir-j2p-survey uir-j2p-survey-noindex uir-j2p-evidence uir-j2p-gate
+
+.PHONY: multitenant-task-finops-skills
+multitenant-task-finops-skills:
+	PYTHONDONTWRITEBYTECODE=1 python3 tooling/integrate_multitenant_task_finops_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/multitenant-task-finops -p 'test_*.py'
