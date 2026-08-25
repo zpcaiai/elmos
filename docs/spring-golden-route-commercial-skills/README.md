@@ -13,7 +13,22 @@ This directory records the safe repository import of `elmos-spring-golden-route-
 
 The ZIP remains the canonical source. The importer reads it directly and does not create a mutable extracted source tree under `skills/`. Each installed Skill retains its source package, version, source path and digest, and references its corresponding `contracts/<name>.json` contract through `references/contract.json`. The aggregate compiled-contract index binds the same exact inventory.
 
-The package's Skill dependency DAG contains 128 declared edges. The importer reconciles contract, package-manifest, and dependency-graph references, rejects unknown or self dependencies, proves the Skill and commercial-batch graphs are acyclic, and records a deterministic topological order in `installed-manifest.json`.
+The pinned digest proves byte identity only. The ZIP contains no
+`LICENSE`/`COPYING`/`NOTICE`, SBOM, package signature, or independent provenance
+attestation. Its three package-authored `SOURCE_PROVENANCE` records are retained
+as untrusted source assertions and do not establish redistribution, commercial
+use, or third-party license clearance; unknown rights remain blocked pending
+qualified review.
+
+The package's outer Skill DAG contains 128 declared edges, and its nested
+foundation graph contributes 21 distinct critical edges. The importer preserves
+both classes, schedules against their 149-edge union, and also preserves the 24
+commercial plus 19 foundation batch edges. The raw foundation batch IDs
+`01`–`10` are retained and explicitly normalized to the contract IDs
+`F01`–`F10`. It reconciles contract,
+package-manifest, and dependency-graph references, rejects unknown or self
+dependencies, proves every source and effective graph acyclic, and records the
+declared, effective, and batch topological orders in `installed-manifest.json`.
 
 ## Safe import and verification
 

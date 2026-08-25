@@ -1,23 +1,763 @@
 {
   "archive_code_execution": "DENIED",
   "batch_count": 22,
+  "batch_dependency_edge_count": 43,
+  "batch_topological_order": [
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "F05",
+    "F06",
+    "F07",
+    "F08",
+    "F09",
+    "F10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22"
+  ],
   "canonical_source": "skills/subskills/elmos-spring-golden-route-commercial-skills-v2.0.0.zip",
   "certification": "NOT_CERTIFIED",
+  "commercial_batch_dependencies": {
+    "11": [],
+    "12": [
+      "11"
+    ],
+    "13": [
+      "12"
+    ],
+    "14": [
+      "12",
+      "13"
+    ],
+    "15": [
+      "14"
+    ],
+    "16": [
+      "15"
+    ],
+    "17": [
+      "16"
+    ],
+    "18": [
+      "15",
+      "17"
+    ],
+    "19": [
+      "17",
+      "18"
+    ],
+    "20": [
+      "13",
+      "18",
+      "19"
+    ],
+    "21": [
+      "14",
+      "18",
+      "19",
+      "20"
+    ],
+    "22": [
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21"
+    ]
+  },
+  "commercial_batch_dependency_edge_count": 24,
   "commercial_skill_count": 96,
+  "commercial_skill_dependencies": {
+    "elmos-build-buy-partner": [
+      "elmos-competitive-positioning"
+    ],
+    "elmos-competitive-positioning": [
+      "elmos-product-category"
+    ],
+    "elmos-golden-route-priority": [
+      "elmos-maturity-l1-l5"
+    ],
+    "elmos-maturity-l1-l5": [
+      "elmos-product-category"
+    ],
+    "elmos-recipe-license-gate": [
+      "elmos-build-buy-partner"
+    ],
+    "elmos-scope-control": [
+      "elmos-spring-route-boundary"
+    ],
+    "elmos-spring-route-boundary": [
+      "elmos-golden-route-priority"
+    ],
+    "gr-audit-retention": [
+      "gr-evidence-store",
+      "gr-data-model"
+    ],
+    "gr-benchmark-corpus": [
+      "repo-benchmark-profile"
+    ],
+    "gr-cache": [
+      "gr-capacity",
+      "spring-repo-graph"
+    ],
+    "gr-capacity": [
+      "gr-large-repo",
+      "gr-observability"
+    ],
+    "gr-claim-ledger": [
+      "gr-evidence-store"
+    ],
+    "gr-clean-room": [
+      "gr-size-gate"
+    ],
+    "gr-cost-accounting": [
+      "gr-observability"
+    ],
+    "gr-customer-data-ip": [
+      "gr-sow",
+      "gr-audit-retention"
+    ],
+    "gr-event-catalog": [
+      "gr-data-model"
+    ],
+    "gr-evidence-store": [
+      "gr-event-catalog"
+    ],
+    "gr-failure-denominator": [
+      "gr-no-cheating"
+    ],
+    "gr-l3-gate": [
+      "gr-clean-room",
+      "gr-failure-denominator"
+    ],
+    "gr-large-repo": [
+      "spring-route-orchestrator",
+      "repo-erss"
+    ],
+    "gr-migration-kg": [
+      "gr-recipe-certification",
+      "gr-claim-ledger"
+    ],
+    "gr-multirepo": [
+      "gr-large-repo"
+    ],
+    "gr-no-cheating": [
+      "gr-unseen-policy"
+    ],
+    "gr-observability": [
+      "gr-event-catalog"
+    ],
+    "gr-patch-mining": [
+      "gr-cache",
+      "spring-deterministic-share"
+    ],
+    "gr-pilot-selection": [
+      "spring-pilot-sku"
+    ],
+    "gr-pilot-success": [
+      "gr-pilot-selection",
+      "gr-clean-room"
+    ],
+    "gr-pricing": [
+      "spring-effort-estimate",
+      "gr-cost-accounting"
+    ],
+    "gr-progress-eta": [
+      "gr-cost-accounting",
+      "spring-runtime-eta"
+    ],
+    "gr-public-claims": [
+      "gr-l3-gate"
+    ],
+    "gr-recipe-certification": [
+      "gr-patch-mining",
+      "gr-benchmark-corpus"
+    ],
+    "gr-route-expansion": [
+      "gr-migration-kg",
+      "gr-l3-gate"
+    ],
+    "gr-size-gate": [
+      "gr-no-cheating"
+    ],
+    "gr-sow": [
+      "gr-pricing"
+    ],
+    "gr-unseen-policy": [
+      "gr-benchmark-corpus"
+    ],
+    "repo-benchmark-profile": [
+      "repo-rcs",
+      "repo-semantic-accounting"
+    ],
+    "repo-erss": [
+      "repo-mrloc"
+    ],
+    "repo-mrloc": [
+      "spring-source-profile"
+    ],
+    "repo-origin-classifier": [
+      "repo-mrloc"
+    ],
+    "repo-rcs": [
+      "repo-erss"
+    ],
+    "repo-scale-report": [
+      "repo-benchmark-profile"
+    ],
+    "repo-semantic-accounting": [
+      "repo-transform-surface"
+    ],
+    "repo-transform-surface": [
+      "repo-mrloc"
+    ],
+    "spring-api-config-migrator": [
+      "spring-build-migrator"
+    ],
+    "spring-api-diff": [
+      "spring-dual-runtime"
+    ],
+    "spring-assessment-report": [
+      "spring-runtime-eta"
+    ],
+    "spring-assessment-sku": [
+      "spring-assessment-report"
+    ],
+    "spring-async-graph": [
+      "spring-repo-graph"
+    ],
+    "spring-baseline-preflight": [
+      "spring-eligibility"
+    ],
+    "spring-bean-flow": [
+      "spring-repo-graph"
+    ],
+    "spring-build-migrator": [
+      "spring-license-router",
+      "spring-maven-multimodule"
+    ],
+    "spring-capability-matrix": [
+      "spring-source-profile"
+    ],
+    "spring-characterization": [
+      "spring-env-snapshot"
+    ],
+    "spring-completion-proof": [
+      "spring-verification-fixpoint",
+      "spring-delivery-rollback"
+    ],
+    "spring-context-slicer": [
+      "spring-repair-agent",
+      "spring-repo-graph"
+    ],
+    "spring-crash-recovery": [
+      "spring-side-effect-ledger"
+    ],
+    "spring-critical-subroutes": [
+      "spring-capability-matrix"
+    ],
+    "spring-data-graph": [
+      "spring-repo-graph"
+    ],
+    "spring-db-diff": [
+      "spring-dual-runtime",
+      "spring-data-graph"
+    ],
+    "spring-delivery-rollback": [
+      "spring-route-orchestrator"
+    ],
+    "spring-deterministic-share": [
+      "spring-recipe-fixpoint",
+      "repo-semantic-accounting"
+    ],
+    "spring-diagnostic-classifier": [
+      "spring-recipe-fixpoint"
+    ],
+    "spring-dual-runtime": [
+      "spring-sandbox",
+      "spring-characterization"
+    ],
+    "spring-durable-session": [
+      "spring-context-slicer",
+      "spring-migration-dag"
+    ],
+    "spring-effort-estimate": [
+      "spring-legacy-risk",
+      "repo-transform-surface"
+    ],
+    "spring-eligibility": [
+      "spring-secure-intake",
+      "repo-rcs"
+    ],
+    "spring-env-snapshot": [
+      "spring-secure-intake",
+      "spring-baseline-preflight"
+    ],
+    "spring-factory-sku": [
+      "spring-pilot-sku",
+      "gr-multirepo"
+    ],
+    "spring-human-approval": [
+      "spring-crash-recovery"
+    ],
+    "spring-legacy-risk": [
+      "spring-baseline-preflight"
+    ],
+    "spring-license-router": [
+      "spring-native-recipes"
+    ],
+    "spring-maven-multimodule": [
+      "spring-target-profile"
+    ],
+    "spring-migration-dag": [
+      "spring-test-corpus",
+      "spring-target-profile"
+    ],
+    "spring-native-recipes": [
+      "spring-openrewrite-adapter"
+    ],
+    "spring-openrewrite-adapter": [
+      "spring-migration-dag",
+      "elmos-recipe-license-gate"
+    ],
+    "spring-pilot-sku": [
+      "spring-assessment-sku"
+    ],
+    "spring-private-deps": [
+      "spring-baseline-preflight"
+    ],
+    "spring-quality-gates": [
+      "spring-api-diff",
+      "spring-db-diff",
+      "spring-security-diff",
+      "spring-sideeffect-diff"
+    ],
+    "spring-recipe-fixpoint": [
+      "spring-api-config-migrator"
+    ],
+    "spring-repair-agent": [
+      "spring-diagnostic-classifier"
+    ],
+    "spring-repo-graph": [
+      "spring-characterization"
+    ],
+    "spring-route-orchestrator": [
+      "elmos-spring-route-boundary"
+    ],
+    "spring-runtime-eta": [
+      "spring-effort-estimate"
+    ],
+    "spring-sandbox": [
+      "spring-human-approval"
+    ],
+    "spring-security-diff": [
+      "spring-dual-runtime",
+      "spring-security-graph"
+    ],
+    "spring-security-graph": [
+      "spring-bean-flow"
+    ],
+    "spring-side-effect-ledger": [
+      "spring-durable-session"
+    ],
+    "spring-sideeffect-diff": [
+      "spring-dual-runtime",
+      "spring-async-graph"
+    ],
+    "spring-source-profile": [
+      "spring-route-orchestrator"
+    ],
+    "spring-target-profile": [
+      "spring-source-profile"
+    ],
+    "spring-test-corpus": [
+      "spring-bean-flow",
+      "spring-data-graph",
+      "spring-security-graph",
+      "spring-async-graph"
+    ],
+    "spring-unsupported-manager": [
+      "spring-capability-matrix"
+    ],
+    "spring-verification-fixpoint": [
+      "spring-quality-gates"
+    ]
+  },
   "compiled_contracts_path": "docs/spring-golden-route-commercial-skills/compiled-contracts.json",
-  "compiled_contracts_sha256": "sha256:5d07ac8ee79a542a1defa350bbad1573fbfdbfc12bb6aca095f38896405fb7af",
+  "compiled_contracts_sha256": "sha256:adfa6e88204dbf3590417b3a219efee054f4ae0a9ba5e9306571f7071caf9cf4",
   "contract_count": 196,
   "customer_evidence_status": "NOT_RUN",
+  "declared_topological_order": [
+    "lossless-semantic-ir",
+    "rich-type-attribution",
+    "semantic-marker-metadata",
+    "cursor-execution-context",
+    "immutable-tree-transform",
+    "parser-roundtrip-fidelity",
+    "parser-capability-contract",
+    "native-parser-adapter",
+    "version-aware-parser",
+    "multi-format-source-model",
+    "deterministic-recipe-engine",
+    "recipe-composition-graph",
+    "recipe-preconditions",
+    "scanning-recipe-accumulator",
+    "scan-generate-edit-lifecycle",
+    "multi-cycle-fixpoint",
+    "recipe-option-schema",
+    "recipe-descriptor-introspection",
+    "recipe-change-attribution",
+    "recipe-effort-estimation",
+    "recipe-data-table",
+    "recipe-marketplace",
+    "recipe-bundle-resolver",
+    "recipe-marketplace-validation",
+    "semantic-template-engine",
+    "constrained-capture-matching",
+    "variadic-pattern-matching",
+    "dynamic-template-builder",
+    "lenient-semantic-comparator",
+    "semantic-search-engine",
+    "build-model-intelligence",
+    "native-dependency-resolution",
+    "minimal-lockfile-delta",
+    "package-metadata-ladder",
+    "dependency-credential-propagation",
+    "lockfile-accuracy-contract",
+    "parser-tck",
+    "transformation-before-after-tests",
+    "transformation-benchmarks",
+    "parse-failure-evidence",
+    "rewrite-rpc-runtime",
+    "mirrored-rpc-capabilities",
+    "cross-runtime-data-sink",
+    "rpc-process-isolation",
+    "repository-knowledge-precompute",
+    "architecture-context-extractor",
+    "dependency-and-library-usage-index",
+    "coding-and-error-pattern-miner",
+    "method-and-test-quality-index",
+    "semantic-token-context-query",
+    "agent-registry",
+    "primary-subagent-hierarchy",
+    "plan-explore-scout-agents",
+    "hidden-system-agents",
+    "per-agent-model-routing",
+    "agent-step-budget",
+    "parallel-subagent-execution",
+    "parent-child-session-graph",
+    "agent-command-playbooks",
+    "safe-agent-role-switching",
+    "durable-session-inbox",
+    "queue-steer-delivery",
+    "session-event-sourcing",
+    "session-run-coordinator",
+    "wake-resume-interrupt",
+    "provider-turn-persistence",
+    "durable-tool-settlement",
+    "context-epoch",
+    "context-compaction",
+    "reconnect-safe-history",
+    "git-snapshot-revert",
+    "session-retry-run-state",
+    "side-effect-interruption-fencing",
+    "post-crash-continuation-recovery",
+    "typed-tool-registry",
+    "schema-validated-tool-io",
+    "wildcard-permission-engine",
+    "command-resource-policy",
+    "doom-loop-human-intervention",
+    "structured-task-and-question-tools",
+    "lazy-skill-discovery",
+    "mcp-gateway-oauth-context-budget",
+    "lsp-diagnostics-and-navigation",
+    "post-edit-format-and-patch",
+    "provider-model-abstraction",
+    "portable-request-vs-local-behavior",
+    "model-run-vs-provider-turn",
+    "stream-usage-cost-cache-runtime",
+    "hierarchical-enterprise-config",
+    "workspace-control-plane-and-multi-client",
+    "deterministic-first-router",
+    "recipe-agent-hybrid-planner",
+    "semantic-context-provider",
+    "semantic-patch-and-evidence-ledger",
+    "verification-fixpoint-completion-proof",
+    "migration-knowledge-graph",
+    "successful-patch-to-recipe-learning",
+    "hierarchical-context-and-repo-cache",
+    "side-effect-ledger-and-recovery-fencing",
+    "skill-marketplace-certification",
+    "elmos-product-category",
+    "elmos-competitive-positioning",
+    "elmos-build-buy-partner",
+    "elmos-maturity-l1-l5",
+    "elmos-golden-route-priority",
+    "elmos-spring-route-boundary",
+    "elmos-recipe-license-gate",
+    "elmos-scope-control",
+    "spring-route-orchestrator",
+    "spring-source-profile",
+    "spring-target-profile",
+    "spring-maven-multimodule",
+    "spring-capability-matrix",
+    "spring-critical-subroutes",
+    "spring-unsupported-manager",
+    "spring-delivery-rollback",
+    "repo-mrloc",
+    "repo-origin-classifier",
+    "repo-erss",
+    "repo-rcs",
+    "repo-transform-surface",
+    "repo-semantic-accounting",
+    "repo-benchmark-profile",
+    "repo-scale-report",
+    "spring-secure-intake",
+    "spring-eligibility",
+    "spring-baseline-preflight",
+    "spring-legacy-risk",
+    "spring-private-deps",
+    "spring-effort-estimate",
+    "spring-runtime-eta",
+    "spring-assessment-report",
+    "spring-env-snapshot",
+    "spring-characterization",
+    "spring-repo-graph",
+    "spring-bean-flow",
+    "spring-data-graph",
+    "spring-security-graph",
+    "spring-async-graph",
+    "spring-test-corpus",
+    "spring-migration-dag",
+    "spring-openrewrite-adapter",
+    "spring-native-recipes",
+    "spring-license-router",
+    "spring-build-migrator",
+    "spring-api-config-migrator",
+    "spring-recipe-fixpoint",
+    "spring-deterministic-share",
+    "spring-diagnostic-classifier",
+    "spring-repair-agent",
+    "spring-context-slicer",
+    "spring-durable-session",
+    "spring-side-effect-ledger",
+    "spring-crash-recovery",
+    "spring-human-approval",
+    "spring-sandbox",
+    "spring-dual-runtime",
+    "spring-api-diff",
+    "spring-db-diff",
+    "spring-security-diff",
+    "spring-sideeffect-diff",
+    "spring-quality-gates",
+    "spring-verification-fixpoint",
+    "spring-completion-proof",
+    "gr-data-model",
+    "gr-event-catalog",
+    "gr-evidence-store",
+    "gr-claim-ledger",
+    "gr-observability",
+    "gr-cost-accounting",
+    "gr-progress-eta",
+    "gr-audit-retention",
+    "gr-benchmark-corpus",
+    "gr-unseen-policy",
+    "gr-no-cheating",
+    "gr-size-gate",
+    "gr-clean-room",
+    "gr-failure-denominator",
+    "gr-l3-gate",
+    "gr-public-claims",
+    "spring-assessment-sku",
+    "spring-pilot-sku",
+    "gr-large-repo",
+    "gr-multirepo",
+    "spring-factory-sku",
+    "gr-pricing",
+    "gr-sow",
+    "gr-customer-data-ip",
+    "gr-pilot-selection",
+    "gr-pilot-success",
+    "gr-capacity",
+    "gr-cache",
+    "gr-patch-mining",
+    "gr-recipe-certification",
+    "gr-migration-kg",
+    "gr-route-expansion"
+  ],
   "dependency_edge_count": 128,
+  "effective_dependency_edge_count": 149,
   "external_evidence_status": "NOT_RUN",
+  "foundation_batch_dependencies": {
+    "01": [],
+    "02": [
+      "01"
+    ],
+    "03": [
+      "01",
+      "02"
+    ],
+    "04": [
+      "01",
+      "02"
+    ],
+    "05": [
+      "01"
+    ],
+    "06": [
+      "05"
+    ],
+    "07": [
+      "06"
+    ],
+    "08": [
+      "07"
+    ],
+    "09": [
+      "06",
+      "07",
+      "08"
+    ],
+    "10": [
+      "01",
+      "02",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ]
+  },
+  "foundation_batch_dependency_edge_count": 19,
+  "foundation_batch_id_map": {
+    "01": "F01",
+    "02": "F02",
+    "03": "F03",
+    "04": "F04",
+    "05": "F05",
+    "06": "F06",
+    "07": "F07",
+    "08": "F08",
+    "09": "F09",
+    "10": "F10"
+  },
   "foundation_checksum_entries": 130,
   "foundation_critical_dependency_edge_count": 21,
+  "foundation_critical_skill_dependencies": {
+    "deterministic-first-router": [
+      "recipe-marketplace",
+      "semantic-search-engine",
+      "agent-registry"
+    ],
+    "deterministic-recipe-engine": [
+      "lossless-semantic-ir",
+      "rich-type-attribution",
+      "immutable-tree-transform"
+    ],
+    "durable-tool-settlement": [
+      "durable-session-inbox",
+      "session-event-sourcing",
+      "typed-tool-registry"
+    ],
+    "multi-cycle-fixpoint": [
+      "deterministic-recipe-engine",
+      "recipe-change-attribution"
+    ],
+    "post-crash-continuation-recovery": [
+      "provider-turn-persistence",
+      "durable-tool-settlement",
+      "side-effect-interruption-fencing"
+    ],
+    "semantic-search-engine": [
+      "lossless-semantic-ir",
+      "rich-type-attribution",
+      "repository-knowledge-precompute"
+    ],
+    "successful-patch-to-recipe-learning": [
+      "semantic-patch-and-evidence-ledger",
+      "recipe-marketplace-validation"
+    ],
+    "verification-fixpoint-completion-proof": [
+      "multi-cycle-fixpoint",
+      "semantic-patch-and-evidence-ledger"
+    ]
+  },
   "foundation_skill_count": 100,
   "implementation_state": "SPECIFICATION_IMPORTED",
+  "independent_provenance_attestation_status": "NOT_PROVIDED",
   "installed_namespace": "spring-golden-route-commercial-v2",
+  "normalized_foundation_batch_dependencies": {
+    "F01": [],
+    "F02": [
+      "F01"
+    ],
+    "F03": [
+      "F01",
+      "F02"
+    ],
+    "F04": [
+      "F01",
+      "F02"
+    ],
+    "F05": [
+      "F01"
+    ],
+    "F06": [
+      "F05"
+    ],
+    "F07": [
+      "F06"
+    ],
+    "F08": [
+      "F07"
+    ],
+    "F09": [
+      "F06",
+      "F07",
+      "F08"
+    ],
+    "F10": [
+      "F01",
+      "F02",
+      "F04",
+      "F05",
+      "F06",
+      "F07",
+      "F08"
+    ]
+  },
   "outer_checksum_entries": 594,
   "outer_checksum_sha256": "sha256:18a3e8d9ffaa20a6ba4b33b987578fe5323bf497625eed468ebda0612dad50bf",
   "package": "elmos-spring-golden-route-commercial-skills",
+  "package_authored_provenance_records": [
+    {
+      "path": "SOURCE_PROVENANCE.md",
+      "sha256": "sha256:300fbe16aa1990bde6a9af27d3674cd1c4f3a31ed4b847a1f6d15b309646909d"
+    },
+    {
+      "path": "docs/11_SOURCE_PROVENANCE.md",
+      "sha256": "sha256:7b207dfa048232b6da1ef7f42038876ca503e57dd64861fe3edaf6657ee4e9a4"
+    },
+    {
+      "path": "foundation/openrewrite-opencode-v1.0/SOURCE_PROVENANCE.md",
+      "sha256": "sha256:8f588694797de9527b1c7f0eb048da5d54d6a02919a7d26cdb55e054861f5922"
+    }
+  ],
+  "package_license_status": "NOT_PROVIDED",
+  "package_sbom_status": "NOT_PROVIDED",
+  "package_signature_status": "NOT_PROVIDED",
   "package_version": "2.0.0",
   "quarantined_archive_members": [
     "scripts/__pycache__/estimate_quote.cpython-313.pyc",
@@ -27,7 +767,7 @@
     "tests/__pycache__/test_toolkit.cpython-313.pyc"
   ],
   "runtime_evidence_status": "NOT_RUN",
-  "schema_version": "elmos.spring-golden-route.installed-manifest.v1",
+  "schema_version": "elmos.spring-golden-route.installed-manifest.v2",
   "side_effects_authorized": false,
   "skill_count": 196,
   "skills": [
@@ -5133,10 +5873,10 @@
     "recipe-preconditions",
     "scanning-recipe-accumulator",
     "scan-generate-edit-lifecycle",
+    "recipe-change-attribution",
     "multi-cycle-fixpoint",
     "recipe-option-schema",
     "recipe-descriptor-introspection",
-    "recipe-change-attribution",
     "recipe-effort-estimation",
     "recipe-data-table",
     "recipe-marketplace",
@@ -5147,6 +5887,7 @@
     "variadic-pattern-matching",
     "dynamic-template-builder",
     "lenient-semantic-comparator",
+    "repository-knowledge-precompute",
     "semantic-search-engine",
     "build-model-intelligence",
     "native-dependency-resolution",
@@ -5162,7 +5903,6 @@
     "mirrored-rpc-capabilities",
     "cross-runtime-data-sink",
     "rpc-process-isolation",
-    "repository-knowledge-precompute",
     "architecture-context-extractor",
     "dependency-and-library-usage-index",
     "coding-and-error-pattern-miner",
@@ -5184,6 +5924,7 @@
     "session-run-coordinator",
     "wake-resume-interrupt",
     "provider-turn-persistence",
+    "typed-tool-registry",
     "durable-tool-settlement",
     "context-epoch",
     "context-compaction",
@@ -5192,7 +5933,6 @@
     "session-retry-run-state",
     "side-effect-interruption-fencing",
     "post-crash-continuation-recovery",
-    "typed-tool-registry",
     "schema-validated-tool-io",
     "wildcard-permission-engine",
     "command-resource-policy",

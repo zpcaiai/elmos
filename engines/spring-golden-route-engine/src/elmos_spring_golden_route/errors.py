@@ -56,3 +56,6 @@ class IdempotencyConflict(GoldenRouteError):
 class EvidenceValidationError(GoldenRouteError):
     code = "EVIDENCE_VALIDATION_FAILED"
 
+
+class SchemaMigrationRequired(GoldenRouteError):
+    code = "STATE_SCHEMA_MIGRATION_REQUIRED"

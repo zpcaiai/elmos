@@ -9,11 +9,11 @@ from dataclasses import dataclass
 from types import MappingProxyType
 
 from .canonical import canonical_bytes, parse_json_strict, sha256_digest, validate_json_value
-from .catalog import Catalog, SkillContract, load_catalog
+from .catalog import Catalog, EXPECTED_SKILL_COUNT, SkillContract, load_catalog
 from .errors import ExternalAdapterRequired, RequestValidationError, UnknownSkillError
 
 REQUEST_SCHEMA_VERSION = "elmos.spring-golden-route.request.v1"
-RESPONSE_SCHEMA_VERSION = "elmos.spring-golden-route.response.v1"
+RESPONSE_SCHEMA_VERSION = "elmos.spring-golden-route.response.v2"
 LOCAL_EXECUTED_SELF_ATTESTED = "LOCAL_EXECUTED_SELF_ATTESTED"
 NOT_RUN = "NOT_RUN"
 NOT_CERTIFIED = "NOT_CERTIFIED"
@@ -107,6 +107,35 @@ class ValidatedRequest:
 
 
 SkillHandler = Callable[[ValidatedRequest], dict[str, object]]
+
+
+def output_media_type(name: str) -> str:
+    """Return a conservative media type from an explicitly named blueprint."""
+
+    lowered = name.lower()
+    if lowered.endswith(".json"):
+        return "application/json"
+    if lowered.endswith(".jsonl"):
+        return "application/x-ndjson"
+    if lowered.endswith((".yaml", ".yml")):
+        return "application/yaml"
+    if lowered.endswith(".md"):
+        return "text/markdown"
+    if lowered.endswith(".csv"):
+        return "text/csv"
+    if lowered.endswith(".txt"):
+        return "text/plain"
+    if lowered.endswith(".xml"):
+        return "application/xml"
+    if lowered.endswith(".html"):
+        return "text/html"
+    if lowered.endswith(".sarif"):
+        return "application/sarif+json"
+    if lowered.endswith(".zip"):
+        return "application/zip"
+    if lowered.endswith((".tar.gz", ".tgz")):
+        return "application/gzip"
+    return "application/octet-stream"
 
 
 def _fail(message: str, **details: object) -> None:
@@ -277,6 +306,11 @@ def _base_response(
         "decision": "DRAFT_ONLY",
         "operation": request.operation,
         "skill_name": contract.name,
+        "batch": contract.batch,
+        "batch_dependencies": [
+            {"batch": dependency, "status": NOT_RUN}
+            for dependency in catalog.batch_dependencies[contract.batch]
+        ],
         "source_id": contract.source_id,
         "source_contract_sha256": contract.source_contract_sha256,
         "catalog": {
@@ -329,12 +363,24 @@ def _handle(contract: SkillContract, request: ValidatedRequest, catalog: Catalog
             "target": _thaw(request.input["target"]),
             "constraints": list(request.input["constraints"]),
             "dependencies": [
-                {"skill_name": dependency, "status": NOT_RUN} for dependency in contract.dependencies
+                {
+                    "skill_name": dependency,
+                    "dependency_kinds": [
+                        kind
+                        for kind, selected in (
+                            ("declared", dependency in contract.dependencies),
+                            ("foundation-critical", dependency in contract.critical_dependencies),
+                        )
+                        if selected
+                    ],
+                    "status": NOT_RUN,
+                }
+                for dependency in contract.effective_dependencies
             ],
             "output_blueprints": [
                 {
                     "name": output,
-                    "media_type": "application/json",
+                    "media_type": output_media_type(output),
                     "materialized": False,
                     "status": NOT_RUN,
                     "producer": "EXTERNAL_ADAPTER_REQUIRED",
@@ -371,7 +417,10 @@ class SkillRegistry:
         handlers = {
             name: _make_handler(catalog.contracts[name], catalog) for name in catalog.topological_order
         }
-        if len(handlers) != 196 or len({id(handler) for handler in handlers.values()}) != 196:
+        if (
+            len(handlers) != EXPECTED_SKILL_COUNT
+            or len({id(handler) for handler in handlers.values()}) != EXPECTED_SKILL_COUNT
+        ):
             raise RuntimeError("registry must contain 196 distinct callable objects")
         self.handlers: Mapping[str, SkillHandler] = MappingProxyType(handlers)
 
@@ -408,11 +457,13 @@ __all__ = [
     "NOT_CERTIFIED",
     "NOT_RUN",
     "REQUEST_SCHEMA_VERSION",
+    "RESPONSE_SCHEMA_VERSION",
     "SkillRegistry",
     "ValidatedRequest",
     "build_registry",
     "dispatch_skill",
     "load_catalog",
+    "output_media_type",
     "parse_request",
     "validate_request",
 ]

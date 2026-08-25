@@ -61,6 +61,12 @@ EXPECTED_CONTRACTS = 196
 EXPECTED_BATCHES = 22
 EXPECTED_DEPENDENCY_EDGES = 128
 EXPECTED_FOUNDATION_CRITICAL_EDGES = 21
+EXPECTED_EFFECTIVE_DEPENDENCY_EDGES = 149
+EXPECTED_COMMERCIAL_BATCH_DEPENDENCY_EDGES = 24
+EXPECTED_FOUNDATION_BATCH_DEPENDENCY_EDGES = 19
+EXPECTED_BATCH_DEPENDENCY_EDGES = 43
+EXPECTED_PACKAGE_PROVENANCE_RECORDS = 3
+MAX_ARCHIVE_BYTES = 8 * 1024 * 1024
 MAX_ARCHIVE_ENTRY_BYTES = 512 * 1024
 MAX_ARCHIVE_TOTAL_BYTES = 4 * 1024 * 1024
 MAX_COMPRESSION_RATIO = 100
@@ -112,6 +118,14 @@ def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def _json_bytes(value: Any) -> bytes:
     return (
         json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
@@ -135,6 +149,7 @@ def inspect_archive(
     expected_total_bytes: int | None = EXPECTED_ARCHIVE_UNCOMPRESSED_BYTES,
     expected_mode_counts: dict[int, int] | None = EXPECTED_MODE_COUNTS,
     expected_root: str = PACKAGE_DIRECTORY,
+    max_archive_bytes: int = MAX_ARCHIVE_BYTES,
     max_entry_bytes: int = MAX_ARCHIVE_ENTRY_BYTES,
     max_total_bytes: int = MAX_ARCHIVE_TOTAL_BYTES,
     max_compression_ratio: int = MAX_COMPRESSION_RATIO,
@@ -142,11 +157,13 @@ def inspect_archive(
     """Read a ZIP only after validating bounded regular-file entries."""
 
     _require(archive.is_file() and not archive.is_symlink(), f"archive is missing or unsafe: {archive}")
-    raw_archive = archive.read_bytes()
-    if trusted_sha256 is not None:
-        _require(_sha256(raw_archive) == trusted_sha256, "archive SHA-256 mismatch")
+    archive_bytes = archive.stat().st_size
     if trusted_sha256 == EXPECTED_ARCHIVE_SHA256:
-        _require(len(raw_archive) == EXPECTED_ARCHIVE_BYTES, "archive byte count mismatch")
+        _require(archive_bytes == EXPECTED_ARCHIVE_BYTES, "archive byte count mismatch")
+    else:
+        _require(archive_bytes <= max_archive_bytes, "archive exceeds compressed byte limit")
+    if trusted_sha256 is not None:
+        _require(_sha256_file(archive) == trusted_sha256, "archive SHA-256 mismatch")
 
     records: dict[str, ArchiveRecord] = {}
     folded: set[str] = set()
@@ -306,6 +323,28 @@ def validate_source(source: Path | dict[str, ArchiveRecord]) -> dict[str, Any]:
 
     records = inspect_archive(source) if isinstance(source, Path) else source
     outer, nested = _validate_checksums(records)
+    basenames = {PurePosixPath(relative).name.casefold() for relative in records}
+    _require(
+        not ({"license", "license.txt", "copying", "copying.txt", "notice", "notice.txt"} & basenames),
+        "package license inventory changed; explicit rights review is required",
+    )
+    _require(
+        not any(name.startswith("sbom") for name in basenames),
+        "package SBOM inventory changed; explicit supply-chain review is required",
+    )
+    _require(
+        not any(name.endswith((".sig", ".asc", ".minisig")) for name in basenames),
+        "package signature inventory changed; explicit trust review is required",
+    )
+    provenance_records = sorted(
+        relative
+        for relative in records
+        if PurePosixPath(relative).name.casefold().endswith("source_provenance.md")
+    )
+    _require(
+        len(provenance_records) == EXPECTED_PACKAGE_PROVENANCE_RECORDS,
+        "package-authored provenance record count mismatch",
+    )
     manifest = _load_json_record(records, "manifest/package.json")
     _require(manifest.get("package") == PACKAGE_NAME, "package identity mismatch")
     _require(manifest.get("version") == PACKAGE_VERSION, "package version mismatch")
@@ -391,6 +430,11 @@ def validate_source(source: Path | dict[str, ArchiveRecord]) -> dict[str, Any]:
         _require(not errors, f"example Schema failure {example}: {errors[0].message if errors else ''}")
 
     dependency_manifest = _load_json_record(records, "manifest/dependency-graph.json")
+    _require(
+        isinstance(dependency_manifest, dict)
+        and set(dependency_manifest) == {"skill_dependencies", "batch_dependencies"},
+        "commercial dependency graph has an invalid field set",
+    )
     commercial_graph = dependency_manifest.get("skill_dependencies")
     _require(isinstance(commercial_graph, dict), "commercial dependency graph missing")
     manifest_graph = {entry["name"]: list(entry.get("dependencies", [])) for entry in skills}
@@ -398,28 +442,107 @@ def validate_source(source: Path | dict[str, ArchiveRecord]) -> dict[str, Any]:
         entry["name"] for entry in skills if entry.get("origin") == "commercial-extension"
     }
     _require(set(commercial_graph) <= commercial_names, "unknown commercial graph node")
+    _assert_dag(commercial_graph, name_set, "commercial Skill")
     for entry in skills:
         if entry.get("origin") == "commercial-extension":
             _require(commercial_graph.get(entry["name"], []) == manifest_graph[entry["name"]], f"commercial graph mismatch: {entry['name']}")
     edge_count = sum(len(value) for value in manifest_graph.values())
     _require(edge_count == EXPECTED_DEPENDENCY_EDGES, "manifest dependency edge count mismatch")
-    topological_order = _assert_dag(manifest_graph, name_set, "Skill")
+    declared_topological_order = _assert_dag(manifest_graph, name_set, "Skill")
 
     foundation_graph_value = _load_json_record(records, f"{FOUNDATION_ROOT}/manifest/dependency-graph.json")
+    _require(
+        isinstance(foundation_graph_value, dict)
+        and set(foundation_graph_value) == {
+            "critical_skill_dependencies",
+            "batch_dependencies",
+        },
+        "foundation dependency graph has an invalid field set",
+    )
     foundation_graph = foundation_graph_value.get("critical_skill_dependencies")
     _require(isinstance(foundation_graph, dict), "foundation critical dependency graph missing")
+    _require(
+        all(isinstance(value, list) for value in foundation_graph.values()),
+        "foundation critical dependency values must be arrays",
+    )
     foundation_edges = sum(len(value) for value in foundation_graph.values())
     _require(foundation_edges == EXPECTED_FOUNDATION_CRITICAL_EDGES, "foundation critical edge count mismatch")
     foundation_known = {entry["name"] for entry in skills if entry.get("origin") == "foundation"}
     _require(set(foundation_graph) <= foundation_known, "unknown foundation graph node")
-    _assert_dag({name: list(foundation_graph.get(name, [])) for name in foundation_known}, foundation_known, "foundation Skill")
+    foundation_full_graph = {
+        name: list(foundation_graph.get(name, [])) for name in sorted(foundation_known)
+    }
+    _assert_dag(foundation_full_graph, foundation_known, "foundation Skill")
+
+    effective_graph: dict[str, list[str]] = {}
+    for name, dependencies in manifest_graph.items():
+        critical = foundation_full_graph.get(name, [])
+        effective_graph[name] = dependencies + [
+            dependency for dependency in critical if dependency not in dependencies
+        ]
+    effective_edges = sum(len(value) for value in effective_graph.values())
+    _require(
+        effective_edges == EXPECTED_EFFECTIVE_DEPENDENCY_EDGES,
+        "effective Skill dependency edge count mismatch",
+    )
+    topological_order = _assert_dag(effective_graph, name_set, "effective Skill")
 
     commercial_batches = dependency_manifest.get("batch_dependencies")
     _require(isinstance(commercial_batches, dict), "commercial batch graph missing")
-    _assert_dag({str(key): list(value) for key, value in commercial_batches.items()}, set(map(str, commercial_batches)), "commercial batch")
+    _require(all(isinstance(key, str) for key in commercial_batches), "commercial batch key is not a string")
+    _require(
+        all(isinstance(value, list) for value in commercial_batches.values()),
+        "commercial batch dependency values must be arrays",
+    )
+    commercial_batch_edges = sum(len(value) for value in commercial_batches.values())
+    _require(
+        commercial_batch_edges == EXPECTED_COMMERCIAL_BATCH_DEPENDENCY_EDGES,
+        "commercial batch dependency edge count mismatch",
+    )
+    commercial_batch_graph = {key: list(value) for key, value in commercial_batches.items()}
+    _assert_dag(commercial_batch_graph, set(commercial_batch_graph), "commercial batch")
     foundation_batches = foundation_graph_value.get("batch_dependencies")
     _require(isinstance(foundation_batches, dict), "foundation batch graph missing")
-    _assert_dag({str(key): list(value) for key, value in foundation_batches.items()}, set(map(str, foundation_batches)), "foundation batch")
+    _require(all(isinstance(key, str) for key in foundation_batches), "foundation batch key is not a string")
+    _require(
+        all(isinstance(value, list) for value in foundation_batches.values()),
+        "foundation batch dependency values must be arrays",
+    )
+    foundation_batch_edges = sum(len(value) for value in foundation_batches.values())
+    _require(
+        foundation_batch_edges == EXPECTED_FOUNDATION_BATCH_DEPENDENCY_EDGES,
+        "foundation batch dependency edge count mismatch",
+    )
+    foundation_batch_graph = {key: list(value) for key, value in foundation_batches.items()}
+    _assert_dag(foundation_batch_graph, set(foundation_batch_graph), "foundation batch")
+    declared_batches = {str(entry["batch"]) for entry in skills}
+    foundation_batch_id_map = {
+        source_batch: f"F{source_batch}" for source_batch in foundation_batch_graph
+    }
+    _require(
+        all(re.fullmatch(r"[0-9]{2}", source_batch) for source_batch in foundation_batch_id_map),
+        "foundation batch source identity is not canonical",
+    )
+    _require(
+        set(foundation_batch_id_map.values())
+        == {batch for batch in declared_batches if batch.startswith("F")},
+        "foundation batch identity mapping does not cover the contract batches",
+    )
+    normalized_foundation_batch_graph = {
+        foundation_batch_id_map[source_batch]: [
+            foundation_batch_id_map[dependency] for dependency in dependencies
+        ]
+        for source_batch, dependencies in foundation_batch_graph.items()
+    }
+    _require(
+        not (set(commercial_batch_graph) & set(normalized_foundation_batch_graph)),
+        "foundation and commercial batch identities collide",
+    )
+    batch_graph = {**normalized_foundation_batch_graph, **commercial_batch_graph}
+    _require(set(batch_graph) == declared_batches, "effective batch graph does not cover contract batches")
+    batch_edges = sum(len(value) for value in batch_graph.values())
+    _require(batch_edges == EXPECTED_BATCH_DEPENDENCY_EDGES, "batch dependency edge count mismatch")
+    batch_topological_order = _assert_dag(batch_graph, set(batch_graph), "effective batch")
 
     return {
         "records": records,
@@ -431,7 +554,25 @@ def validate_source(source: Path | dict[str, ArchiveRecord]) -> dict[str, Any]:
         "contract_count": len(contract_paths),
         "dependency_edge_count": edge_count,
         "foundation_critical_dependency_edge_count": foundation_edges,
+        "effective_dependency_edge_count": effective_edges,
+        "commercial_batch_dependency_edge_count": commercial_batch_edges,
+        "foundation_batch_dependency_edge_count": foundation_batch_edges,
+        "batch_dependency_edge_count": batch_edges,
+        "declared_skill_dependencies": manifest_graph,
+        "commercial_skill_dependencies": commercial_graph,
+        "foundation_critical_skill_dependencies": foundation_graph,
+        "effective_skill_dependencies": effective_graph,
+        "commercial_batch_dependencies": commercial_batch_graph,
+        "foundation_batch_dependencies": foundation_batch_graph,
+        "foundation_batch_id_map": foundation_batch_id_map,
+        "normalized_foundation_batch_dependencies": normalized_foundation_batch_graph,
+        "declared_topological_order": declared_topological_order,
         "topological_order": topological_order,
+        "batch_topological_order": batch_topological_order,
+        "package_authored_provenance_records": [
+            {"path": relative, "sha256": "sha256:" + records[relative].sha256}
+            for relative in provenance_records
+        ],
     }
 
 
@@ -530,7 +671,7 @@ def _runtime_binding(record: dict[str, Any]) -> bytes:
             "dispatcher": RUNTIME_DISPATCHER,
             "supported_operations": ["describe", "plan"],
             "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
-            "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+            "control_plane_evidence_status": "DECLARED",
             "domain_runtime_evidence_status": "NOT_RUN",
             "customer_evidence_status": "NOT_RUN",
             "external_evidence_status": "NOT_RUN",
@@ -622,7 +763,7 @@ def build_expected(summary: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         runtime_bindings.append(json.loads(runtime_binding_bytes.decode("utf-8")))
 
     compiled_value = {
-        "schema_version": "elmos.spring-golden-route.compiled-contracts.v1",
+        "schema_version": "elmos.spring-golden-route.compiled-contracts.v2",
         "package": PACKAGE_NAME,
         "package_version": PACKAGE_VERSION,
         "source_archive_sha256": "sha256:" + EXPECTED_ARCHIVE_SHA256,
@@ -630,7 +771,21 @@ def build_expected(summary: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         "contract_count": EXPECTED_CONTRACTS,
         "dependency_edge_count": summary["dependency_edge_count"],
         "foundation_critical_dependency_edge_count": summary["foundation_critical_dependency_edge_count"],
+        "effective_dependency_edge_count": summary["effective_dependency_edge_count"],
+        "commercial_batch_dependency_edge_count": summary["commercial_batch_dependency_edge_count"],
+        "foundation_batch_dependency_edge_count": summary["foundation_batch_dependency_edge_count"],
+        "batch_dependency_edge_count": summary["batch_dependency_edge_count"],
+        "commercial_skill_dependencies": summary["commercial_skill_dependencies"],
+        "foundation_critical_skill_dependencies": summary["foundation_critical_skill_dependencies"],
+        "commercial_batch_dependencies": summary["commercial_batch_dependencies"],
+        "foundation_batch_dependencies": summary["foundation_batch_dependencies"],
+        "foundation_batch_id_map": summary["foundation_batch_id_map"],
+        "normalized_foundation_batch_dependencies": summary[
+            "normalized_foundation_batch_dependencies"
+        ],
+        "declared_topological_order": summary["declared_topological_order"],
         "topological_order": summary["topological_order"],
+        "batch_topological_order": summary["batch_topological_order"],
         "implementation_state": "SPECIFICATION_IMPORTED",
         "runtime_evidence_status": "NOT_RUN",
         "customer_evidence_status": "NOT_RUN",
@@ -649,7 +804,7 @@ def build_expected(summary: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         or QUARANTINED_PARTS.intersection(PurePosixPath(relative).parts)
     )
     manifest_value = {
-        "schema_version": "elmos.spring-golden-route.installed-manifest.v1",
+        "schema_version": "elmos.spring-golden-route.installed-manifest.v2",
         "package": PACKAGE_NAME,
         "package_version": PACKAGE_VERSION,
         "installed_namespace": NAMESPACE,
@@ -668,11 +823,32 @@ def build_expected(summary: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         "batch_count": EXPECTED_BATCHES,
         "dependency_edge_count": summary["dependency_edge_count"],
         "foundation_critical_dependency_edge_count": summary["foundation_critical_dependency_edge_count"],
+        "effective_dependency_edge_count": summary["effective_dependency_edge_count"],
+        "commercial_batch_dependency_edge_count": summary["commercial_batch_dependency_edge_count"],
+        "foundation_batch_dependency_edge_count": summary["foundation_batch_dependency_edge_count"],
+        "batch_dependency_edge_count": summary["batch_dependency_edge_count"],
+        "commercial_skill_dependencies": summary["commercial_skill_dependencies"],
+        "foundation_critical_skill_dependencies": summary["foundation_critical_skill_dependencies"],
+        "commercial_batch_dependencies": summary["commercial_batch_dependencies"],
+        "foundation_batch_dependencies": summary["foundation_batch_dependencies"],
+        "foundation_batch_id_map": summary["foundation_batch_id_map"],
+        "normalized_foundation_batch_dependencies": summary[
+            "normalized_foundation_batch_dependencies"
+        ],
+        "declared_topological_order": summary["declared_topological_order"],
         "topological_order": summary["topological_order"],
+        "batch_topological_order": summary["batch_topological_order"],
         "compiled_contracts_path": (DOC_RELATIVE / "compiled-contracts.json").as_posix(),
         "compiled_contracts_sha256": "sha256:" + _sha256(compiled_bytes),
         "archive_code_execution": "DENIED",
         "quarantined_archive_members": quarantine,
+        "package_license_status": "NOT_PROVIDED",
+        "package_signature_status": "NOT_PROVIDED",
+        "package_sbom_status": "NOT_PROVIDED",
+        "independent_provenance_attestation_status": "NOT_PROVIDED",
+        "package_authored_provenance_records": summary[
+            "package_authored_provenance_records"
+        ],
         "implementation_state": "SPECIFICATION_IMPORTED",
         "runtime_evidence_status": "NOT_RUN",
         "customer_evidence_status": "NOT_RUN",
@@ -693,7 +869,7 @@ def build_expected(summary: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         "dispatcher": RUNTIME_DISPATCHER,
         "skill_count": EXPECTED_SKILLS,
         "binding_state": "BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED",
-        "control_plane_evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
+        "control_plane_evidence_status": "DECLARED",
         "domain_runtime_evidence_status": "NOT_RUN",
         "customer_evidence_status": "NOT_RUN",
         "external_evidence_status": "NOT_RUN",
@@ -836,6 +1012,13 @@ def check_install(root: Path, expected: dict[str, Any]) -> dict[str, Any]:
         "skills": len(expected["skill_names"]),
         "contracts": len(expected["compiled_contracts"]["contracts"]),
         "dependency_edges": expected["manifest"]["dependency_edge_count"],
+        "foundation_critical_dependency_edges": expected["manifest"][
+            "foundation_critical_dependency_edge_count"
+        ],
+        "effective_dependency_edges": expected["manifest"][
+            "effective_dependency_edge_count"
+        ],
+        "batch_dependency_edges": expected["manifest"]["batch_dependency_edge_count"],
         "runtime_evidence_status": "NOT_RUN",
         "customer_evidence_status": "NOT_RUN",
         "external_evidence_status": "NOT_RUN",

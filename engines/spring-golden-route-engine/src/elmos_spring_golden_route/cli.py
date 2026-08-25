@@ -21,8 +21,19 @@ def _default_root() -> Path:
 
 def _read(path: str) -> bytes:
     if path == "-":
-        return sys.stdin.buffer.read(65_537)
-    return Path(path).read_bytes()
+        data = sys.stdin.buffer.read(65_537)
+    else:
+        source = Path(path)
+        if source.stat().st_size > 65_536:
+            raise RequestValidationError(
+                "CLI JSON input exceeds 65536 bytes",
+                details={"path": str(source), "maximum_bytes": 65_536},
+            )
+        with source.open("rb") as stream:
+            data = stream.read(65_537)
+    if len(data) > 65_536:
+        raise RequestValidationError("CLI JSON input exceeds 65536 bytes")
+    return data
 
 
 def _emit(value: object) -> None:
@@ -30,6 +41,7 @@ def _emit(value: object) -> None:
 
 
 def _add_scope(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--repo-root", type=Path, default=_default_root())
     parser.add_argument("--tenant", required=True)
     parser.add_argument("--project", required=True)
     parser.add_argument("--run", required=True)
@@ -128,7 +140,9 @@ def _run(args: argparse.Namespace) -> tuple[object, int]:
         run = RunStore(args.database, registry=registry).create_run(request, result)
         return run.as_dict(), 0
 
-    store = RunStore(args.database, create=False)
+    catalog = load_catalog(args.repo_root)
+    registry = build_registry(catalog)
+    store = RunStore(args.database, registry=registry, create=False)
     if args.command == "get-run":
         return store.get_run(args.tenant, args.project, args.run).as_dict(), 0
     if args.command == "list-events":

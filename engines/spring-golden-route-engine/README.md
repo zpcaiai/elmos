@@ -6,8 +6,10 @@ the 196 contracts imported from
 
 It validates the repository manifest, compiled contracts, archive digest,
 installed Skill files, interfaces, contract references, counts, identities,
-and dependency DAG before exposing a registry. Every Skill has a distinct
-callable. Those callables support only:
+the raw foundation Batch graph (`01` through `10`), its exact normalized
+identity map (`F01` through `F10`), the commercial Batch graph, and the Skill
+dependency DAG before exposing a registry. Every Skill has a distinct callable.
+Those callables support only:
 
 - `describe`: return the immutable imported contract and its conservative
   evidence boundary.
@@ -15,17 +17,25 @@ callable. Those callables support only:
   generation, builds, startup, behavior checks, security checks, holdout runs,
   customer evidence, and external verification remain `NOT_RUN`.
 
+Describe and plan responses use `elmos.spring-golden-route.response.v2` and
+expose the contract's normalized `batch` plus its direct `batch_dependencies`.
+Raw foundation IDs such as `01` never appear as contract Batch identities.
+
 The engine never runs Spring, build tools, repository hooks, provider APIs, or
-repository writes. Requests for execution or side effects fail with
+target-repository writes. Requests for execution or side effects fail with
 `EXTERNAL_ADAPTER_REQUIRED`. Local dispatch can be reported only as
 `LOCAL_EXECUTED_SELF_ATTESTED`; it is not domain runtime evidence.
 
 The SQLite store records run state, optimistic transitions, idempotency,
 append-only hash-chained events, and digest-bound local evidence. Because the
 local engine has no independent authorization trust store, its strongest
-possible decision is `LOCAL_HANDOFF_PREPARED` (below
-`READY_FOR_EXTERNAL_GATE`). It always reports
+possible local status is `LOCAL_HANDOFF_PREPARED`; the readiness decision stays
+`BLOCKED` until an external authorized verifier runs. It always reports
 customer/external evidence as `NOT_RUN` and certification as `NOT_CERTIFIED`.
+Every command that reads or mutates an existing run reloads the exact repository
+catalog and registry, then redispatches the complete stored plan before access.
+Library callers must likewise provide that registry; an unbound store may only
+initialize or validate the SQLite schema.
 
 ## Run
 
@@ -79,3 +89,15 @@ Unknown fields, duplicate JSON keys, oversized values, invalid identifiers,
 unknown Skills, and unsupported operations are rejected. `input` must be empty
 for `describe`; `plan` accepts only `objective`, `source`, `target`,
 `constraints`, and `requested_outputs` with bounded values.
+
+## SQLite state schema
+
+The durable store uses schema ID `elmos.spring-golden-route.run-store`, schema
+version `1`, `PRAGMA user_version=1`, and a digest of its exact table/trigger
+contract. Validation compares normalized table and trigger SQL, column types and
+nullability, primary/unique index semantics, checks, foreign keys, and trigger
+bodies. Existing compatible databases are opened without DDL changes. Missing,
+older, newer, or drifted schemas fail with
+`STATE_SCHEMA_MIGRATION_REQUIRED`; this engine performs no automatic migration.
+Migration requires a separately reviewed, backup-aware migration tool and is
+outside this bounded runtime.

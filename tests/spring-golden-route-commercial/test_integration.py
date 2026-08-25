@@ -39,6 +39,14 @@ class SpringGoldenRouteIntegrationTests(unittest.TestCase):
             self.summary["foundation_critical_dependency_edge_count"],
         )
         self.assertEqual(
+            integration.EXPECTED_EFFECTIVE_DEPENDENCY_EDGES,
+            self.summary["effective_dependency_edge_count"],
+        )
+        self.assertEqual(
+            integration.EXPECTED_BATCH_DEPENDENCY_EDGES,
+            self.summary["batch_dependency_edge_count"],
+        )
+        self.assertEqual(
             integration.EXPECTED_SKILLS,
             len(self.summary["topological_order"]),
         )
@@ -47,12 +55,50 @@ class SpringGoldenRouteIntegrationTests(unittest.TestCase):
         }
         for record in self.summary["skills"]:
             name = record["entry"]["name"]
-            for dependency in record["entry"].get("dependencies", []):
+            for dependency in self.summary["effective_skill_dependencies"][name]:
                 self.assertLess(position[dependency], position[name])
+        self.assertEqual(
+            integration.EXPECTED_FOUNDATION_CRITICAL_EDGES,
+            sum(
+                len(value)
+                for value in self.summary["foundation_critical_skill_dependencies"].values()
+            ),
+        )
+        self.assertEqual(
+            set(self.summary["commercial_batch_dependencies"])
+            | set(self.summary["normalized_foundation_batch_dependencies"]),
+            set(self.summary["batch_topological_order"]),
+        )
+        self.assertEqual(
+            {f"{number:02d}": f"F{number:02d}" for number in range(1, 11)},
+            self.summary["foundation_batch_id_map"],
+        )
+        batch_position = {
+            batch: index for index, batch in enumerate(self.summary["batch_topological_order"])
+        }
+        self.assertEqual(
+            {str(record["entry"]["batch"]) for record in self.summary["skills"]},
+            set(batch_position),
+        )
+        effective_batches = {
+            **self.summary["normalized_foundation_batch_dependencies"],
+            **self.summary["commercial_batch_dependencies"],
+        }
+        for batch, dependencies in effective_batches.items():
+            for dependency in dependencies:
+                self.assertLess(batch_position[dependency], batch_position[batch])
 
     def test_expected_install_is_dual_root_and_fail_closed(self) -> None:
         files = self.expected["files"]
         self.assertEqual(integration.EXPECTED_SKILLS * 10 + 3, len(files))
+        self.assertEqual(
+            "elmos.spring-golden-route.installed-manifest.v2",
+            self.expected["manifest"]["schema_version"],
+        )
+        self.assertEqual(
+            "elmos.spring-golden-route.compiled-contracts.v2",
+            self.expected["compiled_contracts"]["schema_version"],
+        )
         self.assertEqual(
             {
                 "implementation_state": "SPECIFICATION_IMPORTED",
@@ -75,6 +121,29 @@ class SpringGoldenRouteIntegrationTests(unittest.TestCase):
             },
         )
         self.assertEqual(5, len(self.expected["manifest"]["quarantined_archive_members"]))
+        self.assertEqual("NOT_PROVIDED", self.expected["manifest"]["package_license_status"])
+        self.assertEqual("NOT_PROVIDED", self.expected["manifest"]["package_signature_status"])
+        self.assertEqual("NOT_PROVIDED", self.expected["manifest"]["package_sbom_status"])
+        self.assertEqual(
+            integration.EXPECTED_PACKAGE_PROVENANCE_RECORDS,
+            len(self.expected["manifest"]["package_authored_provenance_records"]),
+        )
+        self.assertEqual(
+            self.summary["foundation_critical_skill_dependencies"],
+            self.expected["manifest"]["foundation_critical_skill_dependencies"],
+        )
+        self.assertEqual(
+            self.summary["commercial_batch_dependencies"],
+            self.expected["compiled_contracts"]["commercial_batch_dependencies"],
+        )
+        self.assertEqual(
+            self.summary["foundation_batch_dependencies"],
+            self.expected["compiled_contracts"]["foundation_batch_dependencies"],
+        )
+        self.assertEqual(
+            self.summary["normalized_foundation_batch_dependencies"],
+            self.expected["compiled_contracts"]["normalized_foundation_batch_dependencies"],
+        )
         self.assertTrue(
             all(
                 "__pycache__" in member and member.endswith(".pyc")
@@ -85,6 +154,7 @@ class SpringGoldenRouteIntegrationTests(unittest.TestCase):
         self.assertEqual(integration.EXPECTED_SKILLS, registry["skill_count"])
         self.assertEqual(integration.EXPECTED_SKILLS, len(registry["bindings"]))
         self.assertEqual("BOUNDED_LOCAL_CONTROL_PLANE_IMPLEMENTED", registry["binding_state"])
+        self.assertEqual("DECLARED", registry["control_plane_evidence_status"])
         self.assertEqual("NOT_RUN", registry["domain_runtime_evidence_status"])
         self.assertEqual("NOT_CERTIFIED", registry["certification"])
         for name in self.expected["skill_names"]:
@@ -233,7 +303,12 @@ class SpringGoldenRouteIntegrationTests(unittest.TestCase):
         expected = {
             "files": files,
             "skill_names": [name],
-            "manifest": {"dependency_edge_count": 0},
+            "manifest": {
+                "dependency_edge_count": 0,
+                "foundation_critical_dependency_edge_count": 0,
+                "effective_dependency_edge_count": 0,
+                "batch_dependency_edge_count": 0,
+            },
             "compiled_contracts": {"contracts": [{}]},
         }
         original = integration._write_atomic
@@ -280,6 +355,19 @@ class SpringGoldenRouteIntegrationTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(integration.IntegrationError, "outer checksum mismatch"):
             integration.validate_source(records)
+
+    def test_archive_size_is_rejected_before_hashing_or_loading(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            archive = Path(temporary) / "oversized.zip"
+            with archive.open("wb") as stream:
+                stream.truncate(integration.EXPECTED_ARCHIVE_BYTES + 1)
+            with mock.patch.object(
+                integration,
+                "_sha256_file",
+                side_effect=AssertionError("oversized archive must not be hashed"),
+            ):
+                with self.assertRaisesRegex(integration.IntegrationError, "archive byte count mismatch"):
+                    integration.inspect_archive(archive)
 
     def test_zip_path_escape_and_symlink_are_rejected(self) -> None:
         cases = (
