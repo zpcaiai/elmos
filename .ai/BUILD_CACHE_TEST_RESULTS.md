@@ -316,3 +316,118 @@ The checked-in config remains `measured_only` / `observe`; provider serving,
 environment restoration, affinity serving and the coordinator are off. No
 stable-turn reuse, unexpected-miss, exact-rerun, warm-start, cost-saving or
 wall-clock target is claimed as achieved by these local runs.
+
+## 2026-08-25 — commands actually run
+
+Environment: cloud container, CPython **3.11.15**, aarch64-linux, `pip install -e .`.
+`psycopg` is a dev-group dependency and is not installable offline, so all 26
+postgres parameterisations skip.
+
+**`pytest -q` hides the summary line in this package.** `pyproject`'s `addopts`
+already carries `-q`; passing it again is double-quiet and prints no count at
+all. Every number below was taken with `-o addopts="--strict-markers"`.
+
+| Command | Result |
+| --- | --- |
+| `pytest tests/` (session baseline, before any change) | **4 failed** |
+| `pytest tests/test_slo_service.py` | **52 passed** |
+| `pytest tests/test_metadata_store_contract.py tests/test_sota_acceptance.py` | **74 passed, 26 skipped** |
+| `pytest tests/test_parity_composition.py` | **230 passed** |
+| `pytest tests/test_api_composition_wiring.py` | **42 passed** |
+| `pytest tests/test_provider_prompt_runtime.py` | **18 passed** |
+| `pytest tests/` (final, merged tree) | **1600 passed, 52 skipped, 0 failed** — 116.40s |
+| `ruff check src tests` | 1 error: pre-existing `tests/test_e2e.py` `I001`, not touched |
+| `mypy --strict` | 1 error: pre-existing `psycopg` `import-not-found` at `db/store.py:1956`, 72 source files checked |
+
+### Mutation evidence — every fix proven to bite by reverting it
+
+Each mutation was applied to a copy under `/tmp` and driven with `PYTHONPATH`;
+the working tree was never mutated.
+
+| Mutation | Before the fix | After the fix |
+| --- | --- | --- |
+| Revert `slo_service._dependency_source_kind` namespacing | — | **29 of 52** `test_slo_service.py` fail |
+| Stop stripping `provider_request.payload` | — | **12** fail |
+| Re-echo `value` / `unknown` in `_enum` / `_strict_object` | canary test passed (it never issued a 4xx) | canary test fails and prints the leaked prompt text |
+| Delete the `exact_action_reused` refusal in `_composed_serving_call` | **93 passed** — invisible | **1 failed** |
+| Relax `ActionCacheLayerProbe.__call__`'s `not result.hit` test | **293 passed** — invisible | **1 failed** |
+| `served = result.hit` (ignore the composition) | — | **3** fail |
+| Composed path always serves | — | **11** fail |
+| Drop the composition scope-binding check | — | **4** fail |
+| Move ownership preflight after the idempotency claim | — | **2** fail (durable row written; `409` vs `404` oracle) |
+| Add a stray `0008_future.sql` to `migrations/sqlite/` | — | migration-contract test fails |
+| Mutate `WRONG_REPLICA` → `WRONG_REPLICAS` in the OpenAPI YAML | — | vocabulary-drift test fails |
+
+### 2026-08-25 later — Mac + live PostgreSQL: the postgres profile actually executed
+
+Environment: darwin, CPython **3.12.12**, pytest 8.4.1, pinned toolchain via
+`uv run --locked`, `psycopg` **3.3.4**, live **PostgreSQL 17.5 (Homebrew)** reached
+through `ELMOS_TEST_POSTGRES_DSN`.
+
+| Command | Result |
+| --- | --- |
+| `pytest tests/test_metadata_store_contract.py` (cloud, no DSN) | 39 passed, **26 skipped** |
+| `pytest tests/test_metadata_store_contract.py` (Mac, DSN set, server down) | 39 passed, **26 errors** |
+| `pytest tests/test_metadata_store_contract.py` (Mac, DSN set, server up) | **65 passed, 0 skipped** — 3.80s |
+
+This is the first execution of `migrations/postgres/0009_slo_control.sql`
+against a real server. Until now it had been verified only as text and
+byte-identity. Now actually exercised:
+
+- `test_postgres_slo_control_migration_carries_the_same_composite_scope_contract`
+  — the new project-scoped table's `(tenant_id, project_id)` FK with
+  `RESTRICT/RESTRICT` holds on a real server, not just in the SQL text.
+- `test_postgres_slo_control_migration_failure_is_retryable_and_contiguous`
+  — a single failing migration rolls back cleanly and replays to a full ledger.
+- `test_project_identity_cannot_be_claimed_by_another_tenant[postgres]`
+  — the assertion this session used to decide that the store was right and
+  `test_sota_16` was wrong. It had only ever run on SQLite.
+
+#### Full suite on the Mac, with the postgres profile live
+
+`pytest tests/` → **11 failed, 1626 passed, 26 skipped** (58.31s), 1663 collected.
+
+The skip count confirms the postgres profile really is executing: the cloud run
+skipped 52, of which exactly 26 were the postgres parameterisations. On the Mac
+with a live server those 26 run, and 26 non-postgres skips remain. 1626 + 11 + 26
+= 1663.
+
+**None of the 11 failures belongs to this session's change set.** Two independent
+checks: each of the six affected test files imports zero of the modules changed
+here (`api`, `parity_api`, `slo_service`, `parity_composition*`), and all 11
+pass in the cloud container *with* those changes in place. They are
+platform-and-privilege deltas between darwin-as-user and linux-as-root:
+
+| Category | Count | Tests | Mechanism |
+| --- | ---: | --- | --- |
+| root bypasses file permissions | 4 | `test_cas` ×3, `test_checkpoint` ×1 | `cas.py:45` sets `BLOB_MODE = 0o444` and `put_bytes` chmods the blob. The tests simulate corruption by writing over it. uid 0 in the container ignores the mode bit; a normal macOS user does not, so the test errors on its own setup line |
+| **deliberate tripwires firing correctly** | 2 | `test_the_xcode_swift_adapter_holds_without_a_swift_toolchain`, `test_the_flutter_pub_adapter_holds_without_a_flutter_sdk` | Not failures. `test_native_toolchains.py:478-480` and `:489-491` skip when the tool is absent and **`pytest.fail` when it appears** — "swiftc appeared: replace this skip with a real Xcode/SwiftPM certification". The Mac has the pinned Swift 6.3.3 and Flutter 3.44.1, so the tripwire is doing its job: two `NOT_RUN`s are now closable on this machine |
+| Linux-only | 2 | `test_overlay` ×2 | macOS has no kernel overlayfs, and `/home` is an autofs mount — of the seven denied host paths only the `/home/someone` case fails |
+| timing / measurement sensitivity | 2 | `test_coordinator::test_probe_timeout_...`, `test_observability::test_latency_slo_breach_is_reported` | The coordinator test sleeps 0.05s in a probe and asserts `elapsed < 0.04` (`tests/test_coordinator.py:409,417`) — a 40 ms wall-clock budget that a loaded machine will miss |
+| still to categorise | 1 | `test_msbuild_incremental_build_through_the_sandboxed_nuget_cache` | Not yet examined |
+
+**Methodological hole this exposes in the cloud baseline.** The container runs as
+uid 0. Any assertion that depends on file permissions being *enforced* is vacuous
+there. The 1600-passed cloud figure therefore carries no weight for that class of
+assertion, and `BLOB_MODE = 0o444` currently has no test that holds on either
+platform — the only four tests that touch it do so by accident, and only as
+failures. This is the same lesson as the `#1 PHP inventory` case in a new shape:
+not "the cloud cannot run this segment" but "the cloud runs it without meaning".
+
+**The skip guard is DSN-presence, not liveness.** `test_metadata_store_contract.py:73`
+reads `if not POSTGRES_DSN`. A DSN pointing at a dead server therefore turns 26
+skips into 26 *errors* rather than skips. Failing loud is the right behavior, but
+it means a misconfigured CI DSN yields a wall of errors rather than "postgres was
+not covered" — two very different things on a report, and worth knowing which one
+you are looking at.
+
+Still local, self-attested engineering evidence: one developer machine, one
+server, one run. Not production, not multi-host, not independently verified.
+
+### NOT_RUN
+
+Live PostgreSQL; real OpenAI / Anthropic / self-hosted provider execution; the
+Mac pinned-toolchain gate; schema-aware OpenAPI parsing (PyYAML is not a
+dependency and cannot be installed, so the contract tests scan the document with
+indentation-anchored text matching, as the pre-existing tests in that file
+already do); concurrent composition execution.

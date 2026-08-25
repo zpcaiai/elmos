@@ -234,3 +234,52 @@ The local maximum remains `READY_FOR_EXTERNAL_GATE`, and only after every
 required scenario has immutable raw evidence, replay metadata, authorization
 and an independent verifier. The current repository state does not meet that
 condition and remains `NOT_CERTIFIED`.
+
+## 2026-08-25 — BC-13 / BC-14 / BC-15 code state
+
+Fifteen files changed: 4 new, 11 modified. Verified against the pristine
+baseline with `diff -rq` — exactly this set, no sixteenth file. `migrations/**`
+was **not** touched (all 16 files were already byte-identical to their packaged
+mirrors; confirmed with `cmp`).
+
+**New**
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `src/elmos_build_cache/parity_composition_wiring.py` | 578 | The adapters binding the composition to real collaborators. Kept out of both `api.py` and `parity_composition.py`: the composition is deliberately dependency-free (it imports only `canonical`, `errors`, `security`), and `api.py` is routing/idempotency/error-mapping only. A sibling module named after the seam keeps both pure and lets a non-HTTP driver reuse the adapters |
+| `tests/test_slo_service.py` | 1924 | 52 tests, BC-13 |
+| `tests/test_parity_composition.py` | 1967 | 230 tests, BC-14 composition |
+| `tests/test_api_composition_wiring.py` | 1275 | 42 tests, BC-14 wiring |
+
+**Modified**
+
+- `src/elmos_build_cache/slo_service.py` — dependency reference edges moved to a
+  derived namespace `f"{source_kind}-dependency"`. Before this, the proposal's
+  identity key resolved to three digests (because `artifact_targets` selects on
+  `(tenant_id, source_kind, source_id)` and ignores `ref_kind`), so `_proposal()`
+  rejected every proposal the service had just produced and the whole
+  install/advance/rollback path was unreachable. Plus one pre-existing `I001`
+  import-order fix in the same file.
+- `src/elmos_build_cache/api.py` — `PromptCacheController` injected into
+  `CacheControlPlane`; two new authenticated + idempotent provider routes with
+  ownership preflight ahead of the global idempotency claim; the composition
+  reachable from `lookup_action` and `_serving_call`, with `_direct_serving_call`
+  holding the old body verbatim for the unwired path; `served = result.hit and
+  (reused is None or reused)` so `reused` can only ever subtract; and a corrected
+  comment on why serving routes cannot skip their operation (the old one gave a
+  false reason — see `BUILD_CACHE_EVIDENCE.md`).
+- `src/elmos_build_cache/parity_api.py` — `_enum` and `_strict_object` no longer
+  echo caller-supplied text. They report shape instead: the closed server-owned
+  `permitted` / `allowed` set, a bounded `unknown_count`, and `missing` as a
+  subset of the server's own `required`. None of the three is an echo, and a
+  caller can still name its offending keys by subtracting `allowed` from its own
+  request.
+- `openapi/cache-parity-control-plane.openapi.yaml` and its packaged mirror
+  `src/elmos_build_cache/_data/openapi/…` — two operations added, kept
+  byte-identical to each other.
+- `tests/test_api.py`, `tests/test_metadata_store_contract.py`,
+  `tests/test_parity_api.py`, `tests/test_parity_contract_assets.py`,
+  `tests/test_provider_prompt_runtime.py`, `tests/test_sota_acceptance.py`.
+
+**Not touched:** `parity_composition.py`, `prompt_cache.py`, `cli.py`,
+`migrations/**`, `tests/test_e2e.py`.

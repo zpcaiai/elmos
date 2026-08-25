@@ -500,7 +500,6 @@ def run_batch(
         "unattempted_count": unattempted,
         "status_counts": counts,
         "units": outcomes,
-        "react_project_descriptor": declared_react_descriptor,
         "external_verification_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
         "limitations": [

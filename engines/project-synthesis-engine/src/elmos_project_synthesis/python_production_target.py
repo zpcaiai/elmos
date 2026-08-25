@@ -51,7 +51,7 @@ def _production_model_field(
                 constraints[names[str(predicate["operator"])]] = predicate["value"]
     relation_targets_id = any(
         relation.source == entity and relation.source_field == field.name and relation.target_field == "id"
-        for relation in request.relations
+        for relation in request.canonical_relations
     )
     type_name = "UUID" if relation_targets_id else _python_type(field)
     if constraints:

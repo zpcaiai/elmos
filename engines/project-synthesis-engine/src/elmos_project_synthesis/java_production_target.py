@@ -347,7 +347,7 @@ def _uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
     """
     return {
         (relation.source, relation.source_field)
-        for relation in request.relations
+        for relation in request.canonical_relations
         if relation.source_field is not None and relation.target_field == "id"
     }
 
@@ -370,7 +370,7 @@ def _relation_parents(request: SynthesisRequest, entity_name: str) -> list[tuple
     """
     return [
         (relation.source_field, relation.target)
-        for relation in request.relations
+        for relation in request.canonical_relations
         if relation.source == entity_name
         and relation.source_field is not None
         and relation.target_field == "id"

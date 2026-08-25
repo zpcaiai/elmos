@@ -43,7 +43,7 @@
       "account_model": "approved-isolated-project-required",
       "iac_tool": {
         "name": "gcloud-cli",
-        "version": "NOT_INSTALLED_2026-07-29"
+        "version": "NOT_INSTALLED_2026-08-09"
       },
       "runtime": {
         "name": "cloud-run",
@@ -69,15 +69,17 @@
     "local_container_build_pass_rate": 1.0,
     "local_health_pass_rate": 1.0,
     "local_cleanup_pass_rate": 1.0,
+    "local_deployment_control_pass_rate": 1.0,
     "target_plan_pass_rate": 0,
     "target_apply_pass_rate": 0
   },
   "evidence_refs": [
     "certification/local-container-evidence.json",
+    "certification/local-control-evidence.json",
     "certification/external-tooling-status.json"
   ],
   "blockers": [
-    "NOT_RUN: gcloud is not installed",
+    "NOT_RUN: gcloud was not installed when rechecked on 2026-08-09",
     "NOT_RUN: no approved isolated Google Cloud project, billing owner, or short-lived credential",
     "NOT_RUN: provider plan/apply, authenticated runtime, rollback, cleanup, drift, and cost checks",
     "NOT_CERTIFIED: local container evidence cannot certify Cloud Run"

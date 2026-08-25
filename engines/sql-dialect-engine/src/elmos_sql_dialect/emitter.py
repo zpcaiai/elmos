@@ -15,8 +15,10 @@ from .models import (
     AddColumn,
     AddConstraint,
     AlterTable,
+    NULLARY_CHECK_OPERATORS,
     CheckComparison,
     CheckConstraint,
+    CheckOperator,
     Column,
     Dialect,
     DialectError,
@@ -29,12 +31,26 @@ from .models import (
 )
 
 
+def _render_literal(value: str, is_string: bool) -> str:
+    return f"'{value.replace(chr(39), chr(39) * 2)}'" if is_string else value
+
+
 def _render_check_comparison(comparison: CheckComparison) -> str:
-    literal = (
-        f"'{comparison.literal.replace(chr(39), chr(39) * 2)}'"
-        if comparison.literal_is_string
-        else comparison.literal
-    )
+    operator = comparison.operator
+    if operator in NULLARY_CHECK_OPERATORS:
+        return f"{comparison.column} {operator.value}"
+    if operator is CheckOperator.IN:
+        members = ", ".join(
+            _render_literal(item.value, item.is_string) for item in comparison.literals
+        )
+        return f"{comparison.column} IN ({members})"
+    if operator is CheckOperator.BETWEEN:
+        low, high = comparison.literals
+        return (
+            f"{comparison.column} BETWEEN {_render_literal(low.value, low.is_string)}"
+            f" AND {_render_literal(high.value, high.is_string)}"
+        )
+    literal = _render_literal(comparison.literal, comparison.literal_is_string)
     return f"{comparison.column} {check_operator_sql(comparison.operator)} {literal}"
 
 
@@ -100,9 +116,67 @@ def _render_foreign_key_clause(fk: ForeignKey, dialect: Dialect) -> str:
     return f"{base} {actions}" if actions else base
 
 
+#: Which targets can express `IF NOT EXISTS`, per statement kind.
+#:
+#: The two maps differ, and that asymmetry is the whole reason this is a table
+#: rather than one boolean: MySQL has `CREATE TABLE IF NOT EXISTS` but has no
+#: `CREATE INDEX IF NOT EXISTS` at all.
+#:
+#: Oracle is refused for both. Oracle only grew the syntax in 23ai, and
+#: `Dialect` carries no version, so the engine cannot tell a 23ai target from
+#: a 19c one. Refusing is the same discipline the rest of this repository
+#: applies to unpinned versions: an exact tuple or nothing.
+#:
+#: SQL Server is refused for both -- it has `DROP ... IF EXISTS` but no
+#: `CREATE ... IF NOT EXISTS` in any shipping version. The usual workaround
+#: (`IF NOT EXISTS (SELECT ... FROM sys.tables) BEGIN ... END`) is a different
+#: statement with different transactional and permission behaviour, so
+#: synthesising one here would be this engine inventing semantics rather than
+#: translating them.
+_IF_NOT_EXISTS_TABLE_SUPPORT: frozenset[Dialect] = frozenset({Dialect.POSTGRES, Dialect.MYSQL})
+_IF_NOT_EXISTS_INDEX_SUPPORT: frozenset[Dialect] = frozenset({Dialect.POSTGRES})
+
+
+def _if_not_exists_clause(
+    requested: bool,
+    dialect: Dialect,
+    *,
+    object_kind: str,
+    object_name: str,
+    supported: frozenset[Dialect],
+) -> str:
+    """Render ` IF NOT EXISTS`, or fail closed when the target cannot say it.
+
+    Dropping the modifier would compile and would look like a success, and the
+    difference only shows up the second time the migration runs: the source
+    statement is a no-op, the emitted one is an error. That is a behaviour
+    change, so it fails closed like every other one in this profile.
+    """
+
+    if not requested:
+        return ""
+    if dialect in supported:
+        return " IF NOT EXISTS"
+    raise DialectError(
+        "CERTIFIED_DDL_IF_NOT_EXISTS_UNSUPPORTED_BY_TARGET",
+        f"the source declares CREATE {object_kind} IF NOT EXISTS for {object_name!r}, and "
+        f"{dialect.value} has no equivalent spelling. Emitting it without the modifier would "
+        "change what a re-run does -- a no-op in the source, an error in the target -- so the "
+        "translation fails closed instead. Remove the modifier at the source, or guard the "
+        "statement outside the DDL.",
+    )
+
+
 def emit_create_table(table: Table, dialect: Dialect) -> str:
     if dialect is Dialect.MYSQL:
         _require_mysql_auto_increment_key(table)
+    existence = _if_not_exists_clause(
+        table.if_not_exists,
+        dialect,
+        object_kind="TABLE",
+        object_name=table.name,
+        supported=_IF_NOT_EXISTS_TABLE_SUPPORT,
+    )
     lines: list[str] = [_render_column(c, dialect) for c in table.columns]
 
     if table.primary_key:
@@ -122,12 +196,19 @@ def emit_create_table(table: Table, dialect: Dialect) -> str:
         lines.append(f"CONSTRAINT {check.name} {clause}" if check.name else clause)
 
     body = ",\n    ".join(lines)
-    return f"CREATE TABLE {table.name} (\n    {body}\n)"
+    return f"CREATE TABLE{existence} {table.name} (\n    {body}\n)"
 
 
 def emit_create_index(index: Index, dialect: Dialect) -> str:
     keyword = "CREATE UNIQUE INDEX" if index.unique else "CREATE INDEX"
-    return f"{keyword} {index.name} ON {index.table} ({', '.join(index.columns)})"
+    existence = _if_not_exists_clause(
+        index.if_not_exists,
+        dialect,
+        object_kind="INDEX",
+        object_name=index.name,
+        supported=_IF_NOT_EXISTS_INDEX_SUPPORT,
+    )
+    return f"{keyword}{existence} {index.name} ON {index.table} ({', '.join(index.columns)})"
 
 
 def _render_check_clause(check: CheckConstraint) -> str:

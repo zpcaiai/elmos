@@ -72,6 +72,34 @@ Agent 与执行者共享同一环境和同一意图，不满足独立性。Agent
 - 生成线：`uv --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py`
 - Spring 线：`ELMOS_MAVEN_EXECUTABLE=<path> python3 scripts/batch30/run_spring_boot_reference.py --repo-root .`
 
+## 提交产物的机器可校验规格
+
+在本文档之前，`schemas/test-suite/` 有 9 个 schema，覆盖 case、result、coverage、
+environment、waiver —— **唯独没有覆盖认证提交本身**。而 `run_strict_test_gate.py`
+恰恰接受 `--certification-request`、`--signature`、`--trust-store` 三个输入。
+对比之下 `schemas/mature-product/` 与 `schemas/test-suite-b38-45/` 都有对应 schema，
+要求最严的 Batch 1-37 套件反而没有。后果是独立验证者**无法在提交前自检**，
+只能把材料丢给 gate 试错。
+
+现已补上，两者都从 gate 代码反推：
+
+- [`schemas/test-suite/certification-request.schema.json`](../schemas/test-suite/certification-request.schema.json)
+- [`schemas/test-suite/trust-store.schema.json`](../schemas/test-suite/trust-store.schema.json)
+
+## 信任锚有效性矩阵的回归覆盖
+
+`tests/test-suite/test_toolkit.py` 已经覆盖了认证路径的主干：接受完整独立签名包，
+拒绝 NOT_RUN、未签名的合成 pass、被篡改的原始证据、伪造请求、自验证和非独立语料。
+
+但 `verify_certification_request` 内部的**信任锚有效性分支**此前没有任何测试 ——
+锚被吊销、缺 `independent-certifier` 角色、算法不是 rsa-sha256、超出有效期、
+公钥摘要不匹配、签名者根本没有锚、请求位于套件之外、请求过期。
+这些分支每一个判错都意味着**一个本不该被认可的签名被静默接受**。
+
+`make test-suite-certification-rehearsal` 用一次性密钥在临时目录里把这 8 种篡改
+连同正向路径一起打一遍（10/10），已并入 `make test-suite-check` 与 CI。
+它**不授予任何认证**，只保证这批分支不会悄悄腐坏。
+
 ## 建议的最小起步
 
 不要试图一次推进 98 个 gate。**选一条路线打穿**，验证整套证据体系真的能往前走：

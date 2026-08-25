@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch105-108/conservative-release-status.schema.json",
+  "title": "Batch 105-108 conservative release status",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "decision",
+    "blockers",
+    "boundary_state_layers",
+    "worktrees",
+    "scm_draft_pull_request",
+    "local_engineering_evidence",
+    "production_ready",
+    "certified"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "decision": { "enum": ["BLOCKED", "READY_FOR_EXTERNAL_GATE"] },
+    "production_ready": { "const": false },
+    "certified": { "const": false },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "boundary_state_layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image_build_external_boundaries",
+        "release_closure_effective_boundaries"
+      ],
+      "properties": {
+        "image_build_external_boundaries": { "$ref": "#/$defs/imageBoundaries" },
+        "release_closure_effective_boundaries": {
+          "$ref": "#/$defs/closureBoundaries"
+        }
+      }
+    },
+    "worktrees": {
+      "type": "object",
+      "required": ["primary", "isolated_image_source"],
+      "properties": {
+        "primary": { "$ref": "#/$defs/worktree" },
+        "isolated_image_source": { "$ref": "#/$defs/worktree" }
+      }
+    },
+    "scm_draft_pull_request": {
+      "type": "object",
+      "required": ["number", "draft", "head_sha", "remote_ci"],
+      "properties": {
+        "draft": { "const": true },
+        "head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "remote_ci": {
+          "type": "object",
+          "required": [
+            "status",
+            "claimed_passed",
+            "failure_count",
+            "pending_count",
+            "success_count"
+          ],
+          "properties": {
+            "status": { "enum": ["NOT_RUN", "IN_PROGRESS", "FAILED", "PASSED"] },
+            "claimed_passed": { "type": "boolean" },
+            "failure_count": { "type": "integer", "minimum": 0 },
+            "pending_count": { "type": "integer", "minimum": 0 },
+            "success_count": { "type": "integer", "minimum": 0 }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "status": { "const": "PASSED" } } },
+              "then": {
+                "properties": {
+                  "claimed_passed": { "const": true },
+                  "failure_count": { "const": 0 },
+                  "pending_count": { "const": 0 }
+                }
+              },
+              "else": { "properties": { "claimed_passed": { "const": false } } }
+            }
+          ]
+        }
+      }
+    },
+    "local_engineering_evidence": {
+      "type": "object",
+      "required": ["v63_flyway_testcontainers"],
+      "properties": {
+        "v63_flyway_testcontainers": {
+          "type": "object",
+          "required": [
+            "status",
+            "scope",
+            "production_equivalent",
+            "promotes_external_boundary",
+            "certifies_release"
+          ],
+          "properties": {
+            "status": { "enum": ["PASSED", "BLOCKED"] },
+            "scope": { "const": "LOCAL_ENGINEERING_INTEGRATION" },
+            "production_equivalent": { "const": false },
+            "promotes_external_boundary": { "const": false },
+            "certifies_release": { "const": false }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "boundaryNames": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "REAL_CLOUD_PROVIDER",
+        "SCM_DRAFT_PULL_REQUEST",
+        "CUSTOMER_ACCEPTANCE",
+        "INDEPENDENT_REVIEW",
+        "PRODUCTION_DEPLOYMENT",
+        "EXTERNAL_CERTIFICATION"
+      ],
+      "properties": {
+        "REAL_CLOUD_PROVIDER": { "type": "string" },
+        "SCM_DRAFT_PULL_REQUEST": { "type": "string" },
+        "CUSTOMER_ACCEPTANCE": { "type": "string" },
+        "INDEPENDENT_REVIEW": { "type": "string" },
+        "PRODUCTION_DEPLOYMENT": { "type": "string" },
+        "EXTERNAL_CERTIFICATION": { "type": "string" }
+      }
+    },
+    "imageBoundaries": {
+      "allOf": [
+        { "$ref": "#/$defs/boundaryNames" },
+        {
+          "properties": {
+            "REAL_CLOUD_PROVIDER": { "const": "NOT_RUN" },
+            "SCM_DRAFT_PULL_REQUEST": { "const": "NOT_RUN" },
+            "CUSTOMER_ACCEPTANCE": { "const": "NOT_RUN" },
+            "INDEPENDENT_REVIEW": { "const": "NOT_RUN" },
+            "PRODUCTION_DEPLOYMENT": { "const": "NOT_RUN" },
+            "EXTERNAL_CERTIFICATION": { "const": "NOT_RUN" }
+          }
+        }
+      ]
+    },
+    "closureBoundaries": {
+      "allOf": [
+        { "$ref": "#/$defs/boundaryNames" },
+        {
+          "properties": {
+            "REAL_CLOUD_PROVIDER": { "const": "NOT_RUN" },
+            "SCM_DRAFT_PULL_REQUEST": {
+              "const": "EXECUTED_AWAITING_INDEPENDENT_VERIFICATION"
+            },
+            "CUSTOMER_ACCEPTANCE": { "const": "NOT_RUN" },
+            "INDEPENDENT_REVIEW": { "const": "NOT_RUN" },
+            "PRODUCTION_DEPLOYMENT": { "const": "NOT_RUN" },
+            "EXTERNAL_CERTIFICATION": { "const": "NOT_RUN" }
+          }
+        }
+      ]
+    },
+    "worktree": {
+      "type": "object",
+      "required": ["path", "head_sha", "clean", "dirty_entry_count", "status_sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "clean": { "type": "boolean" },
+        "dirty_entry_count": { "type": "integer", "minimum": 0 },
+        "status_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

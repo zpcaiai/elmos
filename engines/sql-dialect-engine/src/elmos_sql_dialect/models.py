@@ -118,6 +118,40 @@ class CheckOperator(str, Enum):
     LE = "<="
     GT = ">"
     GE = ">="
+    # Null tests and set/range membership. Every one of the four certified
+    # dialects spells these identically and means the same thing by them,
+    # which is why they need no per-dialect rendering while LIKE and regex
+    # (which do diverge) stay out.
+    IS_NULL = "IS NULL"
+    IS_NOT_NULL = "IS NOT NULL"
+    IN = "IN"
+    BETWEEN = "BETWEEN"
+
+
+#: Operators whose right-hand side is a single literal. The rest carry either
+#: no operand (the null tests) or several (`IN`, `BETWEEN`), which is why
+#: `CheckComparison` has both `literal` and `literals`.
+BINARY_CHECK_OPERATORS: frozenset[CheckOperator] = frozenset(
+    {
+        CheckOperator.EQ,
+        CheckOperator.NE,
+        CheckOperator.LT,
+        CheckOperator.LE,
+        CheckOperator.GT,
+        CheckOperator.GE,
+    }
+)
+NULLARY_CHECK_OPERATORS: frozenset[CheckOperator] = frozenset(
+    {CheckOperator.IS_NULL, CheckOperator.IS_NOT_NULL}
+)
+
+
+@dataclass(frozen=True)
+class CheckLiteral:
+    """One literal operand, carrying whether it needs quoting on emission."""
+
+    value: str
+    is_string: bool = False
 
 
 @dataclass(frozen=True)
@@ -129,8 +163,37 @@ class CheckComparison:
 
     column: str
     operator: CheckOperator
-    literal: str
+    #: Right-hand side for the binary operators. Empty for the null tests and
+    #: unused by `IN` / `BETWEEN`, which use `literals` instead.
+    literal: str = ""
     literal_is_string: bool = False
+    #: Operands for `IN` (one or more) and `BETWEEN` (exactly two, low then
+    #: high). Empty for every other operator.
+    literals: tuple[CheckLiteral, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.operator in NULLARY_CHECK_OPERATORS:
+            if self.literal or self.literals:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                    f"{self.operator.value} takes no operand",
+                )
+        elif self.operator is CheckOperator.IN:
+            if not self.literals:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_CHECK", "IN requires at least one literal"
+                )
+        elif self.operator is CheckOperator.BETWEEN:
+            if len(self.literals) != 2:
+                raise DialectError(
+                    "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                    "BETWEEN requires exactly two literals (low, high)",
+                )
+        elif not self.literal and not self.literal_is_string:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                f"{self.operator.value} requires a right-hand literal",
+            )
 
 
 class CheckConnector(str, Enum):
@@ -162,6 +225,12 @@ class Table:
     unique_constraints: tuple[tuple[str, ...], ...] = field(default_factory=tuple)
     foreign_keys: tuple[ForeignKey, ...] = ()
     check_constraints: tuple[CheckConstraint, ...] = ()
+    #: `CREATE TABLE IF NOT EXISTS`. Part of the model rather than dropped at
+    #: the door, because it is not decoration: it decides whether re-running a
+    #: migration is a no-op or an error. Not every target can express it, and
+    #: `emitter` fails closed rather than emitting a statement with different
+    #: rerun behaviour than the source had.
+    if_not_exists: bool = False
 
     def __post_init__(self) -> None:
         if not self.columns:
@@ -198,6 +267,9 @@ class Index:
     table: str
     columns: tuple[str, ...]
     unique: bool = False
+    #: `CREATE INDEX IF NOT EXISTS`. Narrower than the table form -- MySQL has
+    #: no such spelling for indexes even though it has one for tables.
+    if_not_exists: bool = False
 
     def __post_init__(self) -> None:
         if not self.columns:

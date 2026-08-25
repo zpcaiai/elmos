@@ -1376,6 +1376,7 @@ def test_repository_pending_languages_are_refused_by_the_repository_surface(tmp_
 
     from elmos_polyglot_route.models import (
         PENDING_REPOSITORY_LANGUAGES,
+        REPOSITORY_SURFACE_LANGUAGES,
         RouteError,
         is_routed_pair,
     )

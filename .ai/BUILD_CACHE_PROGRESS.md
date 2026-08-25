@@ -15,9 +15,11 @@
 - **Current Git note:** this progress synchronization is after the implementation
   commit and remains uncommitted while the shared Git window is owned by the
   CAS/Snapshot/EI task
-- **Overall state:** `PARTIAL` — the imported package and most local runtime
-  surfaces are implemented, but the durable SLO service, five-layer composition
-  and provider production API chain still require the work recorded below
+- **Overall state:** `PARTIAL` — BC-13/14/15/16 closed on 2026-08-25 (durable SLO
+  service, five-layer composition and wiring, provider production chain). What
+  remains open is external, not code: live PostgreSQL, real providers, images,
+  fleet, representative corpus and rollout (BC-18), plus two pre-existing
+  security defects on BC-10 routes that need the owner's decision
 - **External evidence:** `NOT_RUN`
 - **Certification:** `NOT_CERTIFIED`
 
@@ -50,33 +52,61 @@ provider, production, independent-verifier or certification evidence.
 | BC-10 | Durable parity metadata plus the original seven-operation API/CLI surface | `COMPLETE_VERIFIED` | SQLite reopen/idempotency/tenant slices passed; parity API 11 tests and combined API/store slice 36 tests passed; CLI slice 6 tests passed | This closes only the original seven operations, not BC-15's provider production chain |
 | BC-11 | P0 tenant/project/principal isolation across cache mutations | `COMPLETE_VERIFIED` | Fail-closed action-cache, GC and metadata checks; 64 targeted tests were observed; foreign identifiers do not become existence oracles | Extend the same pre-idempotency project ownership rule to BC-15 provider mutations |
 | BC-12 | Trusted parity-harness execution service | `COMPLETE_VERIFIED` | `parity_harness_service.py`; closed request vocabulary, immutable allowlist, Ed25519 binding, CAS ownership/reference replay and durable idempotency; 4 tests passed; Ruff and strict mypy clean | API/CLI wiring was intentionally not part of this task; external execution remains `NOT_RUN` |
-| BC-13 | Durable tenant-scoped SLO policy/proposal/rollout state machine | `IMPLEMENTED_NOT_VERIFIED` | `slo_service.py` plus SQLite `0007` and PostgreSQL `0009`, mirrored under `_data`; Python/JSON syntax checks passed before commit | Create `test_slo_service.py`; run transition, rollback, concurrency, isolation, migration, Ruff and strict mypy checks |
-| BC-14 | Signed five-layer cache composition | `IMPLEMENTED_NOT_VERIFIED` | `parity_composition.py` defines prompt/context/action/environment/affinity layers and fail-closed composition types; Python syntax check passed before commit | Create `test_parity_composition.py`; verify authorization, deadline, lookup/restore/populate/outcome/miss hooks and the rule that only an exact Action hit skips execution; wire the composition |
-| BC-15 | Provider production API chain and prompt-safe durable idempotency | `PARTIAL` | `ParityApiService.prepare_provider_prompt` and `record_provider_usage` exist with direct provider-runtime tests | Inject `PromptCacheController` into `CacheControlPlane`; add authenticated/idempotent routes and OpenAPI operations; preflight project ownership before global idempotency; ensure raw prompt payloads never enter durable idempotency responses; add replay/drift, cross-tenant/principal, missing-controller and counter-mismatch tests |
-| BC-16 | Consolidated verification pack and evidence reconciliation | `PARTIAL` | Narrow checkpoints are recorded without summing overlapping counts; staged Python and JSON parse checks passed; protected-path allowlist passed | Run the combined current-HEAD narrow suite after the shared resource lock; refresh an immutable command/result receipt; reconcile BC-13 through BC-15 results |
+| BC-13 | Durable tenant-scoped SLO policy/proposal/rollout state machine | `COMPLETE_VERIFIED` | `tests/test_slo_service.py` (1924 lines, **52 tests**) drives real SQLite + real CAS + real Ed25519 through public entry points: all 9 durable actions and the full `SHADOW→FULL` walk; operator/automatic/approval-expiry rollback; 18 illegal transitions asserted on `ErrorCode`, never message text; a real two-thread race (one store per thread) reopened to check what persisted; tenant isolation compared as a complete refusal shape so a wrong tenant is byte-identical to an absent one; migration mirrors byte-compared and the `0007` schema rebuilt from `0001..0006` and checked against columns *derived* from the SQL the service actually issues; write/close/reopen durability plus a journal-tamper case. **A real defect was found and fixed** — `_persist_document` wrote dependency edges under the proposal's own identity key, and `artifact_targets` ignores `ref_kind`, so the identity key resolved to 3 digests and `_proposal()` rejected every proposal the service had just produced: `install()`/`advance()`/`rollback()` were unreachable dead code. Reverting the one-line fix fails 29 of the 52 | **Live PostgreSQL 17.5 (Homebrew) executed on the Mac 2026-08-25: `65 passed, 0 skipped` (3.80s), CPython 3.12.12, psycopg 3.3.4.** `0009_slo_control.sql` ran against a real server for the first time — composite `(tenant_id, project_id)` FK with `RESTRICT/RESTRICT`, migration-failure rollback and replay, and the cross-tenant project-claim refusal all hold there, not only in the SQL text. Still one machine, one server, one run: local self-attested engineering evidence, not production, multi-host or independently verified |
+| BC-14 | Signed five-layer cache composition | `COMPLETE_VERIFIED` | `tests/test_parity_composition.py` (1967 lines, **230 tests**) covers authorization (cross-tenant and cross-principal separately), deadline refusal before any layer is consulted, all five hooks per layer, signature binding and replay refusal, and the closed refusal vocabulary. The central invariant is exhaustive: all 15 non-empty subsets of the four non-Action layers still execute, and 14 distinct Action-layer defects still execute **with the other four layers hot**. Wiring landed as `src/elmos_build_cache/parity_composition_wiring.py` (578 lines) plus `tests/test_api_composition_wiring.py` (1275 lines, **42 tests**); a default control plane is byte-identical to before (`_direct_serving_call` is the old body verbatim, diff-verified). Defects found and fixed: the Action Cache was looked up twice per request (now memoised); and — found by the adversarial pass, not by the wiring author — `served = result.hit if reused is None else reused` made the subset property *inferred* rather than enforced, so a `layer_ports[ACTION]` override (which replaces the port and discards the per-request probe) returned `200 hit:true, result:null` on a cold cache. Now `served = result.hit and (reused is None or reused)`, and an ACTION port override is refused at wiring construction | The four non-Action layers are an injection seam defaulting to out-of-scope `BYPASS`: `ParityRepository` exposes no scope-keyed read for context or affinity, and the prompt/environment getters need keys no current route carries. No layer writers are wired, so no route populates on the serving path. `CompositionResult` itself is unsigned — `to_dict()` states `certification: NOT_CERTIFIED`. Concurrency is `NOT_RUN` |
+| BC-15 | Provider production API chain and prompt-safe durable idempotency | `COMPLETE_VERIFIED` (local) | `PromptCacheController` injected on the `serving_authorizer` convention — absence stays absence, and a plane without it fails closed on both routes with the package's own `RemoteUnavailable`, never a `None` dereference. Operations `prepareProviderPrompt` (`POST /cache/provider-prompts/prepare`) and `recordProviderCacheUsage` (`POST /cache/provider-prompts/usage`), both under `IdempotencyKey` and `gatewayMutualTLS`, with `openapi/` and its `_data` mirror byte-identical. Ownership preflight before the global idempotency claim is proven **empirically**: moving it after the claim fails exactly two tests — a refused request must leave zero `idempotency_records` rows, and a foreign-project probe must answer identically for a used and an unused key (swapped, it answers `409` vs `404`, which alone enumerates keys). Prompt-safety: `_content_free_provider_prompt` strips `provider_request.payload` at the control-plane boundary; reverting it fails 12 tests. Replay proved to skip re-execution by advancing the `ManualClock` an hour between call and replay | Real provider execution is `NOT_RUN` — no network, and no fake provider was built; both operations return `provider_execution_performed: false` and `/status` still reports `external_provider_evidence: NOT_RUN`. Postgres-backed idempotency is `NOT_RUN`. **Two pre-existing defects reproduced and deliberately not fixed** (they belong to closed row BC-10 and to `parity_store` semantics, and changing them moves error precedence that other tests pin) — see findings §5 |
+| BC-16 | Consolidated verification pack and evidence reconciliation | `COMPLETE_VERIFIED` (local) | Combined post-merge suite run once on the merged tree rather than summed from per-row runs: **1600 passed, 52 skipped, 0 failed** (116.40s), `ruff` and `mypy --strict` clean apart from the two pre-existing items. Change set verified against the pristine baseline with `diff -rq`: exactly 15 files (4 new, 11 modified), no 16th, `migrations/**` untouched. An independent adversarial pass attacked six closing claims and **refuted one**, partially confirmed two, and found four problems no author reported; all in-scope findings are fixed and each fix is proven to bite by reverting it | Every number here is cloud-container engineering evidence (CPython 3.11.15, aarch64-linux). It is not Mac, provider, production, independent-verifier or certification evidence. BC-18 stays `NOT_RUN`; BC-19 stays `NOT_CERTIFIED` |
 | BC-17 | Scoped Git closeout | `COMPLETE_VERIFIED` | Commit `73c68c0776031a8082a4feed7e1a598b71b330c2` pushed to `perf/analyzer-build-cache-and-batching`; local/tracking/remote SHA matched; index empty at closeout | Commit this later progress-only synchronization in the next authorized Git window |
 | BC-18 | Live PostgreSQL, providers, images, fleet, representative corpus and rollout | `NOT_RUN` | No production-equivalent receipt exists for the v1.2 additions | Execute only with exact environment/provider/corpus bindings, authorization and an independent verifier |
 | BC-19 | v1.2 parity certification | `NOT_CERTIFIED` | Missing and unverified evidence fails closed; local implementation cannot certify Codex/Claude equivalence | Use the governing external gate only after every required immutable evidence role exists |
 
 ## Current execution order
 
-1. Finish BC-13 tests and validate the SQLite/PostgreSQL migration mirrors.
-2. Finish BC-14 tests and integrate the five-layer composition without allowing
-   prompt/context/environment/affinity hits to skip model/compiler/test work.
-3. Finish BC-15 provider routes, prompt-safe idempotent replay and OpenAPI.
-4. Run BC-16 focused verification, then update every affected row in this
-   ledger and the companion evidence files from observed results only.
-5. Keep BC-18 `NOT_RUN` and BC-19 `NOT_CERTIFIED` until exact external evidence
+1. ~~Finish BC-13 tests and validate the SQLite/PostgreSQL migration mirrors.~~
+   **DONE 2026-08-25.**
+2. ~~Finish BC-14 tests and integrate the five-layer composition without allowing
+   prompt/context/environment/affinity hits to skip model/compiler/test work.~~
+   **DONE 2026-08-25.**
+3. ~~Finish BC-15 provider routes, prompt-safe idempotent replay and OpenAPI.~~
+   **DONE 2026-08-25.**
+4. ~~Run BC-16 focused verification, then update every affected row in this
+   ledger and the companion evidence files from observed results only.~~
+   **DONE 2026-08-25.**
+5. Re-run the suite on the Mac with the exact pinned toolchain and with
+   `psycopg` installed, so the 26 skipped postgres parameterisations actually
+   execute. That segment is where a cross-layer contradiction is most likely to
+   hide — see the `#1 PHP inventory` lesson in `CODE_LEVEL_BACKLOG.md`.
+6. **Decide on two reproduced security defects that were deliberately left
+   alone** because they change behavior of closed row BC-10 and of
+   `parity_store` semantics that other tests pin — see
+   `.ai/FINDINGS-2026-08-25-build-cache-bc13-bc16.md` §5:
+   (a) `compile_prompt_prefix` is a cross-tenant project existence oracle and
+   lets any tenant permanently squat any unused global `project_id`;
+   (b) all four BC-10 mutating routes leak an idempotency-key existence oracle
+   and write durable state for requests that were never authorized.
+7. Keep BC-18 `NOT_RUN` and BC-19 `NOT_CERTIFIED` until exact external evidence
    exists.
 
 ## Active claims (2026-08-25)
 
 > Claim protocol per `.ai/CODE_LEVEL_BACKLOG.md`: write the claim before touching code.
 
-- `BC-13` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
-- `BC-14` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
-- `BC-15` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
-- `BC-16` — IN-PROGRESS by cowork-claude-20260825 @ 03:10 Asia/Shanghai
+- `BC-13` — RELEASED by cowork-claude-20260825 @ 06:20 Asia/Shanghai
+- `BC-14` — RELEASED by cowork-claude-20260825 @ 06:20 Asia/Shanghai
+- `BC-15` — RELEASED by cowork-claude-20260825 @ 06:20 Asia/Shanghai
+- `BC-16` — RELEASED by cowork-claude-20260825 @ 06:20 Asia/Shanghai
+
+Closing measurement, same environment: **1600 passed, 52 skipped, 0 failed**
+(116.40s). `ruff check src tests` reports only the pre-existing
+`tests/test_e2e.py` `I001`; `mypy --strict` only the pre-existing `psycopg`
+`import-not-found` at `db/store.py:1956` (72 source files). Neither was touched.
+
+`pytest -q` silently suppresses the summary line in this package — `addopts`
+already carries `-q`, so a second one is double-quiet. Every count above was
+taken with `-o addopts="--strict-markers"`.
+
+Full write-up, including an adversarial verification pass that refuted one of
+the three closing claims: `.ai/FINDINGS-2026-08-25-build-cache-bc13-bc16.md`.
 
 Observed baseline before any change of this session (cloud container, CPython 3.11.15,
 aarch64-linux, editable install, `pytest tests/ -q`): **4 failures**, all in

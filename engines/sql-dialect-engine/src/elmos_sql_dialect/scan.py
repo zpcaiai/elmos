@@ -48,6 +48,7 @@ from sqlglot import exp
 
 from .models import Dialect, DialectError
 from .parser import parse_alter_table, parse_create_index, parse_create_table
+from .statement_splitter import split_statements
 
 FindingStatus = Literal["IN_SUBSET", "OUT_OF_SUBSET", "SCAN_ERROR"]
 
@@ -76,6 +77,11 @@ BlockerFamily = Literal[
 #: message, which is always populated -- an unmapped code degrades to less
 #: readable, never to wrong.
 BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
+    "CERTIFIED_DDL_CLIENT_DIRECTIVE": (
+        "source-format",
+        "a psql client directive such as `\\c` or `\\i` -- it never reaches a server, so it "
+        "is neither in nor out of the SQL subset; it has to be handled before translation",
+    ),
     "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": (
         "statement-kind",
         "a statement no certified profile covers -- CREATE VIEW, stored procedures, "
@@ -341,6 +347,70 @@ def _classify(statement: exp.Expr, dialect: Dialect) -> tuple[FindingStatus, str
         return "SCAN_ERROR", "ENGINE_ERROR", f"{type(exc).__name__}: {exc}"
 
 
+def _recover_statements(
+    text: str,
+    relative: str,
+    source_dialect: Dialect,
+) -> list[ScanFinding]:
+    """Classify a file the parser refused as a whole, statement by statement.
+
+    Each statement is handed to the same parser independently, so the ones it
+    can read are judged exactly as they would be in a file that parsed, and
+    only the ones it cannot are reported as unreadable -- with their own line
+    number, so they can be found.
+
+    psql client directives (``\\c``, ``\\i``, ``\\.``) get their own code. They are
+    not SQL, never reach a server, and calling them a parse failure would
+    misattribute a client-side construct to the dialect grammar.
+    """
+
+    findings: list[ScanFinding] = []
+    for index, raw in enumerate(split_statements(text), start=1):
+        excerpt = raw.text.strip().replace("\n", " ")[:110]
+        if raw.text.lstrip().startswith("\\"):
+            findings.append(
+                ScanFinding(
+                    relative, index, "OUT_OF_SUBSET", None,
+                    "CERTIFIED_DDL_CLIENT_DIRECTIVE",
+                    f"line {raw.start_line}: psql client directive, not a SQL statement",
+                    "source-format", excerpt,
+                )
+            )
+            continue
+        try:
+            parsed = [s for s in sqlglot.parse(raw.text, read=source_dialect.value) if s is not None]
+        except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
+            findings.append(
+                ScanFinding(
+                    relative, index, "OUT_OF_SUBSET", None,
+                    "CERTIFIED_DDL_PARSE_FAILED",
+                    f"line {raw.start_line}: {source_dialect.value} parser rejected the statement: {exc}",
+                    "source-format", excerpt,
+                )
+            )
+            continue
+        if len(parsed) != 1:
+            findings.append(
+                ScanFinding(
+                    relative, index, "OUT_OF_SUBSET", None,
+                    "CERTIFIED_DDL_MULTIPLE_STATEMENTS",
+                    f"line {raw.start_line}: recovered chunk holds {len(parsed)} statements",
+                    "structure", excerpt,
+                )
+            )
+            continue
+        statement = parsed[0]
+        status, code, reason = _classify(statement, source_dialect)
+        family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
+        findings.append(
+            ScanFinding(
+                relative, index, status, type(statement).__name__,
+                code, reason, family, _excerpt(statement),
+            )
+        )
+    return findings
+
+
 def scan_repository(
     repository: str | os.PathLike[str],
     source_dialect: Dialect,
@@ -368,15 +438,13 @@ def scan_repository(
         # body, or a BEGIN ... END block.
         try:
             statements = sqlglot.parse(text, read=source_dialect.value)
-        except Exception as exc:  # noqa: BLE001 - sqlglot raises several types
-            findings.append(
-                ScanFinding(
-                    relative, 0, "OUT_OF_SUBSET", None,
-                    "CERTIFIED_DDL_PARSE_FAILED",
-                    f"{source_dialect.value} parser rejected the file: {exc}",
-                    "source-format", "",
-                )
-            )
+        except Exception:  # noqa: BLE001 - sqlglot raises several types
+            # ONE construct the parser cannot read must not discard the file.
+            # Measured, five files lost 750 KB of real schema this way, and
+            # each of the five had exactly one offending statement -- while
+            # every coverage ratio was flattered, because those files
+            # contributed 1 to the denominator instead of hundreds.
+            findings.extend(_recover_statements(text, relative, source_dialect))
             continue
 
         index = 0

@@ -28,6 +28,7 @@ from .models import (
     CanonicalType,
     CanonicalTypeRef,
     CheckComparison,
+    CheckLiteral,
     CheckConnector,
     CheckConstraint,
     CheckOperator,
@@ -273,7 +274,69 @@ def _parse_default(node: exp.Expression, type_ref: CanonicalTypeRef) -> ColumnDe
                         "(only literals and CURRENT_TIMESTAMP are supported)")
 
 
+def _check_literal(node: exp.Expression | None, what: str) -> CheckLiteral:
+    _require(isinstance(node, exp.Literal), "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+              f"{what} must be a plain literal")
+    assert isinstance(node, exp.Literal)  # narrows for mypy
+    return CheckLiteral(value=str(node.this), is_string=bool(node.is_string))
+
+
 def _parse_check_comparison(node: exp.Expression) -> CheckComparison:
+    # --- `NOT (x IS NULL)`, which is how mysql/oracle/tsql spell IS NOT NULL --
+    # Only the null test is unwrapped here. `NOT IN` and every other negation
+    # stay outside the profile rather than being admitted as a side effect.
+    if isinstance(node, exp.Not) and isinstance(node.this, exp.Is):
+        inner = node.this
+        _require(isinstance(inner.expression, exp.Null), "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                  "certified-ddl-v1 supports IS [NOT] NULL only; IS TRUE/FALSE has no Oracle equivalent")
+        _require(not inner.args.get("negate"), "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                  "doubly negated null test is outside certified-ddl-v1")
+        return CheckComparison(
+            column=_plain_identifier(inner.this, "CHECK left-hand column"),
+            operator=CheckOperator.IS_NOT_NULL,
+        )
+
+    # --- null tests -------------------------------------------------------
+    # `IS NULL` and `IS NOT NULL` are the same sqlglot node, told apart by a
+    # `negate` flag. `IS TRUE` is also an `Is`, and is refused: Oracle has no
+    # boolean type and no `IS TRUE`.
+    if isinstance(node, exp.Is):
+        _require(isinstance(node.expression, exp.Null), "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                  "certified-ddl-v1 supports IS [NOT] NULL only; IS TRUE/FALSE has no Oracle equivalent")
+        column = _plain_identifier(node.this, "CHECK left-hand column")
+        operator = CheckOperator.IS_NOT_NULL if node.args.get("negate") else CheckOperator.IS_NULL
+        return CheckComparison(column=column, operator=operator)
+
+    # --- set membership ---------------------------------------------------
+    if isinstance(node, exp.In):
+        _require(not node.args.get("query"), "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                  "CHECK IN (subquery) is outside certified-ddl-v1")
+        column = _plain_identifier(node.this, "CHECK left-hand column")
+        members = node.args.get("expressions") or []
+        _require(bool(members), "CERTIFIED_DDL_UNSUPPORTED_CHECK", "CHECK IN requires a literal list")
+        return CheckComparison(
+            column=column,
+            operator=CheckOperator.IN,
+            literals=tuple(_check_literal(m, "CHECK IN member") for m in members),
+        )
+
+    # --- range membership -------------------------------------------------
+    # `BETWEEN SYMMETRIC` is PostgreSQL-only, so it is refused rather than
+    # normalised away.
+    if isinstance(node, exp.Between):
+        _require(not node.args.get("symmetric"), "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                  "BETWEEN SYMMETRIC is PostgreSQL-only and outside certified-ddl-v1")
+        column = _plain_identifier(node.this, "CHECK left-hand column")
+        return CheckComparison(
+            column=column,
+            operator=CheckOperator.BETWEEN,
+            literals=(
+                _check_literal(node.args.get("low"), "CHECK BETWEEN lower bound"),
+                _check_literal(node.args.get("high"), "CHECK BETWEEN upper bound"),
+            ),
+        )
+
+    # --- binary comparisons ----------------------------------------------
     operator = _CHECK_OPERATOR_MAP.get(type(node))
     _require(operator is not None, "CERTIFIED_DDL_UNSUPPORTED_CHECK",
               f"CHECK comparison operator {type(node).__name__} is outside certified-ddl-v1")
@@ -286,7 +349,31 @@ def _parse_check_comparison(node: exp.Expression) -> CheckComparison:
                             literal_is_string=bool(literal.is_string))
 
 
+_MAX_CHECK_PAREN_DEPTH = 8
+
+
+def _unwrap_check_parens(node: exp.Expression) -> exp.Expression:
+    """Strip redundant parentheses around a CHECK body.
+
+    Purely syntactic: `CHECK ((a > 0))` and `CHECK (a > 0)` are the same
+    constraint to all four dialects, and both re-render identically. Bounded
+    so deeply nested input fails closed rather than recursing.
+    """
+
+    depth = 0
+    while isinstance(node, exp.Paren):
+        depth += 1
+        if depth > _MAX_CHECK_PAREN_DEPTH:
+            raise DialectError(
+                "CERTIFIED_DDL_UNSUPPORTED_CHECK",
+                f"CHECK nests more than {_MAX_CHECK_PAREN_DEPTH} redundant parentheses",
+            )
+        node = node.this
+    return node
+
+
 def _parse_check(node: exp.Expression) -> tuple[tuple[CheckComparison, ...], CheckConnector | None]:
+    node = _unwrap_check_parens(node)
     if isinstance(node, exp.And | exp.Or):
         left, right = node.this, node.expression
         if isinstance(left, exp.And | exp.Or) or isinstance(right, exp.And | exp.Or):
@@ -294,6 +381,8 @@ def _parse_check(node: exp.Expression) -> tuple[tuple[CheckComparison, ...], Che
                                 "certified-ddl-v1 supports only a single flat AND/OR of two plain comparisons, "
                                 "not nested boolean expressions")
         connector = CheckConnector.AND if isinstance(node, exp.And) else CheckConnector.OR
+        left = _unwrap_check_parens(left)
+        right = _unwrap_check_parens(right)
         return (_parse_check_comparison(left), _parse_check_comparison(right)), connector
     return (_parse_check_comparison(node),), None
 
@@ -352,9 +441,16 @@ def parse_create_table(sql: str | exp.Expression, source_dialect: Dialect) -> Ta
     statement = _statement(sql, source_dialect)
     _require(isinstance(statement, exp.Create) and statement.args.get("kind") == "TABLE",
               "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "certified-ddl-v1 only accepts a single CREATE TABLE statement")
-    for flag in ("replace", "exists", "unique", "concurrently"):
+    for flag in ("replace", "unique", "concurrently"):
         _require(not statement.args.get(flag), "CERTIFIED_DDL_UNSUPPORTED_STATEMENT_MODIFIER",
                   f"CREATE TABLE modifier {flag!r} is outside certified-ddl-v1")
+    # `exists` (IF NOT EXISTS) is admitted and carried in the model instead of
+    # being refused at the door. Measured on 89 real .sql files it was 54 of
+    # the blocked statements across only 4 distinct reasons -- the densest
+    # blocker in the profile that is a spelling rather than a semantic gap.
+    # Whether it survives translation is the TARGET's question, decided in
+    # `emitter`, because the answer differs per dialect.
+    if_not_exists = bool(statement.args.get("exists"))
 
     schema = statement.this
     _require(isinstance(schema, exp.Schema), "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "malformed CREATE TABLE")
@@ -410,7 +506,7 @@ def parse_create_table(sql: str | exp.Expression, source_dialect: Dialect) -> Ta
 
     return Table(name=table_name, columns=tuple(columns), primary_key=tuple(primary_key),
                  unique_constraints=tuple(unique_constraints), foreign_keys=tuple(foreign_keys),
-                 check_constraints=tuple(check_constraints))
+                 check_constraints=tuple(check_constraints), if_not_exists=if_not_exists)
 
 
 def _parse_reference(reference: exp.Expression, columns: tuple[str, ...], name: str | None) -> ForeignKey:
@@ -477,9 +573,10 @@ def parse_create_index(sql: str | exp.Expression, source_dialect: Dialect) -> In
     _require(isinstance(statement, exp.Create) and statement.args.get("kind") == "INDEX",
               "CERTIFIED_DDL_UNSUPPORTED_STATEMENT",
               "certified-ddl-v1 only accepts a single CREATE INDEX statement here")
-    for flag in ("replace", "exists", "concurrently"):
+    for flag in ("replace", "concurrently"):
         _require(not statement.args.get(flag), "CERTIFIED_DDL_UNSUPPORTED_STATEMENT_MODIFIER",
                   f"CREATE INDEX modifier {flag!r} is outside certified-ddl-v1")
+    index_if_not_exists = bool(statement.args.get("exists"))
     index_node = statement.this
     _require(isinstance(index_node, exp.Index), "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "malformed CREATE INDEX")
     index_name = _plain_identifier(index_node.this, "index name")
@@ -490,7 +587,13 @@ def parse_create_index(sql: str | exp.Expression, source_dialect: Dialect) -> In
     params = index_node.args.get("params")
     _require(params is not None, "CERTIFIED_DDL_UNSUPPORTED_STATEMENT", "CREATE INDEX requires a column list")
     columns = tuple(_plain_identifier(c, "index column") for c in params.args.get("columns") or [])
-    return Index(name=index_name, table=table_name, columns=columns, unique=bool(statement.args.get("unique")))
+    return Index(
+        name=index_name,
+        table=table_name,
+        columns=columns,
+        unique=bool(statement.args.get("unique")),
+        if_not_exists=index_if_not_exists,
+    )
 
 
 def _alter_table_name(statement: exp.Alter) -> str:

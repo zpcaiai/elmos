@@ -1,7 +1,7 @@
 [project]
 name = "elmos-polyglot-route"
 version = "0.1.0"
-description = "Bounded, compiler-backed four-language migration route engine"
+description = "Bounded, compiler-backed nine-language migration route engine"
 requires-python = "==3.12.12"
 dependencies = [
   "jsonschema==4.25.1",
@@ -13,6 +13,7 @@ elmos-polyglot-route = "elmos_polyglot_route.cli:main"
 
 [dependency-groups]
 dev = [
+  "jsonschema==4.25.1",
   "mypy==1.17.0",
   "pytest==8.4.1",
   "ruff==0.12.5",

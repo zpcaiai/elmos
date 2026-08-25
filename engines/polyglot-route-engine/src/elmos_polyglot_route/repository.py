@@ -10,7 +10,6 @@ from typing import Any
 from .models import (
     REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
     REPOSITORY_SURFACE_LANGUAGES,
-    SUPPORTED_LANGUAGES,
     Language,
     RouteError,
     repository_language_lifecycle,
@@ -241,13 +240,14 @@ def plan_repository(
             if directory in _IGNORED_DIRECTORIES:
                 continue
             if candidate.is_symlink():
-                ignored_symlink_count += 1
-                continue
+                raise RouteError("REPOSITORY_SOURCE_SYMLINK_FORBIDDEN")
             safe_directories.append(directory)
         directories[:] = safe_directories
         for name in sorted(files):
             path = current_path / name
             if path.is_symlink():
+                if _EXTENSIONS.get(path.suffix.lower()) is not None:
+                    raise RouteError("REPOSITORY_SOURCE_SYMLINK_FORBIDDEN")
                 ignored_symlink_count += 1
                 continue
             suffix = path.suffix.lower()
@@ -263,6 +263,10 @@ def plan_repository(
                 # counted as an active surface before models promotes it.
                 continue
             relative = path.relative_to(root).as_posix()
+            if len(relative) > 1_024:
+                raise RouteError("REPOSITORY_SOURCE_PATH_TOO_LONG")
+            if any(ord(character) < 32 or ord(character) == 127 for character in relative):
+                raise RouteError("REPOSITORY_SOURCE_PATH_CONTROL_CHARACTER_FORBIDDEN")
             content = _read_stable(path)
             total_bytes += len(content)
             if len(inventory) >= _MAX_FILES:

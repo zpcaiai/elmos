@@ -6,6 +6,7 @@ import json
 import os
 import re
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -21,7 +22,7 @@ import elmos_project_synthesis.cleanup as cleanup
 import elmos_project_synthesis.intake as intake_module
 import elmos_project_synthesis.models as models
 import elmos_project_synthesis.verification as verification
-from elmos_project_synthesis.cli import _archive_workspace, main
+from elmos_project_synthesis.cli import _archive_workspace, _extract_publish_archive, main
 from elmos_project_synthesis.intake import approve_request, create_draft
 from elmos_project_synthesis.production_runtime import render_local_runtime
 from elmos_project_synthesis.models import (
@@ -378,7 +379,10 @@ def test_renders_complete_language_projects_with_fail_closed_claims() -> None:
         "rust/Cargo.lock",
         "rust/Cargo.toml",
         "rust/Dockerfile",
+        "Makefile",
         "docker-compose.yml",
+        "scripts/projectctl.py",
+        "operations/performance-budget.json",
         "requirements/psir.json",
         "requirements/project-blueprint.json",
         "requirements/asset-graph.json",
@@ -392,6 +396,16 @@ def test_renders_complete_language_projects_with_fail_closed_claims() -> None:
     assert manifest["certification_status"] == "NOT_CERTIFIED"
     assert len(manifest["files"]) == len(files) - 1
     assert all(entry["sha256"] for entry in manifest["files"])
+    compose = files["docker-compose.yml"]
+    assert "127.0.0.1:8088:8088" in compose
+    assert "cap_drop: [ALL]" in compose
+    assert "no-new-privileges:true" in compose
+    assert "pids_limit: 256" in compose
+    assert "internal: true" in compose
+    assert "APP_NAME: work-order-service" in compose
+    assert "APP_NAME: work-order-service-java" not in compose
+    budget = json.loads(files["operations/performance-budget.json"])
+    assert budget["production_capacity_evidence"] == "NOT_RUN"
     asset_graph = json.loads(files["requirements/asset-graph.json"])
     build_graph = json.loads(files["requirements/build-graph.json"])
     assert {node["id"] for node in asset_graph["nodes"]} >= {
@@ -881,21 +895,162 @@ def test_native_verification_timeout_fails_closed(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    attempts = 0
+
     def time_out(*args: object, **kwargs: object) -> None:
-        raise subprocess.TimeoutExpired(["native-build"], 30, output="partial output")
+        nonlocal attempts
+        attempts += 1
+        raise subprocess.TimeoutExpired(
+            ["uv", "sync", "--locked"], 30, output="partial output"
+        )
 
     monkeypatch.setattr(verification.subprocess, "run", time_out)
     result = verification._run(
-        ["native-build"],
+        ["uv", "sync", "--locked"],
         tmp_path,
-        language="test-runtime",
+        language="python",
         timeout_seconds=30,
     )
 
+    assert attempts == 1
     assert result["status"] == "FAILED"
     assert result["exit_code"] is None
     assert "COMMAND_TIMEOUT:30s" in result["output"]
     assert "partial output" in result["output"]
+
+
+def test_native_verification_does_not_retry_after_hard_dependency_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    def time_out(*args: object, **kwargs: object) -> None:
+        nonlocal attempts
+        attempts += 1
+        raise subprocess.TimeoutExpired(
+            ["uv", "sync", "--locked"],
+            30,
+            stderr="request failed after retries: operation timed out",
+        )
+
+    monkeypatch.setattr(verification.subprocess, "run", time_out)
+    result = verification._run(
+        ["uv", "sync", "--locked"],
+        tmp_path,
+        language="python",
+        timeout_seconds=30,
+    )
+
+    assert attempts == 1
+    assert result["status"] == "FAILED"
+    assert result["exit_code"] is None
+    assert "COMMAND_TIMEOUT:30s" in result["output"]
+    assert "operation timed out" in result["output"]
+    assert "TRANSIENT_DEPENDENCY_FETCH_RETRY" not in result["output"]
+
+
+def test_native_verification_uses_bounded_configured_default_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observed_timeout: float | None = None
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        nonlocal observed_timeout
+        observed_timeout = float(kwargs["timeout"])
+        return subprocess.CompletedProcess(["native-build"], 0, stdout="ok", stderr="")
+
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "600")
+    monkeypatch.setattr(verification.subprocess, "run", run)
+    result = verification._run(
+        ["native-build"],
+        tmp_path,
+        language="test-runtime",
+    )
+
+    assert observed_timeout == 600
+    assert result["status"] == "PASSED"
+
+
+def test_native_verification_rejects_unbounded_configured_timeout(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS", "901")
+
+    with pytest.raises(ValueError, match="COMMAND_TIMEOUT_OUT_OF_RANGE"):
+        verification._run(
+            ["native-build"],
+            tmp_path,
+            language="test-runtime",
+        )
+
+
+def test_locked_python_dependency_sync_retries_one_transient_fetch_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            return subprocess.CompletedProcess(
+                ["uv", "sync", "--locked"],
+                1,
+                stdout="",
+                stderr="Failed to fetch package: operation timed out",
+            )
+        return subprocess.CompletedProcess(
+            ["uv", "sync", "--locked"],
+            0,
+            stdout="resolved locked dependencies",
+            stderr="",
+        )
+
+    monkeypatch.setattr(verification.subprocess, "run", run)
+    monkeypatch.setattr(verification.time, "sleep", lambda _: None)
+    result = verification._run(
+        ["uv", "sync", "--locked", "--python", "3.12"],
+        tmp_path,
+        language="python",
+    )
+
+    assert attempts == 2
+    assert result["status"] == "PASSED"
+    assert result["exit_code"] == 0
+    assert "TRANSIENT_DEPENDENCY_FETCH_RETRY:1/1" in result["output"]
+    assert "resolved locked dependencies" in result["output"]
+
+
+def test_locked_python_dependency_sync_does_not_retry_build_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    attempts = 0
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        nonlocal attempts
+        attempts += 1
+        return subprocess.CompletedProcess(
+            ["uv", "sync", "--locked"],
+            1,
+            stdout="",
+            stderr="Python package compilation failed",
+        )
+
+    monkeypatch.setattr(verification.subprocess, "run", run)
+    result = verification._run(
+        ["uv", "sync", "--locked", "--python", "3.12"],
+        tmp_path,
+        language="python",
+    )
+
+    assert attempts == 1
+    assert result["status"] == "FAILED"
+    assert "TRANSIENT_DEPENDENCY_FETCH_RETRY" not in result["output"]
 
 
 def test_acceptance_cleanup_retries_transient_directory_not_empty(
@@ -1304,9 +1459,111 @@ def test_archive_includes_verified_lockfiles(tmp_path: Path) -> None:
     assert result["status"] == "ARCHIVED"
     with zipfile.ZipFile(archive_path) as archive:
         names = set(archive.namelist())
-    assert "workspace/python/uv.lock" in names
-    assert "workspace/typescript/pnpm-lock.yaml" in names
-    assert "workspace/.elmos/verification.json" in names
+    assert "commerce-service/python/uv.lock" in names
+    assert "commerce-service/typescript/pnpm-lock.yaml" in names
+    assert "commerce-service/.elmos/verification.json" in names
+
+
+def test_archive_is_deterministic_and_refuses_manifest_drift(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    first = tmp_path / "first.zip"
+    second = tmp_path / "second.zip"
+
+    first_result = _archive_workspace(workspace, first)
+    second_result = _archive_workspace(workspace, second)
+
+    assert first.read_bytes() == second.read_bytes()
+    assert first_result["sha256"] == second_result["sha256"]
+    (workspace / "README.md").write_text("tampered\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="GENERATION_ARTIFACT_INTEGRITY_MISMATCH:README.md"):
+        _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_archive_refuses_a_manifest_owned_symlink(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    readme = workspace / "README.md"
+    readme.unlink()
+    readme.symlink_to(tmp_path / "outside.md")
+
+    with pytest.raises(ValueError, match="GENERATION_ARTIFACT_UNSAFE:README.md"):
+        _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_archive_refuses_a_manifest_owned_symlink_parent(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    outside = tmp_path / "outside-docs"
+    (workspace / "docs").rename(outside)
+    (workspace / "docs").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="GENERATION_ARTIFACT_UNSAFE:docs/"):
+        _archive_workspace(workspace, tmp_path / "refused.zip")
+
+
+def test_publish_extraction_is_bound_to_the_verified_archive(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(approved_request(), workspace)
+    archive_path = tmp_path / "generated.zip"
+    _archive_workspace(workspace, archive_path)
+    destination = tmp_path / "publish"
+    destination.mkdir()
+
+    archive_sha256 = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+    result = _extract_publish_archive(archive_path, destination, archive_sha256)
+
+    assert result["status"] == "EXTRACTED"
+    assert result["project_name"] == "work-order-service"
+    assert result["archive_sha256"] == archive_sha256
+    extracted = destination / "work-order-service"
+    assert (extracted / "requirements" / "project-blueprint.json").is_file()
+    assert result["file_count"] == sum(path.is_file() for path in extracted.rglob("*"))
+
+    rejected_destination = tmp_path / "publish-digest-mismatch"
+    rejected_destination.mkdir()
+    with pytest.raises(ValueError, match="PUBLISH_ARCHIVE_DIGEST_MISMATCH"):
+        _extract_publish_archive(archive_path, rejected_destination, "0" * 64)
+
+
+def test_publish_extraction_rejects_zip_slip_and_symlinks(tmp_path: Path) -> None:
+    for name, configure in (
+        ("zip-slip.zip", lambda info: None),
+        (
+            "symlink.zip",
+            lambda info: setattr(
+                info,
+                "external_attr",
+                (stat.S_IFLNK | 0o777) << 16,
+            ),
+        ),
+    ):
+        archive_path = tmp_path / name
+        info = zipfile.ZipInfo(
+            "safe-project/../../escape" if name == "zip-slip.zip" else "safe-project/link"
+        )
+        configure(info)
+        with zipfile.ZipFile(archive_path, "w") as archive:
+            archive.writestr(info, b"payload")
+        destination = tmp_path / f"extract-{name}"
+        destination.mkdir()
+        with pytest.raises(ValueError, match="PUBLISH_ARCHIVE"):
+            _extract_publish_archive(archive_path, destination)
+
+
+def test_generated_local_controller_verifies_integrity_before_execution(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    generate_workspace(multi_entity_request(languages=("python",)), workspace)
+    command = ["make", "doctor"]
+
+    ready = subprocess.run(command, cwd=workspace, check=False, capture_output=True, text=True)  # noqa: S603
+    assert ready.returncode == 0, ready.stderr
+    assert '"managed_integrity": "PASSED"' in ready.stdout
+
+    (workspace / "README.md").write_text("tampered\n", encoding="utf-8")
+    refused = subprocess.run(command, cwd=workspace, check=False, capture_output=True, text=True)  # noqa: S603
+    assert refused.returncode == 2
+    assert "MANAGED_FILE_INTEGRITY_MISMATCH:README.md" in refused.stderr
 
 
 def test_runtime_plan_is_allowlisted_and_workspace_confined(tmp_path: Path) -> None:
@@ -1332,6 +1589,9 @@ def test_every_profile_open_target_declares_an_integration_command() -> None:
 _HEALTH_SERVER = """
 import json, sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+sys.stdout.write("startup-log:" + "x" * 200000)
+sys.stdout.flush()
 
 
 class Handler(BaseHTTPRequestHandler):

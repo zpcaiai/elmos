@@ -130,6 +130,68 @@ components:
           description: Digest-bound measured report; never provider or certification evidence by itself.
         provider_execution_performed: { type: boolean, const: false }
         certified: { type: boolean, const: false }
+    ProviderRequestView:
+      type: object
+      additionalProperties: false
+      required:
+        - provider
+        - model
+        - cache_key
+        - capability_profile
+        - cache_mode
+        - ttl_class
+        - payload_digest
+        - payload_retained
+      properties:
+        provider: { type: string, enum: [openai, anthropic, self-hosted] }
+        model: { type: string }
+        cache_key: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        capability_profile: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+        cache_mode:
+          enum: [OBSERVE, AUTOMATIC, EXPLICIT, DISABLED]
+        ttl_class: { type: string }
+        payload_digest:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+          description: Digest of the transient provider payload; the payload itself is never returned or persisted.
+        payload_retained: { type: boolean, const: false }
+    PreparedProviderPrompt:
+      type: object
+      additionalProperties: false
+      required: [project_id, manifest, provider_request, reason_code, provider_execution_performed]
+      properties:
+        project_id: { type: string }
+        manifest:
+          type: object
+          description: Content-free PromptPrefixManifest; raw prompt segments are never echoed.
+        provider_request: { $ref: '#/components/schemas/ProviderRequestView' }
+        reason_code:
+          enum:
+            - HIT
+            - COLD_PREFIX
+            - MODEL_CHANGED
+            - EFFORT_CHANGED
+            - TOOL_SCHEMA_CHANGED
+            - PREFIX_CHANGED
+            - TTL_EXPIRED
+            - WRONG_REPLICA
+            - PROVIDER_UNSUPPORTED
+            - PROVIDER_OUTAGE
+            - UNKNOWN
+        provider_execution_performed: { type: boolean, const: false }
+    ProviderCacheUsageRecord:
+      type: object
+      additionalProperties: false
+      required: [project_id, observation, outcome, provider_execution_performed]
+      properties:
+        project_id: { type: string }
+        observation:
+          type: object
+          description: Content-free normalized token accounting for one provider request.
+        outcome:
+          type: object
+          description: Cache outcome event conforming to cache-outcome-event.schema.json.
+        provider_execution_performed: { type: boolean, const: false }
 paths:
   /cache/prompt-prefixes/compile:
     post:
@@ -155,6 +217,102 @@ paths:
         '400': { description: Missing idempotency key }
         '422': { description: Invalid or volatile unapproved prefix }
         '503': { description: Persistent parity metadata repository unavailable }
+  /cache/provider-prompts/prepare:
+    post:
+      operationId: prepareProviderPrompt
+      description: >-
+        Maps one compiled prefix through the server-owned provider profile, policy and
+        circuit breaker. Persists only the content-free PromptPrefixManifest and returns
+        only the content-free provider request view; the assembled provider payload is
+        transient and is represented by its digest, because this response is also the
+        durable idempotency replay record. Performs no provider execution.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [project_id, identity, segments, request_class]
+              properties:
+                project_id: { type: string, minLength: 1, maxLength: 128 }
+                identity: { type: object }
+                segments: { type: array, minItems: 1, items: { type: object } }
+                volatility_approvals: { type: array, items: { type: object } }
+                request_class:
+                  enum:
+                    - CONVERSATIONAL
+                    - DETERMINISTIC_CONVERSION
+                    - REPAIR
+                    - TEST_GENERATION
+                    - SUMMARIZATION
+                    - ONE_SHOT
+                cache_mode:
+                  enum: [OBSERVE, AUTOMATIC, EXPLICIT, DISABLED]
+                ttl_class: { type: string, minLength: 1, maxLength: 128 }
+      responses:
+        '200':
+          description: Content-free manifest, resolved provider request view and reason code
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PreparedProviderPrompt' }
+        '400': { description: Missing idempotency key }
+        '404': { description: Tenant-scoped project miss; indistinguishable from an unowned project }
+        '409': { description: Idempotency key reused for a different request }
+        '422': { description: Invalid identity, unapproved volatile prefix, or invalid request class }
+        '503': { description: Provider prompt cache controller or parity metadata repository unavailable }
+  /cache/provider-prompts/usage:
+    post:
+      operationId: recordProviderCacheUsage
+      description: >-
+        Normalizes counters reported by a provider response into one retry-stable,
+        content-free observation and cache-outcome event. Counters that disagree with the
+        declared reason code or with the provider accounting model are refused, never
+        recorded. Performs no provider execution.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [project_id, prompt_manifest_id, provider, request_id, reason_code, usage]
+              properties:
+                project_id: { type: string, minLength: 1, maxLength: 128 }
+                prompt_manifest_id: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+                provider: { type: string, enum: [openai, anthropic, self-hosted] }
+                request_id: { type: string, pattern: '^sha256:[0-9a-f]{64}$' }
+                reason_code:
+                  enum:
+                    - HIT
+                    - COLD_PREFIX
+                    - MODEL_CHANGED
+                    - EFFORT_CHANGED
+                    - TOOL_SCHEMA_CHANGED
+                    - PREFIX_CHANGED
+                    - TTL_EXPIRED
+                    - WRONG_REPLICA
+                    - PROVIDER_UNSUPPORTED
+                    - PROVIDER_OUTAGE
+                    - UNKNOWN
+                usage:
+                  type: object
+                  description: Raw provider usage counters; prompt, source, and secret values are rejected.
+      responses:
+        '201':
+          description: Normalized observation and hash-derived cache outcome event
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProviderCacheUsageRecord' }
+        '400': { description: Missing idempotency key }
+        '404': { description: Tenant/project-scoped project or prompt manifest miss }
+        '409': { description: Idempotency key reused for a different request }
+        '422': { description: Counters disagree with the reason code, the accounting model, or the manifest }
+        '503': { description: Provider prompt cache controller or parity metadata repository unavailable }
   /cache/context-ledgers/{streamId}/events:
     post:
       operationId: appendContextLedgerEvent

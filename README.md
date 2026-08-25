@@ -42,6 +42,8 @@ ELMOS 也支持绿色项目合成：仓库级 `$elmos-project-synthesis` Skill �
 
 仓库语言环境通过 [`toolchains/runtime-manifest.json`](toolchains/runtime-manifest.json) 统一声明并按任务选择，避免把 Python 3.12/3.14、Node 22/24/26、Maven 3.9.10/3.9.11 或 JDK 8/11/17/21 压成一个全局版本。`make toolchains-check` 严格检查核心、八语言生成与 macOS 13 种活动 Route 运行时；JavaScript 仅保留在 deprecated 历史分区，不计入活动矩阵。`make toolchains-install PROFILE=synthesis` 只安装安全且精确的本地子集；`make toolchains-doctor PROFILE=all` 会把厂商、许可证、远端系统和真实设备环境继续显示为 `NOT_RUN`。完整用法和证据边界见 [`docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md`](docs/toolchains/LANGUAGE_RUNTIME_ENVIRONMENTS.md)。
 
+Web Console `/generation` 已把生成、摘要校验下载、服务端强制 600 秒的浏览器运行预览，以及新建 GitHub 私有仓库交付收敛为同一页面闭环。GitHub Token 仅在一次请求内存中使用；远端必须按归档摘要、完整文件 Tree 和 `main` Commit 回读验证，且不会覆盖、强推、合并或部署。
+
 `/repositories` 可从 GitHub、Gitee 或允许列表内的通用 HTTPS Git 服务建立精确提交工作区，读取/修改代码、说明、配置与部署文件，并交接到项目生成、跨语言转换和 Spring 现代化三条业务线。Commit、非强制 Push 与 GitHub/Gitee PR 分别校验权限、路径、HEAD、短期凭据、远端 SHA、审计和幂等回执；合并与部署不会自动执行。完整软硬件要求、配置及逐步操作见 [`docs/GIT_REPOSITORY_WORKSPACES.md`](docs/GIT_REPOSITORY_WORKSPACES.md)。
 
 Web Console `/help` 汇总三条业务线、受控交付、管理端和外部证据边界；导航与帮助支持中文/英文切换，浅色/深色主题按浏览器持久化，并纳入桌面/移动 Chromium、键盘、200% 缩放和自动可访问性检查。完整英文业务表单、独立读屏/跨浏览器/真实设备、视觉基线审批和代表性客户旅程仍保持 `NOT_RUN`，详见 [`docs/CLIENT_EXPERIENCE_READINESS.md`](docs/CLIENT_EXPERIENCE_READINESS.md)。
@@ -74,7 +76,7 @@ Java/Python 的生产 Emitter 支持多实体与关系；Go、TypeScript、C#、
 
 ELMOS 通过锁定的 `org.openrewrite.recipe:rewrite-spring:6.35.0` 复用同目录 `rewrite-spring` 的 Recipe 能力，不复制其 198 个 Java 源文件，也不形成私有分叉。审计时的上游快照为 `ae11461b732e13c27bc7b8ed9b1b2943b8e4944f`，详见 `docs/adr/0001-rewrite-spring-foundation.md`。
 
-遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线已绑定 Gradle 8.14.3 的隔离构建、OpenRewrite、测试和启动执行器，但精确真实元组仍保持 `NOT_RUN`。**扩大目录不等于扩大证据**：四条 Maven 路线各有且只有一个已记录端到端本地执行证据的元组（`PASSED_LOCAL`）——Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、3.4.1 / Java 17，逐条记录在 `evidence/spring-routes/<route-id>.json`（源构建、OpenRewrite 转换、目标构建与行为探针俱全）。**同一区间内的其余元组以及 Gradle 路线仍是 `NOT_RUN`**：证据绑定的是精确元组，不是整个区间或执行器，因此选中未记录元组时必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。四条 Maven 路线的 `independent_verification`、`external_evidence_status`、`rootless_runner` 与 `authorized_customer_repository` 一律保持 `NOT_RUN`，`certification_status` 保持 `NOT_CERTIFIED`。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
+遗留源版本由 `SpringRouteCatalog` 统一声明，不再断言单一元组：Maven 侧覆盖 Boot `[1.5.0, 2.0.0)` / Java 8、`[2.0.0, 2.7.0)` / Java 8·11·17、`[2.7.0, 2.8.0)` / Java 8·11·17 和 `[3.0.0, 3.5.0)` / Java 17·21 四条路线，各自绑定独立的 OpenRewrite Recipe 与按 Java 版本注册的源 JDK（`elmos.worker.spring-upgrade.java-homes=8=/opt/java/openjdk-8,11=...`）；Gradle 作为第五条路线在目录中声明为 `NOT_IMPLEMENTED`，指纹阶段会明确告知缺少构建驱动而不是笼统地说"仅支持 Maven"。**扩大目录不等于扩大证据**：四条 Maven 路线各有且只有一个已记录端到端本地执行证据的元组（`PASSED_LOCAL`）——Boot 1.5.22.RELEASE / Java 8、2.3.12.RELEASE / Java 11、2.7.18 / Java 17、3.4.1 / Java 17，逐条记录在 `evidence/spring-routes/<route-id>.json`（源构建、OpenRewrite 转换、目标构建与行为探针俱全）。**同一区间内的其余元组仍是 `NOT_RUN`**：证据绑定的是那个精确元组，不是整个区间，因此选中未记录元组时必须显式开启 `elmos.worker.spring-upgrade.experimental-routes-enabled` 才会执行，否则以 `SPRING_ROUTE_EVIDENCE_NOT_RUN` 失败关闭。四条路线的 `independent_verification`、`external_evidence_status`、`rootless_runner` 与 `authorized_customer_repository` 一律保持 `NOT_RUN`，`certification_status` 保持 `NOT_CERTIFIED`。每次运行都会写出 `evidence/route-selection.json` 记录所选路线、接受区间与证据等级。
 
 Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条精确的真实迁移旅程：导入公开 Git 或已物化 Snapshot、锁定 Commit 和确定性 Snapshot、识别 Boot 2.7.18 / Java 17 / Maven、先提取 FCM，再执行固定的 OpenRewrite Recipe，使用 Java 21 编译测试、从内容寻址 ZIP 做新目录验证，验证通过后才开放下载与一键启动、健康检查、日志、停止和重试。默认配置全部关闭；只有已经证明 rootless、只读根、能力移除、默认拒绝网络且绑定独立验证器的 Private Runner 才能启用。可重复的本地开发语料命令为 `ELMOS_MAVEN_EXECUTABLE=/path/to/apache-maven-3.9.11/bin/mvn python3 scripts/batch30/run_spring_boot_reference.py --repo-root .`；执行器拒绝其他 Maven 版本和仓库自带的 `mvnw`，其本地结果不替代客户仓库、Rootless Runner 或独立外部评审证据。
 
@@ -90,10 +92,8 @@ Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条�
 `elmos-project-synthesis-batch61-65`、`elmos-codex-skills-batch66-80-complete`、
 `elmos-language-packs-batch81-95-complete`、`elmos-codex-skills-batch97-104-complete`、
 `elmos-codex-skills-batch56-product-closure`、`elmos-codex-skills-batch1-55-complete`
-及配套的 slightly-strict 测试包）。缺席源包的逐字节完整性会明确保持 `NOT_RUN`；
-已有安装清单的批次则继续通过受版本控制的摘要逐项校验已安装分发。两者不能互相替代。
-例如 Project Synthesis 的正常检出会验证 195 个 B66–80 Runtime Skill、180 个 B81–95
-Language Pack Skill 及其接口摘要，但不会声称重新验证了缺席的 PG001–PG417 源包。
+及配套的 slightly-strict 测试包）。它们的逐字节身份保存在受版本控制的
+`docs/*/installed-manifest.json` 中，因此**检出校验的是已安装分发，而不是缺席的源包**。
 
 依赖源包的每一步都由 `tooling/source_package_guard.py` 把守：源包在场就执行原有的
 包完整性校验；不在场就打印一行醒目且可 grep 的

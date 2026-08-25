@@ -480,9 +480,29 @@ export type GenerationRuntime = {
   language?: GenerationTargetId;
   executor?: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
   containerName?: string;
+  previewPort?: number;
   pid?: number;
   reason?: string;
+  leaseStartedAt?: string;
+  leaseExpiresAt?: string;
+  leaseDurationSeconds?: number;
+  leaseId?: string;
+  remainingSeconds?: number;
   plans: GenerationRuntimePlan[];
+  updatedAt: string;
+};
+
+export type GenerationGitHubPublication = {
+  status: "CREATING" | "PUBLISHED" | "BLOCKED";
+  repositoryFullName?: string;
+  repositoryId?: number;
+  repositoryUrl?: string;
+  branch?: "main";
+  commitSha?: string;
+  artifactSha256: string;
+  fileCount?: number;
+  idempotencyKey: string;
+  reason?: string;
   updatedAt: string;
 };
 
@@ -492,6 +512,11 @@ export type GenerationJob = {
   actor: string;
   createdAt: string;
   updatedAt: string;
+  terminalAt?: string;
+  retentionExpiresAt?: string;
+  retentionPolicySeconds?: number;
+  retentionPolicyVersion?: "generation-storage-v1";
+  legalHold?: boolean;
   status:
     | "QUEUED"
     | "ANALYZING"
@@ -524,6 +549,7 @@ export type GenerationJob = {
   reason?: string;
   logs: GenerationJobLog[];
   runtime: GenerationRuntime;
+  githubPublication?: GenerationGitHubPublication;
 };
 
 export type SpringModernizationStage = {
@@ -712,6 +738,83 @@ export type TranslationBehaviorCoverage = {
   externalVerificationStatus: "NOT_RUN";
 };
 
+export type TranslationConversionReportFile = {
+  path:
+    | "functional-conversion-report.json"
+    | "FUNCTION_CONVERSION_REPORT.md"
+    | "FUNCTION_CONVERSION_REPORT_BUNDLE.zip";
+  bytes: number;
+  sha256: string;
+};
+
+/**
+ * Polling responses deliberately contain no customer source or generated code.
+ * Exact source/target blocks live only in the separately authorized,
+ * content-addressed conversion report download.
+ */
+export type TranslationConversionFailureSummary = {
+  obligationId: string;
+  workUnitId: string;
+  functionDescription: string;
+  sourcePath: string;
+  targetPath?: string;
+  status: string;
+  failureCode: string;
+  failureReason: string;
+  improvementActions: string[];
+};
+
+export type TranslationConversionSummary = {
+  reportId: string;
+  definitionId: string;
+  measurementUnit: "FUNCTIONAL_OBLIGATION";
+  comparisonBasis: "DECLARED_BEHAVIOR_ORACLE";
+  storageMode: "SINGLE" | "SHARDED";
+  shardCount: number;
+  totalShardBytes: number;
+  casesManifestSha256: string;
+  numerator: number;
+  denominator: number;
+  reportedObligationCount: number;
+  unknownScopeCount: number;
+  unreportedObligationCount: number;
+  unsuccessfulCount: number;
+  exactFraction: string;
+  successRateBasisPoints: number;
+  displayPercent: string;
+  projectSuccessRateLowerBoundBasisPoints: number;
+  projectSuccessRateUpperBoundBasisPoints: number;
+  projectSuccessRateDisplay: string;
+  measurementStatus: "MEASURED" | "INDETERMINATE";
+  denominatorComplete: boolean;
+  verifiedCount: number;
+  failedCount: number;
+  codeArtifactReady: boolean;
+  statusCounts: Record<string, number>;
+  failureSummaries: TranslationConversionFailureSummary[];
+  failureSummariesTruncated: boolean;
+};
+
+export type TranslationExecutionRuntimeReceipt = {
+  schemaVersion: "1.0";
+  executionId: string;
+  phase: "preflight" | "pipeline";
+  executor: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
+  state: "STARTING" | "RUNNING" | "EXITED" | "CLEANUP_VERIFIED" | "CLEANUP_UNVERIFIED";
+  processGroupId: number;
+  containerName?: string;
+  cidFile?: string;
+  containerId?: string;
+  labels?: {
+    jobId: string;
+    executionId: string;
+    phase: "preflight" | "pipeline";
+  };
+  startedAt: string;
+  updatedAt: string;
+  cleanupVerifiedAt?: string;
+};
+
 export type TranslationJob = {
   id: string;
   tenantId: string;
@@ -729,14 +832,24 @@ export type TranslationJob = {
   repositoryEvidenceRef: string;
   repositoryEvidenceSha256: string;
   repositoryEvidenceBytes: number;
-  status: "QUEUED" | "RUNNING" | "COMPLETE" | "PARTIAL" | "BLOCKED" | "CANCELLED";
-  stage: "queued" | "pipeline" | "metering" | "complete" | "blocked" | "cancelled" | "restart-recovery";
+  status: "QUEUED" | "PRECHECK" | "RUNNING" | "COMPLETE" | "PARTIAL" | "BLOCKED" | "CANCELLED";
+  stage: "queued" | "preflight" | "pipeline" | "metering" | "complete" | "blocked" | "cancelled" | "restart-recovery";
   progress: number;
   executor: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT";
+  executionId?: string;
+  executionLeaseOwnerId?: string;
+  cancelRequestedAt?: string;
+  cancelRequestedBy?: string;
+  runtimeReceipt?: TranslationExecutionRuntimeReceipt;
   recoveryAttempts: number;
   artifactReady: boolean;
   artifactSha256?: string;
   artifactSize?: number;
+  reportReady: boolean;
+  reportJson?: TranslationConversionReportFile;
+  reportMarkdown?: TranslationConversionReportFile;
+  reportBundle?: TranslationConversionReportFile;
+  conversionSummary?: TranslationConversionSummary;
   snapshotSha256?: string;
   readyCount?: number;
   workUnitCount?: number;
@@ -757,7 +870,10 @@ export type TranslationJob = {
   semanticCoverage?: TranslationSemanticCoverage;
   behaviorCoverage?: TranslationBehaviorCoverage;
   buildVerification?: {
-    status: "PASSED";
+    // The engine reports NOT_RUN for a missing exact toolchain and FAILED for a
+    // reportable build failure; only a verified build is PASSED.  `translationRunner`
+    // already rejects anything outside this set before constructing the job.
+    status: "PASSED" | "FAILED" | "NOT_RUN";
     commands: Array<{ command: string[]; stdout: string; stderr: string }>;
     toolchain: { language: TranslationLanguageId; version: string };
   };

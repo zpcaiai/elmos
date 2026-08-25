@@ -59,7 +59,7 @@ def _schema_sql(request: SynthesisRequest) -> str:
     ]
     uuid_relation_fields = {
         (relation.source, relation.source_field)
-        for relation in request.relations
+        for relation in request.canonical_relations
         if relation.source_field is not None and relation.target_field == "id"
     }
     for entity in request.entities:
@@ -96,7 +96,7 @@ def _schema_sql(request: SynthesisRequest) -> str:
                 "  WITH CHECK (tenant_id = current_setting('app.tenant_id', true));",
             ]
         )
-    for relation in request.relations:
+    for relation in request.canonical_relations:
         if relation.source_field is None or relation.target_field is None:
             continue
         source_table = _table(next(entity for entity in request.entities if entity.singular == relation.source))
@@ -111,6 +111,18 @@ def _schema_sql(request: SynthesisRequest) -> str:
                 "  ON UPDATE CASCADE ON DELETE RESTRICT;",
             ]
         )
+        if relation.enforces_uniqueness:
+            # This is the whole difference between one-to-one and many-to-one:
+            # the same foreign key, forbidden to repeat. Scoped by tenant_id,
+            # like every other constraint in this schema.
+            unique = f"uq_{relation.source}_{relation.source_field}"
+            blocks.extend(
+                [
+                    f'ALTER TABLE "app"."{source_table}" DROP CONSTRAINT IF EXISTS "{unique}";',
+                    f'ALTER TABLE "app"."{source_table}" ADD CONSTRAINT "{unique}"',
+                    f'  UNIQUE ("tenant_id", "{relation.source_field}");',
+                ]
+            )
     blocks.extend(
         [
             "CREATE TABLE IF NOT EXISTS app.schema_migrations (",

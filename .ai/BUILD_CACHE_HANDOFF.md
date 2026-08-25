@@ -377,3 +377,52 @@ automatically; `ELMOS_POLYGLOT_ROUTE_SRC` overrides that. They need
   commit and a hardware profile. Changing any of them expires it —
   `expired_reasons()` tells you which. Do not carry a certificate across a
   capacity change.
+
+## 2026-08-25 — continuation order after BC-13 / BC-14 / BC-15 / BC-16
+
+BC-13 through BC-16 are closed. `pytest tests/` on the merged tree:
+**1600 passed, 52 skipped, 0 failed**. What remains is external, plus two
+decisions.
+
+1. **Run it on the Mac with the pinned toolchain, with `psycopg` installed.**
+   The 26 skipped postgres parameterisations are the single most likely place
+   for a cross-layer contradiction to be hiding — `0009_slo_control.sql` has been
+   verified only as text and byte-identity, never executed against a server.
+   This is the same shape as the `#1 PHP inventory` lesson: the cloud verified
+   the enumeration layer, and only the Mac's full pipeline exposed that the
+   enumerator and its downstream consumer disagreed.
+
+   ```bash
+   cd engines/build-cache-engine
+   uv sync --locked
+   # do NOT add -q: addopts already carries it, and a second one suppresses the
+   # summary line entirely
+   uv run --locked python -m pytest tests/ -o addopts="--strict-markers"
+   uv run --locked ruff check src tests   # expect only tests/test_e2e.py I001
+   uv run --locked mypy --strict          # expect zero once psycopg is present
+   ```
+
+2. **Decide on two reproduced security defects** left untouched on purpose
+   because they move behavior and error precedence that closed rows pin. Both
+   are reproduced with concrete inputs in
+   `.ai/FINDINGS-2026-08-25-build-cache-bc13-bc16.md` §5:
+   (a) `compile_prompt_prefix` as a cross-tenant existence oracle and global
+   project-name squatting primitive — this one is the more serious of the two;
+   (b) the idempotency-key existence oracle on all four BC-10 mutating routes.
+   The fix for (b) is one clause in `_authorize_resource_preflight`, the same
+   shape as the one added for the provider routes — but for
+   `decideCacheAffinity` it changes the precedence
+   `test_default_control_plane_denies_unwired_serving_routes` pins.
+
+3. **Two pre-existing lint/type items** were left alone to keep the change set
+   clean: `tests/test_e2e.py` `I001` and the `psycopg` `import-not-found`. The
+   first is a one-line import reorder owned by another track; the second
+   resolves itself once the dev group is installed.
+
+4. **Optional, named but not done:** `openapi/cache-control-plane.openapi.yaml`
+   does not document the `X-Elmos-Request-Id` / `X-Elmos-Cache-Outcome-Persisted`
+   headers, and `GET /status` does not report composition wiring state. Both
+   touch contract assets or endpoints with assertions owned elsewhere, so
+   neither was changed silently.
+
+5. Keep BC-18 `NOT_RUN` and BC-19 `NOT_CERTIFIED`.

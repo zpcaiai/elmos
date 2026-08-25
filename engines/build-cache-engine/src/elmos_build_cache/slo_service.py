@@ -19,7 +19,7 @@ from typing import Any, Protocol
 
 from .canonical import canonical_json_text, digest_of, require_digest
 from .cas import ContentAddressableStore
-from .clock import Clock, SYSTEM_CLOCK
+from .clock import SYSTEM_CLOCK, Clock
 from .db import MetadataStore
 from .enums import ArtifactStorageState
 from .errors import (
@@ -614,9 +614,14 @@ class CacheSloControlService:
             )
             for dependency_kind, dependency_digest in dependencies:
                 self._assert_owned_registration(dependency_digest)
+                # Dependency edges are recorded under a derived source kind.
+                # ``artifact_targets`` is not ref-kind aware, so writing them
+                # under the identity key would make that key resolve to many
+                # digests and destroy the exact one-target semantic identity
+                # ``_proposal`` and the idempotency guard above depend on.
                 self.store.add_artifact_ref(
                     self.tenant_id,
-                    source_kind,
+                    _dependency_source_kind(source_kind),
                     source_id,
                     dependency_digest,
                     _identifier(dependency_kind, "dependency_kind"),
@@ -1337,6 +1342,12 @@ class CacheSloRuntimeRegistry:
         if registration.service.principal_digest != principal:
             raise NotFound("SLO controller does not exist")
         return registration.service
+
+
+def _dependency_source_kind(source_kind: str) -> str:
+    """Namespace for dependency edges of one semantic identity."""
+
+    return f"{source_kind}-dependency"
 
 
 def _rollout_evidence_payload(evidence: RolloutEvidence) -> dict[str, Any]:

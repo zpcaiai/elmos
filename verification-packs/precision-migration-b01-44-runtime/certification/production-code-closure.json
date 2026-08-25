@@ -21,7 +21,7 @@
       "scripts/precision_migration/production_runtime.py": "sha256:a6a90d98521b9cefded176a35da6ae15e2aad195aeadb4f2774a22682d79b126",
       "scripts/precision_migration/qualify_external_engineering.py": "sha256:cb4043a83872a865a3d1e894aef6b4e074fc06e37b6dbe809e7e1f365b69a999",
       "scripts/precision_migration/runtime.py": "sha256:8e317bf912517cc65e029ee8d1fbdb8d580d563c1bbbd77bda4628d2b540cd16",
-      "scripts/precision_migration/trust.py": "sha256:e0fc4864973491051e6b2c1360c4b7a2a06cbf8547a7a3a984ed67e9edb7762a",
+      "scripts/precision_migration/trust.py": "sha256:48cb911f3cbfe3d0cb297949fd4ef98b9c2f24dee60e23466573fb6433ee90ef",
       "tooling/generate_precision_migration_external_engineering_cases.py": "sha256:20c565b2d36903c2f66dee42f770a38b2afebcb829fa59ee2fa121d50c4bab30",
       "tooling/generate_precision_migration_external_profiles.py": "sha256:d9eb25b6acf3ca5c007f96852a5ab0d9b052c344a8c71a9f8925b99adaaa42f6",
       "tooling/generate_precision_migration_handlers.py": "sha256:cf130cb6b2688f0725bc3fb98bcfb7a8183afc581960d4eb24dd5a1f85529875",

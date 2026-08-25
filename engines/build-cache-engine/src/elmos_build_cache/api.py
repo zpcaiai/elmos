@@ -24,7 +24,7 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from .action_cache import ActionCache, CommitRequest, LookupRequest
+from .action_cache import ActionCache, CommitRequest, LookupResult
 from .affinity import AffinityAuthorizationResolver, AttestedAffinityRegistry
 from .canonical import digest_of, require_digest, sha256_bytes
 from .cas import ContentAddressableStore
@@ -55,8 +55,17 @@ from .errors import (
 from .gc import GarbageCollector
 from .manifests import ActionResultManifest, ExecutionMetrics
 from .parity_api import ParityApiService, ParityRepository, ServiceResult
+from .parity_composition import CompositionLayer
+from .parity_composition_wiring import (
+    ActionCacheLayerProbe,
+    CompositionRunner,
+    LayerProbeFn,
+    ParityCompositionOutcomeSink,
+    ServingCompositionWiring,
+)
 from .parity_evidence import CasParityEvidenceVerifier, ParityEvidenceTrustVerifier
 from .parity_runtime import SERVING_LAYERS, ServingAuthorizer
+from .prompt_cache import PromptCacheController
 from .publish import TreePublisher
 from .staging import Workspace
 
@@ -65,7 +74,11 @@ API_VERSION = "v1"
 MAX_PAGE_SIZE = 500
 MAX_REQUEST_BODY_BYTES = 8 * 1024 * 1024
 AUTHENTICATED_CONTEXT_ENVIRON_KEY = "elmos.authenticated_context"
+COMPOSITION_REQUEST_ID_HEADER = "X-Elmos-Request-Id"
+COMPOSITION_OUTCOME_HEADER = "X-Elmos-Cache-Outcome-Persisted"
 _HTTP_TENANT_IDENTIFIER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+@-]{0,255}$")
+# The composition's request_id vocabulary is the same bounded identifier.
+_COMPOSITION_REQUEST_ID = _HTTP_TENANT_IDENTIFIER
 
 
 @dataclass(frozen=True)
@@ -160,6 +173,8 @@ class CacheControlPlane:
         environment_service: EnvironmentSnapshotService | None = None,
         serving_authorizer: ServingAuthorizer | None = None,
         parity_evidence_trust_verifier: ParityEvidenceTrustVerifier | None = None,
+        prompt_cache_controller: PromptCacheController | None = None,
+        serving_composition: ServingCompositionWiring | None = None,
     ) -> None:
         self.store = store
         self.cas = cas
@@ -173,6 +188,16 @@ class CacheControlPlane:
         # Serving authority is trusted runtime composition, never a request or
         # repository-config assertion. Absence is an explicit deny-all state.
         self.serving_authorizer = serving_authorizer
+        # Provider profiles, kill switches and circuit-breaker state are the
+        # same kind of trusted composition: there is no safe default to build
+        # here, so absence stays absence and the provider routes fail closed.
+        self.prompt_cache_controller = prompt_cache_controller
+        # The signed five-layer composition is the same kind of trusted
+        # composition again. Absence stays absence: without it every route
+        # behaves exactly as it did before the composition existed, and the
+        # composed path is built only when the boundary, the rollback latch and
+        # the outcome repository are all present.
+        self.serving_composition = serving_composition
         resolved_parity_repository = parity_repository
         if resolved_parity_repository is None:
             try:
@@ -183,6 +208,7 @@ class CacheControlPlane:
                 resolved_parity_repository = None
             else:
                 resolved_parity_repository = ParityMetadataRepository(store)
+        self.parity_repository = resolved_parity_repository
         resolved_environment_service = environment_service or EnvironmentSnapshotService(
             store,
             cas,
@@ -202,6 +228,7 @@ class CacheControlPlane:
             affinity_registry=affinity_registry,
             affinity_authorizer=affinity_authorizer,
             environment_service=resolved_environment_service,
+            prompt_cache_controller=prompt_cache_controller,
         )
         self._routes: list[tuple[str, re.Pattern[str], Handler]] = []
         self._register_routes()
@@ -234,6 +261,10 @@ class CacheControlPlane:
         self.route("POST", "/gc/plans", self.create_gc_plan)
         self.route("POST", "/gc/plans/{planId}/apply", self.apply_gc_plan)
         self.route("POST", "/cache/prompt-prefixes/compile", self.compile_prompt_prefix)
+        self.route(
+            "POST", "/cache/provider-prompts/prepare", self.prepare_provider_prompt
+        )
+        self.route("POST", "/cache/provider-prompts/usage", self.record_provider_usage)
         self.route(
             "POST",
             "/cache/context-ledgers/{streamId}/events",
@@ -359,6 +390,23 @@ class CacheControlPlane:
             staged_file_id,
         )
 
+    def _owned_project(self, project_id: str) -> None:
+        """Fail closed on any project this tenant does not own.
+
+        A project owned by somebody else and a project that was never created
+        must be indistinguishable, otherwise the error code alone enumerates
+        another tenant's projects. ``create_run`` deliberately answers
+        ``CONFLICT`` instead because it is claiming an identifier rather than
+        reading one.
+        """
+
+        owner = self.store.query_one(
+            "SELECT tenant_id FROM projects WHERE project_id=?",
+            (project_id,),
+        )
+        if owner is None or str(owner[0]) != self.tenant_id:
+            raise NotFound("project does not exist", project_id=project_id)
+
     def _owned_usable_artifact(self, digest: str) -> Any:
         normalized = require_digest(digest)
         registration = self.store.get_artifact(self.tenant_id, normalized)
@@ -408,6 +456,12 @@ class CacheControlPlane:
                 )
                 if owner is not None and str(owner[0]) != self.tenant_id:
                     raise ConflictError("project identifier is unavailable")
+        if handler.__name__ in ("prepare_provider_prompt", "record_provider_usage"):
+            payload = request.body if isinstance(request.body, dict) else {}
+            project_id = payload.get("project_id")
+            if not isinstance(project_id, str) or not project_id:
+                raise ContractViolation("provider prompt operations require project_id")
+            self._owned_project(project_id)
         if handler.__name__ == "seal_staged_file":
             payload = request.body if isinstance(request.body, dict) else {}
             content = payload.get("content_digest")
@@ -425,24 +479,77 @@ class CacheControlPlane:
     def lookup_action(self, request: Request, params: dict[str, str]) -> Response:
         action_key = _normalize_digest(params["actionKey"])
         minimum = ValidationLevel(request.param("minimumValidation", "TEST_VERIFIED") or "TEST_VERIFIED")
-        result = self.action_cache.lookup(
-            LookupRequest(
-                tenant_id=self.tenant_id,
-                action_key=action_key,
-                trust_namespace=TrustNamespace(
-                    request.param("trustNamespace", str(self.trust_namespace)) or "branch"
-                ),
-                minimum_validation=minimum,
-                mode=CacheMode(request.param("mode", "read-write") or "read-write"),
-            )
+        namespace = TrustNamespace(
+            request.param("trustNamespace", str(self.trust_namespace)) or "branch"
         )
-        if not result.hit:
+        mode = CacheMode(request.param("mode", "read-write") or "read-write")
+        probe = ActionCacheLayerProbe(
+            self.action_cache,
+            tenant_id=self.tenant_id,
+            action_key=action_key,
+            trust_namespace=namespace,
+            minimum_validation=minimum,
+            mode=mode,
+        )
+        runner = self._composition_runner(
+            request,
+            work={
+                "operation": "lookup_action",
+                "action_key": action_key,
+                "trust_namespace": str(namespace),
+                "minimum_validation": str(minimum),
+                "mode": str(mode),
+            },
+            probes={CompositionLayer.ACTION: probe},
+        )
+        if runner is None:
+            return self._action_lookup_response(action_key, probe.lookup(), reused=None)
+        # Only a verified, boundary-authorised, restored exact Action result may
+        # answer "you do not have to execute this". Every other composition
+        # outcome — a miss, a denied grant, a failed restore, an expired cache
+        # deadline — reports a miss, so the composed skip set is a strict subset
+        # of the unwired one.
+        outcome = runner.run(_action_lookup_reports_a_miss)
+        response = self._action_lookup_response(
+            action_key,
+            probe.lookup(),
+            reused=outcome.result.exact_action_reused,
+        )
+        return response.with_headers(
+            **{
+                COMPOSITION_OUTCOME_HEADER: (
+                    "true" if outcome.result.outcome_persisted else "false"
+                )
+            }
+        )
+
+    def _action_lookup_response(
+        self,
+        action_key: str,
+        result: LookupResult,
+        *,
+        reused: bool | None,
+    ) -> Response:
+        # Serving is the conjunction, enforced here rather than inferred from
+        # ``reused``. The 200 body is built entirely from ``result``, so a
+        # composition reporting an exact reuse the Action Cache did not produce
+        # would otherwise answer "you do not have to execute this" with
+        # ``result: null`` attached. Requiring ``result.hit`` on both branches
+        # is what actually makes the composed 200-set a subset of the unwired
+        # one: ``reused`` may only ever subtract from it, never add.
+        served = result.hit and (reused is None or reused)
+        if not served:
+            detail = dict(result.detail)
+            if reused is False and result.hit:
+                detail["composition"] = "COMPOSITION_REFUSED_EXACT_ACTION_REUSE"
+            elif reused is True and not result.hit:
+                detail["composition"] = "COMPOSITION_CLAIMED_UNBACKED_EXACT_ACTION_REUSE"
             return Response(
                 404,
                 {
                     "hit": False,
                     "miss_reasons": [str(reason) for reason in result.reasons],
-                    "detail": result.detail,
+                    "detail": detail,
                 },
             )
         return Response(
@@ -748,13 +855,107 @@ class CacheControlPlane:
             )
         authorizer.authorize_serving(layer, self.tenant_id, project_id)
 
+    # -- five-layer cache-parity composition -----------------------------
+    def _composition_request_id(self, request: Request) -> str:
+        """A bounded, content-free correlation id for the explain endpoint."""
+
+        for header in (COMPOSITION_REQUEST_ID_HEADER, "Idempotency-Key"):
+            value = request.header(header)
+            if value and _COMPOSITION_REQUEST_ID.fullmatch(value):
+                return value
+        return "req-" + digest_of(
+            {
+                "method": request.method.upper(),
+                "path": request.path,
+                "query": dict(request.query),
+                "principal_digest": request.authenticated_principal_digest,
+                "observed_at": self.clock.now(),
+            }
+        ).removeprefix("sha256:")
+
+    def _composition_runner(
+        self,
+        request: Request,
+        *,
+        work: Mapping[str, Any],
+        probes: Mapping[CompositionLayer, LayerProbeFn],
+    ) -> CompositionRunner | None:
+        """Build one composed request scope, or ``None`` when not wired.
+
+        Every collaborator is required. A partially wired plane is not a
+        half-composed plane: it is an unwired one, and behaves exactly as it did
+        before this row existed.
+        """
+
+        wiring = self.serving_composition
+        latch = self.serving_authorizer
+        repository = self.parity_repository
+        if wiring is None or latch is None or repository is None:
+            return None
+        principal_digest = request.authenticated_principal_digest
+        if not principal_digest:
+            # The composition binds a principal. Serving an anonymous request
+            # through it would bind it to somebody else's scope, so refuse.
+            raise PermissionDenied(
+                "cache parity composition requires an authenticated principal",
+                state="NO_AUTHENTICATED_PRINCIPAL",
+            )
+        # The project scope is the signed receipt's, never the request's: a
+        # request cannot nominate the scope it is authorized against.
+        project_id = wiring.serving_boundary.project_id
+        return CompositionRunner(
+            wiring,
+            tenant_id=self.tenant_id,
+            project_id=project_id,
+            principal_digest=principal_digest,
+            request_id=self._composition_request_id(request),
+            work_digest=digest_of(dict(work)),
+            outcome_sink=ParityCompositionOutcomeSink(
+                repository,
+                tenant_id=self.tenant_id,
+                project_id=project_id,
+                now=self.clock.now,
+            ),
+            rollback_latch=latch,
+            probes=probes,
+        )
+
     def _serving_call(
         self,
+        request: Request,
         layer: str,
         project_id: str,
         operation: Callable[[], ServiceResult],
     ) -> Response:
         self._authorize_parity_serving(layer, project_id)
+        runner = self._composition_runner(
+            request,
+            work={
+                "operation": "serving_call",
+                "layer": layer,
+                "project_id": project_id,
+                "path": request.path,
+            },
+            # No serving route carries an action key, so this call site has no
+            # Action probe to offer. That is NOT the same as the Action layer
+            # being out of scope: ``CompositionRunner`` merges
+            # ``wiring.layer_probes`` *underneath* these per-call probes, so a
+            # deployment that registers an ACTION probe there does put the
+            # Action layer in scope on serving routes too. What actually keeps a
+            # serving route from skipping its operation is the explicit
+            # ``exact_action_reused`` refusal in ``_composed_serving_call``,
+            # which latches ``SERVING_PATH_SKIPPED_EXECUTION`` and raises. That
+            # guard is the load-bearing part, not this empty mapping.
+            probes={},
+        )
+        if runner is None:
+            return self._direct_serving_call(operation)
+        return self._composed_serving_call(runner, operation)
+
+    def _direct_serving_call(
+        self,
+        operation: Callable[[], ServiceResult],
+    ) -> Response:
         try:
             result = operation()
             if result.status >= 500:
@@ -779,8 +980,77 @@ class CacheControlPlane:
             self.serving_authorizer.latch_rollback("SERVING_PATH_RUNTIME_FAILED")
             raise
 
+    def _composed_serving_call(
+        self,
+        runner: CompositionRunner,
+        operation: Callable[[], ServiceResult],
+    ) -> Response:
+        """Run the serving operation inside one signed five-layer scope.
+
+        The three refusal paths that escape the composition as exceptions — a
+        fallback executor that crashes, one that returns an unknown type and one
+        that skips unrestored work — all leave here as typed engine errors, so
+        the route maps them to a code instead of leaking an internal traceback.
+        """
+
+        latch = self.serving_authorizer
+        assert latch is not None
+        try:
+            outcome = runner.run(operation)
+        except (CorruptObject, ProvenanceInvalid):
+            latch.latch_rollback("SERVING_PATH_INTEGRITY_FAILED")
+            raise
+        except RemoteUnavailable:
+            latch.latch_rollback("SERVING_PATH_RUNTIME_FAILED")
+            raise
+        except ElmosCacheError:
+            # Includes the composition's own ContractViolation refusals, which
+            # have already latched their own reason code.
+            raise
+        except Exception:
+            latch.latch_rollback("SERVING_PATH_RUNTIME_FAILED")
+            raise
+        composed = outcome.result
+        if composed.exact_action_reused:
+            # Unreachable by construction: no Action probe is in scope on a
+            # serving route. Kept as an enforced invariant rather than a comment,
+            # because the cost of it becoming reachable is served-without-execution.
+            latch.latch_rollback("SERVING_PATH_SKIPPED_EXECUTION")
+            raise ContractViolation(
+                "cache parity serving may not skip its operation",
+                request_id=composed.request_id,
+            )
+        result = outcome.fallback_value
+        if not isinstance(result, ServiceResult):
+            latch.latch_rollback("SERVING_PATH_RESULT_CONTRACT_INVALID")
+            raise ContractViolation("cache parity serving produced an unknown result")
+        if result.status >= 500:
+            latch.latch_rollback("SERVING_PATH_PERSISTENCE_FAILED")
+        return self._parity_response(result).with_headers(
+            **{
+                # A composed call whose outcome graph did not persist has no
+                # audit trail; the composition already latched, and the caller
+                # must not read the 200 as a complete record.
+                COMPOSITION_OUTCOME_HEADER: (
+                    "true" if composed.outcome_persisted else "false"
+                )
+            }
+        )
+
     def compile_prompt_prefix(self, request: Request, params: dict[str, str]) -> Response:
         return self._parity_response(self.parity_api.compile_prompt_prefix(request.json()))
+
+    def prepare_provider_prompt(self, request: Request, params: dict[str, str]) -> Response:
+        return self._parity_response(
+            _content_free_provider_prompt(
+                self.parity_api.prepare_provider_prompt(request.json())
+            )
+        )
+
+    def record_provider_usage(self, request: Request, params: dict[str, str]) -> Response:
+        return self._parity_response(
+            self.parity_api.record_provider_usage(request.json())
+        )
 
     def append_context_ledger_event(
         self, request: Request, params: dict[str, str]
@@ -798,6 +1068,7 @@ class CacheControlPlane:
     ) -> Response:
         project_id = request.param("projectId", "") or ""
         return self._serving_call(
+            request,
             "environment_snapshot",
             project_id,
             lambda: self.parity_api.lookup_environment_snapshot(
@@ -809,6 +1080,7 @@ class CacheControlPlane:
         payload = request.json()
         project_id = payload.get("project_id")
         return self._serving_call(
+            request,
             "affinity",
             project_id if isinstance(project_id, str) else "",
             lambda: self.parity_api.decide_affinity(
@@ -900,6 +1172,16 @@ class CacheControlPlane:
 # --------------------------------------------------------------------------
 # helpers
 # --------------------------------------------------------------------------
+def _action_lookup_reports_a_miss() -> None:
+    """The control plane's fallback for an action lookup.
+
+    ``GET /cache/actions/{actionKey}`` never runs a stage itself: when no exact
+    result may be reused it answers 404, and the caller executes. Making that
+    the composition's fallback keeps "did not reuse" and "must execute" the same
+    branch instead of two branches that can drift apart.
+    """
+
+
 def _request_payload(request: Request) -> dict[str, Any]:
     """Semantic request fingerprint without retaining request payload bytes."""
     if isinstance(request.body, bytes):
@@ -930,6 +1212,33 @@ def _request_payload(request: Request) -> dict[str, Any]:
         "query": dict(sorted(dict(request.query).items())),
         "semantic_headers": semantic_headers,
     }
+
+
+def _content_free_provider_prompt(result: ServiceResult) -> ServiceResult:
+    """Exchange the transient provider payload for its digest.
+
+    :meth:`CacheControlPlane.handle` persists the response it returns, byte
+    for byte, as the durable idempotency record and replays it later out of a
+    store whose access rules are not the prompt's.  The assembled provider
+    payload is the only field of this operation that carries raw tenant
+    prompt bytes, so the control plane never puts it on the wire in the first
+    place: response and durable record stay identical, which is what makes a
+    replay a replay.  A caller that must actually issue the model request
+    holds the segments it just submitted and uses
+    :meth:`ParityApiService.prepare_provider_prompt` in process.
+    """
+
+    body = dict(result.body)
+    provider_request = body.get("provider_request")
+    if not isinstance(provider_request, Mapping):
+        return result
+    projected: dict[str, Any] = {
+        key: value for key, value in provider_request.items() if key != "payload"
+    }
+    projected["payload_digest"] = digest_of(provider_request.get("payload"))
+    projected["payload_retained"] = False
+    body["provider_request"] = projected
+    return ServiceResult(result.status, body)
 
 
 def _idempotency_response(response: Response) -> dict[str, Any]:

@@ -63,8 +63,93 @@ const plannedAssets = [
 ];
 
 const DRAFT_STORAGE_KEY = "elmos.project-generation-drafts.v1";
+const MAX_BROWSER_ARTIFACT_BYTES = 256 * 1024 * 1024;
 const generationTargetIds = new Set<GenerationTargetId>(generationTargets.map((target) => target.id));
 const repositoryWorkspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+type BrowserArtifactTicket = {
+  downloadUrl: string;
+  filename: string;
+  contentSha256: string;
+  byteSize: number;
+  expiresInSeconds: number;
+};
+
+function browserArtifactTicket(value: unknown): BrowserArtifactTicket {
+  if (!value || typeof value !== "object") throw new Error("ARTIFACT_TICKET_INVALID");
+  const ticket = value as Partial<BrowserArtifactTicket>;
+  if (
+    typeof ticket.downloadUrl !== "string"
+    || ticket.downloadUrl.length === 0
+    || ticket.downloadUrl.length > 4096
+    || typeof ticket.filename !== "string"
+    || ticket.filename.length === 0
+    || ticket.filename.length > 180
+    || typeof ticket.contentSha256 !== "string"
+    || !/^[0-9a-f]{64}$/.test(ticket.contentSha256)
+    || !Number.isSafeInteger(ticket.byteSize)
+    || (ticket.byteSize ?? 0) <= 0
+    || (ticket.byteSize ?? 0) > MAX_BROWSER_ARTIFACT_BYTES
+    || !Number.isSafeInteger(ticket.expiresInSeconds)
+    || (ticket.expiresInSeconds ?? 0) <= 0
+    || (ticket.expiresInSeconds ?? 0) > 600
+  ) {
+    throw new Error("ARTIFACT_TICKET_INVALID");
+  }
+  let url: URL;
+  try {
+    url = new URL(ticket.downloadUrl);
+  } catch {
+    throw new Error("ARTIFACT_TICKET_INVALID");
+  }
+  const localDevelopment = url.protocol === "http:"
+    && ["127.0.0.1", "localhost"].includes(url.hostname)
+    && ["127.0.0.1", "localhost"].includes(window.location.hostname);
+  if (
+    (url.protocol !== "https:" && !localDevelopment)
+    || url.username
+    || url.password
+    || url.hash
+  ) {
+    throw new Error("ARTIFACT_TICKET_URL_NOT_ALLOWED");
+  }
+  return ticket as BrowserArtifactTicket;
+}
+
+async function readBoundedArtifact(response: Response, expectedBytes: number): Promise<ArrayBuffer> {
+  if (
+    !Number.isSafeInteger(expectedBytes)
+    || expectedBytes <= 0
+    || expectedBytes > MAX_BROWSER_ARTIFACT_BYTES
+  ) {
+    throw new Error("ARTIFACT_LENGTH_INVALID");
+  }
+  const declared = response.headers.get("content-length");
+  if (declared !== null && Number(declared) !== expectedBytes) {
+    await response.body?.cancel().catch(() => undefined);
+    throw new Error("ARTIFACT_LENGTH_MISMATCH");
+  }
+  if (!response.body) throw new Error("ARTIFACT_BODY_MISSING");
+  const data = new Uint8Array(expectedBytes);
+  const reader = response.body.getReader();
+  let offset = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (offset + value.byteLength > expectedBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new Error("ARTIFACT_LENGTH_MISMATCH");
+      }
+      data.set(value, offset);
+      offset += value.byteLength;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  if (offset !== expectedBytes) throw new Error("ARTIFACT_LENGTH_MISMATCH");
+  return data.buffer;
+}
 
 function isStoredSourceReference(value: unknown): value is GenerationSourceReference {
   if (!value || typeof value !== "object") return false;
@@ -115,7 +200,7 @@ function shellQuote(value: string) {
 function runnerReasonMessage(reason?: string) {
   if (!reason) return "";
   if (reason.includes("ROOTLESS_CONTAINER_ENGINE_REQUIRED")) {
-    return "当前容器引擎不是 rootless；生产一键运行保持关闭，请配置 rootless Podman/Docker。";
+    return "当前容器引擎不是 rootless；生产一键本地部署运行保持关闭，请配置 rootless Podman/Docker。";
   }
   if (reason.includes("TOOLCHAIN_IMAGES_NOT_AVAILABLE_OFFLINE")) {
     return "精确工具链镜像尚未缓存，且构建网络为 none；请预加载 digest 镜像或审批受限构建网络。";
@@ -191,13 +276,23 @@ export function ProjectGenerationStudio() {
   const [recoveryJobId, setRecoveryJobId] = useState("");
   const [runnerBusy, setRunnerBusy] = useState(false);
   const [runtimeLanguage, setRuntimeLanguage] = useState<GenerationTargetId>("java");
+  const [runtimePreviewPayload, setRuntimePreviewPayload] = useState<unknown>(null);
+  const [githubOwner, setGithubOwner] = useState("");
+  const [githubRepositoryName, setGithubRepositoryName] = useState("order-service");
+  const [githubToken, setGithubToken] = useState("");
+  const [githubConfirmed, setGithubConfirmed] = useState(false);
+  const [githubBusy, setGithubBusy] = useState(false);
+  const [githubIdempotencyKey, setGithubIdempotencyKey] = useState(() => crypto.randomUUID());
   const [feedback, setFeedback] = useState("");
   const [targetError, setTargetError] = useState("");
   const feedbackTimer = useRef<number | null>(null);
   const sourceFileInput = useRef<HTMLInputElement | null>(null);
+  const jobRequestEpoch = useRef(0);
   const accountRunner = account.status === "authenticated"
     && account.principal?.permissions.includes("generation:execute") === true;
   const runnerCredentialReady = accountRunner || runnerToken.length >= 24;
+  const accountCanPublish = account.status === "authenticated"
+    && account.principal?.permissions.includes("repository:push") === true;
 
   useEffect(() => {
     if (!accountRunner || !account.principal) return;
@@ -246,6 +341,13 @@ export function ProjectGenerationStudio() {
     }
     return [...groups.entries()].sort(([left], [right]) => left.localeCompare(right));
   }, [job?.artifacts]);
+  const runtimeRemainingSeconds = useMemo(() => {
+    if (!job?.runtime.leaseExpiresAt || !["STARTING", "RUNNING"].includes(job.runtime.status)) {
+      return 0;
+    }
+    return Math.max(0, job.runtime.remainingSeconds ?? 0);
+  }, [job?.runtime.remainingSeconds, job?.runtime.status]);
+  const runtimeCountdown = `${String(Math.floor(runtimeRemainingSeconds / 60)).padStart(2, "0")}:${String(runtimeRemainingSeconds % 60).padStart(2, "0")}`;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -333,17 +435,46 @@ export function ProjectGenerationStudio() {
   }, []);
 
   useEffect(() => {
+    if (!job?.artifactSha256) return;
+    setGithubRepositoryName(draft?.name ?? name);
+    setGithubToken("");
+    setGithubConfirmed(false);
+    setGithubIdempotencyKey(crypto.randomUUID());
+  }, [job?.id, job?.artifactSha256]);
+
+  useEffect(() => {
     if (!job || !runnerCredentialReady) return;
     const active = !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status)
       || ["STARTING", "RUNNING"].includes(job.runtime.status);
     if (!active) return;
-    const timer = window.setInterval(() => {
-      void runnerRequest<GenerationJob>(`/api/generation/jobs/${job.id}`)
-        .then(setJob)
-        .catch(() => undefined);
-    }, 1200);
-    return () => window.clearInterval(timer);
+    let cancelled = false;
+    let timer: number | undefined;
+    const controller = new AbortController();
+    const poll = async () => {
+      const requestEpoch = jobRequestEpoch.current;
+      try {
+        const next = await runnerRequest<GenerationJob>(
+          `/api/generation/jobs/${job.id}`,
+          { signal: controller.signal },
+        );
+        if (!cancelled && jobRequestEpoch.current === requestEpoch) setJob(next);
+      } catch {
+        // Polling is best-effort; the next serialized attempt reconciles state.
+      } finally {
+        if (!cancelled) timer = window.setTimeout(() => void poll(), 1_200);
+      }
+    };
+    timer = window.setTimeout(() => void poll(), 1_200);
+    return () => {
+      cancelled = true;
+      controller.abort();
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
   }, [job?.id, job?.status, job?.runtime.status, runnerCredentialReady, tenantId]);
+
+  useEffect(() => {
+    if (job?.runtime.status !== "RUNNING") setRuntimePreviewPayload(null);
+  }, [job?.id, job?.runtime.status]);
 
   function announce(message: string) {
     if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
@@ -690,6 +821,11 @@ export function ProjectGenerationStudio() {
 
   async function postJobAction(action: "cancel" | "run" | "stop") {
     if (!job) return;
+    if (!runnerCredentialReady) {
+      announce("任务操作需要企业账户会话或本地短期 Runner 令牌。");
+      return;
+    }
+    jobRequestEpoch.current += 1;
     setRunnerBusy(true);
     try {
       const next = await runnerRequest<GenerationJob>(
@@ -700,16 +836,28 @@ export function ProjectGenerationStudio() {
         },
       );
       setJob(next);
-      announce(action === "cancel" ? "任务已请求取消。" : action === "run" ? "运行进程已启动，正在等待健康探针。" : "运行进程已停止。");
+      setRuntimePreviewPayload(null);
+      announce(
+        action === "cancel"
+          ? "任务已请求取消。"
+          : action === "run"
+            ? "浏览器预览已启动；健康确认后可查看，服务端将在 10 分钟租约到期时强制清理。"
+            : "浏览器预览进程已停止。",
+      );
     } catch (error) {
       announce(`操作被阻断：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
     } finally {
+      jobRequestEpoch.current += 1;
       setRunnerBusy(false);
     }
   }
 
   async function downloadArtifact() {
-    if (!job?.artifactReady) return;
+    if (!job?.artifactReady || !job.artifactSize || !job.artifactSha256) return;
+    if (!runnerCredentialReady) {
+      announce("归档下载需要企业账户会话或本地短期 Runner 令牌。");
+      return;
+    }
     try {
       const response = await fetch(`/api/generation/jobs/${job.id}/artifact`, {
         cache: "no-store",
@@ -724,24 +872,25 @@ export function ProjectGenerationStudio() {
         throw new Error(payload.reason ?? `HTTP_${response.status}`);
       }
       let expectedDigest = response.headers.get("x-content-sha256");
-      let blob: Blob;
+      let artifactBytes: ArrayBuffer;
       if (response.headers.get("content-type")?.startsWith("application/json")) {
-        const ticket = await response.json() as {
-          downloadUrl: string;
-          contentSha256: string;
-          byteSize: number;
-        };
+        const ticket = browserArtifactTicket(await response.json());
+        if (
+          ticket.byteSize !== job.artifactSize
+          || ticket.contentSha256 !== job.artifactSha256
+        ) {
+          throw new Error("ARTIFACT_TICKET_IDENTITY_MISMATCH");
+        }
         const objectResponse = await fetch(ticket.downloadUrl, { cache: "no-store" });
         if (!objectResponse.ok) throw new Error(`OBJECT_STORAGE_HTTP_${objectResponse.status}`);
-        blob = await objectResponse.blob();
-        if (blob.size !== ticket.byteSize) throw new Error("ARTIFACT_LENGTH_MISMATCH");
+        artifactBytes = await readBoundedArtifact(objectResponse, ticket.byteSize);
         expectedDigest = ticket.contentSha256;
       } else {
-        blob = await response.blob();
+        artifactBytes = await readBoundedArtifact(response, job.artifactSize);
       }
       const actualDigest = [...new Uint8Array(await crypto.subtle.digest(
         "SHA-256",
-        await blob.arrayBuffer(),
+        artifactBytes,
       ))].map((value) => value.toString(16).padStart(2, "0")).join("");
       if (
         !expectedDigest
@@ -750,6 +899,7 @@ export function ProjectGenerationStudio() {
       ) {
         throw new Error("ARTIFACT_INTEGRITY_MISMATCH");
       }
+      const blob = new Blob([artifactBytes], { type: "application/zip" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -763,6 +913,82 @@ export function ProjectGenerationStudio() {
       );
     } catch (error) {
       announce(`归档下载失败：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
+    }
+  }
+
+  async function openRuntimePreview() {
+    if (!job || job.runtime.status !== "RUNNING") return;
+    setRunnerBusy(true);
+    try {
+      const previewResult = await runnerRequest<{
+        status: "RUNNING";
+        service: string;
+        language: GenerationTargetId;
+        health: unknown;
+        leaseExpiresAt: string;
+        remainingSeconds: number;
+      }>(`/api/generation/jobs/${job.id}/preview`);
+      setRuntimePreviewPayload(previewResult);
+      announce(`已在浏览器读取 ${previewResult.service} 的真实运行健康响应。`);
+    } catch (error) {
+      setRuntimePreviewPayload(null);
+      announce(`浏览器预览失败：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
+    } finally {
+      setRunnerBusy(false);
+    }
+  }
+
+  async function publishGitHub() {
+    if (!job?.artifactReady || !job.artifactSha256) return;
+    if (accountRunner && !accountCanPublish) {
+      announce("当前企业账户缺少 repository:push 权限；未创建 GitHub 仓库。");
+      return;
+    }
+    if (
+      !/^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/.test(githubRepositoryName.trim())
+      || githubRepositoryName.trim().toLowerCase().endsWith(".git")
+      || githubToken.trim().length < 20
+      || /\s/.test(githubToken.trim())
+      || !githubConfirmed
+    ) {
+      announce("请填写有效仓库名与短期 GitHub 凭证，并确认仅创建新的私有仓库。");
+      return;
+    }
+    if (!window.confirm(`将在 GitHub 创建私有仓库 ${githubOwner.trim() ? `${githubOwner.trim()}/` : "当前账户/"}${githubRepositoryName.trim()} 并上传完整生成代码。继续？`)) {
+      return;
+    }
+    const token = githubToken.trim();
+    const requestBody = JSON.stringify({
+      repositoryName: githubRepositoryName.trim(),
+      ...(githubOwner.trim() ? { owner: githubOwner.trim() } : {}),
+      description: `Generated by ELMOS from ${job.artifactSha256}`,
+      token,
+      artifactSha256: job.artifactSha256,
+      idempotencyKey: githubIdempotencyKey,
+      confirmed: true,
+    });
+    setGithubToken("");
+    setGithubConfirmed(false);
+    setGithubBusy(true);
+    try {
+      const next = await runnerRequest<GenerationJob>(
+        `/api/generation/jobs/${job.id}/github`,
+        {
+          method: "POST",
+          body: requestBody,
+        },
+      );
+      setJob(next);
+      announce(`GitHub 私有仓库 ${next.githubPublication?.repositoryFullName ?? githubRepositoryName} 已按 main 提交回读验证。`);
+    } catch (error) {
+      try {
+        setJob(await runnerRequest<GenerationJob>(`/api/generation/jobs/${job.id}`));
+      } catch {
+        // The original publication error remains the useful user-facing result.
+      }
+      announce(`GitHub 上传被阻断：${error instanceof Error ? error.message : "UNKNOWN_ERROR"}`);
+    } finally {
+      setGithubBusy(false);
     }
   }
 
@@ -967,7 +1193,7 @@ export function ProjectGenerationStudio() {
                 </div>
               )}
               <div className="generation-source-actions">
-                <button type="button" className="button button-secondary" onClick={() => void ingestSources()} disabled={sourceBusy || runnerBusy}>
+                <button type="button" className="button button-secondary" onClick={() => void ingestSources()} disabled={sourceBusy || runnerBusy || !runnerCredentialReady}>
                   <Icon name={sourceBusy ? "refresh" : "spark"} size={14} className={sourceBusy ? "spinning" : ""} />
                   {sourceBusy ? "正在提取与绑定" : "解析并合并来源"}
                 </button>
@@ -1109,7 +1335,7 @@ export function ProjectGenerationStudio() {
 
           <section className="generation-runner" aria-labelledby="generation-runner-title">
             <div className="generation-section-heading compact">
-              <div><span className="overline">GOVERNED LOCAL RUNNER</span><h3 id="generation-runner-title">执行、验证与一键运行</h3></div>
+              <div><span className="overline">GOVERNED LOCAL RUNNER</span><h3 id="generation-runner-title">执行、验证与一键本地部署运行</h3></div>
               <StatusChip status={job?.status ?? (runnerReady ? "READY" : runnerReadiness?.status === "BLOCKED" ? "BLOCKED" : "NOT_CONFIGURED")} compact />
             </div>
             <div className="generation-job-recovery">
@@ -1124,7 +1350,7 @@ export function ProjectGenerationStudio() {
                   maxLength={36}
                 />
               </label>
-              <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerReady} onClick={() => void recoverJob()}>
+              <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerReady || !runnerCredentialReady} onClick={() => void recoverJob()}>
                 <Icon name="refresh" size={15} />恢复任务
               </button>
               <small>使用当前租户、审批者与重新输入的短期令牌恢复服务端原子持久化任务；浏览器不保存令牌。</small>
@@ -1140,6 +1366,7 @@ export function ProjectGenerationStudio() {
                   <div><span>阶段</span><strong>{job.stage}</strong></div>
                   <div><span>结果</span><strong>{job.resultStatus}</strong></div>
                   <div><span>运行</span><strong>{job.runtime.status}</strong></div>
+                  <div><span>预览剩余</span><strong>{["STARTING", "RUNNING"].includes(job.runtime.status) ? runtimeCountdown : "--:--"}</strong></div>
                   <div><span>隔离</span><strong>{job.runtime.executor ?? capability?.localRunner.isolation ?? "NOT_CONFIGURED"}</strong></div>
                   {job.artifactSha256 && <div><span>归档摘要</span><strong>{job.artifactSha256.slice(0, 12)}</strong></div>}
                 </div>
@@ -1160,10 +1387,44 @@ export function ProjectGenerationStudio() {
                 )}
                 <div className="generation-runtime-controls">
                   <label><span>运行目标</span><select value={runtimeLanguage} onChange={(event) => setRuntimeLanguage(event.target.value as GenerationTargetId)} disabled={["STARTING", "RUNNING"].includes(job.runtime.status)}>{job.runtime.plans.map((plan) => <option key={plan.language} value={plan.language}>{plan.language} · :{plan.port}</option>)}</select></label>
-                  <button className="button button-secondary" type="button" disabled={runnerBusy || job.runtime.plans.length === 0 || ["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("run")}><Icon name="play" size={15} />一键运行</button>
-                  <button className="button button-secondary" type="button" disabled={runnerBusy || !["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("stop")}><Icon name="close" size={15} />停止</button>
-                  <button className="button button-primary" type="button" disabled={!job.artifactReady} onClick={() => void downloadArtifact()}><Icon name="file" size={15} />下载归档</button>
+                  <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady || job.runtime.plans.length === 0 || ["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("run")}><Icon name="play" size={15} />一键运行 10 分钟</button>
+                  <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady || job.runtime.status !== "RUNNING"} onClick={() => void openRuntimePreview()}><Icon name="external" size={15} />浏览器查看运行结果</button>
+                  <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady || !["STARTING", "RUNNING"].includes(job.runtime.status)} onClick={() => void postJobAction("stop")}><Icon name="close" size={15} />停止</button>
+                  <button className="button button-primary" type="button" disabled={!job.artifactReady || !runnerCredentialReady} onClick={() => void downloadArtifact()}><Icon name="file" size={15} />一键下载完整代码库</button>
                 </div>
+                {runtimePreviewPayload !== null && (
+                  <pre className="generation-runtime-preview" aria-label="浏览器运行结果">{JSON.stringify(runtimePreviewPayload, null, 2)}</pre>
+                )}
+                <section className="generation-github-publish" aria-labelledby="generation-github-title">
+                  <div className="generation-section-heading compact">
+                    <div><span className="overline">GITHUB DELIVERY</span><h4 id="generation-github-title">一键上传 GitHub 私有仓库</h4></div>
+                    <StatusChip status={job.githubPublication?.status ?? "NOT_RUN"} compact />
+                  </div>
+                  <p>只创建新的私有仓库和 <code>main</code> 首次提交，不覆盖、强推、合并或部署。生成归档与远端 Tree/Branch 会逐项回读校验。</p>
+                  <div className="generation-github-fields">
+                    <label><span>GitHub 所有者（可选）</span><input value={githubOwner} onChange={(event) => setGithubOwner(event.target.value)} placeholder="组织名；留空为当前账户" autoComplete="off" maxLength={39} /></label>
+                    <label><span>GitHub 仓库名</span><input value={githubRepositoryName} onChange={(event) => setGithubRepositoryName(event.target.value)} autoComplete="off" maxLength={100} /></label>
+                    <label className="generation-github-token"><span>GitHub 短期凭证</span><input type="password" value={githubToken} onChange={(event) => setGithubToken(event.target.value)} autoComplete="off" minLength={20} maxLength={512} aria-describedby="github-token-hint" /><small id="github-token-hint">需要 Administration: write 与 Contents: write；只在本次 HTTPS 请求内存中使用，不写入浏览器存储、任务、日志或代码库。</small></label>
+                  </div>
+                  <label className="generation-approval generation-github-confirmation">
+                    <input type="checkbox" checked={githubConfirmed} onChange={(event) => setGithubConfirmed(event.target.checked)} disabled={githubBusy || job.status !== "COMPLETED"} />
+                    <span><strong>我确认创建新的 GitHub 私有仓库并上传当前摘要绑定的完整代码</strong><small>上传失败时只清理本次新建仓库；清理无法验证会保持 BLOCKED 并要求人工核对。</small></span>
+                  </label>
+                  <div className="generation-github-actions">
+                    <button className="button button-primary" type="button" disabled={githubBusy || job.status !== "COMPLETED" || !job.artifactReady || !githubConfirmed || githubToken.trim().length < 20 || (accountRunner && !accountCanPublish)} onClick={() => void publishGitHub()}><Icon name="repository" size={15} />{githubBusy ? "正在创建并校验…" : "一键上传 GitHub"}</button>
+                    {accountRunner && !accountCanPublish && <small>当前账户没有 repository:push，服务端会拒绝外部写入。</small>}
+                  </div>
+                  {job.githubPublication?.status === "PUBLISHED" && job.githubPublication.repositoryUrl && (
+                    <div className="generation-github-receipt">
+                      <strong>{job.githubPublication.repositoryFullName}</strong>
+                      <span>main · {job.githubPublication.commitSha?.slice(0, 12)} · {job.githubPublication.fileCount} 个文件</span>
+                      <a href={job.githubPublication.repositoryUrl} target="_blank" rel="noreferrer">在 GitHub 查看</a>
+                    </div>
+                  )}
+                  {job.githubPublication?.status === "BLOCKED" && (
+                    <p className="generation-job-reason" role="alert">{job.githubPublication.reason}</p>
+                  )}
+                </section>
               </div>
             )}
           </section>
@@ -1171,7 +1432,7 @@ export function ProjectGenerationStudio() {
           <div className="generation-submit-row">
             <div><Icon name="lock" size={16} /><span><strong>显式批准后才允许执行</strong><small>未配置 Runner 时仍可导出 Intent 与 CLI 交接</small></span></div>
             <div className="generation-submit-actions">
-              {job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status) && <button className="button button-secondary" type="button" disabled={runnerBusy} onClick={() => void postJobAction("cancel")}><Icon name="close" size={16} />取消任务</button>}
+              {job && !["COMPLETED", "PARTIAL", "BLOCKED", "CANCELLED"].includes(job.status) && <button className="button button-secondary" type="button" disabled={runnerBusy || !runnerCredentialReady} onClick={() => void postJobAction("cancel")}><Icon name="close" size={16} />取消任务</button>}
               <button className="button button-secondary" type="button" disabled={!draft} onClick={downloadIntent}><Icon name="external" size={16} />导出 Intent</button>
               <button className="button button-secondary" type="submit"><Icon name="spark" size={16} />锁定生成计划</button>
               <button className="button button-secondary" type="button" disabled={!draft || !runnerReady || !runnerCredentialReady || runnerBusy} onClick={() => void analyzeDraft()}><Icon name="workflow" size={16} />分析并整理需求</button>

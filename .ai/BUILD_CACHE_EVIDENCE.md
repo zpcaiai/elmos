@@ -320,3 +320,96 @@ Local tests may support implementation readiness, but they cannot produce a
 Codex/Claude-equivalence claim. A future report must bind the exact source,
 configuration, provider/model/tool profile, date, platform, corpus, raw
 evidence, replay command, authorization, executor and separate verifier.
+
+## 2026-08-25 — claim boundaries after BC-13 / BC-14 / BC-15 / BC-16
+
+Everything recorded for this date is **cloud-container engineering evidence**
+(CPython 3.11.15, aarch64-linux). It is not Mac, provider, production,
+independent-verifier or certification evidence. BC-18 remains `NOT_RUN` and
+BC-19 remains `NOT_CERTIFIED`. Local test passes were not relabelled.
+
+### An adversarial pass refuted one of the three closing claims
+
+After the three rows reported success, an independent pass was run whose brief
+was to **refute** them, defaulting to "refuted" where it could not positively
+confirm. It was read-only on the tree and mutated only copies under `/tmp`.
+
+**Refuted — "the wiring cannot widen what skips execution."** The claim rested on
+`served = result.hit if reused is None else reused` plus the argument that
+`exact_action_reused` is a conjunction on top of `result.hit`. But
+`CompositionRunner.__init__` lets a `layer_ports[ACTION]` entry replace the
+whole port, discarding the per-request `ActionCacheLayerProbe` that
+`lookup_action` supplies — after which `exact_action_reused` has no causal link
+to the Action Cache at all. Reproduced on a cold cache with nothing ever
+committed: the wired plane answered `200 {"hit": true, "result": null}` where the
+unwired plane answered `404 {"hit": false, "miss_reasons": ["NO_ENTRY"]}`. A
+"do not execute" answer with no result attached.
+
+The lesson is about the shape of the argument, not the bug: a subset property
+that depends on a conjunct which can be bypassed elsewhere is **contingent, not
+structural**. It now lives at the decision point — `served = result.hit and
+(reused is None or reused)`, so `reused` can only subtract — and an ACTION port
+override is refused at wiring construction.
+
+**Partially confirmed — "raw prompt payloads never enter the durable idempotency
+record."** The central mechanism held under mutation. But `handle()` persists any
+response under 500, and two validators echoed caller strings verbatim into
+`details`, so `POST /cache/provider-prompts/prepare` with the whole prompt as
+`request_class` produced a 422 whose `details.value` was that prompt, written to
+`idempotency_records.response`. The canary test never issued a 4xx — it scanned
+only the rows the happy path wrote. Both validators now report shape instead of
+content, and the canary scans every row the whole sequence writes. Separately,
+the scan was NFC-blind (`canonical_json_bytes` normalises before storage), so a
+leak written in NFD would have slipped past; both sides are now normalised, with
+a dedicated NFD case whose positive control uses the writer's own encoder rather
+than `json.dumps` (which escapes non-ASCII and would make the check vacuous).
+
+**Confirmed — no assertion was relaxed and no test was deleted.** All six
+modified test files were diffed against the pristine baseline. The only removal
+is a rename whose replacement is strictly stronger (it pins the full ordered
+migration tuple in both dialects and byte-compares every packaged mirror, not
+just the newest). One coverage regression was found and fixed:
+`test_postgres_project_scope_migration_failure_is_retryable_and_contiguous` used
+`POSTGRES_MIGRATIONS[-1]`, which silently re-pointed at the SLO migration when
+`0009` landed — so a test named for the project-scope migration had stopped
+exercising it. It now names its subject, and the SLO case is its own test.
+
+**Confirmed — the store, not the test, was right about `ensure_project`.**
+`0001_init.sql:12` declares `projects.project_id` a **global** `PRIMARY KEY`, and
+`0006` adds the composite unique index as an FK target without dropping it. Two
+tenants sharing a `project_id` is not schema-permitted, so the `ConflictError` is
+correct and `src/` was correctly left alone.
+
+**Two guards had zero coverage — deleting one was invisible to the whole suite.**
+Both are now pinned, and each was proven to bite by reverting it. One of them is
+precisely the conjunct the refuted claim rested on, and nothing downstream
+re-checks it: it is unfalsifiable today only because `ActionCache.lookup` happens
+to set `result_digest` on the hit path alone. Any future miss reason that keeps
+the digest would turn straight into a served hit.
+
+**A correctness comment in `api.py` gave a false reason.** It claimed the ACTION
+layer stays out of scope on serving routes because `probes={}` is passed;
+`CompositionRunner` merges `wiring.layer_probes` *underneath* the per-call
+probes, so a deployment-level ACTION probe is in scope there. The behavior was
+still fail-closed — but by way of the guard that had no test. A false "this
+cannot happen" comment also explains why nobody tested the thing that actually
+prevents it.
+
+### Reproduced, in scope of nothing this session claimed, deliberately not fixed
+
+These change behavior of closed row BC-10 and of `parity_store` semantics that
+other tests pin. They are recorded here as reproduced facts, not as fixed:
+
+1. `POST /cache/prompt-prefixes/compile` is a cross-tenant project existence
+   oracle (foreign → `404 TENANT_MISMATCH`, absent → `200` **plus a new
+   `projects` row owned by the caller**), and combined with the global
+   `project_id` primary key it lets any tenant permanently squat any unused
+   project name. Reproduced: `tenant-attacker` claimed `acme-production`, after
+   which the rightful tenant's `ensure_project` fails closed forever.
+2. All four BC-10 mutating routes take the durable idempotency claim before
+   their own tenancy check, so a used key answers `409` where an unused key
+   answers `404`/`422`/`403` — an existence oracle over idempotency keys — and
+   every probe writes a durable row for a request that was never authorized.
+3. The composition's `request_id` is a client header with no principal binding,
+   so two principals in one tenant sharing a request id land in one outcome
+   bucket that `explain_cache_outcome` reads without a principal check.

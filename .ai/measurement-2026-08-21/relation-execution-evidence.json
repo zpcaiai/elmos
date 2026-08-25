@@ -1,0 +1,38 @@
+{
+  "kind": "elmos.project-synthesis-relation-execution-evidence",
+  "schema_version": "1.0.0",
+  "server": "PostgreSQL 16.15",
+  "cases": [
+    {
+      "relation_kind": "many-to-one",
+      "migration_executed": "PASSED",
+      "first_child_insert": "PASSED",
+      "second_child_for_same_parent": "ACCEPTED",
+      "dangling_foreign_key": "REFUSED"
+    },
+    {
+      "relation_kind": "one-to-one",
+      "migration_executed": "PASSED",
+      "first_child_insert": "PASSED",
+      "second_child_for_same_parent": "REFUSED (UniqueViolation)",
+      "dangling_foreign_key": "REFUSED"
+    },
+    {
+      "relation_kind": "one-to-many",
+      "migration_executed": "PASSED",
+      "first_child_insert": "PASSED",
+      "second_child_for_same_parent": "ACCEPTED",
+      "dangling_foreign_key": "REFUSED"
+    }
+  ],
+  "expected_second_child": {
+    "many-to-one": "ACCEPTED",
+    "one-to-many": "ACCEPTED",
+    "one-to-one": "REFUSED"
+  },
+  "execution_status": "LOCAL_EXECUTED",
+  "certification_status": "NOT_CERTIFIED",
+  "limitations": [
+    "Proves the generated migration runs and the relation constraints behave. It does not run the generated application, which needs the pinned toolchains."
+  ]
+}

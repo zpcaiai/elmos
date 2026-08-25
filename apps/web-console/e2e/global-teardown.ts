@@ -1,4 +1,4 @@
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -27,7 +27,7 @@ async function removeTemporaryNextTypeReferences(applicationRoot: string): Promi
   const nextEnvironmentSource = await readFile(nextEnvironmentPath, "utf8");
   const stableNextEnvironment = nextEnvironmentSource.replace(
     temporaryNextTypeImport,
-    'import "./.next/types/$1.d.ts";',
+    (_match, typeName: string) => `import "./.next/types/${typeName}.d.ts";`,
   );
   if (stableNextEnvironment !== nextEnvironmentSource) {
     await writeFile(nextEnvironmentPath, stableNextEnvironment, "utf8");
@@ -35,11 +35,12 @@ async function removeTemporaryNextTypeReferences(applicationRoot: string): Promi
 }
 
 export default async function globalTeardown(): Promise<void> {
+  const canonicalTemporaryRoot = await realpath(tmpdir());
   const runnerRoot = process.env.ELMOS_E2E_EFFECTIVE_RUNNER_ROOT;
   if (
     process.env.ELMOS_E2E_AUTO_RUNNER_ROOT === "true"
     && runnerRoot
-    && path.dirname(path.resolve(runnerRoot)) === path.resolve(tmpdir())
+    && path.dirname(path.resolve(runnerRoot)) === canonicalTemporaryRoot
     && path.basename(runnerRoot).startsWith("elmos-web-console-e2e-")
   ) {
     await rm(runnerRoot, {
@@ -50,6 +51,21 @@ export default async function globalTeardown(): Promise<void> {
     });
   }
 
+  const translationFixtureRoot = process.env.ELMOS_E2E_EFFECTIVE_TRANSLATION_FIXTURE_ROOT;
+  if (
+    translationFixtureRoot
+    && path.dirname(path.resolve(translationFixtureRoot)) === canonicalTemporaryRoot
+    && path.basename(translationFixtureRoot).startsWith("elmos-web-console-e2e-translation-fixtures-")
+  ) {
+    await rm(translationFixtureRoot, {
+      recursive: true,
+      force: true,
+      maxRetries: 5,
+      retryDelay: 100,
+    });
+  }
+
+  const distDir = process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR;
   const applicationRoot = path.resolve(process.cwd());
   // Playwright runs globalTeardown before it terminates configured webServer
   // processes. Removing the active Next dist directory here corrupts the live

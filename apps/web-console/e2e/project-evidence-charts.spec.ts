@@ -174,6 +174,9 @@ function translationJob(): TranslationJob {
     executor: "HOST_DEVELOPMENT",
     recoveryAttempts: 0,
     artifactReady: false,
+    // `reportReady` arrived on TranslationJob with the functional-conversion
+    // report from the other side of this merge; this fixture predates it.
+    reportReady: false,
     workUnitCount: 2,
     includedUnitCount: 1,
     semanticCoverage: {

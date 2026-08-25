@@ -8,6 +8,7 @@ import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -4183,17 +4184,28 @@ def _react() -> ExactToolchain:
     )
 
 
-def exact_toolchain(language: Language) -> ExactToolchain:
-    """Resolve one language's pinned toolchain, or fail with a code.
+def _toolchain_fingerprint() -> tuple[str, ...]:
+    tsc = REPOSITORY_ROOT / "engines" / "frontend-client-engine" / "node_modules" / ".bin" / "tsc"
+    try:
+        tsc_stat = tsc.stat(follow_symlinks=True)
+        tsc_identity = f"{tsc_stat.st_dev}:{tsc_stat.st_ino}:{tsc_stat.st_size}:{tsc_stat.st_mtime_ns}"
+    except OSError:
+        tsc_identity = "MISSING"
+    return (
+        os.environ.get("PATH", ""),
+        os.environ.get("ELMOS_JAVA21_HOME", ""),
+        os.environ.get("ELMOS_CLANG_HOME", ""),
+        os.environ.get(_CLANG_VERSION_VARIABLE, ""),
+        os.environ.get(_SWIFT_VERSION_VARIABLE, ""),
+        tsc_identity,
+    )
 
-    A language absent from this table has no pinned toolchain at all, which
-    is a property of the engine rather than of the machine asking: it cannot
-    be a source anywhere. Letting the bare `KeyError` escape made that read
-    as an internal fault at every call site -- and it is the one dict lookup
-    in this package that did not convert. `emitter._type`,
-    `identifier_hygiene.policy_for_language` and the pipeline's own lookup
-    all raise a coded `RouteError` here.
-    """
+
+@lru_cache(maxsize=64)
+def _cached_exact_toolchain(
+    language: Language,
+    _fingerprint: tuple[str, ...],
+) -> ExactToolchain:
     selectors = {
         "java": _java,
         "python": _python,
@@ -4215,3 +4227,21 @@ def exact_toolchain(language: Language) -> ExactToolchain:
     except KeyError as error:
         raise RouteError(f"EXACT_TOOLCHAIN_UNREGISTERED:{language}") from error
     return selector()
+
+
+def clear_exact_toolchain_cache() -> None:
+    _cached_exact_toolchain.cache_clear()
+
+
+def exact_toolchain(language: Language) -> ExactToolchain:
+    """Resolve one language's pinned toolchain, or fail with a code.
+
+    A language absent from this table has no pinned toolchain at all, which
+    is a property of the engine rather than of the machine asking: it cannot
+    be a source anywhere. Letting the bare `KeyError` escape made that read
+    as an internal fault at every call site -- and it is the one dict lookup
+    in this package that did not convert. `emitter._type`,
+    `identifier_hygiene.policy_for_language` and the pipeline's own lookup
+    all raise a coded `RouteError` here.
+    """
+    return _cached_exact_toolchain(language, _toolchain_fingerprint())

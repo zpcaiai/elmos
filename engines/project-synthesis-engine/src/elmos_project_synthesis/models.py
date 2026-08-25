@@ -344,10 +344,24 @@ class RelationSpec:
             if mapping.get("target_field") is not None
             else None
         )
-        if source_field and source_field not in entity_fields[source]:
+        if kind == "one-to-many":
+            # The foreign key lives on the MANY side, which is the target here,
+            # so the source names its own `id`. Allowed for this kind only --
+            # every other kind still requires a real declared field.
+            if source_field is not None and source_field != "id":
+                raise RequestValidationError(
+                    f"RELATION_SOURCE_FIELD_UNKNOWN:{source}:{source_field}"
+                )
+        elif source_field and source_field not in entity_fields[source]:
             raise RequestValidationError(f"RELATION_SOURCE_FIELD_UNKNOWN:{source}:{source_field}")
         if target_field and target_field not in entity_fields[target] | {"id"}:
             raise RequestValidationError(f"RELATION_TARGET_FIELD_UNKNOWN:{target}:{target_field}")
+        if kind == "one-to-many" and target_field == "id":
+            # `A one-to-many B` with the key on A's id and B's id is not a
+            # foreign key, it is two primary keys pointed at each other.
+            raise RequestValidationError(
+                f"RELATION_TARGET_FIELD_UNKNOWN:{target}:{target_field}"
+            )
         if (source_field is None) != (target_field is None):
             raise RequestValidationError("RELATION_FIELD_MAPPING_INCOMPLETE")
         if kind not in SUPPORTED_RELATION_KINDS:
@@ -362,6 +376,32 @@ class RelationSpec:
             source_field=source_field,
             target_field=target_field,
         )
+
+    def canonical(self) -> RelationSpec:
+        """This relation with the foreign key on `source`, referencing `target.id`.
+
+        `one-to-many` is the only kind declared from the other end, so it is the
+        only one that swaps. Everything downstream -- migration, DTO typing,
+        fixture ordering -- then has a single orientation to reason about, and
+        `kind` still says what the author actually wrote.
+        """
+
+        if self.kind != "one-to-many":
+            return self
+        return RelationSpec(
+            source=self.target,
+            target=self.source,
+            kind=self.kind,
+            required=self.required,
+            source_field=self.target_field,
+            target_field=self.source_field,
+        )
+
+    @property
+    def enforces_uniqueness(self) -> bool:
+        """A one-to-one is a foreign key that may not repeat."""
+
+        return self.kind == "one-to-one"
 
     def to_mapping(self) -> dict[str, Any]:
         result: dict[str, Any] = {
@@ -552,14 +592,24 @@ class SynthesisRequest:
             raise RequestValidationError("RELATIONS_MUST_BE_ARRAY")
         relations = tuple(RelationSpec.from_mapping(item, entity_fields=entity_fields) for item in relations_raw)
         if persistence == "postgresql" and require_approval:
-            if any(
-                relation.kind != "many-to-one" or relation.source_field is None or relation.target_field != "id"
-                for relation in relations
-            ):
-                raise RequestValidationError("PRODUCTION_RELATION_PROFILE_UNSUPPORTED")
+            # many-to-many is the one kind still outside the production profile:
+            # it needs a join table owned by no entity, plus association
+            # endpoints. The other three are one foreign key each.
+            for relation in relations:
+                canonical = relation.canonical()
+                if (
+                    relation.kind not in {"many-to-one", "one-to-one", "one-to-many"}
+                    or canonical.source_field is None
+                    or canonical.target_field != "id"
+                ):
+                    raise RequestValidationError("PRODUCTION_RELATION_PROFILE_UNSUPPORTED")
             adjacency: dict[str, set[str]] = {name: set() for name in entity_names}
             for relation in relations:
-                adjacency[relation.source].add(relation.target)
+                # Cycles are a property of the foreign keys, so they are checked
+                # in the canonical orientation -- otherwise a cycle written
+                # partly as one-to-many would slip through.
+                canonical = relation.canonical()
+                adjacency[canonical.source].add(canonical.target)
             visiting: set[str] = set()
             visited: set[str] = set()
 
@@ -631,6 +681,18 @@ class SynthesisRequest:
             requirement_sources=requirement_sources,
             source_bundle_sha256=source_bundle_sha256,
         )
+
+    @property
+    def canonical_relations(self) -> tuple[RelationSpec, ...]:
+        """Every relation with its foreign key on `source`, referencing `target.id`.
+
+        Generation reads this rather than `relations`, so emitters keep one code
+        path no matter which end the author declared the relation from.
+        Documentation keeps reading `relations`, because an ER diagram has to
+        show what was written.
+        """
+
+        return tuple(relation.canonical() for relation in self.relations)
 
     @property
     def entity(self) -> EntitySpec:

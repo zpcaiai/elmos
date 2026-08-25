@@ -428,3 +428,362 @@ main 的区 2 才有，`source` 只有取 perf 的区 3 才有，`path` 还会�
 4. `discover_repository` 同理：先 `_preflight_inventory`（main），
    再 perf 的 `file_results` 后处理循环
 5. 每步之后跑引擎 pytest，并用规则 11 修订版的双向检验（无 F821 且无未使用顶层定义）
+
+---
+
+## 补记（合并提交 a54938b26 之后发现）
+
+### 规则 13：合并前先确认「分支尖端」是不是分支的真实状态
+
+这次合并的 perf 一侧取的是 `origin/perf/...`（当时 `5543624b4`），
+但 perf 的真实可运行状态一直在本地工作区里没提交。结果是：
+
+```
+5543624b4:assembly.py   import REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE   ← 引用了
+5543624b4:models.py     （无定义）                                     ← 但没定义
+```
+
+也就是说 **origin/perf 本身就 import 不了**，跟合并无关。它之前能跑测试，
+是因为工作区里有未提交的 `models.py`。合并后 15 个测试模块 collection error，
+根因就是这个，而不是嫁接接缝。
+
+教训：把 `git status` 干净、`git log` 有内容，当成「分支状态完整」的证据是错的。
+合并前该做的一步是拿分支尖端**单独**跑一次 import/collect：
+
+```
+git worktree add /tmp/tip-check <branch-tip>
+uv --directory engines/polyglot-route-engine run --locked --group dev pytest --collect-only -q
+```
+
+### 规则 14：`git add -A` 出来的提交，进 main 之前必须先看文件清单
+
+补上这批工作的那个本地提交（subject 是 `...`）是 `add -A` 扫出来的，
+6199 个文件里混着：
+
+| 路径 | 文件数 | 性质 |
+| --- | --- | --- |
+| `.matrix223-python-let-candidate.xU9hBY/` | 1595 | pytest basetemp，测试产物 |
+| `_merge_conflicts/` | 56 | 这次合并的暂存目录 |
+| `verify-merge.sh` / `commit-perf-merge.sh` / `fix-lint.py` / `resolve-merge.py` / `regenerate-inventory.sh` | 5 | 合并期临时脚本 |
+
+`A-clean-perf-tip.sh` 用 `git rm --cached` + `--amend` 把它们摘掉（工作区文件不动），
+并写进 `.gitignore`。因为这个提交还没 push，amend 是安全的。
+
+### 二次合并的冲突面
+
+本地 perf 尖端与我手工解过的 54 个文件重叠 **21 个**，其中难的是
+`native.py` `discovery.py` `pipeline.py` `batch.py` `validation.py` `repository.py`。
+`assembly.py` 不在重叠里，`models.py` 也不在原冲突清单里 —— 所以
+lifecycle 那三个符号会随合并干净地进来。
+
+重叠清单：
+
+```
+Makefile, Makefile.batch29, README.md,
+apps/web-console/{app/lib/contracts.ts, app/lib/server/translationRunner.ts,
+                  app/translation/TranslationStudio.tsx,
+                  e2e/core-business-lines-ui.spec.ts, package.json},
+docs/BUSINESS_LINE_CLOSURE_MATRIX.md,
+engines/polyglot-route-engine/README.md,
+engines/polyglot-route-engine/src/elmos_polyglot_route/{batch,cli,discovery,engine,
+    native,pipeline,repository,toolchains,validation}.py,
+engines/polyglot-route-engine/tests/{test_repository_pipeline,test_routes}.py
+```
+
+前 12 条规则在二次合并里同样适用，尤其是规则 3（字段集逐字段比对）——
+`models.py` 这次把 `PENDING_ANALYZER_LANGUAGES` 从 `("kotlin","react","flutter")`
+改成了 `()`，并新增 `PENDING_REPOSITORY_LANGUAGES`；`Function` 多了 `documentation`
+字段并进入 `to_mapping`。这两处都会动摘要/摘要digest 和路线条数，
+README 与 BUSINESS_LINE_CLOSURE_MATRIX 的数字要按二次合并**之后**的
+`validate_translation_route_matrix.py` 输出来写，不要用现在的。
+
+---
+
+## 第七轮：二次合并的 10 个冲突文件（`a54938b26` 侧）
+
+接手时工作树是 `git merge` 中途，10 个文件带冲突标记。本轮把标记全部解掉，
+但 **`discovery.py` 没有按规则 12 重建**，仍是逐区取舍的结果 —— 见「未完成」。
+
+**命名对照**：本轮冲突标记里 `HEAD` = perf 分支尖端，`>>>>>>> a54938b26` = 前一次
+把 main 合进来的那个提交。所以下表的「perf/main」与前六轮一致。
+
+| 文件 | 取舍 | 理由 |
+|---|---|---|
+| `batch.py` | **整文件 perf** | 见下「规则 15」 |
+| `discovery.py` | 两侧都留，`_preflight_inventory` 置于 react 校验之前 | 语言无关的通用闸门先跑，错误优先级不随语言变化。**但这是逐区取舍，未按规则 12 重建** |
+| `single_unit.py` | perf | 冲突区外唯一调用点是 `_run(command, output, toolchain=toolchain)`，匹配 perf 签名；main 那侧只定义 `_run` 一个符号 |
+| `toolchains.py` | 两侧都留，砍掉 perf 尾部被截断的 `exact_toolchain` 残头 | 完整定义在公共区（`_cached_exact_toolchain` + 薄封装），且 `return _cached_exact_toolchain(language, _toolchain_fingerprint())` 硬依赖 main 的 `_toolchain_fingerprint` |
+| `pipeline.py` | main 骨架 + 嫁接 perf 的图证据 | 见下「pipeline.py 的联合」 |
+| `tests/test_repository_pipeline.py` | perf | import 是超集；但**产生了重复测试定义**，见规则 15 |
+| `README.md` | perf | 13 语言 156 路由是当前事实 |
+| `TranslationStudio.tsx` | perf | 冲突区外第 760 行已在用 `capability?.routePackageCount ?? routeCounts.total`，取 main 会让同一组件出现两种口径 |
+| `core-business-lines-ui.spec.ts` | perf | 14 门语言计数 |
+| `package.json` | 并集 | perf 独有的 `test:multimodal-intake-runner` + main 的十条；11 个脚本键已确认全部存在 |
+
+## 规则 15：规则 12 适用于**所有**双改文件，不只是它被发现的那个
+
+规则 12 是在 `discovery.py` 的 `discover_unit` 上发现的，本轮证明它同样适用于
+`batch.py` 和测试文件。我按逐区取舍解了 `batch.py`，结果：
+
+    batch.py 区2 取 perf → 调用点写着 identifier_unit_namespace=identifier_unit_namespace
+    但定义该变量的语句在自动合并区，被 main 侧覆盖  → NameError，约 20 个测试红
+
+同一文件的其余症状：`_UNIT_ID_PATTERN` 被 main 收窄成 `^WU-[0-9]{5}$`（丢掉
+`-F###` 每符号后缀）、`DISCOVERY_RESULT_ID_DUPLICATED` 整个消失、
+`BATCH_UNITS_DIRECTORY_UNSAFE` 改名。三侧计数：
+
+    符号                              base   perf   main
+    identifier_unit_namespace          12     12      0
+    _UNIT_ID_PATTERN 带 -F### 后缀      有     有      无
+    DISCOVERY_RESULT_ID_DUPLICATED      有     有      无
+
+**main 相对合并基线删掉了整个标识符命名空间特性。** 改为整文件取 perf 后清掉 14 个失败。
+丢掉的 5 个 main 独有函数（`_compact_checkpoint` `_confined_source` `_partial_target`
+`_prepare_unit_directories` `_reportable_unit_failure`）经确认全是 batch.py 私有，
+仓库无第二处引用 —— 但按规则 10，**它们各自服务于什么仍需单独核**，尤其 `_confined_source`
+（路径封闭）看起来是安全性质。**这一条尚未做，是已知欠账。**
+
+测试文件同型：我取 perf 的区 2 把 `test_proposed_candidates_never_decide_eligibility`
+又加了一遍，而自动合并区已有一份 → ruff F811。Python 只认最后一个，前一份被静默架空。
+
+## `pipeline.py` 的联合
+
+两侧是围绕不同证据模型重写的同一条流水线，且**前端对两套都有硬依赖**：
+
+- perf 的报告发 `project_graph` / `conversion_coverage` / `behavior_coverage` / `repository_complete`
+- main 的发 `functional_conversion` / `artifact_packaging` / `cases_manifest_sha256`
+- `translationRunner.ts`（自动合并，从未进冲突列表）**两套都校验** —— 1191-1266 行校验前者，
+  2302 / 2370 行校验后者
+
+这与 main 侧 `pipeline.py` 第 729 行留下的注释矛盾：那条注释说图与覆盖率
+「连同 runner 的覆盖字段一起延后到一个后续提交」，但自动合并没有执行后半段，
+前端的覆盖字段留下来了。**照那条注释走会得到一棵前端必红的树。** 注释已删除。
+
+采用的联合：main 骨架（错误处理更成熟）+ 移植 perf 的六个函数
+（`_project_graph_summary` `_neutral_project_snapshot` `_write_and_verify_project_graph`
+`_bind_project_graph_to_plan` `_conversion_coverage_summary` `_commit_owned_directory`），
+重写 `_run_repository_pipeline_attempt` 使其同时产出两套证据。
+`_shared_claim(status)` 闭包让报告与 manifest 从单一来源展开 —— 前端第 1264-1266 行
+要求三个字段块在两份文档间 `canonicalEqual`，写两遍再祈祷相等是不可靠的。
+
+**此处有一个未定项**：main 的失败降级语义（discovery/assembly 失败降为 PARTIAL）
+与 perf 的 `passed < 1 → raise PIPELINE_NO_VERIFIED_UNITS` 冲突，
+`test_pipeline.py::test_repository_pipeline_refuses_to_package_without_behavior_evidence`
+要求后者。两者其实正交（「一个通过单元都没有」≠「某个单元失败了」），应当都保留，尚未做。
+
+## 顺带发现的两个真实缺陷（都不是合并解错造成的）
+
+### 1. `conversion_reporting.py` 的九语言硬编码
+
+main 带进来的新文件（无冲突、自动合并，所以没人审过）第 680 行：
+
+    languages = {"java","python","csharp","typescript","go","rust","cpp","objc","swift"}
+    if source_language not in languages: raise RouteError("FUNCTION_REPORT_LANGUAGE_INVALID")
+
+**php / kotlin / react / flutter 全不在里面** —— 矩阵在这个字面量写下之后新增的每一门。
+main 那侧从没跑过这些路由，所以从没暴露。已改为 `set(REPOSITORY_SURFACE_LANGUAGES)` 并注明理由。
+这是规则 3（字段集/计数必须派生不能写字面量）在**新增文件**上的实例。
+
+### 2. main 的执行证据词汇与 runner 不符
+
+main 的 `local_execution_evidence` 发 `"PASSED"/"PARTIAL"/"FAILED"`，
+而 `translationRunner.ts` 算的是 `reportStatus === "COMPLETE" ? "PASSED" : "LIMITED"` ——
+**main 从不发 `LIMITED`**。任何 PARTIAL 运行都会撞 `TRANSLATION_PIPELINE_EVIDENCE_INVALID`，
+与图字段无关。联合版已采用 perf 的 PASSED/LIMITED 口径。
+
+另注：runner 的 `validateTranslationPipelineEvidence` 只接受 COMPLETE / PARTIAL，
+遇到 main 的 `BLOCKED` 会报 `TRANSLATION_PIPELINE_STATUS_INVALID`。这与 main 自己
+limitations 里「BLOCKED 绝不让目标代码可下载」一致（BLOCKED 本就没有归档可下），
+但若希望 BLOCKED 也走那条读取路径，前端要改。
+
+## 规则 16：`git show :N:<path>` 只对**未解决**的文件有 stage 条目
+
+已解决并 `git add` 过的文件只有 stage 0。对它跑 `git show :1:/:2:/:3:` 得到的是**空输出**，
+而 `grep -c` 对空输入返回 0 —— 看起来像「三侧都没有这个符号」的干净结论。
+
+本轮在 `repository.py` 上差点据此下结论。正确做法是用**合并双亲**：
+`git show HEAD:<path>` 与 `git show <merge-commit>:<path>`。
+
+同类教训：`timeout 40 git show ...` 在慢挂载上产出过被截断/取错的内容却报 exit 0，
+据此得出过「某文件从未提交」的错误结论。**取权威内容不要包 timeout，取完核 sha256。**
+
+## 本轮的 ruff 判据结果
+
+按规则 11 修订版的双向检验跑 `ruff check src tests`：26 条 → 修掉 7 条非风格类 → 19 条。
+
+修掉的 7 条即全部合并伤：
+
+    F821 cli.py:70,71              REPOSITORY_SURFACE_LANGUAGES 未定义
+                                   （两侧「各自保留」时导入块只留了一侧）
+    F821 test_..._language_matrix.py:1384   同上，局部导入块
+    F811 test_repository_pipeline.py:25     build_project_graph 重复导入
+    F811 test_repository_pipeline.py:461    重复测试定义（规则 9）
+    F601 batch.py:503              react_project_descriptor 字典键重复（perf 侧既有）
+    F401 repository.py:13          SUPPORTED_LANGUAGES 未用（HEAD 上既有欠账，非合并伤）
+
+剩余 19 条全是 I001 / E501 / B009 / UP035 / S108，13 条 `--fix` 可自动处理，属收尾。
+
+**一处语义选择待确认**：`cli.py` 的 `repository-preflight` 子命令原用
+`REPOSITORY_SURFACE_LANGUAGES`（14 门，含弃用的 javascript），已改为 `SUPPORTED_LANGUAGES`。
+理由是 `test_language_set.py` 断言其余六个公开子命令的 choices 都等于 `SUPPORTED_LANGUAGES`
+且不含 javascript，只有 preflight 例外会让它成为唯一提供弃用语言的命令行入口。
+
+## 未完成
+
+> ⚠️ 这 6 条写于 08:46，**已被第八轮的实测推翻大半**：1/2/3 已闭合、4 前提不成立、
+> 5 只有 1 条属于本次合并。逐条定级与证据见文末「第八轮」，不要照这 6 条动手。
+
+1. **`discovery.py` 按规则 12 重建** —— 当前仍是逐区取舍的产物，7 个测试红：
+   `discovery_module.analyze` 属性不存在（4 个 monkeypatch 测试）、verdict 语义
+   （`NO_CANDIDATE_DECLARATION` vs `UNSUPPORTED`、多函数文件 READY vs UNSUPPORTED）、
+   `propose_candidates` 漏掉类方法。文档已给重建顺序（第六轮末尾），照做即可。
+2. **`pipeline.py` 的 `PIPELINE_NO_VERIFIED_UNITS`** —— 与降级语义并存，见上。
+3. **`_behavior_coverage_summary` 的两个版本** —— main 那份比 perf 严（多要
+   `identifier_plan_path` / `identifier_plan_sha256`），当初误以为两份相同（都是 176 行）。
+   `test_pipeline_insights.py` 2 个失败即此。
+4. **规则 10 复查 batch.py 丢掉的 5 个 main 函数**，尤其 `_confined_source`。
+5. 风格类 19 条 ruff、`--fix` 之后人工核 I001 的排序结果。
+6. 全部完成后按文档「合完之后要跑的门禁」跑完整清单，并按
+   `validate_translation_route_matrix.py` 的实际输出修 README 与
+   `BUSINESS_LINE_CLOSURE_MATRIX.md` 里的路线条数（规则 8）。
+
+### 第七轮补记：「7 个 discovery 失败」的分解 —— 它们不是同一个病
+
+动手按规则 12 重建之前先做了归因，结论是**这 7 个失败分属三个互不相干的根因，
+只有一个真的落在 `discovery.py` 的重建范围内**。记下来免得下一个人照着
+「重建 discover_unit」去修全部 7 个然后发现修不动。
+
+**(a) 4 个 `monkeypatch.setattr(discovery_module, "analyze", ...)` —— 既有红，非合并伤**
+
+    裸名 analyze 的导入：  base 无   perf 无   main 无
+    三侧一致：            from .source_analyzer import analyze_many, inventory_module
+                          （main 侧是 from .native import analyze_many, inventory_module）
+
+**没有任何一侧的 `discovery.py` 有 `analyze` 这个模块属性。** base 侧的测试文件里
+就已经有 2 个这样的测试，也就是说它们**在合并基线上就是红的**。另外 3 个是 main
+新增的同型测试，同样红。
+
+重建 `discover_unit` 不会让它们变绿。真正的修法是把注入点改到 `analyze_many`
+（分析走批量路径之后注入点就移了），但 `analyze_many` 的签名与返回形状不同，
+那几个返回 `SemanticIR` 的假函数要改成批量形状。**这是改测试，需要单独决定**，
+因为它们断言的行为是真的（分析器失败不得降级为 UNSUPPORTED、容量预检必须在
+原生分析之前）。
+
+**(b) `propose_candidates` 漏掉类方法 —— 在 `project_graph.py`，不在 discovery**
+
+`propose_candidates` 三侧都是 33 行，python 分支只是转发：
+
+    return [s.name for s in python_coverage_subjects(tree, "<candidate-source>")
+            if s.candidate][:MAX_CANDIDATES_PER_FILE]
+
+`project_graph.python_coverage_subjects` **确实处理 `ClassDef`**（1234-1246 行），
+所以 `Hidden.method` 会被产出，只是它的 `.candidate` 为假 —— 这是 `project_graph.py`
+里的候选策略。而 `project_graph.py` **从未进冲突列表**，属于规则 8 的管辖范围
+（自动合并的文件也可能是错的），不是 discovery 的重建范围。
+
+**(c) verdict 语义 —— 这一个才是规则 12 的真身**
+
+    Verdict.UNSUPPORTED if candidates else Verdict.NO_CANDIDATE_DECLARATION
+    出现在 main(stage3) 第 1414 行；base 与 perf 都没有这一行
+
+对应两个失败：`constants.py` 应判 `NO_CANDIDATE_DECLARATION` 却得 `UNSUPPORTED`，
+多函数文件应判 `UNSUPPORTED` 却得 `READY`。这行在 main 的 `_candidate_inventory`
+一路里，与 perf 的 `_analyzer_failure_verdict` / `_subject_blocker` 是两套判定机器 ——
+按规则 11 修订版，两套都被冲突区外的代码引用着，所以只能重建 + 嫁接，不能取一侧。
+
+**结论**：规则 12 的重建工作量比原先估计的小得多，只覆盖 (c)。(a) 是既有红加一个
+测试注入点的决定，(b) 要去 `project_graph.py` 按规则 8 复查。
+
+---
+
+## 第八轮（新会话，只做验证不改代码）：「未完成」6 条按实测重新定级
+
+**这一节的每个数字都是跑出来的，不是读出来的。** 判据只有一个：同一个容器里把
+**main 独跑**和**合并树**各跑一遍，比 FAILED 集合与 ruff 集合的差。
+上面几轮里凡是「X 是合并造成的」这类断言，有三条经不起这个判据 —— 列在最后。
+
+### 复现办法（下次照抄）
+
+    # baseline：设备桥上取 main 侧内容，实测不留 index.lock
+    GIT_OPTIONAL_LOCKS=0 timeout 40 git archive --format=tar.gz -o .ai-tmp/x.tgz \
+        HEAD engines/polyglot-route-engine/src engines/polyglot-route-engine/tests
+
+云端容器还要额外解开仓库根的 `contracts/` 与 `schemas/`，否则 `test_preflight.py` 3 条
+全红在 `repository-conversion-preflight.schema.json` 找不到上，看着像真失败。
+ruff 必须钉 `ruff==0.12.5`（pyproject 的 dev group）；容器默认装 0.16.4，判据不一样。
+设备 VM 是 Python 3.10 且无网，`uv run` 直接报 `No interpreter found for Python 3.12.12`，
+ruff 和 pytest 都只能在云端跑。
+
+### 实测结果
+
+| 套件 | main 独跑（`git archive HEAD`） | 合并树 |
+|---|---|---|
+| `test_pipeline` + `test_pipeline_insights` + `test_repository_pipeline` | 27 failed / 60 passed | 30 failed / 73 passed |
+| `test_repository_pipeline_language_matrix` | 313 failed / 2 passed | 312 failed / 3 passed |
+| `ruff check src tests` | **21** | **18** |
+
+- **0 回归**：main 自己的测试没有一条由合并变红。
+- 2 条被合并修好：`test_pipeline_report_and_manifest_share_fail_closed_behavior_insights`、
+  `test_repository_pending_languages_are_refused_by_the_repository_surface`。
+- 4 条残留全是 perf 侧新测试：3 条 batch + `test_discovery_never_silently_selects_the_first_of_multiple_functions`。
+- `test_pipeline.py` 那 10 条红**全部**是撞 `PIPELINE_NO_VERIFIED_UNITS` 才失败的 ——
+  容器没有 native analyzer ⇒ 没有 passed unit ⇒ 守卫先抛，被测的那个错误码（`PIPELINE_OUTPUT_UNSAFE`、
+  `PROJECT_GRAPH_CHANGED_DURING_PIPELINE`）根本走不到。**环境性，不是缺陷。**
+
+### 6 条逐条定级
+
+| # | 原文 | 实测 |
+|---|---|---|
+| 1 | `discovery.py` 按规则 12 重建 | **已闭合**。`Verdict.UNSUPPORTED if candidates else NO_CANDIDATE_DECLARATION` 在树上（`discovery.py:1579`）；(a) 注入点已用 `_as_analyze_many` 适配器接好，(b) 已按 main 的 blocker 语义改写 |
+| 2 | `PIPELINE_NO_VERIFIED_UNITS` 与降级并存 | **已闭合**。`pipeline.py:969` = `if passed < 1 and discovery_incident is None`，理由写在决定点上 |
+| 3 | `_behavior_coverage_summary` 两版本 | **已闭合**。合并树那份与 main 那份 **diff 为 0 行**，严的一侧（要 `identifier_plan_path` / `_sha256`）已在树上 |
+| 4 | 规则 10 复查 `batch.py` 丢掉的 5 个 main 函数 | **前提不成立**。`batch.py` 已回退成 main 版，与 main 只差 1 行（删掉重复字典键 `react_project_descriptor`）；`_confined_source` 在两侧源码里**都不存在** |
+| 5 | 19 条 ruff | **只有 1 条是合并伤**（`tests/test_repository_pipeline.py` 的 I001），其余 18 条在 main 独跑上一模一样 |
+| 6 | 门禁清单 + 路线条数 | **仍未做**，且大部分只能在 Mac 上跑 |
+
+### 三条要更正的前提
+
+1. **「`test_pipeline_insights.py` 2 个失败即 `_behavior_coverage_summary` 之争」——错。**
+   这 2 条在 **main 独跑上同样红**，红在 `BEHAVIOR_COVERAGE_PASSED_UNIT_INVALID`（还是没有 passed unit）。
+   选哪版仍可以讨论，但不能拿这 2 条当证据，**修完它们也不会绿**。
+2. **「F821 `test_..._language_matrix.py:1384` 是合并伤」——错。** 它在 main 独跑的 ruff 里就在。
+   同样，F601 `batch.py:503` 记成「perf 侧既有」也不准确，main 侧一样有。
+   合并在 ruff 上是**净减 3 条**（F601、F401、F821），不是净增。
+3. **「剩余 19 条 ruff 属收尾」——重新定级为「不属于本次合并」。**
+   18/19 是 main 的既有欠账（I001×4 / E501×5 / B009×7 / UP035 / S108），
+   分布在 `assembly.py`、`react_repository.py`、`assembly_deployment_guidance.py` 等
+   **合并根本没碰过的文件**上。在一个 54 文件的合并里顺手 `--fix` 它们只会加噪声、
+   让 review 分不清哪些改动是合并决定。**建议单独一个 style 提交，不要塞进这次合并。**
+   唯一那条合并伤（`test_repository_pipeline.py` 的 I001）应当在本次合并里修掉。
+
+### 已拍板的四条（用户 2026-08-25 确认）
+
+1. **测试注入点**：保留测试侧 `_as_analyze_many` 适配器。
+   已知代价：适配器对每个 name 立即求值，「第二个函数才失败」这类假函数会在批量调用时就抛，
+   顺序性断言被抹平 —— 现有 7 处断言的都不是顺序，所以可接受。
+2. **`project_graph.py` 候选策略**：保留 main —— 嵌套符号是 `candidate=False` + `blocking_reasons`
+   的**显式 blocker**，比 perf 的「提为候选」更 fail-closed。
+3. **多函数文件**：保留 main 的分区（`WU-00001-F001/F002`），perf 那条测试改成断言同一性质。
+4. **3 条 perf batch 测试**：保留义务，不删。
+
+### 未提交的一处，以及为什么
+
+按第 4 条我在云端给那 3 条 batch 测试加了 `@pytest.mark.xfail(strict=True)`（reason 里写明
+缺 `reason_code` / `source_validation_status` / `_partial_target`，随移植一起摘掉）。
+**没有落盘。** 原因：写的过程中发现**另一个会话正在实时改同一个文件** ——
+`tests/test_repository_pipeline.py` 08:57 被改（+15 行，把这 3 条**改写成断言 main 的
+`batch.py` 语义**并附了理由注释），`.ai/MERGE_PERF_VERIFICATION.md` 09:06 被追写。
+两条路线互斥，提交我的版本会抹掉对方刚写的东西。已按用户指示停手，由那一侧继续。
+
+云端实测：对方改写后那 3 条仍红，但红因是 `StopIteration`（取不到 PASSED unit）——
+**环境性**，在这个容器里判不出改写对不对，需要在 Mac 上验。
+
+### 还剩什么
+
+- 门禁清单（本文件「合完之后要跑的门禁」10 条）+ 按 `validate_translation_route_matrix.py`
+  实际输出修 README 与 `BUSINESS_LINE_CLOSURE_MATRIX.md` 的路线条数 —— 只能在 Mac 上跑。
+- `translationRunner.ts` 的四个字段收尾（规则 6：等引擎合完）。
+- main 侧既有破损：`routes/inventory.json` 缺 `exact_versions`（详见 `.ai/MERGE_PERF_VERIFICATION.md`），
+  与本次合并无关，别顺手修。
+- `.ai-tmp/` 下留了三个中转 tgz（`polyglot-state-0825b`、`repo-contracts-0825b`、`head-engine-0825b`），
+  设备桥删不掉，已 gitignore，可自行 `rm`。

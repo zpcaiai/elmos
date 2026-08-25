@@ -234,10 +234,18 @@ def test_every_repository_surface_language_has_a_registered_toolchain() -> None:
     machine that simply lacks the pinned install, which is not.  Reading the
     selector table rather than calling it keeps this check honest on any
     machine and free of toolchain work.
+
+    The table is located in the module rather than in one named function: it
+    has already moved once, from ``exact_toolchain`` into the lru_cached
+    ``_cached_exact_toolchain`` behind it, and pinning this check to either
+    name would make it pass or fail for reasons that have nothing to do with
+    the matrix.
     """
 
-    source = inspect.getsource(toolchains.exact_toolchain)
-    registered = set(re.findall(r'"([a-z]+)"\s*:\s*_[a-z_]+\s*,', source))
+    source = inspect.getsource(toolchains)
+    table = re.search(r"^\s*selectors(?::[^=\n]+)?\s*=\s*\{(.*?)^\s*\}", source, re.S | re.M)
+    assert table is not None, "could not locate the toolchain selector table"
+    registered = set(re.findall(r'"([a-z]+)"\s*:', table.group(1)))
 
     # Guards against a regex that silently stops matching and turns the
     # superset check below into a comparison against the empty set.

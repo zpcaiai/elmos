@@ -91,10 +91,20 @@ The browser flow is:
    the generation plan.
 5. Analyze the PSIR, resolve every open question, explicitly approve it, and
    select **一键生成、验证并归档**.
-6. Download the digest-checked archive. Read `docs/LOCAL_RUN.md` for exact
+6. Select **一键运行 10 分钟** to start an isolated preview. The server enforces
+   the expiry even if the browser tab closes; the page shows the remaining
+   lease and can read the real service-identity health response without a
+   terminal.
+7. Select **一键下载完整代码库** to download the digest-checked archive. Read `docs/LOCAL_RUN.md` for exact
    local software/hardware and startup steps, and `docs/CLOUD_DEPLOYMENT.md`
    plus `deploy/deployment-options.json` for cloud sizing, Cloud Run commands,
    rollback, cleanup, and still-`NOT_RUN` external gates.
+8. Optionally enter a short-lived GitHub credential and select **一键上传
+   GitHub**. This creates a new private repository only, writes one `main`
+   commit from the same artifact-bound file set, and verifies the remote Tree
+   and Branch before recording success. It never overwrites, force-pushes,
+   merges, deploys, or stores the credential in browser storage, job state,
+   logs, or the generated repository.
 
 ```bash
 uv run elmos-project-synthesis draft \
@@ -175,6 +185,26 @@ digests, and every non-`scratch` generated container base is pinned to an
 official multi-architecture manifest SHA-256. Human-readable release labels
 and image tags aid review but never determine immutable execution identity.
 
+Every generated workspace also has a root lifecycle entry point:
+
+```bash
+cd generated/order-service
+make doctor        # verify the generation manifest and required native tools
+make verify        # build and test every generated target
+make run           # run the first target; use make run-python, run-java, etc.
+make plan          # validate the hardened Compose plan without starting it
+make up            # build/start all in-memory, auth=none targets on 127.0.0.1
+make status        # verify exact service identity on every health endpoint
+make smoke         # record bounded local health-latency evidence
+make down          # stop the Compose stack and remove orphans
+```
+
+The Compose path deliberately refuses PostgreSQL/JWT/OIDC profiles. Those
+profiles use `make run-<language>`, whose target-owned harness provisions the
+disposable database, file Secret material, migrations, authentication negative
+cases, tenant-isolation journey, and cleanup. This avoids presenting a partial
+container start as a production-capable deployment.
+
 ## 4. Run real target verification
 
 ```bash
@@ -185,6 +215,10 @@ uv run elmos-project-synthesis verify \
 
 Verification invokes only the selected native toolchains. A missing toolchain,
 failed build, failed test, or failed startup probe returns a non-success result.
+Each build or analysis command has a bounded 600-second default timeout. A
+controlled runner may set `ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS` to
+an integer from 30 through 900; timeout remains `FAILED` and never becomes a
+successful or skipped result.
 The optional runtime plan is also bound to the same exact toolchain selection;
 it omits a target instead of falling back to a different version:
 
@@ -198,7 +232,9 @@ whose real build, tests, and service-identity health probe passed. Production
 mode uses a rootless container engine, per-job internal-only networking,
 loopback publication, a read-only filesystem, dropped capabilities,
 `no-new-privileges`, and CPU/memory/PID limits. Host execution is an explicit
-development-only profile and is rejected when `NODE_ENV=production`.
+development-only profile and is rejected when `NODE_ENV=production`. Every
+browser preview has a server-enforced 600-second maximum lease; manual stop,
+lease expiry, and rootless cleanup are distinct persisted outcomes.
 After a browser refresh, an operator can recover an atomically persisted task by
 its complete UUID, tenant, actor, and a re-entered short-lived token. The token
 is not written to browser storage, and a tenant/actor mismatch fails closed.
@@ -234,6 +270,25 @@ behavior corpus and their normalized observations are compared. Structure,
 traceability, native target verification, direct semantic equivalence, direct
 behavior equivalence, independent verification, and certification are therefore
 shown separately and are never averaged into one misleading score.
+
+Set `ELMOS_PROJECT_SYNTHESIS_UV_CACHE` to an absolute, service-owned,
+non-symlink directory on persistent storage. If it is omitted, the Runner uses
+`$ELMOS_LOCAL_RUNNER_ROOT/dependency-cache/uv`. Prewarm the exact locked Python
+dependencies before opening the service to users: the verified cold-cache
+PostgreSQL/JWT representative took 8.7 minutes on the qualification host,
+while the immediately following cache-reusing OIDC representative took 1.8
+minutes. A hard 600-second command timeout is not retried; it fails closed with
+its command-level evidence so the enclosing 20-minute pipeline budget remains
+effective.
+
+GitHub publication requires the same tenant-bound job, a `PASSED` generation,
+the exact archive SHA-256, `repository:push`, explicit private-repository
+confirmation, and a short-lived credential with GitHub Administration and
+Contents write permission. The API creates blobs, Tree, root Commit and
+`refs/heads/main`, then reads the branch and recursive Tree back. A retry is
+idempotency-keyed. If a newly created repository cannot be completed, ELMOS
+attempts to remove only that repository; an unverifiable cleanup remains
+`BLOCKED` and requires manual reconciliation.
 
 ## Evidence boundary
 

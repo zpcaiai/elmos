@@ -535,9 +535,22 @@ def test_sota_16_a_policy_cannot_make_an_invalid_entry_reusable(tmp_path: Path, 
     assert result.hit is False
     assert result.reasons
 
-    # And a cross-tenant lookup of the same key is equally a miss.
-    with store.transaction():
+    # ``projects.project_id`` is a globally unique primary key, so a second
+    # tenant cannot claim an identifier another tenant already owns. The store
+    # fails closed on the attempt rather than quietly aliasing the two scopes.
+    from elmos_build_cache.errors import ConflictError
+
+    with pytest.raises(ConflictError), store.transaction():
         store.ensure_project("tenant-b", "project")
+    owner = store.query_one(
+        "SELECT tenant_id FROM projects WHERE project_id=?", ("project",)
+    )
+    assert owner is not None and str(owner[0]) == "tenant-a"
+
+    # And a cross-tenant lookup of the same key, from tenant-b's own project,
+    # is equally a miss.
+    with store.transaction():
+        store.ensure_project("tenant-b", "project-b")
         other = cache.lookup(
             LookupRequest(
                 tenant_id="tenant-b",

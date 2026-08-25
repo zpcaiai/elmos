@@ -1,18 +1,19 @@
 """Resumable repository translation pipeline and content-addressed handoff.
 
-This module composes the existing project graph, inventory, discovery, batch,
-and assembly primitives without weakening any of their gates.  It is
-intentionally a local engineering workflow: a COMPLETE result means that the
-content-addressed project graph has no open obligations, every discovered work
-unit passed its supplied behavior cases, and the assembled project built with
-the exact local toolchains.  Independent and external verification remain
+This module composes the existing inventory, discovery, batch and assembly
+primitives without weakening any of their gates.  It is intentionally a local
+engineering workflow: a COMPLETE result means that every discovered functional
+obligation passed its supplied behavior cases and the assembled project built
+with the exact local toolchains.  Independent and external verification remain
 NOT_RUN.
 """
 
 from __future__ import annotations
 
 import hashlib
+import io
 import json
+import os
 import re
 import shutil
 import zipfile
@@ -20,19 +21,34 @@ from pathlib import Path
 from typing import Any
 
 from .assembly import (
-    MANIFEST_NAME as ASSEMBLY_MANIFEST_NAME,
-)
-from .assembly import (
     assemble_project,
-    verify_archived_assembly_closure,
     verify_assembled_project,
     verify_assembly_closure,
 )
+from .batch import REPORT_NAME as BATCH_REPORT_NAME
 from .batch import run_batch
-from .discovery import discover_repository
-from .models import REPOSITORY_SURFACE_LANGUAGES, SUPPORTED_LANGUAGES, Language, RouteError
+from .conversion_reporting import (
+    JSON_REPORT_NAME as FUNCTION_REPORT_JSON_NAME,
+)
+from .conversion_reporting import (
+    MARKDOWN_REPORT_NAME as FUNCTION_REPORT_MARKDOWN_NAME,
+)
+from .conversion_reporting import (
+    build_conversion_report,
+    render_conversion_markdown,
+    reset_conversion_report_outputs,
+    write_conversion_reports,
+)
+from .discovery import discover_repository, inventory_repository_incident
+from .models import (
+    REPOSITORY_SURFACE_LANGUAGES,
+    SUPPORTED_LANGUAGES,
+    Language,
+    RouteError,
+)
 from .project_graph import build_project_graph, verify_project_graph
 from .repository import plan_repository
+from .safe_io import atomic_output_file, atomic_write_bytes, stable_file_digest, stable_read_bytes
 
 SCHEMA_VERSION = "1.0.0"
 REPORT_NAME = "repository-pipeline-report.json"
@@ -41,61 +57,17 @@ ARTIFACT_MANIFEST_NAME = "artifact-manifest.json"
 PROJECT_GRAPH_NAME = "project-graph.json"
 _GRAPH_OBLIGATION_STATUSES = ("FAILED", "NOT_RUN", "PASSED", "UNKNOWN")
 _CONVERSION_COVERAGE_STATUSES = ("BLOCKED", "FAILED", "NOT_RUN", "PASSED", "UNKNOWN")
-_BEHAVIOR_COVERAGE_STATUSES = ("FAILED", "NOT_RUN", "PASSED", "UNKNOWN")
-_BATCH_TO_BEHAVIOR_STATUS = {
-    "FAILED": "FAILED",
-    "PASSED": "PASSED",
-    "SKIPPED_NO_CASES": "NOT_RUN",
-    "SKIPPED_NOT_READY": "NOT_RUN",
-}
+#: Surfaces a consumer may read as "this run completed".  A failed run must
+#: not leave any of them from an earlier one visible.
 _FINAL_CLAIM_NAMES = (ARTIFACT_NAME, REPORT_NAME, ARTIFACT_MANIFEST_NAME)
 _PRIOR_CLAIM_SUFFIX = ".previous-handoff"
-_ARTIFACT_CONTROL_PATHS = frozenset(
-    {
-        ARTIFACT_NAME,
-        f"{ARTIFACT_NAME}.tmp",
-        REPORT_NAME,
-        ARTIFACT_MANIFEST_NAME,
-        *(f"{name}{_PRIOR_CLAIM_SUFFIX}" for name in _FINAL_CLAIM_NAMES),
-    }
-)
+CASES_MANIFEST_NAME = "behavior-cases-manifest.json"
+_MAX_CASE_FILES = 10_000
+_MAX_CASE_BYTES = 64 * 1024 * 1024
+MAX_ARTIFACT_UNCOMPRESSED_BYTES = 256 * 1024 * 1024
+MAX_ARTIFACT_COMPRESSED_BYTES = 256 * 1024 * 1024
+_MAX_PIPELINE_JSON_BYTES = 64 * 1024 * 1024
 
-
-def _write_json(path: Path, value: dict[str, Any]) -> None:
-    temporary = path.with_suffix(f"{path.suffix}.tmp")
-    temporary.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    temporary.replace(path)
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(64 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _owned_directory(output: Path, child: str) -> Path:
-    root = output.resolve(strict=True)
-    raw_candidate = output / child
-    if raw_candidate.is_symlink():
-        raise RouteError("PIPELINE_OUTPUT_UNSAFE")
-    candidate = raw_candidate.resolve()
-    if candidate.parent != root:
-        raise RouteError("PIPELINE_PATH_CONFINEMENT_FAILED")
-    return candidate
-
-
-def _reset_owned_directory(output: Path, child: str) -> Path:
-    candidate = _owned_directory(output, child)
-    if candidate.exists():
-        if candidate.is_symlink() or not candidate.is_dir():
-            raise RouteError("PIPELINE_OUTPUT_UNSAFE")
-        shutil.rmtree(candidate)
-    return candidate
 
 
 def _validate_handoff_targets(output: Path) -> None:
@@ -151,12 +123,370 @@ def _invalidate_current_final_claims(output: Path) -> None:
         candidate.unlink(missing_ok=True)
 
 
-def _clean_archive_temporary(output: Path) -> None:
-    temporary = output / f"{ARTIFACT_NAME}.tmp"
-    if temporary.is_symlink() or (temporary.exists() and not temporary.is_file()):
-        raise RouteError("PIPELINE_OUTPUT_UNSAFE")
-    if temporary.exists():
-        temporary.unlink()
+def _write_json(path: Path, value: dict[str, Any]) -> None:
+    content = (json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    atomic_write_bytes(
+        path,
+        content,
+        max_bytes=_MAX_PIPELINE_JSON_BYTES,
+        unsafe_error="PIPELINE_OUTPUT_UNSAFE",
+        limit_error="PIPELINE_JSON_LIMIT_EXCEEDED",
+    )
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while chunk := handle.read(64 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _stable_file(
+    path: Path,
+    error_code: str,
+    *,
+    max_bytes: int,
+    limit_error: str,
+) -> tuple[int, str]:
+    return stable_file_digest(
+        path,
+        max_bytes=max_bytes,
+        unsafe_error=f"{error_code}_UNSAFE",
+        changed_error=f"{error_code}_CHANGED_DURING_READ",
+        limit_error=limit_error,
+    )
+
+
+def _cases_manifest(cases: Path, plan: dict[str, Any]) -> tuple[dict[str, Any], str]:
+    """Bind every case byte and every expected missing-case state."""
+    root = cases.resolve(strict=True)
+    inventory: list[dict[str, Any]] = []
+    total_bytes = 0
+    for current, directories, files in os.walk(root, topdown=True, followlinks=False):
+        current_path = Path(current)
+        safe_directories: list[str] = []
+        for directory in sorted(directories):
+            candidate = current_path / directory
+            if candidate.is_symlink():
+                raise RouteError("BEHAVIOR_CASES_SYMLINK_REJECTED")
+            safe_directories.append(directory)
+        directories[:] = safe_directories
+        for name in sorted(files):
+            candidate = current_path / name
+            if candidate.is_symlink():
+                raise RouteError("BEHAVIOR_CASES_SYMLINK_REJECTED")
+            relative = candidate.relative_to(root).as_posix()
+            if any(ord(character) < 32 or ord(character) == 127 for character in relative):
+                raise RouteError("BEHAVIOR_CASES_PATH_INVALID")
+            size, digest = _stable_file(
+                candidate,
+                "BEHAVIOR_CASES_FILE",
+                max_bytes=max(0, _MAX_CASE_BYTES - total_bytes),
+                limit_error="BEHAVIOR_CASES_MANIFEST_LIMIT_EXCEEDED",
+            )
+            total_bytes += size
+            if len(inventory) >= _MAX_CASE_FILES or total_bytes > _MAX_CASE_BYTES:
+                raise RouteError("BEHAVIOR_CASES_MANIFEST_LIMIT_EXCEEDED")
+            inventory.append({"path": relative, "bytes": size, "sha256": digest})
+    inventory.sort(key=lambda item: str(item["path"]))
+    by_path = {str(item["path"]): item for item in inventory}
+    expected: list[dict[str, Any]] = []
+    for unit in plan.get("work_units", []):
+        unit_id = str(unit.get("id", ""))
+        relative = f"{unit_id}.json"
+        entry = by_path.get(relative)
+        expected.append(
+            {
+                "work_unit_id": unit_id,
+                "path": relative,
+                "status": "PRESENT" if entry else "MISSING",
+                "bytes": entry["bytes"] if entry else None,
+                "sha256": entry["sha256"] if entry else None,
+            }
+        )
+    manifest = {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "elmos.behavior-cases-manifest",
+        "snapshot_sha256": plan.get("snapshot_sha256"),
+        "expected": expected,
+        "inventory": inventory,
+    }
+    digest = hashlib.sha256(
+        json.dumps(manifest, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return manifest, digest
+
+
+def _owned_directory(output: Path, child: str) -> Path:
+    if not child or Path(child).name != child:
+        raise RouteError("PIPELINE_PATH_CONFINEMENT_FAILED")
+    root = output.resolve(strict=True)
+    candidate = output / child
+    if candidate.is_symlink() or candidate.parent.resolve(strict=True) != root:
+        raise RouteError("PIPELINE_PATH_CONFINEMENT_FAILED")
+    if candidate.exists() and candidate.resolve(strict=True).parent != root:
+        raise RouteError("PIPELINE_PATH_CONFINEMENT_FAILED")
+    return candidate
+
+
+def _reset_owned_directory(output: Path, child: str) -> Path:
+    candidate = _owned_directory(output, child)
+    if candidate.exists():
+        if candidate.is_symlink() or not candidate.is_dir():
+            raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+        shutil.rmtree(candidate)
+    return candidate
+
+
+def _remove_stale_handoff(output: Path) -> None:
+    reset_conversion_report_outputs(output)
+    for name in (
+        ARTIFACT_NAME,
+        REPORT_NAME,
+        ARTIFACT_MANIFEST_NAME,
+        f"{FUNCTION_REPORT_JSON_NAME}.tmp",
+        f"{FUNCTION_REPORT_MARKDOWN_NAME}.tmp",
+        f"{ARTIFACT_NAME}.tmp",
+    ):
+        candidate = output / name
+        if candidate.is_symlink():
+            raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+        if candidate.exists():
+            if not candidate.is_file():
+                raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+            candidate.unlink()
+
+
+def _artifact_inventory(output: Path) -> list[dict[str, Any]]:
+    excluded = {ARTIFACT_NAME, f"{ARTIFACT_NAME}.tmp", REPORT_NAME, ARTIFACT_MANIFEST_NAME}
+    root = output.resolve(strict=True)
+    files: list[dict[str, Any]] = []
+    total_bytes = 0
+    for current, directories, names in os.walk(root, topdown=True, followlinks=False):
+        current_path = Path(current)
+        safe_directories: list[str] = []
+        for name in sorted(directories):
+            candidate = current_path / name
+            if candidate.is_symlink():
+                raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE")
+            safe_directories.append(name)
+        directories[:] = safe_directories
+        for name in sorted(names):
+            path = current_path / name
+            relative = path.relative_to(root).as_posix()
+            if relative in excluded:
+                continue
+            if path.is_symlink() or not path.is_file():
+                raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE")
+            if any(ord(character) < 32 or ord(character) == 127 for character in relative):
+                raise RouteError("PIPELINE_ARTIFACT_PATH_INVALID")
+            size, digest = _stable_file(
+                path,
+                "PIPELINE_ARTIFACT_SOURCE",
+                max_bytes=max(0, MAX_ARTIFACT_UNCOMPRESSED_BYTES - total_bytes),
+                limit_error="PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED",
+            )
+            total_bytes += size
+            if total_bytes > MAX_ARTIFACT_UNCOMPRESSED_BYTES:
+                raise RouteError("PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED")
+            files.append({"path": relative, "bytes": size, "sha256": digest})
+    files.sort(key=lambda item: str(item["path"]))
+    if not files:
+        raise RouteError("PIPELINE_ARTIFACT_EMPTY")
+    return files
+
+
+def _bound_artifact_bytes(output: Path, entry: dict[str, Any]) -> bytes:
+    relative = str(entry.get("path", ""))
+    if (
+        not relative
+        or relative.startswith("/")
+        or "\\" in relative
+        or any(part in {"", ".", ".."} for part in relative.split("/"))
+        or any(ord(character) < 32 or ord(character) == 127 for character in relative)
+    ):
+        raise RouteError("PIPELINE_ARTIFACT_PATH_INVALID")
+    root = output.resolve(strict=True)
+    current = root
+    for part in Path(relative).parts:
+        current /= part
+        if current.is_symlink():
+            raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE")
+    try:
+        source = (root / relative).resolve(strict=True)
+        source.relative_to(root)
+    except (FileNotFoundError, ValueError) as error:
+        raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE") from error
+    expected_bytes = entry.get("bytes")
+    expected_sha256 = str(entry.get("sha256", ""))
+    if (
+        not isinstance(expected_bytes, int)
+        or expected_bytes < 0
+        or expected_bytes > MAX_ARTIFACT_UNCOMPRESSED_BYTES
+        or len(expected_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in expected_sha256)
+    ):
+        raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
+    content = stable_read_bytes(
+        source,
+        max_bytes=expected_bytes,
+        unsafe_error="PIPELINE_ARTIFACT_SOURCE_UNSAFE",
+        changed_error="PIPELINE_ARTIFACT_SOURCE_CHANGED_DURING_READ",
+        limit_error="PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH",
+    )
+    if len(content) != expected_bytes or hashlib.sha256(content).hexdigest() != expected_sha256:
+        raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_MISMATCH")
+    return content
+
+
+def _verify_zip_content(content: bytes, entries: list[dict[str, Any]]) -> None:
+    expected_paths = [str(entry["path"]) for entry in entries]
+    try:
+        with zipfile.ZipFile(io.BytesIO(content), "r") as bundle:
+            if bundle.namelist() != expected_paths or len(set(bundle.namelist())) != len(expected_paths):
+                raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
+            for entry in entries:
+                archived = bundle.read(str(entry["path"]))
+                if len(archived) != entry["bytes"] or hashlib.sha256(archived).hexdigest() != entry["sha256"]:
+                    raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_MANIFEST_MISMATCH")
+    except (KeyError, zipfile.BadZipFile) as error:
+        raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_INVALID") from error
+
+
+def _verify_zip_entries(archive: Path, entries: list[dict[str, Any]]) -> bytes:
+    content = stable_read_bytes(
+        archive,
+        max_bytes=MAX_ARTIFACT_COMPRESSED_BYTES,
+        unsafe_error="PIPELINE_ARTIFACT_ARCHIVE_UNSAFE",
+        changed_error="PIPELINE_ARTIFACT_ARCHIVE_CHANGED_DURING_READ",
+        limit_error="PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
+    )
+    _verify_zip_content(content, entries)
+    return content
+
+
+def _write_deterministic_zip(output: Path, paths: list[dict[str, Any]]) -> tuple[Path, int, str]:
+    archive = output / ARTIFACT_NAME
+    ordered = sorted(paths, key=lambda entry: str(entry.get("path", "")))
+    path_names = [str(entry.get("path", "")) for entry in ordered]
+    if len(path_names) != len(set(path_names)) or ARTIFACT_MANIFEST_NAME not in path_names:
+        raise RouteError("PIPELINE_ARTIFACT_DESCRIPTOR_SET_INVALID")
+    if sum(int(entry.get("bytes", -1)) for entry in ordered) > MAX_ARTIFACT_UNCOMPRESSED_BYTES:
+        raise RouteError("PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED")
+    published = False
+    completed = False
+    try:
+        with atomic_output_file(
+            archive,
+            max_bytes=MAX_ARTIFACT_COMPRESSED_BYTES,
+            unsafe_error="PIPELINE_ARTIFACT_ARCHIVE_UNSAFE",
+            limit_error="PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
+        ) as handle:
+            with zipfile.ZipFile(handle, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as bundle:
+                for entry in ordered:
+                    relative = str(entry["path"])
+                    content = _bound_artifact_bytes(output, entry)
+                    info = zipfile.ZipInfo(relative, date_time=(1980, 1, 1, 0, 0, 0))
+                    info.compress_type = zipfile.ZIP_DEFLATED
+                    info.external_attr = 0o100644 << 16
+                    bundle.writestr(info, content)
+            handle.flush()
+            handle.seek(0)
+            temporary_content = handle.read(MAX_ARTIFACT_COMPRESSED_BYTES + 1)
+            if len(temporary_content) > MAX_ARTIFACT_COMPRESSED_BYTES:
+                raise RouteError("PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED")
+            _verify_zip_content(temporary_content, ordered)
+        published = True
+        current_inventory = _artifact_inventory(output)
+        expected_inventory = [entry for entry in ordered if entry["path"] != ARTIFACT_MANIFEST_NAME]
+        if current_inventory != expected_inventory:
+            raise RouteError("PIPELINE_ARTIFACT_INVENTORY_CHANGED_DURING_ARCHIVE")
+        for entry in ordered:
+            _bound_artifact_bytes(output, entry)
+        archive_bytes = _verify_zip_entries(archive, ordered)
+        completed = True
+        return archive, len(archive_bytes), hashlib.sha256(archive_bytes).hexdigest()
+    finally:
+        if published and not completed and archive.exists():
+            if archive.is_symlink() or not archive.is_file():
+                raise RouteError("PIPELINE_ARTIFACT_ARCHIVE_UNSAFE")
+            archive.unlink()
+
+
+def _reportable_assembly_failure(error: RouteError) -> bool:
+    reason = str(error)
+    return reason.startswith(
+        (
+            "ASSEMBLY_UNSUPPORTED_TARGET_LANGUAGE",
+            "ASSEMBLY_BUILD_VERIFICATION_FAILED",
+            "ASSEMBLY_BUILD_TIMEOUT",
+            "EXACT_TOOLCHAIN_",
+        )
+    )
+
+
+def _assembly_failure_status(error: RouteError) -> str:
+    return "NOT_RUN" if str(error).startswith("EXACT_TOOLCHAIN_") else "FAILED"
+
+
+def _reportable_discovery_incident(error: RouteError) -> bool:
+    return str(error).startswith(
+        (
+            "EXACT_TOOLCHAIN_",
+            "NATIVE_ANALYZER_FAILED",
+            "NATIVE_ANALYZER_CONTRACT_INVALID",
+            "NATIVE_ANALYZER_INVALID_JSON",
+            "NATIVE_ANALYZER_OBJECT_REQUIRED",
+            "NATIVE_ANALYZER_TIMEOUT",
+            "SWIFT_ANALYZER_BUILD_FAILED",
+            "SWIFT_ANALYZER_BUILD_TIMEOUT",
+            "TYPESCRIPT_ANALYZER_BUILD_FAILED",
+            "TYPESCRIPT_ANALYZER_BUILD_TIMEOUT",
+        )
+    )
+
+
+def _reportable_artifact_capacity(error: RouteError) -> bool:
+    return str(error).split(":", 1)[0] in {
+        "PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED",
+        "PIPELINE_ARTIFACT_COMPRESSED_LIMIT_EXCEEDED",
+    }
+
+
+def _incident_batch(discovery: dict[str, Any], reason: str) -> dict[str, Any]:
+    reason_code = reason.split(":", 1)[0][:120]
+    units = [
+        {
+            "id": result["id"],
+            "source_path": result["source_path"],
+            "status": "SKIPPED_NOT_READY",
+            "reason_code": reason_code,
+            "reason": reason[:2_000],
+            "failure_stage": "ANALYSIS",
+            "analysis_incident": True,
+        }
+        for result in discovery["results"]
+    ]
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "elmos.repository-batch-report",
+        "status": "PARTIAL",
+        "repository_ref": discovery.get("repository_ref"),
+        "snapshot_sha256": discovery.get("snapshot_sha256"),
+        "route_id": discovery.get("route_id"),
+        "profile": discovery.get("profile"),
+        "work_unit_count": len(units),
+        "selected_unit_count": len(units),
+        "attempted_count": 0,
+        "unattempted_count": len(units),
+        "resumed_count": 0,
+        "status_counts": {"SKIPPED_NOT_READY": len(units)},
+        "units": units,
+        "execution_status": "NOT_RUN",
+        "external_verification_status": "NOT_RUN",
+        "certification_status": "NOT_CERTIFIED",
+    }
 
 
 def _commit_owned_directory(output: Path, staging_name: str, final_name: str) -> Path:
@@ -182,156 +512,6 @@ def _commit_owned_directory(output: Path, staging_name: str, final_name: str) ->
     if backup.exists():
         shutil.rmtree(backup)
     return final
-
-
-def _artifact_inventory(output: Path) -> list[dict[str, Any]]:
-    files: list[dict[str, Any]] = []
-    for path in sorted(output.rglob("*"), key=lambda item: item.as_posix()):
-        if not path.is_file() or path.is_symlink():
-            continue
-        relative = path.relative_to(output).as_posix()
-        if relative in _ARTIFACT_CONTROL_PATHS:
-            continue
-        files.append(
-            {
-                "path": relative,
-                "bytes": path.stat().st_size,
-                "sha256": _sha256(path),
-            }
-        )
-    if not files:
-        raise RouteError("PIPELINE_ARTIFACT_EMPTY")
-    return files
-
-
-def _archive_entry_path(output: Path, relative: str) -> Path:
-    pure = Path(relative)
-    if not relative or pure.is_absolute() or ".." in pure.parts or "\\" in relative or pure.as_posix() != relative:
-        raise RouteError("PIPELINE_ARTIFACT_PATH_INVALID")
-    cursor = output
-    for part in pure.parts:
-        cursor = cursor / part
-        if cursor.is_symlink():
-            raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE")
-    if not cursor.is_file():
-        raise RouteError("PIPELINE_ARTIFACT_SOURCE_MISSING")
-    root = output.resolve(strict=True)
-    resolved = cursor.resolve(strict=True)
-    if root not in resolved.parents:
-        raise RouteError("PIPELINE_ARTIFACT_SOURCE_UNSAFE")
-    return cursor
-
-
-def _validate_archive_entry(entry: dict[str, Any]) -> tuple[str, int, str]:
-    relative = entry.get("path")
-    byte_count = entry.get("bytes")
-    sha256 = entry.get("sha256")
-    if (
-        not isinstance(relative, str)
-        or type(byte_count) is not int
-        or byte_count < 0
-        or not isinstance(sha256, str)
-        or len(sha256) != 64
-        or any(character not in "0123456789abcdef" for character in sha256)
-    ):
-        raise RouteError("PIPELINE_ARTIFACT_ENTRY_INVALID")
-    return relative, byte_count, sha256
-
-
-def _verify_deterministic_zip(archive: Path, entries: list[dict[str, Any]]) -> None:
-    expected: dict[str, tuple[int, str]] = {}
-    for entry in entries:
-        relative, byte_count, sha256 = _validate_archive_entry(entry)
-        if relative in expected:
-            raise RouteError("PIPELINE_ARTIFACT_ENTRY_DUPLICATED")
-        expected[relative] = (byte_count, sha256)
-    try:
-        with zipfile.ZipFile(archive) as bundle:
-            infos = bundle.infolist()
-            names = [info.filename for info in infos]
-            if len(names) != len(set(names)) or set(names) != set(expected):
-                raise RouteError("PIPELINE_ARTIFACT_PATH_SET_MISMATCH")
-            for info in infos:
-                if info.is_dir():
-                    raise RouteError("PIPELINE_ARTIFACT_PATH_SET_MISMATCH")
-                content = bundle.read(info)
-                expected_bytes, expected_sha256 = expected[info.filename]
-                if (
-                    len(content) != expected_bytes
-                    or info.file_size != expected_bytes
-                    or hashlib.sha256(content).hexdigest() != expected_sha256
-                ):
-                    raise RouteError(f"PIPELINE_ARTIFACT_ENTRY_MISMATCH:{info.filename}")
-            try:
-                embedded_manifest = json.loads(bundle.read(ARTIFACT_MANIFEST_NAME))
-            except (KeyError, UnicodeDecodeError, json.JSONDecodeError) as error:
-                raise RouteError("PIPELINE_ARTIFACT_MANIFEST_INVALID") from error
-            declared_files = embedded_manifest.get("files") if isinstance(embedded_manifest, dict) else None
-            if not isinstance(declared_files, list):
-                raise RouteError("PIPELINE_ARTIFACT_MANIFEST_INVALID")
-            declared: dict[str, tuple[int, str]] = {}
-            for entry in declared_files:
-                if not isinstance(entry, dict):
-                    raise RouteError("PIPELINE_ARTIFACT_MANIFEST_INVALID")
-                relative, byte_count, sha256 = _validate_archive_entry(entry)
-                if relative in declared or relative in _ARTIFACT_CONTROL_PATHS:
-                    raise RouteError("PIPELINE_ARTIFACT_MANIFEST_INVALID")
-                declared[relative] = (byte_count, sha256)
-            expected_declared = {
-                relative: binding for relative, binding in expected.items() if relative != ARTIFACT_MANIFEST_NAME
-            }
-            if declared != expected_declared:
-                raise RouteError("PIPELINE_ARTIFACT_MANIFEST_PATH_SET_MISMATCH")
-            source_language = embedded_manifest.get("source_language")
-            target_language = embedded_manifest.get("target_language")
-            if (
-                source_language not in REPOSITORY_SURFACE_LANGUAGES
-                or target_language not in REPOSITORY_SURFACE_LANGUAGES
-                or source_language == target_language
-                or embedded_manifest.get("route_id") != f"{source_language}-to-{target_language}"
-            ):
-                raise RouteError("PIPELINE_ARTIFACT_ROUTE_IDENTITY_INVALID")
-            assembly_manifest_path = f"assembled/{ASSEMBLY_MANIFEST_NAME}"
-            try:
-                assembly_manifest_bytes = bundle.read(assembly_manifest_path)
-            except KeyError as error:
-                raise RouteError("PIPELINE_ARTIFACT_ASSEMBLY_MANIFEST_MISSING") from error
-            verify_archived_assembly_closure(
-                assembly_manifest_bytes,
-                target_language,
-                names,
-                bundle.read,
-            )
-    except (OSError, zipfile.BadZipFile) as error:
-        raise RouteError("PIPELINE_ARTIFACT_INVALID") from error
-
-
-def _write_deterministic_zip(output: Path, paths: list[dict[str, Any]]) -> tuple[Path, int, str]:
-    archive = output / ARTIFACT_NAME
-    temporary = output / f"{ARTIFACT_NAME}.tmp"
-    _clean_archive_temporary(output)
-    seen: set[str] = set()
-    with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as bundle:
-        for entry in paths:
-            relative, expected_bytes, expected_sha256 = _validate_archive_entry(entry)
-            if relative in seen or relative in {ARTIFACT_NAME, f"{ARTIFACT_NAME}.tmp"}:
-                raise RouteError("PIPELINE_ARTIFACT_ENTRY_DUPLICATED")
-            seen.add(relative)
-            source = _archive_entry_path(output, relative)
-            content = source.read_bytes()
-            if len(content) != expected_bytes or hashlib.sha256(content).hexdigest() != expected_sha256:
-                raise RouteError(f"PIPELINE_ARTIFACT_SOURCE_DRIFTED:{relative}")
-            info = zipfile.ZipInfo(relative, date_time=(1980, 1, 1, 0, 0, 0))
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o100644 << 16
-            bundle.writestr(info, content)
-    temporary.replace(archive)
-    try:
-        _verify_deterministic_zip(archive, paths)
-    except RouteError:
-        archive.unlink(missing_ok=True)
-        raise
-    return archive, archive.stat().st_size, _sha256(archive)
 
 
 def _project_graph_summary(graph: dict[str, object]) -> dict[str, Any]:
@@ -681,6 +861,394 @@ def _conversion_coverage_summary(
     }
 
 
+def _run_repository_pipeline_attempt(
+    repository_root: Path,
+    repository_ref: str,
+    source_language: Language,
+    target_language: Language,
+    cases_directory: Path,
+    output: Path,
+) -> dict[str, Any]:
+    """Run and package a bounded repository translation.
+
+    The output directory is a durable checkpoint boundary.  Batch execution
+    resumes from its existing checkpoint; inventory and discovery are
+    recomputed from the read-only source on every invocation so source drift is
+    detected before prior work is reused.
+
+    Two drift detectors run side by side here and are deliberately not
+    interchangeable.  Re-inventorying the plan and the behaviour cases catches
+    byte, name and presence changes in the two *declared* inputs.  The neutral
+    project-graph snapshot catches a change anywhere in the scanned tree,
+    including files no plan ever selected.  Either one firing invalidates the
+    run; neither subsumes the other.
+
+    Failure handling is white-listed, not permissive.  A discovery or assembly
+    failure becomes a reportable PARTIAL only when one of the ``_reportable_*``
+    predicates recognises it.  Confinement, digest and unsafe-output failures
+    still raise and can never be packaged as trustworthy evidence.
+    """
+    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
+        raise RouteError("UNSUPPORTED_LANGUAGE")
+    if source_language == target_language:
+        raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
+    if output.exists() and (output.is_symlink() or not output.is_dir()):
+        raise RouteError("PIPELINE_OUTPUT_UNSAFE")
+    output.mkdir(parents=True, exist_ok=True)
+    _remove_stale_handoff(output)
+    root = repository_root.resolve(strict=True)
+    cases = cases_directory.resolve(strict=True)
+    if repository_root.is_symlink() or not root.is_dir():
+        raise RouteError("REPOSITORY_DIRECTORY_INVALID")
+    if cases_directory.is_symlink() or not cases.is_dir():
+        raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
+
+    invocation_graph = build_project_graph(root, repository_ref)
+    invocation_snapshot = _neutral_project_snapshot(invocation_graph)
+
+    plan = plan_repository(root, repository_ref, source_language, target_language)
+    cases_manifest, cases_manifest_sha256 = _cases_manifest(cases, plan)
+
+    discovery_incident: str | None = None
+    discovery: dict[str, Any] | None = None
+    if source_language == "react":
+        # React's repository identity is project-contextual: an exact React
+        # project may contain both .tsx and .ts helpers, and its package and
+        # tsconfig bytes are part of repository completeness.  The compiler-
+        # backed discovery receipt is therefore required before the graph can
+        # classify those .ts files as React or close the two descriptors.
+        try:
+            discovery = discover_repository(plan, root)
+        except RouteError as error:
+            if not _reportable_discovery_incident(error):
+                raise
+            discovery_incident = str(error)[:2_000]
+            discovery = inventory_repository_incident(plan, root, discovery_incident)
+        if discovery_incident is None:
+            project_graph = build_project_graph(root, repository_ref, discovery)
+            if _neutral_project_snapshot(project_graph) != invocation_snapshot:
+                raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
+        else:
+            # An incident discovery carries no compiler receipt, so it cannot
+            # reclassify anything.  Fall back to the uninformed graph rather
+            # than binding a graph to a receipt that was never produced.
+            project_graph = invocation_graph
+    else:
+        project_graph = invocation_graph
+
+    initial_graph_summary = _project_graph_summary(project_graph)
+    _bind_project_graph_to_plan(project_graph, plan)
+    _write_json(output / "repository-route-plan.json", plan)
+    _write_json(output / CASES_MANIFEST_NAME, cases_manifest)
+
+    if discovery is None:
+        try:
+            discovery = discover_repository(plan, root)
+        except RouteError as error:
+            if not _reportable_discovery_incident(error):
+                raise
+            discovery_incident = str(error)[:2_000]
+            discovery = inventory_repository_incident(plan, root, discovery_incident)
+    _write_json(output / "repository-discovery-report.json", discovery)
+
+    if discovery_incident is None:
+        batch_output = _owned_directory(output, "batch")
+        batch = run_batch(discovery, root, cases, batch_output)
+    else:
+        batch_output = _reset_owned_directory(output, "batch")
+        batch_output.mkdir(parents=True)
+        batch = _incident_batch(discovery, discovery_incident)
+        _write_json(batch_output / BATCH_REPORT_NAME, batch)
+
+    passed = int(batch.get("status_counts", {}).get("PASSED", 0))
+    # An empty behavior-case corpus is not a reportable incident: with nothing
+    # verified there is no evidence to package, and a run that got this far
+    # without a discovery incident must refuse rather than emit a report that
+    # reads like a result.  A *discovery* incident still takes the diagnostic
+    # path below, which is the tolerance the other side of this merge added.
+    if passed < 1 and discovery_incident is None:
+        raise RouteError("PIPELINE_NO_VERIFIED_UNITS")
+    assembly: dict[str, Any] | None = None
+    assembly_failure: str | None = discovery_incident
+    build_status = "NOT_RUN"
+    # Assembly is derived exclusively from digest-verified batch bytes, and is
+    # built in a staging directory so a mid-run failure leaves the previous
+    # `assembled` tree intact rather than half-overwritten.
+    assembly_staging = _reset_owned_directory(output, "assembled.staging")
+    if passed > 0:
+        try:
+            assembly = assemble_project(batch, batch_output, assembly_staging)
+            try:
+                assembly = verify_assembled_project(target_language, assembly_staging)
+                build_status = "PASSED"
+            except RouteError as error:
+                if not _reportable_assembly_failure(error):
+                    raise
+                assembly_failure = str(error)[:4_000]
+                build_status = _assembly_failure_status(error)
+        except RouteError as error:
+            if not _reportable_assembly_failure(error):
+                raise
+            assembly_failure = str(error)[:4_000]
+            build_status = _assembly_failure_status(error)
+
+    def _discard_staging() -> None:
+        if assembly_staging.exists():
+            if assembly_staging.is_symlink() or not assembly_staging.is_dir():
+                raise RouteError("PIPELINE_STAGING_DIRECTORY_INVALID")
+            shutil.rmtree(assembly_staging)
+
+    replayed_graph = build_project_graph(
+        root,
+        repository_ref,
+        discovery if source_language == "react" and discovery_incident is None else None,
+    )
+    if _neutral_project_snapshot(replayed_graph) != invocation_snapshot:
+        _discard_staging()
+        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
+    if _project_graph_summary(replayed_graph) != initial_graph_summary:
+        _discard_staging()
+        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
+
+    if not assembly_staging.is_dir():
+        assembly_staging.mkdir(parents=True)
+    assembled_output = _commit_owned_directory(output, "assembled.staging", "assembled")
+    if build_status == "PASSED":
+        # Closure is only meaningful over a tree that actually built.  A
+        # reportable assembly failure leaves a partial tree on purpose; running
+        # the closure gate over it would convert a diagnosable PARTIAL into an
+        # unrelated raise.
+        assembly = verify_assembly_closure(target_language, assembled_output)
+
+    semantic_graph = build_project_graph(root, repository_ref, discovery)
+    if (
+        _neutral_project_snapshot(semantic_graph) != invocation_snapshot
+        or semantic_graph.get("snapshot_sha256") != project_graph.get("snapshot_sha256")
+    ):
+        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
+    _bind_project_graph_to_plan(semantic_graph, plan)
+    graph_summary = _write_and_verify_project_graph(output, semantic_graph)
+    conversion_coverage = _conversion_coverage_summary(semantic_graph, discovery, batch)
+    behavior_coverage = _behavior_coverage_summary(discovery, batch)
+    repository_complete = (
+        graph_summary["repository_complete"] is True
+        and conversion_coverage["complete"] is True
+        and behavior_coverage["complete"] is True
+        and build_status == "PASSED"
+    )
+
+    function_report = build_conversion_report(
+        discovery,
+        batch,
+        root,
+        batch_output,
+        build_status=build_status,
+        build_reason=assembly_failure,
+        cases_manifest_sha256=cases_manifest_sha256,
+    )
+
+    # Re-inventory both independent inputs after all analysis, target execution
+    # and assembly work. Any addition, deletion, rename, byte drift or change
+    # from PRESENT to MISSING is an integrity failure, not a reportable partial.
+    try:
+        final_plan = plan_repository(root, repository_ref, source_language, target_language)
+    except RouteError as error:
+        if str(error).startswith("NO_SOURCE_FILES:"):
+            raise RouteError("PIPELINE_SOURCE_SNAPSHOT_CHANGED_DURING_RUN") from error
+        raise
+    if final_plan != plan:
+        raise RouteError("PIPELINE_SOURCE_SNAPSHOT_CHANGED_DURING_RUN")
+    final_cases_manifest, final_cases_manifest_sha256 = _cases_manifest(cases, final_plan)
+    if final_cases_manifest != cases_manifest or final_cases_manifest_sha256 != cases_manifest_sha256:
+        raise RouteError("PIPELINE_BEHAVIOR_CASES_CHANGED_DURING_RUN")
+
+    functional_conversion = write_conversion_reports(function_report, output)
+    status = str(function_report["status"])
+
+    def _shared_claim(current_status: str) -> dict[str, Any]:
+        """Fields the report and the manifest must agree on, byte for byte.
+
+        The console compares the two documents field by field, so they are
+        built once from a single source rather than written out twice.  The
+        two execution-evidence vocabularies are the console's, not this
+        module's: it expects PASSED/LIMITED, never PARTIAL.
+        """
+        complete = current_status == "COMPLETE"
+        return {
+            "status": current_status,
+            "repository_ref": repository_ref,
+            "snapshot_sha256": plan["snapshot_sha256"],
+            "repository_scale": plan["repository_scale"],
+            "repository_limits": plan["repository_limits"],
+            "route_id": plan["route_id"],
+            "source_language": source_language,
+            "target_language": target_language,
+            "profile": "typed-pure-function-v1",
+            "unit_batch_status": batch.get("status"),
+            "project_graph": graph_summary,
+            "conversion_coverage": conversion_coverage,
+            "behavior_coverage": behavior_coverage,
+            "repository_complete": repository_complete,
+            "local_execution_evidence": "PASSED" if complete else "LIMITED",
+            "repository_execution_status": "PASSED_LOCAL" if complete else "LIMITED",
+            "independent_verification_status": "NOT_RUN",
+            "external_verification_status": "NOT_RUN",
+            "certification_status": "NOT_CERTIFIED",
+        }
+
+    artifact: dict[str, Any] | None = None
+    artifact_packaging: dict[str, Any] = {
+        "status": "NOT_RUN",
+        "reason_code": "FUNCTIONAL_CONVERSION_NOT_CODE_READY",
+        "reason": "No verified build-ready target artifact was available for packaging.",
+        "max_uncompressed_bytes": MAX_ARTIFACT_UNCOMPRESSED_BYTES,
+        "max_compressed_bytes": MAX_ARTIFACT_COMPRESSED_BYTES,
+    }
+    if functional_conversion["code_artifact_ready"]:
+        try:
+            inventory = _artifact_inventory(output)
+            manifest = {
+                "schema_version": SCHEMA_VERSION,
+                "kind": "elmos.repository-migration-artifact-manifest",
+                **_shared_claim(status),
+                "functional_conversion": {
+                    "definition_id": functional_conversion["definition_id"],
+                    "numerator": functional_conversion["numerator"],
+                    "denominator": functional_conversion["denominator"],
+                    "success_rate_basis_points": functional_conversion["success_rate_basis_points"],
+                    "measurement_status": functional_conversion["measurement_status"],
+                    "denominator_complete": functional_conversion["denominator_complete"],
+                    "project_success_rate_display": functional_conversion[
+                        "project_success_rate_display"
+                    ],
+                    "code_artifact_ready": True,
+                    "cases_manifest_sha256": cases_manifest_sha256,
+                },
+                "files": inventory,
+            }
+            _write_json(output / ARTIFACT_MANIFEST_NAME, manifest)
+            manifest_bytes, manifest_sha256 = _stable_file(
+                output / ARTIFACT_MANIFEST_NAME,
+                "PIPELINE_ARTIFACT_MANIFEST",
+                max_bytes=MAX_ARTIFACT_UNCOMPRESSED_BYTES,
+                limit_error="PIPELINE_ARTIFACT_UNCOMPRESSED_LIMIT_EXCEEDED",
+            )
+            archive_entries = [
+                *inventory,
+                {
+                    "path": ARTIFACT_MANIFEST_NAME,
+                    "bytes": manifest_bytes,
+                    "sha256": manifest_sha256,
+                },
+            ]
+            archive, artifact_size, artifact_sha256 = _write_deterministic_zip(
+                output, archive_entries
+            )
+            artifact = {
+                "path": archive.name,
+                "bytes": artifact_size,
+                "sha256": artifact_sha256,
+            }
+            artifact_packaging = {
+                "status": "PASSED",
+                "reason_code": None,
+                "reason": None,
+                "max_uncompressed_bytes": MAX_ARTIFACT_UNCOMPRESSED_BYTES,
+                "max_compressed_bytes": MAX_ARTIFACT_COMPRESSED_BYTES,
+            }
+        except RouteError as error:
+            if not _reportable_artifact_capacity(error):
+                raise
+            reason_code = str(error).split(":", 1)[0]
+            status = "BLOCKED"
+            artifact_packaging = {
+                "status": "FAILED",
+                "reason_code": reason_code,
+                "reason": str(error)[:2_000],
+                "max_uncompressed_bytes": MAX_ARTIFACT_UNCOMPRESSED_BYTES,
+                "max_compressed_bytes": MAX_ARTIFACT_COMPRESSED_BYTES,
+            }
+            # The manifest that was just written describes an archive that does
+            # not exist.  Remove it rather than leave a claim behind, which is
+            # also what keeps report and manifest from disagreeing.
+            manifest_path = output / ARTIFACT_MANIFEST_NAME
+            if manifest_path.exists():
+                if manifest_path.is_symlink() or not manifest_path.is_file():
+                    raise RouteError("PIPELINE_OUTPUT_UNSAFE") from error
+                manifest_path.unlink()
+            function_report["code_artifact_ready"] = False
+            function_report["markdown_sha256"] = hashlib.sha256(
+                render_conversion_markdown(function_report).encode("utf-8")
+            ).hexdigest()
+            functional_conversion = write_conversion_reports(function_report, output)
+
+    report = {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "elmos.repository-pipeline-report",
+        **_shared_claim(status),
+        "work_unit_count": batch["work_unit_count"],
+        "ready_count": discovery["ready_count"],
+        "resumed_count": batch["resumed_count"],
+        "status_counts": batch["status_counts"],
+        "included_unit_count": int(assembly.get("included_unit_count", 0)) if assembly else 0,
+        "excluded_units": (
+            assembly.get("excluded_units", [])
+            if assembly
+            else [
+                {
+                    "id": unit.get("id"),
+                    "status": unit.get("status"),
+                    "reason": unit.get("reason", assembly_failure or "TARGET_PROJECT_NOT_ASSEMBLED"),
+                }
+                for unit in batch.get("units", [])
+            ]
+        ),
+        "build_verification": {
+            "status": build_status,
+            "commands": (assembly.get("build_verification", {}) or {}).get("commands", [])
+            if assembly
+            else [],
+            "toolchain": {
+                "language": (assembly.get("build_verification", {}) or {}).get("toolchain_language")
+                if assembly
+                else None,
+                "version": (assembly.get("build_verification", {}) or {}).get("toolchain_version")
+                if assembly
+                else None,
+            },
+            "reason": assembly_failure,
+        },
+        "functional_conversion": functional_conversion,
+        "cases_manifest_sha256": cases_manifest_sha256,
+        "artifact": artifact,
+        "artifact_packaging": artifact_packaging,
+        "limitations": [
+            "The result covers typed-pure-function-v1 only.",
+            "Cross-file calls, shared state, original build dependencies, resources, and configuration "
+            "must be represented by a project graph and remain blocking when unresolved.",
+            "A locally passing unit batch remains LIMITED while any project-graph obligation is open.",
+            "Every compiler-indexed declaration and module effect must bind to one READY unit that PASSED.",
+            "Non-Python declaration inventories remain INDETERMINATE until a compiler-complete "
+            "inventory is available for that source language.",
+            "PARTIAL means at least one repository unit was skipped, failed, unsupported, or unknown.",
+            "BLOCKED can still carry a content-addressed diagnostic report, but it never makes "
+            "target code downloadable.",
+            "Local exact-toolchain execution is engineering evidence, not independent or external certification.",
+        ],
+    }
+    _write_json(output / REPORT_NAME, report)
+    return report
+
+
+
+
+_BEHAVIOR_COVERAGE_STATUSES = ("FAILED", "NOT_RUN", "PASSED", "UNKNOWN")
+_BATCH_TO_BEHAVIOR_STATUS = {
+    "FAILED": "FAILED",
+    "PASSED": "PASSED",
+    "SKIPPED_NO_CASES": "NOT_RUN",
+    "SKIPPED_NOT_READY": "NOT_RUN",
+}
 def _behavior_coverage_summary(
     discovery: dict[str, Any],
     batch: dict[str, Any],
@@ -857,196 +1425,6 @@ def _behavior_coverage_summary(
     }
 
 
-def _run_repository_pipeline_attempt(
-    repository_root: Path,
-    repository_ref: str,
-    source_language: Language,
-    target_language: Language,
-    cases_directory: Path,
-    output: Path,
-) -> dict[str, Any]:
-    """Run and package a bounded repository translation.
-
-    The output directory is a durable checkpoint boundary.  Batch execution
-    resumes from its existing checkpoint; inventory and discovery are
-    recomputed from the read-only source on every invocation so source drift is
-    detected before prior work is reused.
-    """
-    if source_language not in SUPPORTED_LANGUAGES or target_language not in SUPPORTED_LANGUAGES:
-        raise RouteError("UNSUPPORTED_LANGUAGE")
-    if source_language == target_language:
-        raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if output.exists() and (output.is_symlink() or not output.is_dir()):
-        raise RouteError("PIPELINE_OUTPUT_UNSAFE")
-    output.mkdir(parents=True, exist_ok=True)
-    _validate_handoff_targets(output)
-    _clean_archive_temporary(output)
-    root = repository_root.resolve(strict=True)
-    cases = cases_directory.resolve(strict=True)
-    if repository_root.is_symlink() or not root.is_dir():
-        raise RouteError("REPOSITORY_DIRECTORY_INVALID")
-    if cases_directory.is_symlink() or not cases.is_dir():
-        raise RouteError("BEHAVIOR_CASES_DIRECTORY_INVALID")
-
-    invocation_graph = build_project_graph(root, repository_ref)
-    invocation_snapshot = _neutral_project_snapshot(invocation_graph)
-    plan = plan_repository(root, repository_ref, source_language, target_language)
-    discovery: dict[str, Any] | None = None
-    if source_language == "react":
-        # React's repository identity is project-contextual: an exact React
-        # project may contain both .tsx and .ts helpers, and its package and
-        # tsconfig bytes are part of repository completeness.  The compiler-
-        # backed discovery receipt is therefore required before the graph can
-        # classify those .ts files as React or close the two descriptors.
-        discovery = discover_repository(plan, root)
-        project_graph = build_project_graph(root, repository_ref, discovery)
-        if _neutral_project_snapshot(project_graph) != invocation_snapshot:
-            raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
-    else:
-        project_graph = invocation_graph
-    initial_graph_summary = _project_graph_summary(project_graph)
-    _bind_project_graph_to_plan(project_graph, plan)
-    _write_json(output / "repository-route-plan.json", plan)
-
-    if discovery is None:
-        discovery = discover_repository(plan, root)
-    _write_json(output / "repository-discovery-report.json", discovery)
-
-    batch_output = _owned_directory(output, "batch")
-    batch = run_batch(discovery, root, cases, batch_output)
-
-    passed = int(batch.get("status_counts", {}).get("PASSED", 0))
-    if passed < 1:
-        raise RouteError("PIPELINE_NO_VERIFIED_UNITS")
-
-    # Assembly is derived exclusively from digest-verified batch bytes. Rebuild
-    # this cheap final view on recovery instead of trusting an interrupted tree.
-    assembly_staging = _reset_owned_directory(output, "assembled.staging")
-    assembly = assemble_project(batch, batch_output, assembly_staging)
-    assembly = verify_assembled_project(target_language, assembly_staging)
-
-    replayed_graph = build_project_graph(
-        root,
-        repository_ref,
-        discovery if source_language == "react" else None,
-    )
-    if _neutral_project_snapshot(replayed_graph) != invocation_snapshot:
-        if assembly_staging.is_symlink() or not assembly_staging.is_dir():
-            raise RouteError("PIPELINE_STAGING_DIRECTORY_INVALID")
-        shutil.rmtree(assembly_staging)
-        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
-    replayed_summary = _project_graph_summary(replayed_graph)
-    if replayed_summary != initial_graph_summary:
-        if assembly_staging.is_symlink() or not assembly_staging.is_dir():
-            raise RouteError("PIPELINE_STAGING_DIRECTORY_INVALID")
-        shutil.rmtree(assembly_staging)
-        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
-    assembled_output = _commit_owned_directory(
-        output,
-        "assembled.staging",
-        "assembled",
-    )
-    assembly = verify_assembly_closure(target_language, assembled_output)
-    semantic_graph = build_project_graph(root, repository_ref, discovery)
-    if (
-        _neutral_project_snapshot(semantic_graph) != invocation_snapshot
-        or semantic_graph.get("snapshot_sha256") != project_graph.get("snapshot_sha256")
-    ):
-        raise RouteError("PROJECT_GRAPH_CHANGED_DURING_PIPELINE")
-    _bind_project_graph_to_plan(semantic_graph, plan)
-    graph_summary = _write_and_verify_project_graph(output, semantic_graph)
-    conversion_coverage = _conversion_coverage_summary(semantic_graph, discovery, batch)
-    behavior_coverage = _behavior_coverage_summary(discovery, batch)
-
-    repository_complete = (
-        graph_summary["repository_complete"] is True
-        and conversion_coverage["complete"] is True
-        and behavior_coverage["complete"] is True
-        and assembly.get("build_verification_status") == "PASSED"
-    )
-    status = "COMPLETE" if repository_complete else "PARTIAL"
-    repository_execution_status = "PASSED_LOCAL" if status == "COMPLETE" else "LIMITED"
-    shared_claim = {
-        "status": status,
-        "repository_ref": repository_ref,
-        "snapshot_sha256": plan["snapshot_sha256"],
-        "repository_scale": plan["repository_scale"],
-        "repository_limits": plan["repository_limits"],
-        "route_id": plan["route_id"],
-        "source_language": source_language,
-        "target_language": target_language,
-        "profile": "typed-pure-function-v1",
-        "unit_batch_status": batch.get("status"),
-        "project_graph": graph_summary,
-        "conversion_coverage": conversion_coverage,
-        "behavior_coverage": behavior_coverage,
-        "repository_complete": repository_complete,
-        "local_execution_evidence": "PASSED" if status == "COMPLETE" else "LIMITED",
-        "repository_execution_status": repository_execution_status,
-        "independent_verification_status": "NOT_RUN",
-        "external_verification_status": "NOT_RUN",
-        "certification_status": "NOT_CERTIFIED",
-    }
-    _clean_archive_temporary(output)
-    inventory = _artifact_inventory(output)
-    manifest = {
-        "schema_version": SCHEMA_VERSION,
-        "kind": "elmos.repository-migration-artifact-manifest",
-        **shared_claim,
-        "files": inventory,
-    }
-    _write_json(output / ARTIFACT_MANIFEST_NAME, manifest)
-    archive_entries = [
-        *inventory,
-        {
-            "path": ARTIFACT_MANIFEST_NAME,
-            "bytes": (output / ARTIFACT_MANIFEST_NAME).stat().st_size,
-            "sha256": _sha256(output / ARTIFACT_MANIFEST_NAME),
-        },
-    ]
-    try:
-        archive, artifact_size, artifact_sha256 = _write_deterministic_zip(output, archive_entries)
-    except RouteError:
-        (output / ARTIFACT_MANIFEST_NAME).unlink(missing_ok=True)
-        raise
-
-    report = {
-        "schema_version": SCHEMA_VERSION,
-        "kind": "elmos.repository-pipeline-report",
-        **shared_claim,
-        "work_unit_count": batch["work_unit_count"],
-        "ready_count": discovery["ready_count"],
-        "resumed_count": batch["resumed_count"],
-        "status_counts": batch["status_counts"],
-        "included_unit_count": assembly["included_unit_count"],
-        "excluded_units": assembly["excluded_units"],
-        "build_verification": {
-            "status": assembly["build_verification_status"],
-            "commands": assembly.get("build_verification", {}).get("commands", []),
-            "toolchain": {
-                "language": assembly.get("build_verification", {}).get("toolchain_language"),
-                "version": assembly.get("build_verification", {}).get("toolchain_version"),
-            },
-        },
-        "artifact": {
-            "path": archive.name,
-            "bytes": artifact_size,
-            "sha256": artifact_sha256,
-        },
-        "limitations": [
-            "The result covers typed-pure-function-v1 only.",
-            "Cross-file calls, shared state, original build dependencies, resources, and configuration "
-            "must be represented by a project graph and remain blocking when unresolved.",
-            "A locally passing unit batch remains LIMITED while any project-graph obligation is open.",
-            "Every compiler-indexed declaration and module effect must bind to one READY unit that PASSED.",
-            "PARTIAL means at least one repository unit was skipped or failed and blocks a whole-repository claim.",
-            "Local exact-toolchain execution is engineering evidence, not independent or external certification.",
-        ],
-    }
-    _write_json(output / REPORT_NAME, report)
-    return report
-
-
 def run_repository_pipeline(
     repository_root: Path,
     repository_ref: str,
@@ -1055,8 +1433,22 @@ def run_repository_pipeline(
     cases_directory: Path,
     output: Path,
 ) -> dict[str, Any]:
-    """Run one attempt while atomically isolating prior final status claims."""
+    """Run one attempt while atomically isolating prior final status claims.
 
+    Argument validation happens *before* the quarantine on purpose.  Quarantine
+    is destructive on failure -- a run that fails deletes the previous run's
+    COMPLETE surfaces, because the directory it half-overwrote no longer
+    represents that earlier run.  A caller passing an unsupported language must
+    therefore be refused before anything is moved, or a typo would destroy a
+    perfectly good previous result.
+    """
+    if (
+        source_language not in SUPPORTED_LANGUAGES
+        or target_language not in SUPPORTED_LANGUAGES
+    ):
+        raise RouteError("UNSUPPORTED_LANGUAGE")
+    if source_language == target_language:
+        raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
     if output.exists() and (output.is_symlink() or not output.is_dir()):
         raise RouteError("PIPELINE_OUTPUT_UNSAFE")
     output.mkdir(parents=True, exist_ok=True)

@@ -787,9 +787,47 @@ V12_PROJECT_SCOPED_TABLES = (
 )
 
 
-def test_project_scope_migrations_are_contiguous_and_packaged_byte_exactly() -> None:
-    assert SQLITE_MIGRATIONS[-1] == "0006_project_tenant_scope.sql"
-    assert POSTGRES_MIGRATIONS[-1] == "0008_project_tenant_scope.sql"
+# The exact, ordered migration contract. A new migration must be appended here
+# in the same commit that adds the file, so a migration landing without its
+# contract update fails this module rather than shipping unasserted.
+EXPECTED_SQLITE_MIGRATIONS = (
+    "0001_init.sql",
+    "0002_saved_compiler_ms.sql",
+    "0003_context_ledger.sql",
+    "0004_cache_parity.sql",
+    "0005_idempotency_claims.sql",
+    "0006_project_tenant_scope.sql",
+    "0007_slo_control.sql",
+)
+EXPECTED_POSTGRES_MIGRATIONS = (
+    "0001_init.sql",
+    "0002_elmos_extensions.sql",
+    "0003_column_types.sql",
+    "0004_saved_compiler_ms.sql",
+    "0005_context_ledger.sql",
+    "0006_cache_parity.sql",
+    "0007_idempotency_claims.sql",
+    "0008_project_tenant_scope.sql",
+    "0009_slo_control.sql",
+)
+SQLITE_PROJECT_SCOPE_MIGRATION = "0006_project_tenant_scope.sql"
+POSTGRES_PROJECT_SCOPE_MIGRATION = "0008_project_tenant_scope.sql"
+SQLITE_SLO_CONTROL_MIGRATION = "0007_slo_control.sql"
+POSTGRES_SLO_CONTROL_MIGRATION = "0009_slo_control.sql"
+
+
+def test_migration_lists_are_exact_contiguous_and_packaged_byte_exactly() -> None:
+    """The whole ordered list is pinned, in both dialects, byte for byte.
+
+    Asserting only the *last* migration lets a new one be appended with no
+    contract update at all; asserting the full tuple means any addition,
+    removal or reordering fails here first.
+    """
+
+    assert tuple(SQLITE_MIGRATIONS) == EXPECTED_SQLITE_MIGRATIONS
+    assert tuple(POSTGRES_MIGRATIONS) == EXPECTED_POSTGRES_MIGRATIONS
+    assert SQLITE_MIGRATIONS[-1] == SQLITE_SLO_CONTROL_MIGRATION
+    assert POSTGRES_MIGRATIONS[-1] == POSTGRES_SLO_CONTROL_MIGRATION
     assert [int(name[:4]) for name in SQLITE_MIGRATIONS] == list(
         range(1, len(SQLITE_MIGRATIONS) + 1)
     )
@@ -798,13 +836,23 @@ def test_project_scope_migrations_are_contiguous_and_packaged_byte_exactly() -> 
     )
 
     repository_migrations = Path(__file__).resolve().parents[1] / "migrations"
-    for dialect, name in (
-        ("sqlite", SQLITE_MIGRATIONS[-1]),
-        ("postgres", POSTGRES_MIGRATIONS[-1]),
+    for dialect, names in (
+        ("sqlite", SQLITE_MIGRATIONS),
+        ("postgres", POSTGRES_MIGRATIONS),
     ):
-        assert (repository_migrations / dialect / name).read_bytes() == (
-            store_module.MIGRATIONS_DIR / dialect / name
-        ).read_bytes()
+        # Every packaged mirror, not just the newest: a stale mirror of an
+        # older file ships a different schema than the repository claims.
+        repository_names = sorted(
+            path.name for path in (repository_migrations / dialect).glob("*.sql")
+        )
+        packaged_names = sorted(
+            path.name for path in (store_module.MIGRATIONS_DIR / dialect).glob("*.sql")
+        )
+        assert repository_names == sorted(names) == packaged_names
+        for name in names:
+            assert (repository_migrations / dialect / name).read_bytes() == (
+                store_module.MIGRATIONS_DIR / dialect / name
+            ).read_bytes()
 
 
 def test_sqlite_v12_tables_reject_cross_tenant_project_inserts_and_updates(
@@ -896,9 +944,17 @@ def test_sqlite_project_scope_upgrade_rejects_legacy_drift_without_ledger_entry(
     tmp_path: Path, clock: ManualClock
 ) -> None:
     path = tmp_path / "legacy-drift.sqlite"
+    # The drift is legal only *before* the project-scope migration installs its
+    # guards, so the legacy database is built from everything strictly before
+    # that migration -- never from "all but the last", which silently stops
+    # testing the upgrade as soon as a newer migration is appended.
+    scope_index = SQLITE_MIGRATIONS.index(SQLITE_PROJECT_SCOPE_MIGRATION)
+    legacy = SQLITE_MIGRATIONS[:scope_index]
+    pending = SQLITE_MIGRATIONS[scope_index:]
+    assert pending[0] == SQLITE_PROJECT_SCOPE_MIGRATION and len(pending) >= 1
     connection = sqlite3.connect(path)
     try:
-        for name in SQLITE_MIGRATIONS[:-1]:
+        for name in legacy:
             connection.executescript(
                 (store_module.MIGRATIONS_DIR / "sqlite" / name).read_text(encoding="utf-8")
             )
@@ -907,7 +963,7 @@ def test_sqlite_project_scope_upgrade_rejects_legacy_drift_without_ledger_entry(
         )
         connection.executemany(
             "INSERT INTO schema_migrations (name, applied_at) VALUES (?, ?)",
-            ((name, "legacy") for name in SQLITE_MIGRATIONS[:-1]),
+            ((name, "legacy") for name in legacy),
         )
         connection.executemany(
             "INSERT INTO tenants (tenant_id, created_at) VALUES (?, ?)",
@@ -952,8 +1008,10 @@ def test_sqlite_project_scope_upgrade_rejects_legacy_drift_without_ledger_entry(
             "SELECT 1 FROM sqlite_master WHERE type='trigger'"
             " AND name='prompt_prefix_manifests_project_scope_insert'"
         ).fetchone()
-        assert applied == set(SQLITE_MIGRATIONS[:-1])
+        assert applied == set(legacy)
         assert trigger is None
+        # Nothing at or after the failing migration was recorded.
+        assert applied.isdisjoint(pending)
         connection.execute(
             "UPDATE prompt_prefix_manifests SET tenant_id=? WHERE manifest_id=?",
             ("tenant-owner", "legacy-drift"),
@@ -977,9 +1035,10 @@ def test_sqlite_project_scope_upgrade_rejects_legacy_drift_without_ledger_entry(
 
 
 def test_postgres_project_scope_migration_has_exact_composite_fk_contract() -> None:
-    sql = (store_module.MIGRATIONS_DIR / "postgres" / POSTGRES_MIGRATIONS[-1]).read_text(
-        encoding="utf-8"
-    )
+    assert POSTGRES_PROJECT_SCOPE_MIGRATION in POSTGRES_MIGRATIONS
+    sql = (
+        store_module.MIGRATIONS_DIR / "postgres" / POSTGRES_PROJECT_SCOPE_MIGRATION
+    ).read_text(encoding="utf-8")
     constraints = {
         "context_ledger_streams": "fk_context_ledger_streams_project_scope",
         "context_ledger_events": "fk_context_ledger_events_project_scope",
@@ -1024,15 +1083,49 @@ def test_postgres_project_scope_migration_has_exact_composite_fk_contract() -> N
     assert "CURRENT_SETTING" not in upper_sql
 
 
-def test_postgres_project_scope_migration_failure_is_retryable_and_contiguous(
+def test_postgres_slo_control_migration_carries_the_same_composite_scope_contract() -> None:
+    """Every project-scoped table added after 0008 must keep the FK contract.
+
+    The composite ``(tenant_id, project_id)`` foreign key is the only thing
+    stopping a controller row from naming another tenant's project, so a new
+    project-scoped table that omits it is a tenancy hole, not a style lapse.
+    """
+
+    sql = (
+        store_module.MIGRATIONS_DIR / "postgres" / POSTGRES_SLO_CONTROL_MIGRATION
+    ).read_text(encoding="utf-8")
+    assert (
+        "  CONSTRAINT fk_cache_slo_control_events_project_scope\n"
+        "    FOREIGN KEY (tenant_id, project_id)\n"
+        "    REFERENCES projects (tenant_id, project_id)\n"
+        "    ON UPDATE RESTRICT ON DELETE RESTRICT"
+    ) in sql
+    assert sql.count("FOREIGN KEY (tenant_id, project_id)") == 1
+    assert "PRIMARY KEY (tenant_id, project_id, controller_id, sequence)" in sql
+    upper_sql = sql.upper()
+    assert "ROW LEVEL SECURITY" not in upper_sql
+    assert "CREATE POLICY" not in upper_sql
+    assert "CURRENT_SETTING" not in upper_sql
+
+
+def _assert_migration_failure_is_retryable_and_contiguous(
     clock: ManualClock,
+    failed: str,
 ) -> None:
-    failed = POSTGRES_MIGRATIONS[-1]
+    """One failing migration rolls back cleanly and replays to a full ledger.
+
+    ``failed`` is named by the caller rather than taken from
+    ``POSTGRES_MIGRATIONS[-1]``: indexing from the end silently re-points the
+    subject at whatever migration was appended last, which is how the
+    project-scope case stopped being exercised when ``0009`` landed.
+    """
+
+    index = POSTGRES_MIGRATIONS.index(failed)
     connection = _FakePostgresConnection(fail_on=failed)
     with pytest.raises(RuntimeError, match="injected migration failure"):
         PostgresMetadataStore(connection, clock).migrate()
 
-    assert connection.applied == set(POSTGRES_MIGRATIONS[:-1])
+    assert connection.applied == set(POSTGRES_MIGRATIONS[:index])
     assert failed not in connection.executed_scripts
     assert connection.rollback_count == 1
 
@@ -1040,3 +1133,21 @@ def test_postgres_project_scope_migration_failure_is_retryable_and_contiguous(
     PostgresMetadataStore(connection, clock).migrate()
     assert connection.applied == set(POSTGRES_MIGRATIONS)
     assert connection.executed_scripts == list(POSTGRES_MIGRATIONS)
+
+
+def test_postgres_project_scope_migration_failure_is_retryable_and_contiguous(
+    clock: ManualClock,
+) -> None:
+    _assert_migration_failure_is_retryable_and_contiguous(
+        clock,
+        POSTGRES_PROJECT_SCOPE_MIGRATION,
+    )
+
+
+def test_postgres_slo_control_migration_failure_is_retryable_and_contiguous(
+    clock: ManualClock,
+) -> None:
+    _assert_migration_failure_is_retryable_and_contiguous(
+        clock,
+        POSTGRES_SLO_CONTROL_MIGRATION,
+    )

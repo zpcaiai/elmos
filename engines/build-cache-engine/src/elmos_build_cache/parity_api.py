@@ -266,11 +266,24 @@ def _strict_object(
     required: frozenset[str] = frozenset(),
 ) -> Mapping[str, Any]:
     document = _mapping(value, field)
-    unknown = sorted(set(document) - allowed)
+    unknown = set(document) - allowed
     missing = sorted(required - set(document))
     if unknown or missing:
+        # The offending key *names* are caller-supplied text — unbounded in
+        # count and in length — and ``handle()`` persists any response under
+        # 500 verbatim into ``idempotency_records.response``. Echoing them
+        # therefore turns a 422 into a durable copy of caller content, which is
+        # what BC-15 forbids. Report the shape instead: ``allowed`` is the
+        # closed server-owned key set, ``unknown_count`` is a bounded integer,
+        # and ``missing`` is a subset of the server's own ``required`` set, so
+        # none of the three is an echo. A caller still has its own request and
+        # can name its offending keys by subtracting ``allowed`` from them.
         raise ContractViolation(
-            f"{field} has an invalid shape", field=field, unknown=unknown, missing=missing
+            f"{field} has an invalid shape",
+            field=field,
+            allowed=sorted(allowed),
+            unknown_count=len(unknown),
+            missing=missing,
         )
     return document
 
@@ -302,8 +315,15 @@ def _enum(enum_type: type[_TEnum], value: Any, field: str) -> _TEnum:
     try:
         return enum_type(value)
     except ValueError as exc:
+        # Never echo ``value``. Any JSON string field will hold an entire prompt
+        # if a caller puts one there, and this rejection is persisted verbatim
+        # into the durable idempotency record. ``permitted`` is the closed,
+        # server-owned vocabulary and carries the whole diagnostic: the caller
+        # already knows what it sent, and now knows what was legal.
         raise ContractViolation(
-            f"{field} must use the closed vocabulary", field=field, value=value
+            f"{field} must use the closed vocabulary",
+            field=field,
+            permitted=sorted(str(member.value) for member in enum_type),
         ) from exc
 
 

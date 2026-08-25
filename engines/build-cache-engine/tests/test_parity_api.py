@@ -1450,6 +1450,8 @@ def test_openapi_supplement_declares_all_operations_and_matches_packaged_copy() 
         "explainCacheOutcome",
         "startCacheParityRun",
         "getCacheParityReport",
+        "prepareProviderPrompt",
+        "recordProviderCacheUsage",
     ):
         assert f"operationId: {operation}" in text
     assert "ContextAppendRequest" in text

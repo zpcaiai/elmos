@@ -1,5 +1,14 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  readFile,
+  readdir,
+  realpath,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import type { NextRequest } from "next/server";
 import {
@@ -20,6 +29,13 @@ const requestTimeoutMs = 30_000;
 const workspaceIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const sourceCommitPattern = /^[0-9a-f]{40}$/;
 const digestPattern = /^[0-9a-f]{64}$/;
+const translationCategories = new Set<RepositoryFileEntry["category"]>([
+  "SOURCE",
+  "DOCUMENTATION",
+  "CONFIGURATION",
+  "TEST",
+]);
+const translationMarkerName = ".elmos-repository-source.json";
 
 type RepositoryFileEntry = {
   path: string;
@@ -33,6 +49,7 @@ type RepositoryFileEntry = {
     | "CLOUD_DEPLOYMENT"
     | "TEST"
     | "OTHER";
+  readable: boolean;
   writable: boolean;
 };
 
@@ -242,11 +259,12 @@ function safeRepositoryFilePath(value: string): string {
   const candidate = value.trim();
   if (
     !candidate
+    || candidate !== value
     || candidate.length > 512
     || candidate.startsWith("/")
     || candidate.includes("\\")
     || candidate.split("/").includes("..")
-    || /[\0\r\n]/.test(candidate)
+    || [...candidate].some((character) => character.codePointAt(0)! < 32 || character.codePointAt(0) === 127)
   ) {
     throw new RepositoryWorkspaceProxyError(
       400,
@@ -255,6 +273,131 @@ function safeRepositoryFilePath(value: string): string {
     );
   }
   return candidate;
+}
+
+type TranslationManifestFile = Pick<RepositoryFileEntry, "path" | "bytes" | "sha256" | "category">;
+
+function translationManifestFiles(files: RepositoryFileEntry[]): TranslationManifestFile[] {
+  const normalized = files.map((file) => ({
+    path: safeRepositoryFilePath(file.path),
+    bytes: file.bytes,
+    sha256: file.sha256,
+    category: file.category,
+  })).sort((left, right) => left.path.localeCompare(right.path));
+  if (
+    normalized.some((file) => (
+      !Number.isSafeInteger(file.bytes)
+      || file.bytes < 0
+      || file.bytes > maximumTranslationRepositoryBytes
+      || !digestPattern.test(file.sha256)
+      || !translationCategories.has(file.category)
+    ))
+    || new Set(normalized.map((file) => file.path)).size !== normalized.length
+  ) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_SOURCE_MANIFEST_INVALID",
+      "仓库转换来源清单无效或包含重复路径。",
+    );
+  }
+  return normalized;
+}
+
+function translationManifestSha256(input: {
+  tenantId: string;
+  workspaceId: string;
+  sourceCommit: string;
+  currentHeadCommit: string;
+  files: TranslationManifestFile[];
+}): string {
+  return createHash("sha256").update(JSON.stringify(input)).digest("hex");
+}
+
+async function stableMaterializedFile(
+  file: string,
+  expected: { bytes: number; sha256: string },
+): Promise<void> {
+  const before = await lstat(file);
+  if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+      "仓库转换来源包含不安全或已漂移的文件。",
+    );
+  }
+  const content = await readFile(file);
+  const after = await lstat(file);
+  if (
+    before.dev !== after.dev
+    || before.ino !== after.ino
+    || before.size !== after.size
+    || before.mtimeMs !== after.mtimeMs
+    || content.length !== before.size
+    || content.length !== expected.bytes
+    || createHash("sha256").update(content).digest("hex") !== expected.sha256
+  ) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+      "仓库转换来源文件摘要与已授权提交不一致。",
+    );
+  }
+}
+
+async function materializedRelativeFiles(root: string): Promise<string[]> {
+  const rootInfo = await lstat(root);
+  if (!rootInfo.isDirectory() || rootInfo.isSymbolicLink()) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+      "仓库转换来源目录不安全。",
+    );
+  }
+  const canonicalRoot = await realpath(root);
+  const observed: string[] = [];
+  const visit = async (directory: string, prefix: string): Promise<void> => {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
+      safeRepositoryFilePath(relative);
+      const candidate = path.resolve(directory, entry.name);
+      const info = await lstat(candidate);
+      if (info.isSymbolicLink()) {
+        throw new RepositoryWorkspaceProxyError(
+          409,
+          "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+          "仓库转换来源包含符号链接。",
+        );
+      }
+      const canonical = await realpath(candidate);
+      if (!canonical.startsWith(`${canonicalRoot}${path.sep}`)) {
+        throw new RepositoryWorkspaceProxyError(
+          409,
+          "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+          "仓库转换来源路径逸出物化目录。",
+        );
+      }
+      if (info.isDirectory()) {
+        await visit(candidate, relative);
+      } else if (info.isFile() && info.nlink === 1) {
+        observed.push(relative);
+        if (observed.length > maximumTranslationRepositoryFiles + 1) {
+          throw new RepositoryWorkspaceProxyError(
+            409,
+            "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+            "仓库转换来源出现额外文件。",
+          );
+        }
+      } else {
+        throw new RepositoryWorkspaceProxyError(
+          409,
+          "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+          "仓库转换来源包含不支持的文件类型。",
+        );
+      }
+    }
+  };
+  await visit(root, "");
+  return observed.sort();
 }
 
 async function controlPlaneJson<T>(
@@ -476,6 +619,8 @@ export async function repositoryTranslationWorkspace(input: {
     || snapshot.completeness !== "COMPLETE"
     || !sourceCommitPattern.test(snapshot.sourceCommit)
     || !sourceCommitPattern.test(snapshot.currentHeadCommit)
+    || !Array.isArray(snapshot.files)
+    || !Array.isArray(snapshot.pendingPaths)
     || snapshot.pendingPaths.length > 0
   ) {
     throw new RepositoryWorkspaceProxyError(
@@ -484,8 +629,28 @@ export async function repositoryTranslationWorkspace(input: {
       "语言转换仅接受完整且无待提交变更的仓库工作区。",
     );
   }
-  const selected = snapshot.files.filter((file) =>
-    file.writable && ["SOURCE", "DOCUMENTATION", "CONFIGURATION", "TEST"].includes(file.category));
+  if (snapshot.files.some((file) => typeof file.readable !== "boolean" || typeof file.writable !== "boolean")) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_READABILITY_EVIDENCE_MISSING",
+      "仓库文件缺少独立的可读性证据，不能安全物化转换来源。",
+    );
+  }
+  if (snapshot.files.some((file) => file.category === "SOURCE" && !file.readable)) {
+    throw new RepositoryWorkspaceProxyError(
+      409,
+      "REPOSITORY_TRANSLATION_PROTECTED_SOURCE_EXCLUDED",
+      "仓库含不可读取的受保护源码；请先创建不含秘密且授权完整的转换快照。",
+    );
+  }
+  // Translation is read-only. Protected/branch-governed source must remain in
+  // the functional denominator even when it is not writable. Secret-bearing
+  // files are independently unreadable and are never requested from the
+  // control plane.
+  const selected = snapshot.files.filter(
+    (file) => file.readable && translationCategories.has(file.category),
+  );
+  const manifestFiles = translationManifestFiles(selected);
   const declaredBytes = selected.reduce((total, file) => total + file.bytes, 0);
   if (
     selected.length === 0
@@ -498,7 +663,17 @@ export async function repositoryTranslationWorkspace(input: {
       "仓库可转换文本范围超过 1000 个文件或 64 MB，需先拆分工作区。",
     );
   }
-  const materializedId = `repo-${input.workspaceId}`;
+  const manifestSha256 = translationManifestSha256({
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    sourceCommit: snapshot.sourceCommit,
+    currentHeadCommit: snapshot.currentHeadCommit,
+    files: manifestFiles,
+  });
+  // A workspace UUID is mutable as its branch advances. Bind the cache path to
+  // the tenant and exact authorized snapshot so a newer commit cannot collide
+  // with, or silently reuse, an older tenant's materialization.
+  const materializedId = `repo-${manifestSha256.slice(0, 48)}`;
   const destination = path.resolve(input.sourceRoot, materializedId);
   const root = path.resolve(input.sourceRoot);
   if (!destination.startsWith(`${root}${path.sep}`)) {
@@ -508,14 +683,42 @@ export async function repositoryTranslationWorkspace(input: {
   }
   const marker = path.join(destination, ".elmos-repository-source.json");
   try {
+    const markerInfo = await lstat(marker);
+    if (!markerInfo.isFile() || markerInfo.isSymbolicLink() || markerInfo.nlink !== 1) {
+      throw new RepositoryWorkspaceProxyError(
+        409,
+        "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+        "仓库转换来源标记不安全。",
+      );
+    }
     const existing = JSON.parse(await readFile(marker, "utf8")) as {
+      tenantId?: string;
       workspaceId?: string;
+      sourceCommit?: string;
       currentHeadCommit?: string;
+      manifestSha256?: string;
+      files?: TranslationManifestFile[];
     };
     if (
-      existing.workspaceId === input.workspaceId
+      existing.tenantId === input.tenantId
+      && existing.workspaceId === input.workspaceId
+      && existing.sourceCommit === snapshot.sourceCommit
       && existing.currentHeadCommit === snapshot.currentHeadCommit
+      && existing.manifestSha256 === manifestSha256
+      && JSON.stringify(existing.files) === JSON.stringify(manifestFiles)
     ) {
+      const observed = await materializedRelativeFiles(destination);
+      const expected = [...manifestFiles.map((file) => file.path), translationMarkerName].sort();
+      if (JSON.stringify(observed) !== JSON.stringify(expected)) {
+        throw new RepositoryWorkspaceProxyError(
+          409,
+          "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+          "仓库转换来源包含缺失或额外文件。",
+        );
+      }
+      for (const file of manifestFiles) {
+        await stableMaterializedFile(path.resolve(destination, file.path), file);
+      }
       return {
         materializedId,
         sourceCommit: snapshot.sourceCommit,
@@ -531,6 +734,17 @@ export async function repositoryTranslationWorkspace(input: {
     );
   } catch (error) {
     if (error instanceof RepositoryWorkspaceProxyError) throw error;
+    try {
+      await lstat(destination);
+      throw new RepositoryWorkspaceProxyError(
+        409,
+        "REPOSITORY_TRANSLATION_MATERIALIZATION_DRIFT",
+        "既有仓库转换来源缺少可验证的内容清单。",
+      );
+    } catch (destinationError) {
+      if (destinationError instanceof RepositoryWorkspaceProxyError) throw destinationError;
+      if ((destinationError as NodeJS.ErrnoException).code !== "ENOENT") throw destinationError;
+    }
   }
   const temporary = path.resolve(root, `.${materializedId}.${randomUUID()}.tmp`);
   await mkdir(temporary, { recursive: false, mode: 0o700 });
@@ -547,8 +761,11 @@ export async function repositoryTranslationWorkspace(input: {
       if (
         content.workspaceId !== input.workspaceId
         || content.path !== filePath
+        || content.category !== entry.category
+        || content.encoding !== "UTF-8"
         || content.sha256 !== entry.sha256
         || digest !== entry.sha256
+        || raw.length !== entry.bytes
       ) {
         throw new RepositoryWorkspaceProxyError(
           409,
@@ -574,20 +791,36 @@ export async function repositoryTranslationWorkspace(input: {
       await writeFile(target, raw, { mode: 0o600, flag: "wx" });
     }
     await writeFile(
-      path.join(temporary, ".elmos-repository-source.json"),
+      path.join(temporary, translationMarkerName),
       `${JSON.stringify({
         schemaVersion: "1.0",
+        tenantId: input.tenantId,
         workspaceId: input.workspaceId,
         sourceCommit: snapshot.sourceCommit,
         currentHeadCommit: snapshot.currentHeadCommit,
         includedCategories: ["SOURCE", "DOCUMENTATION", "CONFIGURATION", "TEST"],
-        excludedProtectedAndBinaryDeploymentAssets: true,
+        includedReadableReadOnlySources: true,
+        excludedDeploymentAndBinaryAssets: true,
         fileCount: selected.length,
         totalBytes: actualBytes,
+        manifestSha256,
+        files: manifestFiles,
       }, null, 2)}\n`,
       { mode: 0o600, flag: "wx" },
     );
-    await rename(temporary, destination);
+    try {
+      await rename(temporary, destination);
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code === "EEXIST" || code === "ENOTEMPTY") {
+        // Another process won the same content-addressed publication race.
+        // Re-enter through the normal cache verifier; never trust the winner
+        // merely because the destination now exists.
+        await rm(temporary, { recursive: true, force: true });
+        return repositoryTranslationWorkspace(input);
+      }
+      throw error;
+    }
   } catch (error) {
     await rm(temporary, { recursive: true, force: true });
     throw error;

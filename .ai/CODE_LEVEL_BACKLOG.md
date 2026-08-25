@@ -342,6 +342,13 @@ mvn -q -pl modules/cas -am test
 #5b DONE  Go/Rust else-if + 修 Go emitter 语法缺陷
 #10 IN-PROGRESS  CAS 本地结构已补 capture roots/resource bindings/dual-read/metadata/
                  tenant-local encryption/durable JDBC index；仍 SINGLE_HOST / NOT_CERTIFIED
+    ↳ 2026-08-25 增量验证（另一会话，未改代码）：V65→V66→V67→V69 迁移链已对
+      真 PostgreSQL 16.2 实跑，51 项全过。三次 NO FORCE→FORCE 窗口后 10 张 CAS 表
+      的 relforcerowsecurity 全为 true，且 V66 的 RAISE 中止路径会把 FORCE 一起回滚。
+      迁移层的 `live PostgreSQL NOT_RUN` 可据此改写；Docker/provider 与真实双进程
+      共享 object tier 的跨实例证据**仍然没有**，别一起划掉。
+      脚本 scripts/cas/verify_cas_migration_chain.py，
+      详见 FINDINGS-2026-08-25-cas-chain-live-postgres.md
 
 下一步，按「不阻塞」排序：
   #10a 接 snapshot delete/release 与 commit-unknown reconciliation，证明 unresolved graph

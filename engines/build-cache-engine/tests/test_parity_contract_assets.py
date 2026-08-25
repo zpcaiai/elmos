@@ -152,6 +152,24 @@ VALID_DOCUMENTS: dict[str, dict[str, object]] = {
 }
 
 
+def _declared_components(text: str) -> set[tuple[str, str]]:
+    """Component names declared under ``components:``, keyed by section.
+
+    PyYAML is not a dependency of this engine, so the overlay is read with the
+    same indentation-anchored scanning the rest of this module uses.
+    """
+
+    body = text.split("\ncomponents:\n", 1)[1].split("\npaths:\n", 1)[0]
+    declared: set[tuple[str, str]] = set()
+    section: str | None = None
+    for line in body.splitlines():
+        if re.fullmatch(r"  [A-Za-z][A-Za-z0-9_]*:", line):
+            section = line.strip().rstrip(":")
+        elif section is not None and re.fullmatch(r"    [A-Za-z][A-Za-z0-9_]*:", line):
+            declared.add((section, line.strip().rstrip(":")))
+    return declared
+
+
 def test_schema_registry_is_the_closed_on_disk_inventory() -> None:
     on_disk = {
         path.name.removesuffix(".schema.json"): path.name
@@ -209,7 +227,9 @@ def test_parity_openapi_production_overlay_is_exact_and_all_local_refs_resolve()
     assert overlay_text.count(
         "schema: { $ref: '#/components/schemas/ContextLedgerEventResponse' }"
     ) == 2
-    assert overlay_text.count("#/components/parameters/IdempotencyKey") == 4
+    # One reference per mutating operation: compile, context append, affinity,
+    # parity run, provider prompt preparation, provider cache usage.
+    assert overlay_text.count("#/components/parameters/IdempotencyKey") == 6
     assert "provider_execution_performed: { type: boolean, const: false }" in overlay_text
     assert "certified: { type: boolean, const: false }" in overlay_text
     # The affinity transport speaks the runtime provider vocabulary.  The
@@ -223,7 +243,21 @@ def test_parity_openapi_production_overlay_is_exact_and_all_local_refs_resolve()
 
     reference_pattern = re.compile(r"\$ref:\s*[\"']?([^\"'\s}]+)")
     for document in (repository, packaged):
-        references = reference_pattern.findall(document.read_text(encoding="utf-8"))
+        text = document.read_text(encoding="utf-8")
+        references = reference_pattern.findall(text)
+        # Every ``#/components/<section>/<Name>`` pointer must name a component
+        # this document actually declares; a dangling one would make the
+        # published contract unusable to a generator even though the YAML parses.
+        declared = _declared_components(text)
+        document_references = [
+            reference for reference in references if reference.startswith("#/components/")
+        ]
+        assert document_references
+        for reference in document_references:
+            _section, name = reference.removeprefix("#/components/").split("/", 1)
+            assert (_section, name) in declared, reference
+        for operation in ("prepareProviderPrompt", "recordProviderCacheUsage"):
+            assert f"operationId: {operation}" in text
         local_references = [reference for reference in references if not reference.startswith("#")]
         assert local_references == ["../schemas/cache-affinity-decision.schema.json"]
         for reference in local_references:
@@ -296,3 +330,61 @@ def test_context_append_runtime_responses_match_the_closed_openapi_component() -
     assert rollback["event_type"] == "COMPACTION_ROLLBACK"
     with pytest.raises(SchemaInvalid, match="context-ledger-event document is invalid"):
         schemas.validate("context-ledger-event", rollback)
+
+
+def test_provider_prompt_operations_document_the_runtime_vocabulary() -> None:
+    """The two BC-15 operations must not drift from the runtime enums.
+
+    A documented ``enum`` that the runtime does not accept turns a valid
+    generated client into a 422, and one the runtime accepts but the document
+    omits hides a live input from review. Both are caught by comparing the
+    published lists against the enums themselves.
+    """
+
+    from elmos_build_cache.prompt_cache import (
+        PromptProvider,
+        PromptRequestClass,
+        ProviderCacheMode,
+        ProviderCacheReason,
+    )
+
+    text = (
+        ENGINE_ROOT / "openapi/cache-parity-control-plane.openapi.yaml"
+    ).read_text(encoding="utf-8")
+    prepare = text.split("  /cache/provider-prompts/prepare:\n", 1)[1].split(
+        "  /cache/provider-prompts/usage:\n", 1
+    )[0]
+    usage = text.split("  /cache/provider-prompts/usage:\n", 1)[1].split(
+        "  /cache/context-ledgers/", 1
+    )[0]
+
+    assert "operationId: prepareProviderPrompt" in prepare
+    assert "operationId: recordProviderCacheUsage" in usage
+    assert prepare.count("#/components/parameters/IdempotencyKey") == 1
+    assert usage.count("#/components/parameters/IdempotencyKey") == 1
+
+    request_classes = set(
+        re.findall(r"^                    - ([A-Z][A-Z_]*)$", prepare, re.M)
+    )
+    assert request_classes == {item.value for item in PromptRequestClass}
+    documented_modes = set(
+        re.findall(r"cache_mode:\n\s+enum: \[([^\]]+)\]", prepare)[0].split(", ")
+    )
+    assert documented_modes == {item.value for item in ProviderCacheMode}
+    reason_codes = set(
+        re.findall(r"^                    - ([A-Z][A-Z_]*)$", usage, re.M)
+    )
+    assert reason_codes == {item.value for item in ProviderCacheReason}
+    providers = set(
+        re.findall(r"provider: \{ type: string, enum: \[([^\]]+)\] \}", usage)[0].split(", ")
+    )
+    assert providers == {item.value for item in PromptProvider}
+
+    view = text.split("    ProviderRequestView:\n", 1)[1].split(
+        "    PreparedProviderPrompt:\n", 1
+    )[0]
+    # The published provider request view is the content-free projection: the
+    # assembled payload is represented only by its digest.
+    assert "payload_digest" in view
+    assert "payload_retained: { type: boolean, const: false }" in view
+    assert "\n        payload:" not in view

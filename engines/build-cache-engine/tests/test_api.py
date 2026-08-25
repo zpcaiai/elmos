@@ -7,7 +7,7 @@ import threading
 
 import pytest
 
-from conftest import TENANT, claim_node, digest
+from conftest import PROJECT, TENANT, claim_node, digest
 from elmos_build_cache.api import (
     AUTHENTICATED_CONTEXT_ENVIRON_KEY,
     MAX_REQUEST_BODY_BYTES,
@@ -801,6 +801,65 @@ def test_default_control_plane_denies_unwired_serving_routes(
     assert affinity.status == 403
     assert environment.json()["details"]["state"] == "NOT_WIRED"
     assert affinity.json()["details"]["state"] == "NOT_WIRED"
+
+
+def test_default_control_plane_fails_closed_on_unwired_provider_prompt_routes(
+    plane: CacheControlPlane,
+) -> None:
+    """A plane built with no ``PromptCacheController`` denies, never dereferences.
+
+    The default fixture injects no controller, so the two provider routes must
+    answer the package's own closed error rather than raising ``AttributeError``
+    on ``None`` and surfacing as an opaque ``INTERNAL``.
+    """
+
+    assert plane.prompt_cache_controller is None
+    prepared = plane.handle(
+        Request(
+            "POST",
+            "/cache/provider-prompts/prepare",
+            {
+                "project_id": PROJECT,
+                "identity": {
+                    "provider": "openai",
+                    "provider_namespace_digest": digest("2"),
+                    "model": "gpt-5.6",
+                    "effort_profile": "high",
+                    "tool_schema_digest": digest("3"),
+                    "compatibility_digest": digest("4"),
+                },
+                "segments": [
+                    {
+                        "segment_id": "system-policy",
+                        "stability": "stable",
+                        "ordinal": 0,
+                        "content": "Stable system policy",
+                    }
+                ],
+                "request_class": "DETERMINISTIC_CONVERSION",
+            },
+            {"Idempotency-Key": "unwired-provider-prepare"},
+        )
+    )
+    recorded = plane.handle(
+        Request(
+            "POST",
+            "/cache/provider-prompts/usage",
+            {
+                "project_id": PROJECT,
+                "prompt_manifest_id": digest("5"),
+                "provider": "openai",
+                "request_id": digest("6"),
+                "reason_code": "HIT",
+                "usage": {"usage": {"input_tokens": 1, "output_tokens": 1}},
+            },
+            {"Idempotency-Key": "unwired-provider-usage"},
+        )
+    )
+
+    for response in (prepared, recorded):
+        assert response.status == 503
+        assert response.json()["code"] == "REMOTE_UNAVAILABLE"
 
 
 def test_wsgi_adapter_serialises_json(plane: CacheControlPlane) -> None:

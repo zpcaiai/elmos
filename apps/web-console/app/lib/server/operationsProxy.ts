@@ -311,25 +311,45 @@ export async function withBusinessAudit(
   const requestId = safeRequestIdentifier(request);
   const required = process.env.NODE_ENV === "production"
     || process.env.ELMOS_BUSINESS_AUDIT_REQUIRED === "true";
-  try {
+  if (required) {
     await appendBusinessAuditEvent(
       request, requestId, descriptor, "ATTEMPT", "SUCCESS", null, startedAt,
     );
-  } catch (error) {
-    if (required) throw error;
+  } else {
+    void appendBusinessAuditEvent(
+      request, requestId, descriptor, "ATTEMPT", "SUCCESS", null, startedAt,
+    ).catch(() => undefined);
   }
   let response: Response;
   try {
     response = await operation();
   } catch (error) {
-    try {
-      await appendBusinessAuditEvent(
+    if (required) {
+      try {
+        await appendBusinessAuditEvent(
+          request, requestId, descriptor, "COMPLETION", "FAILURE", 500, startedAt,
+        );
+      } catch {
+        // Preserve the original operation failure; the attempt is durable when required.
+      }
+    } else {
+      void appendBusinessAuditEvent(
         request, requestId, descriptor, "COMPLETION", "FAILURE", 500, startedAt,
-      );
-    } catch {
-      // Preserve the original operation failure; the attempt is durable when required.
+      ).catch(() => undefined);
     }
     throw error;
+  }
+  if (!required) {
+    void appendBusinessAuditEvent(
+      request,
+      requestId,
+      descriptor,
+      "COMPLETION",
+      response.ok ? "SUCCESS" : "FAILURE",
+      response.status,
+      startedAt,
+    ).catch(() => undefined);
+    return response;
   }
   try {
     await appendBusinessAuditEvent(
@@ -341,8 +361,8 @@ export async function withBusinessAudit(
       response.status,
       startedAt,
     );
-  } catch (error) {
-    if (required && response.ok) {
+  } catch {
+    if (response.ok) {
       return Response.json(
         {
           status: "BLOCKED",
