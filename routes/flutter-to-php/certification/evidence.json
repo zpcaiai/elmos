@@ -2,17 +2,28 @@
   "schema_version": 1,
   "route_key": "flutter-to-php",
   "route_version": "0.1.0",
+  "route_maturity": "RESEARCH",
+  "execution_status": "NOT_RUN",
+  "module_execution_status": "NOT_RUN",
+  "repository_execution_status": "NOT_RUN",
+  "independent_verification_status": "NOT_RUN",
+  "external_certification_status": "NOT_RUN",
   "runs": [],
+  "negative_runs": [],
   "metrics": {
-    "first_build_pass_rate": 0,
-    "build_green_rate": 0,
-    "p0_behavior_pass_rate": 0,
-    "source_map_coverage": 0,
-    "manual_hours": 0,
-    "cost_per_verified_workload": 0
+    "build_green_rate": null,
+    "first_build_pass_rate": null,
+    "p0_behavior_pass_rate": null,
+    "source_map_coverage": null,
+    "manual_hours": null,
+    "cost_per_verified_workload": null
   },
-  "critical_unknown_semantics": 0,
-  "critical_behavior_regressions": 0,
-  "test_integrity_violations": 0,
-  "notes": []
+  "critical_unknown_semantics": null,
+  "critical_behavior_regressions": null,
+  "test_integrity_violations": null,
+  "notes": [
+    "No V3 route-level semantic profile or target profile has been admitted.",
+    "Analyzer and emitter bindings are metadata, not route execution evidence.",
+    "Local, repository, independent, external, customer, and production evidence remain NOT_RUN."
+  ]
 }

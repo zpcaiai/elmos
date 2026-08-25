@@ -7,13 +7,21 @@
   "review_date": "",
   "source": {
     "language": "kotlin",
-    "versions": [],
-    "engine_path": "engines/kotlin-engine"
+    "versions": [
+      "Kotlin 2.2.20",
+      "JDK 21.0.11",
+      "Kotlin compiler PSI"
+    ],
+    "engine_path": "engines/polyglot-route-engine/native/kotlin/analyzer.kt"
   },
   "target": {
     "language": "csharp",
-    "versions": [],
-    "engine_path": "engines/csharp-engine"
+    "versions": [
+      "C# 14",
+      ".NET SDK 10.0.301",
+      "Roslyn 5.6.0"
+    ],
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
   },
   "profiles": {
     "semantic_profile": "",

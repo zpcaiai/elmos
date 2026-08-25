@@ -7,13 +7,21 @@
   "review_date": "",
   "source": {
     "language": "react",
-    "versions": [],
-    "engine_path": "engines/react-engine"
+    "versions": [
+      "React 19.2.7",
+      "React DOM 19.2.7",
+      "TypeScript 5.9.2 Compiler API",
+      "Node.js 26.0.0"
+    ],
+    "engine_path": "engines/polyglot-route-engine/native/react/analyzer.mjs"
   },
   "target": {
     "language": "java",
-    "versions": [],
-    "engine_path": "engines/java-engine"
+    "versions": [
+      "Java 21.0.11",
+      "JDK Compiler Tree API"
+    ],
+    "engine_path": "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
   },
   "profiles": {
     "semantic_profile": "",

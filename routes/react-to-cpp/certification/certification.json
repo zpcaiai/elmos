@@ -4,9 +4,21 @@
   "route_version": "0.1.0",
   "status": "research",
   "certification_decision": "NOT_CERTIFIED",
-  "gate_results": {},
-  "metrics": {},
+  "declared_scope": "NO_ROUTE_PROFILE_ADMITTED",
+  "gate_results": {
+    "local_execution": "NOT_RUN",
+    "external_execution": "NOT_RUN",
+    "independent_verification": "NOT_RUN"
+  },
+  "metrics": {
+    "build_green_rate": null,
+    "first_build_pass_rate": null,
+    "p0_behavior_pass_rate": null,
+    "source_map_coverage": null,
+    "manual_hours": null,
+    "cost_per_verified_workload": null
+  },
   "evidence_refs": [],
-  "issued_at": "",
-  "next_review_at": ""
+  "issued_at": "2026-08-09T00:00:00+00:00",
+  "next_review_at": "2026-11-24T00:00:00+00:00"
 }
