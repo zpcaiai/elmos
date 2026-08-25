@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -345,6 +346,33 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         result = preflight_result()
         result["certification"] = "CERTIFIED"
         self.assertInvalid(self.result_validator, result)
+
+    def test_java_worker_and_control_plane_protocols_do_not_drift(self):
+        worker_path = ROOT / "engines" / "database-data-engine" / "src" / "main" / "java" / "io" / "elmos" / "databasedata" / "ChinaDbSqlPreflightProtocol.java"
+        control_path = ROOT / "apps" / "control-plane" / "src" / "main" / "java" / "io" / "elmos" / "controlplane" / "ChinaDbSqlPreflightProtocol.java"
+        worker = worker_path.read_text(encoding="utf-8")
+        control = control_path.read_text(encoding="utf-8")
+
+        def normalize(source):
+            source = re.sub(r"package io\.elmos\.[a-z]+;", "package io.elmos.shared;", source)
+            source = source.replace("io.elmos.databasedata.", "io.elmos.shared.")
+            source = source.replace("io.elmos.controlplane.", "io.elmos.shared.")
+            source = source.replace("sidecar hop", "upstream hop")
+            source = source.replace("worker hop", "upstream hop")
+            return source
+
+        self.assertEqual(normalize(worker), normalize(control))
+        constants = dict(re.findall(
+            r"static final int (MAX_[A-Z_]+) = ([^;]+);",
+            worker,
+        ))
+        self.assertEqual(constants, dict(re.findall(
+            r"static final int (MAX_[A-Z_]+) = ([^;]+);",
+            control,
+        )))
+        self.assertEqual("1_310_720", constants["MAX_REQUEST_BYTES"])
+        self.assertEqual("256 * 1024", constants["MAX_SQL_BYTES"])
+        self.assertEqual("4_194_304", constants["MAX_RESPONSE_BYTES"])
 
 
 if __name__ == "__main__":

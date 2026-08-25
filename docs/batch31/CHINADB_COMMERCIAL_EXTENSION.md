@@ -86,6 +86,14 @@ mvn -pl apps/control-plane -am -Dtest=DatabaseDataControllerTest \
 pnpm --dir apps/web-console test:chinadb-sql-policy
 ```
 
+The Java suites also exercise the real bounded loopback HTTP clients for the
+worker-to-sidecar success path and the control-plane-to-worker stale-snapshot
+failure path. They assert that only trusted tenant/actor headers cross the
+internal hops, redirects remain disabled, non-local plain HTTP destinations are
+rejected, and every received assessment still validates as blocked with no
+target SQL. The Schema suite additionally rejects drift between the worker and
+control-plane copies of the strict protocol and its byte limits.
+
 These commands are local engineering evidence. They do not execute DM8,
 KingbaseES, openGauss, TiDB, GBase, HighGo, OceanBase, GaussDB, GoldenDB, or an
 independent holdout/certification environment.

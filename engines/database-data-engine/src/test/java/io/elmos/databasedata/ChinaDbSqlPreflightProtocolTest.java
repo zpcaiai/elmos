@@ -4,15 +4,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -110,6 +118,59 @@ class ChinaDbSqlPreflightProtocolTest {
                 ChinaDbSqlPreflightFailure.class,
                 () -> HttpChinaDbSqlPreflightGateway.requireMatchingContentLength(13, 12));
         assertEquals(ChinaDbSqlPreflightFailure.Kind.PROTOCOL_ERROR, failure.kind());
+    }
+
+    @Test
+    void fixedHttpHopForwardsTrustedIdentityAndAcceptsOnlyBlockedJson() throws Exception {
+        HttpServer server = HttpServer.create(
+                new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+        AtomicReference<String> organization = new AtomicReference<>();
+        AtomicReference<String> actor = new AtomicReference<>();
+        AtomicReference<String> authorization = new AtomicReference<>();
+        AtomicReference<byte[]> receivedBody = new AtomicReference<>();
+        server.createContext("/internal/v1/chinadb-sql/capabilities", exchange -> {
+            assertEquals("GET", exchange.getRequestMethod());
+            respond(exchange, capabilities());
+        });
+        server.createContext("/internal/v1/chinadb-sql/assess", exchange -> {
+            assertEquals("POST", exchange.getRequestMethod());
+            organization.set(exchange.getRequestHeaders().getFirst("X-ELMOS-Organization-ID"));
+            actor.set(exchange.getRequestHeaders().getFirst("X-ELMOS-Actor-ID"));
+            authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            receivedBody.set(exchange.getRequestBody().readAllBytes());
+            respond(exchange, assessment());
+        });
+        server.start();
+        try {
+            String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+            var gateway = new HttpChinaDbSqlPreflightGateway(
+                    true, baseUrl, Duration.ofSeconds(1), Duration.ofSeconds(2), json);
+            byte[] request = requestJson("SELECT 1").getBytes(StandardCharsets.UTF_8);
+
+            JsonNode capabilityDocument = gateway.capabilities();
+            JsonNode result = gateway.assess(request, "org-a", "actor-a");
+
+            assertEquals(13, capabilityDocument.path("targetCount").intValue());
+            assertEquals("BLOCKED", result.path("state").textValue());
+            assertTrue(result.has("targetSql"));
+            assertTrue(result.path("targetSql").isNull());
+            assertEquals("org-a", organization.get());
+            assertEquals("actor-a", actor.get());
+            assertNull(authorization.get());
+            assertArrayEquals(request, receivedBody.get());
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    private void respond(HttpExchange exchange, JsonNode body) throws IOException {
+        byte[] payload = json.writeValueAsBytes(body);
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.getResponseHeaders().set("Cache-Control", "private, no-store");
+        exchange.sendResponseHeaders(200, payload.length);
+        try (var output = exchange.getResponseBody()) {
+            output.write(payload);
+        }
     }
 
     private ObjectNode capabilities() {
