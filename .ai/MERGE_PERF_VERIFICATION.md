@@ -398,3 +398,144 @@ Order of operations from here:
    suite has no regressions, `tsc --noEmit` and `next build` both clean)
 2. `git merge -s ours origin/feat/execution-intelligence-forecasting` (above)
 3. then the real perf -> main merge, 87 both-changed files
+
+---
+
+# Round 5: `make business-line-contracts` — from red to green
+
+Merge landed: `main` = `origin/main` = `3768d0a78`.
+
+This gate was red on main independently of the merge. Both failures traced to
+`routes/inventory.json` never being updated after `c03782bfe` expanded the
+matrix from 30 routes to 156 and added `exact_versions` as a requirement in
+`translationRoutes.ts` and `validate_translation_route_matrix.py`.
+
+Every value written below comes from an authoritative table
+(`scripts/batch29/route_runtime_metadata.py` and `route_sets.py`) or from a
+generator the validator itself compares against. Nothing was invented, and no
+route's evidence status was promoted.
+
+## Five stale facts, found by running the validator to a fixed point
+
+| # | reason code | what was stale | authority used |
+|---|---|---|---|
+| 1 | `V3_REPOSITORY_STATUS_DRIFT` | `route_sets["kotlin-react-flutter-completion-66"].repository_status` was `PENDING_REPOSITORY_SURFACE`; `pending_repository_languages` absent | `models.PENDING_REPOSITORY_LANGUAGES == ()` and kotlin/react/flutter all in `REPOSITORY_SURFACE_LANGUAGES`, with `test_{kotlin,react,flutter}_repository_pipeline.py` present |
+| 2 | `LANGUAGE_EXACT_VERSION_DRIFT` | **all 13** languages had no `exact_versions` | `VERSIONS[language]` |
+| 3 | (same block) | kotlin/react/flutter carried the *status string* `"LOCAL_SINGLE_UNIT_READY"` in their `version` field and had no `engine_path` | `SHORT_VERSIONS`, `ENGINE_PATHS` |
+| 4 | `ROUTE_VERSION_DRIFT` | 66 V3 route entries carried `target_version: "PENDING_ANALYZER"`; 72 version fields disagreed with `languages[*].version` | `languages[*].version` |
+| 5 | `V3_ROUTE_EVIDENCE_OVERCLAIM` | all 66 V3 routes had `local_execution_reason: "LOCAL_EXECUTION_NOT_RUN"` | the validator's own required literal `V3_ROUTE_CAMPAIGN_NOT_RUN` |
+| 6 | `ROUTE_SOURCE_VERSION_DRIFT` | the 66 V3 route packs had `versions: []` and placeholder `engine_path: "engines/java-engine"` (the other 90 packs were already correct) | `VERSIONS`, `ENGINE_PATHS`, `TARGET_EMITTER_RELATIVE_PATH` |
+| 7 | `V3_ROUTE_CERTIFICATION_OVERCLAIM` | 66 `certification.json` + 66 `evidence.json` did not match their generators | `v3_research_certification_document()` / `v3_research_evidence_document()` |
+
+**199 files changed**: `routes/inventory.json`, plus 66 x
+(`route.json`, `certification/certification.json`, `certification/evidence.json`).
+
+## Result
+
+```
+validate_model_catalog             PASS
+validate_makefile_portability      PASS
+validate_spring_route_contract     PASS
+validate_translation_route_matrix  PASS
+make business-line-contracts       OK
+```
+
+`{"route_count": 156, "certified_route_count": 0, "locally_passed": 0,
+  "external_certification_evidence": "NOT_RUN", "status": "PASSED"}`
+
+Note what did **not** change: `locally_passed` stays 0 and
+`certified_route_count` stays 0. The matrix expansion from 30 to 156 reset every
+route to NOT_RUN (`origin/main`@`467e25551` had 30 routes all `PASSED_LOCAL`;
+everything from `a54938b26` on has 156 routes with 0 passed). That reset is
+correct — a 156-route matrix cannot inherit evidence produced for 30 — and the
+validator accepts it.
+
+## Regression check on the inventory edit
+
+`test_matrix_consistency.py` — the module that binds the engine's language
+tuples to `routes/inventory.json` — is **fully green** against the new
+inventory. `test_language_set.py` is 23/24; the one failure is
+`EXACT_TOOLCHAIN_PLATFORM_MISMATCH:kotlin:expected=Darwin/arm64:observed=Linux/x86_64`,
+i.e. the container's platform, not the data.
+
+## Still red, and correctly so
+
+`pnpm test:translation-cancellation` now gets past the inventory parse and fails
+with `TRANSLATION_ROUTE_NOT_LOCALLY_EXECUTABLE`. It points `ELMOS_REPOSITORY_ROOT`
+at the real repository and requires a route with `localExecution === "PASSED"`
+**and** `repositoryExecutionStatus === "PASSED"` with evidence refs.
+
+No revision in this history has ever had `repository_execution_status == "PASSED"`
+on any route — not `467e25551`, not `a54938b26`, not `c03782bfe`, not HEAD. The
+test needs produced evidence and cannot pass on a bare checkout. Writing
+`PASSED` plus evidence refs into the inventory to satisfy it is exactly the
+overclaim `ROUTE_EVIDENCE_INVERTED` and the hardcoded-`LOCAL PASS` ban exist to
+prevent, so it was left alone.
+
+---
+
+# Round 6: `test:translation-cancellation` — my mistake, corrected
+
+## The evidence cannot be produced from here, and that is not the point
+
+`createTranslationJob` refuses a route without
+`localExecution === "PASSED"` **and** `repositoryExecutionStatus === "PASSED"`
+plus evidence refs. That guard is **not** new — it is present at the merge base
+`5543624b4`, at `c03782bfe`, and at `a54938b26` alike.
+
+Producing that evidence means running the repository pipeline for real. The
+toolchains are pinned to `Darwin/arm64` with absolute paths under
+`/Users/stephen/.local` (`_EXPECTED_PYTHON_LOCAL_ANCHOR`,
+`_EXPECTED_TYPESCRIPT_CACHE_ANCHOR`, and the `EXACT_TOOLCHAIN_PLATFORM_MISMATCH`
+guards). Neither the Cowork Linux VM nor the Linux container can run it. It can
+only be produced on the Mac.
+
+A synthetic fixture repository root is also not viable: `assertRoutePacksExist`
+walks **every** route in the inventory and `assertSafeRepositoryEnginePath`
+requires the real analyzer files to exist under the root. The console is
+deliberately built to read the real repository, not a stand-in.
+
+## What was actually wrong: the test was on the wrong gate, and I put it there
+
+| revision | test file present | `test:translation-cancellation` in `check` | inventory `locally_passed` |
+|---|---|---|---|
+| `5543624b4` (base) | no | — | — |
+| `c03782bfe` (main) | no | **NOT in check** | 0 |
+| `a54938b26` (perf) | yes | **in check** | 0 |
+
+So the test was already failing on `a54938b26` — the fourth pre-existing red on
+that side, alongside `discovery.analyze`, the 41-vs-40 `propose_candidates`
+assertion, and the two dropped TypeScript terminators.
+
+When I unioned the two `check` scripts into eleven, I pulled an
+evidence-dependent test onto a gate that has to pass on a clean checkout. Main
+had deliberately left it off. That was my error.
+
+## Fix
+
+`pnpm check` no longer runs it. The script stays defined and is reachable
+through a new, explicitly named entry point:
+
+```
+"check":          "tsc --noEmit && …10 scripts… && next build"
+"check:evidence": "pnpm test:translation-cancellation"
+```
+
+`check:evidence` is the gate for "this checkout carries produced route
+evidence". It fails on a bare checkout by design, and passes once a repository
+run has recorded a locally-passed route with repository evidence.
+
+## `pnpm check` status after the change
+
+| | |
+|---|---|
+| `tsc --noEmit` | 0 errors |
+| `next build` | EXIT=0, 22 static pages |
+| durable-lease, repository-translation, upstream-policy, operations-jobs-policy, billing-reconciliation-policy, admin-mutation-policy, runner-fleet-policy, chinadb-sql-policy | **PASS** |
+| translation-report | 23/24 — the one failure is the device bridge refusing `rm .venv/.lock` ("Operation not permitted"); not reproducible off the mount |
+| multimodal-intake-runner | `MULTIMODAL_ENGINE_UNAVAILABLE` — needs a running engine; this one was already on main's own `check` |
+
+Both remaining failures are environmental to this session, not properties of the
+checkout. `pnpm check` has not been observed green end to end anywhere I can
+run it; on the Mac, with the pinned toolchain and the engine reachable, the
+remaining two should pass.
