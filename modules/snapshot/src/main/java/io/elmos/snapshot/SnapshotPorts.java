@@ -52,8 +52,23 @@ public final class SnapshotPorts {
                 EphemeralCredential credential
         );
     }
-    public record FetchedSource(Path path, String treeSha, AutoCloseable cleanup) implements AutoCloseable {
-        public FetchedSource(Path path, AutoCloseable cleanup) { this(path, null, cleanup); }
+    public record FetchedSource(
+            Path path,
+            String treeSha,
+            DeterministicSnapshotArchiver.SourceLease sourceLease,
+            AutoCloseable cleanup
+    ) implements AutoCloseable {
+        public FetchedSource {
+            path = Objects.requireNonNull(path, "path");
+            sourceLease = Objects.requireNonNull(sourceLease, "sourceLease");
+            cleanup = Objects.requireNonNull(cleanup, "cleanup");
+        }
+        public FetchedSource(Path path, AutoCloseable cleanup) {
+            this(path, null, DeterministicSnapshotArchiver.localSelfAttestedLease(), cleanup);
+        }
+        public FetchedSource(Path path, String treeSha, AutoCloseable cleanup) {
+            this(path, treeSha, DeterministicSnapshotArchiver.localSelfAttestedLease(), cleanup);
+        }
         @Override public void close() throws Exception { cleanup.close(); }
     }
     public interface RepositoryCredentialBroker {

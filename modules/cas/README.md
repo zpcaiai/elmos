@@ -12,8 +12,11 @@ encrypted envelopes deliberately use fresh random nonces.
 
 `modules/portfolio-scale/…/TenantContentAddressedCache.java` was an in-heap `HashMap` with a
 separator-joined cache key. It now delegates immutable bytes to this module without changing its
-public caller shape. Its key-to-digest index remains process-local and is therefore not evidence
-of cross-instance portfolio-cache hits.
+legacy caller shape. Its key-to-digest mapping is now a generation-bound `ACTION_CACHE` logical
+root in `CasCatalog`; a second instance sharing the catalogue and object tier can resolve a result
+from the complete input manifest without receiving the writer's reference. This is code-level
+cross-instance support, not evidence of a production shared tier, workload authorization or
+multi-host operation.
 
 ## Layout
 
@@ -35,7 +38,7 @@ of cross-instance portfolio-cache hits.
 | `LogRedaction` | secret removal before a log is cached and replayed |
 | `CasAccessPolicy` | tenant / residency / clearance / permission-scope decision on every read |
 | `ActionCache`, `ActionCacheIndex`, `JdbcActionCacheIndex`, `CachedActionExecutor` | outcomes, failure-cache policy, fresh read/execute authorization, sampled recompute, tenant-scoped quarantine and a durable reconstructable PostgreSQL index |
-| `CasGarbageCollector` | reachability marking, generation-safe roots, retention/legal hold and a reason-bound deletion manifest; any unresolved graph blocks the whole sweep |
+| `CasGarbageCollector` | reachability marking, generation-safe roots, retention/legal hold, atomic deletion-authority handoff and a reason-bound deletion manifest; any unresolved graph or missing/unavailable/unconfirmed authority retains bytes |
 | `CasReconciler` | missing blobs, orphans, dangling manifests, incomplete uploads |
 | `CasMetrics` | per-layer outcome counters, savings, miss explanation |
 | `CasBatch`, `CasStore.putAll/getAll` | batch transfer with one existence probe and per-item failure isolation |
@@ -59,8 +62,17 @@ of cross-instance portfolio-cache hits.
    `ActionKeyBuilder` refuses rather than silently narrowing.
 3. **The GC never deletes on uncertainty.** A missing/unreadable root, unknown manifest decode,
    resolver substitution or malformed tree blocks the entire sweep. Uncatalogued, young and
-   legally held objects are also retained. The addressable deletion record binds collected and
-   retained reasons plus every unresolved reference, rather than only the object digests.
+   legally held objects are also retained. An executing sweep additionally requires a
+   deployment-owned `AtomicDeletionAuthority`. V76 commits a tenant/digest tombstone before bytes
+   are touched; root, resource-binding, and legal-hold activation acquire the same lifecycle lock
+   and fail while that tombstone exists. `PENDING` and `OUTCOME_UNKNOWN` remain non-repairable
+   fences; only terminal `DELETED`, `MISSING`, or `FAILED` state permits durable publication to
+   repair/verify bytes under the lock and then clear the tombstone. A boolean check followed by a separate delete is deliberately
+   not accepted because it has a live-root publication race. Global-digest stores additionally
+   require a privileged cross-tenant authority; the tenant-scoped catalogue fails closed instead.
+   Missing, denied, unconfirmed, or unavailable authority retains the object.
+   The addressable deletion record binds collected and retained reasons plus every unresolved
+   reference, rather than only the object digests.
 4. **Eviction never removes a not-yet-durable object.** `TieredCasStore.put` registers the
    durability debt *before* admitting the object locally; doing it afterwards opened a window
    where reclamation discarded the only copy (caught by test, fixed).
@@ -79,7 +91,8 @@ of cross-instance portfolio-cache hits.
   `SnapshotPorts.ArtifactReader`, so snapshot archives land in the CAS with tenant, sensitivity,
   residency and retention attached instead of in a bare directory.
 - `io.elmos.portfolio.TenantContentAddressedCache` delegates here instead of holding its own
-  `HashMap`, which is what gave it a length-prefixed key and verify-on-read.
+  `HashMap`; it uses a length-prefixed key, exact durable logical-root lookup, verify-on-read and
+  generation-bound invalidation so a delayed release cannot remove a rebuilt result.
 - `modules/persistence` owns `V65__content_addressed_store_and_action_cache.sql` and the
   V66/V67 metadata, resource-binding and durable ActionCache migrations.
 
@@ -101,10 +114,23 @@ These are real boundaries, not oversights. Do not read a green test run as cover
 - **Production certification.** The checked-in control-plane modes are single-host and explicitly
   `NOT_CERTIFIED`. Local tests do not prove multi-host object sharing, operator key custody,
   production PostgreSQL/RLS, recovery, scale, or independent verification.
-- **A production execution-service binding for the typed caller.** `CachedActionExecutor` composes
-  fresh `CACHE_READ`/`EXECUTE` authorization and never executes after a cache denial, but no
-  production runner service invokes it yet. Actuator reports
-  `TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE`.
+- **A tenant-API binding and trusted completion write-back for asynchronous execution.**
+  `ActionCacheExecutionJobDispatcher` now composes fresh `CACHE_READ`/`EXECUTE` authorization with
+  the durable `ExecutionJobPort`: a trusted hit avoids the queue, while an authorized miss is
+  enqueued with a canonical tenant/action/payload digest and an uncertain enqueue remains
+  reconciliation-required. The opt-in bean is still not invoked by a tenant API, and runner
+  completion carries no signed `ActionResultRecord`, output manifest or attested writer, so it
+  cannot be written back honestly. Actuator reports
+  `ASYNC_DISPATCHER_AVAILABLE_NOT_BOUND_TO_TENANT_API` and
+  `NOT_BOUND_RUNNER_COMPLETION_LACKS_SIGNED_ACTION_RESULT`.
+- **ActionKey v1-to-v2 rollout is fail-closed, not transparent.** The v2 builder fixes composite
+  collisions and component order under the explicit `elmos-action-key/2` domain; the cache,
+  in-memory/JDBC indexes and dispatcher reject v1 before lookup or mutation, and the dispatcher
+  binds that schema into every queued envelope. There is no collision-prone v1
+  fallback and no automatic key migration. Operators must quiesce mixed-version writers/readers,
+  invalidate or allow old ActionCache rows to expire under the controlled tenant lifecycle, and
+  then roll out v2 atomically. Until that procedure is executed, old rows are cold data rather
+  than compatible hits.
 - **An externally operated current-trust service.** V69 persists the detached signature bytes;
   JDBC readback recomputes the complete-subject envelope, and `ResultSignature.Verifier` can
   cryptographically reverify every hit against current key validity and revocation. The
@@ -115,10 +141,12 @@ These are real boundaries, not oversights. Do not read a green test run as cover
   serialize artifact reads with archive/GC. Production wiring is disabled until an operator sets
   a stable worker identity. A real multi-replica soak, crash/recovery drill, operational ownership,
   and authorization for destructive snapshot policy remain external `NOT_RUN` evidence.
-- **An atomic production legal-hold/deletion coordinator.** Catalogue loads now preserve the
-  authoritative hold bit and the collector always checks it before tenant deletion. A hold applied
-  after that load can still race the later object-store delete because no production GC epoch/row
-  lock spans both systems. Executing collection remains unsupported until that handoff is atomic.
+- **An operated global-digest deletion authority.** V76 closes the in-database publication/delete
+  race with durable tombstones and shared tenant/digest locking, and the Java catalogue can execute
+  that protocol for a physically tenant-isolated store. It deliberately refuses `GLOBAL_SHARED`
+  deletion because tenant RLS cannot prove the absence of another tenant's root. A privileged,
+  independently reviewed cross-tenant authority plus crash/reconciliation and object-store lease
+  evidence remain external `NOT_RUN`; production execution is therefore still unsupported.
 - **A deployed production KMS/HSM and custody ceremony.** `KmsTenantEncryption` implements data-key
   envelopes, context binding, rotation/revocation, outage fail-closed behavior and exact plaintext
   key zeroization. `HttpKmsBrokerProvider` adds a dependency-free HTTPS/mTLS production boundary

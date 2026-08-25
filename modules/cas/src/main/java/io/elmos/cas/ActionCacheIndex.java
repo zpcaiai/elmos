@@ -9,6 +9,8 @@ import java.util.Optional;
  * <p>Every operation is tenant scoped. Implementations backed by a database must bind that
  * tenant to the same transaction that performs the query; accepting a caller-supplied digest
  * without the tenant would turn an action-cache hit into a cross-tenant object oracle.
+ * Every key-bearing boundary must also call {@link ActionKeyBuilder#verifyCanonical(ActionKey)}
+ * before reading or mutating state; legacy-v1 and forged digests are not compatibility lookups.
  */
 public interface ActionCacheIndex {
 

@@ -55,10 +55,13 @@ class CompatibleSnapshotArtifactStoreTest {
         var compatible = backends.compatible(CompatibleSnapshotArtifactStore.WriterMode.LEGACY);
 
         assertArrayEquals(content, compatible.open(RESOURCE, casReference).readAllBytes());
-        compatible.retainSnapshot(RESOURCE, "snapshot-before-rollback", List.of(casReference));
+        SnapshotPorts.ArtifactRetention retention = compatible.retainSnapshotGeneration(
+                RESOURCE, "snapshot-before-rollback", List.of(casReference));
         assertEquals(1, backends.catalog().activeReferenceRoots("tenant-a").size());
 
-        compatible.releaseSnapshot(RESOURCE, "snapshot-before-rollback");
+        assertThrows(UnsupportedOperationException.class,
+                () -> compatible.releaseSnapshot(RESOURCE, "snapshot-before-rollback"));
+        compatible.releaseSnapshotGeneration(RESOURCE, retention);
         assertTrue(backends.catalog().activeReferenceRoots("tenant-a").isEmpty());
 
         String newReference = compatible.putIfAbsent(
@@ -140,6 +143,25 @@ class CompatibleSnapshotArtifactStoreTest {
                 "snapshot-mixed", "snapshot-mixed"), cas.released);
     }
 
+    @Test void rejectsNonCanonicalSnapshotIdBeforeDispatchingToEitherBackend() {
+        StrictLifecycleStore legacy = new StrictLifecycleStore("test.legacy");
+        StrictLifecycleStore cas = new StrictLifecycleStore("test.cas");
+        var compatible = new CompatibleSnapshotArtifactStore(
+                CompatibleSnapshotArtifactStore.WriterMode.CAS,
+                legacy, legacy, cas, cas);
+        String legacyReference = "cas:sha256:" + "a".repeat(64);
+        String casReference = "cas://sha256/" + "b".repeat(64) + "/10";
+
+        assertThrows(IllegalArgumentException.class,
+                () -> compatible.retainSnapshotGeneration(
+                        RESOURCE, "s".repeat(65), List.of(legacyReference, casReference)));
+
+        assertTrue(legacy.retained.isEmpty());
+        assertTrue(cas.retained.isEmpty());
+        assertTrue(legacy.released.isEmpty());
+        assertTrue(cas.released.isEmpty());
+    }
+
     private Backends backends() {
         var legacy = new LocalContentAddressedArtifactStore(
                 temporary.resolve("legacy"), 64L * 1024 * 1024);
@@ -170,6 +192,7 @@ class CompatibleSnapshotArtifactStoreTest {
     private static final class StrictLifecycleStore implements
             SnapshotPorts.ArtifactStore, SnapshotPorts.ArtifactReader {
         private final String generationName;
+        private final List<String> retained = new ArrayList<>();
         private final List<String> released = new ArrayList<>();
         private StrictLifecycleStore(String generationName) {
             this.generationName = generationName;
@@ -185,6 +208,7 @@ class CompatibleSnapshotArtifactStoreTest {
         @Override public SnapshotPorts.ArtifactRetention retainSnapshotGeneration(
                 SnapshotPorts.ArtifactResourceContext resource, String snapshotId,
                 List<String> references) {
+            retained.add(snapshotId);
             return new SnapshotPorts.ArtifactRetention(
                     snapshotId, Map.of(generationName, 1L));
         }

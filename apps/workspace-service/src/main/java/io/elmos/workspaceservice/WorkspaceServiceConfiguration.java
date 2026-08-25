@@ -17,10 +17,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
-import java.nio.file.Path;
-import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 
 @Configuration
@@ -64,12 +65,21 @@ class WorkspaceServiceConfiguration {
     }
 
     @Bean @ConditionalOnProperty(name = "elmos.workspace.docker.enabled", havingValue = "true")
-    WorkspaceInfrastructurePorts.SnapshotVolumeMaterializer snapshotMaterializer(DockerClient docker, JdbcClient jdbc,
+    WorkspaceInfrastructurePorts.SnapshotArtifactResolver workspaceSnapshotArtifactResolver(
+            DataSource dataSource
+    ) {
+        return new JdbcWorkspaceSnapshotArtifactResolver(dataSource);
+    }
+
+    @Bean @ConditionalOnProperty(name = "elmos.workspace.docker.enabled", havingValue = "true")
+    WorkspaceInfrastructurePorts.SnapshotVolumeMaterializer snapshotMaterializer(
+            DockerClient docker,
+            WorkspaceInfrastructurePorts.SnapshotArtifactResolver snapshots,
+            WorkspaceInfrastructurePorts.SnapshotArtifactReader artifacts,
             WorkspaceInfrastructurePorts.ApprovedImageRegistry images,
-            @Value("${elmos.workspace.snapshot-artifact-root:}") String root,
             @Value("${elmos.workspace.snapshot-helper-image-digest:}") String digest) {
-        if (root.isBlank()) throw new IllegalStateException("snapshot artifact root is required");
-        return new DockerSnapshotVolumeMaterializer(docker, jdbc, Path.of(root), digest, images);
+        return new DockerSnapshotVolumeMaterializer(
+                docker, snapshots, artifacts, digest, images);
     }
 
     @Bean @ConditionalOnProperty(name = "elmos.workspace.docker.enabled", havingValue = "true")

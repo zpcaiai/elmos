@@ -31,7 +31,10 @@ class CasGarbageCollectorTest {
     }
 
     private CasGarbageCollector collector() {
-        return new CasGarbageCollector(store, digest -> Optional.ofNullable(manifests.get(digest)), clock::get);
+        return new CasGarbageCollector(store, digest -> Optional.ofNullable(manifests.get(digest)),
+                clock::get, candidate -> store.delete(candidate.digest())
+                ? CasGarbageCollector.AtomicDeletionOutcome.DELETED
+                : CasGarbageCollector.AtomicDeletionOutcome.NOT_FOUND);
     }
 
     @Test void reachableObjectsSurviveAndUnreferencedOnesAreCollected() {
@@ -79,9 +82,99 @@ class CasGarbageCollectorTest {
         CasDigest orphan = store("orphan", 0, CasObjectModel.RetentionClass.STANDARD);
         var result = collector().collect(List.of(), catalog,
                 CasGarbageCollector.CollectionPolicy.dryRun(0), "batch-3");
-        assertEquals(1, result.collected().size());
+        assertTrue(result.collected().isEmpty(),
+                "dry-run must not report a physical deletion that never happened");
+        assertEquals(0, result.reclaimedBytes());
+        assertEquals(List.of("DRY_RUN_CANDIDATE:UNREACHABLE"), result.retained().stream()
+                .map(CasGarbageCollector.Retained::reason).toList());
         assertTrue(result.dryRun());
         assertTrue(store.contains(orphan));
+    }
+
+    @Test void executingSweepWithoutAnAtomicDeletionAuthorityFailsClosed() {
+        CasDigest orphan = store("unguarded orphan", 0, CasObjectModel.RetentionClass.STANDARD);
+        var unguarded = new CasGarbageCollector(
+                store, digest -> Optional.ofNullable(manifests.get(digest)), clock::get);
+
+        var result = unguarded.collect(List.of(), catalog,
+                CasGarbageCollector.CollectionPolicy.dryRun(0).executing(), "unguarded");
+
+        assertTrue(result.collected().isEmpty());
+        assertTrue(store.contains(orphan));
+        assertEquals("ATOMIC_DELETION_AUTHORITY_REQUIRED", result.retained().get(0).reason());
+    }
+
+    @Test void rootPublishedAfterMarkBlocksTheDeleteTimeRecheck() {
+        CasDigest candidate = store("late root", 0, CasObjectModel.RetentionClass.STANDARD);
+        var guarded = new CasGarbageCollector(
+                store, digest -> Optional.ofNullable(manifests.get(digest)), clock::get,
+                deletion -> deletion.digest().equals(candidate)
+                        ? CasGarbageCollector.AtomicDeletionOutcome.LIVE_REFERENCE_OR_HOLD
+                        : CasGarbageCollector.AtomicDeletionOutcome.DELETED);
+
+        var result = guarded.collect(List.of(), catalog,
+                CasGarbageCollector.CollectionPolicy.dryRun(0).executing(), "late-root");
+
+        assertTrue(result.collected().isEmpty());
+        assertTrue(store.contains(candidate));
+        assertEquals("LIVE_REFERENCE_RECHECK_BLOCKED", result.retained().get(0).reason());
+    }
+
+    @Test void unavailableAtomicDeleteAuthorityRetainsTheCandidate() {
+        CasDigest candidate = store("guard outage", 0, CasObjectModel.RetentionClass.STANDARD);
+        var guarded = new CasGarbageCollector(
+                store, digest -> Optional.ofNullable(manifests.get(digest)), clock::get,
+                deletion -> {
+                    throw new IllegalStateException("catalog unavailable");
+                });
+
+        var result = guarded.collect(List.of(), catalog,
+                CasGarbageCollector.CollectionPolicy.dryRun(0).executing(), "guard-outage");
+
+        assertTrue(result.collected().isEmpty());
+        assertTrue(store.contains(candidate));
+        assertEquals("ATOMIC_DELETION_AUTHORITY_UNAVAILABLE", result.retained().get(0).reason());
+    }
+
+    @Test void authorityOwnsThePhysicalDeleteInsteadOfReturningACheckThenDeleteBoolean() {
+        CasDigest candidate = store("authority-owned delete", 0,
+                CasObjectModel.RetentionClass.STANDARD);
+        java.util.concurrent.atomic.AtomicBoolean authorityDeleted =
+                new java.util.concurrent.atomic.AtomicBoolean();
+        var collector = new CasGarbageCollector(
+                store, digest -> Optional.ofNullable(manifests.get(digest)), clock::get,
+                deletion -> {
+                    authorityDeleted.set(store.delete(deletion.digest()));
+                    return authorityDeleted.get()
+                            ? CasGarbageCollector.AtomicDeletionOutcome.DELETED
+                            : CasGarbageCollector.AtomicDeletionOutcome.NOT_FOUND;
+                });
+
+        var result = collector.collect(List.of(), catalog,
+                CasGarbageCollector.CollectionPolicy.dryRun(0).executing(),
+                "atomic-authority");
+
+        assertTrue(authorityDeleted.get());
+        assertEquals(List.of(candidate), result.collected().stream()
+                .map(CasGarbageCollector.Candidate::digest).toList());
+        assertFalse(store.contains(candidate));
+    }
+
+    @Test void aDeletedClaimWithoutPhysicalConfirmationDoesNotReclaimTheCandidate() {
+        CasDigest candidate = store("false deleted claim", 0,
+                CasObjectModel.RetentionClass.STANDARD);
+        var collector = new CasGarbageCollector(
+                store, digest -> Optional.ofNullable(manifests.get(digest)), clock::get,
+                ignored -> CasGarbageCollector.AtomicDeletionOutcome.DELETED);
+
+        var result = collector.collect(List.of(), catalog,
+                CasGarbageCollector.CollectionPolicy.dryRun(0).executing(),
+                "false-deleted-claim");
+
+        assertTrue(result.collected().isEmpty());
+        assertEquals("DELETE_NOT_CONFIRMED", result.retained().get(0).reason());
+        assertTrue(store.contains(candidate));
+        assertEquals(0, result.reclaimedBytes());
     }
 
     @Test void aNegativeMinimumAgeCannotTurnFreshObjectsIntoDeletionCandidates() {
@@ -227,17 +320,51 @@ class CasGarbageCollectorTest {
 
     @Test void theDeletionManifestDigestBindsReasonsAndUnresolvedReferences() {
         CasDigest object = CasDigest.of("same-object".getBytes(StandardCharsets.UTF_8));
-        var collected = new CasGarbageCollector.DeletionManifest("batch", true,
+        var collected = new CasGarbageCollector.DeletionManifest("batch", false,
                 List.of(new CasGarbageCollector.Candidate(object, object.sizeBytes(),
                         "tenant-a", "UNREACHABLE")), List.of(), List.of(), object.sizeBytes(), 1);
-        var tenantDeletion = new CasGarbageCollector.DeletionManifest("batch", true,
+        var tenantDeletion = new CasGarbageCollector.DeletionManifest("batch", false,
                 List.of(new CasGarbageCollector.Candidate(object, object.sizeBytes(),
                         "tenant-a", "TENANT_DELETION")), List.of(), List.of(), object.sizeBytes(), 1);
-        var unresolved = new CasGarbageCollector.DeletionManifest("batch", true,
+        var unresolved = new CasGarbageCollector.DeletionManifest("batch", false,
                 List.of(new CasGarbageCollector.Candidate(object, object.sizeBytes(),
                         "tenant-a", "UNREACHABLE")), List.of(), List.of(object), object.sizeBytes(), 1);
 
         assertNotEquals(collected.digest(), tenantDeletion.digest());
         assertNotEquals(collected.digest(), unresolved.digest());
+    }
+
+    @Test void aDryRunManifestCannotClaimPhysicalDeletion() {
+        CasDigest object = CasDigest.of("dry-run-object".getBytes(StandardCharsets.UTF_8));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CasGarbageCollector.DeletionManifest(
+                        "dry-run", true,
+                        List.of(new CasGarbageCollector.Candidate(
+                                object, object.sizeBytes(), "tenant-a", "UNREACHABLE")),
+                        List.of(), List.of(), object.sizeBytes(), 1));
+    }
+
+    @Test void deletionManifestRequiresAnExactUniqueAndDisjointAccounting() {
+        CasDigest object = CasDigest.of("manifest-object".getBytes(StandardCharsets.UTF_8));
+        var candidate = new CasGarbageCollector.Candidate(
+                object, object.sizeBytes(), "tenant-a", "UNREACHABLE");
+        var retained = new CasGarbageCollector.Retained(object, "DELETE_FAILED");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new CasGarbageCollector.DeletionManifest(
+                        "wrong-total", false, List.of(candidate), List.of(), List.of(),
+                        object.sizeBytes() + 1, 1));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CasGarbageCollector.DeletionManifest(
+                        "duplicate", false, List.of(candidate, candidate), List.of(), List.of(),
+                        Math.multiplyExact(object.sizeBytes(), 2), 1));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CasGarbageCollector.DeletionManifest(
+                        "overlap", false, List.of(candidate), List.of(retained), List.of(),
+                        object.sizeBytes(), 1));
+        assertThrows(IllegalArgumentException.class,
+                () -> new CasGarbageCollector.DeletionManifest(
+                        "duplicate-retained", false, List.of(), List.of(retained, retained),
+                        List.of(), 0, 1));
     }
 }

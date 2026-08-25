@@ -29,6 +29,25 @@ elmos:
     docker:
       enabled: ${ELMOS_WORKSPACE_DOCKER_ENABLED:false}
     snapshot-artifact-root: ${ELMOS_SNAPSHOT_ARTIFACT_ROOT:}
+    snapshot-max-artifact-bytes: ${ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES:1073741824}
+    snapshot-legacy-compatibility-enabled: ${ELMOS_WORKSPACE_SNAPSHOT_LEGACY_COMPATIBILITY_ENABLED:false}
+    snapshot-cas:
+      root: ${ELMOS_SNAPSHOT_CAS_ROOT:}
+      store-name: ${ELMOS_SNAPSHOT_CAS_STORE_NAME:snapshot-local}
+      data-residency: ${ELMOS_SNAPSHOT_CAS_DATA_RESIDENCY:}
+      security-tier: ${ELMOS_SNAPSHOT_CAS_SECURITY_TIER:CONFIDENTIAL}
+      allow-unencrypted-single-host: ${ELMOS_SNAPSHOT_CAS_ALLOW_UNENCRYPTED_SINGLE_HOST:false}
+      encryption:
+        enabled: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_ENABLED:false}
+        provider: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_PROVIDER:DIRECTORY}
+        key-directory: ${ELMOS_SNAPSHOT_CAS_TENANT_KEY_DIRECTORY:}
+        kms-broker:
+          endpoint: ${ELMOS_SNAPSHOT_CAS_KMS_BROKER_ENDPOINT:}
+          connect-timeout: ${ELMOS_SNAPSHOT_CAS_KMS_BROKER_CONNECT_TIMEOUT:5s}
+          operation-timeout: ${ELMOS_SNAPSHOT_CAS_KMS_BROKER_OPERATION_TIMEOUT:15s}
+          workload-spiffe-id: ${ELMOS_SNAPSHOT_CAS_KMS_WORKLOAD_SPIFFE_ID:}
+          mtls-secret-reference: ${ELMOS_SNAPSHOT_CAS_KMS_MTLS_SECRET_REFERENCE:}
+          authorization-secret-reference: ${ELMOS_SNAPSHOT_CAS_KMS_AUTHORIZATION_SECRET_REFERENCE:}
     command-artifact-root: ${ELMOS_COMMAND_ARTIFACT_ROOT:}
     snapshot-helper-image-digest: ${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:}
     egress-proxy-image-digest: ${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:}

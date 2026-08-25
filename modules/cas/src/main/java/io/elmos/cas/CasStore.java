@@ -101,6 +101,17 @@ public interface CasStore {
     void put(CasDigest expected, byte[] content);
 
     /**
+     * Stores an object in the authoritative tier before returning.
+     *
+     * <p>A single-tier implementation is already authoritative, so its ordinary write satisfies
+     * this contract. A write-back implementation must override it and wait for the shared tier;
+     * callers must use this method before publishing a durable catalogue/root reference.</p>
+     */
+    default void putDurable(CasDigest expected, byte[] content) {
+        put(expected, content);
+    }
+
+    /**
      * @throws CasExceptions.CasNotFoundException   if absent
      * @throws CasExceptions.CasCorruptionException if present but poisoned
      */

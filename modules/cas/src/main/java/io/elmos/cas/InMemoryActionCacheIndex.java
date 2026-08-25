@@ -20,11 +20,13 @@ public final class InMemoryActionCacheIndex implements ActionCacheIndex {
 
     @Override
     public Optional<ActionCache.Entry> find(ActionKey key) {
+        ActionKeyBuilder.verifyCanonical(key);
         return Optional.ofNullable(entries.get(new EntryKey(key.tenantId(), key.digest())));
     }
 
     @Override
     public void store(ActionCache.Entry entry) {
+        ActionKeyBuilder.verifyCanonical(entry.key());
         EntryKey key = new EntryKey(entry.key().tenantId(), entry.key().digest());
         entries.compute(key, (ignored, current) -> {
             if (current != null && !ActionCacheIndex.isIdempotentReplay(current, entry)) {
@@ -37,6 +39,7 @@ public final class InMemoryActionCacheIndex implements ActionCacheIndex {
 
     @Override
     public boolean invalidate(ActionKey key, String reason, long atEpochMillis) {
+        ActionKeyBuilder.verifyCanonical(key);
         return entries.remove(new EntryKey(key.tenantId(), key.digest())) != null;
     }
 

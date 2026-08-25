@@ -56,6 +56,19 @@ class ActionCacheTest {
                 .build();
     }
 
+    private static ActionKey legacyV1(ActionKey canonical) {
+        CasManifest.CanonicalEncoder encoder =
+                new CasManifest.CanonicalEncoder("elmos-action-key/1");
+        canonical.components().forEach(encoder::field);
+        return new ActionKey(CasDigest.of(encoder.bytes()), canonical.tenantId(),
+                canonical.components());
+    }
+
+    private static ActionKey forgedDigest(ActionKey canonical) {
+        return new ActionKey(digest("forged-action-key-digest"), canonical.tenantId(),
+                canonical.components());
+    }
+
     private CasAccessPolicy.ProducerContext producer(String tenant, Set<String> scope,
                                                      CasAccessPolicy.SecurityTier tier,
                                                      CasObjectModel.Sensitivity sensitivity) {
@@ -78,6 +91,42 @@ class ActionCacheTest {
 
     private static ActionCache.WriterIdentity writer(String nodeId) {
         return new ActionCache.WriterIdentity("runner", "elmos.internal", nodeId, true);
+    }
+
+    @Test void cacheAndInMemoryIndexRejectLegacyAndForgedKeysAtEveryKeyBoundary() {
+        InMemoryActionCacheIndex index = new InMemoryActionCacheIndex();
+        ActionCache cache = cache(index);
+        ActionKey canonical = key("tenant-a", Set.of("repo:read"));
+        ActionResultRecord result = storedSuccess("canonical-only output");
+        CasAccessPolicy.ProducerContext producer = producer(
+                "tenant-a", Set.of("repo:read"), CasAccessPolicy.SecurityTier.INTERNAL,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT);
+        CasAccessPolicy.ReaderContext reader = reader(
+                "tenant-a", Set.of("repo:read"), CasAccessPolicy.SecurityTier.INTERNAL, false);
+
+        for (ActionKey invalid : List.of(legacyV1(canonical), forgedDigest(canonical))) {
+            ActionCache.Entry invalidEntry = new ActionCache.Entry(
+                    invalid, result, producer, writer("node-invalid"), Optional.empty(),
+                    ActionCache.RiskTier.STANDARD, clock.get(), Optional.empty());
+
+            assertThrows(IllegalArgumentException.class,
+                    () -> cache.put(invalid, result, producer, writer("node-invalid"),
+                            ActionCache.RiskTier.STANDARD, Optional.empty()));
+            assertThrows(IllegalArgumentException.class,
+                    () -> cache.get(invalid, reader, false));
+            assertThrows(IllegalArgumentException.class,
+                    () -> cache.get(invalid, reader, true));
+            assertThrows(IllegalArgumentException.class,
+                    () -> cache.confirmRecompute(invalid, result.outputManifestDigest()));
+            assertThrows(IllegalArgumentException.class,
+                    () -> cache.invalidate(invalid, "INVALID_KEY_MUST_NOT_MUTATE"));
+
+            assertThrows(IllegalArgumentException.class, () -> index.find(invalid));
+            assertThrows(IllegalArgumentException.class, () -> index.store(invalidEntry));
+            assertThrows(IllegalArgumentException.class,
+                    () -> index.invalidate(invalid, "INVALID_KEY_MUST_NOT_MUTATE", clock.get()));
+        }
+        assertEquals(0, index.size("tenant-a"));
     }
 
     @Test void unchangedRerunReusesTheResult() {

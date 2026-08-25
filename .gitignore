@@ -47,6 +47,7 @@ _to_delete/
 
 # --- 打包产物（可重新生成，不入库） ---
 /elmos-*.tar.gz
+/modules/cas/elmos-cas-wave3-repo.tar.gz
 /elmos-*.skill
 /elmos-*.bundle
 /artifacts/batch105-108/

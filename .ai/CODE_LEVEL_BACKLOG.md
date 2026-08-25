@@ -225,7 +225,10 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 
 ---
 
-## #10 CAS 与 Action Cache — `IN-PROGRESS`（底层已验证，生产闭环未完成）
+## #10 CAS 与 Action Cache — `IN-PROGRESS`（历史实现快照，生产闭环未完成）
+
+> 本节保留 2026-08-19/20 的实现与验证快照。其“当前源码”“仍未闭合”和下一步清单
+> 不再代表最新代码；本文件末尾的 CAS / Snapshot / EI reconciliation 才是当前口径。
 
 来源不是 polyglot 评估，是 `elmos-infrastructure-foundation-skills-v1.0.0` 的
 `elmos-content-addressed-cache`（P0/G3，42 条带 ID 的验收点）。动手前核对：全仓唯一的
@@ -244,7 +247,7 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 
 ### 第二轮（同日下午）：底层能力补齐；「零调用者」只完成本机试验切片
 
-`modules/cas` 现在 **6860 行主代码（36 文件）/ 3404 行测试（19 文件）/ 177 条测试**，云端全绿。
+当时 `modules/cas` 为 **6860 行主代码（36 文件）/ 3404 行测试（19 文件）/ 177 条测试**，云端全绿。
 
 | 上一轮的缺口 | 现状 |
 |---|---|
@@ -262,7 +265,7 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 
 合计 **193 条测试 + 45 项数据库约束检查**，全部执行过。三个 pom 加了 `elmos-cas` 依赖。
 
-2026-08-20 当前源码已实现上一轮六项结构性缺口中的本地工程部分：
+2026-08-20 精确源码已实现上一轮六项结构性缺口中的本地工程部分：
 
 - capture-time archive/manifest roots 使用 generation-safe 原子批次；root reactivation
   不会被旧 generation 的延迟 release 隐藏
@@ -272,7 +275,7 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 - 默认关闭的 tenant-local AES-GCM 本机层（fresh nonce + tenant/key/digest AAD）
 - durable JDBC `ActionCacheIndex` 持久化可重建 metadata、隔离与失效状态
 
-共享 223-node 矩阵释放后，当前源码已通过 `modules/cas` 全模块测试，以及 catalog/GC、
+共享 223-node 矩阵释放后，当时源码已通过 `modules/cas` 全模块测试，以及 catalog/GC、
 ActionCache/encryption、snapshot/integrations、persistence migration、portfolio 的 focused
 Maven 验证和 task-scoped 静态检查。ActionCache v2 subject/envelope 已覆盖完整
 key/result/producer/risk/writer 并在 JDBC 读回重算 digest，focused 负例已通过。live
@@ -296,7 +299,7 @@ PostgreSQL、Docker/provider 与真实双进程共享 object tier 仍为 `NOT_RU
 `SINGLE_HOST / NOT_CERTIFIED`；durable JDBC index 的存在不等于已有共享 object tier 或
 真实跨实例命中。
 
-**共享矩阵释放后已执行及仍待执行的验证边界**：
+**该历史快照已执行及当时仍待执行的验证边界**：
 
 ```bash
 cd /Users/stephen/DevProjects/AIProjects/elmos
@@ -350,7 +353,7 @@ mvn -q -pl modules/cas -am test
       脚本 scripts/cas/verify_cas_migration_chain.py，
       详见 FINDINGS-2026-08-25-cas-chain-live-postgres.md
 
-下一步，按「不阻塞」排序：
+2026-08-20 当时的下一步（现由文末 reconciliation 更新）：
   #10a 接 snapshot delete/release 与 commit-unknown reconciliation，证明 unresolved graph
        的 full sweep fail-closed
   #10b 接 ActionCache execution caller、命中时签名/attestation trust 重验与真实共享 object tier
@@ -401,7 +404,11 @@ mvn -q -pl modules/cas -am test
 **环境事实**：`engines/polyglot-route-engine/.venv` 指向 Mac 解释器，Cowork 的 device VM
 是 aarch64-linux 且无网，`uv` 会去下 CPython 然后失败——**全量测试只能在 Mac 上跑。**
 
-## 2026-08-24 CAS / Snapshot / EI backlog reconciliation
+## 2026-08-24 CAS / Snapshot / EI backlog reconciliation 与当前源码增量
+
+2026-08-24 的 197/197、34/34、live PostgreSQL 与同宿主 MinIO 结果只绑定当时精确源码和
+环境。后续 catalog/tiering、ActionKey/dispatcher、workspace materializer/archiver 与 pre-V9
+receipt 改动不能复用这些结果作为当前回归证据。
 
 已从结构性 blocker 移出：
 
@@ -410,25 +417,85 @@ mvn -q -pl modules/cas -am test
 - legacy `cas:sha256:` / sized CAS verified dual-read 与显式迁移模式
 - tenant envelope encryption 的 KMS provider 端口及缺 provider 的启动拒绝
 - JDBC metadata 完整读回
-- ActionCache detached signature 持久化、跨实例 JDBC 命中、当前 trust 重验及 fail-closed opt-in caller 绑定端口
+- ActionCache detached signature 持久化、代码级跨实例 JDBC lookup、当前 trust 重验及 fail-closed opt-in caller 绑定端口
 - snapshot archive/root release、stale-PENDING reconciliation、不可变 DB lifecycle、fenced materialization lease 与有界全局队列
 - snapshot repository/installation/tenant 复合绑定
 - 已验签 GitHub webhook 的 pre-principal tenant routing 与 tenant-bound outbox
 - EI read-once schema validation、digest-bound 双签 provenance/trust-store 合同、外部 trust snapshot adapter 及 wheel resources
+- `CasCatalog` 强制 metadata+roots 单事务发布、统一首发 generation 与 exact-generation release，
+  in-memory publish 失败回滚；`TieredCasStore` 支持嵌套 durable tier、失败 flush 保留重试和统一状态锁
+- workspace snapshot CAS-first/RLS-bound resolver、默认拒绝的 verified legacy compatibility，以及
+  有界 no-follow spool、tar materializer 与 deterministic archiver 安全检查
 
 仍未闭合，状态不得上调：
 
 1. **真实多主机** shared tier、故障切换和并发跨实例压力；现有 MinIO 是同主机两个 JVM。
 2. 生产 KMS/HSM、密钥创建/托管/轮换/吊销和灾备；本地 provider 测试不替代它。
 3. 外部且独立治理的 ActionCache/EI trust、key revocation 与 verifier；本地 key registry/loopback authority 不独立。
-4. ActionCache 的真实生产 execution-service authorizer/runner adapter；当前只完成默认关闭、缺任一端口即启动失败的绑定边界。
-5. snapshot materialization lease 与全租户 scheduler 的生产部署、稳定 holder/election、archive/GC worker 协调；本地 PostgreSQL 证明不替代它。
-6. V9 前已有 `audit_events` 的受控 pre-migration bootstrap；不可用 `repair` 掩盖 checksum/顺序。
+4. ActionCache 的真实生产 tenant-API 与 runner completion write-back：本轮新增默认关闭的
+   durable async hit-or-enqueue dispatcher，且 deployment 必须提供 identity-bound authorization
+   grant、typed payload policy、current-trust revalidator 与唯一 `ExecutionJobPort`；仓库仍没有真实
+   生产 authorizer/payload-policy 实现，tenant API 也尚未构造 ActionKey，runner completion 合同缺
+   signed ActionResult/output/provenance，因此不能写回缓存。`ExecutionJobPort` 也没有按 idempotency
+   key 的权威查询；enqueue ack-loss、冲突或无效返回保持 `UNKNOWN_RECONCILIATION_REQUIRED`，
+   不能用盲目重试伪造成成功 reconciliation。
+5. snapshot materialization lease 与全租户 scheduler 的生产部署、稳定 holder/election、archive/GC
+   worker 协调，以及生产 KMS/shared tier、legal-hold/object-delete 原子边界、跨主机 Docker 和
+   大规模/跨平台/对抗 archive 证据；本地 PostgreSQL 和静态代码检查不替代它们。
+6. V9 前已有 `audit_events` 的真实受控升级执行证据：本轮新增 fail-closed pre-V9 bootstrap，
+   默认只读且只接受 checksum/顺序完全匹配的 V1..V8，apply 需 target-bound 二次确认并在单事务
+   锁内补 `organization_id`/回填 `org-system`/设 NOT NULL，绝不写 Flyway history。apply 在连接
+   数据库前必须预留 durable pending `OUTCOME_UNKNOWN` receipt；mutation/commit/rollback ack-loss
+   继续 unknown，只有确认 rollback 才能写 `BLOCKED`。`py_compile` 与 focused unittest **18/18
+   PASS**，但尚未对真实历史 PostgreSQL 执行 assess/apply/reconciliation，不能用本地单元测试替代。
 7. V69/V70/V72 大表 backfill/FK/索引/队列的在线 rollout、锁/WAL 容量与维护窗口证据。
 8. 真实 GitHub App installation/webhook/redelivery/revocation 与 provider outage reconciliation；本地 17-test harness 不替代它。
 9. ArkUI/Harmony 真实设备；`hdc` 3.2.0b 已安装但 inventory 为 `[Empty]`，继续 `NOT_RUN`。
-10. portfolio `TenantContentAddressedCache` 的 key→digest 索引仍是进程内状态。
+10. portfolio cache 的生产授权与规模证据：本轮已把 key→digest 映射改成 durable
+    `CasCatalog` ACTION_CACHE logical root，支持仅凭完整 InputManifest 的跨实例 lookup、精确索引
+    查询、generation-bound invalidate 与 GC root release。发布前必须 `putDurable`，metadata+root
+    在同一 catalog 事务提交，单实例 transient miss 不再撤销全局 root，读取还验证最低 retention；
+    snapshot artifact 同样在 root publication 前修复 authoritative tier，并统一 64 字符 lifecycle
+    receipt 边界。但 `signatureVerified`/tenant/trust 仍由外层调用者提供，必须由生产 authenticated
+    principal/attestation authorizer 绑定，且真实共享 JDBC/object tier 的并发、容量和多主机证据仍缺失。
+11. ActionKey v2 的生产 rollout：本轮将 canonical domain 升为 `elmos-action-key/2`，固定 component
+    order，复合字段全部结构化摘要，dispatcher 使用同一 verifier 严拒 v1，并把 schema 写入 durable
+    queue envelope。由于 v1 存在碰撞且持久行没有可安全自动迁移的原始身份，禁止兼容 fallback；
+    上线前必须 quiesce mixed-version caller，并按租户受控 invalidate/expire 旧 ActionCache 行。
+
+当前源码增量的验证边界固定为：pre-V9 `py_compile` + unittest **18/18 PASS**，以及
+Tiered/Compatible targeted `javac` **PASS**。其余当前增量 Maven/JUnit、live PostgreSQL 与 MinIO
+均为 **NOT_RUN / 待本任务 focused 复验**；不得把 2026-08-24 历史通过数改写成当前源码通过。
 
 当前判定固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`。
-本地 72-migration PostgreSQL、双进程 MinIO 和全部 focused pass 只能减少代码级 backlog，
+日期绑定的本地 72-migration PostgreSQL、双进程 MinIO 和 focused pass 只能减少当时代码级 backlog，
 不能替代上述外部、生产、多主机、设备或独立认证证据。
+
+### 2026-08-26 protocol closure and remaining production wiring
+
+本轮进一步完成的本地代码级协议：
+
+- atomic deletion tombstone 与 `PENDING`/`OUTCOME_UNKNOWN` publication fence；
+- GC manifest exact/unique/disjoint accounting 与删除前 overflow refusal；
+- repository incarnation epoch、ACTIVE -> RETIRING -> RETIRED、root-to-resource durable edge、
+  retirement write fence、全部 root 释放后的 binding batch release 和 stale-token replay refusal；
+- JDBC rollback 失败时 abort connection，禁止用恢复 auto-commit 意外提交 unresolved transaction；
+- production snapshot source-lease/reuse fail-closed、inode-bound materializer spool、canonical PAX 与固定
+  helper ENTRYPOINT/CMD。
+
+聚焦结果为 core 195 PASS / 2 filesystem-assumption skips / 0 fail/error，app 63/63 PASS，pre-V9
+18/18 PASS。V76 live PostgreSQL 因非本任务 persistence testCompile 错误未运行。
+
+仍是生产 blocker、不得从 backlog 移出：
+
+1. repository retirement 目前只有 protocol/API 和测试；control-plane/webhook/repository deletion 无 caller，
+   因此生产 bindings 不会自动进入 fence/release。
+2. authoritative fenced source adapter 与 durable lease provenance schema 未提供；control-plane 当前安全地
+   阻断新 capture 和旧行 reuse。
+3. V76 的真实 Flyway/PostgreSQL、线上 rollout、锁/WAL/恢复验证未执行。
+4. 真实多主机 shared tier、生产 KMS/HSM、外部 trust/revocation、ActionCache tenant API 与 signed
+   completion write-back、生产 snapshot election/reconciliation/archive-GC、真实 GitHub App/webhook、
+   Docker 跨主机与 ArkUI 设备证据继续缺失。
+
+状态固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`、ArkUI
+`NOT_RUN / NOT_CERTIFIED`。

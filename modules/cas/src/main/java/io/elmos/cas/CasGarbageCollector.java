@@ -3,6 +3,7 @@ package io.elmos.cas;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,37 @@ import java.util.function.LongSupplier;
  * collector considered and kept this" is the record you need when an object goes missing.
  */
 public final class CasGarbageCollector {
+
+    /** Outcome of one authoritative, indivisible deletion attempt. */
+    public enum AtomicDeletionOutcome {
+        DELETED,
+        LIVE_REFERENCE_OR_HOLD,
+        NOT_FOUND,
+        FAILED,
+        UNAVAILABLE
+    }
+
+    /**
+     * Authority for a destructive sweep.
+     *
+     * <p>The mark input is necessarily a snapshot.  A separate boolean "still unreferenced"
+     * callback followed by {@link CasStore#delete} is not sufficient: a root can be published in
+     * the gap between the callback and the delete.  Implementations of this interface therefore
+     * own the delete side effect as well as the final authoritative root, legal-hold, and tenant
+     * checks.  They must either hold the same lock used by root publication through the physical
+     * delete, or use a durable deletion lease/tombstone that makes concurrent publication fail
+     * closed until reconciliation.  Only {@link AtomicDeletionOutcome#DELETED} means that the
+     * physical delete was confirmed.
+     *
+     * <p>Throwing, timing out, returning {@code null}, or returning any non-deleted outcome retains
+     * the object.  This callback is intentionally separate from the catalogue map passed to
+     * {@link #collect}: that map is evidence for the mark decision, not authority for a later
+     * destructive side effect.
+     */
+    @FunctionalInterface
+    public interface AtomicDeletionAuthority {
+        AtomicDeletionOutcome deleteIfStillUnreferenced(Candidate candidate);
+    }
 
     public enum RootKind {
         SNAPSHOT,
@@ -108,7 +140,9 @@ public final class CasGarbageCollector {
 
     public record DeletionManifest(String batchId,
                                    boolean dryRun,
+                                   /* Physically deleted and independently confirmed absent. */
                                    List<Candidate> collected,
+                                   /* Not reclaimed by this run, including dry-run candidates. */
                                    List<Retained> retained,
                                    List<CasDigest> unresolvedReferences,
                                    long reclaimedBytes,
@@ -121,6 +155,42 @@ public final class CasGarbageCollector {
             if (reclaimedBytes < 0 || atEpochMillis < 0) {
                 throw new IllegalArgumentException(
                         "deletion manifest byte count and epoch must not be negative");
+            }
+            if (dryRun && (!collected.isEmpty() || reclaimedBytes != 0)) {
+                throw new IllegalArgumentException(
+                        "a dry-run manifest cannot report physical deletion or reclaimed bytes");
+            }
+            Set<CasDigest> collectedDigests = new HashSet<>();
+            long collectedBytes = 0;
+            try {
+                for (Candidate candidate : collected) {
+                    Objects.requireNonNull(candidate, "collected candidate");
+                    if (!collectedDigests.add(candidate.digest())) {
+                        throw new IllegalArgumentException(
+                                "a deletion manifest cannot collect a digest more than once");
+                    }
+                    collectedBytes = Math.addExact(
+                            collectedBytes, candidate.sizeBytes());
+                }
+            } catch (ArithmeticException overflow) {
+                throw new IllegalArgumentException(
+                        "deletion manifest reclaimed byte count overflow", overflow);
+            }
+            if (collectedBytes != reclaimedBytes) {
+                throw new IllegalArgumentException(
+                        "reclaimed bytes must equal the collected candidate sizes");
+            }
+            Set<CasDigest> retainedDigests = new HashSet<>();
+            for (Retained entry : retained) {
+                Objects.requireNonNull(entry, "retained entry");
+                if (!retainedDigests.add(entry.digest())) {
+                    throw new IllegalArgumentException(
+                            "a deletion manifest cannot retain a digest more than once");
+                }
+                if (collectedDigests.contains(entry.digest())) {
+                    throw new IllegalArgumentException(
+                            "a deletion manifest cannot both collect and retain a digest");
+                }
             }
         }
 
@@ -162,12 +232,23 @@ public final class CasGarbageCollector {
     private final CasStore store;
     private final Function<CasDigest, Optional<CasManifest>> manifestResolver;
     private final LongSupplier clock;
+    private final Optional<AtomicDeletionAuthority> deletionAuthority;
 
     public CasGarbageCollector(CasStore store, Function<CasDigest, Optional<CasManifest>> manifestResolver,
                                LongSupplier clock) {
-        this.store = store;
-        this.manifestResolver = manifestResolver;
-        this.clock = clock;
+        this(store, manifestResolver, clock, null);
+    }
+
+    public CasGarbageCollector(
+            CasStore store,
+            Function<CasDigest, Optional<CasManifest>> manifestResolver,
+            LongSupplier clock,
+            AtomicDeletionAuthority deletionAuthority
+    ) {
+        this.store = Objects.requireNonNull(store, "store");
+        this.manifestResolver = Objects.requireNonNull(manifestResolver, "manifestResolver");
+        this.clock = Objects.requireNonNull(clock, "clock");
+        this.deletionAuthority = Optional.ofNullable(deletionAuthority);
     }
 
     /**
@@ -293,11 +374,64 @@ public final class CasGarbageCollector {
                 continue;
             }
             String reason = tenantDeleting ? "TENANT_DELETION" : "UNREACHABLE";
-            collected.add(new Candidate(digest, digest.sizeBytes(), tenantId, reason));
-            reclaimed += digest.sizeBytes();
-            if (!policy.dryRun()) {
-                store.delete(digest);
+            Candidate candidate = new Candidate(digest, digest.sizeBytes(), tenantId, reason);
+            if (policy.dryRun()) {
+                retained.add(new Retained(digest, "DRY_RUN_CANDIDATE:" + reason));
+                continue;
             }
+            if (deletionAuthority.isEmpty()) {
+                retained.add(new Retained(digest, "ATOMIC_DELETION_AUTHORITY_REQUIRED"));
+                continue;
+            }
+            AtomicDeletionOutcome outcome;
+            long reclaimedAfterCandidate;
+            try {
+                // Refuse before physical deletion if this run could not be represented by the
+                // durable manifest that follows it.
+                reclaimedAfterCandidate = Math.addExact(
+                        reclaimed, digest.sizeBytes());
+            } catch (ArithmeticException overflow) {
+                retained.add(new Retained(digest, "RECLAIMED_BYTE_COUNT_OVERFLOW"));
+                continue;
+            }
+            try {
+                outcome = deletionAuthority.orElseThrow()
+                        .deleteIfStillUnreferenced(candidate);
+            } catch (RuntimeException authorityUnavailable) {
+                retained.add(new Retained(digest, "ATOMIC_DELETION_AUTHORITY_UNAVAILABLE"));
+                continue;
+            }
+            if (outcome == null || outcome == AtomicDeletionOutcome.UNAVAILABLE) {
+                retained.add(new Retained(digest, "ATOMIC_DELETION_AUTHORITY_UNAVAILABLE"));
+                continue;
+            }
+            if (outcome == AtomicDeletionOutcome.LIVE_REFERENCE_OR_HOLD) {
+                retained.add(new Retained(digest, "LIVE_REFERENCE_RECHECK_BLOCKED"));
+                continue;
+            }
+            if (outcome == AtomicDeletionOutcome.FAILED) {
+                retained.add(new Retained(digest, "DELETE_FAILED"));
+                continue;
+            }
+            if (outcome == AtomicDeletionOutcome.NOT_FOUND) {
+                retained.add(new Retained(digest, "DELETE_NOT_CONFIRMED"));
+                continue;
+            }
+            if (outcome != AtomicDeletionOutcome.DELETED) {
+                retained.add(new Retained(digest, "ATOMIC_DELETION_AUTHORITY_UNAVAILABLE"));
+                continue;
+            }
+            try {
+                if (store.contains(digest)) {
+                    retained.add(new Retained(digest, "DELETE_NOT_CONFIRMED"));
+                    continue;
+                }
+            } catch (RuntimeException confirmationUnavailable) {
+                retained.add(new Retained(digest, "DELETE_CONFIRMATION_UNAVAILABLE"));
+                continue;
+            }
+            collected.add(candidate);
+            reclaimed = reclaimedAfterCandidate;
         }
         return new DeletionManifest(batchId, policy.dryRun(), collected, retained, unresolved, reclaimed, now);
     }

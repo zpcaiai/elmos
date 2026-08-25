@@ -85,6 +85,9 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
             throw new IllegalArgumentException("artifact size is outside policy: " + size);
         }
         Objects.requireNonNull(content, "content");
+        CasCatalog.ResourceLifecycle lifecycle = catalog.ensureActiveResource(
+                resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
+                resource.repositoryId());
         CasStore store = tenantStore.forTenant(resource.organizationId());
         CasDigest declared = new CasDigest(CasDigest.ALGORITHM, sha256, size);
         CasCatalog.CatalogEntry intended = entry(resource, declared, mediaType);
@@ -94,15 +97,30 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
 
         if (bound.isPresent()) {
             requireWriteCompatible(intended, bound.orElseThrow());
+            byte[] verified;
             if (store.contains(declared)) {
                 // contains() is only a cheap size probe. Verify the already-published bytes before
-                // trusting the catalogue binding and returning a reusable reference.
-                store.get(declared);
-                return reference(declared);
+                // trusting the catalogue binding and promoting them to the authoritative tier.
+                verified = store.get(declared);
+            } else {
+                verified = readAndVerify(content, declared);
             }
-
-            byte[] recovered = readAndVerify(content, declared);
-            store.put(declared, recovered);
+            CasCatalog.ResourceBinding binding = new CasCatalog.ResourceBinding(
+                    resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
+                    resource.repositoryId(), declared, clock.getAsLong());
+            byte[] durableBytes = verified;
+            // Revalidate the exact resource incarnation around the durable callback.  A
+            // repository retirement that linearized after findBound must win here.
+            catalog.recordAndBindDurableResource(
+                    intended, binding, lifecycle,
+                    () -> store.putDurable(declared, durableBytes));
+            CasCatalog.CatalogEntry recorded = catalog.findBound(
+                            resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
+                            resource.repositoryId(), declared)
+                    .orElseThrow(() -> new IllegalStateException(
+                            "CAS catalogue lost an existing artifact resource binding"));
+            requireWriteCompatible(intended, recorded);
+            requireSnapshotRetention(recorded);
             return reference(declared);
         }
 
@@ -114,23 +132,27 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         // wrote identical bytes. A digest alone is not proof that this repository produced those
         // bytes: require and verify the complete content before minting its resource binding.
         byte[] bytes = readAndVerify(content, declared);
+        byte[] verified = bytes;
         if (store.contains(declared)) {
-            store.get(declared);
-        } else {
-            store.put(declared, bytes);
+            verified = store.get(declared);
         }
-        if (existing.isEmpty()) {
-            catalog.record(intended);
-        }
-        catalog.bindResource(new CasCatalog.ResourceBinding(
+        CasCatalog.ResourceBinding binding = new CasCatalog.ResourceBinding(
                 resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
-                resource.repositoryId(), declared, clock.getAsLong()));
+                resource.repositoryId(), declared, clock.getAsLong());
+        // A durable binding must never name bytes that exist only in a write-back L1. The
+        // tombstone-aware catalogue boundary also makes a retry repairable if a collector raced
+        // this first publication after the caller's initial content verification.
+        byte[] durableBytes = verified;
+        catalog.recordAndBindDurableResource(
+                intended, binding, lifecycle,
+                () -> store.putDurable(declared, durableBytes));
         CasCatalog.CatalogEntry recorded = catalog.findBound(
                         resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                         resource.repositoryId(), declared)
                 .orElseThrow(() -> new IllegalStateException(
                         "CAS catalogue did not persist the artifact resource binding"));
         requireWriteCompatible(intended, recorded);
+        requireSnapshotRetention(recorded);
         return reference(declared);
     }
 
@@ -168,6 +190,9 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         if (references.isEmpty()) {
             throw new IllegalArgumentException("snapshot references must not be empty");
         }
+        CasCatalog.ResourceLifecycle lifecycle = catalog.ensureActiveResource(
+                resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
+                resource.repositoryId());
 
         // Complete all authorization and integrity checks before publishing the first root.
         // addReferenceRoots is one catalogue transaction, so a later database failure cannot
@@ -177,13 +202,15 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                 .distinct()
                 .toList();
         CasStore store = tenantStore.forTenant(resource.organizationId());
+        Map<CasDigest, byte[]> verifiedBytes = new java.util.LinkedHashMap<>();
         for (CasDigest digest : digests) {
             CasCatalog.CatalogEntry entry = catalog.findBound(
                             resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                             resource.repositoryId(), digest)
                     .orElseThrow(CasBackedArtifactStore::unavailable);
             authorizeRead(resource, digest, entry);
-            store.get(digest);
+            byte[] verified = store.get(digest);
+            verifiedBytes.put(digest, verified);
         }
 
         long retainedAt = clock.getAsLong();
@@ -191,17 +218,17 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
             throw new IllegalStateException("CAS root generation clock is invalid");
         }
         String rootOwner = snapshotRootOwner(resource, snapshotId);
-        long authoritativeGeneration = catalog.addReferenceRoots(digests.stream()
+        List<CasCatalog.ReferenceRoot> requestedRoots = digests.stream()
                 .map(digest -> new CasCatalog.ReferenceRoot(
                         resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT,
                         rootOwner, digest, retainedAt))
-                .toList());
+                .toList();
+        long authoritativeGeneration = catalog.publishDurableResourceReferenceRoots(
+                lifecycle, requestedRoots,
+                () -> verifiedBytes.forEach(store::putDurable));
 
         List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
-                        resource.organizationId()).stream()
-                .filter(root -> root.kind() == CasGarbageCollector.RootKind.SNAPSHOT)
-                .filter(root -> root.rootId().equals(rootOwner))
-                .toList();
+                resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT, rootOwner);
         Set<CasDigest> observed = active.stream().map(CasCatalog.ReferenceRoot::digest)
                 .collect(java.util.stream.Collectors.toUnmodifiableSet());
         Set<CasDigest> expected = Set.copyOf(digests);
@@ -218,13 +245,20 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                 authoritativeGeneration));
     }
 
+    /**
+     * Unconditional release is deliberately unavailable for a collector-aware store.
+     *
+     * @deprecated callers must retain the token returned by {@link #retainSnapshotGeneration}
+     * and call {@link #releaseSnapshotGeneration}; a wall-clock release can retire a newer root
+     * generation after a delayed acknowledgement.
+     */
     @Override
+    @Deprecated(forRemoval = false)
     public void releaseSnapshot(SnapshotPorts.ArtifactResourceContext resource, String snapshotId) {
         Objects.requireNonNull(resource, "resource");
         requireSnapshotId(snapshotId);
-        catalog.releaseReferenceRoot(resource.organizationId(),
-                CasGarbageCollector.RootKind.SNAPSHOT, snapshotRootOwner(resource, snapshotId),
-                clock.getAsLong());
+        throw new UnsupportedOperationException(
+                "collector-aware snapshot release requires an exact generation token");
     }
 
     @Override
@@ -237,25 +271,50 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         requireSnapshotId(retention.snapshotId());
         long generation = retention.requireGeneration(ROOT_GENERATION);
         String rootOwner = snapshotRootOwner(resource, retention.snapshotId());
-        try {
-            catalog.releaseReferenceRoot(resource.organizationId(),
-                    CasGarbageCollector.RootKind.SNAPSHOT, rootOwner, generation);
-        } catch (IllegalArgumentException delayedRelease) {
-            // A later generation is deliberately not an error for an old reconciliation attempt:
-            // it proves this token no longer owns the active root. Verify that exact condition
-            // after the catalogue's atomic rejection before treating the old release as complete.
-            List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
-                            resource.organizationId()).stream()
-                    .filter(root -> root.kind() == CasGarbageCollector.RootKind.SNAPSHOT)
-                    .filter(root -> root.rootId().equals(rootOwner))
-                    .toList();
-            if (!active.isEmpty()
-                    && active.stream().allMatch(root ->
-                    root.createdAtEpochMillis() > generation)) {
-                return;
-            }
-            throw delayedRelease;
+        long releasedAt = Math.max(clock.getAsLong(), generation);
+        if (catalog.releaseReferenceRootGeneration(
+                resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT,
+                rootOwner, generation, releasedAt)) {
+            return;
         }
+        // An absent or later generation is deliberately idempotent for an old reconciliation
+        // token. An older/mixed generation is inconsistent catalogue state and must fail closed.
+        List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
+                resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT, rootOwner);
+        if (active.isEmpty()
+                || active.stream().allMatch(root ->
+                root.createdAtEpochMillis() > generation)) {
+            return;
+        }
+        throw new IllegalStateException(
+                "snapshot root generation changed without a comparable lifecycle token");
+    }
+
+    /** Begins repository deletion and permanently fences this incarnation against new writes. */
+    public CasCatalog.ResourceLifecycle beginRepositoryRetirement(
+            SnapshotPorts.ArtifactResourceContext resource) {
+        Objects.requireNonNull(resource, "resource");
+        return catalog.beginResourceRetirement(
+                resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
+                resource.repositoryId(), clock.getAsLong());
+    }
+
+    /**
+     * Completes deletion only after every snapshot root generation for the incarnation has been
+     * reconciled.  Repository bindings are released as one catalogue transaction, never once per
+     * snapshot.
+     */
+    public CasCatalog.ResourceLifecycle finalizeRepositoryRetirement(
+            CasCatalog.ResourceLifecycle retiring) {
+        requireRepositoryLifecycle(retiring);
+        return catalog.finalizeResourceRetirement(retiring, clock.getAsLong());
+    }
+
+    /** Explicit repository-ID reuse.  A stale retirement token cannot affect the new epoch. */
+    public CasCatalog.ResourceLifecycle reactivateRepository(
+            CasCatalog.ResourceLifecycle retired) {
+        requireRepositoryLifecycle(retired);
+        return catalog.reactivateResource(retired, clock.getAsLong());
     }
 
     public static String reference(CasDigest digest) {
@@ -299,7 +358,9 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                 || entry.kind() != CasObjectModel.ObjectKind.BLOB
                 || !"snapshot".equals(entry.sourceSystem())
                 || !"1.0".equals(entry.schemaVersion())
-                || entry.sensitivity() != CasObjectModel.Sensitivity.PRIVATE_SOURCE) {
+                || entry.sensitivity() != CasObjectModel.Sensitivity.PRIVATE_SOURCE
+                || retentionStrength(entry.retentionClass())
+                    < retentionStrength(CasObjectModel.RetentionClass.STANDARD)) {
             throw unavailable();
         }
         CasAccessPolicy.Decision decision = accessPolicy.evaluateRead(
@@ -312,6 +373,23 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
             // Do not turn an authorization failure into an existence or metadata oracle.
             throw unavailable();
         }
+    }
+
+    private static void requireSnapshotRetention(CasCatalog.CatalogEntry entry) {
+        if (retentionStrength(entry.retentionClass())
+                < retentionStrength(CasObjectModel.RetentionClass.STANDARD)) {
+            throw new IllegalStateException(
+                    "snapshot artifact metadata did not reach STANDARD retention");
+        }
+    }
+
+    private static int retentionStrength(CasObjectModel.RetentionClass retentionClass) {
+        return switch (retentionClass) {
+            case EPHEMERAL -> 0;
+            case STANDARD -> 1;
+            case EVIDENCE -> 2;
+            case REGULATORY -> 3;
+        };
     }
 
     private static void requireWriteCompatible(
@@ -346,6 +424,13 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         return new SecurityException("snapshot artifact is unavailable for resource context");
     }
 
+    private static void requireRepositoryLifecycle(CasCatalog.ResourceLifecycle lifecycle) {
+        Objects.requireNonNull(lifecycle, "lifecycle");
+        if (lifecycle.resourceKind() != CasCatalog.ResourceKind.REPOSITORY) {
+            throw new IllegalArgumentException("snapshot artifact lifecycle must be REPOSITORY");
+        }
+    }
+
     /**
      * Reads at most {@code size} bytes and refuses a stream that has more. A declared size that
      * undercounts is how a hostile or broken producer turns a bounded read into an unbounded one.
@@ -375,7 +460,7 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
 
     private static void requireSnapshotId(String snapshotId) {
         if (snapshotId == null
-                || !snapshotId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")) {
+                || !snapshotId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,63}")) {
             throw new IllegalArgumentException("snapshotId must be a safe identifier");
         }
     }

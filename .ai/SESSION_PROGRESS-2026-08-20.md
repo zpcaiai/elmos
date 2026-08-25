@@ -52,8 +52,8 @@ grep -rln '"let"' native/ python_analyzer.py   →   (空)
 | #7 六个骨架引擎 | READY | 建议先回答「它们是否该独立存在」再动手 |
 | #8 R10 独立验证 0/90 | BLOCKED | 需外部方 |
 | #9 C 档 34 项 | EPIC | — |
-| #10 CAS 生产闭环 | IN-PROGRESS | 已实现 capture roots 的 generation-safe 原子批次、unresolved graph 全 sweep fail-closed、多仓 `ResourceBinding`、verified legacy/CAS dual-read、JDBC metadata 精确读回、默认关闭的 tenant-local AES-GCM、durable JDBC ActionCache index 与完整 v2 subject/envelope 绑定；本轮 focused/module/static 验证已通过，但生产调用链/共享 tier/密钥与信任重验仍未闭合 |
-| Execution Intelligence readiness | BLOCKED / NOT_CERTIFIED | 入口退出已 fail-closed；当前 280 passed / 18 skipped、Ruff 与 strict MyPy 通过，真实 `make certify` 正确返回 `BLOCK`/exit 2；本地 synthetic evidence 仍可手写且没有签名 provenance，不能作为 readiness 或生产证据 |
+| #10 CAS 生产闭环 | IN-PROGRESS | 已实现 generation-safe roots、多仓 `ResourceBinding`、verified legacy/CAS dual-read、JDBC metadata、默认关闭的 tenant-local AES-GCM、durable ActionCache index，以及后续 catalog/tiering/dispatcher/workspace/pre-V9 加固；2026-08-24 focused/live 结果只绑定当时源码，当前增量仅有 pre-V9 py_compile+unittest 18/18 与 Tiered/Compatible targeted javac PASS，其余 Maven/JUnit/live PG/MinIO 待复验；生产共享 tier、密钥、信任和完成写回仍未闭合 |
+| Execution Intelligence readiness | BLOCKED / NOT_CERTIFIED | 入口退出已 fail-closed；2026-08-20 的 280 passed / 18 skipped、Ruff、strict MyPy 与 `make certify` `BLOCK`/exit 2 是日期绑定的本地工程证据；后续 2026-08-24 结果同样不构成独立或生产证据，本地 synthetic evidence 不能提升 readiness |
 
 `certified_route_count` 仍为 **0**。
 
@@ -128,7 +128,7 @@ local/tracking/remote SHA 一致且 index empty。ArkUI/Harmony device runtime �
 - `make all` 与 CI readiness step 均传播非零退出码
 - 本地证据 JSON 与 synthetic harness 仍可由同一执行者手写，缺少内容绑定的签名 provenance、
   独立 verifier 与不可变原始证据链
-- 共享矩阵释放后已执行当前源码：入口回归 `3 passed`，全包 `280 passed, 18 skipped`，
+- 共享矩阵释放后对 2026-08-20 精确源码执行：入口回归 `3 passed`，全包 `280 passed, 18 skipped`，
   Ruff 与 strict MyPy（26 个源码文件）通过，workflow YAML 解析通过
 - 真实 `make certify` 返回 make exit **2** 并打印
   `Decision: BLOCK (pass 9 · fail 2 · not executed 0)`；没有伪造样本来抬高状态
@@ -137,9 +137,11 @@ local/tracking/remote SHA 一致且 index empty。ArkUI/Harmony device runtime �
 这项修复只保证入口把失败传播给调用者；它不证明输入 evidence 可信，也没有把 readiness
 改成通过。
 
-## 八、CAS 快照接线 — 默认关闭的本机工程切片，不是生产闭环
+## 八、CAS 快照接线 — 历史本机工程切片，不是生产闭环
 
-当前源码已把上一轮“六项全未实现”纠正为以下本地实现：
+> 本节记录 2026-08-20 精确源码与当时未闭合项；第九节及其“当前源码增量”段落是后续口径。
+
+2026-08-20 源码已把上一轮“六项全未实现”纠正为以下本地实现：
 
 1. snapshot capture 在 DB 可见前登记 archive/manifest reference roots；根集合为原子批次，
    root reactivation 使用新 generation，延迟释放不能隐藏新一代活根
@@ -153,7 +155,7 @@ local/tracking/remote SHA 一致且 index empty。ArkUI/Harmony device runtime �
    v2 subject 绑定完整 key/result/producer/risk/writer，verified receipt 不可由包外直接构造或跨
    Entry 重放，JDBC 读回会重算 envelope digest
 
-共享 223-node 矩阵释放 CAS 源码后，本轮当前源码已通过：`modules/cas` 全模块测试；catalog/GC、
+共享 223-node 矩阵释放 CAS 源码后，当时源码已通过：`modules/cas` 全模块测试；catalog/GC、
 ActionCache/encryption、snapshot/integrations、persistence migration 与 portfolio 的 focused Maven
 验证；control-plane main compile/package；task-scoped diff/XML/YAML/JSON 静态检查。普通
 control-plane testCompile 仍被任务外 ChinaDB 测试的过期构造器调用阻断，记录为
@@ -173,7 +175,7 @@ provider 验证仍为 `NOT_RUN`，不能从本地单进程测试推导。
    依最新吊销/信任状态重新验证
 6. `TenantContentAddressedCache` 的 portfolio key→digest 索引仍为进程内状态
 
-因此这条路径继续默认关闭，只能报告 `SINGLE_HOST / NOT_CERTIFIED`；当前本地测试通过不能
+因此这条路径继续默认关闭，只能报告 `SINGLE_HOST / NOT_CERTIFIED`；当时本地测试通过不能
 转换为 production、scale 或认证证据。
 
 ## 九、2026-08-24 CAS / Snapshot / EI 收口
@@ -185,9 +187,12 @@ provider 验证仍为 `NOT_RUN`，不能从本地单进程测试推导。
 - tenant envelope encryption 接入 production-facing KMS provider 端口，启动时缺 provider 即拒绝；
   本地测试只使用受控 provider，**没有生产 KMS/HSM、密钥托管或轮换证据**。
 - ActionCache 持久索引保存 detached signature bytes，并在每次命中重新执行当前 key/trust/revocation
-  判定；控制面新增显式 opt-in 绑定，只有 current-trust provider、authorizer、同步 runner 各且仅各
-  一个时才创建 `CachedActionExecutor`，否则启动失败。仓库仍没有真实生产执行服务适配器，外部
-  trust/revocation authority 也仍缺失。
+  判定；当前控制面提供默认关闭的异步 durable hit-or-enqueue dispatcher，只有 current-trust
+  revalidator、identity-bound authorizer、typed payload policy 与 durable `ExecutionJobPort` 各且
+  仅各一个时才创建，否则启动失败。仓库有 JDBC execution-job adapter，但 tenant API 尚未构造
+  ActionKey，也没有 deployment-owned production authorizer/payload-policy/独立 trust authority。
+  job port 缺按 idempotency key 的权威查询，因此不确定 enqueue 保持
+  `UNKNOWN_RECONCILIATION_REQUIRED`；completion 缺 signed ActionResult/output/provenance，不能写回缓存。
 - snapshot archive/root release 与 crash-stale PENDING reconciliation 已接入；DB lifecycle 为
   append-preserving，只有 `AVAILABLE -> ARCHIVED`。V72 新增 materialization fenced lease、心跳、
   失效接管和有界 tenant-fair `SKIP LOCKED` reconciliation queue；生产部署中的稳定 holder、全局
@@ -199,11 +204,31 @@ provider 验证仍为 `NOT_RUN`，不能从本地单进程测试推导。
 - V71 为已验签 GitHub webhook 建立无直接 runtime table 权限的 installation/repository tenant route，
   delivery/outbox 显式写 tenant；未知、失活、payload 不同的 duplicate 与跨租户资源组合均拒绝。
 
-当前实测：既有 Java focused **197/197 PASS**（34 个测试类）；本轮新增 CAS/KMS/lease/scheduler/
-caller focused **34/34 PASS**。真实 PostgreSQL 17.5 上 CAS 10/10、snapshot materialization
+当前源码在上述 2026-08-24 快照之后又增加了以下代码级闭环：
+
+- `CasCatalog` 强制 metadata+roots 单事务发布和 exact-generation release；首发多 digest 使用统一
+  generation，in-memory publish 失败会回滚 metadata/root 状态。
+- `TieredCasStore` 的 durable/flush 路径向嵌套 shared tier 传播 `putDurable`，flush 失败保留队首供
+  重试，并统一协调 local access、write-back、reclaim 与 eviction 状态。
+- portfolio cache 使用 durable `CasCatalog` `ACTION_CACHE` logical root、完整 InputManifest lookup、
+  `putDurable` 后原子发布与 generation-bound invalidate；单进程 transient miss 不撤销全局 root。
+- ActionKey v2 固定 schema-owned component order、使用结构化复合摘要且无 v1 fallback；dispatcher
+  先验证 exact key/tenant，再按序授权并对 canonical payload、secret reference 与 aggregate size
+  fail closed。
+- workspace snapshot 已 CAS-first，legacy 默认拒绝且只允许显式 verified compatibility；RLS resolver
+  精确绑定 organization/snapshot/run，materializer/archiver 对 source identity、大小、路径、link、
+  special-file、privileged metadata 与不支持的 tar extension 有界拒绝。
+- pre-V9 bootstrap apply 在连接数据库前预留 durable `OUTCOME_UNKNOWN` receipt，不写 Flyway history；
+  mutation/commit/rollback ack-loss 保持 unknown，只有确认 rollback 才能变成 `BLOCKED`。
+
+2026-08-24 精确源码实测：既有 Java focused **197/197 PASS**（34 个测试类）；当时新增
+CAS/KMS/lease/scheduler/caller focused **34/34 PASS**。真实 PostgreSQL 17.5 上 CAS 10/10、snapshot materialization
 lease/scheduler 3/3，Flyway **72/72**；外部 MinIO 的两个独立
 JVM（PID 35250/35273）完成同 digest 读回。该 MinIO 证据仍是同一宿主机，明确标记
 `SINGLE_HOST_EXTERNAL_PROCESS / LOCAL_EXECUTED_SELF_ATTESTED / NOT_CERTIFIED`。
+这些结果不覆盖上述当前源码增量。当前增量验证只有 pre-V9 `py_compile` 与 unittest
+**18/18 PASS**、Tiered/Compatible targeted `javac` **PASS**；其余 Maven/JUnit、live PostgreSQL
+与 MinIO 均为 **NOT_RUN / 待本任务 focused 复验**。
 
 EI 当前源码：`299 passed, 11 skipped`；把生产 schema 应用到独立 PostgreSQL 17 后，store
 conformance `22 passed, 0 skipped`；Ruff 与 strict MyPy（28 个源码文件）通过；安装 wheel 在源码
@@ -213,11 +238,33 @@ conformance `22 passed, 0 skipped`；Ruff 与 strict MyPy（28 个源码文件�
 （29 个源码文件）通过；没有真实独立 authority endpoint，所以 EI 运营口径继续
 `BLOCK / NOT_CERTIFIED`。
 
+### 2026-08-26 CAS / Snapshot focused closeout
+
+- JDK 21 聚焦 Maven：CAS/snapshot/integrations/portfolio 共 197 项，195 PASS、0 fail/error、2 个
+  文件系统能力假设 skip；workspace/control-plane 63/63 PASS；pre-V9 unittest 18/18 PASS。
+- GC deletion manifest 现在要求 collected/retained 唯一且互斥、reclaimed bytes 精确相等，并在物理
+  删除前用 `Math.addExact` 拒绝不可审计的溢出。
+- V76/`CasCatalog` 增加 deletion tombstone、PENDING/OUTCOME_UNKNOWN fence、统一锁序和 repository
+  incarnation lifecycle；多 snapshot 共享 binding 只有在所有映射/legacy roots 已释放后才能批量解除，
+  旧 epoch token 不能重放。该结果是本地 protocol/API，生产 repository deletion caller 仍不存在。
+- snapshot control-plane 强制 authoritative source lease，并拒绝缺 durable provenance 的历史复用行；
+  当前 JGit adapter 只有 local self-attestation，所以生产 capture 是明确 `BLOCKED`，不是 passed。
+- materializer 使用 inode-bound spool、逐次 digest/size 复验、canonical tar/PAX 筛选并覆盖 helper image
+  ENTRYPOINT/CMD；只跑了单元测试，Docker runtime/cross-host 仍 `NOT_RUN`。
+- V76 live PostgreSQL 被非本任务 `WalletMigrationContractTest` testCompile 错误阻断，不能把静态或
+  in-memory 结果写成 Flyway/live-PG 证据；MinIO、多主机、KMS/HSM、外部 trust、真实 GitHub App、
+  生产 snapshot 调度和 ArkUI 设备仍未执行。
+
+最终口径不变：CAS `SINGLE_HOST / NOT_CERTIFIED`，EI `BLOCK / NOT_CERTIFIED`，ArkUI
+`NOT_RUN / NOT_CERTIFIED`。
+
 GitHub App 证据 harness 的 17 个 unittest 与 Ruff 通过，但没有 App 私钥、真实 delivery/redelivery
 或生产 RLS 数据库；Kubernetes 多主机 probe 的 bash/static 与缺配置负例通过，但没有可用的双节点
-上下文。仍需保留的外部/生产阻塞：真实多主机共享 tier、生产 KMS/HSM、独立
-trust/revocation authority、生产 snapshot holder/scheduler/archive-GC 协调、已有 V9 前 audit row 的
-受控升级 bootstrap、真实 GitHub App/webhook、ArkUI/Harmony 设备运行。`hdc` 3.2.0b 已发现，
+上下文。仍需保留的外部/生产阻塞：真实多主机共享 tier/并发/故障切换、生产 KMS/HSM、独立
+trust/revocation authority、ActionCache tenant API/权威 enqueue reconciliation/signed completion
+write-back 与 v1→v2 rollout、生产 snapshot holder/scheduler/archive-GC 协调和跨主机/大规模 archive
+证据、已有 V9 前 audit row 的真实 PostgreSQL assess/apply/reconciliation、V69/V70/V72 在线 rollout、
+真实 GitHub App/webhook、ArkUI/Harmony 设备运行。`hdc` 3.2.0b 已发现，
 但 `hdc list targets -v` 返回 `[Empty]`，设备证据为 `NOT_RUN`。因此 CAS 仍严格是
 `SINGLE_HOST / NOT_CERTIFIED`，EI 仍是
 `BLOCK / NOT_CERTIFIED`。

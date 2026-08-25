@@ -59,6 +59,25 @@ class JdbcCasCatalogTenantScopeTest {
         assertTrue(dataSource.queryTenants.isEmpty());
     }
 
+    @Test
+    void aRollbackFailureAbortsTheConnectionWithoutRestoringAutoCommit() {
+        var dataSource = new ReusedConnectionDataSource();
+        dataSource.failQueries = true;
+        dataSource.failRollback = true;
+        var catalog = new JdbcCasCatalog(dataSource);
+
+        IllegalStateException failure = assertThrows(IllegalStateException.class,
+                () -> catalog.find("tenant-a", CasDigest.ofUtf8("payload")));
+
+        assertEquals(1, dataSource.rollbacks);
+        assertEquals(1, dataSource.aborts);
+        assertFalse(dataSource.autoCommit,
+                "an unresolved transaction must never be committed by restoring auto-commit");
+        assertEquals(0, dataSource.autoCommitRestores);
+        assertTrue(failure.getCause().getSuppressed().length >= 1,
+                "the rollback failure must remain attached to the operation failure");
+    }
+
     private static final class ReusedConnectionDataSource implements DataSource {
         private final List<String> queryTenants = new ArrayList<>();
         private boolean autoCommit = true;
@@ -66,6 +85,10 @@ class JdbcCasCatalogTenantScopeTest {
         private String localTenant;
         private int commits;
         private int rollbacks;
+        private int aborts;
+        private int autoCommitRestores;
+        private boolean failQueries;
+        private boolean failRollback;
         private final Connection connection = proxy(Connection.class, this::connectionCall);
 
         private Object connectionCall(Object ignored, java.lang.reflect.Method method, Object[] args)
@@ -74,6 +97,7 @@ class JdbcCasCatalogTenantScopeTest {
                 case "getAutoCommit" -> autoCommit;
                 case "setAutoCommit" -> {
                     autoCommit = (boolean) args[0];
+                    if (autoCommit) autoCommitRestores++;
                     yield null;
                 }
                 case "prepareStatement" -> preparedStatement((String) args[0]);
@@ -84,6 +108,12 @@ class JdbcCasCatalogTenantScopeTest {
                 }
                 case "rollback" -> {
                     rollbacks++;
+                    if (failRollback) throw new SQLException("rollback failed");
+                    localTenant = null;
+                    yield null;
+                }
+                case "abort" -> {
+                    aborts++;
                     localTenant = null;
                     yield null;
                 }
@@ -120,6 +150,7 @@ class JdbcCasCatalogTenantScopeTest {
                     if (localTenant == null) {
                         throw new SQLException("query executed without a tenant-local scope");
                     }
+                    if (failQueries) throw new SQLException("query failed");
                     queryTenants.add(localTenant);
                     yield proxy(ResultSet.class, (row, rowMethod, rowArgs) ->
                             "next".equals(rowMethod.getName())

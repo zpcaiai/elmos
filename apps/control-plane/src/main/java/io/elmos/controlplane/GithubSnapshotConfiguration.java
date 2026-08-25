@@ -207,7 +207,7 @@ class GithubSnapshotConfiguration {
                         GitHubInstallationTokenBroker.Operation.CAPTURE_SNAPSHOT);
         return new SnapshotCaptureService(credentials, source, source,
                 new DeterministicSnapshotArchiver(), artifacts, snapshots,
-                lifecycle, lifecycle, clock);
+                lifecycle, lifecycle, true, clock);
     }
 
     @Bean JdbcSnapshotLifecycleAdapter jdbcSnapshotLifecycleAdapter(

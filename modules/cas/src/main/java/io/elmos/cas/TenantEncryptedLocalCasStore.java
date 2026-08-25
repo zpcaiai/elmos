@@ -69,6 +69,11 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
         return "TENANT_NAMESPACED_CIPHERTEXT";
     }
 
+    @Override
+    public DeletionScope deletionScope() {
+        return DeletionScope.TENANT_ISOLATED;
+    }
+
     public Path root() {
         return root;
     }

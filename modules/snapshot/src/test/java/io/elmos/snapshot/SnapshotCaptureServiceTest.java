@@ -13,6 +13,49 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SnapshotCaptureServiceTest {
     @TempDir Path temp;
+
+    @Test void productionCaptureRejectsLocalSourceAttestationBeforeArtifactWrites()
+            throws Exception {
+        Files.writeString(temp.resolve("pom.xml"), "<project/>");
+        java.util.concurrent.atomic.AtomicInteger artifactWrites =
+                new java.util.concurrent.atomic.AtomicInteger();
+        AtomicBoolean stagingClosed = new AtomicBoolean();
+        RecordingReconciliations reconciliations = new RecordingReconciliations();
+        SnapshotPorts.SnapshotStore snapshotStore = new SnapshotPorts.SnapshotStore() {
+            @Override public SnapshotModel.RepositorySnapshot findReusable(
+                    String organization, String repository, String sha, int version) {
+                return null;
+            }
+            @Override public SnapshotModel.RepositorySnapshot saveAvailable(
+                    SnapshotModel.RepositorySnapshot snapshot) {
+                fail("a locally attested source must not reach persistence");
+                return snapshot;
+            }
+        };
+        var service = new SnapshotCaptureService(
+                (organization, repository, external, installation) ->
+                        new EphemeralCredential("token".toCharArray()),
+                (repository, ref, secret) ->
+                        new SnapshotPorts.ResolvedRef("a".repeat(40), "b".repeat(40)),
+                (repository, ref, secret) -> new SnapshotPorts.FetchedSource(
+                        temp, () -> stagingClosed.set(true)),
+                new DeterministicSnapshotArchiver(),
+                (resource, digest, size, content, media) -> {
+                    artifactWrites.incrementAndGet();
+                    return "cas:sha256:" + digest;
+                },
+                snapshotStore, coordinator(snapshotStore, reconciliations), reconciliations,
+                true, Clock.fixed(Instant.parse("2026-07-20T00:00:00Z"), ZoneOffset.UTC));
+
+        SecurityException rejected = assertThrows(
+                SecurityException.class, () -> service.capture(request()));
+
+        assertEquals("production snapshot requires an authoritative source lease",
+                rejected.getMessage());
+        assertEquals(0, artifactWrites.get());
+        assertTrue(stagingClosed.get());
+    }
+
     @Test void capturesImmutableCommitAndAlwaysClosesCredentialAndStaging() throws Exception {
         Files.writeString(temp.resolve("pom.xml"), "<project/>"); AtomicBoolean stagingClosed = new AtomicBoolean();
         EphemeralCredential credential = new EphemeralCredential("token".toCharArray()); List<String> stored = new ArrayList<>();
@@ -119,6 +162,46 @@ class SnapshotCaptureServiceTest {
         assertEquals(List.of(new Retention("snapshot-existing", List.of(
                 reusable.archiveArtifactRef(), reusable.manifestArtifactRef()))),
                 artifacts.retentions);
+    }
+
+    @Test void productionCaptureRejectsReusableRowsWithoutDurableLeaseProvenance() {
+        RecordingArtifacts artifacts = new RecordingArtifacts();
+        SnapshotModel.RepositorySnapshot reusable = new SnapshotModel.RepositorySnapshot(
+                "snapshot-existing", "org", "repo", "refs/heads/main",
+                "a".repeat(40), "b".repeat(40), "cas:sha256:" + "1".repeat(64),
+                "1".repeat(64), 123, "cas:sha256:" + "2".repeat(64),
+                "2".repeat(64), 1, SnapshotModel.Status.AVAILABLE,
+                Instant.parse("2026-07-19T00:00:00Z"));
+        SnapshotPorts.SnapshotStore snapshotStore = new SnapshotPorts.SnapshotStore() {
+            @Override public SnapshotModel.RepositorySnapshot findReusable(
+                    String organization, String repository, String sha, int version) {
+                return reusable;
+            }
+            @Override public SnapshotModel.RepositorySnapshot saveAvailable(
+                    SnapshotModel.RepositorySnapshot snapshot) {
+                throw new AssertionError("an unproven reusable row must not be saved again");
+            }
+        };
+        RecordingReconciliations reconciliations = new RecordingReconciliations();
+        var service = new SnapshotCaptureService(
+                (organization, repository, external, installation) ->
+                        new EphemeralCredential("token".toCharArray()),
+                (repository, ref, secret) ->
+                        new SnapshotPorts.ResolvedRef("a".repeat(40), "b".repeat(40)),
+                (repository, ref, secret) -> {
+                    throw new AssertionError("reuse rejection must occur before source fetch");
+                },
+                new DeterministicSnapshotArchiver(), artifacts, snapshotStore,
+                coordinator(snapshotStore, reconciliations), reconciliations,
+                true, Clock.fixed(Instant.parse("2026-07-20T00:00:00Z"), ZoneOffset.UTC));
+
+        SecurityException rejected = assertThrows(
+                SecurityException.class, () -> service.capture(request()));
+
+        assertEquals("reusable snapshot lacks authoritative source lease provenance",
+                rejected.getMessage());
+        assertEquals(0, artifacts.putCount);
+        assertTrue(artifacts.retentions.isEmpty());
     }
 
     @Test void concurrentWinnerIsRetainedBeforeTheProvisionalRootIsReleased() throws Exception {

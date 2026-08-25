@@ -126,13 +126,14 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
 
     @Override
     public Optional<ActionCache.Entry> find(ActionKey key) {
-        Objects.requireNonNull(key, "key");
+        ActionKeyBuilder.verifyCanonical(key);
         return inTenantTransaction(key.tenantId(), connection -> find(connection, key));
     }
 
     @Override
     public void store(ActionCache.Entry entry) {
         Objects.requireNonNull(entry, "entry");
+        ActionKeyBuilder.verifyCanonical(entry.key());
         inTenantTransaction(entry.key().tenantId(), connection -> {
             int changed;
             try (PreparedStatement statement = connection.prepareStatement(UPSERT)) {
@@ -153,6 +154,7 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
 
     @Override
     public boolean invalidate(ActionKey key, String reason, long atEpochMillis) {
+        ActionKeyBuilder.verifyCanonical(key);
         String detail = boundedReason(reason);
         return inTenantTransaction(key.tenantId(), connection -> {
             recordInvalidation(connection, key.tenantId(), key.digest().hex(), detail,
@@ -317,6 +319,7 @@ public final class JdbcActionCacheIndex implements ActionCacheIndex {
                 digest(rows, "action_key_hex", "action_key_bytes"), tenant,
                 pairedMap(textArray(rows, "action_component_names"),
                         textArray(rows, "action_component_values"), "action components"));
+        ActionKeyBuilder.verifyCanonical(key);
 
         Optional<CasDigest> stdout = optionalDigest(rows, "stdout_digest_hex", "stdout_digest_bytes");
         Optional<CasDigest> stderr = optionalDigest(rows, "stderr_digest_hex", "stderr_digest_bytes");

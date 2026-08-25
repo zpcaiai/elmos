@@ -562,6 +562,7 @@ public final class ActionCache {
      */
     public Optional<Entry> put(ActionKey key, ActionResultRecord result, CasAccessPolicy.ProducerContext producer,
                                WriterIdentity writer, RiskTier riskTier, Optional<ResultAttestation> attestation) {
+        ActionKeyBuilder.verifyCanonical(key);
         if (!writer.attested()) {
             throw new CasExceptions.CasAccessDeniedException("WRITER_NOT_ATTESTED", writer.serviceId());
         }
@@ -644,6 +645,7 @@ public final class ActionCache {
     }
 
     public Lookup get(ActionKey key, CasAccessPolicy.ReaderContext reader, boolean bypassRequested) {
+        ActionKeyBuilder.verifyCanonical(key);
         try (CasTelemetry.Span span = telemetry.startSpan("cas.action_cache.lookup",
                 CasTelemetry.SpanKind.INTERNAL, Optional.empty())) {
             span.attribute("cas.action_key", key.shortForm());
@@ -675,6 +677,11 @@ public final class ActionCache {
             return Lookup.miss("NO_ENTRY");
         }
         Entry entry = indexed.orElseThrow();
+        ActionKeyBuilder.verifyCanonical(entry.key());
+        if (!entry.key().equals(key)) {
+            throw new CasExceptions.CasAccessDeniedException(
+                    "ACTION_KEY_METADATA_MISMATCH", key.shortForm());
+        }
         if (quarantinedNodes.contains(entry.writer().nodeId())
                 || index.isNodeQuarantined(key.tenantId(), entry.writer().nodeId())) {
             index.invalidate(key, "PRODUCER_NODE_QUARANTINED", clock.getAsLong());
@@ -763,11 +770,17 @@ public final class ActionCache {
      * so the node is quarantined (ELMOS-CAS-031) rather than just the one entry dropped.
      */
     public boolean confirmRecompute(ActionKey key, CasDigest observedOutputManifestDigest) {
+        ActionKeyBuilder.verifyCanonical(key);
         Optional<Entry> indexed = index.find(key);
         if (indexed.isEmpty()) {
             return true;
         }
         Entry entry = indexed.orElseThrow();
+        ActionKeyBuilder.verifyCanonical(entry.key());
+        if (!entry.key().equals(key)) {
+            throw new CasExceptions.CasAccessDeniedException(
+                    "ACTION_KEY_METADATA_MISMATCH", key.shortForm());
+        }
         if (entry.result().outputManifestDigest().equals(observedOutputManifestDigest)) {
             return true;
         }
@@ -782,6 +795,7 @@ public final class ActionCache {
     }
 
     public void invalidate(ActionKey key, String reason) {
+        ActionKeyBuilder.verifyCanonical(key);
         if (index.invalidate(key, reason, clock.getAsLong())) {
             processEntries.remove(key.digest());
             invalidations.add(new Invalidation(key.digest(), reason, clock.getAsLong()));

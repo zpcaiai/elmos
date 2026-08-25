@@ -44,7 +44,7 @@ final class DockerWorkspaceProvisioner implements WorkspaceProvisioningPort {
             String workspaceVolume = createVolume("elmos-workspace-" + suffix, labels(request, "workspace"));
             String artifactVolume = createVolume("elmos-artifacts-" + suffix, labels(request, "artifacts"));
             String cacheVolume = createVolume("elmos-m2-" + suffix, labels(request, "maven-cache"));
-            snapshots.materialize(request.snapshotId(), snapshotVolume, workspaceVolume);
+            snapshots.materialize(request, snapshotVolume, workspaceVolume);
             String networkName = "elmos-net-" + suffix;
             String networkId = docker.createNetworkCmd().withName(networkName).withInternal(true).withLabels(labels(request, "network")).exec().getId();
             WorkspaceInfrastructurePorts.NetworkBinding binding = networkPolicies.apply(request, networkId, networkName);

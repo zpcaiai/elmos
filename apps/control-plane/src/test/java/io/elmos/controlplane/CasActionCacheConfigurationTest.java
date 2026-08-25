@@ -2,11 +2,10 @@ package io.elmos.controlplane;
 
 import io.elmos.cas.ActionCache;
 import io.elmos.cas.ActionCacheIndex;
-import io.elmos.cas.ActionResultRecord;
-import io.elmos.cas.CachedActionExecutor;
 import io.elmos.cas.InMemoryCasStore;
 import io.elmos.cas.JdbcActionCacheIndex;
 import io.elmos.cas.TenantCasStore;
+import io.elmos.workflow.ExecutionJobPort;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
@@ -42,10 +41,12 @@ class CasActionCacheConfigurationTest {
                             CasActionCacheConfiguration.ActionCacheStatus.class);
                     assertEquals("JDBC_INDEX_CONFIGURED_OBJECT_TIER_DEPENDENT",
                             status.crossInstanceLookup());
-                    assertEquals("TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE",
+                    assertEquals("ASYNC_DISPATCHER_AVAILABLE_NOT_BOUND_TO_TENANT_API",
                             status.executionCaller());
                     assertEquals("FAIL_CLOSED_CURRENT_TRUST_NOT_CONFIGURED",
                             status.trustDecisionReadback());
+                    assertEquals("NOT_BOUND_RUNNER_COMPLETION_LACKS_SIGNED_ACTION_RESULT",
+                            status.completionWriteback());
                     assertEquals("GLOBAL_DIGEST", status.physicalNamespace());
                     assertEquals("NOT_CONFIGURED", status.atRestProtection());
                     assertFalse(status.productionCertified());
@@ -56,10 +57,12 @@ class CasActionCacheConfigurationTest {
                     assertEquals("JDBC_POSTGRESQL", info.get("index"));
                     assertEquals("JDBC_INDEX_CONFIGURED_OBJECT_TIER_DEPENDENT",
                             info.get("crossInstanceLookup"));
-                    assertEquals("TYPED_CALLER_AVAILABLE_NOT_BOUND_TO_EXECUTION_SERVICE",
+                    assertEquals("ASYNC_DISPATCHER_AVAILABLE_NOT_BOUND_TO_TENANT_API",
                             info.get("executionCaller"));
                     assertEquals("FAIL_CLOSED_CURRENT_TRUST_NOT_CONFIGURED",
                             info.get("trustDecisionReadback"));
+                    assertEquals("NOT_BOUND_RUNNER_COMPLETION_LACKS_SIGNED_ACTION_RESULT",
+                            info.get("completionWriteback"));
                     assertEquals("GLOBAL_DIGEST", info.get("physicalNamespace"));
                     assertEquals("NOT_CONFIGURED", info.get("atRestProtection"));
                     assertEquals("NOT_CERTIFIED", info.get("productionCertification"));
@@ -110,6 +113,9 @@ class CasActionCacheConfigurationTest {
                 .withBean(Clock.class, Clock::systemUTC)
                 .withBean(TenantCasStore.class,
                         () -> TenantCasStore.global(new InMemoryCasStore("action-output")))
+                .withBean(ExecutionJobPort.class, () -> mock(ExecutionJobPort.class))
+                .withBean(ActionCacheExecutionJobDispatcher.Authorizer.class,
+                        () -> CasActionCacheConfigurationTest::allow)
                 .withPropertyValues(
                         "elmos.action-cache.enabled=true",
                         "elmos.action-cache.execution-caller-enabled=true")
@@ -122,7 +128,7 @@ class CasActionCacheConfigurationTest {
                 });
     }
 
-    @Test void executionCallerBindsOnlyWithExactTrustAuthorizationAndRunnerPorts() {
+    @Test void executionCallerBindsOnlyWithExactTrustAuthorizationAndDurableJobPort() {
         new ApplicationContextRunner()
                 .withUserConfiguration(CasActionCacheConfiguration.class)
                 .withBean(DataSource.class, () -> mock(DataSource.class))
@@ -131,24 +137,91 @@ class CasActionCacheConfigurationTest {
                         () -> TenantCasStore.global(new InMemoryCasStore("action-output")))
                 .withBean(ActionCache.TrustRevalidator.class,
                         CasActionCacheConfigurationTest::currentTrust)
-                .withBean(CachedActionExecutor.Authorizer.class,
-                        () -> (request, operation) ->
-                                CachedActionExecutor.AuthorizationDecision.allow(
-                                        "TEST_" + operation.name()))
-                .withBean(CachedActionExecutor.ActionRunner.class,
-                        () -> request -> mock(ActionResultRecord.class))
+                .withBean(ActionCacheExecutionJobDispatcher.Authorizer.class,
+                        () -> CasActionCacheConfigurationTest::allow)
+                .withBean(ActionCacheExecutionJobDispatcher.PayloadPolicy.class,
+                        CasActionCacheConfigurationTest::payloadPolicy)
+                .withBean(ExecutionJobPort.class, () -> mock(ExecutionJobPort.class))
                 .withPropertyValues(
                         "elmos.action-cache.enabled=true",
                         "elmos.action-cache.execution-caller-enabled=true")
                 .run(context -> {
-                    assertNotNull(context.getBean(CachedActionExecutor.class));
-                    assertEquals("OPT_IN_CALLER_BOUND_TO_EXPLICIT_AUTHORIZER_AND_RUNNER",
+                    assertNotNull(context.getBean(ActionCacheExecutionJobDispatcher.class));
+                    assertEquals("OPT_IN_DURABLE_HIT_OR_ENQUEUE_NOT_BOUND_TO_TENANT_API",
                             context.getBean(CasActionCacheConfiguration.ActionCacheStatus.class)
                                     .executionCaller());
                     assertFalse(context.getBean(
                             CasActionCacheConfiguration.ActionCacheStatus.class)
                             .productionCertified());
                 });
+    }
+
+    @Test void executionCallerFailsClosedWithoutExactlyOnePayloadPolicy() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(CasActionCacheConfiguration.class)
+                .withBean(DataSource.class, () -> mock(DataSource.class))
+                .withBean(Clock.class, Clock::systemUTC)
+                .withBean(TenantCasStore.class,
+                        () -> TenantCasStore.global(new InMemoryCasStore("action-output")))
+                .withBean(ActionCache.TrustRevalidator.class,
+                        CasActionCacheConfigurationTest::currentTrust)
+                .withBean(ActionCacheExecutionJobDispatcher.Authorizer.class,
+                        () -> CasActionCacheConfigurationTest::allow)
+                .withBean(ExecutionJobPort.class, () -> mock(ExecutionJobPort.class))
+                .withPropertyValues(
+                        "elmos.action-cache.enabled=true",
+                        "elmos.action-cache.execution-caller-enabled=true")
+                .run(context -> {
+                    assertNotNull(context.getStartupFailure());
+                    assertEquals(
+                            "exactly one ActionCache dispatch payload policy is required when "
+                                    + "the ActionCache execution caller is enabled",
+                            rootCause(context.getStartupFailure()).getMessage());
+                });
+    }
+
+    @Test void executionCallerRejectsPersistedDecisionCompatibilityAsCurrentTrust() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(CasActionCacheConfiguration.class)
+                .withBean(DataSource.class, () -> mock(DataSource.class))
+                .withBean(Clock.class, Clock::systemUTC)
+                .withBean(TenantCasStore.class,
+                        () -> TenantCasStore.global(new InMemoryCasStore("action-output")))
+                .withBean(ActionCache.TrustRevalidator.class,
+                        ActionCache.TrustRevalidator::persistedDecisionCompatibility)
+                .withBean(ActionCacheExecutionJobDispatcher.Authorizer.class,
+                        () -> CasActionCacheConfigurationTest::allow)
+                .withBean(ActionCacheExecutionJobDispatcher.PayloadPolicy.class,
+                        CasActionCacheConfigurationTest::payloadPolicy)
+                .withBean(ExecutionJobPort.class, () -> mock(ExecutionJobPort.class))
+                .withPropertyValues(
+                        "elmos.action-cache.enabled=true",
+                        "elmos.action-cache.execution-caller-enabled=true")
+                .run(context -> {
+                    assertNotNull(context.getStartupFailure());
+                    assertEquals(
+                            "ActionCache execution caller requires a real current trust "
+                                    + "revalidator; compatibility and fail-closed placeholder "
+                                    + "modes are not executable",
+                            rootCause(context.getStartupFailure()).getMessage());
+                });
+    }
+
+    private static ActionCacheExecutionJobDispatcher.AuthorizationDecision allow(
+            ActionCacheExecutionJobDispatcher.Request request,
+            ActionCacheExecutionJobDispatcher.Operation operation
+    ) {
+        return ActionCacheExecutionJobDispatcher.AuthorizationDecision.allow(
+                "TEST_" + operation.name(),
+                new ActionCacheExecutionJobDispatcher.AuthorizationGrant(
+                        request.reader().tenantId(), request.dispatch().actorId(),
+                        request.key().components().get("project_id"),
+                        "decision-test", "policy-v1"));
+    }
+
+    private static ActionCacheExecutionJobDispatcher.PayloadPolicy payloadPolicy() {
+        return context -> new ActionCacheExecutionJobDispatcher.SanitizedPayload(
+                "TEST_PAYLOAD_ALLOWLIST", "v1", context.request().dispatch().payload());
     }
 
     private static Throwable rootCause(Throwable failure) {

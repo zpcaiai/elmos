@@ -989,7 +989,7 @@ external, customer, or certification evidence.
 
 ### Execution Intelligence fail-closed entrypoints
 
-Current-source local engineering evidence:
+2026-08-20 exact-source local engineering evidence:
 
 ```text
 tests/test_fail_closed_entrypoints.py                         3 passed
@@ -1016,9 +1016,11 @@ provenance plus an independent verifier. The only supported readiness posture
 is `BLOCK / NOT_CERTIFIED`; these local counts are not production, customer,
 external, or certification evidence.
 
-### Snapshot local CAS engineering slice
+### Snapshot local CAS engineering slice — historical pre-closure source
 
-Current-source local engineering evidence:
+The commands and report counts in this subsection are retained as exact-source local engineering
+evidence from the 2026-08-20/22 checkpoint. They do not qualify later CAS, ActionCache, workspace,
+snapshot or pre-V9 changes.
 
 ```text
 mvn -q -pl modules/cas -am \
@@ -1061,7 +1063,7 @@ task-scoped diff/XML/YAML/JSON static validation
   PASS
 ```
 
-The current 2026-08-22 Surefire report window contains 33 suites / 276 tests,
+The 2026-08-22 Surefire report window contains 33 suites / 276 tests,
 with 0 failures, 0 errors, and 0 skips: CAS 230, snapshot 8, integrations 20,
 persistence migration contracts 11, and portfolio 7. These report files are
 local engineering evidence and do not include live PostgreSQL or a shared
@@ -1072,7 +1074,7 @@ unrelated ChinaDB changes left `DatabaseDataControllerTest` calling an obsolete
 constructor, so testCompile exited 1. This is recorded as
 `BLOCKED_BY_UNRELATED_TEST_COMPILE`, not as a control-plane module pass.
 
-The current source corrects the old “six blockers all unimplemented” statement:
+That source snapshot corrected the old “six blockers all unimplemented” statement:
 
 - snapshot capture roots are an atomic generation-safe set; unresolved full
   reference graphs still block a full sweep fail-closed
@@ -1087,18 +1089,23 @@ The current source corrects the old “six blockers all unimplemented” stateme
 
 ActionCache v2 signature subject now binds the complete key/result/producer/risk/writer,
 and JDBC readback recomputes its envelope digest; its focused negative tests passed.
-Live PostgreSQL, Docker/provider validation, and a real two-process shared object tier
-remain **NOT_RUN**; local in-memory/JDBC contract tests do not substitute for them.
+At that checkpoint, live PostgreSQL, Docker/provider validation, and a real two-process shared object
+tier remained **NOT_RUN**; the later dated evidence below supersedes only the exact items it ran.
 
-Unresolved production boundaries are the snapshot delete/release caller,
+Unresolved production boundaries recorded at that checkpoint were the snapshot delete/release caller,
 commit-unknown root reconciliation (the collector itself now blocks the whole sweep on any
 unresolved graph), the post-load legal-hold versus object-store-delete race, tenant-unscoped legacy reads, the
 workspace-service legacy-only materializer, production KMS/key rotation, live
 PostgreSQL and real shared-tier evidence, ActionCache execution wiring and trust
 revalidation, and the portfolio process-local key→digest index. The configured
-mode remains default-off `SINGLE_HOST / NOT_CERTIFIED`.
+mode remained default-off `SINGLE_HOST / NOT_CERTIFIED`. This is a historical backlog snapshot, not
+the current implementation inventory.
 
-### 2026-08-24 CAS / Snapshot / EI focused and live closure
+### 2026-08-24 CAS / Snapshot / EI focused and live closure — historical exact-source evidence
+
+These results remain valid for their recorded 2026-08-24 source and disposable environment. They
+are not regression results for later catalog/tiering, dispatcher, workspace materializer, archiver
+or pre-V9 receipt changes.
 
 ```text
 Java focused regression (34 classes)                     197 passed, 0 failed/error/skipped
@@ -1131,7 +1138,7 @@ KMS/HSM, external trust and revocation, global snapshot reconciliation, real Git
 and ArkUI device evidence remain unexecuted. Final posture stays CAS
 `SINGLE_HOST / NOT_CERTIFIED`, EI `BLOCK / NOT_CERTIFIED`.
 
-### 2026-08-24 post-extension final-current verification
+### 2026-08-24 post-extension exact-source verification
 
 ```text
 CAS/KMS/lease/scheduler/caller focused Maven             34 passed, 0 failed/error/skipped
@@ -1146,10 +1153,15 @@ Kubernetes multi-host missing-config negative control    expected exit 2, no clu
 ArkUI hdc version / target inventory                      3.2.0b / [Empty]
 ```
 
-The ActionCache application binding is now an explicit opt-in seam. Enabling it requires exactly
-one current-trust revalidator, one authorizer and one synchronous action runner; missing or
-ambiguous ports fail application startup. No repository production execution service supplies
-those three deployment-owned ports yet, so this is not a production caller execution result.
+The ActionCache application binding is now an explicit opt-in asynchronous seam. Enabling the
+durable hit-or-enqueue dispatcher requires exactly one current-trust revalidator, one identity-bound
+authorizer, one typed payload policy and one durable `ExecutionJobPort`; missing or ambiguous ports
+fail application startup. A JDBC execution-job adapter exists, but the dispatcher is not bound to
+the tenant API and no deployment-owned production authorizer, payload policy or independently
+governed trust/revocation authority is supplied. The job port cannot authoritatively look up an
+idempotency key, so enqueue acknowledgement loss and conflicts remain
+`UNKNOWN_RECONCILIATION_REQUIRED` rather than becoming a retry success. Runner completion lacks a
+signed `ActionResult`, output manifest and provenance, so completion write-back remains absent.
 
 V72 adds fenced materialization leases and a bounded, tenant-fair PostgreSQL reconciliation queue.
 The live tests exercised acquisition, renewal/fencing, contention, recovery and queue claiming on a
@@ -1173,5 +1185,69 @@ failed before any cluster call. No usable two-node context exists on this host. 
 installed, but `hdc list targets -v` returned `[Empty]`, so device/runtime evidence remains
 `NOT_RUN / NOT_CERTIFIED`.
 
+### Current-source delta after the 2026-08-24 evidence snapshot
+
+Implemented code now includes mandatory atomic metadata-plus-root catalog publication, exact
+generation release, unified first-publication generations and in-memory rollback; nested-tier
+durable propagation, retry-preserving flush and coordinated TieredCasStore state; durable portfolio
+`ACTION_CACHE` logical roots; canonical ActionKey v2 verification and the bounded asynchronous
+dispatcher; CAS-first/RLS-bound workspace snapshot resolution and hardened bounded tar
+materialization/archiving; and the fail-closed pre-V9 bootstrap receipt state machine.
+
+The pre-V9 apply path reserves a durable `OUTCOME_UNKNOWN` receipt before connecting, never writes
+Flyway history, preserves mutation/commit/rollback acknowledgement loss as unknown and emits
+`BLOCKED` only after rollback is confirmed. Current focused evidence is limited to:
+
+```text
+pre-V9 bootstrap py_compile                              PASS
+pre-V9 bootstrap unittest                                18/18 PASS
+Tiered/Compatible targeted javac                         PASS
+current-delta Maven/JUnit                                NOT_RUN; pending focused reverification
+current-delta live PostgreSQL/MinIO                      NOT_RUN; pending focused reverification
+```
+
+The historical 197/197, 34/34, PostgreSQL and same-host MinIO results above must not be relabelled
+as validation of this current delta. True multi-host shared-tier/failover/concurrency, production
+KMS/HSM, independent trust/revocation, ActionCache tenant-API and signed completion write-back,
+production snapshot holder/election/archive-GC coordination, real historical pre-V9 PostgreSQL
+apply/reconciliation, real GitHub App traffic and ArkUI device execution all remain unexecuted.
+
 Final posture is unchanged: CAS `SINGLE_HOST / NOT_CERTIFIED`, EI
 `BLOCK / NOT_CERTIFIED`, ArkUI `NOT_RUN / NOT_CERTIFIED`.
+
+### 2026-08-26 current-source focused closeout
+
+All Java commands below used JDK 21. The initial shell-default JDK 25 attempt was rejected by the
+repository Maven enforcer before test execution and is not a source failure.
+
+```text
+CAS + snapshot + integrations + portfolio focused Maven   197 tests
+  passed                                                   195
+  failed / errors                                           0 / 0
+  skipped                                                   2
+workspace + control-plane focused Maven                    63/63 PASS
+pre-V9 bootstrap unittest                                  18/18 PASS
+task-owned git diff --check                                PASS
+V76 JdbcCasCatalogLiveTest                                 NOT_RUN
+MinIO / Docker runtime / multi-host                        NOT_RUN
+```
+
+The two skipped tests are `emittedSymlinkHeaderMatchesTheExactCanonicalProfile` and
+`symlinkSwapAndRestoreCannotSubstituteTheAnchoredLinkTarget`; the current filesystem cannot create
+the stable hard-link anchor for a symlink inode required by those fixtures. They remain explicit
+skips and are not described as passed.
+
+The first app reactor attempt was stopped before target execution by an unrelated
+`modules/persistence/.../WalletMigrationContractTest.java` test-compilation error. After compiling
+current main artifacts without test compilation and resolving the exact `commons-io:2.21.0`
+dependency, the two target app modules ran their focused classes directly and passed 63/63. The
+same unrelated persistence test-compile error prevents the V76 live PostgreSQL class from running,
+so V76/Flyway/live-PG remains `NOT_RUN`.
+
+Local repository-lifecycle tests cover shared bindings across snapshots, RETIRING write fences,
+exact-generation release, batch binding release and stale-token replay rejection. No production
+repository-deletion caller invokes those APIs. Production snapshot capture also deliberately blocks
+because JGit provides only `LOCAL_SELF_ATTESTED` source assurance and existing snapshot rows lack
+durable authoritative-lease provenance. These fail-closed outcomes preserve, rather than raise,
+the final status: CAS `SINGLE_HOST / NOT_CERTIFIED`, EI `BLOCK / NOT_CERTIFIED`, ArkUI
+`NOT_RUN / NOT_CERTIFIED`.

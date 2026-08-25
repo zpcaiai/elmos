@@ -256,7 +256,7 @@ runtime evidence remains `NOT_RUN`; this result does not change certification.
 - This protects only the command exit boundary. The local JSON/synthetic harness
   can still be authored by the same executor and lacks digest-bound signed
   provenance plus an independent verifier.
-- Current-source local evidence: entrypoint regression `3 passed`; package
+- 2026-08-20 exact-source local evidence: entrypoint regression `3 passed`; package
   tests `280 passed / 18 skipped`; Ruff, strict MyPy over 26 source files, and
   workflow YAML parsing passed. A fresh real `make certify` returned exit 2 and
   `BLOCK (pass 9 / fail 2 / not executed 0)` as required by the evidence floor.
@@ -265,10 +265,10 @@ runtime evidence remains `NOT_RUN`; this result does not change certification.
 
 ### Snapshot CAS slice
 
-> Historical pre-closure baseline. The final-current results and corrected posture are recorded in
-> the 2026-08-24 correction below; `NOT_RUN` statements in this subsection are not current.
+> Historical pre-closure baseline. The dated 2026-08-24 evidence and the later current-source delta
+> are recorded below; `NOT_RUN` statements in this subsection are not current.
 
-- Current source implements capture-time archive/manifest roots as one atomic,
+- That historical source implemented capture-time archive/manifest roots as one atomic,
   generation-safe set; resource bindings separate immutable object metadata
   from repository/project ownership; and verified dual-read accepts legacy
   `cas:sha256:` and sized `cas://sha256/...` references under explicit modes.
@@ -281,7 +281,7 @@ runtime evidence remains `NOT_RUN`; this result does not change certification.
   recompute its envelope digest. Current focused negative tests passed;
   persisted trust decisions are still not cryptographically reverified against
   signature bytes, key policy or current revocation state on lookup.
-- Current-source local evidence: full `modules/cas` tests and focused
+- Evidence bound to that historical source: full `modules/cas` tests and focused
   catalog/GC, ActionCache/encryption, snapshot/integrations, persistence
   migration and portfolio tests passed; control-plane main compile/package and
   task-scoped static checks passed. The ordinary control-plane testCompile is
@@ -308,9 +308,14 @@ external verification, customer evidence, production evidence, or
 
 ### 2026-08-24 CAS / Snapshot / EI evidence correction
 
+The rows below are retained as exact-source, exact-environment evidence from
+2026-08-24. Later CAS/catalog, tiering, ActionKey/dispatcher, workspace materialization,
+snapshot archiving and pre-V9 bootstrap changes are not covered by these Maven, JUnit,
+PostgreSQL or MinIO runs and must not be described as current-source regression results.
+
 | Evidence | Result | Supported claim |
 | --- | --- | --- |
-| Java focused Maven scope | 197/197 PASS across 34 classes | current task-owned Java contracts compile and pass locally |
+| Java focused Maven scope | 197/197 PASS across 34 classes | the 2026-08-24 task-owned Java contracts compiled and passed locally; this is historical exact-source evidence |
 | PostgreSQL 17 / Flyway | V72 reached; 72/72 validated and applied in both final live runs | fresh-schema migration is executable locally; not a historical production upgrade proof |
 | CAS JDBC live | 10/10 PASS, no skip | catalog metadata, roots, durable ActionCache and current-trust invalidation work on a real local PostgreSQL |
 | Snapshot/RLS/webhook live | 5/5 PASS, no skip | tenant context resets, immutable lifecycle, stale reconciliation and signed-webhook tenant routing work on a real local PostgreSQL |
@@ -329,21 +334,85 @@ MinIO raw receipt directory:
 `SINGLE_HOST_EXTERNAL_PROCESS`, `LOCAL_EXECUTED_SELF_ATTESTED`, and `NOT_CERTIFIED`.
 
 The local KMS tests validate provider binding, AAD, zeroization and startup refusal when no provider
-exists; they do not exercise a production KMS/HSM. ActionCache now has an opt-in application bean
-that refuses to start unless exactly one current-trust provider, authorizer and synchronous runner
-are supplied. The repository supplies no real production execution adapter for that seam, and the
-local detached-signature/live revalidation evidence does not supply an independently governed
-trust/revocation source.
+exists; they do not exercise a production KMS/HSM. ActionCache now has an opt-in asynchronous
+durable hit-or-enqueue dispatcher that refuses to start unless exactly one current-trust
+revalidator, identity-bound authorizer, typed payload policy and durable `ExecutionJobPort` are
+supplied. The repository does contain a JDBC execution-job adapter, but the dispatcher is not bound
+to the tenant API and no deployment-owned production authorizer, payload policy or independently
+governed trust/revocation authority is supplied. The job port also has no authoritative lookup by
+idempotency key, so an uncertain enqueue remains `UNKNOWN_RECONCILIATION_REQUIRED` and is not
+blindly retried. Runner completion lacks a signed `ActionResult`, output manifest and provenance,
+so completion write-back is intentionally absent.
 
 V72 provides fenced materialization leases and a bounded global reconciliation queue, with exact
 runtime-role function grants. Its disposable PostgreSQL tests do not establish deployment of stable
 holder identities, scheduler election, production archive/GC participation or cross-host behavior.
 The GitHub evidence collector has fail-closed local tests, but no real App or delivery was used. A
 fresh 72-migration database does not cure the pre-existing V9 ordering hazard for a database containing
-historical `audit_events`; that needs a controlled pre-V9 bootstrap, not Flyway `repair`.
+historical `audit_events`. The current pre-V9 bootstrap is default-read-only, requires a durable
+pending receipt before an apply-mode database connection, never writes Flyway history, and preserves
+mutation/commit/rollback acknowledgement loss as `OUTCOME_UNKNOWN`; only a confirmed rollback may
+produce `BLOCKED`. `py_compile` and its focused unittest suite passed 18/18, but no real historical
+PostgreSQL assess/apply run has been executed.
+
+#### Current post-2026-08-24 source delta
+
+Current code adds the following bounded engineering capabilities:
+
+- `CasCatalog` requires atomic metadata-plus-root publication and exact-generation release;
+  JDBC uses a single tenant transaction and logical-root lock, while the in-memory implementation
+  rolls metadata and roots back if publication fails.
+- `TieredCasStore` propagates durable writes through nested tiers, retains a failed flush item for
+  retry, and coordinates local access, write-back, reclaim and eviction state under locks.
+- portfolio ActionCache mappings use durable `CasCatalog` `ACTION_CACHE` logical roots, publish only
+  after `putDurable`, support complete-manifest lookup and generation-bound invalidation, and do not
+  revoke a global root merely because one process misses its transient tier.
+- ActionKey v2 uses schema-owned component order and structured compound digests with no v1 fallback;
+  the asynchronous dispatcher performs exact-key and tenant checks before ordered authorization,
+  bounds canonical payloads, persists a request digest and fails closed on uncertain queue outcomes.
+- workspace snapshot reads are CAS-first; legacy compatibility is default-denied and, when explicitly
+  enabled, remains digest-verified. The RLS resolver binds organization/snapshot/run in a fresh
+  transaction. Materialization uses a bounded private no-follow spool and rejects traversal,
+  escaping links, special files, privileged metadata and unsupported tar extensions. The deterministic
+  archiver applies no-follow identity and node/file bounds.
+
+The validation boundary for this current delta is intentionally narrow: pre-V9 `py_compile` plus
+unittest **18/18 PASS**, and targeted `javac` for the Tiered/Compatible slices **PASS**. Current-delta
+Maven/JUnit, live PostgreSQL and MinIO validation are **NOT_RUN** and await this task's focused
+reverification. The 2026-08-24 results above cannot be reused to close that gap.
 
 Supported status therefore remains exactly:
 
 - CAS: `SINGLE_HOST / NOT_CERTIFIED`
 - Execution Intelligence: `BLOCK / NOT_CERTIFIED`
 - ArkUI/Harmony device: `NOT_RUN / NOT_CERTIFIED`
+
+### 2026-08-26 current-source focused revalidation
+
+The current CAS/snapshot source was revalidated with JDK 21 using only the task-owned focused
+classes. The CAS, snapshot, integrations and portfolio set reported 197 tests, 0 failures, 0
+errors and 2 explicit filesystem-assumption skips: 195 executed tests passed. Both skips are
+symlink-inode hard-link-anchor cases on the current filesystem; they are not counted as passed.
+The workspace/control-plane set passed 63/63, and the pre-V9 bootstrap unittest remained 18/18.
+
+This source now has a local repository resource-lifecycle protocol: epoch-bound ACTIVE -> RETIRING
+-> RETIRED transitions, durable root-to-resource edges, a retirement write fence, exact-generation
+root release, and batch binding release only after all mapped and legacy roots are inactive. It is
+an API/protocol result, not a production deletion result: no control-plane, webhook or repository
+deletion caller invokes repository retirement. Production resource reclamation therefore remains
+blocked.
+
+V76 adds atomic deletion tombstones and lifecycle fences, including one tenant -> resource ->
+sorted-object -> logical-root lock order. Its live PostgreSQL test did not run: the persistence
+module test compilation is currently blocked by the unrelated `WalletMigrationContractTest` lambda
+compile error. No V76/Flyway/live-PostgreSQL claim is made.
+
+Production snapshot capture is intentionally fail closed. The control-plane requires an
+authoritative fenced source lease, rejects legacy reusable rows without persisted lease provenance,
+and the only JGit adapter currently supplies a local self-attestation. Therefore both new and reuse
+production capture paths are `BLOCKED`, not passed. Docker materialization unit tests verify bounded
+spooling, canonical tar/PAX validation and an explicit helper ENTRYPOINT/CMD, but no Docker runtime
+or cross-host materialization was executed.
+
+The final status remains exactly CAS `SINGLE_HOST / NOT_CERTIFIED`, Execution Intelligence
+`BLOCK / NOT_CERTIFIED`, and ArkUI/Harmony `NOT_RUN / NOT_CERTIFIED`.

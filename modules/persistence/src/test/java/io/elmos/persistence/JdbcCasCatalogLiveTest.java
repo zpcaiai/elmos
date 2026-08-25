@@ -11,6 +11,7 @@ import io.elmos.cas.CasDigest;
 import io.elmos.cas.CasGarbageCollector;
 import io.elmos.cas.CasMetrics;
 import io.elmos.cas.CasObjectModel;
+import io.elmos.cas.CasStore;
 import io.elmos.cas.CasTelemetry;
 import io.elmos.cas.InMemoryCasStore;
 import io.elmos.cas.JdbcActionCacheIndex;
@@ -38,6 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,12 +94,18 @@ class JdbcCasCatalogLiveTest {
             statement.execute("GRANT USAGE ON SCHEMA public TO " + APP_USER);
             statement.execute("GRANT SELECT ON TABLE cas_object_catalog, cas_object_placement, "
                     + "cas_resource_bindings, cas_reference_roots, cas_deletion_manifests, "
+                    + "cas_object_deletion_tombstones, cas_tenant_lifecycles, "
+                    + "cas_resource_lifecycles, "
                     + "cas_quarantine_events, cas_action_cache_entries, "
                     + "cas_action_cache_invalidations, cas_action_cache_quarantined_nodes TO "
                     + APP_USER);
             statement.execute("GRANT INSERT, UPDATE ON TABLE cas_object_catalog, "
                     + "cas_object_placement, cas_resource_bindings, cas_reference_roots, "
+                    + "cas_object_deletion_tombstones, cas_tenant_lifecycles, "
+                    + "cas_resource_lifecycles, "
                     + "cas_action_cache_entries TO " + APP_USER);
+            statement.execute("GRANT DELETE ON TABLE cas_object_deletion_tombstones TO "
+                    + APP_USER);
             statement.execute("GRANT INSERT ON TABLE cas_deletion_manifests, "
                     + "cas_quarantine_events, cas_action_cache_invalidations, "
                     + "cas_action_cache_quarantined_nodes TO " + APP_USER);
@@ -115,17 +126,45 @@ class JdbcCasCatalogLiveTest {
                 1_800_000_000_000L);
     }
 
+    private static TenantCasStore tenantIsolated(CasStore store) {
+        return new TenantCasStore() {
+            @Override
+            public CasStore forTenant(String tenantId) {
+                return store;
+            }
+
+            @Override
+            public String atRestProtection() {
+                return "TEST_ONLY";
+            }
+
+            @Override
+            public String physicalNamespace() {
+                return "TEST_TENANT_ISOLATED";
+            }
+
+            @Override
+            public DeletionScope deletionScope() {
+                return DeletionScope.TENANT_ISOLATED;
+            }
+        };
+    }
+
     @Test void anEntryRoundTripsThroughTheRealSchema() {
         var catalog = new JdbcCasCatalog(dataSource);
         CasDigest object = digest("jdbc payload");
-        catalog.record(entry("tenant-jdbc-1", object, CasObjectModel.Sensitivity.GENERATED_OUTPUT,
-                Optional.of(digest("provenance"))));
+        CasDigest provenance = digest("provenance");
+        CasCatalog.CatalogEntry expected = entry("tenant-jdbc-1", object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.of(provenance));
+        catalog.record(expected);
 
         var found = catalog.find("tenant-jdbc-1", object).orElseThrow();
-        assertEquals(object.hex(), found.digest().hex());
-        assertEquals(object.sizeBytes(), found.digest().sizeBytes());
-        assertEquals(CasObjectModel.Sensitivity.GENERATED_OUTPUT, found.sensitivity());
-        assertEquals(CasAccessPolicy.SecurityTier.INTERNAL, found.securityTier());
+        assertEquals(expected, found,
+                "the current schema must round-trip the complete catalog entry metadata");
+        assertEquals(expected.metadata(), found.metadata());
+        assertEquals(provenance.sizeBytes(),
+                found.provenanceDigest().orElseThrow().sizeBytes(),
+                "V66 must read back provenance_size_bytes rather than reconstructing it");
     }
 
     @Test void recordingTheSameObjectTwiceIsIdempotent() {
@@ -162,7 +201,10 @@ class JdbcCasCatalogLiveTest {
             setTenant(connection, "tenant-jdbc-4");
             assertEquals(0, countCatalogRows(connection, "tenant-jdbc-3"),
                     "a reused physical connection must not retain the previous tenant");
-            assertThrows(SQLException.class, () -> insertCatalogRowForAnotherTenant(connection));
+            SQLException rejected = assertThrows(SQLException.class,
+                    () -> insertCatalogRowForAnotherTenant(connection));
+            assertEquals("42501", rejected.getSQLState(),
+                    "the cross-tenant insert must fail because of RLS, not schema drift");
             connection.rollback();
         } catch (SQLException error) {
             throw new IllegalStateException(error);
@@ -195,13 +237,269 @@ class JdbcCasCatalogLiveTest {
     @Test void referenceRootsAreActiveUntilReleased() {
         var catalog = new JdbcCasCatalog(dataSource);
         CasDigest object = digest("referenced by jdbc");
+        CasDigest sibling = digest("second referenced by jdbc");
+        long generation = catalog.addReferenceRoots(List.of(
+                new CasCatalog.ReferenceRoot("tenant-jdbc-7",
+                        CasGarbageCollector.RootKind.SNAPSHOT, "snap-1", object,
+                        1_800_000_000_000L),
+                new CasCatalog.ReferenceRoot("tenant-jdbc-7",
+                        CasGarbageCollector.RootKind.SNAPSHOT, "snap-1", sibling,
+                        1_800_000_000_001L)));
         catalog.addReferenceRoot(new CasCatalog.ReferenceRoot("tenant-jdbc-7",
-                CasGarbageCollector.RootKind.SNAPSHOT, "snap-1", object, 1_800_000_000_000L));
-        assertEquals(1, catalog.activeReferenceRoots("tenant-jdbc-7").size());
+                CasGarbageCollector.RootKind.ACTION_CACHE, "cache-unrelated",
+                digest("unrelated jdbc root"), 1_800_000_000_001L));
+        assertEquals(3, catalog.activeReferenceRoots("tenant-jdbc-7").size());
+        List<CasCatalog.ReferenceRoot> snapshotRoots = catalog.activeReferenceRoots(
+                "tenant-jdbc-7", CasGarbageCollector.RootKind.SNAPSHOT, "snap-1");
+        assertEquals(Set.of(object, sibling), snapshotRoots.stream()
+                .map(CasCatalog.ReferenceRoot::digest).collect(
+                        java.util.stream.Collectors.toSet()));
+        assertEquals(Set.of(generation), snapshotRoots.stream()
+                .map(CasCatalog.ReferenceRoot::createdAtEpochMillis).collect(
+                        java.util.stream.Collectors.toSet()),
+                "a multi-object JDBC root must publish one lifecycle generation");
 
         catalog.releaseReferenceRoot("tenant-jdbc-7", CasGarbageCollector.RootKind.SNAPSHOT, "snap-1",
                 1_800_000_100_000L);
-        assertTrue(catalog.activeReferenceRoots("tenant-jdbc-7").isEmpty());
+        assertTrue(catalog.activeReferenceRoots(
+                "tenant-jdbc-7", CasGarbageCollector.RootKind.SNAPSHOT, "snap-1").isEmpty());
+        assertEquals(1, catalog.activeReferenceRoots("tenant-jdbc-7").size());
+    }
+
+    @Test void v76TombstoneBlocksRootAndResourcePublicationUntilDurableRepair() {
+        String tenant = "tenant-jdbc-v76";
+        var catalog = new JdbcCasCatalog(dataSource);
+        var store = new InMemoryCasStore("jdbc-v76-tenant-store");
+        byte[] bytes = "v76 deletion protocol".getBytes(StandardCharsets.UTF_8);
+        CasDigest object = CasDigest.of(bytes);
+        catalog.record(entry(tenant, object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.empty()));
+        store.put(object, bytes);
+        var candidate = new CasGarbageCollector.Candidate(
+                object, object.sizeBytes(), tenant, "UNREACHABLE");
+
+        assertEquals(CasGarbageCollector.AtomicDeletionOutcome.DELETED,
+                catalog.deleteIfUnreferenced(candidate, tenantIsolated(store)));
+        assertFalse(store.contains(object));
+        CasCatalog.ReferenceRoot root = new CasCatalog.ReferenceRoot(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-v76", object, TRUST_NOW);
+        assertThrows(IllegalStateException.class,
+                () -> catalog.addReferenceRoots(List.of(root)));
+        assertThrows(IllegalStateException.class,
+                () -> catalog.bindResource(new CasCatalog.ResourceBinding(
+                        tenant, CasCatalog.ResourceKind.REPOSITORY,
+                        "repository-v76", object, TRUST_NOW)));
+        assertThrows(IllegalStateException.class,
+                () -> catalog.setLegalHold(tenant, object, true));
+        assertDirectRootActivationBlockedByTombstone(tenant, root);
+
+        long generation = catalog.publishDurableReferenceRoots(
+                List.of(root), () -> store.putDurable(object, bytes));
+
+        assertTrue(store.contains(object));
+        assertEquals(TRUST_NOW, generation);
+        assertEquals(List.of(root), catalog.activeReferenceRoots(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT, "snapshot-v76"));
+    }
+
+    @Test void activeResourceBindingIsAnAuthoritativeDeleteTimeReference() {
+        String tenant = "tenant-jdbc-v76-binding";
+        var catalog = new JdbcCasCatalog(dataSource);
+        var store = new InMemoryCasStore("jdbc-v76-bound-store");
+        byte[] bytes = "bound object".getBytes(StandardCharsets.UTF_8);
+        CasDigest object = CasDigest.of(bytes);
+        catalog.record(entry(tenant, object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.empty()));
+        catalog.bindResource(new CasCatalog.ResourceBinding(
+                tenant, CasCatalog.ResourceKind.REPOSITORY,
+                "repository-v76", object, TRUST_NOW));
+        store.put(object, bytes);
+        var candidate = new CasGarbageCollector.Candidate(
+                object, object.sizeBytes(), tenant, "UNREACHABLE");
+
+        assertEquals(CasGarbageCollector.AtomicDeletionOutcome.LIVE_REFERENCE_OR_HOLD,
+                catalog.deleteIfUnreferenced(candidate, tenantIsolated(store)));
+        assertTrue(store.contains(object));
+
+        catalog.releaseResource(tenant, CasCatalog.ResourceKind.REPOSITORY,
+                "repository-v76", object, TRUST_NOW + 1);
+        assertEquals(CasGarbageCollector.AtomicDeletionOutcome.DELETED,
+                catalog.deleteIfUnreferenced(candidate, tenantIsolated(store)));
+        assertFalse(store.contains(object));
+    }
+
+    @Test void jdbcResourceRetirementWaitsForMappedRootsAndAdvancesIncarnation() {
+        String tenant = "tenant-jdbc-v76-resource-lifecycle";
+        var catalog = new JdbcCasCatalog(dataSource);
+        CasDigest object = digest("resource lifecycle object");
+        catalog.record(entry(tenant, object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.empty()));
+        CasCatalog.ResourceLifecycle active = catalog.ensureActiveResource(
+                tenant, CasCatalog.ResourceKind.REPOSITORY, "repository-lifecycle");
+        catalog.bindResource(new CasCatalog.ResourceBinding(
+                tenant, CasCatalog.ResourceKind.REPOSITORY,
+                "repository-lifecycle", object, TRUST_NOW));
+        CasCatalog.ReferenceRoot root = new CasCatalog.ReferenceRoot(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-resource-lifecycle", object, TRUST_NOW);
+        long generation = catalog.publishDurableResourceReferenceRoots(
+                active, List.of(root), () -> { });
+
+        CasCatalog.ResourceLifecycle retiring = catalog.beginResourceRetirement(
+                tenant, CasCatalog.ResourceKind.REPOSITORY,
+                "repository-lifecycle", TRUST_NOW + 1);
+        assertThrows(IllegalStateException.class,
+                () -> catalog.finalizeResourceRetirement(retiring, TRUST_NOW + 2));
+        assertTrue(catalog.releaseReferenceRootGeneration(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-resource-lifecycle", generation, TRUST_NOW + 2));
+        CasCatalog.ResourceLifecycle retired = catalog.finalizeResourceRetirement(
+                retiring, TRUST_NOW + 3);
+
+        assertEquals(CasCatalog.ResourceLifecycleState.RETIRED, retired.state());
+        assertEquals(1, retired.releasedBindingCount());
+        assertTrue(catalog.activeResourceBindings(
+                tenant, CasCatalog.ResourceKind.REPOSITORY,
+                "repository-lifecycle").isEmpty());
+        CasCatalog.ResourceLifecycle reactivated = catalog.reactivateResource(
+                retired, TRUST_NOW + 4);
+        assertEquals(active.resourceEpoch() + 1, reactivated.resourceEpoch());
+    }
+
+    @Test void jdbcDurableResourcePublicationRepairsAndClearsADeletionTombstone() {
+        String tenant = "tenant-jdbc-v76-resource-repair";
+        var catalog = new JdbcCasCatalog(dataSource);
+        var store = new InMemoryCasStore("jdbc-v76-resource-repair-store");
+        byte[] bytes = "jdbc resource repair".getBytes(StandardCharsets.UTF_8);
+        CasDigest object = CasDigest.of(bytes);
+        CasCatalog.CatalogEntry entry = entry(tenant, object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.empty());
+        catalog.record(entry);
+        store.put(object, bytes);
+        var candidate = new CasGarbageCollector.Candidate(
+                object, object.sizeBytes(), tenant, "UNREACHABLE");
+        assertEquals(CasGarbageCollector.AtomicDeletionOutcome.DELETED,
+                catalog.deleteIfUnreferenced(candidate, tenantIsolated(store)));
+        CasCatalog.ResourceBinding binding = new CasCatalog.ResourceBinding(
+                tenant, CasCatalog.ResourceKind.REPOSITORY,
+                "repository-repair", object, TRUST_NOW);
+
+        catalog.recordAndBindDurableResource(
+                entry, binding, () -> store.putDurable(object, bytes));
+
+        assertTrue(store.contains(object));
+        assertEquals(List.of(binding), catalog.activeResourceBindings(
+                tenant, CasCatalog.ResourceKind.REPOSITORY, "repository-repair"));
+    }
+
+    @Test void pendingPhysicalDeleteFencesACompetingDurablePublisher() throws Exception {
+        String tenant = "tenant-jdbc-v76-delete-fence";
+        var catalog = new JdbcCasCatalog(dataSource);
+        var delegate = new InMemoryCasStore("jdbc-v76-delete-fence-store");
+        byte[] bytes = "pending deletion fence".getBytes(StandardCharsets.UTF_8);
+        CasDigest object = CasDigest.of(bytes);
+        CasCatalog.CatalogEntry entry = entry(tenant, object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.empty());
+        catalog.record(entry);
+        delegate.put(object, bytes);
+        CountDownLatch deleteEntered = new CountDownLatch(1);
+        CountDownLatch allowDelete = new CountDownLatch(1);
+        CasStore blockingStore = new CasStore() {
+            @Override public String name() { return delegate.name(); }
+            @Override public boolean contains(CasDigest digest) { return delegate.contains(digest); }
+            @Override public void put(CasDigest digest, byte[] content) {
+                delegate.put(digest, content);
+            }
+            @Override public void putDurable(CasDigest digest, byte[] content) {
+                delegate.putDurable(digest, content);
+            }
+            @Override public byte[] get(CasDigest digest) { return delegate.get(digest); }
+            @Override public byte[] readRange(CasDigest digest, long offset, int length) {
+                return delegate.readRange(digest, offset, length);
+            }
+            @Override public boolean delete(CasDigest digest) {
+                deleteEntered.countDown();
+                try {
+                    if (!allowDelete.await(5, TimeUnit.SECONDS)) {
+                        throw new IllegalStateException("delete fence timed out");
+                    }
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("delete fence interrupted", interrupted);
+                }
+                return delegate.delete(digest);
+            }
+            @Override public Set<CasDigest> inventory() { return delegate.inventory(); }
+            @Override public long totalBytes() { return delegate.totalBytes(); }
+        };
+        var candidate = new CasGarbageCollector.Candidate(
+                object, object.sizeBytes(), tenant, "UNREACHABLE");
+        CasCatalog.ReferenceRoot root = new CasCatalog.ReferenceRoot(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-delete-fence", object, TRUST_NOW);
+        AtomicBoolean durableCallbackCalled = new AtomicBoolean();
+
+        try (var executor = Executors.newSingleThreadExecutor()) {
+            var deletion = executor.submit(() -> catalog.deleteIfUnreferenced(
+                    candidate, tenantIsolated(blockingStore)));
+            assertTrue(deleteEntered.await(5, TimeUnit.SECONDS));
+            try {
+                assertThrows(IllegalStateException.class,
+                        () -> catalog.publishDurableReferenceRoots(List.of(root), () -> {
+                            durableCallbackCalled.set(true);
+                            delegate.putDurable(object, bytes);
+                        }));
+                assertFalse(durableCallbackCalled.get(),
+                        "PENDING must fence the publisher before it rewrites bytes");
+            } finally {
+                allowDelete.countDown();
+            }
+            assertEquals(CasGarbageCollector.AtomicDeletionOutcome.DELETED,
+                    deletion.get(5, TimeUnit.SECONDS));
+        }
+
+        catalog.publishDurableReferenceRoots(
+                List.of(root), () -> delegate.putDurable(object, bytes));
+        assertTrue(delegate.contains(object));
+        assertEquals(List.of(root), catalog.activeReferenceRoots(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-delete-fence"));
+    }
+
+    @Test void durablePublisherErrorRollsBackTombstoneAndRootTransaction() {
+        String tenant = "tenant-jdbc-v76-error-rollback";
+        var catalog = new JdbcCasCatalog(dataSource);
+        var store = new InMemoryCasStore("jdbc-v76-error-rollback-store");
+        byte[] bytes = "publisher error rollback".getBytes(StandardCharsets.UTF_8);
+        CasDigest object = CasDigest.of(bytes);
+        catalog.record(entry(tenant, object,
+                CasObjectModel.Sensitivity.GENERATED_OUTPUT, Optional.empty()));
+        store.put(object, bytes);
+        assertEquals(CasGarbageCollector.AtomicDeletionOutcome.DELETED,
+                catalog.deleteIfUnreferenced(
+                        new CasGarbageCollector.Candidate(
+                                object, object.sizeBytes(), tenant, "UNREACHABLE"),
+                        tenantIsolated(store)));
+        CasCatalog.ReferenceRoot root = new CasCatalog.ReferenceRoot(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-error-rollback", object, TRUST_NOW);
+
+        assertThrows(AssertionError.class,
+                () -> catalog.publishDurableReferenceRoots(
+                        List.of(root), () -> {
+                            throw new AssertionError("simulated VM-level callback failure");
+                        }));
+        assertThrows(IllegalStateException.class,
+                () -> catalog.addReferenceRoots(List.of(root)),
+                "Error must not commit the tombstone delete when auto-commit is restored");
+        assertTrue(catalog.activeReferenceRoots(
+                tenant, CasGarbageCollector.RootKind.SNAPSHOT,
+                "snapshot-error-rollback").isEmpty());
+
+        catalog.publishDurableReferenceRoots(
+                List.of(root), () -> store.putDurable(object, bytes));
+        assertTrue(store.contains(object));
     }
 
     @Test void referenceRootGenerationSurvivesASecondCatalogAndRegressedClock() {
@@ -222,6 +520,33 @@ class JdbcCasCatalogLiveTest {
         assertThrows(IllegalArgumentException.class, () -> restarted.releaseReferenceRoot(
                 "tenant-jdbc-generation", kind, "snap-persistent-generation", first));
         assertEquals(second, restarted.activeReferenceRoots("tenant-jdbc-generation")
+                .get(0).createdAtEpochMillis());
+    }
+
+    @Test void exactGenerationReleaseIsAtomicAcrossCatalogInstances() {
+        String tenant = "tenant-jdbc-generation-compare";
+        CasGarbageCollector.RootKind kind = CasGarbageCollector.RootKind.ACTION_CACHE;
+        String rootId = "cache-generation-compare";
+        CasDigest object = digest("exact persistent generation");
+        JdbcCasCatalog writer = new JdbcCasCatalog(dataSource);
+        JdbcCasCatalog reconciler = new JdbcCasCatalog(dataSource);
+        long first = writer.addReferenceRoots(List.of(new CasCatalog.ReferenceRoot(
+                tenant, kind, rootId, object, 1_800_000_000_000L)));
+
+        assertFalse(reconciler.releaseReferenceRootGeneration(
+                tenant, kind, rootId, first - 1L, first + 100L));
+        assertEquals(first, writer.activeReferenceRoots(tenant, kind, rootId)
+                .get(0).createdAtEpochMillis());
+        assertTrue(reconciler.releaseReferenceRootGeneration(
+                tenant, kind, rootId, first, first + 100L));
+
+        long second = writer.addReferenceRoots(List.of(new CasCatalog.ReferenceRoot(
+                tenant, kind, rootId, object, first - 10_000L)));
+        assertTrue(second > first);
+        assertFalse(reconciler.releaseReferenceRootGeneration(
+                tenant, kind, rootId, first, second + 100L),
+                "a delayed token must not release the newer generation");
+        assertEquals(second, writer.activeReferenceRoots(tenant, kind, rootId)
                 .get(0).createdAtEpochMillis());
     }
 
@@ -438,10 +763,10 @@ class JdbcCasCatalogLiveTest {
         CasDigest injected = digest("cross-tenant direct insert");
         try (PreparedStatement insert = connection.prepareStatement("""
                 INSERT INTO cas_object_catalog(
-                    organization_id, digest_hex, size_bytes, project_id, object_kind,
+                    organization_id, digest_hex, size_bytes, object_kind,
                     media_type, source_system, schema_version, sensitivity, retention_class,
                     data_residency, security_tier, labels, legal_hold)
-                VALUES ('tenant-jdbc-3', ?, ?, 'project-a', 'BLOB',
+                VALUES ('tenant-jdbc-3', ?, ?, 'BLOB',
                     'application/octet-stream', 'adversarial-sql', '1.0', 'PRIVATE_SOURCE',
                     'STANDARD', 'eu-west', 'INTERNAL', '{}'::jsonb, false)
                 """)) {
@@ -449,6 +774,36 @@ class JdbcCasCatalogLiveTest {
             insert.setLong(2, injected.sizeBytes());
             insert.executeUpdate();
         }
+    }
+
+    private static void assertDirectRootActivationBlockedByTombstone(
+            String tenant,
+            CasCatalog.ReferenceRoot root
+    ) {
+        SQLException rejected = assertThrows(SQLException.class, () -> {
+            try (Connection connection = dataSource.getConnection()) {
+                connection.setAutoCommit(false);
+                setTenant(connection, tenant);
+                try (PreparedStatement insert = connection.prepareStatement("""
+                        INSERT INTO cas_reference_roots (
+                            organization_id, root_kind, root_id, digest_hex,
+                            size_bytes, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """)) {
+                    insert.setString(1, tenant);
+                    insert.setString(2, root.kind().name());
+                    insert.setString(3, root.rootId());
+                    insert.setString(4, root.digest().hex());
+                    insert.setLong(5, root.digest().sizeBytes());
+                    insert.setTimestamp(6, new java.sql.Timestamp(
+                            root.createdAtEpochMillis()));
+                    insert.executeUpdate();
+                } finally {
+                    connection.rollback();
+                }
+            }
+        });
+        assertEquals("P0001", rejected.getSQLState());
     }
 
     private static void assertRuntimeMutationDenied(String sql) {

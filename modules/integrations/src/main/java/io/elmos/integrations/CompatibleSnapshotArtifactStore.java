@@ -145,22 +145,12 @@ public final class CompatibleSnapshotArtifactStore
     }
 
     @Override
+    @Deprecated(forRemoval = false)
     public void releaseSnapshot(SnapshotPorts.ArtifactResourceContext resource, String snapshotId) {
         Objects.requireNonNull(resource, "resource");
         requireSnapshotId(snapshotId);
-        RuntimeException failure = null;
-        try {
-            casWriter.releaseSnapshot(resource, snapshotId);
-        } catch (RuntimeException error) {
-            failure = error;
-        }
-        try {
-            legacyWriter.releaseSnapshot(resource, snapshotId);
-        } catch (RuntimeException error) {
-            if (failure == null) failure = error;
-            else failure.addSuppressed(error);
-        }
-        if (failure != null) throw failure;
+        throw new UnsupportedOperationException(
+                "compatible snapshot release requires the participant generation token");
     }
 
     @Override
@@ -216,9 +206,9 @@ public final class CompatibleSnapshotArtifactStore
     }
 
     private static void requireSnapshotId(String snapshotId) {
-        if (snapshotId == null
-                || !snapshotId.matches("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")) {
-            throw new IllegalArgumentException("snapshotId must be a safe identifier");
-        }
+        // ArtifactRetention is the persistence contract passed between capture, reconciliation,
+        // and release. Reuse its canonical boundary before dispatching to any backend so an ID can
+        // never produce lifecycle state that cannot be represented by the returned token.
+        SnapshotPorts.ArtifactRetention.untracked(snapshotId);
     }
 }

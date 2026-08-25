@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JdbcActionCacheIndexTenantScopeTest {
+
+    private static final String PINNED_IMAGE =
+            "registry.internal/elmos/java21@sha256:" + "a".repeat(64);
 
     @Test void aPooledConnectionCannotLeakOneLookupTenantIntoTheNext() {
         var dataSource = new ReusedConnectionDataSource();
@@ -50,9 +55,49 @@ class JdbcActionCacheIndexTenantScopeTest {
         assertTrue(dataSource.queryTenants.isEmpty());
     }
 
+    @Test void legacyAndForgedKeysAreRejectedBeforeOpeningAJdbcConnection() {
+        var dataSource = new ReusedConnectionDataSource();
+        var index = new JdbcActionCacheIndex(dataSource);
+        ActionKey canonical = key("tenant-a");
+
+        for (ActionKey invalid : List.of(legacyV1(canonical), forgedDigest(canonical))) {
+            assertThrows(IllegalArgumentException.class, () -> index.find(invalid));
+            assertThrows(IllegalArgumentException.class,
+                    () -> index.invalidate(invalid, "INVALID_KEY_MUST_NOT_MUTATE", 1_000));
+        }
+
+        assertEquals(0, dataSource.connectionRequests);
+        assertTrue(dataSource.queryTenants.isEmpty());
+        assertEquals(0, dataSource.commits);
+        assertEquals(0, dataSource.rollbacks);
+    }
+
     private static ActionKey key(String tenantId) {
-        return new ActionKey(CasDigest.ofUtf8(tenantId + ":action"), tenantId,
-                java.util.Map.of("tenant_id", tenantId));
+        return new ActionKeyBuilder()
+                .tenant(tenantId, "project-a")
+                .sourceTree(CasDigest.ofUtf8("source"))
+                .toolchainImage(PINNED_IMAGE)
+                .command(List.of("./mvnw", "verify"))
+                .declaredOutputs(List.of("target"))
+                .policy(CasDigest.ofUtf8("policy"))
+                .permissionScope(Set.of("repo:read"))
+                .dataResidency("eu-west")
+                .environmentContract(ActionKeyBuilder.EnvironmentContract.of())
+                .environment(Map.of())
+                .build();
+    }
+
+    private static ActionKey legacyV1(ActionKey canonical) {
+        CasManifest.CanonicalEncoder encoder =
+                new CasManifest.CanonicalEncoder("elmos-action-key/1");
+        canonical.components().forEach(encoder::field);
+        return new ActionKey(CasDigest.of(encoder.bytes()), canonical.tenantId(),
+                canonical.components());
+    }
+
+    private static ActionKey forgedDigest(ActionKey canonical) {
+        return new ActionKey(CasDigest.ofUtf8("forged-action-key-digest"),
+                canonical.tenantId(), canonical.components());
     }
 
     private static final class ReusedConnectionDataSource implements DataSource {
@@ -60,6 +105,7 @@ class JdbcActionCacheIndexTenantScopeTest {
         private boolean autoCommit = true;
         private boolean usedSessionScopedSetting;
         private String localTenant;
+        private int connectionRequests;
         private int commits;
         private int rollbacks;
         private final Connection connection = proxy(Connection.class, this::connectionCall);
@@ -120,8 +166,14 @@ class JdbcActionCacheIndexTenantScopeTest {
             return proxy(PreparedStatement.class, handler);
         }
 
-        @Override public Connection getConnection() { return connection; }
-        @Override public Connection getConnection(String username, String password) { return connection; }
+        @Override public Connection getConnection() {
+            connectionRequests++;
+            return connection;
+        }
+        @Override public Connection getConnection(String username, String password) {
+            connectionRequests++;
+            return connection;
+        }
         @Override public PrintWriter getLogWriter() { return null; }
         @Override public void setLogWriter(PrintWriter out) { }
         @Override public void setLoginTimeout(int seconds) { }

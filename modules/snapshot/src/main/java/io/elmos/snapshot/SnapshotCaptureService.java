@@ -19,6 +19,7 @@ public final class SnapshotCaptureService {
     private final SnapshotPorts.ArtifactStore artifacts; private final SnapshotPorts.SnapshotStore snapshots;
     private final SnapshotLifecyclePorts.SnapshotCommitCoordinator commits;
     private final SnapshotLifecyclePorts.RootReconciliationJournal reconciliations;
+    private final boolean requireAuthoritativeSourceLease;
     private final Clock clock;
 
     public SnapshotCaptureService(SnapshotPorts.RepositoryCredentialBroker credentials, SnapshotPorts.RefResolver refs,
@@ -27,11 +28,24 @@ public final class SnapshotCaptureService {
             SnapshotLifecyclePorts.SnapshotCommitCoordinator commits,
             SnapshotLifecyclePorts.RootReconciliationJournal reconciliations,
             Clock clock) {
+        this(credentials, refs, fetcher, archiver, artifacts, snapshots, commits,
+                reconciliations, false, clock);
+    }
+
+    public SnapshotCaptureService(SnapshotPorts.RepositoryCredentialBroker credentials,
+            SnapshotPorts.RefResolver refs, SnapshotPorts.SourceFetcher fetcher,
+            DeterministicSnapshotArchiver archiver,
+            SnapshotPorts.ArtifactStore artifacts, SnapshotPorts.SnapshotStore snapshots,
+            SnapshotLifecyclePorts.SnapshotCommitCoordinator commits,
+            SnapshotLifecyclePorts.RootReconciliationJournal reconciliations,
+            boolean requireAuthoritativeSourceLease,
+            Clock clock) {
         this.credentials = Objects.requireNonNull(credentials); this.refs = Objects.requireNonNull(refs); this.fetcher = Objects.requireNonNull(fetcher);
         this.archiver = Objects.requireNonNull(archiver); this.artifacts = Objects.requireNonNull(artifacts);
         this.snapshots = Objects.requireNonNull(snapshots);
         this.commits = Objects.requireNonNull(commits);
         this.reconciliations = Objects.requireNonNull(reconciliations);
+        this.requireAuthoritativeSourceLease = requireAuthoritativeSourceLease;
         this.clock = Objects.requireNonNull(clock);
     }
 
@@ -49,6 +63,13 @@ public final class SnapshotCaptureService {
                     request.organizationId(), request.repositoryId(),
                     resolved.commitSha(), SCHEMA_VERSION);
             if (reusable != null) {
+                if (requireAuthoritativeSourceLease) {
+                    // The current snapshot schema predates durable source-lease provenance.
+                    // Treat every existing row as UNKNOWN instead of laundering a historical
+                    // local self-attestation through the production reuse path.
+                    throw new SecurityException(
+                            "reusable snapshot lacks authoritative source lease provenance");
+                }
                 if (reusable.status() != SnapshotModel.Status.AVAILABLE) throw new IllegalStateException("matching snapshot is not available");
                 requireOwnedBy(resource, reusable);
                 requireArtifactReferences(reusable);
@@ -65,7 +86,9 @@ public final class SnapshotCaptureService {
                 if (treeSha == null || !treeSha.matches("[0-9a-f]{40}")) throw new SecurityException("SCM did not prove the snapshot tree SHA");
                 var context = new DeterministicSnapshotArchiver.SnapshotContext("GITHUB", request.repositoryId(), request.repositoryFullName(),
                         request.requestedRef(), resolved.commitSha(), treeSha);
-                var archive = archiver.archive(source.path(), context);
+                var archive = requireAuthoritativeSourceLease
+                        ? archiver.archive(source.path(), context, source.sourceLease())
+                        : archiver.archive(source.path(), context);
                 byte[] archiveBytes = archive.archive(), manifestBytes = archive.manifest();
                 String snapshotId = "snapshot-" + UUID.randomUUID();
                 String archiveRef = artifacts.putIfAbsent(resource, archive.archiveSha256(), archiveBytes.length,
