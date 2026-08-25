@@ -47,6 +47,36 @@ DENIED_MOUNT_PREFIXES: tuple[str, ...] = (
     "/home",
 )
 
+# macOS splits the root filesystem into a read-only system volume and a writable
+# data volume, and ``realpath`` resolves some paths through the data volume's
+# real mount point. ``/home`` is the one that bites: it is an autofs mount whose
+# resolved form is ``/System/Volumes/Data/home/...``, so a literal ``/home``
+# prefix match never fires and *another user's home directory was mountable into
+# a build stage on darwin* -- observed on macOS 26 with
+# ``/home/someone -> /System/Volumes/Data/home/someone``.
+#
+# Enumerating the rewritten spellings one at a time is what let this through in
+# the first place (``/private/etc`` and ``/Users`` were each added by hand after
+# someone noticed). Stripping the prefix instead makes every entry above -- and
+# every entry added later -- cover its data-volume spelling automatically.
+_DATA_VOLUME_PREFIX = "/System/Volumes/Data"
+
+
+def _denied_spellings(resolved: Path) -> tuple[str, ...]:
+    """Every spelling of ``resolved`` the deny list should be matched against.
+
+    Returns the resolved path itself plus, on a macOS data-volume path, the
+    equivalent path as it is spelled on the system volume. Both are checked, so
+    a deny entry written in either form still fires.
+    """
+
+    text = resolved.as_posix()
+    if text == _DATA_VOLUME_PREFIX:
+        return (text, "/")
+    if text.startswith(_DATA_VOLUME_PREFIX + "/"):
+        return (text, text[len(_DATA_VOLUME_PREFIX) :])
+    return (text,)
+
 DENIED_BASENAMES: frozenset[str] = frozenset(
     {".ssh", ".aws", ".gnupg", ".netrc", ".docker", ".kube", ".npmrc", ".pypirc", ".git-credentials"}
 )
@@ -108,9 +138,10 @@ class SandboxPolicy:
                 raise PermissionDenied("credential directory cannot be mounted", path=text)
         if any(root == resolved or root in resolved.parents for root in self.allowed_roots):
             return resolved
-        for prefix in DENIED_MOUNT_PREFIXES:
-            if text == prefix or text.startswith(prefix + "/"):
-                raise PermissionDenied("host path is outside the sandbox allowlist", path=text)
+        for spelling in _denied_spellings(resolved):
+            for prefix in DENIED_MOUNT_PREFIXES:
+                if spelling == prefix or spelling.startswith(prefix + "/"):
+                    raise PermissionDenied("host path is outside the sandbox allowlist", path=text)
         if resolved.is_socket():  # pragma: no cover - rare in tests
             raise PermissionDenied("sockets cannot be mounted", path=text)
         return resolved

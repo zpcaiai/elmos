@@ -476,3 +476,100 @@ Mac 上仍需你跑一遍，重点看三处：
    失败信息会指名解析后的路径。
 2. 两条新的工具链认证（Swift / Flutter）—— 只有你的机器能执行。
 3. `mypy --strict` 应当零错误。
+
+---
+
+# 十、第三轮：Mac 全量把四个真缺陷逼了出来
+
+> 用户在 Mac 上跑了两次全量（shell 的续行被吞了，所以两条命令都变成了全量——反而更有用）：
+> **4 failed / 1658 passed** 与 **3 failed / 1659 passed**，1663 collected，live PostgreSQL 17.5。
+> 两次的差是并发那条在第二次通过了——那本身就是证据。
+
+## 10.1 `DENIED_MOUNT_PREFIXES` 在 macOS 上有一个真实的挂载拒绝缺口（安全）
+
+第二轮把这条**刻意留成失败**并让它打印解析后的路径，现在答案有了：
+
+```
+/home/someone resolved to /System/Volumes/Data/home/someone on Darwin
+and SandboxPolicy accepted it
+```
+
+macOS 把根分成只读的系统卷和可写的数据卷，`realpath` 会把一部分路径解析到数据卷的真实挂载点。
+`/home` 正是被咬的那个：它是 autofs 挂载，解析后变成 `/System/Volumes/Data/home/...`，
+于是字面量 `/home` 前缀**永远匹配不上**——**在 darwin 上，别人的家目录可以被挂进构建阶段**。
+
+注意 `/Users/someone` 那条是**通过**的：`/Users` 是 firmlink，`realpath` 不改写它。
+所以两个"另一个用户的家目录"的拼写里，只有一个被挡住——这正是"逐个枚举拼写"这种做法的失败模式。
+
+**修法不是再补一条前缀**，那正是当初 `/private/etc` 和 `/Users` 被一个一个手工补进去、
+却仍然漏掉 `/home` 的原因。改为在匹配前**剥掉数据卷前缀**（`_denied_spellings`），
+于是 `DENIED_MOUNT_PREFIXES` 里**现有的和以后新增的**每一条都自动覆盖它的数据卷拼写。
+
+新测试直接驱动 `_denied_spellings`（不是 `check`）——重写是**宿主的 realpath** 做的，
+linux 上不会发生，走 `check(Path("/home/someone"))` 在容器里什么都测不到。
+并且断言了反向：`/System/Volumes/Data/opt/workspace` 与 `/System/Volumes/Data` 本身
+**必须仍然放行**，防止剥前缀退化成"在 darwin 上拒绝一切"。
+**变异证明**：撤销归一化 → 4 条失败。
+
+## 10.2 `FlutterPubAdapter` 把自己的横幅当成了下载
+
+`--offline` 的解析成功了、缓存被消费了（`entries=306, bytes_used=7216778`），
+但 `parse_diagnostics` 报 `misses=1`。原因：
+
+```python
+build_log.count("Downloading")   # 旧
+```
+
+而 `pub get --offline` 的输出是：
+
+```
+Resolving dependencies...
+Downloading packages...      ← 这是段落横幅，不是下载
++ characters 1.4.1
+...
+```
+
+`Downloading packages...` 是 pub 在 `+ pkg` 之前**无条件打印的横幅**，
+`--offline` 被禁止碰网络，所以它根本不可能下载。真正的取包会**点名**：`Downloading foo 1.2.3...`。
+
+**这跟 `MsbuildNugetAdapter._SKIPPED` 是同一个缺陷形状**——解析器读横幅而不是读信号——
+**也是同一个修法**：要求只有真实事件才会产生的那个 token。已改为
+`^\s*Downloading (?!packages\b)\S+`，并断言反向（真取包仍然计数 2），防止解析器被钝化成恒返回 0。
+
+**这一轮两个产品缺陷都是这个形状。** 值得作为一条规律记住：
+**别用「工具打印了某个词」当证据，要用「只有那件事发生才会出现的形状」当证据。**
+
+## 10.3 msbuild：测试把作者当时的 SDK 写死了
+
+`TargetFramework` 硬编码 `net8.0`，而 `NuGet.config` 把包源 `<clear />` 清空了——
+唯一剩下的 feed 是 SDK 自带的 `library-packs`，它只带**那个 SDK 自己那一代**的引用包。
+在 Homebrew dotnet **10.0.301** 上就是三条 `NU1101: Unable to find package
+Microsoft.NETCore.App.Ref`。
+
+在测试里钉死一个框架名，等于把测试变成"作者当时装的是哪个 SDK"的陈述，而不是关于适配器的陈述。
+已改为 `tool_version_major(dotnet)` 向工具本身要主版本，拼出 `net{major}.0`。
+
+## 10.4 并发那条测的是调度器，不是不变式
+
+`test_a_concurrency_loser_never_forks_the_event_chain` 断言
+`len(winners) == 1 and len(losers) == 1`——Mac 上出现 **2 个 winner**，容器上一直是 1。
+
+`threading.Barrier` 同步的是**起跑**，不是事务：在快机器上第一个写者可以在第二个读到 head 之前
+就提交完，第二个于是**合法地**对新 head 再追加一次回滚。**那是两个写者串行化，不是分叉**——
+而这条测试的名字说的是分叉。原来的断言在测调度器。
+
+已改为断言每一轮**无论怎么落地都必须成立**的三件事：两个线程都跑完；至少有一个赢
+（head 不能把两个都拒了）；**失败者必须是干净地失败**（`ConflictError`，
+而不是撕裂的事务或半写链导致的契约违规）——最后这条才是真正的安全属性。
+链的连续性与父指针断言**原样保留**，那才是"不分叉"的判据，一个赢还是两个赢都要过。
+
+## 10.5 收口
+
+云端（linux/aarch64，uid 0，CPython 3.11.15）：
+**1659 passed / 52 skipped / 0 failed**；`ruff check src tests` **全绿**；
+`mypy --strict` **零错误**（容器里装上 `psycopg[binary]` 3.3.4 后确认，
+证实那条 import-not-found 是缺依赖不是类型问题）。
+
+本轮改动 6 个文件：`overlay.py`、`native_adapters.py` 与四个测试文件。
+
+仍是本地工程证据。BC-18 `NOT_RUN`，BC-19 `NOT_CERTIFIED`。

@@ -62,6 +62,23 @@ def tool(name: str) -> str:
     return path
 
 
+def tool_version_major(executable: str) -> int:
+    """The installed SDK's major version, read from the SDK itself.
+
+    Pinning a framework moniker in a test makes the test a statement about
+    which SDK the author had, not about the adapter. Ask the tool.
+    """
+
+    completed = subprocess.run(  # noqa: S603
+        [executable, "--version"], capture_output=True, text=True, timeout=120, check=False
+    )
+    reported = (completed.stdout + completed.stderr).strip().splitlines()
+    assert reported, f"{executable} --version produced nothing"
+    head = reported[0].strip().split(".")[0]
+    assert head.isdigit(), f"cannot read a major version from {reported[0]!r}"
+    return int(head)
+
+
 def profile(name: str, version_argv: Sequence[str], **kwargs: object) -> ToolchainProfile:
     """A toolchain identity taken from the installed compiler, not invented."""
     completed = subprocess.run(  # noqa: S603
@@ -470,11 +487,20 @@ def test_msbuild_incremental_build_through_the_sandboxed_nuget_cache(tmp_path: P
     dotnet = tool("dotnet")
     project = tmp_path / "cs-project"
     project.mkdir()
+    # The target framework has to be the SDK's own, not a fixed one. The
+    # NuGet.config below clears every package source, so the only feed left is
+    # the SDK's bundled ``library-packs`` -- which carries the reference packs
+    # for *that* SDK's framework and no other. A hardcoded ``net8.0`` therefore
+    # restored fine on a .NET 8 SDK and failed with three ``NU1101: Unable to
+    # find package Microsoft.NETCore.App.Ref`` on a .NET 10 one, which is what
+    # this test hit on a Homebrew dotnet 10.0.301.
+    sdk_major = tool_version_major(dotnet)
+    target_framework = f"net{sdk_major}.0"
     (project / "probe.csproj").write_text(
         "<Project Sdk=\"Microsoft.NET.Sdk\">\n"
         "  <PropertyGroup>\n"
         "    <OutputType>Exe</OutputType>\n"
-        "    <TargetFramework>net8.0</TargetFramework>\n"
+        f"    <TargetFramework>{target_framework}</TargetFramework>\n"
         "  </PropertyGroup>\n"
         "</Project>\n",
         encoding="utf-8",

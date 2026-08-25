@@ -1228,8 +1228,23 @@ def test_a_concurrency_loser_never_forks_the_event_chain(
         winners, losers = _race(
             harness, RollbackReason.FALSE_HIT, RollbackReason.CORRUPT_EXECUTION
         )
-        assert len(winners) == 1 and len(losers) == 1
-        assert isinstance(losers[0], ConflictError)
+        # The *outcome* of the race is not asserted, and deliberately so. A
+        # ``threading.Barrier`` synchronises the start, not the transactions: on
+        # a fast host the first writer can commit before the second has read the
+        # head, and the second then legitimately appends a second rollback to
+        # the new head. That is two writers serialising, not a fork -- and this
+        # test is named for the fork. Asserting ``len(winners) == 1`` asserted
+        # the scheduler instead, and duly failed on a Mac (2 winners) while
+        # passing on the container.
+        #
+        # What must hold on every round, whichever way the race lands:
+        assert len(winners) + len(losers) == 2, (winners, losers)
+        # someone made progress -- the head cannot refuse both writers
+        assert winners, losers
+        # and a loser fails *cleanly*. This is the real safety property: losing
+        # a write race must surface as the store's own conflict, never as a
+        # torn transaction or a contract violation from a half-written chain.
+        assert all(isinstance(failure, ConflictError) for failure in losers), losers
 
         reopened = harness.open_store()
         try:
@@ -1240,6 +1255,10 @@ def test_a_concurrency_loser_never_forks_the_event_chain(
                 (harness.tenant_id, harness.project_id, harness.controller_id),
             )
             # One row per sequence number, and every link points at its parent.
+            # This is what "never forks" means, and it is checked whether the
+            # round produced one winner or two: a fork would show up either as a
+            # duplicated sequence number or as a child whose parent digest does
+            # not match the row before it.
             assert [int(row[0]) for row in rows] == list(range(1, len(rows) + 1))
             assert rows[0][2] is None
             for parent, child in zip(rows, rows[1:], strict=False):

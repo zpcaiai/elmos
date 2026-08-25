@@ -434,8 +434,22 @@ class FlutterPubAdapter(NativeBuildCacheAdapter):
     output_patterns = ("build/**/*.aab", "build/**/*.apk", "build/**/*.app/**")
     lockfile_names = ("pubspec.lock",)
 
+    # ``Downloading packages...`` is a section *banner*: pub prints it before the
+    # ``+ pkg`` lines whether or not anything was fetched, and it appears even
+    # under ``pub get --offline``, which is forbidden to touch the network at
+    # all. Counting the bare word therefore reported a miss on a resolve that
+    # was served entirely from the sandboxed cache -- observed on Flutter 3.44
+    # where an ``--offline`` resolve printed the banner plus seven ``+`` lines
+    # and scored ``misses=1``.
+    #
+    # A real fetch names the package: ``Downloading foo 1.2.3...``. Only that
+    # counts. This is the same defect shape as ``MsbuildNugetAdapter._SKIPPED``
+    # -- a parser reading a banner rather than a signal -- and the same fix:
+    # require the token that only the real event produces.
+    _DOWNLOAD = re.compile(r"^\s*Downloading (?!packages\b)\S+", re.MULTILINE)
+
     def parse_diagnostics(self, build_log: str) -> NativeCacheStats:
-        return self.stats(build_log.count("(cached)"), build_log.count("Downloading"))
+        return self.stats(build_log.count("(cached)"), len(self._DOWNLOAD.findall(build_log)))
 
 
 class GoBuildCacheAdapter(NativeBuildCacheAdapter):

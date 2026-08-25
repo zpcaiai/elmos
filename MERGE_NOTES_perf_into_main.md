@@ -849,3 +849,21 @@ ruff 和 pytest 都只能在云端跑。
 
 `--baseline` 的比对集合也从 ruff/pytest 扩到 **mypy 与 production-readiness**
 （mypy 两侧行号必然错位，只比「文件 + 错误码 + 文本」）。
+
+### 第八轮补记之三：别在门禁跑动期间编辑正在跑的脚本
+
+那次 4 小时的 run 在最后一步报 `syntax error near unexpected token ')'`，位置指向
+`classify()` 里的一行。**不是那行的语法问题** —— 是我在它跑的过程中改了三次
+`gate-triage.sh`：bash 按**文件偏移增量读取**脚本，函数体要到执行流走到那里才解析，
+文件被改动之后偏移全部错位，后半段就解析成了垃圾。
+`classify()` 定义在基线那一段之后，所以恰好在基线跑完时才炸。
+
+两个后果与修法：
+
+- `gate-triage.sh` 现在**开头先把自己复制到 `/tmp/gate-triage-self.$$.sh` 再 `exec`**，
+  此后怎么改原文件都不影响正在跑的这一次。
+- 新增 `--reuse`：不跑任何门禁，直接对 `/tmp/gate-triage/` 里已有的日志重新定性并做差 ——
+  一次 4 小时的 run 不必因为定性代码有 bug 就重跑。
+  同时每条门禁会把 PASS/FAIL 记进 `<name>.status`，以后 reuse 就是精确的。
+- 做差时**缺基线日志的门禁一律跳过**，不再把空集当成「对面一条都没有」从而把既有问题全判成合并伤；
+  `*.new` 差集文件每次先清掉，免得 reuse 拿上一轮的结论骗自己。

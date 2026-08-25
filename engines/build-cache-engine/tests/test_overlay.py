@@ -34,6 +34,7 @@ from pathlib import Path
 
 import pytest
 
+import elmos_build_cache.overlay as overlay_module
 from elmos_build_cache.cas import ContentAddressableStore
 from elmos_build_cache.config import WorkspaceConfig
 from elmos_build_cache.errors import ContractViolation, PermissionDenied, QuotaExceeded, UnsafePath
@@ -433,3 +434,42 @@ def test_the_workspace_works_on_top_of_a_kernel_overlayfs(tmp_path: Path) -> Non
         exported, undeclared = workspace.export(["README.md"])
         assert exported == ["README.md"]
         assert undeclared
+
+
+@pytest.mark.parametrize(
+    ("resolved", "denied"),
+    [
+        # The case observed on the user's Mac: /home is an autofs mount and
+        # realpath rewrites it onto the data volume, so a literal "/home"
+        # prefix never fired and a stranger's home was mountable.
+        ("/System/Volumes/Data/home/someone", True),
+        ("/System/Volumes/Data/Users/someone", True),
+        ("/System/Volumes/Data/etc/passwd", True),
+        ("/System/Volumes/Data/root", True),
+        # The data volume itself is not a deny entry, and a path under it that
+        # maps to nothing denied must still be allowed -- stripping the prefix
+        # must not turn into "deny everything on darwin".
+        ("/System/Volumes/Data/opt/workspace", False),
+        ("/System/Volumes/Data", False),
+    ],
+)
+def test_the_macos_data_volume_spelling_is_denied_too(resolved: str, denied: bool) -> None:
+    """Deny entries must fire on the data-volume spelling of the same location.
+
+    macOS resolves some paths through ``/System/Volumes/Data``. Enumerating the
+    rewritten spellings by hand is exactly what let ``/home/someone`` through on
+    darwin, so ``_denied_spellings`` strips the prefix and every entry in
+    ``DENIED_MOUNT_PREFIXES`` -- present and future -- covers both forms.
+
+    This drives ``_denied_spellings`` directly rather than ``check``: the
+    rewrite is done by the *host's* realpath, which linux will not perform, so
+    a ``check(Path("/home/someone"))`` here would test nothing.
+    """
+
+    spellings = overlay_module._denied_spellings(Path(resolved))
+    hit = any(
+        spelling == prefix or spelling.startswith(prefix + "/")
+        for spelling in spellings
+        for prefix in overlay_module.DENIED_MOUNT_PREFIXES
+    )
+    assert hit is denied, spellings

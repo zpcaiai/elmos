@@ -32,16 +32,30 @@
 
 set -uo pipefail
 
+# bash 是按文件偏移增量读取脚本的：跑动期间有人编辑本文件，后半段就会解析错乱
+# （2026-08-25 真踩过：改了 classify() 上面的行，跑到一半报 syntax error）。
+# 所以先把自己复制到 /tmp 再 exec，之后怎么改原文件都不影响这一次跑动。
+if [ -z "${GATE_TRIAGE_SNAPSHOT:-}" ]; then
+    SELF="/tmp/gate-triage-self.$$.sh"
+    cp "$0" "$SELF" || { echo "无法快照自身" >&2; exit 2; }
+    GATE_TRIAGE_SNAPSHOT=1 exec bash "$SELF" "$@"
+fi
+
 OUT=${GATE_TRIAGE_OUT:-/tmp/gate-triage}
 BASE=${GATE_TRIAGE_BASE:-/tmp/gate-triage-baseline}
 ENGINE=engines/polyglot-route-engine
 DO_BASELINE=0
+REUSE=0
+BASELINE_REF=""
 ONLY=""
 PW_INSTALL=0
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --baseline)        DO_BASELINE=1 ;;
+        --reuse)           REUSE=1 ;;
+        --baseline-ref)    shift; BASELINE_REF="$1"; DO_BASELINE=1 ;;
+        --baseline-ref=*)  BASELINE_REF="${1#--baseline-ref=}"; DO_BASELINE=1 ;;
         --only)            shift; ONLY=",$1," ;;
         --only=*)          ONLY=",${1#--only=}," ;;
         --playwright-install) PW_INSTALL=1 ;;
@@ -54,7 +68,12 @@ done
 [ -e .git ] || { echo "请在仓库根目录运行（elmos 或 elmos-merge 工作树）" >&2; exit 2; }
 command -v uv >/dev/null || { echo "找不到 uv" >&2; exit 2; }
 
-rm -rf "$OUT"; mkdir -p "$OUT"
+if [ "$REUSE" = 1 ]; then
+    [ -d "$OUT" ] || { echo "$OUT 里没有上一次的日志，--reuse 无从谈起" >&2; exit 2; }
+    echo "reuse：不跑门禁，直接对 $OUT 里已有的日志重新定性"
+else
+    rm -rf "$OUT"; mkdir -p "$OUT"
+fi
 touch "$OUT/.start"   # 用来在收尾时查出「跑动期间被改过的文件」
 
 g() { GIT_OPTIONAL_LOCKS=0 git "$@"; }   # 只读 git 一律走这里
@@ -105,11 +124,22 @@ while [ "$idx" -lt "${#NAMES[@]}" ]; do
         *",$name,"*) ;;
         *) STATUS+=("SKIP"); continue ;;
     esac
+    if [ "$REUSE" = 1 ]; then
+        if [ -f "$OUT/$name.status" ]; then
+            STATUS+=("$(cat "$OUT/$name.status")")
+        elif [ -f "$OUT/$name.log" ]; then
+            # 上一次没记状态（旧版脚本跑的），只能当失败送去定性
+            STATUS+=("FAIL")
+        else
+            STATUS+=("SKIP")
+        fi
+        continue
+    fi
     printf '\033[1m==> %s\033[0m\n' "$name"
     if eval "$cmd" > "$OUT/$name.log" 2>&1; then
-        printf '    PASS\n'; STATUS+=("PASS")
+        printf '    PASS\n'; STATUS+=("PASS"); echo PASS > "$OUT/$name.status"
     else
-        printf '    FAIL\n'; STATUS+=("FAIL")
+        printf '    FAIL\n'; STATUS+=("FAIL"); echo FAIL > "$OUT/$name.status"
         tail -12 "$OUT/$name.log" | sed 's/^/    | /'
     fi
 done
@@ -118,11 +148,40 @@ done
 # 判据只有一个：同一台机器、同一套命令，main 独跑一遍、合并树一遍，比集合的差。
 # 断言「这条红是既有的」而没做这一步，就是今天被推翻四次的那种断言。
 BASELINE_OK=0
-if [ "$DO_BASELINE" = 1 ]; then
+if [ "$REUSE" = 1 ] && [ -f "$OUT/base-pytest-engine.log" ]; then
+    BASELINE_OK=1
+    echo "reuse：沿用 $OUT/base-*.log 这份已有基线"
+elif [ "$DO_BASELINE" = 1 ]; then
     echo
-    printf '\033[1m==> 构建 main 独跑基线（git archive HEAD，只读，不碰索引）\033[0m\n'
+    # 基线该取哪个 ref，必须说清楚 —— 合并一旦提交，HEAD 就是合并后的树，
+    # 再拿 HEAD 当「main 独跑」就是自己跟自己比，差集恒为空，所有问题都会被判成 PRE-EXIST。
+    if [ -n "$BASELINE_REF" ]; then
+        BREF="$BASELINE_REF"; BWHY="你指定的"
+    elif g rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1; then
+        BREF=HEAD; BWHY="合并进行中，HEAD 就是被合入的那一侧"
+    elif [ "$(g rev-list --parents -n1 HEAD | wc -w | tr -d ' ')" -ge 3 ]; then
+        BREF="HEAD^1"; BWHY="HEAD 是合并提交，取第一个父提交"
+    else
+        BREF=""; BWHY=""
+    fi
+    if [ -z "$BREF" ]; then
+        printf '\033[31m==> 判不出基线该取哪个 ref\033[0m\n'
+        echo "    合并已经提交、HEAD 也不是合并提交，拿 HEAD 当基线等于自己跟自己比。"
+        echo "    请显式指定，例如：bash gate-triage.sh --baseline-ref c03782bfe"
+        DO_BASELINE=0
+    fi
+fi
+if [ "$DO_BASELINE" = 1 ] && [ "$REUSE" != 1 ]; then
+    printf '\033[1m==> 构建基线（git archive %s，%s；只读，不碰索引）\033[0m\n' "$BREF" "$BWHY"
+    echo "    $(g log -1 --format='%h %s' "$BREF" 2>/dev/null | cut -c1-90)"
+    if [ "$(g rev-parse "$BREF" 2>/dev/null)" = "$(g rev-parse HEAD 2>/dev/null)" ]; then
+        printf '\033[31m    基线 ref 与 HEAD 是同一个提交 —— 这样比出来的差集恒为空，拒绝继续\033[0m\n'
+        DO_BASELINE=0
+    fi
+fi
+if [ "$DO_BASELINE" = 1 ] && [ "$REUSE" != 1 ]; then
     rm -rf "$BASE"; mkdir -p "$BASE"
-    if g archive --format=tar HEAD | tar x -C "$BASE"; then
+    if g archive --format=tar "$BREF" | tar x -C "$BASE"; then
         echo "    解到 $BASE"
         ( cd "$BASE" && uv --directory $ENGINE run --locked --group dev \
             ruff check src tests ) > "$OUT/base-ruff-engine.log" 2>&1
@@ -148,9 +207,12 @@ unit_of()  { grep -E '^(FAIL|ERROR): ' "$1" 2>/dev/null | sort -u; }
 if [ "$BASELINE_OK" = 1 ]; then
     echo
     printf '\033[1m===== 与 main 独跑做差 =====\033[0m\n'
+    rm -f "$OUT"/*.new    # 清掉上一次留下的差集，否则 reuse 会拿旧结论骗自己
     for pair in "pytest-engine:fails_of" "ruff-engine:ruff_of" "mypy-engine:mypy_of" "production-readiness:unit_of"; do
         gate="${pair%%:*}"; fn="${pair##*:}"
         [ -f "$OUT/$gate.log" ] || continue
+        # 没有对应的基线日志就别做差 —— 空集会把既有问题全算成「新增」
+        [ -f "$OUT/base-$gate.log" ] || { echo "  [$gate] 没有基线日志，跳过做差"; continue; }
         "$fn" "$OUT/base-$gate.log" > "$OUT/$gate.base.set"
         "$fn" "$OUT/$gate.log"      > "$OUT/$gate.head.set"
         comm -13 "$OUT/$gate.base.set" "$OUT/$gate.head.set" > "$OUT/$gate.new"
@@ -186,7 +248,7 @@ classify() {
     fi
     if grep -qE 'RequireJavaVersion|is not in the allowed range' "$log"; then
         jdk=$(grep -oE 'is version [0-9.]+' "$log" | head -1)
-        VERDICT=ENV; WHY="JDK 版本闸：当前 $jdk，enforcer 要 [21,22)。在仓库根跑 sdk env（.sdkmanrc 钉的是 java=21.0.6-amzn / maven=3.9.10），没装就 sdk env install"; return
+        VERDICT=ENV; WHY="JDK 版本闸：当前 $jdk，enforcer 要 21.x。在仓库根跑 sdk env —— .sdkmanrc 钉的是 java=21.0.6-amzn 与 maven=3.9.10，没装先 sdk env install"; return
     fi
     if grep -q "ModuleNotFoundError: No module named" "$log"; then
         missing=$(grep -o "No module named .*" "$log" | head -1)
@@ -205,7 +267,7 @@ classify() {
             VERDICT=UNKNOWN; WHY="$n 条。基线已归零（第八轮补记），任何一条都不是既有欠账"
         fi ;;
     pytest-engine)
-        if [ "$BASELINE_OK" = 1 ]; then
+        if [ "$BASELINE_OK" = 1 ] && [ -f "$OUT/pytest-engine.new" ]; then
             if [ -s "$OUT/pytest-engine.new" ]; then VERDICT=MERGE; WHY="见上面的差集（新增失败）"
             else VERDICT=PRE-EXIST; WHY="相对 main 独跑没有新增失败（见上面的差集）"; fi
         elif grep -q 'PIPELINE_NO_VERIFIED_UNITS' "$log" && ! grep -q 'native' "$log"; then
@@ -214,7 +276,7 @@ classify() {
             VERDICT=UNKNOWN; WHY="没跑基线就判不了。加 --baseline 重跑"
         fi ;;
     mypy-engine)
-        if [ "$BASELINE_OK" = 1 ]; then
+        if [ "$BASELINE_OK" = 1 ] && [ -f "$OUT/mypy-engine.new" ]; then
             if [ -s "$OUT/mypy-engine.new" ]; then VERDICT=MERGE; WHY="见上面的差集（新增类型错误）"
             else VERDICT=PRE-EXIST; WHY="相对 main 独跑没有新增类型错误"; fi
         else
@@ -274,6 +336,9 @@ if [ -n "$touched" ]; then
     echo
 fi
 printf '需要处理的（MERGE + UNKNOWN）：%d 条；跳过 %d 条。全部日志在 %s/\n' "$bad" "$skipped" "$OUT"
+if [ "$REUSE" = 1 ]; then
+    echo "提示：reuse 模式没有重跑任何门禁，PASS/FAIL 来自上一次；旧版脚本留下的日志没有状态文件，会一律按 FAIL 送去定性。"
+fi
 if [ "$BASELINE_OK" != 1 ]; then
     echo "提示：没跑 --baseline，pytest 的定性只能靠模式猜。要下结论请加 --baseline 重跑一次。"
 fi

@@ -210,3 +210,42 @@ def test_msbuild_counts_both_of_msbuilds_skip_messages_as_not_a_miss(tmp_path: P
     cold = adapter.parse_diagnostics("  CoreCompile:\n  CoreResGen:\n")
     assert cold.misses == 2
     assert cold.hits == 0
+
+
+def test_flutter_pub_does_not_read_its_own_banner_as_a_download(tmp_path: Path) -> None:
+    """``Downloading packages...`` is a banner, not evidence of a fetch.
+
+    ``pub get --offline`` is forbidden to touch the network, yet it still prints
+    that header above the ``+ pkg`` lines. Counting the bare word therefore
+    scored a miss on a resolve served entirely from the sandboxed cache -- which
+    is exactly what the Flutter certification hit on a real SDK: an offline
+    resolve, seven packages restored from cache, ``misses=1``.
+
+    Same shape as the MSBuild ``_SKIPPED`` defect: a parser reading a banner
+    instead of a signal. A genuine fetch names the package.
+    """
+
+    adapter = ADAPTERS["flutter-pub"](
+        tmp_path / "volume", ToolchainProfile("flutter", "3.44.1"), "default"
+    )
+
+    offline = (
+        "Resolving dependencies...\n"
+        "Downloading packages...\n"
+        "+ characters 1.4.1\n"
+        "+ collection 1.19.1\n"
+        "+ flutter 0.0.0 from sdk flutter\n"
+        "Changed 7 dependencies!\n"
+    )
+    assert adapter.parse_diagnostics(offline).misses == 0
+
+    # And a real fetch still registers, so the parser was not blunted into
+    # always answering zero.
+    fetched = (
+        "Resolving dependencies...\n"
+        "Downloading packages...\n"
+        "Downloading collection 1.19.1...\n"
+        "Downloading meta 1.18.0...\n"
+        "Changed 2 dependencies!\n"
+    )
+    assert adapter.parse_diagnostics(fetched).misses == 2

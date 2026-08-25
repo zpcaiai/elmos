@@ -87,3 +87,4 @@ erl_crash.dump
 **/_snapshot-*/
 **/probe.tmp.*
 /gate-triage.sh
+apps/web-console/test-results/
