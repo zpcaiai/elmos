@@ -1,0 +1,103 @@
+workflow_id: autonomous-qa-loop
+version: 2
+inputs:
+  - project_id
+  - snapshot_ref
+  - mode
+  - scope
+  - test_profiles
+  - quality_gate
+  - budgets
+  - project_output
+
+steps:
+  - id: ingest
+    skill: 01-project-context-ingestion
+    checkpoint: true
+  - id: normalize_spec
+    skill: 02-spec-normalization
+    depends_on: [ingest]
+    on_ambiguity: fail_spec_blocked
+  - id: build_traceability
+    skill: 03-requirement-traceability-graph
+    depends_on: [normalize_spec]
+  - id: plan
+    skill: 04-risk-coverage-planning
+    depends_on: [build_traceability]
+  - id: plan_project_output
+    skill: 36-project-output-contract
+    depends_on: [plan]
+  - id: generate
+    skill: 05-test-model-dsl
+    fanout_skills:
+      - 06-functional-test-generation
+      - 07-api-contract-testing
+      - 08-data-database-testing
+      - 09-message-workflow-testing
+      - 10-ui-e2e-testing
+      - 11-visual-responsive-testing
+      - 12-accessibility-compatibility-testing
+      - 13-performance-baseline-testing
+      - 14-load-stress-spike-soak-testing
+      - 15-security-abuse-testing
+      - 16-resilience-chaos-recovery-testing
+      - 27-mutation-property-fuzz-testing
+    depends_on: [plan_project_output]
+  - id: materialize_test_artifacts
+    skill: 37-test-source-materialization
+    depends_on: [generate]
+    checkpoint: true
+  - id: validate_generated_tests
+    skill: 20-test-oracle-evidence
+    depends_on: [materialize_test_artifacts]
+  - id: prepare_data_and_environment
+    parallel:
+      - 17-test-data-management
+      - 18-environment-orchestration
+    depends_on: [validate_generated_tests]
+  - id: execute
+    skill: 19-distributed-test-execution
+    depends_on: [prepare_data_and_environment]
+    checkpoint_per_shard: true
+  - id: classify_flaky
+    skill: 21-flaky-test-control
+    depends_on: [execute]
+  - id: triage
+    skill: 22-defect-triage-rca
+    depends_on: [classify_flaky]
+  - id: repair
+    when: mode in [repair, certify, continuous] and defects.fixable > 0
+    sequence:
+      - 23-repair-planning
+      - 24-safe-code-auto-fix
+      - 25-test-self-healing
+      - 26-impact-analysis-regression
+      - 37-test-source-materialization
+    loop:
+      max_iterations_from: budgets.repair_iterations
+  - id: certify
+    skill: 28-quality-gate-release-certification
+    depends_on: [triage, repair]
+  - id: report
+    skill: 29-reporting-observability
+    always: true
+  - id: publish_project_output
+    skill: 38-project-output-bundle-publishing
+    depends_on: [report]
+    always_for_modes: [generate, verify, repair, certify, continuous]
+  - id: finalize_output_lifecycle
+    skill: 39-output-versioning-retention
+    depends_on: [publish_project_output]
+    always: true
+  - id: update_learning
+    skill: 34-continuous-learning-knowledge-base
+    depends_on: [report]
+    non_blocking: true
+
+cross_cutting:
+  control_plane: 00-qa-control-plane
+  checkpoint_resume: 30-checkpoint-resume-idempotency
+  runtime_eta: 31-runtime-cost-eta
+  adapter_sdk: 32-multilanguage-adapter-sdk
+  governance: 35-governance-approval-audit
+  project_output_contract: 36-project-output-contract

@@ -126,7 +126,7 @@ class TrustedSkillServiceTest(unittest.TestCase):
             item for item in outputs["source_locations"] if item["path"] == "app.py"
         )
         self.assertFalse(location["content_exposed"])
-        self.assertRegex(location["sha256"], r"^[0-9a-f]{64}$")
+        self.assertRegex(location["sha256"], r"^sha256:[0-9a-f]{64}$")
         self.assertEqual("NOT_RUN", outputs["build_command_execution"])
 
     def test_01_unbound_project_and_caller_path_are_rejected(self) -> None:

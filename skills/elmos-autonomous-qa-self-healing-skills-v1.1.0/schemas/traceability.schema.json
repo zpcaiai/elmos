@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/traceability.schema.json",
+  "title": "TraceabilityGraph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "graph_id",
+    "snapshot_id",
+    "nodes",
+    "edges",
+    "coverage_summary"
+  ],
+  "properties": {
+    "graph_id": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_id",
+          "kind",
+          "label"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "REQ",
+              "CONSTRAINT",
+              "UXR",
+              "NFR",
+              "AC",
+              "FEATURE",
+              "API",
+              "UI",
+              "DATA",
+              "EVENT",
+              "CODE",
+              "TEST",
+              "DEFECT",
+              "PATCH",
+              "EVIDENCE",
+              "TEST_FILE",
+              "OUTPUT_BUNDLE"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "kind"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "implements",
+              "verifies",
+              "depends_on",
+              "observed_by",
+              "caused_by",
+              "fixed_by",
+              "regressed_by",
+              "derived_from",
+              "materialized_as",
+              "contains",
+              "supersedes",
+              "validated_by"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "coverage_summary": {
+      "type": "object",
+      "required": [
+        "required_nodes",
+        "mapped_required_nodes",
+        "executable_required_nodes"
+      ],
+      "properties": {
+        "required_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mapped_required_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "executable_required_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "orphan_test_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "materialized_required_tests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmanifested_test_files": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

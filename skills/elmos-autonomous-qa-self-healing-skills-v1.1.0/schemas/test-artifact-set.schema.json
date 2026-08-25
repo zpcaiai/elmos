@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/test-artifact-set.schema.json",
+  "title": "TestArtifactSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "set_id",
+    "project_id",
+    "revision_id",
+    "run_id",
+    "created_at",
+    "state",
+    "native_layout",
+    "artifact_refs",
+    "test_case_refs",
+    "test_types",
+    "toolchains",
+    "commands"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "enum": [
+        "planned",
+        "generated",
+        "validated",
+        "executed",
+        "certified",
+        "blocked",
+        "stale",
+        "superseded"
+      ]
+    },
+    "native_layout": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "test_case_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "requirement_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "test_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "toolchains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "lock_or_digest_ref": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "commands": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "install": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "discover": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "smoke": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "by_type": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "test_cases": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "test_files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fixture_files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "config_files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "baselines": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "formatted": {
+          "type": "boolean"
+        },
+        "syntax_valid": {
+          "type": "boolean"
+        },
+        "discovered": {
+          "type": "boolean"
+        },
+        "buildable": {
+          "type": "boolean"
+        },
+        "smoke_executed": {
+          "type": "boolean"
+        },
+        "blocked_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "supersedes_set_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

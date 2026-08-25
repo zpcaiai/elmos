@@ -1,0 +1,33 @@
+workflow_id: pull-request-gate
+version: 2
+mode: verify
+scope:
+  strategy: changed_code_plus_transitive_impact
+  always_include:
+    - p0_tests
+    - changed_contract_tests
+    - changed_security_boundary_tests
+steps:
+  - ingest_changed_snapshot
+  - diff_requirements_code_and_test_artifacts
+  - update_traceability
+  - generate_or_update_impacted_tests
+  - materialize_impacted_test_files
+  - validate_test_discovery_and_build
+  - execute_impacted_tests
+  - run_contract_security_static_checks
+  - evaluate_pr_gates
+  - publish_status_evidence_and_tests_only_bundle
+fallback:
+  when_impact_confidence_below: 0.80
+  action: run_full_required_regression
+merge_blockers:
+  - unmapped_required_change
+  - required_test_without_materialized_file
+  - untracked_generated_test_file
+  - stale_required_test_artifact
+  - required_test_failed
+  - required_test_blocked
+  - confirmed_flaky_required_test
+  - critical_or_high_defect
+  - unauthorized_quality_gate_change

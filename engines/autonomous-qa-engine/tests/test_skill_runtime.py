@@ -145,6 +145,7 @@ def fixtures() -> dict[str, dict[str, Any]]:
         "full_regression_required": False,
         "impacted_tests": ["TC-1"],
         "unknown_paths": [],
+        "caller_confidence_accepted": False,
     }
     impact_report["report_digest"] = digest_json(impact_report)
     repair_plan = {
@@ -436,7 +437,13 @@ def fixtures() -> dict[str, dict[str, Any]]:
             },
             "28-quality-gate-release-certification": {
                 "mode": "verify",
-                "requirements": [REQUIREMENT],
+                "requirements": [
+                    {
+                        "requirement_id": REQUIREMENT["requirement_id"],
+                        "priority": REQUIREMENT["priority"],
+                        "required": REQUIREMENT["required"],
+                    }
+                ],
                 "tests": [
                     {
                         "test_case_id": "TC-1",
@@ -852,6 +859,129 @@ class SkillRuntimeTest(unittest.TestCase):
         self.assertEqual(result["state"], "BLOCKED")
         self.assertIn("pytest.mark.skip", result["outputs"]["findings"])
         self.assertFalse(result["outputs"]["merge_authorized"])
+
+    def test_advanced_repair_plan_composes_with_safe_auto_fix(self) -> None:
+        repair_inputs = fixtures()["23-repair-planning"]
+        repair_inputs["alternatives"][0]["changes"][0]["kind"] = "LOGIC-FIX"
+        repair = dispatch_skill(
+            "23-repair-planning",
+            request(repair_inputs, mutating=False),
+        )
+        self.assertEqual(repair["code"], "REPAIR_PLAN_CREATED")
+        repair_plan = repair["outputs"]["repair_plan"]
+        self.assertEqual(
+            repair_plan["alternatives"][0]["changes"][0]["kind"],
+            "logic-fix",
+        )
+        patch_request = {
+            "diff": (
+                "--- a/src/add.py\n+++ b/src/add.py\n@@ -1 +1 @@\n"
+                "-pass\n+return left + right\n"
+            ),
+            "candidate_paths": ["src/add.py"],
+            "semantic_tags": ["logic-fix"],
+            "repair_plan": repair_plan,
+            "repair_plan_digest": repair_plan["plan_digest"],
+            "isolated_worktree": True,
+            "sandboxed": True,
+            "approvals": [],
+        }
+        result = dispatch_skill("24-safe-code-auto-fix", request(patch_request))
+        self.assertEqual(result["code"], "PATCH_REQUIRES_TRUSTED_EXECUTION_RECEIPT")
+        self.assertEqual(result["outputs"]["risk_level"], "R1")
+        self.assertFalse(result["outputs"]["execution_performed"])
+        self.assertFalse(result["outputs"]["merge_authorized"])
+
+        mismatched = dict(patch_request)
+        mismatched["semantic_tags"] = ["adapter-fix"]
+        rejected = dispatch_skill("24-safe-code-auto-fix", request(mismatched))
+        self.assertEqual(rejected["code"], "REQUEST_CONTRACT_REJECTED")
+
+    def test_normalized_requirement_composes_with_quality_gate(self) -> None:
+        normalized = dispatch_skill(
+            "02-spec-normalization",
+            request({"requirements": [REQUIREMENT]}, mutating=False),
+        )
+        self.assertEqual(normalized["code"], "SPECIFICATION_NORMALIZED")
+        gate_request = dict(fixtures()["28-quality-gate-release-certification"])
+        gate_request["requirements"] = normalized["outputs"]["requirements"]
+        result = dispatch_skill(
+            "28-quality-gate-release-certification",
+            request(gate_request, mutating=False),
+        )
+        self.assertEqual(result["code"], "QUALITY_GATE_BLOCKED")
+        self.assertFalse(result["outputs"]["certified"])
+
+    def test_typed_impact_report_composes_with_ci_and_rejects_nested_fields(self) -> None:
+        impact_inputs = fixtures()["26-impact-analysis-regression"]
+        graph = impact_inputs["graph"]
+        graph_body = {
+            "graph_id": graph["graph_id"],
+            "nodes": sorted(graph["nodes"], key=lambda item: item["node_id"]),
+            "edges": sorted(
+                [
+                    *graph["edges"],
+                    {
+                        "source": "source-1",
+                        "target": "TC-1",
+                        "kind": "COVERS",
+                        "direction": "source-to-target",
+                    },
+                ],
+                key=lambda item: (
+                    item["source"],
+                    item["target"],
+                    item["kind"],
+                    item["direction"],
+                ),
+            ),
+        }
+        impact_inputs["graph"] = {
+            **graph_body,
+            "graph_digest": digest_json(graph_body),
+        }
+        impact = dispatch_skill(
+            "26-impact-analysis-regression",
+            request(impact_inputs, mutating=False),
+        )
+        self.assertEqual(impact["code"], "TRUSTED_GRAPH_RECEIPT_REQUIRED")
+        self.assertEqual(
+            impact["outputs"]["propagation_paths"],
+            [{"from": "source-1", "to": "TC-1"}],
+        )
+        ci_request = {
+            "event": "pull-request",
+            "changed_nodes": ["src/add.py"],
+            "impact_report": impact["outputs"],
+        }
+        result = dispatch_skill("33-ci-cd-pr-integration", request(ci_request))
+        self.assertEqual(result["code"], "TRUSTED_IMPACT_RECEIPT_REQUIRED")
+        self.assertFalse(result["outputs"]["merge_authorized"])
+
+        tampered_report = dict(impact["outputs"])
+        tampered_report["propagation_paths"] = [
+            {**item, "trusted": True}
+            for item in impact["outputs"]["propagation_paths"]
+        ]
+        unsigned_report = dict(tampered_report)
+        unsigned_report.pop("report_digest")
+        tampered_report["report_digest"] = digest_json(unsigned_report)
+        rejected = dispatch_skill(
+            "33-ci-cd-pr-integration",
+            request({**ci_request, "impact_report": tampered_report}),
+        )
+        self.assertEqual(rejected["code"], "REQUEST_CONTRACT_REJECTED")
+
+        hybrid_report = dict(impact["outputs"])
+        hybrid_report["impacted_tests"] = ["TC-1"]
+        unsigned_report = dict(hybrid_report)
+        unsigned_report.pop("report_digest")
+        hybrid_report["report_digest"] = digest_json(unsigned_report)
+        hybrid = dispatch_skill(
+            "33-ci-cd-pr-integration",
+            request({**ci_request, "impact_report": hybrid_report}),
+        )
+        self.assertEqual(hybrid["code"], "REQUEST_CONTRACT_REJECTED")
 
     def test_local_gate_never_claims_certification(self) -> None:
         result = dispatch_skill(

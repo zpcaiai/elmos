@@ -20,6 +20,7 @@ from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path, PurePosixPath
 from typing import Any, Mapping
+from urllib.parse import quote
 
 from .canonical import (
     UnsafePathError,
@@ -312,7 +313,13 @@ def _open_directory_chain_nofollow(path: Path, *, create: bool = False) -> list[
             except FileNotFoundError:
                 if not create:
                     raise
-                os.mkdir(part, mode=0o755, dir_fd=current)
+                try:
+                    os.mkdir(part, mode=0o755, dir_fd=current)
+                except FileExistsError:
+                    # A concurrent creator may win after the failed open.  The
+                    # descriptor-rooted no-follow open below still verifies
+                    # that the winner installed a real directory.
+                    pass
                 child = os.open(part, flags, dir_fd=current)
             descriptors.append(child)
             current = child
@@ -2426,6 +2433,12 @@ class ArtifactPublisher:
             raise ArtifactValidationError(
                 f"manifest/file mismatch; unmanifested={missing}, missing={absent}"
             )
+        if self.plan.run_mode == "repair" and not any(
+            record.category == "patch" for record in self.records
+        ):
+            raise ArtifactValidationError(
+                "verified repair publication requires a registered patch artifact"
+            )
         for record in self.records:
             data = _read_regular_file_nofollow(self.plan.staging_root, record.path)
             if (
@@ -3255,17 +3268,43 @@ class ArtifactLifecycleStore:
         length(quarantine_snapshot) AS quarantine_snapshot_size
     """
 
-    def __init__(self, database_path: str | Path, managed_root: str | Path) -> None:
-        self.database_path = Path(database_path)
+    def __init__(
+        self,
+        database_path: str | Path,
+        managed_root: str | Path,
+        *,
+        auto_recover: bool = True,
+    ) -> None:
+        if type(auto_recover) is not bool:
+            raise TypeError("auto_recover must be an exact boolean")
+        self.database_path = Path(os.path.abspath(database_path))
         self.managed_root = _safe_root(Path(managed_root), "managed_root")
-        database_resolved = self.database_path.resolve(strict=False)
+        database_parent = _safe_root(
+            self.database_path.parent, "lifecycle_database_parent"
+        )
         try:
-            database_resolved.relative_to(self.managed_root)
+            _safe_segment(self.database_path.name, "lifecycle database filename")
+        except (TypeError, ValueError) as exc:
+            raise LifecycleError("lifecycle database filename is unsafe") from exc
+        try:
+            self.database_path.relative_to(self.managed_root)
         except ValueError:
             pass
         else:
             raise LifecycleError("lifecycle database may not live under its managed output root")
-        self.database_path.parent.mkdir(parents=True, exist_ok=True)
+        database_descriptors: list[int] = []
+        try:
+            database_descriptors = _open_directory_chain_nofollow(
+                database_parent, create=True
+            )
+            _require_private_directory_descriptor(
+                database_descriptors[-1], "lifecycle database parent"
+            )
+            _fsync_directory_descriptor(database_descriptors[-1])
+        except OSError as exc:
+            raise LifecycleError("cannot safely create lifecycle database parent") from exc
+        finally:
+            _close_descriptors(database_descriptors)
         try:
             managed_descriptors = _open_directory_chain_nofollow(
                 self.managed_root, create=True
@@ -3289,16 +3328,129 @@ class ArtifactLifecycleStore:
         finally:
             for descriptor in reversed(quarantine_descriptors):
                 os.close(descriptor)
+        self._database_identity = self._prepare_database_file()
         self._initialize()
-        self.recover_collecting()
+        if auto_recover:
+            self.recover_collecting()
+
+    def _prepare_database_file(self) -> tuple[int, int]:
+        descriptors: list[int] = []
+        descriptor = -1
+        try:
+            descriptors = _open_directory_chain_nofollow(self.database_path.parent)
+            parent = descriptors[-1]
+            _require_private_directory_descriptor(parent, "lifecycle database parent")
+            flags = (
+                os.O_RDWR
+                | getattr(os, "O_NOFOLLOW", 0)
+                | getattr(os, "O_CLOEXEC", 0)
+            )
+            try:
+                descriptor = os.open(self.database_path.name, flags, dir_fd=parent)
+            except FileNotFoundError:
+                try:
+                    descriptor = os.open(
+                        self.database_path.name,
+                        flags | os.O_CREAT | os.O_EXCL,
+                        0o600,
+                        dir_fd=parent,
+                    )
+                except FileExistsError:
+                    descriptor = os.open(
+                        self.database_path.name, flags, dir_fd=parent
+                    )
+            opened = os.fstat(descriptor)
+            named = os.stat(
+                self.database_path.name,
+                dir_fd=parent,
+                follow_symlinks=False,
+            )
+            if (
+                not stat.S_ISREG(opened.st_mode)
+                or not stat.S_ISREG(named.st_mode)
+                or opened.st_nlink != 1
+                or named.st_nlink != 1
+                or (hasattr(os, "geteuid") and opened.st_uid != os.geteuid())
+                or (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino)
+            ):
+                raise LifecycleError("lifecycle database identity is unsafe")
+            os.fchmod(descriptor, 0o600)
+            os.fsync(descriptor)
+            _fsync_directory_descriptor(parent)
+            return int(opened.st_dev), int(opened.st_ino)
+        except LifecycleError:
+            raise
+        except OSError as exc:
+            raise LifecycleError("cannot establish lifecycle database") from exc
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
+            _close_descriptors(descriptors)
+
+    def _assert_database_path_identity(self) -> None:
+        try:
+            metadata = self.database_path.lstat()
+        except OSError as exc:
+            raise LifecycleError("lifecycle database identity is unavailable") from exc
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_nlink != 1
+            or (int(metadata.st_dev), int(metadata.st_ino)) != self._database_identity
+            or (hasattr(os, "geteuid") and metadata.st_uid != os.geteuid())
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+        ):
+            raise LifecycleError("lifecycle database identity changed")
+
+    def _assert_database_sidecars(self) -> None:
+        for suffix in ("-wal", "-shm", "-journal"):
+            path = Path(str(self.database_path) + suffix)
+            try:
+                metadata = path.lstat()
+            except FileNotFoundError:
+                continue
+            except OSError as exc:
+                raise LifecycleError(
+                    "lifecycle database sidecar is unavailable"
+                ) from exc
+            if (
+                not stat.S_ISREG(metadata.st_mode)
+                or metadata.st_nlink != 1
+                or (hasattr(os, "geteuid") and metadata.st_uid != os.geteuid())
+                or stat.S_IMODE(metadata.st_mode) & 0o077
+            ):
+                raise LifecycleError("lifecycle database sidecar identity is unsafe")
 
     def _connect(self) -> sqlite3.Connection:
-        connection = sqlite3.connect(
-            self.database_path, timeout=30, factory=_ClosingConnection
-        )
-        connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA foreign_keys = ON")
-        return connection
+        return self._open_connection(validate_schema=True)
+
+    def _open_connection(self, *, validate_schema: bool) -> sqlite3.Connection:
+        if type(validate_schema) is not bool:
+            raise TypeError("validate_schema must be an exact boolean")
+        self._assert_database_path_identity()
+        self._assert_database_sidecars()
+        database_uri = "file:" + quote(str(self.database_path), safe="/")
+        database_uri += "?mode=rw&nofollow=1"
+        connection: sqlite3.Connection | None = None
+        try:
+            connection = sqlite3.connect(
+                database_uri,
+                timeout=30,
+                factory=_ClosingConnection,
+                uri=True,
+            )
+            self._assert_database_path_identity()
+            self._assert_database_sidecars()
+            connection.row_factory = sqlite3.Row
+            connection.execute("PRAGMA foreign_keys = ON")
+            connection.execute("PRAGMA synchronous = FULL")
+            connection.execute("PRAGMA trusted_schema = OFF")
+            if validate_schema:
+                self._assert_current_schema(connection)
+            return connection
+        except BaseException:
+            if connection is not None:
+                connection.close()
+            raise
 
     @staticmethod
     def _normalize_schema_sql(value: str) -> str:
@@ -3366,45 +3518,60 @@ class ArtifactLifecycleStore:
 
     @classmethod
     def _assert_current_schema(cls, connection: sqlite3.Connection) -> None:
-        expected_objects = cls._expected_schema_objects()
-        actual_objects = cls._physical_schema_objects(connection)
-        if actual_objects != expected_objects:
-            raise LifecycleError(
-                "legacy or altered lifecycle schema requires an explicit verified migration"
-            )
-        version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-        if version != LIFECYCLE_SCHEMA_VERSION:
-            raise LifecycleError("lifecycle schema version is unsupported")
-        rows = connection.execute(
-            "SELECT schema_key, schema_version, physical_fingerprint, created_at "
-            "FROM lifecycle_schema"
-        ).fetchall()
-        expected_fingerprint = cls._expected_schema_fingerprint()
-        if (
-            len(rows) != 1
-            or rows[0]["schema_key"] != cls._SCHEMA_KEY
-            or rows[0]["schema_version"] != LIFECYCLE_SCHEMA_VERSION
-            or rows[0]["physical_fingerprint"] != expected_fingerprint
-            or cls._physical_schema_fingerprint(connection) != expected_fingerprint
-        ):
-            raise LifecycleError("lifecycle schema metadata or fingerprint is invalid")
         try:
-            _created_at_value(rows[0]["created_at"])
-        except (ArtifactValidationError, TypeError, ValueError) as exc:
-            raise LifecycleError("lifecycle schema creation timestamp is invalid") from exc
-        if connection.execute("PRAGMA foreign_key_check").fetchone() is not None:
-            raise LifecycleError("lifecycle schema contains a foreign-key violation")
-        oversized_snapshot = connection.execute(
-            "SELECT tenant_id, output_id FROM lifecycle_outputs "
-            "WHERE quarantine_snapshot IS NOT NULL AND ("
-            "typeof(quarantine_snapshot) <> 'blob' "
-            "OR length(quarantine_snapshot) > ?) LIMIT 1",
-            (MAX_GC_SNAPSHOT_BYTES,),
-        ).fetchone()
-        if oversized_snapshot is not None:
-            raise LifecycleError(
-                "lifecycle database contains an invalid garbage-collection snapshot"
-            )
+            expected_objects = cls._expected_schema_objects()
+            actual_objects = cls._physical_schema_objects(connection)
+            if actual_objects != expected_objects:
+                raise LifecycleError(
+                    "legacy or altered lifecycle schema requires an explicit verified migration"
+                )
+            version = int(connection.execute("PRAGMA user_version").fetchone()[0])
+            if version != LIFECYCLE_SCHEMA_VERSION:
+                raise LifecycleError("lifecycle schema version is unsupported")
+            rows = connection.execute(
+                "SELECT schema_key, schema_version, physical_fingerprint, created_at "
+                "FROM lifecycle_schema"
+            ).fetchall()
+            expected_fingerprint = cls._expected_schema_fingerprint()
+            if (
+                len(rows) != 1
+                or rows[0]["schema_key"] != cls._SCHEMA_KEY
+                or rows[0]["schema_version"] != LIFECYCLE_SCHEMA_VERSION
+                or rows[0]["physical_fingerprint"] != expected_fingerprint
+                or cls._physical_schema_fingerprint(connection) != expected_fingerprint
+            ):
+                raise LifecycleError("lifecycle schema metadata or fingerprint is invalid")
+            try:
+                _created_at_value(rows[0]["created_at"])
+            except (ArtifactValidationError, TypeError, ValueError) as exc:
+                raise LifecycleError("lifecycle schema creation timestamp is invalid") from exc
+            integrity_rows = connection.execute(
+                "PRAGMA integrity_check(1)"
+            ).fetchmany(2)
+            if (
+                len(integrity_rows) != 1
+                or len(integrity_rows[0]) != 1
+                or type(integrity_rows[0][0]) is not str
+                or integrity_rows[0][0] != "ok"
+            ):
+                raise LifecycleError("lifecycle database integrity check failed")
+            if connection.execute("PRAGMA foreign_key_check").fetchone() is not None:
+                raise LifecycleError("lifecycle schema contains a foreign-key violation")
+            oversized_snapshot = connection.execute(
+                "SELECT tenant_id, output_id FROM lifecycle_outputs "
+                "WHERE quarantine_snapshot IS NOT NULL AND ("
+                "typeof(quarantine_snapshot) <> 'blob' "
+                "OR length(quarantine_snapshot) > ?) LIMIT 1",
+                (MAX_GC_SNAPSHOT_BYTES,),
+            ).fetchone()
+            if oversized_snapshot is not None:
+                raise LifecycleError(
+                    "lifecycle database contains an invalid garbage-collection snapshot"
+                )
+        except LifecycleError:
+            raise
+        except sqlite3.Error as exc:
+            raise LifecycleError("lifecycle database integrity validation failed") from exc
 
     @classmethod
     def _create_current_schema(cls, connection: sqlite3.Connection) -> None:
@@ -3424,7 +3591,7 @@ class ArtifactLifecycleStore:
 
     def _initialize(self) -> None:
         try:
-            with self._connect() as connection:
+            with self._open_connection(validate_schema=False) as connection:
                 connection.execute("BEGIN EXCLUSIVE")
                 objects = self._physical_schema_objects(connection)
                 version = int(connection.execute("PRAGMA user_version").fetchone()[0])
@@ -3972,6 +4139,13 @@ class ArtifactLifecycleStore:
                 )
 
             materialize = manifest_status == "verified" and run_mode != "plan-only"
+            if materialize and run_mode == "repair" and not any(
+                artifact["category"] == "patch"
+                for artifact in normalized_artifacts
+            ):
+                raise LifecycleError(
+                    "verified repair output is missing its patch artifact"
+                )
             materialization = manifest.get("materialization")
             if (
                 not isinstance(materialization, dict)
@@ -4017,7 +4191,7 @@ class ArtifactLifecycleStore:
                     for artifact in normalized_artifacts
                 ):
                     required_kinds.add("qa-evidence")
-                if any(
+                if run_mode == "repair" or any(
                     artifact["category"] == "patch" for artifact in normalized_artifacts
                 ):
                     required_kinds.add("repair-patches")
@@ -4348,24 +4522,37 @@ class ArtifactLifecycleStore:
                 (tenant_id, output_id, reference_id),
             )
 
-    def gc_candidates(self, *, tenant_id: str) -> tuple[str, ...]:
+    def gc_candidates(
+        self, *, tenant_id: str, project_id: str | None = None
+    ) -> tuple[str, ...]:
         tenant_id = _safe_segment(tenant_id, "tenant_id")
+        if project_id is not None:
+            project_id = _safe_segment(project_id, "project_id")
         candidates: list[str] = []
         last_output_id = ""
         while True:
+            project_clause = (
+                "" if project_id is None else "AND output.project_id = ? "
+            )
+            parameters: tuple[object, ...] = (
+                (tenant_id, last_output_id, LIFECYCLE_PAGE_SIZE)
+                if project_id is None
+                else (tenant_id, last_output_id, project_id, LIFECYCLE_PAGE_SIZE)
+            )
+            query = (
+                "SELECT output_id, layout_version "
+                "FROM lifecycle_outputs AS output "
+                "WHERE tenant_id = ? AND output_id > ? "
+                + project_clause
+                + "AND state IN ('stale', 'superseded') "
+                "AND legal_hold = 0 AND NOT EXISTS ("
+                "SELECT 1 FROM lifecycle_references AS reference "
+                "WHERE reference.tenant_id = output.tenant_id "
+                "AND reference.output_id = output.output_id) "
+                "ORDER BY output_id LIMIT ?"
+            )
             with self._connect() as connection:
-                rows = connection.execute(
-                    "SELECT output_id, layout_version "
-                    "FROM lifecycle_outputs AS output "
-                    "WHERE tenant_id = ? AND output_id > ? "
-                    "AND state IN ('stale', 'superseded') "
-                    "AND legal_hold = 0 AND NOT EXISTS ("
-                    "SELECT 1 FROM lifecycle_references AS reference "
-                    "WHERE reference.tenant_id = output.tenant_id "
-                    "AND reference.output_id = output.output_id) "
-                    "ORDER BY output_id LIMIT ?",
-                    (tenant_id, last_output_id, LIFECYCLE_PAGE_SIZE),
-                ).fetchall()
+                rows = connection.execute(query, parameters).fetchall()
             if not rows:
                 break
             for row in rows:
@@ -4377,6 +4564,46 @@ class ArtifactLifecycleStore:
                 if len(candidates) > MAX_LIFECYCLE_RESULTS:
                     raise LifecycleError(
                         "garbage-collection candidate result limit exceeded"
+                    )
+            last_output_id = str(rows[-1]["output_id"])
+        return tuple(candidates)
+
+    def collecting_candidates(
+        self, *, tenant_id: str, project_id: str | None = None
+    ) -> tuple[str, ...]:
+        """Return the exact bounded set of crash-interrupted outputs in scope."""
+
+        tenant_id = _safe_segment(tenant_id, "tenant_id")
+        if project_id is not None:
+            project_id = _safe_segment(project_id, "project_id")
+        candidates: list[str] = []
+        last_output_id = ""
+        while True:
+            project_clause = "" if project_id is None else "AND project_id = ? "
+            parameters: tuple[object, ...] = (
+                (tenant_id, last_output_id, LIFECYCLE_PAGE_SIZE)
+                if project_id is None
+                else (tenant_id, last_output_id, project_id, LIFECYCLE_PAGE_SIZE)
+            )
+            with self._connect() as connection:
+                rows = connection.execute(
+                    "SELECT output_id, layout_version FROM lifecycle_outputs "
+                    "WHERE tenant_id = ? AND output_id > ? "
+                    + project_clause
+                    + "AND state = 'collecting' ORDER BY output_id LIMIT ?",
+                    parameters,
+                ).fetchall()
+            if not rows:
+                break
+            for row in rows:
+                if row["layout_version"] != LIFECYCLE_LAYOUT_VERSION:
+                    raise LifecycleError(
+                        "legacy collecting output requires an explicit migration"
+                    )
+                candidates.append(str(row["output_id"]))
+                if len(candidates) > MAX_LIFECYCLE_RESULTS:
+                    raise LifecycleError(
+                        "collecting candidate result limit exceeded"
                     )
             last_output_id = str(rows[-1]["output_id"])
         return tuple(candidates)
@@ -4696,22 +4923,49 @@ class ArtifactLifecycleStore:
             if updated.rowcount != 1:
                 raise LifecycleError("garbage-collection completion ownership was lost")
 
-    def recover_collecting(self, *, tenant_id: str | None = None) -> tuple[str, ...]:
+    def recover_collecting(
+        self,
+        *,
+        tenant_id: str | None = None,
+        project_id: str | None = None,
+        candidates: tuple[str, ...] | None = None,
+    ) -> tuple[str, ...]:
         """Reconcile crash-interrupted quarantine operations without deleting unknown data."""
 
         if tenant_id is not None:
             tenant_id = _safe_segment(tenant_id, "tenant_id")
+        if project_id is not None:
+            if tenant_id is None:
+                raise LifecycleError("project-scoped recovery requires tenant_id")
+            project_id = _safe_segment(project_id, "project_id")
         fence = self._acquire_gc_fence()
         if fence is None:
             return ()
         try:
-            return self._recover_collecting_locked(tenant_id=tenant_id, fence=fence)
+            return self._recover_collecting_locked(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                fence=fence,
+                candidates=candidates,
+            )
         finally:
             self._release_gc_fence(fence)
 
     def _recover_collecting_locked(
-        self, *, tenant_id: str | None, fence: _LifecycleFence
+        self,
+        *,
+        tenant_id: str | None,
+        project_id: str | None = None,
+        fence: _LifecycleFence,
+        candidates: tuple[str, ...] | None = None,
     ) -> tuple[str, ...]:
+        if candidates is not None:
+            return self._recover_collecting_candidates_locked(
+                tenant_id=tenant_id,
+                project_id=project_id,
+                candidates=candidates,
+                fence=fence,
+            )
         with self._connect() as connection:
             if tenant_id is None:
                 collecting_count = int(
@@ -4720,12 +4974,21 @@ class ArtifactLifecycleStore:
                         "WHERE state = 'collecting'"
                     ).fetchone()[0]
                 )
-            else:
+            elif project_id is None:
                 collecting_count = int(
                     connection.execute(
                         "SELECT COUNT(*) FROM lifecycle_outputs "
                         "WHERE state = 'collecting' AND tenant_id = ?",
                         (tenant_id,),
+                    ).fetchone()[0]
+                )
+            else:
+                collecting_count = int(
+                    connection.execute(
+                        "SELECT COUNT(*) FROM lifecycle_outputs "
+                        "WHERE state = 'collecting' AND tenant_id = ? "
+                        "AND project_id = ?",
+                        (tenant_id, project_id),
                     ).fetchone()[0]
                 )
         if collecting_count > MAX_LIFECYCLE_RESULTS:
@@ -4748,12 +5011,25 @@ class ArtifactLifecycleStore:
                             LIFECYCLE_PAGE_SIZE,
                         ),
                     ).fetchall()
-                else:
+                elif project_id is None:
                     candidates = connection.execute(
                         "SELECT tenant_id, output_id FROM lifecycle_outputs "
                         "WHERE state = 'collecting' AND tenant_id = ? "
                         "AND output_id > ? ORDER BY output_id LIMIT ?",
                         (tenant_id, last_output_id, LIFECYCLE_PAGE_SIZE),
+                    ).fetchall()
+                else:
+                    candidates = connection.execute(
+                        "SELECT tenant_id, output_id FROM lifecycle_outputs "
+                        "WHERE state = 'collecting' AND tenant_id = ? "
+                        "AND project_id = ? AND output_id > ? "
+                        "ORDER BY output_id LIMIT ?",
+                        (
+                            tenant_id,
+                            project_id,
+                            last_output_id,
+                            LIFECYCLE_PAGE_SIZE,
+                        ),
                     ).fetchall()
             if not candidates:
                 break
@@ -4769,6 +5045,53 @@ class ArtifactLifecycleStore:
                     raise LifecycleError("collecting recovery result limit exceeded")
             last_tenant_id = str(candidates[-1]["tenant_id"])
             last_output_id = str(candidates[-1]["output_id"])
+        return tuple(recovered)
+
+    def _recover_collecting_candidates_locked(
+        self,
+        *,
+        tenant_id: str | None,
+        project_id: str | None,
+        candidates: tuple[str, ...],
+        fence: _LifecycleFence,
+    ) -> tuple[str, ...]:
+        if tenant_id is None:
+            raise LifecycleError("candidate-bound recovery requires tenant_id")
+        if type(candidates) is not tuple:
+            raise LifecycleError("collecting candidates must be an exact tuple")
+        if len(candidates) > MAX_LIFECYCLE_RESULTS:
+            raise LifecycleError("collecting recovery result limit exceeded")
+        normalized = tuple(
+            _safe_segment(output_id, "output_id") for output_id in candidates
+        )
+        if normalized != tuple(sorted(set(normalized))):
+            raise LifecycleError("collecting candidates must be ordered and unique")
+        recovered: list[str] = []
+        for output_id in normalized:
+            self._assert_gc_fence(fence)
+            with self._connect() as connection:
+                current = self._select_lifecycle_row(
+                    connection, tenant_id=tenant_id, output_id=output_id
+                )
+            if current is None:
+                continue
+            if project_id is not None and current["project_id"] != project_id:
+                raise LifecycleError(
+                    "collecting candidate is outside the authorized project"
+                )
+            if current["state"] != "collecting":
+                continue
+            row = self._claim_collecting(
+                tenant_id=tenant_id,
+                output_id=output_id,
+            )
+            if row is None:
+                continue
+            if project_id is not None and row["project_id"] != project_id:
+                raise LifecycleError(
+                    "claimed collecting output crossed the authorized project"
+                )
+            self._recover_collecting_row(row, recovered, fence)
         return tuple(recovered)
 
     def _recover_collecting_row(
@@ -4861,9 +5184,18 @@ class ArtifactLifecycleStore:
         recovered.append(str(row["output_id"]))
 
     def collect_garbage(
-        self, *, tenant_id: str, dry_run: bool = True
+        self,
+        *,
+        tenant_id: str,
+        project_id: str | None = None,
+        dry_run: bool = True,
     ) -> tuple[str, ...]:
-        candidates = self.gc_candidates(tenant_id=tenant_id)
+        tenant_id = _safe_segment(tenant_id, "tenant_id")
+        if project_id is not None:
+            project_id = _safe_segment(project_id, "project_id")
+        candidates = self.gc_candidates(
+            tenant_id=tenant_id, project_id=project_id
+        )
         if dry_run:
             return candidates
         fence = self._acquire_gc_fence()
@@ -4871,7 +5203,10 @@ class ArtifactLifecycleStore:
             raise LifecycleError("another garbage-collection operation is active")
         try:
             return self._collect_garbage_locked(
-                tenant_id=tenant_id, candidates=candidates, fence=fence
+                tenant_id=tenant_id,
+                project_id=project_id,
+                candidates=candidates,
+                fence=fence,
             )
         finally:
             self._release_gc_fence(fence)
@@ -4880,6 +5215,7 @@ class ArtifactLifecycleStore:
         self,
         *,
         tenant_id: str,
+        project_id: str | None = None,
         candidates: tuple[str, ...],
         fence: _LifecycleFence,
     ) -> tuple[str, ...]:
@@ -4898,6 +5234,10 @@ class ArtifactLifecycleStore:
                 ).fetchone()[0]
                 if (
                     row is None
+                    or (
+                        project_id is not None
+                        and row["project_id"] != project_id
+                    )
                     or row["state"] not in {"stale", "superseded"}
                     or row["legal_hold"]
                     or references

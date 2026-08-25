@@ -1,0 +1,1767 @@
+{
+  "canonical_source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0",
+  "canonical_source_tree_sha256": "sha256:f8aa9ea2271fefc586ba96fae7700cf551262e31373257e7f24ef5f2761083fb",
+  "certification_status": "NOT_CERTIFIED",
+  "compiled_manifest_sha256": "sha256:44e73427c0614ea2d6c2c53b3f826fcce8f9cbab5c5b74b41dd6edc7816d1850",
+  "dual_root_byte_identical": true,
+  "external_evidence_status": "NOT_RUN",
+  "immutable_source": true,
+  "immutable_source_rewritten": false,
+  "implementation_matrix_sha256": "sha256:a6d56a20c2212da42166ca4c2a429e368e7c87620e0950e378a288272ad0a78d",
+  "install_roots": [
+    ".agents/skills",
+    "agent-skills/runtime"
+  ],
+  "installed_skill_count_per_root": 40,
+  "installed_tree_sha256_per_root": "sha256:7f71c9a972ef4368583798cbd2ae68df20179882eb3dea5b7b00197e5fa492c7",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package": {
+    "id": "elmos.autonomous-qa-self-healing",
+    "name": "elmos-autonomous-qa-self-healing-skills",
+    "version": "1.1.0"
+  },
+  "package_tools_executed": false,
+  "runtime_authority": {
+    "authority_modules": [
+      {
+        "bytes": 2550,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/__init__.py",
+        "sha256": "sha256:fc553b86a0170209abd250bb3509606e632dad8fb6efc9ce2a514b1fce9ab786"
+      },
+      {
+        "bytes": 50013,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/adapters.py",
+        "sha256": "sha256:0984e619d30ae23226e1d8f10e4e6e6416e19d58633b0459dc622d5184c5e5e8"
+      },
+      {
+        "bytes": 101664,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/advanced_skills.py",
+        "sha256": "sha256:2638a2cc0b61a00e5745863625afd0cdfbb6fc0816bdad978448d50fe020846c"
+      },
+      {
+        "bytes": 26872,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/api.py",
+        "sha256": "sha256:e7c2400b751711311daaead1ac9aca6995fb58f00918e1b0706542da5c4ac4dc"
+      },
+      {
+        "bytes": 223330,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/artifacts.py",
+        "sha256": "sha256:59bc7fc070ad40b48bcf6ce42ddc1afb9990d567ecb2cf6becb98904aceeb10f"
+      },
+      {
+        "bytes": 9234,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/canonical.py",
+        "sha256": "sha256:38948bb29170a375b24ed349e94183614305e315f2b0ff2e7380eaa9a45ab91c"
+      },
+      {
+        "bytes": 11643,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/cli.py",
+        "sha256": "sha256:12d487cca1f543a2e4dcd1ce5ae2b2383dfc6319493c5fb11b1ae22e65f9f957"
+      },
+      {
+        "bytes": 65284,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/context_skills.py",
+        "sha256": "sha256:bc5d3896267364292ef31427885c351fd8af62fb6ec3364f1aea052b2375ac86"
+      },
+      {
+        "bytes": 13705,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/contracts.py",
+        "sha256": "sha256:64acd10a12ecef7102ae7284c7d4079416cbe69f22f10f99cc49a458de6e3433"
+      },
+      {
+        "bytes": 133353,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/control_plane.py",
+        "sha256": "sha256:3cd8edb0049af4852ccbc0f610b4809db6d743f8a902f72734ebb7076c3c99ec"
+      },
+      {
+        "bytes": 207106,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/delivery_service.py",
+        "sha256": "sha256:7c605db59797c50e5c65d87a5f6fd3388e835b752ee1b556ad4239b656960c1e"
+      },
+      {
+        "bytes": 56864,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/delivery_skills.py",
+        "sha256": "sha256:784e56f298bc64a576d17a8b306f0523874791e28e03658119ce9fb915e2182f"
+      },
+      {
+        "bytes": 108469,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/domain.py",
+        "sha256": "sha256:47ec7429175e83e0c19896c8bc0b042b6e568ffd6208e736695322b9d6f9b35a"
+      },
+      {
+        "bytes": 49501,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/gates.py",
+        "sha256": "sha256:7055aa91750afed4995f37d0490a2aa18d2a0116253323fe72438d7aee777c2f"
+      },
+      {
+        "bytes": 56240,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/generators.py",
+        "sha256": "sha256:e2cfb5ae217f6194601b772dbb8180eb6af38cdcbb318b601c8040160e9ce71b"
+      },
+      {
+        "bytes": 22025,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/project.py",
+        "sha256": "sha256:0830ab8c0f660b840211e14ebf746b94363e1883e47f2fe2fcf2e4db78a4fef0"
+      },
+      {
+        "bytes": 24111,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17"
+      },
+      {
+        "bytes": 27016,
+        "path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/trusted_services.py",
+        "sha256": "sha256:0f59b84302446267507bf4a261c5f8a5178b5e0604a1e680ca5920272ddbc516"
+      }
+    ],
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "bindings": [
+      {
+        "handler_id": "execute_00_qa_control_plane",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.trusted_services.control_plane_operation_contract",
+        "phase": "control",
+        "source_id": "00-qa-control-plane"
+      },
+      {
+        "handler_id": "execute_01_project_context_ingestion",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.trusted_services.project_context_operation_contract",
+        "phase": "context",
+        "source_id": "01-project-context-ingestion"
+      },
+      {
+        "handler_id": "execute_02_spec_normalization",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.normalize_specification",
+        "phase": "context",
+        "source_id": "02-spec-normalization"
+      },
+      {
+        "handler_id": "execute_03_requirement_traceability_graph",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.build_traceability_graph",
+        "phase": "planning",
+        "source_id": "03-requirement-traceability-graph"
+      },
+      {
+        "handler_id": "execute_04_risk_coverage_planning",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.plan_risk_coverage",
+        "phase": "planning",
+        "source_id": "04-risk-coverage-planning"
+      },
+      {
+        "handler_id": "execute_05_test_model_dsl",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.compile_test_model",
+        "phase": "generation",
+        "source_id": "05-test-model-dsl"
+      },
+      {
+        "handler_id": "execute_06_functional_test_generation",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.generate_functional_tests",
+        "phase": "generation",
+        "source_id": "06-functional-test-generation"
+      },
+      {
+        "handler_id": "execute_07_api_contract_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_api_contract_tests",
+        "phase": "generation",
+        "source_id": "07-api-contract-testing"
+      },
+      {
+        "handler_id": "execute_08_data_database_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_database_tests",
+        "phase": "generation",
+        "source_id": "08-data-database-testing"
+      },
+      {
+        "handler_id": "execute_09_message_workflow_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_message_workflow_tests",
+        "phase": "generation",
+        "source_id": "09-message-workflow-testing"
+      },
+      {
+        "handler_id": "execute_10_ui_e2e_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_ui_e2e_tests",
+        "phase": "generation",
+        "source_id": "10-ui-e2e-testing"
+      },
+      {
+        "handler_id": "execute_11_visual_responsive_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_visual_responsive_tests",
+        "phase": "generation",
+        "source_id": "11-visual-responsive-testing"
+      },
+      {
+        "handler_id": "execute_12_accessibility_compatibility_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_accessibility_compatibility_tests",
+        "phase": "generation",
+        "source_id": "12-accessibility-compatibility-testing"
+      },
+      {
+        "handler_id": "execute_13_performance_baseline_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_performance_baseline_tests",
+        "phase": "generation",
+        "source_id": "13-performance-baseline-testing"
+      },
+      {
+        "handler_id": "execute_14_load_stress_spike_soak_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_load_stress_spike_soak_tests",
+        "phase": "generation",
+        "source_id": "14-load-stress-spike-soak-testing"
+      },
+      {
+        "handler_id": "execute_15_security_abuse_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_security_abuse_tests",
+        "phase": "generation",
+        "source_id": "15-security-abuse-testing"
+      },
+      {
+        "handler_id": "execute_16_resilience_chaos_recovery_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_resilience_chaos_recovery_tests",
+        "phase": "generation",
+        "source_id": "16-resilience-chaos-recovery-testing"
+      },
+      {
+        "handler_id": "execute_17_test_data_management",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.prepare_test_data",
+        "phase": "execution",
+        "source_id": "17-test-data-management"
+      },
+      {
+        "handler_id": "execute_18_environment_orchestration",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.plan_environment_orchestration",
+        "phase": "execution",
+        "source_id": "18-environment-orchestration"
+      },
+      {
+        "handler_id": "execute_19_distributed_test_execution",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.plan_shards",
+        "phase": "execution",
+        "source_id": "19-distributed-test-execution"
+      },
+      {
+        "handler_id": "execute_20_test_oracle_evidence",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.verify_evidence",
+        "phase": "evidence",
+        "source_id": "20-test-oracle-evidence"
+      },
+      {
+        "handler_id": "execute_21_flaky_test_control",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.classify_flaky",
+        "phase": "evidence",
+        "source_id": "21-flaky-test-control"
+      },
+      {
+        "handler_id": "execute_22_defect_triage_rca",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.triage_defects",
+        "phase": "repair",
+        "source_id": "22-defect-triage-rca"
+      },
+      {
+        "handler_id": "execute_23_repair_planning",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.plan_repair",
+        "phase": "repair",
+        "source_id": "23-repair-planning"
+      },
+      {
+        "handler_id": "execute_24_safe_code_auto_fix",
+        "mutating": true,
+        "operation_id": "external-plan:elmos_autonomous_qa.domain.validate_patch",
+        "phase": "repair",
+        "source_id": "24-safe-code-auto-fix"
+      },
+      {
+        "handler_id": "execute_25_test_self_healing",
+        "mutating": true,
+        "operation_id": "external-plan:elmos_autonomous_qa.domain.validate_test_heal",
+        "phase": "repair",
+        "source_id": "25-test-self-healing"
+      },
+      {
+        "handler_id": "execute_26_impact_analysis_regression",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.analyze_impact",
+        "phase": "repair",
+        "source_id": "26-impact-analysis-regression"
+      },
+      {
+        "handler_id": "execute_27_mutation_property_fuzz_testing",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.plan_advanced_testing",
+        "phase": "generation",
+        "source_id": "27-mutation-property-fuzz-testing"
+      },
+      {
+        "handler_id": "execute_28_quality_gate_release_certification",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.gates.evaluate_quality_gate_contract",
+        "phase": "gate",
+        "source_id": "28-quality-gate-release-certification"
+      },
+      {
+        "handler_id": "execute_29_reporting_observability",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.build_report",
+        "phase": "reporting",
+        "source_id": "29-reporting-observability"
+      },
+      {
+        "handler_id": "execute_30_checkpoint_resume_idempotency",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.create_checkpoint",
+        "phase": "control",
+        "source_id": "30-checkpoint-resume-idempotency"
+      },
+      {
+        "handler_id": "execute_31_runtime_cost_eta",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.estimate_eta",
+        "phase": "planning",
+        "source_id": "31-runtime-cost-eta"
+      },
+      {
+        "handler_id": "execute_32_multilanguage_adapter_sdk",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.adapters.execute_adapter_contract",
+        "phase": "generation",
+        "source_id": "32-multilanguage-adapter-sdk"
+      },
+      {
+        "handler_id": "execute_33_ci_cd_pr_integration",
+        "mutating": true,
+        "operation_id": "external-plan:elmos_autonomous_qa.domain.plan_ci",
+        "phase": "publishing",
+        "source_id": "33-ci-cd-pr-integration"
+      },
+      {
+        "handler_id": "execute_34_continuous_learning_knowledge_base",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.propose_learning",
+        "phase": "lifecycle",
+        "source_id": "34-continuous-learning-knowledge-base"
+      },
+      {
+        "handler_id": "execute_35_governance_approval_audit",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.authorize_action",
+        "phase": "control",
+        "source_id": "35-governance-approval-audit"
+      },
+      {
+        "handler_id": "execute_36_project_output_contract",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.delivery_skills.plan_project_output_contract",
+        "phase": "delivery-plan",
+        "source_id": "36-project-output-contract"
+      },
+      {
+        "handler_id": "execute_37_test_source_materialization",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.delivery_skills.emit_test_sources",
+        "phase": "materialization",
+        "source_id": "37-test-source-materialization"
+      },
+      {
+        "handler_id": "execute_38_project_output_bundle_publishing",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.delivery_service.publishing_operation_contract",
+        "phase": "publishing",
+        "source_id": "38-project-output-bundle-publishing"
+      },
+      {
+        "handler_id": "execute_39_output_versioning_retention",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.delivery_service.lifecycle_operation_contract",
+        "phase": "lifecycle",
+        "source_id": "39-output-versioning-retention"
+      }
+    ],
+    "dispatcher": "dispatch_skill",
+    "handler_ids": [
+      "execute_00_qa_control_plane",
+      "execute_01_project_context_ingestion",
+      "execute_02_spec_normalization",
+      "execute_03_requirement_traceability_graph",
+      "execute_04_risk_coverage_planning",
+      "execute_05_test_model_dsl",
+      "execute_06_functional_test_generation",
+      "execute_07_api_contract_testing",
+      "execute_08_data_database_testing",
+      "execute_09_message_workflow_testing",
+      "execute_10_ui_e2e_testing",
+      "execute_11_visual_responsive_testing",
+      "execute_12_accessibility_compatibility_testing",
+      "execute_13_performance_baseline_testing",
+      "execute_14_load_stress_spike_soak_testing",
+      "execute_15_security_abuse_testing",
+      "execute_16_resilience_chaos_recovery_testing",
+      "execute_17_test_data_management",
+      "execute_18_environment_orchestration",
+      "execute_19_distributed_test_execution",
+      "execute_20_test_oracle_evidence",
+      "execute_21_flaky_test_control",
+      "execute_22_defect_triage_rca",
+      "execute_23_repair_planning",
+      "execute_24_safe_code_auto_fix",
+      "execute_25_test_self_healing",
+      "execute_26_impact_analysis_regression",
+      "execute_27_mutation_property_fuzz_testing",
+      "execute_28_quality_gate_release_certification",
+      "execute_29_reporting_observability",
+      "execute_30_checkpoint_resume_idempotency",
+      "execute_31_runtime_cost_eta",
+      "execute_32_multilanguage_adapter_sdk",
+      "execute_33_ci_cd_pr_integration",
+      "execute_34_continuous_learning_knowledge_base",
+      "execute_35_governance_approval_audit",
+      "execute_36_project_output_contract",
+      "execute_37_test_source_materialization",
+      "execute_38_project_output_bundle_publishing",
+      "execute_39_output_versioning_retention"
+    ],
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating_flags": [
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true
+    ],
+    "operation_ids": [
+      "elmos_autonomous_qa.trusted_services.control_plane_operation_contract",
+      "elmos_autonomous_qa.trusted_services.project_context_operation_contract",
+      "elmos_autonomous_qa.context_skills.normalize_specification",
+      "elmos_autonomous_qa.context_skills.build_traceability_graph",
+      "elmos_autonomous_qa.context_skills.plan_risk_coverage",
+      "elmos_autonomous_qa.context_skills.compile_test_model",
+      "elmos_autonomous_qa.generators.generate_functional_tests",
+      "elmos_autonomous_qa.generators.plan_api_contract_tests",
+      "elmos_autonomous_qa.generators.plan_database_tests",
+      "elmos_autonomous_qa.generators.plan_message_workflow_tests",
+      "elmos_autonomous_qa.generators.plan_ui_e2e_tests",
+      "elmos_autonomous_qa.generators.plan_visual_responsive_tests",
+      "elmos_autonomous_qa.generators.plan_accessibility_compatibility_tests",
+      "elmos_autonomous_qa.generators.plan_performance_baseline_tests",
+      "elmos_autonomous_qa.generators.plan_load_stress_spike_soak_tests",
+      "elmos_autonomous_qa.generators.plan_security_abuse_tests",
+      "elmos_autonomous_qa.generators.plan_resilience_chaos_recovery_tests",
+      "elmos_autonomous_qa.context_skills.prepare_test_data",
+      "elmos_autonomous_qa.context_skills.plan_environment_orchestration",
+      "elmos_autonomous_qa.advanced_skills.plan_shards",
+      "elmos_autonomous_qa.advanced_skills.verify_evidence",
+      "elmos_autonomous_qa.advanced_skills.classify_flaky",
+      "elmos_autonomous_qa.advanced_skills.triage_defects",
+      "elmos_autonomous_qa.advanced_skills.plan_repair",
+      "external-plan:elmos_autonomous_qa.domain.validate_patch",
+      "external-plan:elmos_autonomous_qa.domain.validate_test_heal",
+      "elmos_autonomous_qa.advanced_skills.analyze_impact",
+      "elmos_autonomous_qa.advanced_skills.plan_advanced_testing",
+      "elmos_autonomous_qa.gates.evaluate_quality_gate_contract",
+      "elmos_autonomous_qa.advanced_skills.build_report",
+      "elmos_autonomous_qa.advanced_skills.create_checkpoint",
+      "elmos_autonomous_qa.advanced_skills.estimate_eta",
+      "elmos_autonomous_qa.adapters.execute_adapter_contract",
+      "external-plan:elmos_autonomous_qa.domain.plan_ci",
+      "elmos_autonomous_qa.advanced_skills.propose_learning",
+      "elmos_autonomous_qa.advanced_skills.authorize_action",
+      "elmos_autonomous_qa.delivery_skills.plan_project_output_contract",
+      "elmos_autonomous_qa.delivery_skills.emit_test_sources",
+      "elmos_autonomous_qa.delivery_service.publishing_operation_contract",
+      "elmos_autonomous_qa.delivery_service.lifecycle_operation_contract"
+    ],
+    "phases": [
+      "control",
+      "context",
+      "context",
+      "planning",
+      "planning",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "generation",
+      "execution",
+      "execution",
+      "execution",
+      "evidence",
+      "evidence",
+      "repair",
+      "repair",
+      "repair",
+      "repair",
+      "repair",
+      "generation",
+      "gate",
+      "reporting",
+      "control",
+      "planning",
+      "generation",
+      "publishing",
+      "lifecycle",
+      "control",
+      "delivery-plan",
+      "materialization",
+      "publishing",
+      "lifecycle"
+    ],
+    "source_ids": [
+      "00-qa-control-plane",
+      "01-project-context-ingestion",
+      "02-spec-normalization",
+      "03-requirement-traceability-graph",
+      "04-risk-coverage-planning",
+      "05-test-model-dsl",
+      "06-functional-test-generation",
+      "07-api-contract-testing",
+      "08-data-database-testing",
+      "09-message-workflow-testing",
+      "10-ui-e2e-testing",
+      "11-visual-responsive-testing",
+      "12-accessibility-compatibility-testing",
+      "13-performance-baseline-testing",
+      "14-load-stress-spike-soak-testing",
+      "15-security-abuse-testing",
+      "16-resilience-chaos-recovery-testing",
+      "17-test-data-management",
+      "18-environment-orchestration",
+      "19-distributed-test-execution",
+      "20-test-oracle-evidence",
+      "21-flaky-test-control",
+      "22-defect-triage-rca",
+      "23-repair-planning",
+      "24-safe-code-auto-fix",
+      "25-test-self-healing",
+      "26-impact-analysis-regression",
+      "27-mutation-property-fuzz-testing",
+      "28-quality-gate-release-certification",
+      "29-reporting-observability",
+      "30-checkpoint-resume-idempotency",
+      "31-runtime-cost-eta",
+      "32-multilanguage-adapter-sdk",
+      "33-ci-cd-pr-integration",
+      "34-continuous-learning-knowledge-base",
+      "35-governance-approval-audit",
+      "36-project-output-contract",
+      "37-test-source-materialization",
+      "38-project-output-bundle-publishing",
+      "39-output-versioning-retention"
+    ]
+  },
+  "runtime_evidence_status": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+  "schema_version": "elmos.autonomous-qa.installed-manifest.v1",
+  "skills": [
+    {
+      "dependencies": [],
+      "installed_alias": "autonomous-qa-00-qa-control-plane",
+      "installed_tree_sha256": "sha256:3fa985d5d1733f31750629ae286fcc0bf233ebd4227791def610bf2dabeab6e2",
+      "ordinal": 0,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_00_qa_control_plane",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.trusted_services.control_plane_operation_contract",
+        "phase": "control",
+        "side_effects_authorized": false,
+        "skill_key": "00-qa-control-plane"
+      },
+      "source_id": "00-qa-control-plane",
+      "source_name": "QA Control Plane",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/00-qa-control-plane/SKILL.md",
+      "source_sha256": "sha256:72fe0e567586375feabff9b936003d4410608015c67ba630a1b299db98a5e100"
+    },
+    {
+      "dependencies": [
+        "00-qa-control-plane"
+      ],
+      "installed_alias": "autonomous-qa-01-project-context-ingestion",
+      "installed_tree_sha256": "sha256:bba901a5b9d2a73291a62800a75b75ebc64ed3cbd2d6e4eec61aeeda39955649",
+      "ordinal": 1,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_01_project_context_ingestion",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.trusted_services.project_context_operation_contract",
+        "phase": "context",
+        "side_effects_authorized": false,
+        "skill_key": "01-project-context-ingestion"
+      },
+      "source_id": "01-project-context-ingestion",
+      "source_name": "Project Context Ingestion",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/01-project-context-ingestion/SKILL.md",
+      "source_sha256": "sha256:c3d0eb15f2e2c3c0dd1ea4835b84617c74c43e8882e7541301114bf8dd4eb5d7"
+    },
+    {
+      "dependencies": [
+        "01-project-context-ingestion"
+      ],
+      "installed_alias": "autonomous-qa-02-spec-normalization",
+      "installed_tree_sha256": "sha256:a305d89fc4dfa4722669db46c92f886a2062cf98420fec2b4e1103d37b0ce9a6",
+      "ordinal": 2,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_02_spec_normalization",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.normalize_specification",
+        "phase": "context",
+        "side_effects_authorized": false,
+        "skill_key": "02-spec-normalization"
+      },
+      "source_id": "02-spec-normalization",
+      "source_name": "Specification Normalization",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/02-spec-normalization/SKILL.md",
+      "source_sha256": "sha256:bc67bdc2a1b35b33fad848b394e7853d039a95a514351f685798981871763c1f"
+    },
+    {
+      "dependencies": [
+        "02-spec-normalization"
+      ],
+      "installed_alias": "autonomous-qa-03-requirement-traceability-graph",
+      "installed_tree_sha256": "sha256:7b712cc504702017af69825d7bf118174a534df43467d5904050c84841cfd07b",
+      "ordinal": 3,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_03_requirement_traceability_graph",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.build_traceability_graph",
+        "phase": "planning",
+        "side_effects_authorized": false,
+        "skill_key": "03-requirement-traceability-graph"
+      },
+      "source_id": "03-requirement-traceability-graph",
+      "source_name": "Requirement Traceability Graph",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/03-requirement-traceability-graph/SKILL.md",
+      "source_sha256": "sha256:21e9b9ef27d7e7f73da4f1f0357cc34d1ecc5d2bd20ba57c3b649a3cca678071"
+    },
+    {
+      "dependencies": [
+        "03-requirement-traceability-graph"
+      ],
+      "installed_alias": "autonomous-qa-04-risk-coverage-planning",
+      "installed_tree_sha256": "sha256:a07f6734b019d72cec4ca0fb5ce8503ef905f8bae28460059c4b793d2b95ffbe",
+      "ordinal": 4,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_04_risk_coverage_planning",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.plan_risk_coverage",
+        "phase": "planning",
+        "side_effects_authorized": false,
+        "skill_key": "04-risk-coverage-planning"
+      },
+      "source_id": "04-risk-coverage-planning",
+      "source_name": "Risk & Coverage Planning",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/04-risk-coverage-planning/SKILL.md",
+      "source_sha256": "sha256:6d0cb90bf8c73207a2963d3f585babfdcb8e787a1287073d9c365c176f3f96e6"
+    },
+    {
+      "dependencies": [
+        "04-risk-coverage-planning"
+      ],
+      "installed_alias": "autonomous-qa-05-test-model-dsl",
+      "installed_tree_sha256": "sha256:008aa7cf56ef64ca9709eeff19852fae0e746308c1ead16157bd8e9f6680ed49",
+      "ordinal": 5,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_05_test_model_dsl",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.compile_test_model",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "05-test-model-dsl"
+      },
+      "source_id": "05-test-model-dsl",
+      "source_name": "Unified Test Model & DSL",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/05-test-model-dsl/SKILL.md",
+      "source_sha256": "sha256:702ee717e3ff7cb51c52067005f3d976120763168890c25f7bd62fbebe86176c"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-06-functional-test-generation",
+      "installed_tree_sha256": "sha256:3990196381492deedfdfc07dafe82cfe580cf3cd86e8d3ccf3eb35db8c2536be",
+      "ordinal": 6,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_06_functional_test_generation",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.generate_functional_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "06-functional-test-generation"
+      },
+      "source_id": "06-functional-test-generation",
+      "source_name": "Functional Test Generation",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/06-functional-test-generation/SKILL.md",
+      "source_sha256": "sha256:d1325205b11bfb17ca290b212a0781bec9ce66c8558614ee04b88517c78073eb"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-07-api-contract-testing",
+      "installed_tree_sha256": "sha256:00cb76c6c926c59b9881bbb911250e90433b6fb001f9c3ecc1b967542cebec23",
+      "ordinal": 7,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_07_api_contract_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_api_contract_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "07-api-contract-testing"
+      },
+      "source_id": "07-api-contract-testing",
+      "source_name": "API & Contract Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/07-api-contract-testing/SKILL.md",
+      "source_sha256": "sha256:01ca8dbdaeabed03fbe7c135b1811796a540f14528bf95e210ff67e267f9ec3c"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-08-data-database-testing",
+      "installed_tree_sha256": "sha256:f225841bca45b037ffa5fbb73fa882bb7f098af71e84d22e321084a8eb648d1b",
+      "ordinal": 8,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_08_data_database_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_database_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "08-data-database-testing"
+      },
+      "source_id": "08-data-database-testing",
+      "source_name": "Data & Database Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/08-data-database-testing/SKILL.md",
+      "source_sha256": "sha256:1311b3feb07fe71b605496c746e2facbd552e937a77c87cd48b13069e2a38300"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-09-message-workflow-testing",
+      "installed_tree_sha256": "sha256:2f676d24a90b7c96d2e3ee32afcd39aaf41a2ccf054dde075ff72c2de3d36e3d",
+      "ordinal": 9,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_09_message_workflow_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_message_workflow_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "09-message-workflow-testing"
+      },
+      "source_id": "09-message-workflow-testing",
+      "source_name": "Message & Workflow Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/09-message-workflow-testing/SKILL.md",
+      "source_sha256": "sha256:5ebd7272fdeb7831e1816cbc70cf41deedfc0913b841c27f46d7d26ecdbef89a"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-10-ui-e2e-testing",
+      "installed_tree_sha256": "sha256:4ce45deb160fb14897bb6ec02babd2990bd24c53dc167d9e5f9dfc366b877e89",
+      "ordinal": 10,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_10_ui_e2e_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_ui_e2e_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "10-ui-e2e-testing"
+      },
+      "source_id": "10-ui-e2e-testing",
+      "source_name": "UI End-to-End Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/10-ui-e2e-testing/SKILL.md",
+      "source_sha256": "sha256:45756a21639c72e549e3ccee4801fba1ae2ff6cdad9c7eeadd3af6c10882bd95"
+    },
+    {
+      "dependencies": [
+        "10-ui-e2e-testing"
+      ],
+      "installed_alias": "autonomous-qa-11-visual-responsive-testing",
+      "installed_tree_sha256": "sha256:76aa06486c47785b4f8624a7e05bb38a97869afcd1f0d2c42215300be6bc0844",
+      "ordinal": 11,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_11_visual_responsive_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_visual_responsive_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "11-visual-responsive-testing"
+      },
+      "source_id": "11-visual-responsive-testing",
+      "source_name": "Visual & Responsive Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/11-visual-responsive-testing/SKILL.md",
+      "source_sha256": "sha256:e65f9986f07af22aa9db168948ad453367f4a0fa52c86f3d987eafbbfc696acb"
+    },
+    {
+      "dependencies": [
+        "10-ui-e2e-testing"
+      ],
+      "installed_alias": "autonomous-qa-12-accessibility-compatibility-testing",
+      "installed_tree_sha256": "sha256:8fb1de49a7d4a08d9fbe1ce3fea381707772cba7a3523dec82421f8245dc7c9a",
+      "ordinal": 12,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_12_accessibility_compatibility_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_accessibility_compatibility_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "12-accessibility-compatibility-testing"
+      },
+      "source_id": "12-accessibility-compatibility-testing",
+      "source_name": "Accessibility & Compatibility Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/12-accessibility-compatibility-testing/SKILL.md",
+      "source_sha256": "sha256:ac67a837f2f60314a3ad77b008b2b61b2bbe23df380d48ba10481f9b9a226ed8"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-13-performance-baseline-testing",
+      "installed_tree_sha256": "sha256:c017e97385a24f476c659076a09ec3703ed61e331d48bd41c4cb58d69ee040f5",
+      "ordinal": 13,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_13_performance_baseline_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_performance_baseline_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "13-performance-baseline-testing"
+      },
+      "source_id": "13-performance-baseline-testing",
+      "source_name": "Performance Baseline Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/13-performance-baseline-testing/SKILL.md",
+      "source_sha256": "sha256:070f30e3fa13d18083ca688125150a63bc71d9bb7f4abc2863f0820456017a58"
+    },
+    {
+      "dependencies": [
+        "13-performance-baseline-testing"
+      ],
+      "installed_alias": "autonomous-qa-14-load-stress-spike-soak-testing",
+      "installed_tree_sha256": "sha256:95659f5e5dc63ac2ff6efd8c870fb1a131b774835792f8de80be104a62962e2c",
+      "ordinal": 14,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_14_load_stress_spike_soak_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_load_stress_spike_soak_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "14-load-stress-spike-soak-testing"
+      },
+      "source_id": "14-load-stress-spike-soak-testing",
+      "source_name": "Load, Stress, Spike & Soak Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/14-load-stress-spike-soak-testing/SKILL.md",
+      "source_sha256": "sha256:2799b97f14f80d29bed8e10c9e907017681f8f390d92c15a8e24b36cdff7551a"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-15-security-abuse-testing",
+      "installed_tree_sha256": "sha256:ac89d77f7e3f672322d494e2e978d8f45b9651385b63add619687368faee42c9",
+      "ordinal": 15,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_15_security_abuse_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_security_abuse_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "15-security-abuse-testing"
+      },
+      "source_id": "15-security-abuse-testing",
+      "source_name": "Security & Abuse Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/15-security-abuse-testing/SKILL.md",
+      "source_sha256": "sha256:a74f48e5bd50faa9c35afa1ba838b5643b965eb8601c5bee4efb8aae20631d60"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-16-resilience-chaos-recovery-testing",
+      "installed_tree_sha256": "sha256:49326cce1c5b6f1f61480f6b7a8a76835c89535e499b51056a81f48e6a8260c1",
+      "ordinal": 16,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_16_resilience_chaos_recovery_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.generators.plan_resilience_chaos_recovery_tests",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "16-resilience-chaos-recovery-testing"
+      },
+      "source_id": "16-resilience-chaos-recovery-testing",
+      "source_name": "Resilience, Chaos & Recovery Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/16-resilience-chaos-recovery-testing/SKILL.md",
+      "source_sha256": "sha256:4ace4d57c7775732e67ef7bb4681eab785eb811b78b95f21921508270c7f82ab"
+    },
+    {
+      "dependencies": [
+        "04-risk-coverage-planning"
+      ],
+      "installed_alias": "autonomous-qa-17-test-data-management",
+      "installed_tree_sha256": "sha256:21e65b9771209f94a0be2fc851e652fbf62cb32c6aea6575d63860a07196edde",
+      "ordinal": 17,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_17_test_data_management",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.prepare_test_data",
+        "phase": "execution",
+        "side_effects_authorized": false,
+        "skill_key": "17-test-data-management"
+      },
+      "source_id": "17-test-data-management",
+      "source_name": "Test Data Management",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/17-test-data-management/SKILL.md",
+      "source_sha256": "sha256:5b90064f7e8ff4e02b029463fe6d10b150d8d0033b75d8489722e09efe8f8675"
+    },
+    {
+      "dependencies": [
+        "04-risk-coverage-planning"
+      ],
+      "installed_alias": "autonomous-qa-18-environment-orchestration",
+      "installed_tree_sha256": "sha256:44f3f8769d2497db5ec96c621a775ee4af74eb5fd52b9de6b291c4ebac998293",
+      "ordinal": 18,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_18_environment_orchestration",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.context_skills.plan_environment_orchestration",
+        "phase": "execution",
+        "side_effects_authorized": false,
+        "skill_key": "18-environment-orchestration"
+      },
+      "source_id": "18-environment-orchestration",
+      "source_name": "Environment Orchestration",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/18-environment-orchestration/SKILL.md",
+      "source_sha256": "sha256:53a5b29046dde5025215633baccc4c77a701943d00a7f596aab2729aeb549e1c"
+    },
+    {
+      "dependencies": [
+        "17-test-data-management",
+        "18-environment-orchestration"
+      ],
+      "installed_alias": "autonomous-qa-19-distributed-test-execution",
+      "installed_tree_sha256": "sha256:3d708e6a5fe39c507bd3821a31ec30d39f999268be85c3ec60cf0522221eb699",
+      "ordinal": 19,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_19_distributed_test_execution",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.plan_shards",
+        "phase": "execution",
+        "side_effects_authorized": false,
+        "skill_key": "19-distributed-test-execution"
+      },
+      "source_id": "19-distributed-test-execution",
+      "source_name": "Distributed Test Execution",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/19-distributed-test-execution/SKILL.md",
+      "source_sha256": "sha256:e029a47a1b0e86271bd893e20c288861c1d1c5f0e52179c61d1639693df3ddb9"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-20-test-oracle-evidence",
+      "installed_tree_sha256": "sha256:f4839be0f3ca74162809d7d00834adf2d6c1b70fe2b37235fa7cb9412f1a6bcf",
+      "ordinal": 20,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_20_test_oracle_evidence",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.verify_evidence",
+        "phase": "evidence",
+        "side_effects_authorized": false,
+        "skill_key": "20-test-oracle-evidence"
+      },
+      "source_id": "20-test-oracle-evidence",
+      "source_name": "Test Oracle & Evidence Engine",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/20-test-oracle-evidence/SKILL.md",
+      "source_sha256": "sha256:9c817c47f3305be3c520a3db77ab227afbc9aeb35fe8f3fb7cc775ddafbaca67"
+    },
+    {
+      "dependencies": [
+        "19-distributed-test-execution"
+      ],
+      "installed_alias": "autonomous-qa-21-flaky-test-control",
+      "installed_tree_sha256": "sha256:e1f751e4b7ef48de74fefff3a86162c8de06ad5eb49a961f2a6cc7f979aadd9a",
+      "ordinal": 21,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_21_flaky_test_control",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.classify_flaky",
+        "phase": "evidence",
+        "side_effects_authorized": false,
+        "skill_key": "21-flaky-test-control"
+      },
+      "source_id": "21-flaky-test-control",
+      "source_name": "Flaky Test Control",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/21-flaky-test-control/SKILL.md",
+      "source_sha256": "sha256:83900f9a17366ac5920ec037e3ebbd6428e9a586fcc58bafbe2b4c7dcfb1d679"
+    },
+    {
+      "dependencies": [
+        "20-test-oracle-evidence",
+        "21-flaky-test-control"
+      ],
+      "installed_alias": "autonomous-qa-22-defect-triage-rca",
+      "installed_tree_sha256": "sha256:39b6bc249a86c1d1085ed84368d68389e334a0efc329fc84f6d696ca097524c0",
+      "ordinal": 22,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_22_defect_triage_rca",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.triage_defects",
+        "phase": "repair",
+        "side_effects_authorized": false,
+        "skill_key": "22-defect-triage-rca"
+      },
+      "source_id": "22-defect-triage-rca",
+      "source_name": "Defect Triage & Root Cause Analysis",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/22-defect-triage-rca/SKILL.md",
+      "source_sha256": "sha256:adc27f99a34c307632b22e732fe3fcb86a082b12cdb28ed2a9ea4008283166fb"
+    },
+    {
+      "dependencies": [
+        "22-defect-triage-rca"
+      ],
+      "installed_alias": "autonomous-qa-23-repair-planning",
+      "installed_tree_sha256": "sha256:faaf83db84156e65ad94aa66ff6f8c1692c8ba26721798f938ae8e2d17625a8f",
+      "ordinal": 23,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_23_repair_planning",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.plan_repair",
+        "phase": "repair",
+        "side_effects_authorized": false,
+        "skill_key": "23-repair-planning"
+      },
+      "source_id": "23-repair-planning",
+      "source_name": "Repair Planning",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/23-repair-planning/SKILL.md",
+      "source_sha256": "sha256:eb0142c5cb16fe5378f5c0c449f8e0ae57d74ed95000ba38685710fd5f694009"
+    },
+    {
+      "dependencies": [
+        "23-repair-planning"
+      ],
+      "installed_alias": "autonomous-qa-24-safe-code-auto-fix",
+      "installed_tree_sha256": "sha256:69012e8520c4a7459d1f91e8dd535718b9af69ed406ece6db8e04203e754b7f6",
+      "ordinal": 24,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_24_safe_code_auto_fix",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "external-plan:elmos_autonomous_qa.domain.validate_patch",
+        "phase": "repair",
+        "side_effects_authorized": false,
+        "skill_key": "24-safe-code-auto-fix"
+      },
+      "source_id": "24-safe-code-auto-fix",
+      "source_name": "Safe Code Auto-Fix",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/24-safe-code-auto-fix/SKILL.md",
+      "source_sha256": "sha256:4980d5bdb68b7ad4779bc3cfb9e7d284264fc75f849b3d4d5668913556e0e710"
+    },
+    {
+      "dependencies": [
+        "21-flaky-test-control",
+        "23-repair-planning"
+      ],
+      "installed_alias": "autonomous-qa-25-test-self-healing",
+      "installed_tree_sha256": "sha256:7aff1acba39b670bc37e0c1f85a1ce8d723b4ec6305cb17368b12944832fda33",
+      "ordinal": 25,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_25_test_self_healing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "external-plan:elmos_autonomous_qa.domain.validate_test_heal",
+        "phase": "repair",
+        "side_effects_authorized": false,
+        "skill_key": "25-test-self-healing"
+      },
+      "source_id": "25-test-self-healing",
+      "source_name": "Safe Test Self-Healing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/25-test-self-healing/SKILL.md",
+      "source_sha256": "sha256:d25920d13281942e916c27be3d660007043fce34734b8cc7e984b235e1f6bf45"
+    },
+    {
+      "dependencies": [
+        "24-safe-code-auto-fix"
+      ],
+      "installed_alias": "autonomous-qa-26-impact-analysis-regression",
+      "installed_tree_sha256": "sha256:5255884db175247630bbfb2ee4cfad7c6ab975afc4fa10f262c667b81648a455",
+      "ordinal": 26,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_26_impact_analysis_regression",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.analyze_impact",
+        "phase": "repair",
+        "side_effects_authorized": false,
+        "skill_key": "26-impact-analysis-regression"
+      },
+      "source_id": "26-impact-analysis-regression",
+      "source_name": "Impact Analysis & Regression",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/26-impact-analysis-regression/SKILL.md",
+      "source_sha256": "sha256:9bc711640e0bfdf0e6f6656a681bbe9b3403069990e4de7a45b628d6861484f6"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-27-mutation-property-fuzz-testing",
+      "installed_tree_sha256": "sha256:7850d2691b1d0b95b14de6ecfd4e5bf0a430a812e92f2e54ee88165f0060e045",
+      "ordinal": 27,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_27_mutation_property_fuzz_testing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.plan_advanced_testing",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "27-mutation-property-fuzz-testing"
+      },
+      "source_id": "27-mutation-property-fuzz-testing",
+      "source_name": "Mutation, Property & Fuzz Testing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/27-mutation-property-fuzz-testing/SKILL.md",
+      "source_sha256": "sha256:8aab2689d7e635720972b2dee92404bffa7274f814b1d8c7cec3f56104ec014c"
+    },
+    {
+      "dependencies": [
+        "26-impact-analysis-regression"
+      ],
+      "installed_alias": "autonomous-qa-28-quality-gate-release-certification",
+      "installed_tree_sha256": "sha256:f57acfd58c5e303eccdb39d974aaa492be3d7e1b30bef7601812e0787a82e67a",
+      "ordinal": 28,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_28_quality_gate_release_certification",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.gates.evaluate_quality_gate_contract",
+        "phase": "gate",
+        "side_effects_authorized": false,
+        "skill_key": "28-quality-gate-release-certification"
+      },
+      "source_id": "28-quality-gate-release-certification",
+      "source_name": "Quality Gate & Release Certification",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/28-quality-gate-release-certification/SKILL.md",
+      "source_sha256": "sha256:a0a686fd495e75b85686dc4747264ff83e31fae442e6be72cf5297771c90e099"
+    },
+    {
+      "dependencies": [
+        "20-test-oracle-evidence",
+        "28-quality-gate-release-certification"
+      ],
+      "installed_alias": "autonomous-qa-29-reporting-observability",
+      "installed_tree_sha256": "sha256:462b046905dab7ea867a33fdf50a1e02163c1ea02a66ee0f79a9decfa3477368",
+      "ordinal": 29,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_29_reporting_observability",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.build_report",
+        "phase": "reporting",
+        "side_effects_authorized": false,
+        "skill_key": "29-reporting-observability"
+      },
+      "source_id": "29-reporting-observability",
+      "source_name": "Reporting & Observability",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/29-reporting-observability/SKILL.md",
+      "source_sha256": "sha256:8bb4983a54ef2128d853fb32cc88bbfb1ed116f5a6362dd6f9f1f1f1b1d7482f"
+    },
+    {
+      "dependencies": [
+        "00-qa-control-plane",
+        "19-distributed-test-execution"
+      ],
+      "installed_alias": "autonomous-qa-30-checkpoint-resume-idempotency",
+      "installed_tree_sha256": "sha256:e0f0a180627f4f8fbae6c1f4f1259455dcd328ee8a927ad14ca2f19ffc3f6376",
+      "ordinal": 30,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_30_checkpoint_resume_idempotency",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.create_checkpoint",
+        "phase": "control",
+        "side_effects_authorized": false,
+        "skill_key": "30-checkpoint-resume-idempotency"
+      },
+      "source_id": "30-checkpoint-resume-idempotency",
+      "source_name": "Checkpoint, Resume & Idempotency",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/30-checkpoint-resume-idempotency/SKILL.md",
+      "source_sha256": "sha256:9fa88c4d40e693f51b6096fc4a90e0ddd8dacbe7dfd5a6b30e8b4dca0c7d9a76"
+    },
+    {
+      "dependencies": [
+        "04-risk-coverage-planning",
+        "19-distributed-test-execution"
+      ],
+      "installed_alias": "autonomous-qa-31-runtime-cost-eta",
+      "installed_tree_sha256": "sha256:3067963421c9784931d7e0256d65c83586ca9e324644eeee56551fb75b8b25f6",
+      "ordinal": 31,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_31_runtime_cost_eta",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.estimate_eta",
+        "phase": "planning",
+        "side_effects_authorized": false,
+        "skill_key": "31-runtime-cost-eta"
+      },
+      "source_id": "31-runtime-cost-eta",
+      "source_name": "Runtime, Cost & ETA Estimation",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/31-runtime-cost-eta/SKILL.md",
+      "source_sha256": "sha256:0744fa308f2868c83bae39eb43aa2e923d1513997c84bfee43eb58c737a93373"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl"
+      ],
+      "installed_alias": "autonomous-qa-32-multilanguage-adapter-sdk",
+      "installed_tree_sha256": "sha256:6c394369e85d8824da99c8be4c0205cd7a2b818b0efc568282080e92689c48b8",
+      "ordinal": 32,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_32_multilanguage_adapter_sdk",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.adapters.execute_adapter_contract",
+        "phase": "generation",
+        "side_effects_authorized": false,
+        "skill_key": "32-multilanguage-adapter-sdk"
+      },
+      "source_id": "32-multilanguage-adapter-sdk",
+      "source_name": "Multi-Language Adapter SDK",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/32-multilanguage-adapter-sdk/SKILL.md",
+      "source_sha256": "sha256:2266cb3639c42951910f660e966bc5cea2bc280858485fd594bf9987ba907b95"
+    },
+    {
+      "dependencies": [
+        "28-quality-gate-release-certification",
+        "32-multilanguage-adapter-sdk"
+      ],
+      "installed_alias": "autonomous-qa-33-ci-cd-pr-integration",
+      "installed_tree_sha256": "sha256:cf476c0481a66636e14cc6ed66c59e8416eceeb5523aff0019adb22dc93e31b7",
+      "ordinal": 33,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_33_ci_cd_pr_integration",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "external-plan:elmos_autonomous_qa.domain.plan_ci",
+        "phase": "publishing",
+        "side_effects_authorized": false,
+        "skill_key": "33-ci-cd-pr-integration"
+      },
+      "source_id": "33-ci-cd-pr-integration",
+      "source_name": "CI/CD & Pull Request Integration",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/33-ci-cd-pr-integration/SKILL.md",
+      "source_sha256": "sha256:f94593e12efd81c7c2ec7f2ffa74621fc4566e01614e4a37d5e6a644995b4399"
+    },
+    {
+      "dependencies": [
+        "29-reporting-observability"
+      ],
+      "installed_alias": "autonomous-qa-34-continuous-learning-knowledge-base",
+      "installed_tree_sha256": "sha256:187f6d8c9edca87adf5b9d2f81a4d2d922aa296482f535e50e90c316440c0d26",
+      "ordinal": 34,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_34_continuous_learning_knowledge_base",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.propose_learning",
+        "phase": "lifecycle",
+        "side_effects_authorized": false,
+        "skill_key": "34-continuous-learning-knowledge-base"
+      },
+      "source_id": "34-continuous-learning-knowledge-base",
+      "source_name": "Continuous Learning Knowledge Base",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/34-continuous-learning-knowledge-base/SKILL.md",
+      "source_sha256": "sha256:b4a5ec32e291dce3672e6501339ddd5577e659b859798efd15ec963ce8a1bfcb"
+    },
+    {
+      "dependencies": [
+        "00-qa-control-plane"
+      ],
+      "installed_alias": "autonomous-qa-35-governance-approval-audit",
+      "installed_tree_sha256": "sha256:7ee4b22917e936691f9dc17bb8c01d8583bec7af8e04c0c8714bc3bf5a437897",
+      "ordinal": 35,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_35_governance_approval_audit",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.advanced_skills.authorize_action",
+        "phase": "control",
+        "side_effects_authorized": false,
+        "skill_key": "35-governance-approval-audit"
+      },
+      "source_id": "35-governance-approval-audit",
+      "source_name": "Governance, Approval & Audit",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/35-governance-approval-audit/SKILL.md",
+      "source_sha256": "sha256:8bf1a1d1b740fe46b752a32632da603e7026581755370b03a9ec7a497a289105"
+    },
+    {
+      "dependencies": [
+        "03-requirement-traceability-graph",
+        "04-risk-coverage-planning",
+        "32-multilanguage-adapter-sdk"
+      ],
+      "installed_alias": "autonomous-qa-36-project-output-contract",
+      "installed_tree_sha256": "sha256:0a99309a226b1cfc79bcf7408e3dd45f2e00de122ed985c8d08476b994b1790c",
+      "ordinal": 36,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_36_project_output_contract",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": false,
+        "operation_id": "elmos_autonomous_qa.delivery_skills.plan_project_output_contract",
+        "phase": "delivery-plan",
+        "side_effects_authorized": false,
+        "skill_key": "36-project-output-contract"
+      },
+      "source_id": "36-project-output-contract",
+      "source_name": "Project Output Contract",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/36-project-output-contract/SKILL.md",
+      "source_sha256": "sha256:62c55163952ea186be75eb80cd661ba7b8bba2890cc1452e9a6b561c46f171cd"
+    },
+    {
+      "dependencies": [
+        "05-test-model-dsl",
+        "06-functional-test-generation",
+        "07-api-contract-testing",
+        "08-data-database-testing",
+        "09-message-workflow-testing",
+        "10-ui-e2e-testing",
+        "11-visual-responsive-testing",
+        "12-accessibility-compatibility-testing",
+        "13-performance-baseline-testing",
+        "14-load-stress-spike-soak-testing",
+        "15-security-abuse-testing",
+        "16-resilience-chaos-recovery-testing",
+        "27-mutation-property-fuzz-testing",
+        "36-project-output-contract"
+      ],
+      "installed_alias": "autonomous-qa-37-test-source-materialization",
+      "installed_tree_sha256": "sha256:d95c0df86fcb4c3052e1958ee2b63098d5fbdc2644593b31b9662830ce00901b",
+      "ordinal": 37,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_37_test_source_materialization",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.delivery_skills.emit_test_sources",
+        "phase": "materialization",
+        "side_effects_authorized": false,
+        "skill_key": "37-test-source-materialization"
+      },
+      "source_id": "37-test-source-materialization",
+      "source_name": "Test Source Materialization",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/37-test-source-materialization/SKILL.md",
+      "source_sha256": "sha256:cb55ff439925ba96076df2b86ffeb3ec76c8c0a8c4bcd7b2bfc8631c23460686"
+    },
+    {
+      "dependencies": [
+        "20-test-oracle-evidence",
+        "28-quality-gate-release-certification",
+        "29-reporting-observability",
+        "36-project-output-contract",
+        "37-test-source-materialization"
+      ],
+      "installed_alias": "autonomous-qa-38-project-output-bundle-publishing",
+      "installed_tree_sha256": "sha256:f604e471a7cba87abe01ccd60bc6c11d911b2fdb98dd1a8ad549e8d9111dcd7d",
+      "ordinal": 38,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_38_project_output_bundle_publishing",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.delivery_service.publishing_operation_contract",
+        "phase": "publishing",
+        "side_effects_authorized": false,
+        "skill_key": "38-project-output-bundle-publishing"
+      },
+      "source_id": "38-project-output-bundle-publishing",
+      "source_name": "Project Output Bundle Publishing",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/38-project-output-bundle-publishing/SKILL.md",
+      "source_sha256": "sha256:fe1cc0085ca975265bacf4a28bd81675d19b4b7d5911d03710b04ebaacef67cd"
+    },
+    {
+      "dependencies": [
+        "30-checkpoint-resume-idempotency",
+        "35-governance-approval-audit",
+        "38-project-output-bundle-publishing"
+      ],
+      "installed_alias": "autonomous-qa-39-output-versioning-retention",
+      "installed_tree_sha256": "sha256:1d51768f4bac47dd606a70a300ded8cf9b080b63fd6a0dc8536bb4a8ce7b6a25",
+      "ordinal": 39,
+      "runtime_binding": {
+        "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+        "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+        "certification_status": "NOT_CERTIFIED",
+        "dispatcher": "dispatch_skill",
+        "external_evidence_status": "NOT_RUN",
+        "handler_id": "execute_39_output_versioning_retention",
+        "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+        "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+        "mutating": true,
+        "operation_id": "elmos_autonomous_qa.delivery_service.lifecycle_operation_contract",
+        "phase": "lifecycle",
+        "side_effects_authorized": false,
+        "skill_key": "39-output-versioning-retention"
+      },
+      "source_id": "39-output-versioning-retention",
+      "source_name": "Output Versioning, Retention & Lifecycle",
+      "source_path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/39-output-versioning-retention/SKILL.md",
+      "source_sha256": "sha256:bec0fb53ff931207af3acdd4cb6f90e18371eb77b9ecd626a3418728f454c0b5"
+    }
+  ],
+  "source_archive": "skills/subskills/elmos-autonomous-qa-self-healing-skills-v1.1.0.zip",
+  "source_archive_bytes": 176052,
+  "source_archive_sha256": "sha256:07928b59925c80b1b158cce42e729ee97510172676989badf7dd656971a56ae2",
+  "source_entry_count": 125,
+  "source_policy_findings": [
+    {
+      "code": "SOURCE_POLICY_NULL_SECTION",
+      "expected_type": "object",
+      "immutable_source_rewritten": false,
+      "json_pointer": "/artifact_update_rules",
+      "observed_type": "null",
+      "orphaned_root_keys": [
+        "rematerialize_changed_tests",
+        "preserve_previous_artifact_version",
+        "update_project_output_manifest",
+        "update_test_artifact_set",
+        "rebuild_required_bundles",
+        "failed_patch_must_not_replace_published_output"
+      ],
+      "path": "policies/auto-fix-policy.yaml",
+      "severity": "ERROR"
+    },
+    {
+      "code": "SOURCE_POLICY_NULL_SECTION",
+      "expected_type": "object",
+      "immutable_source_rewritten": false,
+      "json_pointer": "/test_artifact_execution",
+      "observed_type": "null",
+      "orphaned_root_keys": [
+        "manifest_only_execution",
+        "materialization_required_before_execution",
+        "verify_artifact_hash_before_shard_start",
+        "execute_temporary_unmanifested_code",
+        "record_artifact_refs_per_attempt"
+      ],
+      "path": "policies/execution-policy.yaml",
+      "severity": "ERROR"
+    }
+  ],
+  "source_policy_status": "KNOWN_MALFORMED_NULL_SECTIONS_PRESERVED",
+  "source_scripts_executed": false,
+  "source_sql_executed": false
+}

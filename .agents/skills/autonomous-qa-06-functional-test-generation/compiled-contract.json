@@ -1,0 +1,40 @@
+{
+  "installed_alias": "autonomous-qa-06-functional-test-generation",
+  "installed_dependencies": [
+    "autonomous-qa-05-test-model-dsl"
+  ],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_06_functional_test_generation",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": false,
+    "operation_id": "elmos_autonomous_qa.generators.generate_functional_tests",
+    "phase": "generation",
+    "side_effects_authorized": false,
+    "skill_key": "06-functional-test-generation"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "testing",
+    "dependencies": [
+      "05-test-model-dsl"
+    ],
+    "id": "06-functional-test-generation",
+    "name": "Functional Test Generation",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/06-functional-test-generation/SKILL.md",
+    "sha256": "sha256:d1325205b11bfb17ca290b212a0781bec9ce66c8558614ee04b88517c78073eb"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

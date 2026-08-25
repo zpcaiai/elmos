@@ -243,6 +243,33 @@ def _exact_fields(
         raise ContractError(f"{field} is missing required fields: {sorted(missing)}")
 
 
+_RUNTIME_CONTEXT_FIELDS = frozenset(
+    {"tenant_id", "project_id", "actor_id", "request_id", "idempotency_key"}
+)
+
+
+def _validated_optional_runtime_context(
+    inputs: Mapping[str, Any],
+) -> Mapping[str, Any] | None:
+    if "_runtime_context" not in inputs:
+        return None
+    raw = inputs.get("_runtime_context")
+    if not isinstance(raw, Mapping):
+        raise ContractError("_runtime_context must be an object when supplied")
+    _exact_fields(
+        raw,
+        field="_runtime_context",
+        allowed=_RUNTIME_CONTEXT_FIELDS,
+        required=_RUNTIME_CONTEXT_FIELDS,
+    )
+    for field in ("tenant_id", "project_id", "actor_id", "request_id"):
+        require_resource_id(raw.get(field), f"runtime.{field}")
+    require_text(
+        raw.get("idempotency_key"), "runtime.idempotency_key", maximum=200
+    )
+    return raw
+
+
 def _unique(values: Sequence[str], field: str) -> list[str]:
     if len(set(values)) != len(values):
         raise ContractError(f"{field} may not contain duplicates")
@@ -1446,50 +1473,329 @@ def plan_repair(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
     }
 
 
+_LEGACY_PATCH_PLAN_FIELDS = frozenset(
+    {"defect_id", "risk_level", "candidate_paths", "approval"}
+)
+_ADVANCED_PATCH_PLAN_FIELDS = frozenset(
+    {
+        "defect_id",
+        "reproduction_evidence_digest",
+        "root_cause_confidence",
+        "confidence_threshold",
+        "max_attempts",
+        "alternatives",
+        "selected_alternative_id",
+        "validation_required",
+        "rollback_required",
+        "plan_digest",
+    }
+)
+_ADVANCED_ALTERNATIVE_FIELDS = frozenset(
+    {
+        "alternative_id",
+        "changes",
+        "validation_steps",
+        "rollback_steps",
+        "estimated_attempts",
+        "forbidden_changes",
+        "eligible",
+    }
+)
+_FORBIDDEN_REPAIR_CHANGE_KINDS = frozenset(
+    {
+        "weaken-test",
+        "disable-security",
+        "broaden-permission",
+        "delete-evidence",
+        "skip-validation",
+    }
+)
+
+
+def _repair_approval(risk: str) -> str:
+    return (
+        "MULTI_ROLE_REQUIRED"
+        if risk == "R3"
+        else "CODE_OWNER_REQUIRED"
+        if risk == "R2"
+        else "POLICY_GATES_REQUIRED"
+    )
+
+
+def _validated_patch_plan(
+    repair_plan: Mapping[str, Any],
+    *,
+    repair_plan_digest: str,
+    caller_candidate_paths: list[str] | None,
+    caller_semantic_tags: set[str] | None,
+) -> tuple[list[str], set[str], str, str]:
+    if any(not isinstance(key, str) for key in repair_plan):
+        raise ContractError("repair_plan field names must be strings")
+    present = frozenset(repair_plan)
+    if present == _LEGACY_PATCH_PLAN_FIELDS:
+        if digest_json(dict(repair_plan)) != repair_plan_digest:
+            raise ContractError("repair_plan_digest does not match repair_plan")
+        require_resource_id(repair_plan.get("defect_id"), "repair_plan.defect_id")
+        planned_paths = _strings(
+            repair_plan.get("candidate_paths"), "repair_plan.candidate_paths"
+        )
+        try:
+            planned_paths = [normalize_relative_path(path) for path in planned_paths]
+        except ValueError as exc:
+            raise ContractError("repair_plan candidate paths are unsafe") from exc
+        if len(set(planned_paths)) != len(planned_paths):
+            raise ContractError("repair_plan candidate paths may not contain duplicates")
+        if caller_candidate_paths is not None and tuple(sorted(planned_paths)) != tuple(
+            sorted(caller_candidate_paths)
+        ):
+            raise ContractError("patch candidate paths differ from the repair plan")
+        semantic_tags = caller_semantic_tags or set()
+        risk = _repair_risk(planned_paths, semantic_tags)
+        declared_risk = require_text(
+            repair_plan.get("risk_level"), "repair_plan.risk_level", maximum=2
+        )
+        if declared_risk not in {"R1", "R2", "R3"} or declared_risk != risk:
+            raise ContractError("patch risk differs from the repair plan")
+        approval = require_text(
+            repair_plan.get("approval"), "repair_plan.approval", maximum=64
+        )
+        expected_approval = _repair_approval(risk)
+        if approval != expected_approval:
+            raise ContractError("repair plan approval does not match derived risk")
+        return planned_paths, semantic_tags, risk, expected_approval
+
+    if present != _ADVANCED_PATCH_PLAN_FIELDS:
+        unknown = present - (_LEGACY_PATCH_PLAN_FIELDS | _ADVANCED_PATCH_PLAN_FIELDS)
+        if unknown:
+            raise ContractError(
+                f"repair_plan contains unsupported fields: {sorted(unknown)}"
+            )
+        raise ContractError(
+            "repair_plan must match exactly the legacy or advanced planning schema"
+        )
+
+    nested_digest = _digest(repair_plan.get("plan_digest"), "repair_plan.plan_digest")
+    if nested_digest != repair_plan_digest:
+        raise ContractError("repair_plan_digest does not match repair_plan.plan_digest")
+    unsigned_plan = dict(repair_plan)
+    unsigned_plan.pop("plan_digest")
+    if digest_json(unsigned_plan) != nested_digest:
+        raise ContractError("repair_plan.plan_digest does not match canonical plan content")
+
+    require_resource_id(repair_plan.get("defect_id"), "repair_plan.defect_id")
+    _digest(
+        repair_plan.get("reproduction_evidence_digest"),
+        "repair_plan.reproduction_evidence_digest",
+    )
+    root_confidence = repair_plan.get("root_cause_confidence")
+    confidence_threshold = repair_plan.get("confidence_threshold")
+    for value, field in (
+        (root_confidence, "repair_plan.root_cause_confidence"),
+        (confidence_threshold, "repair_plan.confidence_threshold"),
+    ):
+        if (
+            not isinstance(value, (int, float))
+            or isinstance(value, bool)
+            or not math.isfinite(float(value))
+            or not 0 <= float(value) <= 1
+        ):
+            raise ContractError(f"{field} must be a finite number from 0 to 1")
+    max_attempts = repair_plan.get("max_attempts")
+    if (
+        not isinstance(max_attempts, int)
+        or isinstance(max_attempts, bool)
+        or not 1 <= max_attempts <= 10
+    ):
+        raise ContractError("repair_plan.max_attempts must be an integer from 1 to 10")
+    if repair_plan.get("validation_required") is not True:
+        raise ContractError("repair_plan.validation_required must be true")
+    if repair_plan.get("rollback_required") is not True:
+        raise ContractError("repair_plan.rollback_required must be true")
+
+    alternatives = _objects(repair_plan.get("alternatives"), "repair_plan.alternatives")
+    normalized: dict[str, dict[str, Any]] = {}
+    for index, alternative in enumerate(alternatives):
+        _exact_fields(
+            alternative,
+            field=f"repair_plan.alternatives[{index}]",
+            allowed=_ADVANCED_ALTERNATIVE_FIELDS,
+            required=_ADVANCED_ALTERNATIVE_FIELDS,
+        )
+        alternative_id = require_resource_id(
+            alternative.get("alternative_id"),
+            f"repair_plan.alternatives[{index}].alternative_id",
+        )
+        if alternative_id in normalized:
+            raise ContractError("repair_plan alternatives may not contain duplicate ids")
+        changes = _objects(
+            alternative.get("changes"),
+            f"repair_plan.alternatives[{index}].changes",
+        )
+        paths: list[str] = []
+        kinds: list[str] = []
+        for change_index, change in enumerate(changes):
+            _exact_fields(
+                change,
+                field=(
+                    f"repair_plan.alternatives[{index}].changes[{change_index}]"
+                ),
+                allowed=frozenset({"path", "kind"}),
+                required=frozenset({"path", "kind"}),
+            )
+            try:
+                path = normalize_relative_path(
+                    require_text(
+                        change.get("path"),
+                        "repair_plan.change.path",
+                        maximum=1024,
+                    )
+                )
+            except ValueError as exc:
+                raise ContractError("repair plan change path is unsafe") from exc
+            kind = require_resource_id(
+                change.get("kind"), "repair_plan.change.kind"
+            ).casefold()
+            paths.append(path)
+            kinds.append(kind)
+        if len(set(paths)) != len(paths):
+            raise ContractError("repair plan alternative change paths must be unique")
+        _strings(
+            alternative.get("validation_steps"),
+            "repair_plan.alternative.validation_steps",
+        )
+        _strings(
+            alternative.get("rollback_steps"),
+            "repair_plan.alternative.rollback_steps",
+        )
+        estimated_attempts = alternative.get("estimated_attempts")
+        if (
+            not isinstance(estimated_attempts, int)
+            or isinstance(estimated_attempts, bool)
+            or not 1 <= estimated_attempts <= 10
+        ):
+            raise ContractError(
+                "repair_plan alternative estimated_attempts must be from 1 to 10"
+            )
+        forbidden_changes = _strings(
+            alternative.get("forbidden_changes"),
+            "repair_plan.alternative.forbidden_changes",
+            allow_empty=True,
+        )
+        _unique_casefold(forbidden_changes, "repair_plan.alternative.forbidden_changes")
+        normalized_forbidden = sorted(value.casefold() for value in forbidden_changes)
+        expected_forbidden = sorted(
+            set(kinds).intersection(_FORBIDDEN_REPAIR_CHANGE_KINDS)
+        )
+        if normalized_forbidden != expected_forbidden:
+            raise ContractError("repair plan forbidden change classification is inconsistent")
+        eligible = alternative.get("eligible")
+        if not isinstance(eligible, bool):
+            raise ContractError("repair_plan alternative eligible must be boolean")
+        expected_eligible = not expected_forbidden and estimated_attempts <= max_attempts
+        if eligible is not expected_eligible:
+            raise ContractError("repair plan alternative eligibility is inconsistent")
+        normalized[alternative_id] = {
+            "paths": paths,
+            "kinds": set(kinds),
+            "eligible": eligible,
+            "estimated_attempts": estimated_attempts,
+        }
+
+    selected_id = require_resource_id(
+        repair_plan.get("selected_alternative_id"),
+        "repair_plan.selected_alternative_id",
+    )
+    selected = normalized.get(selected_id)
+    if selected is None or selected["eligible"] is not True:
+        raise ContractError("repair plan must select a declared eligible alternative")
+    if float(root_confidence) < float(confidence_threshold):
+        raise ContractError("repair plan root-cause confidence is below threshold")
+    expected_selected_id = min(
+        (
+            (value["estimated_attempts"], alternative_id)
+            for alternative_id, value in normalized.items()
+            if value["eligible"] is True
+        )
+    )[1]
+    if selected_id != expected_selected_id:
+        raise ContractError("repair plan selected alternative is not canonical")
+
+    planned_paths = list(selected["paths"])
+    semantic_tags = set(selected["kinds"])
+    if caller_candidate_paths is not None and tuple(sorted(caller_candidate_paths)) != tuple(
+        sorted(planned_paths)
+    ):
+        raise ContractError("patch candidate paths differ from the selected alternative")
+    if caller_semantic_tags is not None and caller_semantic_tags != semantic_tags:
+        raise ContractError("patch semantic tags differ from selected change kinds")
+    risk = _repair_risk(planned_paths, semantic_tags)
+    return planned_paths, semantic_tags, risk, _repair_approval(risk)
+
+
 def validate_patch(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    _exact_fields(
+        inputs,
+        field="patch validation request",
+        allowed=frozenset(
+            {
+                "diff",
+                "candidate_paths",
+                "semantic_tags",
+                "risk_level",
+                "repair_plan",
+                "repair_plan_digest",
+                "isolated_worktree",
+                "sandboxed",
+                "approvals",
+                "_runtime_context",
+            }
+        ),
+        required=frozenset(
+            {
+                "diff",
+                "repair_plan",
+                "repair_plan_digest",
+                "isolated_worktree",
+                "sandboxed",
+            }
+        ),
+    )
+    context = _validated_optional_runtime_context(inputs)
     diff = require_exact_text(inputs.get("diff"), "diff", maximum=2_000_000)
     if "risk_level" in inputs:
         raise ContractError("risk_level is derived by policy and may not be caller-selected")
-    raw_candidate_paths = _strings(inputs.get("candidate_paths"), "candidate_paths")
-    try:
-        candidate_paths = [
-            normalize_relative_path(path)
-            for path in raw_candidate_paths
-        ]
-    except ValueError as exc:
-        raise ContractError("candidate_paths must be safe repository-relative paths") from exc
-    if len(set(candidate_paths)) != len(candidate_paths):
-        raise ContractError("candidate_paths may not contain duplicates")
-    raw_semantic_tags = _strings(
-        inputs.get("semantic_tags", []), "semantic_tags", allow_empty=True
-    )
-    _unique_casefold(raw_semantic_tags, "semantic_tags")
-    semantic_tags = {value.casefold() for value in raw_semantic_tags}
-    risk = _repair_risk(candidate_paths, semantic_tags)
+    caller_candidate_paths: list[str] | None = None
+    if "candidate_paths" in inputs:
+        raw_candidate_paths = _strings(
+            inputs.get("candidate_paths"), "candidate_paths", allow_empty=True
+        )
+        try:
+            caller_candidate_paths = [
+                normalize_relative_path(path) for path in raw_candidate_paths
+            ]
+        except ValueError as exc:
+            raise ContractError(
+                "candidate_paths must be safe repository-relative paths"
+            ) from exc
+        if len(set(caller_candidate_paths)) != len(caller_candidate_paths):
+            raise ContractError("candidate_paths may not contain duplicates")
+    caller_semantic_tags: set[str] | None = None
+    if "semantic_tags" in inputs:
+        raw_semantic_tags = _strings(
+            inputs.get("semantic_tags"), "semantic_tags", allow_empty=True
+        )
+        _unique_casefold(raw_semantic_tags, "semantic_tags")
+        caller_semantic_tags = {value.casefold() for value in raw_semantic_tags}
     repair_plan_digest = _digest(inputs.get("repair_plan_digest"), "repair_plan_digest")
     repair_plan = inputs.get("repair_plan")
     if not isinstance(repair_plan, Mapping):
         raise ContractError("repair_plan must be the digest-bound planning document")
-    if set(repair_plan) != {
-        "defect_id",
-        "risk_level",
-        "candidate_paths",
-        "approval",
-    }:
-        raise ContractError("repair_plan fields are incomplete or ambiguous")
-    if digest_json(dict(repair_plan)) != repair_plan_digest:
-        raise ContractError("repair_plan_digest does not match repair_plan")
-    planned_paths = _strings(repair_plan.get("candidate_paths"), "repair_plan.candidate_paths")
-    try:
-        planned_paths = [normalize_relative_path(path) for path in planned_paths]
-    except ValueError as exc:
-        raise ContractError("repair_plan candidate paths are unsafe") from exc
-    if tuple(sorted(planned_paths)) != tuple(sorted(candidate_paths)):
-        raise ContractError("patch candidate paths differ from the repair plan")
-    if repair_plan.get("risk_level") != risk:
-        raise ContractError("patch risk differs from the repair plan")
-    require_resource_id(repair_plan.get("defect_id"), "repair_plan.defect_id")
-    require_text(repair_plan.get("approval"), "repair_plan.approval")
+    candidate_paths, _semantic_tags, risk, approval_requirement = _validated_patch_plan(
+        repair_plan,
+        repair_plan_digest=repair_plan_digest,
+        caller_candidate_paths=caller_candidate_paths,
+        caller_semantic_tags=caller_semantic_tags,
+    )
     lowered = diff.casefold()
     findings = sorted(marker for marker in FORBIDDEN_PATCH_MARKERS if marker in lowered)
     if re.search(r"\bassert\s+(?:true|1\s*==\s*1)\b", lowered):
@@ -1504,11 +1810,16 @@ def validate_patch(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
     isolated = isolated_value
     sandboxed = sandboxed_value
     approvals = _objects(inputs.get("approvals", []), "approvals", allow_empty=True)
-    context = inputs.get("_runtime_context")
     actor_id = context.get("actor_id") if isinstance(context, Mapping) else None
     approved_roles: set[str] = set()
     approvers: set[str] = set()
     for approval in approvals:
+        _exact_fields(
+            approval,
+            field="approval",
+            allowed=frozenset({"approver_id", "role", "repair_plan_digest"}),
+            required=frozenset({"approver_id", "role", "repair_plan_digest"}),
+        )
         approver_id = require_resource_id(approval.get("approver_id"), "approver_id")
         role = require_text(approval.get("role"), "approval.role")
         bound_digest = _digest(
@@ -1522,9 +1833,15 @@ def validate_patch(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
         approved_roles.add(role)
     if len(approvers) != len(approvals):
         findings.append("DUPLICATE_REPAIR_APPROVER")
-    if risk == "R3" and not {"code-owner", "security-reviewer"}.issubset(approved_roles):
+    if approval_requirement == "MULTI_ROLE_REQUIRED" and not {
+        "code-owner",
+        "security-reviewer",
+    }.issubset(approved_roles):
         findings.append("R3_APPROVALS_MISSING")
-    if risk == "R2" and "code-owner" not in approved_roles:
+    if (
+        approval_requirement == "CODE_OWNER_REQUIRED"
+        and "code-owner" not in approved_roles
+    ):
         findings.append("R2_CODE_OWNER_APPROVAL_MISSING")
     if not isolated:
         findings.append("ISOLATED_WORKTREE_MISSING")
@@ -1540,6 +1857,7 @@ def validate_patch(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
         "outputs": {
             "findings": sorted(set(findings)),
             "risk_level": risk,
+            "approval_requirement": approval_requirement,
             "repair_plan_digest": repair_plan_digest,
             "diff_paths": list(diff_paths),
             "execution_performed": False,
@@ -1554,6 +1872,21 @@ def validate_patch(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def validate_test_heal(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    _exact_fields(
+        inputs,
+        field="test-heal validation request",
+        allowed=frozenset(
+            {
+                "before",
+                "after",
+                "reason",
+                "business_oracle_changed",
+                "_runtime_context",
+            }
+        ),
+        required=frozenset({"before", "after", "reason"}),
+    )
+    _validated_optional_runtime_context(inputs)
     before = require_exact_text(inputs.get("before"), "before", maximum=1_000_000)
     after = require_exact_text(inputs.get("after"), "after", maximum=1_000_000)
     reason = require_text(inputs.get("reason"), "reason", maximum=1024)
@@ -1775,7 +2108,170 @@ def adapter_contract(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
     return {"state": "PARTIAL" if blockers else "SUCCEEDED", "code": "ADAPTER_CONTRACT_GAPS" if blockers else "ADAPTER_CONTRACTS_VALIDATED", "outputs": {"adapters": normalized, "blockers": blockers}}
 
 
+_GRAPH_CI_IMPACT_FIELDS = frozenset(
+    {
+        "graph_id",
+        "graph_digest",
+        "candidate_impacted_tests",
+        "propagation_paths",
+        "selected_test_scope",
+        "scope",
+        "full_regression_required",
+        "caller_graph_receipt_fields_observed",
+        "caller_graph_receipt_accepted",
+        "trusted_graph_receipt",
+        "report_digest",
+    }
+)
+_COMPACT_CI_IMPACT_FIELDS = frozenset(
+    {
+        "impacted_tests",
+        "unknown_paths",
+        "full_regression_required",
+        "caller_confidence_accepted",
+        "report_digest",
+    }
+)
+
+
+def _validated_ci_impact_report(impact_report: Mapping[str, Any]) -> str:
+    if any(not isinstance(key, str) for key in impact_report):
+        raise ContractError("impact_report field names must be strings")
+    present = frozenset(impact_report)
+    known = _GRAPH_CI_IMPACT_FIELDS | _COMPACT_CI_IMPACT_FIELDS
+    unknown = present - known
+    if unknown:
+        raise ContractError(
+            f"impact_report contains unsupported fields: {sorted(unknown)}"
+        )
+    if present == _GRAPH_CI_IMPACT_FIELDS:
+        shape = "graph"
+    elif present == _COMPACT_CI_IMPACT_FIELDS:
+        shape = "compact"
+    else:
+        graph_only = _GRAPH_CI_IMPACT_FIELDS - _COMPACT_CI_IMPACT_FIELDS
+        compact_only = _COMPACT_CI_IMPACT_FIELDS - _GRAPH_CI_IMPACT_FIELDS
+        if present.intersection(graph_only) and present.intersection(compact_only):
+            raise ContractError("impact_report may not combine graph and compact fields")
+        raise ContractError(
+            "impact_report must match exactly the graph or compact impact schema"
+        )
+
+    supplied_digest = _digest(
+        impact_report.get("report_digest"), "impact_report.report_digest"
+    )
+    unsigned_report = dict(impact_report)
+    unsigned_report.pop("report_digest")
+    if digest_json(unsigned_report) != supplied_digest:
+        raise ContractError("impact_report digest does not match its canonical content")
+
+    full_regression = impact_report.get("full_regression_required")
+    if not isinstance(full_regression, bool):
+        raise ContractError("impact_report.full_regression_required must be boolean")
+
+    if shape == "compact":
+        impacted_tests = _strings(
+            impact_report.get("impacted_tests"),
+            "impact_report.impacted_tests",
+            allow_empty=True,
+        )
+        unknown_paths = _strings(
+            impact_report.get("unknown_paths"),
+            "impact_report.unknown_paths",
+            allow_empty=True,
+        )
+        if len(set(impacted_tests)) != len(impacted_tests):
+            raise ContractError("impact_report.impacted_tests may not contain duplicates")
+        if len(set(unknown_paths)) != len(unknown_paths):
+            raise ContractError("impact_report.unknown_paths may not contain duplicates")
+        for test_id in impacted_tests:
+            require_resource_id(test_id, "impact_report.impacted_tests[]")
+        caller_confidence = impact_report.get("caller_confidence_accepted")
+        if caller_confidence is not False:
+            raise ContractError("impact_report caller confidence must remain unaccepted")
+        if unknown_paths and full_regression is not True:
+            raise ContractError("unknown impact paths require full regression")
+        return supplied_digest
+
+    require_resource_id(impact_report.get("graph_id"), "impact_report.graph_id")
+    _digest(impact_report.get("graph_digest"), "impact_report.graph_digest")
+    candidate_tests = _strings(
+        impact_report.get("candidate_impacted_tests"),
+        "impact_report.candidate_impacted_tests",
+        allow_empty=True,
+    )
+    selected_scope = _strings(
+        impact_report.get("selected_test_scope"),
+        "impact_report.selected_test_scope",
+    )
+    if len(set(candidate_tests)) != len(candidate_tests):
+        raise ContractError(
+            "impact_report.candidate_impacted_tests may not contain duplicates"
+        )
+    if len(set(selected_scope)) != len(selected_scope):
+        raise ContractError("impact_report.selected_test_scope may not contain duplicates")
+    for test_id in candidate_tests:
+        require_resource_id(test_id, "impact_report.candidate_impacted_tests[]")
+    for test_id in selected_scope:
+        require_resource_id(test_id, "impact_report.selected_test_scope[]")
+    if not set(candidate_tests).issubset(selected_scope):
+        raise ContractError("candidate impacted tests must be inside selected test scope")
+
+    raw_paths = _objects(
+        impact_report.get("propagation_paths"),
+        "impact_report.propagation_paths",
+        allow_empty=True,
+    )
+    propagation_edges: set[tuple[str, str]] = set()
+    for index, path in enumerate(raw_paths):
+        _exact_fields(
+            path,
+            field=f"impact_report.propagation_paths[{index}]",
+            allowed=frozenset({"from", "to"}),
+            required=frozenset({"from", "to"}),
+        )
+        source = require_resource_id(
+            path.get("from"), f"impact_report.propagation_paths[{index}].from"
+        )
+        target = require_resource_id(
+            path.get("to"), f"impact_report.propagation_paths[{index}].to"
+        )
+        if source == target:
+            raise ContractError("impact propagation path endpoints must be distinct")
+        edge = source, target
+        if edge in propagation_edges:
+            raise ContractError("impact propagation paths may not contain duplicates")
+        propagation_edges.add(edge)
+
+    observed_fields = _strings(
+        impact_report.get("caller_graph_receipt_fields_observed"),
+        "impact_report.caller_graph_receipt_fields_observed",
+        allow_empty=True,
+    )
+    _unique_casefold(
+        observed_fields, "impact_report.caller_graph_receipt_fields_observed"
+    )
+    if impact_report.get("scope") != "FULL_REQUIRED":
+        raise ContractError("graph impact scope must remain FULL_REQUIRED")
+    if full_regression is not True:
+        raise ContractError("graph impact reports require full regression")
+    if impact_report.get("caller_graph_receipt_accepted") is not False:
+        raise ContractError("caller graph receipts must remain unaccepted")
+    if impact_report.get("trusted_graph_receipt") != "NOT_RUN":
+        raise ContractError("trusted graph receipt must remain NOT_RUN")
+    return supplied_digest
+
+
 def plan_ci(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    _exact_fields(
+        inputs,
+        field="CI integration request",
+        allowed=frozenset(
+            {"event", "changed_nodes", "impact_report", "_runtime_context"}
+        ),
+        required=frozenset({"event", "impact_report"}),
+    )
+    _validated_optional_runtime_context(inputs)
     event = require_text(inputs.get("event"), "event")
     if event not in {"pull-request", "push", "nightly", "release", "manual"}:
         raise ContractError("CI event is invalid")
@@ -1796,16 +2292,7 @@ def plan_ci(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
     impact_report = inputs.get("impact_report")
     if not isinstance(impact_report, Mapping):
         raise ContractError("impact_report must be a digest-bound object")
-    supplied_digest = _digest(
-        impact_report.get("report_digest"), "impact_report.report_digest"
-    )
-    unsigned_report = dict(impact_report)
-    unsigned_report.pop("report_digest", None)
-    if digest_json(unsigned_report) != supplied_digest:
-        raise ContractError("impact_report digest does not match its canonical content")
-    full_regression = impact_report.get("full_regression_required")
-    if not isinstance(full_regression, bool):
-        raise ContractError("impact_report.full_regression_required must be boolean")
+    supplied_digest = _validated_ci_impact_report(impact_report)
     # The caller can provide a content-consistent proposal but not an
     # authoritative impact receipt.  Until a repository-owned graph result is
     # bound, the conservative scope is always the full suite.

@@ -1,0 +1,40 @@
+{
+  "installed_alias": "autonomous-qa-10-ui-e2e-testing",
+  "installed_dependencies": [
+    "autonomous-qa-05-test-model-dsl"
+  ],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_10_ui_e2e_testing",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": false,
+    "operation_id": "elmos_autonomous_qa.generators.plan_ui_e2e_tests",
+    "phase": "generation",
+    "side_effects_authorized": false,
+    "skill_key": "10-ui-e2e-testing"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "testing",
+    "dependencies": [
+      "05-test-model-dsl"
+    ],
+    "id": "10-ui-e2e-testing",
+    "name": "UI End-to-End Testing",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/10-ui-e2e-testing/SKILL.md",
+    "sha256": "sha256:45756a21639c72e549e3ccee4801fba1ae2ff6cdad9c7eeadd3af6c10882bd95"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

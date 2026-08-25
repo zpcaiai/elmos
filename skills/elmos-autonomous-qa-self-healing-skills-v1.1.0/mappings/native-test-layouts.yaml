@@ -1,0 +1,88 @@
+version: 1
+principle: use_native_build_tool_layout_and_record_every_materialized_path
+
+layouts:
+  java_maven:
+    unit: [src/test/java, src/test/resources]
+    integration: [src/it/java, src/it/resources]
+    performance: [performance]
+    build_updates: [pom.xml]
+  java_kotlin_gradle:
+    unit: [src/test/java, src/test/kotlin, src/test/resources]
+    integration: [src/integrationTest/java, src/integrationTest/kotlin, src/integrationTest/resources]
+    performance: [performance]
+    build_updates: [build.gradle, build.gradle.kts, settings.gradle, settings.gradle.kts]
+  python:
+    unit: [tests/unit]
+    integration: [tests/integration]
+    api: [tests/api]
+    e2e: [tests/e2e]
+    performance: [tests/performance]
+    fuzz_property: [tests/property, tests/fuzz]
+    configs: [pyproject.toml, pytest.ini, tox.ini]
+  dotnet:
+    unit: ['tests/{Module}.Tests']
+    integration: ['tests/{Module}.IntegrationTests']
+    e2e: ['tests/{Module}.E2ETests']
+    build_updates: ['*.sln', Directory.Build.props]
+  go:
+    unit: ['adjacent_package/*_test.go']
+    integration: [tests/integration]
+    e2e: [tests/e2e]
+    fuzz: ['adjacent_package/*_test.go']
+    performance: [tests/performance]
+  rust:
+    unit: ['src/* with cfg_test']
+    integration: [tests]
+    benchmarks: [benches]
+    fuzz: [fuzz/fuzz_targets]
+  cpp:
+    unit: [tests/unit]
+    integration: [tests/integration]
+    performance: [tests/performance]
+    build_updates: [CMakeLists.txt, meson.build]
+  php:
+    unit: [tests/Unit]
+    feature: [tests/Feature]
+    integration: [tests/Integration]
+    configs: [phpunit.xml, phpunit.xml.dist]
+  typescript_javascript:
+    unit: [tests/unit, __tests__]
+    integration: [tests/integration]
+    api: [tests/api]
+    e2e: [e2e]
+    visual: [tests/visual, e2e/visual]
+    performance: [performance]
+    security: [tests/security]
+    build_updates: [package.json, playwright.config.ts, vitest.config.ts, jest.config.js]
+  react_vue:
+    component: ['src/**/__tests__', tests/component]
+    e2e: [e2e]
+    visual: [e2e/visual]
+    accessibility: [e2e/accessibility]
+  swift_objc:
+    unit: [Tests, '{Target}Tests']
+    ui: ['{Target}UITests']
+    build_updates: ['*.xcodeproj', Package.swift]
+  flutter:
+    unit: [test]
+    integration: [integration_test]
+    legacy_driver: [test_driver]
+    configs: [pubspec.yaml]
+
+normalized_roles:
+  test_source: executable_test_code
+  test_config: runner_or_tool_configuration
+  test_fixture: deterministic_fixture_or_factory
+  test_data: synthetic_or_approved_redacted_data
+  test_mock: mock_stub_fake_or_virtual_service
+  test_baseline: approved_visual_or_performance_baseline
+  replay_script: reproducibility_entrypoint
+  ci_config: continuous_integration_entrypoint
+
+selection_rules:
+  - preserve_existing_project_conventions_when_safe
+  - do_not_create_duplicate_test_framework_without_reason
+  - generated_paths_must_be_relative_and_manifested
+  - build_file_changes_are_separate_reviewable_artifacts
+  - unsupported_layout_is_blocked_not_guessed

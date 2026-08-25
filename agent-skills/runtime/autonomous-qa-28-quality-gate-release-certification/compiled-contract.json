@@ -1,0 +1,40 @@
+{
+  "installed_alias": "autonomous-qa-28-quality-gate-release-certification",
+  "installed_dependencies": [
+    "autonomous-qa-26-impact-analysis-regression"
+  ],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_28_quality_gate_release_certification",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": false,
+    "operation_id": "elmos_autonomous_qa.gates.evaluate_quality_gate_contract",
+    "phase": "gate",
+    "side_effects_authorized": false,
+    "skill_key": "28-quality-gate-release-certification"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "certification",
+    "dependencies": [
+      "26-impact-analysis-regression"
+    ],
+    "id": "28-quality-gate-release-certification",
+    "name": "Quality Gate & Release Certification",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/28-quality-gate-release-certification/SKILL.md",
+    "sha256": "sha256:a0a686fd495e75b85686dc4747264ff83e31fae442e6be72cf5297771c90e099"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

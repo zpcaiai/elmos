@@ -7,13 +7,15 @@ from pathlib import Path
 from unittest.mock import patch
 
 from elmos_autonomous_qa.api import QaApi, TrustedIdentity
+from elmos_autonomous_qa.artifacts import ArtifactError
 from elmos_autonomous_qa.control_plane import QaControlPlane, ResourceQuotaExceeded
 from elmos_autonomous_qa.delivery_service import TrustedDeliveryService
 
 
 class QaApiTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.temporary = tempfile.TemporaryDirectory()
+        physical_temp_root = Path(tempfile.gettempdir()).resolve(strict=True)
+        self.temporary = tempfile.TemporaryDirectory(dir=physical_temp_root)
         self.addCleanup(self.temporary.cleanup)
         self.api = QaApi(QaControlPlane(Path(self.temporary.name) / "qa.sqlite3"))
         self.writer = TrustedIdentity(
@@ -320,7 +322,6 @@ class QaApiTest(unittest.TestCase):
                             "required": True,
                             "source_refs": ["requirements.md:1"],
                             "acceptance_criteria": ["Same input yields the same output."],
-                            "ambiguities": [],
                             "status": "ready",
                         }
                     ]
@@ -333,6 +334,13 @@ class QaApiTest(unittest.TestCase):
         self.assertEqual(response.body["certification"], "NOT_CERTIFIED")
 
     def test_delivery_skills_require_exact_roles_and_use_trusted_service(self) -> None:
+        missing_idempotency = self.api.handle(
+            "POST",
+            "/api/v1/qa/skills/37-test-source-materialization:execute",
+            {"project_id": "project-a", "inputs": {}},
+            self.writer,
+        )
+        self.assertEqual(missing_idempotency.status, 422)
         denied = self.api.handle(
             "POST",
             "/api/v1/qa/skills/38-project-output-bundle-publishing:execute",
@@ -344,17 +352,33 @@ class QaApiTest(unittest.TestCase):
             self.writer,
         )
         self.assertEqual(denied.status, 403)
+        lifecycle_denied = self.api.handle(
+            "POST",
+            "/api/v1/qa/skills/39-output-versioning-retention:execute",
+            {
+                "project_id": "project-a",
+                "idempotency_key": "lifecycle-denied",
+                "inputs": {"action": "candidates"},
+            },
+            self.writer,
+        )
+        self.assertEqual(lifecycle_denied.status, 403)
 
         root = Path(self.temporary.name)
         embedded = root / "delivery-project-a"
+        embedded_b = root / "delivery-project-b"
         embedded.mkdir(mode=0o700)
+        embedded_b.mkdir(mode=0o700)
         service = TrustedDeliveryService(
             staging_root=root / "delivery-staging",
             publication_root=root / "delivery-publication",
             lifecycle_root=root / "delivery-lifecycle",
             state_root=root / "delivery-state",
             database_path=root / "delivery-state" / "delivery.sqlite3",
-            embedded_roots={("tenant-a", "project-a"): embedded},
+            embedded_roots={
+                ("tenant-a", "project-a"): embedded,
+                ("tenant-a", "project-b"): embedded_b,
+            },
         )
         api = QaApi(
             QaControlPlane(root / "delivery-control-plane.sqlite3"),
@@ -364,7 +388,7 @@ class QaApiTest(unittest.TestCase):
             tenant_id="tenant-a",
             actor_id="actor-delivery",
             roles=frozenset({"qa:write", "qa:publish", "qa:lifecycle"}),
-            project_ids=frozenset({"project-a"}),
+            project_ids=frozenset({"project-a", "project-b"}),
         )
         test_case = {
             "test_case_id": "TC-api-delivery",
@@ -429,6 +453,19 @@ class QaApiTest(unittest.TestCase):
         self.assertEqual(materialized.body["outputs"]["native_build"], "NOT_RUN")
         session_id = materialized.body["outputs"]["session_id"]
 
+        cross_project = api.handle(
+            "POST",
+            "/api/v1/qa/skills/38-project-output-bundle-publishing:execute",
+            {
+                "request_id": "request-api-cross-project-publish",
+                "project_id": "project-b",
+                "idempotency_key": "api-cross-project-publish",
+                "inputs": {"session_id": session_id},
+            },
+            delivery_identity,
+        )
+        self.assertEqual(cross_project.status, 403)
+
         published = api.handle(
             "POST",
             "/api/v1/qa/skills/38-project-output-bundle-publishing:execute",
@@ -458,6 +495,50 @@ class QaApiTest(unittest.TestCase):
         self.assertEqual(registered.status, 200)
         self.assertEqual(registered.body["state"], "SUCCEEDED")
         self.assertTrue(registered.body["outputs"]["lifecycle_registered"])
+
+        with patch.object(
+            service,
+            "execute_publishing",
+            return_value={
+                "state": "SUCCEEDED",
+                "code": "MALFORMED_TRUSTED_RESULT",
+                "outputs": {},
+                "implementation_state": "LOCAL_EXECUTED",
+                "unsupported_field": True,
+            },
+        ):
+            malformed = api.handle(
+                "POST",
+                "/api/v1/qa/skills/38-project-output-bundle-publishing:execute",
+                {
+                    "request_id": "request-api-malformed-publisher",
+                    "project_id": "project-a",
+                    "idempotency_key": "api-malformed-publisher",
+                    "inputs": {"session_id": session_id},
+                },
+                delivery_identity,
+            )
+        self.assertEqual(malformed.status, 500)
+        self.assertEqual(malformed.body["error_code"], "QA_HANDLER_OUTPUT_INVALID")
+
+        with patch.object(
+            service,
+            "execute_publishing",
+            side_effect=ArtifactError("simulated trusted publisher failure"),
+        ):
+            artifact_failure = api.handle(
+                "POST",
+                "/api/v1/qa/skills/38-project-output-bundle-publishing:execute",
+                {
+                    "request_id": "request-api-artifact-failure",
+                    "project_id": "project-a",
+                    "idempotency_key": "api-artifact-failure",
+                    "inputs": {"session_id": session_id},
+                },
+                delivery_identity,
+            )
+        self.assertEqual(artifact_failure.status, 500)
+        self.assertEqual(artifact_failure.body["error_code"], "QA_DELIVERY_ERROR")
 
     def test_approval_requires_separate_privilege_and_exact_evidence(self) -> None:
         self.api.handle(

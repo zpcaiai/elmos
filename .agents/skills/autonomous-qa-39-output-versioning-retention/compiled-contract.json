@@ -1,0 +1,44 @@
+{
+  "installed_alias": "autonomous-qa-39-output-versioning-retention",
+  "installed_dependencies": [
+    "autonomous-qa-30-checkpoint-resume-idempotency",
+    "autonomous-qa-35-governance-approval-audit",
+    "autonomous-qa-38-project-output-bundle-publishing"
+  ],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_39_output_versioning_retention",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": true,
+    "operation_id": "elmos_autonomous_qa.delivery_service.lifecycle_operation_contract",
+    "phase": "lifecycle",
+    "side_effects_authorized": false,
+    "skill_key": "39-output-versioning-retention"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "governance",
+    "dependencies": [
+      "30-checkpoint-resume-idempotency",
+      "35-governance-approval-audit",
+      "38-project-output-bundle-publishing"
+    ],
+    "id": "39-output-versioning-retention",
+    "name": "Output Versioning, Retention & Lifecycle",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/39-output-versioning-retention/SKILL.md",
+    "sha256": "sha256:bec0fb53ff931207af3acdd4cb6f90e18371eb77b9ecd626a3418728f454c0b5"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

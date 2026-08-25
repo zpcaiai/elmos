@@ -486,7 +486,9 @@ class OracleEvidenceContractTest(unittest.TestCase):
     def test_external_signature_and_independent_review_are_not_run(self) -> None:
         request = oracle_request()
         request["signature_valid"] = True
-        result = advanced.verify_evidence(request)
+        with self.assertRaises(ContractError):
+            advanced.verify_evidence(request)
+        result = advanced.verify_evidence(oracle_request())
         self.assertEqual("NOT_RUN", result["outputs"]["signature"])
         self.assertEqual("NOT_RUN", result["outputs"]["independent_verification"])
 
@@ -565,6 +567,36 @@ class RepairPlanningContractTest(unittest.TestCase):
         result = advanced.plan_repair(request)
         self.assertEqual("BLOCKED", result["state"])
         self.assertIsNone(result["outputs"]["repair_plan"]["selected_alternative_id"])
+
+    def test_duplicate_canonical_path_in_one_alternative_is_rejected(self) -> None:
+        request = repair_request()
+        request["alternatives"][0]["changes"].append(
+            {"path": "src/service.py", "kind": "adapter-fix"}
+        )
+        with self.assertRaisesRegex(ContractError, "duplicate path"):
+            advanced.plan_repair(request)
+
+    def test_forbidden_kind_is_case_normalized_and_cannot_be_selected(self) -> None:
+        request = repair_request()
+        request["alternatives"] = [
+            {
+                "alternative_id": "alternative-forbidden-uppercase",
+                "changes": [
+                    {"path": "tests/test_service.py", "kind": "WEAKEN-TEST"}
+                ],
+                "validation_steps": ["run tests"],
+                "rollback_steps": ["restore tests"],
+                "estimated_attempts": 1,
+            }
+        ]
+        result = advanced.plan_repair(request)
+        plan = result["outputs"]["repair_plan"]
+        alternative = plan["alternatives"][0]
+        self.assertEqual("BLOCKED", result["state"])
+        self.assertEqual("weaken-test", alternative["changes"][0]["kind"])
+        self.assertEqual(["weaken-test"], alternative["forbidden_changes"])
+        self.assertFalse(alternative["eligible"])
+        self.assertIsNone(plan["selected_alternative_id"])
 
     def test_external_patch_validation_and_rollback_are_not_run(self) -> None:
         result = advanced.plan_repair(repair_request())
@@ -679,7 +711,9 @@ class RuntimeCostContractTest(unittest.TestCase):
     def test_caller_pricing_never_becomes_trusted_or_runtime_evidence(self) -> None:
         request = estimate_request()
         request["trusted_price_receipt"] = {"valid": True}
-        result = advanced.estimate_eta_contract(request)
+        with self.assertRaises(ContractError):
+            advanced.estimate_eta_contract(request)
+        result = advanced.estimate_eta_contract(estimate_request())
         self.assertEqual("NOT_RUN", result["outputs"]["runtime_execution"])
         self.assertEqual("NOT_RUN", result["outputs"]["trusted_price_receipt"])
         self.assertFalse(result["outputs"]["caller_price_assertion_accepted"])

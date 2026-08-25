@@ -311,6 +311,58 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
             )
             self.assertEqual(left, right)
 
+    def test_unexpected_autonomous_qa_alias_fails_write_preflight_and_check(self) -> None:
+        for install_root in integration.INSTALL_ROOTS:
+            with self.subTest(write_root=install_root.as_posix()):
+                temporary, root, archive = self.temporary_repository()
+                self.addCleanup(temporary.cleanup)
+                unexpected = root / install_root / "autonomous-qa-owner-extension"
+                unexpected.mkdir(parents=True)
+                owner = unexpected / "owner.txt"
+                owner.write_bytes(b"do not adopt\n")
+                with self.assertRaisesRegex(
+                    integration.IntegrationError,
+                    "installed Skill alias inventory drifted",
+                ):
+                    integration.write_integration(root, archive)
+                self.assertEqual(b"do not adopt\n", owner.read_bytes())
+                self.assertFalse((root / integration.SOURCE_RELATIVE).exists())
+
+        temporary, root, archive = self.temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        integration.write_integration(root, archive)
+        for install_root in integration.INSTALL_ROOTS:
+            with self.subTest(check_root=install_root.as_posix()):
+                unexpected = root / install_root / "autonomous-qa-owner-extension"
+                unexpected.mkdir()
+                owner = unexpected / "owner.txt"
+                owner.write_bytes(b"do not adopt\n")
+                with self.assertRaisesRegex(
+                    integration.IntegrationError,
+                    "installed Skill alias inventory drifted",
+                ):
+                    integration.check_integration(root, archive)
+                self.assertEqual(b"do not adopt\n", owner.read_bytes())
+                owner.unlink()
+                unexpected.rmdir()
+
+    def test_non_autonomous_qa_neighbors_are_allowed_and_preserved(self) -> None:
+        temporary, root, archive = self.temporary_repository()
+        self.addCleanup(temporary.cleanup)
+        neighbors: list[Path] = []
+        for install_root in integration.INSTALL_ROOTS:
+            neighbor = root / install_root / "reviewer-owned-neighbor"
+            neighbor.mkdir(parents=True)
+            owner = neighbor / "owner.txt"
+            owner.write_bytes(b"reviewer-owned\n")
+            neighbors.append(owner)
+
+        integration.write_integration(root, archive)
+        integration.check_integration(root, archive)
+        self.assertTrue(
+            all(owner.read_bytes() == b"reviewer-owned\n" for owner in neighbors)
+        )
+
     def test_generated_manifests_coexist_with_reviewer_owned_documentation(self) -> None:
         temporary, root, archive = self.temporary_repository()
         self.addCleanup(temporary.cleanup)
@@ -374,6 +426,7 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
     def test_managed_tree_reader_bounds_entries_and_rejects_hardlinks(self) -> None:
         with tempfile.TemporaryDirectory(prefix="autonomous-qa-tree-") as temporary:
             root = Path(temporary)
+            root.chmod(0o755)
             (root / "one.txt").write_bytes(b"one")
             (root / "two.txt").write_bytes(b"two")
             with mock.patch.object(integration, "MAX_MANAGED_TREE_ENTRIES", 1):
@@ -383,6 +436,7 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
         if hasattr(os, "link"):
             with tempfile.TemporaryDirectory(prefix="autonomous-qa-hardlink-") as temporary:
                 root = Path(temporary)
+                root.chmod(0o755)
                 original = root / "one.txt"
                 original.write_bytes(b"one")
                 os.link(original, root / "two.txt")
@@ -449,6 +503,7 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
     def test_managed_tree_reader_rejects_post_enumeration_extra_entries(self) -> None:
         with tempfile.TemporaryDirectory(prefix="autonomous-qa-tree-extra-") as temporary:
             root = Path(temporary)
+            root.chmod(0o755)
             (root / "owned.txt").write_bytes(b"owned\n")
             real_stat = integration.os.stat
             file_stats = 0
@@ -782,24 +837,25 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
     def test_runtime_source_phase_mutation_operation_and_handler_drift_fail_closed(self) -> None:
         exact_spec = (
             '("00-qa-control-plane", "control", True, '
-            "domain.create_run_contract)"
+            "trusted_services.control_plane_operation_contract)"
         )
         mutations = (
             (
                 exact_spec,
-                '("99-unowned-skill", "control", True, domain.create_run_contract)',
+                '("99-unowned-skill", "control", True, '
+                "trusted_services.control_plane_operation_contract)",
                 "importer-owned exact binding contract",
             ),
             (
                 exact_spec,
                 '("00-qa-control-plane", "planning", True, '
-                "domain.create_run_contract)",
+                "trusted_services.control_plane_operation_contract)",
                 "importer-owned exact binding contract",
             ),
             (
                 exact_spec,
                 '("00-qa-control-plane", "control", False, '
-                "domain.create_run_contract)",
+                "trusted_services.control_plane_operation_contract)",
                 "importer-owned exact binding contract",
             ),
             (
@@ -814,7 +870,7 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
             ),
             (
                 '("00-qa-control-plane", "control", True, '
-                '"elmos_autonomous_qa.domain.create_run_contract")',
+                '"elmos_autonomous_qa.trusted_services.control_plane_operation_contract")',
                 '("00-qa-control-plane", "control", True, '
                 '"elmos_autonomous_qa.domain.ingest_snapshot")',
                 "runtime-owned canonical binding contract",
@@ -1187,7 +1243,7 @@ class AutonomousQaIntegrationTest(unittest.TestCase):
 
         archive.unlink()
         archive.symlink_to(alternate)
-        with self.assertRaisesRegex(integration.IntegrationError, "archive"):
+        with self.assertRaisesRegex(integration.IntegrationError, "symlink"):
             integration.write_integration(root, archive)
         archive.unlink()
         shutil.copy2(alternate, archive)

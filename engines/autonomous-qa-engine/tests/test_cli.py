@@ -106,8 +106,20 @@ class CliTests(unittest.TestCase):
             request["inputs"] = {
                 "resource_tenant_id": "tenant-1",
                 "action": "read-evidence",
-                "roles": ["qa-reader"],
-                "required_roles": ["qa-reader"],
+                "evaluation_time": "2026-08-24T08:00:00Z",
+                "risk": {
+                    "paths": [],
+                    "semantic_tags": [],
+                    "data_classification": "INTERNAL",
+                },
+                "approvals": [],
+                "exception": None,
+                "budget": {"amount": 0, "currency": "USD"},
+                "retention": {"days": 30, "legal_hold": False},
+                "access_policy": {
+                    "allowed_roles": ["code-owner"],
+                    "purpose": "evidence-read",
+                },
             }
             path.write_text(json.dumps(request), encoding="utf-8")
             identity_code, identity_result = self.invoke(
@@ -115,7 +127,8 @@ class CliTests(unittest.TestCase):
             )
             self.assertEqual(3, identity_code)
             self.assertEqual(
-                f"local-uid-{os.getuid()}", identity_result["outputs"]["actor_id"]
+                f"local-uid-{os.getuid()}",
+                identity_result["outputs"]["evaluation"]["actor_id"],
             )
 
             snapshot_code, snapshot = self.invoke(

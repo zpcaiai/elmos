@@ -1,0 +1,40 @@
+{
+  "installed_alias": "autonomous-qa-34-continuous-learning-knowledge-base",
+  "installed_dependencies": [
+    "autonomous-qa-29-reporting-observability"
+  ],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_34_continuous_learning_knowledge_base",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": true,
+    "operation_id": "elmos_autonomous_qa.advanced_skills.propose_learning",
+    "phase": "lifecycle",
+    "side_effects_authorized": false,
+    "skill_key": "34-continuous-learning-knowledge-base"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "learning",
+    "dependencies": [
+      "29-reporting-observability"
+    ],
+    "id": "34-continuous-learning-knowledge-base",
+    "name": "Continuous Learning Knowledge Base",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/34-continuous-learning-knowledge-base/SKILL.md",
+    "sha256": "sha256:b4a5ec32e291dce3672e6501339ddd5577e659b859798efd15ec963ce8a1bfcb"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

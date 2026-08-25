@@ -14,8 +14,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping
 
+from .artifacts import ArtifactError
 from .contracts import (
     ContractError,
+    HandlerOutputError,
     RuntimeRequest,
     digest_json,
     normalize_result,
@@ -378,7 +380,8 @@ class QaApi:
                 if not skill:
                     raise SkillRuntimeError("Skill identifier is required")
                 alias = resolve_skill(skill)
-                source_id = SKILL_REGISTRY[alias].source_id
+                binding = SKILL_REGISTRY[alias]
+                source_id = binding.source_id
                 required_role = {
                     "38-project-output-bundle-publishing": "qa:publish",
                     "39-output-versioning-retention": "qa:lifecycle",
@@ -396,8 +399,12 @@ class QaApi:
                     "tenant_id": caller.tenant_id,
                     "project_id": project_id,
                     "actor_id": caller.actor_id,
-                    "idempotency_key": self._optional_string(
-                        payload, "idempotency_key", nullable=True
+                    "idempotency_key": (
+                        self._required_string(payload, "idempotency_key")
+                        if binding.mutating
+                        else self._optional_string(
+                            payload, "idempotency_key", nullable=True
+                        )
                     ),
                     "inputs": self._object_field(
                         payload, "inputs", default_empty=True
@@ -447,7 +454,22 @@ class QaApi:
                     )
                 else:
                     result = dispatch_skill(alias, request)
-                status = 200 if result["state"] in {"SUCCEEDED", "PARTIAL"} else 422
+                if result["state"] in {"SUCCEEDED", "PARTIAL"}:
+                    status = 200
+                elif result["retryable"]:
+                    status = 503
+                elif result["state"] == "FAILED":
+                    status = 500
+                elif result["code"] == "TRUSTED_DELIVERY_BINDER_REQUIRED":
+                    status = 503
+                elif source_id in {
+                    "37-test-source-materialization",
+                    "38-project-output-bundle-publishing",
+                    "39-output-versioning-retention",
+                }:
+                    status = 409
+                else:
+                    status = 422
                 return ApiResponse(status, result)
             run_prefix = "/api/v1/qa/runs/"
             if path.startswith(run_prefix):
@@ -583,11 +605,15 @@ class QaApi:
             return ApiResponse(
                 422, {"error_code": "QA_EVIDENCE_REJECTED", "retryable": False}
             )
+        except HandlerOutputError:
+            return ApiResponse(
+                500, {"error_code": "QA_HANDLER_OUTPUT_INVALID", "retryable": False}
+            )
         except DeliveryStateError:
             return ApiResponse(
                 500, {"error_code": "QA_DELIVERY_STATE_ERROR", "retryable": False}
             )
-        except DeliveryError:
+        except (DeliveryError, ArtifactError):
             return ApiResponse(
                 500, {"error_code": "QA_DELIVERY_ERROR", "retryable": False}
             )

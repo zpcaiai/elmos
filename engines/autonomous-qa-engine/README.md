@@ -39,6 +39,18 @@ service, or certification authority.
   as `COMMITTED_DURABILITY_UNKNOWN`; the committed tree is preserved, but it
   cannot enter lifecycle management until durability is independently
   reconciled.
+- Skills 37-39 cross a separate trusted-delivery boundary. The pure Skill 37
+  emitter is fully revalidated and digest-bound before staging; a generated
+  provenance artifact binds its exact emission and trusted runtime identity.
+  Skills 38 and 39 remain blocked unless the authenticated API is configured
+  with administrator-owned staging, publication, lifecycle, state, and
+  tenant/project embedded roots.
+- Trusted delivery uses an exact SQLite schema plus a per-project process/file
+  fence. Active publication cannot be mistaken for a crashed publication,
+  lifecycle side effects are serialized with their receipts, collected output
+  identifiers remain reserved, and uncertain commit outcomes stay explicit.
+  An unknown lifecycle mutation does not receive a terminal idempotency receipt;
+  it remains blocked with reconciliation required.
 
 ## Public API
 
@@ -56,6 +68,16 @@ SHA-256 helpers, and relative-path validation helpers used by both layers.
 `$autonomous-qa-*` Skill to one exact repository-owned callable.
 `elmos_autonomous_qa.api` exposes an authenticated in-process API whose tenant
 and actor identity plus exact project grants must come from a trusted transport.
+`elmos_autonomous_qa.delivery_service` exports `TrustedDeliveryService` and its
+exact pure contracts for Skills 38 and 39. Direct service calls are a trusted
+in-process boundary; an untrusted transport must call through `QaApi` with a
+transport-derived `TrustedIdentity`, never construct authorization context from
+request JSON.
+The authenticated Skill 37 binder permits sidecar output only. Embedded or
+combined worktree mutation requires a separately authorized adapter. The
+lower-level trusted service can model those modes for controlled integrations,
+but reports their per-file materialization as non-atomic and revalidates the
+embedded bytes on replay.
 `elmos_autonomous_qa.cli` provides structured-JSON dispatch for non-mutating
 Skills, project snapshots, and local durable run operations through the
 `elmos-autonomous-qa` entry point. It rejects mutating Skill dispatch because a
@@ -75,6 +97,11 @@ All Skill results keep external evidence at `NOT_RUN` and certification at
 `NOT_CERTIFIED`. Commands that require a real runner, SCM, CI, signer, or
 external verifier return a typed external-adapter requirement instead of
 executing caller-supplied commands.
+
+Lifecycle collection owns only the immutable managed publication copy. Its
+result names that exact deletion scope, reports private staging as retained,
+and labels any embedded worktree copy `UNMANAGED_NOT_VERIFIED`; it never
+represents managed-copy GC as a full worktree or evidence erasure.
 
 The test suite uses only `unittest` and temporary directories. Runtime code
 has no third-party dependencies.

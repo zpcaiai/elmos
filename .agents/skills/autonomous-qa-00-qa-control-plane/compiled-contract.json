@@ -1,0 +1,36 @@
+{
+  "installed_alias": "autonomous-qa-00-qa-control-plane",
+  "installed_dependencies": [],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_00_qa_control_plane",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": true,
+    "operation_id": "elmos_autonomous_qa.trusted_services.control_plane_operation_contract",
+    "phase": "control",
+    "side_effects_authorized": false,
+    "skill_key": "00-qa-control-plane"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "orchestration",
+    "dependencies": [],
+    "id": "00-qa-control-plane",
+    "name": "QA Control Plane",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/00-qa-control-plane/SKILL.md",
+    "sha256": "sha256:72fe0e567586375feabff9b936003d4410608015c67ba630a1b299db98a5e100"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

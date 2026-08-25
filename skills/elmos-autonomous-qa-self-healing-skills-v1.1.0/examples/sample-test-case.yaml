@@ -1,0 +1,45 @@
+test_case_id: TC-ORDER-IDEMPOTENCY-001
+title: 相同幂等键并发创建订单只产生一个订单
+test_type: functional
+priority: P0
+required: true
+requirement_refs: [REQ-ORDER-001]
+risk_tags: [idempotency, concurrency, data_consistency]
+preconditions:
+  - 用户已登录且商品有库存
+parameters:
+  concurrent_requests: 20
+  idempotency_key: deterministic-key-001
+steps:
+  - step_id: send-concurrent-requests
+    action: 并发发送 20 个内容相同且幂等键相同的创建订单请求
+    timeout_ms: 10000
+  - step_id: query-order
+    action: 通过幂等键和用户查询订单及订单明细
+    timeout_ms: 3000
+oracles:
+  - oracle_id: one-business-order
+    kind: data
+    assertion: 数据库中该用户与幂等键对应的业务订单数量严格等于 1
+  - oracle_id: same-result
+    kind: invariant
+    assertion: 所有成功响应引用同一订单号，失败响应必须是声明的幂等冲突语义
+  - oracle_id: stock-once
+    kind: state
+    assertion: 库存只扣减一次且审计事件只记录一次创建副作用
+evidence_requirements:
+  - request_response_transcript
+  - database_snapshot
+  - message_capture
+  - distributed_trace
+cleanup:
+  - 通过测试租户清理订单、明细和库存预留
+executor:
+  adapter: java-spring
+  command: ["./gradlew", "test", "--tests", "OrderIdempotencyTest"]
+  environment_profile: integration-postgres-kafka
+stability:
+  deterministic: true
+  retry_for_classification_max: 1
+estimated_duration_seconds: 45
+

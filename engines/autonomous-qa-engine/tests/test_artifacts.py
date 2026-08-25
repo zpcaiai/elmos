@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 import zipfile
+from contextlib import closing
 from dataclasses import replace
 from pathlib import Path
 from unittest import mock
@@ -30,7 +31,12 @@ from elmos_autonomous_qa.canonical import UnsafePathError  # noqa: E402
 
 class ArtifactPublisherTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.temporary = tempfile.TemporaryDirectory()
+        # macOS exposes its default temporary directory through the /var
+        # symlink.  Production artifact roots deliberately reject every
+        # symlinked ancestor, so create the fixture below the physical temp
+        # directory instead of weakening that boundary for tests.
+        temporary_base = Path(tempfile.gettempdir()).resolve(strict=True)
+        self.temporary = tempfile.TemporaryDirectory(dir=temporary_base)
         root = Path(self.temporary.name)
         self.staging = root / "staging"
         self.publication = root / "published"
@@ -1040,10 +1046,27 @@ class ArtifactPublisherTests(unittest.TestCase):
         real_fsync = artifact_module._fsync_directory_descriptor
         renamed = False
 
-        def mark_commit(*args: object, **kwargs: object) -> None:
+        def mark_commit(
+            source_parent: int,
+            source_name: str,
+            destination_parent: int,
+            destination_name: str,
+        ) -> None:
             nonlocal renamed
-            real_renameat(*args, **kwargs)
-            renamed = True
+            real_renameat(
+                source_parent,
+                source_name,
+                destination_parent,
+                destination_name,
+            )
+            # Descriptor-rooted candidate cleanup also uses no-replace renames
+            # for deletion tombstones.  Arm the fsync failure only for the
+            # actual publication namespace commit.
+            if (
+                source_name.startswith(f".pending-{publisher.plan.output_id}-")
+                and destination_name == publisher.plan.final_root.name
+            ):
+                renamed = True
 
         def fail_only_after_commit(descriptor: int) -> None:
             if renamed:
@@ -1313,7 +1336,7 @@ class ArtifactPublisherTests(unittest.TestCase):
 
     def test_legacy_lifecycle_layout_fails_closed(self) -> None:
         database = Path(self.temporary.name) / "legacy-layout.sqlite3"
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             connection.executescript(
                 """
                 CREATE TABLE lifecycle_outputs (
@@ -1342,7 +1365,7 @@ class ArtifactPublisherTests(unittest.TestCase):
             ).fetchall()
         with self.assertRaises(LifecycleError):
             ArtifactLifecycleStore(database, self.publication)
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             after = connection.execute(
                 "SELECT type, name, tbl_name, sql FROM sqlite_schema "
                 "WHERE name NOT LIKE 'sqlite_%' ORDER BY type, name"
@@ -1479,7 +1502,7 @@ class ArtifactPublisherTests(unittest.TestCase):
         ):
             with self.assertRaises(LifecycleError):
                 ArtifactLifecycleStore(database, self.publication)
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             objects = connection.execute(
                 "SELECT name FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%'"
             ).fetchall()

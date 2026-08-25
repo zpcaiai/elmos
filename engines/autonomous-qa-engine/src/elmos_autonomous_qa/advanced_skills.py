@@ -1103,6 +1103,7 @@ def plan_advanced_repair(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
         changes = _objects(raw.get("changes"), "alternative.changes")
         normalized_changes: list[dict[str, str]] = []
         forbidden: list[str] = []
+        change_paths: set[str] = set()
         for change in changes:
             _exact(
                 change,
@@ -1110,11 +1111,19 @@ def plan_advanced_repair(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
                 allowed={"path", "kind"},
                 required={"path", "kind"},
             )
-            kind = require_resource_id(change.get("kind"), "repair change.kind")
+            path = _path(change.get("path"), "repair change.path")
+            if path in change_paths:
+                raise ContractError(
+                    f"repair alternative {alternative_id} contains duplicate path: {path}"
+                )
+            change_paths.add(path)
+            kind = require_resource_id(
+                change.get("kind"), "repair change.kind"
+            ).casefold()
             if kind in _FORBIDDEN_REPAIR_KINDS:
                 forbidden.append(kind)
             normalized_changes.append(
-                {"path": _path(change.get("path"), "repair change.path"), "kind": kind}
+                {"path": path, "kind": kind}
             )
         estimated_attempts = _integer(
             raw.get("estimated_attempts"),
@@ -1227,7 +1236,7 @@ def analyze_typed_impact(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
         node_by_id[node_id] = kind
     edges = _objects(graph.get("edges", []), "graph.edges", allow_empty=True)
     normalized_edges: list[dict[str, str]] = []
-    propagation: dict[str, list[str]] = defaultdict(list)
+    propagation: dict[str, set[str]] = defaultdict(set)
     edge_keys: set[tuple[str, str, str, str]] = set()
     for raw in edges:
         _exact(
@@ -1254,9 +1263,9 @@ def analyze_typed_impact(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
             {"source": source, "target": target, "kind": kind, "direction": direction}
         )
         if direction in {"source-to-target", "bidirectional"}:
-            propagation[source].append(target)
+            propagation[source].add(target)
         if direction in {"target-to-source", "bidirectional"}:
-            propagation[target].append(source)
+            propagation[target].add(source)
     canonical_graph = {
         "graph_id": graph_id,
         "nodes": [

@@ -1,0 +1,27 @@
+defect:
+  defect_id: DEF-ORDER-042
+  failed_test: TC-ORDER-IDEMPOTENCY-001
+  observed: 并发 20 次请求生成了 3 个订单
+  root_cause:
+    summary: 幂等记录检查与订单插入不在同一事务/唯一约束内
+    confidence: 0.94
+repair_plan:
+  risk_level: R2
+  candidate_changes:
+    - path: services/order-service/src/main/resources/db/migration/V42__order_idempotency.sql
+      change_intent: 为 tenant_id + user_id + idempotency_key 增加唯一约束
+    - path: services/order-service/src/main/java/.../OrderService.java
+      change_intent: 在同一事务中插入并将唯一冲突映射为读取既有订单
+  approval:
+    required: true
+    policy_reason: 数据库迁移与事务语义属于高影响变更
+verification:
+  sequence:
+    - 原失败并发用例
+    - 订单创建/取消/库存影响回归
+    - API 契约与数据库迁移升级/回滚
+    - 压力测试下幂等冲突场景
+    - 全量 Required 回归
+result:
+  decision: waiting_code_owner_and_database_owner_approval
+

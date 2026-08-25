@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/project-context.schema.json",
+  "title": "ProjectContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project_id",
+    "snapshot_id",
+    "created_at",
+    "sources",
+    "technology_profile"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "git": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "dirty": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "source_id",
+          "kind",
+          "uri",
+          "content_hash",
+          "required"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "requirement",
+              "constraint",
+              "user_request",
+              "code",
+              "api_schema",
+              "database_schema",
+              "ui_design",
+              "test",
+              "ci",
+              "deployment",
+              "slo",
+              "policy",
+              "other"
+            ]
+          },
+          "uri": {
+            "type": "string"
+          },
+          "content_hash": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "parser_version": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "parsed",
+              "partial",
+              "failed"
+            ]
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "technology_profile": {
+      "type": "object",
+      "required": [
+        "languages"
+      ],
+      "properties": {
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "frameworks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "datastores": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "message_brokers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deployment_targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "declared_support_matrix": {
+      "type": "object"
+    },
+    "risk_classification": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    }
+  }
+}

@@ -296,6 +296,117 @@ class DomainPolicyTest(unittest.TestCase):
                 }
             )
 
+    def test_side_effect_adjacent_contracts_reject_unknown_fields(self) -> None:
+        repair_plan = {
+            "defect_id": "defect-1",
+            "risk_level": "R1",
+            "candidate_paths": ["src/service.py"],
+            "approval": "POLICY_GATES_REQUIRED",
+        }
+        repair_plan_digest = digest_json(repair_plan)
+        patch_request = {
+            "diff": "--- a/src/service.py\n+++ b/src/service.py\n@@ -1 +1 @@\n-a\n+b\n",
+            "candidate_paths": ["src/service.py"],
+            "semantic_tags": [],
+            "repair_plan": repair_plan,
+            "repair_plan_digest": repair_plan_digest,
+            "isolated_worktree": True,
+            "sandboxed": True,
+            "approvals": [],
+        }
+        with self.assertRaisesRegex(ContractError, "unsupported fields"):
+            domain.validate_patch({**patch_request, "merge_authorized": True})
+        with self.assertRaisesRegex(ContractError, "unsupported fields"):
+            domain.validate_patch(
+                {
+                    **patch_request,
+                    "approvals": [
+                        {
+                            "approver_id": "owner-a",
+                            "role": "code-owner",
+                            "repair_plan_digest": repair_plan_digest,
+                            "scope": "all-projects",
+                        }
+                    ],
+                }
+            )
+
+        invalid_runtime_context = {
+            "tenant_id": "tenant-a",
+            "project_id": "project-a",
+            "actor_id": "actor-a",
+            "request_id": "request-1",
+            "idempotency_key": "idempotency-1",
+            "trusted": True,
+        }
+        for operation, payload in (
+            (
+                domain.validate_patch,
+                {**patch_request, "_runtime_context": invalid_runtime_context},
+            ),
+            (
+                domain.validate_test_heal,
+                {
+                    "before": "assert value == 3",
+                    "after": "assert value == 3",
+                    "reason": "stable locator",
+                    "_runtime_context": invalid_runtime_context,
+                },
+            ),
+        ):
+            with self.subTest(operation=operation.__name__):
+                with self.assertRaisesRegex(ContractError, "unsupported fields"):
+                    operation(payload)
+        with self.assertRaisesRegex(ContractError, "unsupported fields"):
+            domain.validate_test_heal(
+                {
+                    "before": "assert value == 3",
+                    "after": "assert value == 3",
+                    "reason": "stable locator",
+                    "execution_performed": True,
+                }
+            )
+
+        impact_report = {
+            "impacted_tests": ["TC-1"],
+            "unknown_paths": [],
+            "full_regression_required": False,
+        }
+        impact_report["report_digest"] = digest_json(impact_report)
+        with self.assertRaisesRegex(ContractError, "unsupported fields"):
+            domain.plan_ci(
+                {
+                    "event": "pull-request",
+                    "changed_nodes": ["src/service.py"],
+                    "impact_report": impact_report,
+                    "_runtime_context": invalid_runtime_context,
+                }
+            )
+        with self.assertRaisesRegex(ContractError, "unsupported fields"):
+            domain.plan_ci(
+                {
+                    "event": "pull-request",
+                    "changed_nodes": ["src/service.py"],
+                    "impact_report": impact_report,
+                    "merge_authorized": True,
+                }
+            )
+        unknown_report = {
+            key: value
+            for key, value in impact_report.items()
+            if key != "report_digest"
+        }
+        unknown_report["trusted"] = True
+        unknown_report["report_digest"] = digest_json(unknown_report)
+        with self.assertRaisesRegex(ContractError, "unsupported fields"):
+            domain.plan_ci(
+                {
+                    "event": "pull-request",
+                    "changed_nodes": ["src/service.py"],
+                    "impact_report": unknown_report,
+                }
+            )
+
     def test_test_healing_cannot_reduce_assertion_strength(self) -> None:
         result = domain.validate_test_heal(
             {

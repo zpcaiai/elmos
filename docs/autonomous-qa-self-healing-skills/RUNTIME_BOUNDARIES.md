@@ -15,6 +15,33 @@ The autonomous QA engine may perform deterministic, bounded local operations:
 - persist run metadata, idempotent outcomes, evidence receipts, event/audit
   chains, and local chain heads in its tenant-scoped SQLite store.
 
+The configured `TrustedDeliveryService` adds a narrower local mutation
+authority for Skills 37-39. Its filesystem roots and tenant/project bindings
+are administrator supplied at construction and cannot be selected in Skill
+JSON. The authenticated API requires `qa:write`, `qa:publish`, or
+`qa:lifecycle` as applicable plus the exact project grant. It then persists the
+transport-bound actor/request/trace authorization digest with the materialized
+plan, then persists a distinct Skill 38 publisher authorization digest with the
+published envelope. Direct service invocation is allowed only for
+trusted in-process callers; it is not an authentication mechanism.
+
+The authenticated Skill 37 binder authorizes sidecar output only. Embedded or
+combined worktree materialization needs a separately authorized adapter because
+it is a per-file mutation, not one atomic commit across roots. Controlled
+low-level integrations that use those modes receive `atomic_publish: false`,
+and replay revalidates the embedded bytes instead of assuming they survived.
+
+Skill 37's in-memory emitter result is treated as another untrusted boundary:
+the service rechecks the complete envelope, canonical DSL identity, artifact
+bytes and hashes, lineage, scans, diffs, replay plans, manifest, path collision
+policy, and execution boundary before descriptor-safe staging. Skills 38 and 39
+use a per-project process and filesystem fence, an exact durable state schema,
+immutable output identifiers (including collected tombstones), and physical
+revalidation before lifecycle registration. A crash or ambiguous commit is
+reported as unknown and is never silently retried as success. Unknown lifecycle
+mutation outcomes do not receive terminal receipts; a caller must reconcile the
+durable state before treating a retry as successful.
+
 Atomic namespace commit and durable commit are separate states. If publication
 renames the verified tree but either parent-directory sync fails, the output is
 preserved as `COMMITTED_DURABILITY_UNKNOWN`; it is not eligible for lifecycle
@@ -35,6 +62,17 @@ command string:
 - running database DDL, load, security, fuzz, chaos, or recovery operations;
 - uploading or deleting object-store artifacts;
 - signing manifests or release certificates.
+
+Local, no-replace publication under the administrator-owned publication root
+is distinct from object-store upload, SCM publication, signing, or release.
+Those external effects remain outside the trusted local delivery service.
+
+Local lifecycle collection deletes only the exact managed publication copy.
+Private staging remains retained for local provenance/replay, and embedded
+worktree files remain outside the collector's managed namespace. Results label
+those embedded copies `UNMANAGED_NOT_VERIFIED`; they do not assert that the
+files still exist, and never equate publication-copy GC with full project,
+evidence, or object-store erasure.
 
 Each requires a typed, allowlisted adapter, exact tenant/project binding,
 idempotency, explicit authorization, and fresh raw evidence. A missing adapter or

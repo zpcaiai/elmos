@@ -13,7 +13,13 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
 from .canonical import normalize_relative_path
-from .contracts import ContractError, digest_json, require_resource_id, require_text
+from .contracts import (
+    ContractError,
+    digest_json,
+    require_exact_text,
+    require_resource_id,
+    require_text,
+)
 
 
 class Priority(str, Enum):
@@ -840,17 +846,34 @@ def estimate_eta_contract(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
 def evaluate_quality_gate_contract(inputs: Mapping[str, Any]) -> Mapping[str, Any]:
     """Parse strict JSON input and expose the conservative gate as a Skill result."""
 
+    def exact_object(
+        value: Any,
+        field: str,
+        *,
+        allowed: frozenset[str],
+        required: frozenset[str] = frozenset(),
+    ) -> Mapping[str, Any]:
+        if not isinstance(value, Mapping):
+            raise ContractError(f"{field} must be an object")
+        if any(type(key) is not str for key in value):
+            raise ContractError(f"{field} field names must be exact strings")
+        present = frozenset(value)
+        unknown = present - allowed
+        missing = required - present
+        if unknown:
+            raise ContractError(
+                f"{field} contains unsupported fields: {sorted(unknown)}"
+            )
+        if missing:
+            raise ContractError(f"{field} is missing required fields: {sorted(missing)}")
+        return value
+
     def objects(value: Any, field: str) -> list[Mapping[str, Any]]:
         if not isinstance(value, list) or not value or any(
             not isinstance(item, Mapping) for item in value
         ):
             raise ContractError(f"{field} must be a non-empty object array")
         return list(value)
-
-    def object_value(value: Any, field: str) -> Mapping[str, Any]:
-        if not isinstance(value, Mapping):
-            raise ContractError(f"{field} must be an object")
-        return value
 
     def strings(value: Any, field: str) -> tuple[str, ...]:
         if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
@@ -879,18 +902,258 @@ def evaluate_quality_gate_contract(inputs: Mapping[str, Any]) -> Mapping[str, An
             raise ContractError(f"{field} must be an integer when supplied")
         return value
 
-    requirements = tuple(
-        Requirement(
-            requirement_id=require_resource_id(
-                item.get("requirement_id"), "requirement.requirement_id"
-            ),
-            priority=required_string(item.get("priority"), "requirement.priority"),
-            required=item.get("required", True),
+    def bounded_strings(
+        value: Any,
+        field: str,
+        *,
+        allow_empty: bool,
+        maximum: int,
+    ) -> tuple[str, ...]:
+        if not isinstance(value, list) or (not value and not allow_empty):
+            qualifier = "a string array" if allow_empty else "a non-empty string array"
+            raise ContractError(f"{field} must be {qualifier}")
+        return tuple(
+            require_text(item, f"{field}[]", maximum=maximum) for item in value
         )
-        for item in objects(inputs.get("requirements"), "requirements")
+
+    compact_requirement_fields = frozenset(
+        {"requirement_id", "priority", "required"}
     )
-    if any(not isinstance(item.required, bool) for item in requirements):
-        raise ContractError("requirement.required must be boolean")
+    normalized_requirement_fields = frozenset(
+        {
+            "requirement_id",
+            "title",
+            "statement",
+            "kind",
+            "priority",
+            "required",
+            "source_refs",
+            "acceptance_criteria",
+            "actor",
+            "action",
+            "object",
+            "preconditions",
+            "postconditions",
+            "data_classification",
+            "business_invariants",
+            "constraint_tags",
+            "conflict_key",
+            "polarity",
+            "confidence",
+            "normalization_method",
+            "status",
+        }
+    )
+
+    def validate_requirement(item: Mapping[str, Any], index: int) -> Requirement:
+        if any(type(key) is not str for key in item):
+            raise ContractError(
+                f"requirements[{index}] field names must be exact strings"
+            )
+        present = frozenset(item)
+        if present == compact_requirement_fields:
+            exact_object(
+                item,
+                f"requirements[{index}]",
+                allowed=compact_requirement_fields,
+                required=compact_requirement_fields,
+            )
+        elif present == normalized_requirement_fields:
+            exact_object(
+                item,
+                f"requirements[{index}]",
+                allowed=normalized_requirement_fields,
+                required=normalized_requirement_fields,
+            )
+            require_text(item.get("title"), "requirement.title", maximum=512)
+            require_exact_text(
+                item.get("statement"), "requirement.statement", maximum=16_384
+            )
+            require_text(item.get("kind"), "requirement.kind", maximum=64)
+            bounded_strings(
+                item.get("source_refs"),
+                "requirement.source_refs",
+                allow_empty=False,
+                maximum=1024,
+            )
+            bounded_strings(
+                item.get("acceptance_criteria"),
+                "requirement.acceptance_criteria",
+                allow_empty=True,
+                maximum=8192,
+            )
+            require_text(item.get("actor"), "requirement.actor", maximum=256)
+            require_text(item.get("action"), "requirement.action", maximum=1024)
+            require_text(item.get("object"), "requirement.object", maximum=1024)
+            bounded_strings(
+                item.get("preconditions"),
+                "requirement.preconditions",
+                allow_empty=True,
+                maximum=2048,
+            )
+            bounded_strings(
+                item.get("postconditions"),
+                "requirement.postconditions",
+                allow_empty=True,
+                maximum=2048,
+            )
+            require_text(
+                item.get("data_classification"),
+                "requirement.data_classification",
+                maximum=64,
+            )
+            bounded_strings(
+                item.get("business_invariants"),
+                "requirement.business_invariants",
+                allow_empty=True,
+                maximum=8192,
+            )
+            bounded_strings(
+                item.get("constraint_tags"),
+                "requirement.constraint_tags",
+                allow_empty=True,
+                maximum=256,
+            )
+            conflict_key = item.get("conflict_key")
+            if not isinstance(conflict_key, str):
+                raise ContractError("requirement.conflict_key must be a string")
+            if conflict_key:
+                require_text(
+                    conflict_key, "requirement.conflict_key", maximum=2048
+                )
+            polarity = require_text(
+                item.get("polarity"), "requirement.polarity", maximum=16
+            )
+            if polarity not in {"require", "prohibit"}:
+                raise ContractError("requirement.polarity is invalid")
+            confidence = item.get("confidence")
+            if (
+                not isinstance(confidence, (int, float))
+                or isinstance(confidence, bool)
+                or not math.isfinite(float(confidence))
+                or not 0 <= float(confidence) <= 1
+            ):
+                raise ContractError("requirement.confidence must be a number from 0 to 1")
+            normalization_method = require_text(
+                item.get("normalization_method"),
+                "requirement.normalization_method",
+                maximum=64,
+            )
+            if normalization_method not in {
+                "STRUCTURED_EXACT",
+                "BOUNDED_DETERMINISTIC_TEXT",
+            }:
+                raise ContractError("requirement.normalization_method is invalid")
+            status = require_text(
+                item.get("status"), "requirement.status", maximum=32
+            )
+            if status not in {
+                "ready",
+                "ambiguous",
+                "conflicting",
+                "blocked",
+                "deprecated",
+            }:
+                raise ContractError("requirement.status is invalid")
+        else:
+            unknown = present - normalized_requirement_fields
+            if unknown:
+                raise ContractError(
+                    f"requirements[{index}] contains unsupported fields: {sorted(unknown)}"
+                )
+            raise ContractError(
+                f"requirements[{index}] must match exactly the compact or "
+                "normalized requirement schema"
+            )
+
+        requirement_id = require_resource_id(
+            item.get("requirement_id"), "requirement.requirement_id"
+        )
+        priority = require_text(item.get("priority"), "requirement.priority", maximum=2)
+        if priority not in {"P0", "P1", "P2", "P3"}:
+            raise ContractError("requirement.priority is invalid")
+        required = item.get("required")
+        if not isinstance(required, bool):
+            raise ContractError("requirement.required must be boolean")
+        return Requirement(
+            requirement_id=requirement_id,
+            priority=priority,
+            required=required,
+        )
+
+    request_object = exact_object(
+        inputs,
+        "quality-gate request",
+        allowed=frozenset(
+            {
+                "mode",
+                "requirements",
+                "tests",
+                "output",
+                "security",
+                "certification",
+                "run_succeeded",
+                "risk_ids",
+                "_runtime_context",
+            }
+        ),
+        required=frozenset({"requirements", "tests", "output", "security"}),
+    )
+    runtime_context = request_object.get("_runtime_context")
+    if runtime_context is not None:
+        exact_object(
+            runtime_context,
+            "quality-gate runtime context",
+            allowed=frozenset(
+                {
+                    "tenant_id",
+                    "project_id",
+                    "actor_id",
+                    "request_id",
+                    "idempotency_key",
+                }
+            ),
+            required=frozenset(
+                {
+                    "tenant_id",
+                    "project_id",
+                    "actor_id",
+                    "request_id",
+                    "idempotency_key",
+                }
+            ),
+        )
+
+    requirement_values = objects(
+        request_object.get("requirements"), "requirements"
+    )
+    requirements = tuple(
+        validate_requirement(item, index)
+        for index, item in enumerate(requirement_values)
+    )
+    test_values = objects(request_object.get("tests"), "tests")
+    for item in test_values:
+        exact_object(
+            item,
+            "test",
+            allowed=frozenset(
+                {
+                    "test_id",
+                    "test_case_id",
+                    "status",
+                    "requirement_refs",
+                    "risk_refs",
+                    "materialized_ref",
+                    "build_status",
+                    "discovery_status",
+                    "required",
+                }
+            ),
+            required=frozenset({"status"}),
+        )
+        if ("test_id" in item) == ("test_case_id" in item):
+            raise ContractError("test must declare exactly one of test_id or test_case_id")
+
     tests = tuple(
         TestObservation(
             test_id=require_resource_id(
@@ -910,23 +1173,77 @@ def evaluate_quality_gate_contract(inputs: Mapping[str, Any]) -> Mapping[str, An
             ),
             required=item.get("required", True),
         )
-        for item in objects(inputs.get("tests"), "tests")
+        for item in test_values
     )
     if any(not isinstance(item.required, bool) for item in tests):
         raise ContractError("test.required must be boolean")
-    output = object_value(inputs.get("output"), "output")
-    security = object_value(inputs.get("security"), "security")
-    certification = object_value(inputs.get("certification", {}), "certification")
+    output = exact_object(
+        request_object.get("output"),
+        "output",
+        allowed=frozenset(
+            {
+                "project_output_manifest_ref",
+                "test_artifact_manifest_ref",
+                "bundles",
+                "materialized_artifact_refs",
+                "all_artifacts_have_sha256",
+                "bundle_checksums_match",
+                "tamper_detected",
+                "test_targets_build",
+                "generated_tests_discoverable",
+                "replay_entrypoint_present",
+                "untracked_generated_files",
+                "secrets_detected",
+                "unsafe_symlink_detected",
+                "partial_output_available",
+            }
+        ),
+    )
+    security = exact_object(
+        request_object.get("security"),
+        "security",
+        allowed=frozenset(
+            {
+                "unresolved_critical_findings",
+                "unresolved_high_findings",
+                "production_credentials_used",
+                "permissions_broadened",
+                "security_controls_disabled",
+                "direct_main_write",
+                "direct_production_write",
+            }
+        ),
+    )
+    certification = exact_object(
+        request_object.get("certification", {}),
+        "certification",
+        allowed=frozenset(
+            {
+                "project_manifest_signed",
+                "evidence_manifest_signed",
+                "signatures_valid",
+                "signer_trusted",
+                "evidence_digests_valid",
+                "authorization_valid",
+                "independent_corpus",
+                "independent_evidence",
+                "external_validation_completed",
+                "executor_id",
+                "verifier_id",
+                "signer_id",
+            }
+        ),
+    )
     bundles = strings(output.get("bundles", []), "output.bundles")
     materialized = strings(
         output.get("materialized_artifact_refs", []),
         "output.materialized_artifact_refs",
     )
-    risk_ids = strings(inputs.get("risk_ids", []), "risk_ids")
+    risk_ids = strings(request_object.get("risk_ids", []), "risk_ids")
     for risk_id in risk_ids:
         require_resource_id(risk_id, "risk_ids[]")
     request = QualityGateInput(
-        mode=required_string(inputs.get("mode", "verify"), "mode"),
+        mode=required_string(request_object.get("mode", "verify"), "mode"),
         requirements=requirements,
         tests=tests,
         output=OutputEvidence(
@@ -974,7 +1291,9 @@ def evaluate_quality_gate_contract(inputs: Mapping[str, Any]) -> Mapping[str, An
             verifier_id=None,
             signer_id=None,
         ),
-        run_succeeded=optional_boolean(inputs.get("run_succeeded"), "run_succeeded"),
+        run_succeeded=optional_boolean(
+            request_object.get("run_succeeded"), "run_succeeded"
+        ),
         risk_ids=frozenset(risk_ids),
     )
     report = evaluate_quality_gate(request)

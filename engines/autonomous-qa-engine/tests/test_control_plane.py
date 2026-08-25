@@ -4,6 +4,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 from unittest.mock import patch
 
@@ -1047,7 +1048,7 @@ class QaControlPlaneTests(unittest.TestCase):
             "_error_type": "IllegalTransition",
             "error_code": "ILLEGAL_RUN_STATE",
         }
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             connection.execute(
                 "CREATE TABLE qa_idempotency ("
                 "tenant_id TEXT NOT NULL, idempotency_key TEXT NOT NULL, "
@@ -1069,7 +1070,7 @@ class QaControlPlaneTests(unittest.TestCase):
                 ),
             )
         QaControlPlane(database)
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             observed = connection.execute(
                 "SELECT response_digest, created_at FROM qa_idempotency "
                 "WHERE tenant_id = ? AND idempotency_key = ?",
@@ -1088,7 +1089,7 @@ class QaControlPlaneTests(unittest.TestCase):
 
     def test_old_idempotency_schema_refuses_noncanonical_backfill(self) -> None:
         database = Path(self.temporary.name) / "unsafe-idempotency.sqlite3"
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             connection.execute(
                 "CREATE TABLE qa_idempotency ("
                 "tenant_id TEXT NOT NULL, idempotency_key TEXT NOT NULL, "
@@ -1111,7 +1112,7 @@ class QaControlPlaneTests(unittest.TestCase):
             )
         with self.assertRaises(ControlPlaneError):
             QaControlPlane(database)
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             columns = {
                 row[1] for row in connection.execute("PRAGMA table_info(qa_idempotency)")
             }
@@ -1128,7 +1129,7 @@ class QaControlPlaneTests(unittest.TestCase):
 
     def test_nonempty_legacy_audit_without_chain_link_fails_before_migration(self) -> None:
         database = Path(self.temporary.name) / "legacy-audit.sqlite3"
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             connection.execute(
                 "CREATE TABLE qa_audit ("
                 "audit_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -1155,7 +1156,7 @@ class QaControlPlaneTests(unittest.TestCase):
             ControlPlaneError, "cannot be safely re-chained"
         ):
             QaControlPlane(database)
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             columns = {
                 row[1] for row in connection.execute("PRAGMA table_info(qa_audit)")
             }
@@ -1165,7 +1166,7 @@ class QaControlPlaneTests(unittest.TestCase):
 
     def test_legacy_schema_migration_rejects_inexact_layout_atomically(self) -> None:
         database = Path(self.temporary.name) / "legacy-inexact.sqlite3"
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             connection.execute(
                 "CREATE TABLE qa_runs ("
                 "tenant_id TEXT NOT NULL, run_id TEXT NOT NULL, "
@@ -1177,7 +1178,7 @@ class QaControlPlaneTests(unittest.TestCase):
             )
         with self.assertRaisesRegex(ControlPlaneError, "schema is not exact"):
             QaControlPlane(database)
-        with sqlite3.connect(database) as connection:
+        with closing(sqlite3.connect(database)) as connection, connection:
             tables = {
                 row[0]
                 for row in connection.execute(
@@ -1206,7 +1207,7 @@ class QaControlPlaneTests(unittest.TestCase):
         )
 
     def test_versioned_schema_rejects_inexact_sql_semantics(self) -> None:
-        with sqlite3.connect(self.database) as connection:
+        with closing(sqlite3.connect(self.database)) as connection, connection:
             sql = connection.execute(
                 "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'qa_runs'"
             ).fetchone()[0]

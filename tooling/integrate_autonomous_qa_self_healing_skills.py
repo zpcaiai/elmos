@@ -67,8 +67,8 @@ RUNTIME_AUTHORITY_MODULES = (
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/artifacts.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/canonical.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/cli.py",
-    "engines/autonomous-qa-engine/src/elmos_autonomous_qa/contracts.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/context_skills.py",
+    "engines/autonomous-qa-engine/src/elmos_autonomous_qa/contracts.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/control_plane.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/delivery_service.py",
     "engines/autonomous-qa-engine/src/elmos_autonomous_qa/delivery_skills.py",
@@ -2651,6 +2651,76 @@ def _bounded_directory_names(descriptor: int, *, label: str) -> tuple[str, ...]:
     return tuple(sorted(names))
 
 
+def _validate_installed_alias_inventory(
+    repository_root: Path,
+    expected: Mapping[str, Any],
+    *,
+    allow_missing: bool,
+) -> None:
+    aliases = tuple(expected["skill_trees"])
+    if (
+        len(aliases) != EXPECTED_SKILL_COUNT
+        or len(set(aliases)) != EXPECTED_SKILL_COUNT
+        or any(not alias.startswith(ALIAS_PREFIX) for alias in aliases)
+    ):
+        raise IntegrationError("expected installed Skill alias inventory is not exact")
+    expected_aliases = frozenset(aliases)
+    folded_prefix = ALIAS_PREFIX.casefold()
+
+    for install_root in INSTALL_ROOTS:
+        destination = _resolve_below(repository_root, install_root)
+        if not destination.exists():
+            if allow_missing:
+                continue
+            raise IntegrationError(
+                f"installed Skill root is missing: {install_root.as_posix()}"
+            )
+
+        probe = install_root / aliases[0]
+        descriptor = _open_managed_parent(
+            repository_root,
+            probe,
+            create=False,
+        )
+        try:
+            before_metadata = _metadata_fingerprint(os.fstat(descriptor))
+            before_names = _bounded_directory_names(
+                descriptor,
+                label=f"installed Skill root {install_root.as_posix()}",
+            )
+            after_names = _bounded_directory_names(
+                descriptor,
+                label=f"installed Skill root {install_root.as_posix()}",
+            )
+            after_metadata = _metadata_fingerprint(os.fstat(descriptor))
+            if before_names != after_names or before_metadata != after_metadata:
+                raise IntegrationError(
+                    f"installed Skill root changed during inventory: "
+                    f"{install_root.as_posix()}"
+                )
+            _revalidate_managed_parent(repository_root, probe, descriptor)
+
+            observed_aliases = frozenset(
+                name
+                for name in before_names
+                if name.casefold().startswith(folded_prefix)
+            )
+            unexpected = sorted(observed_aliases - expected_aliases)
+            missing = (
+                []
+                if allow_missing
+                else sorted(expected_aliases - observed_aliases)
+            )
+            if unexpected or missing:
+                raise IntegrationError(
+                    f"installed Skill alias inventory drifted at "
+                    f"{install_root.as_posix()}: "
+                    f"missing={missing}, unexpected={unexpected}"
+                )
+        finally:
+            _close_descriptor(descriptor)
+
+
 def _reject_reserved_transaction_roots(
     repository_root: Path,
     *,
@@ -3289,6 +3359,11 @@ def _stage_tree(
 
 
 def _check_expected(repository_root: Path, expected: Mapping[str, Any]) -> None:
+    _validate_installed_alias_inventory(
+        repository_root,
+        expected,
+        allow_missing=False,
+    )
     actions = _managed_actions(repository_root, expected)
     for action in actions:
         _compare_action(action)
@@ -3733,6 +3808,11 @@ def write_integration(
     runtime = validate_runtime_registry(repository_root, snapshot.skills)
     expected = build_expected(snapshot, runtime)
     actions = _managed_actions(repository_root, expected)
+    _validate_installed_alias_inventory(
+        repository_root,
+        expected,
+        allow_missing=True,
+    )
 
     missing: list[ManagedAction] = []
     for action in actions:

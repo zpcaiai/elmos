@@ -1,0 +1,92 @@
+version: 2
+policy: strict
+
+traceability:
+  normalized_required_nodes_mapped: 1.0
+  p0_p1_executable_coverage: 1.0
+  p2_executable_coverage_min: 0.98
+  orphan_tests_allowed: false
+  required_test_without_materialized_artifact_allowed: false
+  materialized_test_without_requirement_or_risk_justification_allowed: false
+  unmapped_code_risk_review_required: true
+
+execution:
+  required_test_terminal_status: true
+  skipped_required_tests_allowed: false
+  blocked_required_tests_allowed: false
+  confirmed_flaky_required_tests_allowed: false
+  silent_retry_allowed: false
+  retain_first_failure_evidence: true
+
+correctness:
+  p0_pass_rate: 1.0
+  p1_pass_rate: 1.0
+  unresolved_critical_defects: 0
+  unresolved_high_defects: 0
+  regression_failures: 0
+
+project_output:
+  required_for_modes: [generate, verify, repair, certify, continuous]
+  project_output_manifest_required: true
+  test_artifact_set_manifest_required: true
+  project_with_tests_bundle_required: true
+  tests_only_bundle_required: true
+  qa_evidence_bundle_required_for_modes: [verify, repair, certify, continuous]
+  generated_test_sources_must_be_persisted: true
+  temporary_only_test_sources_allowed: false
+  native_test_layout_required: true
+  all_artifacts_require_sha256: true
+  all_test_sources_require_requirement_or_risk_refs: true
+  all_test_sources_require_test_case_refs: true
+  generated_tests_must_be_discoverable: true
+  p0_p1_test_targets_must_build: true
+  replay_entrypoint_required: true
+  bundle_path_traversal_allowed: false
+  bundle_checksum_mismatch_allowed: false
+  stale_required_test_artifacts_allowed: false
+  partial_output_required_on_failed_run: true
+  untracked_generated_file_allowed: false
+  secrets_in_project_output_allowed: false
+
+performance:
+  require_explicit_slo_or_provisional_budget: true
+  regression_from_approved_baseline_pct_max: 5
+  error_rate_budget_breach_allowed: false
+  resource_saturation_breach_allowed: false
+  stress_breakpoint_must_be_reported: true
+  soak_memory_or_handle_leak_allowed: false
+
+ui:
+  critical_flow_e2e_pass_rate: 1.0
+  unexplained_visual_diff_allowed: false
+  critical_accessibility_violations: 0
+  responsive_breakpoint_coverage_required: true
+
+repair:
+  direct_main_branch_write_allowed: false
+  direct_production_write_allowed: false
+  weaken_assertions_allowed: false
+  delete_failing_tests_allowed: false
+  reduce_requirement_coverage_allowed: false
+  reduce_mutation_score_allowed: false
+  full_regression_after_product_patch_required: true
+  rematerialize_changed_test_artifacts_required: true
+  update_artifact_lineage_required: true
+  max_default_repair_iterations: 3
+
+security:
+  unresolved_critical_findings: 0
+  unresolved_high_findings: 0
+  secrets_in_artifacts_allowed: false
+  production_credentials_in_test_workers_allowed: false
+  unsafe_symlink_in_bundle_allowed: false
+
+certification:
+  immutable_input_snapshot_required: true
+  evidence_manifest_required: true
+  project_output_manifest_signed: true
+  evidence_manifest_signed: true
+  reproducibility_command_required: true
+  machine_wall_clock_report_required: true
+  human_equivalent_comparison_required: true
+  signer_required: true

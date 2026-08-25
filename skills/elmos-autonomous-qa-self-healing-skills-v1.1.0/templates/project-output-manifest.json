@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "output_id": "out_<stable-id>",
+  "project_id": "<project-id>",
+  "revision_id": "<revision-id>",
+  "run_id": "<run-id>",
+  "run_mode": "generate",
+  "source_snapshot_id": "<snapshot-id>",
+  "status": "partial",
+  "output_mode": "both",
+  "created_at": "<RFC3339>",
+  "artifacts": [],
+  "bundles": [],
+  "entrypoints": {
+    "test_all": [
+      "<command>"
+    ],
+    "test_smoke": [
+      "<command>"
+    ]
+  },
+  "quality_summary": {
+    "required_tests": 0,
+    "materialized_required_tests": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 0,
+    "quality_gates_passed": false
+  }
+}

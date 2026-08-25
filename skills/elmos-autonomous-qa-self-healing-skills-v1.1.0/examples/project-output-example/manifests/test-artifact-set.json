@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "set_id": "tas_example_001",
+  "project_id": "example-calculator",
+  "revision_id": "rev_example_001",
+  "run_id": "run_example_001",
+  "created_at": "2026-08-20T05:00:00Z",
+  "state": "generated",
+  "native_layout": "typescript_javascript",
+  "artifact_refs": [
+    "art_test_add",
+    "art_package",
+    "art_replay_smoke"
+  ],
+  "test_case_refs": [
+    "TC-CALC-001"
+  ],
+  "requirement_refs": [
+    "REQ-CALC-001"
+  ],
+  "test_types": [
+    "unit"
+  ],
+  "toolchains": [
+    {
+      "name": "Node.js",
+      "version": "24.x"
+    },
+    {
+      "name": "Vitest",
+      "version": "3.2.4",
+      "lock_or_digest_ref": "project/package.json"
+    }
+  ],
+  "commands": {
+    "install": [
+      "npm ci"
+    ],
+    "discover": [
+      "npm run test:discover"
+    ],
+    "smoke": [
+      "npm run test:smoke"
+    ],
+    "all": [
+      "npm test"
+    ],
+    "by_type": {
+      "unit": [
+        "npm test -- project/tests/unit/add.spec.ts"
+      ]
+    }
+  },
+  "counts": {
+    "test_cases": 1,
+    "test_files": 1,
+    "fixture_files": 0,
+    "config_files": 1,
+    "baselines": 0
+  },
+  "validation": {
+    "formatted": true,
+    "syntax_valid": true,
+    "discovered": false,
+    "buildable": false,
+    "smoke_executed": false,
+    "blocked_reasons": [
+      "Example blueprint is not executed during package construction."
+    ]
+  },
+  "metadata": {
+    "example_only": true
+  }
+}

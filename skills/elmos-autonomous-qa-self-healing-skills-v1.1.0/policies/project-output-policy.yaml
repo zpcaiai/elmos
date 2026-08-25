@@ -1,0 +1,68 @@
+version: 1
+policy_id: elmos.project-output.strict
+
+defaults:
+  enabled_for_modes: [generate, verify, repair, certify, continuous]
+  output_mode: both
+  publish_partial_on_failure: true
+  immutable_after_publish: true
+  atomic_publish: true
+  content_hash: sha256
+  include_replay: true
+  include_test_sources: true
+  include_test_configs: true
+  include_fixtures_mocks_and_data: true
+  include_visual_and_performance_baselines: true
+
+required_bundles:
+  generate: [project-with-tests, tests-only]
+  verify: [project-with-tests, tests-only, qa-evidence]
+  repair: [project-with-tests, tests-only, qa-evidence]
+  certify: [project-with-tests, tests-only, qa-evidence]
+  continuous: [project-with-tests, tests-only, qa-evidence]
+
+path_safety:
+  relative_paths_only: true
+  parent_traversal_allowed: false
+  absolute_paths_allowed: false
+  symlink_escape_allowed: false
+  case_collision_allowed: false
+  reserved_device_names_allowed: false
+  max_path_bytes: 1024
+
+artifact_rules:
+  every_generated_file_must_be_manifested: true
+  every_test_source_requires_test_case_refs: true
+  every_test_source_requires_requirement_or_risk_refs: true
+  native_test_layout_required: true
+  placeholders_allowed: false
+  empty_assertions_allowed: false
+  assert_true_only_allowed: false
+  disabled_required_tests_allowed: false
+  executable_or_blocked_with_reason: true
+  retain_previous_version_on_change: true
+
+bundle_rules:
+  deterministic_file_order: true
+  normalized_timestamps: true
+  include_manifest_and_checksums: true
+  verify_after_creation: true
+  nested_dependency_caches_allowed: false
+  git_metadata_allowed: false
+  temporary_files_allowed: false
+
+security:
+  secrets_scan_required: true
+  production_credentials_allowed: false
+  raw_production_personal_data_allowed: false
+  executable_allowlist_required: true
+  archive_bomb_limits_required: true
+  tenant_isolation_required: true
+
+retention:
+  unverified_days: 30
+  verified_days: 90
+  certified_days: 365
+  failed_security_run_days: 365
+  legal_hold_supported: true
+  referenced_blob_gc_allowed: false

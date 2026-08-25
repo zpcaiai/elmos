@@ -24,6 +24,7 @@ from elmos_autonomous_qa.adapters import (  # noqa: E402
     execute_adapter_contract,
     operation_support,
 )
+from elmos_autonomous_qa.contracts import ContractError  # noqa: E402
 from elmos_autonomous_qa.gates import (  # noqa: E402
     CertificationEvidence,
     Decision,
@@ -986,6 +987,67 @@ class QualityGateTest(unittest.TestCase):
                     "security": {},
                 }
             )
+
+    def test_json_contract_rejects_unknown_fields_at_every_boundary(self) -> None:
+        base = {
+            "requirements": [
+                {"requirement_id": "REQ-P0", "priority": "P0", "required": True}
+            ],
+            "tests": [
+                {
+                    "test_id": "test-1",
+                    "status": "NOT_RUN",
+                    "requirement_refs": ["REQ-P0"],
+                }
+            ],
+            "output": {},
+            "security": {},
+        }
+        variants = {
+            "request": {**base, "unexpected": True},
+            "requirement": {
+                **base,
+                "requirements": [
+                    {
+                        "requirement_id": "REQ-P0",
+                        "priority": "P0",
+                        "required": True,
+                        "unexpected": True,
+                    }
+                ],
+            },
+            "test": {
+                **base,
+                "tests": [
+                    {
+                        "test_id": "test-1",
+                        "status": "NOT_RUN",
+                        "unexpected": True,
+                    }
+                ],
+            },
+            "output": {**base, "output": {"unexpected": True}},
+            "security": {**base, "security": {"unexpected": True}},
+            "certification": {
+                **base,
+                "certification": {"unexpected": True},
+            },
+            "runtime-context": {
+                **base,
+                "_runtime_context": {
+                    "tenant_id": "tenant-a",
+                    "project_id": "project-a",
+                    "actor_id": None,
+                    "request_id": "request-1",
+                    "idempotency_key": None,
+                    "unexpected": True,
+                },
+            },
+        }
+        for boundary, payload in variants.items():
+            with self.subTest(boundary=boundary):
+                with self.assertRaisesRegex(ContractError, "unsupported fields"):
+                    evaluate_quality_gate_contract(payload)
 
 
 class RepairEtaImpactTest(unittest.TestCase):

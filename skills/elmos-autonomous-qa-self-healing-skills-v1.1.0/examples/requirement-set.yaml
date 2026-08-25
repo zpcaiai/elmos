@@ -1,0 +1,28 @@
+requirements:
+  - requirement_id: REQ-ORDER-001
+    kind: functional
+    title: 创建订单
+    statement: 已登录用户可为有效商品创建订单，系统生成唯一订单号并持久化订单明细。
+    priority: P0
+    required: true
+    acceptance_criteria:
+      - 合法请求返回已创建订单及唯一订单号
+      - 订单与明细在同一事务中持久化
+      - 重复幂等键不会生成第二个订单
+    source_refs:
+      - source_id: requirements-md
+        locator: section:3.1
+    status: ready
+  - requirement_id: NFR-ORDER-001
+    kind: non_functional
+    title: 创建订单性能
+    statement: 在目标负载 100 RPS 下，创建订单 p95 小于等于 300ms，错误率不超过 0.1%。
+    priority: P0
+    required: true
+    acceptance_criteria:
+      - 持续 30 分钟目标负载时满足延迟与错误率预算
+    source_refs:
+      - source_id: constraints-md
+        locator: section:performance
+    status: ready
+

@@ -1,0 +1,40 @@
+{
+  "installed_alias": "autonomous-qa-11-visual-responsive-testing",
+  "installed_dependencies": [
+    "autonomous-qa-10-ui-e2e-testing"
+  ],
+  "known_source_policy_defects": 2,
+  "maximum_local_claim": "STRUCTURALLY_INTEGRATED_NOT_EXECUTED",
+  "namespace": "autonomous-qa-self-healing-v1",
+  "package_id": "elmos.autonomous-qa-self-healing",
+  "package_version": "1.1.0",
+  "repository_owned_wrapper": true,
+  "runtime_binding": {
+    "authority_sha256": "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0",
+    "binding_state": "LOCAL_HANDLER_BOUND_NOT_EXECUTED",
+    "certification_status": "NOT_CERTIFIED",
+    "dispatcher": "dispatch_skill",
+    "external_evidence_status": "NOT_RUN",
+    "handler_id": "execute_11_visual_responsive_testing",
+    "module_path": "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py",
+    "module_sha256": "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17",
+    "mutating": false,
+    "operation_id": "elmos_autonomous_qa.generators.plan_visual_responsive_tests",
+    "phase": "generation",
+    "side_effects_authorized": false,
+    "skill_key": "11-visual-responsive-testing"
+  },
+  "schema_version": "elmos.autonomous-qa.compiled-skill-contract.v1",
+  "source": {
+    "category": "testing",
+    "dependencies": [
+      "10-ui-e2e-testing"
+    ],
+    "id": "11-visual-responsive-testing",
+    "name": "Visual & Responsive Testing",
+    "path": "skills/elmos-autonomous-qa-self-healing-skills-v1.1.0/skills/11-visual-responsive-testing/SKILL.md",
+    "sha256": "sha256:e65f9986f07af22aa9db168948ad453367f4a0fa52c86f3d987eafbbfc696acb"
+  },
+  "source_body_embedded_in_wrapper": false,
+  "source_instructions_activated": false
+}

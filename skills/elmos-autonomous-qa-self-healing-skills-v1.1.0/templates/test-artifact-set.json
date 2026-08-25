@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "set_id": "tas_<stable-id>",
+  "project_id": "<project-id>",
+  "revision_id": "<revision-id>",
+  "run_id": "<run-id>",
+  "created_at": "<RFC3339>",
+  "state": "generated",
+  "native_layout": "<adapter-layout-id>",
+  "artifact_refs": [],
+  "test_case_refs": [],
+  "test_types": [],
+  "toolchains": [],
+  "commands": {
+    "discover": [],
+    "smoke": [],
+    "all": []
+  }
+}

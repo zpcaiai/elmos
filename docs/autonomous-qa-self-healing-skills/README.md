@@ -41,6 +41,11 @@ untrusted bytes are preserved for review.
   deterministic bundles, extraction revalidation,
   secret/path/symlink/collision checks, partial failure outputs, and reference-safe
   quarantine/recovery retention.
+- a trusted Skills 37-39 service binder with exact revalidation of the complete
+  Skill 37 emitter contract, an emission/authorization provenance artifact,
+  administrator-owned roots, a private exact-schema SQLite state store,
+  per-project process/file fencing, crash-explicit publication reconciliation,
+  and non-reusable collected output identities.
 
 Callers may request only `verified` publication; caller-declared `partial` or
 `failed` status is rejected before materialization. Those non-success states are
@@ -55,6 +60,23 @@ execution, code patching, SCM updates, CI status publication, object-storage
 publication, signing, and external verification require explicit typed adapters
 and their own authorization. Unsupported or unavailable capabilities remain
 `NOT_RUN` or `BLOCKED`.
+
+The generic Skill dispatcher keeps Skills 38 and 39 blocked behind pure
+contracts. Actual local staging, publishing, and lifecycle mutation is available
+only when `QaApi` is explicitly configured with `TrustedDeliveryService`. The
+transport must derive `TrustedIdentity`, roles, and exact project grants from an
+authenticated resource binding. Caller JSON cannot select service roots or
+manufacture the persisted authorization context; direct service access is a
+trusted in-process integration boundary, not a public API.
+
+The authenticated binder accepts sidecar materialization only. Embedded or
+combined worktree writes require a separately authorized adapter because their
+per-file effects cannot be represented as one cross-root atomic publication.
+The lower-level trusted service reports those modes as non-atomic and verifies
+their bytes on replay. Lifecycle collection is scoped to the managed
+publication copy; it reports private staging as retained and embedded worktree
+copies as `UNMANAGED_NOT_VERIFIED` rather than claiming either their retention
+or their deletion.
 
 Caller-supplied adapter detection and version fields are rejected rather than
 treated as qualification evidence. The test DSL accepts no qualification field

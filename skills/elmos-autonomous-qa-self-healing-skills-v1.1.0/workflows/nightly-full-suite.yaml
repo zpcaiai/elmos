@@ -1,0 +1,28 @@
+workflow_id: nightly-full-suite
+version: 2
+mode: repair
+scope: full_required
+profiles:
+  - functional
+  - api
+  - contract
+  - database
+  - message
+  - ui
+  - visual
+  - accessibility
+  - security
+  - performance_baseline
+repair:
+  max_iterations: 2
+  auto_accept_risk_levels: [R0, R1]
+outputs:
+  - project_with_tests_bundle
+  - tests_only_bundle
+  - qa_evidence_bundle
+  - full_report
+  - defect_digest
+  - candidate_patches
+  - trend_metrics
+  - updated_runtime_model
+  - test_artifact_diff_from_previous_revision

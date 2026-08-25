@@ -1,0 +1,468 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.dev/schemas/project-output-manifest.schema.json",
+  "title": "ProjectOutputManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "output_id",
+    "project_id",
+    "revision_id",
+    "run_id",
+    "run_mode",
+    "source_snapshot_id",
+    "status",
+    "output_mode",
+    "created_at",
+    "artifacts",
+    "bundles",
+    "entrypoints",
+    "quality_summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_mode": {
+      "enum": [
+        "plan-only",
+        "generate",
+        "verify",
+        "repair",
+        "certify",
+        "continuous"
+      ]
+    },
+    "source_snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "assembling",
+        "partial",
+        "failed",
+        "verified",
+        "certified",
+        "publication_failed",
+        "superseded"
+      ]
+    },
+    "output_mode": {
+      "enum": [
+        "embedded",
+        "sidecar",
+        "both"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "supersedes_output_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "category",
+          "role",
+          "path",
+          "content_type",
+          "sha256",
+          "size_bytes",
+          "producer",
+          "created_at",
+          "validation_status",
+          "required"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category": {
+            "enum": [
+              "application_source",
+              "application_config",
+              "test_source",
+              "test_config",
+              "test_fixture",
+              "test_data",
+              "test_mock",
+              "test_baseline",
+              "ci_config",
+              "replay_script",
+              "test_plan",
+              "traceability",
+              "test_result",
+              "report",
+              "evidence",
+              "coverage",
+              "performance_baseline",
+              "security_result",
+              "defect",
+              "patch",
+              "certificate",
+              "manifest",
+              "other"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "content_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "producer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validation_status": {
+            "enum": [
+              "generated",
+              "syntax_valid",
+              "buildable",
+              "discovered",
+              "executed",
+              "certified",
+              "blocked",
+              "stale",
+              "superseded"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "language": {
+            "type": "string"
+          },
+          "framework": {
+            "type": "string"
+          },
+          "test_type": {
+            "type": "string"
+          },
+          "native_test_target": {
+            "type": "string"
+          },
+          "requirement_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "risk_justification": {
+            "type": "string"
+          },
+          "test_case_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "defect_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "patch_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "retention_class": {
+            "enum": [
+              "ephemeral",
+              "standard",
+              "extended",
+              "legal_hold"
+            ]
+          },
+          "sensitivity": {
+            "enum": [
+              "public",
+              "internal",
+              "confidential",
+              "restricted"
+            ]
+          },
+          "supersedes_artifact_id": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "bundles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bundle_id",
+          "kind",
+          "format",
+          "path",
+          "sha256",
+          "size_bytes",
+          "status",
+          "created_at",
+          "file_count",
+          "output_id",
+          "includes_categories",
+          "manifest_ref"
+        ],
+        "properties": {
+          "bundle_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "project-with-tests",
+              "tests-only",
+              "qa-evidence",
+              "repair-patches"
+            ]
+          },
+          "format": {
+            "enum": [
+              "zip",
+              "tar",
+              "tar.gz",
+              "tar.zst"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "enum": [
+              "building",
+              "verified",
+              "failed",
+              "superseded"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "verified_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "file_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "content_manifest_path": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "object"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "output_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "includes_categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "manifest_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "install": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_discover": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_smoke": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "test_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replay_failed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "by_type": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "quality_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_tests",
+        "materialized_required_tests",
+        "passed",
+        "failed",
+        "blocked",
+        "quality_gates_passed"
+      ],
+      "properties": {
+        "required_tests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "materialized_required_tests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "generated_test_files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "discovered_test_files": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "passed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "flaky_confirmed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quality_gates_passed": {
+          "type": "boolean"
+        },
+        "certification_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}
